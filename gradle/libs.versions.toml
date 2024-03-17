@@ -2,12 +2,16 @@
 kotlin = "1.9.23"
 netty = "4.1.107.Final"
 junit = "5.10.2"
+jmh = "0.4.10"
 
 [libraries]
 netty-buffer = { module = "io.netty:netty-buffer", version.ref = "netty" }
 junit-api = { module = "org.junit.jupiter:junit-jupiter-api", version.ref = "junit" }
 junit-engine = { module = "org.junit.jupiter:junit-jupiter-engine", version.ref = "junit" }
 junit-launcher = { module = "org.junit.platform:junit-platform-launcher", version = "1.10.2" }
+jmh-runtime = { module = "org.jetbrains.kotlinx:kotlinx-benchmark-runtime", version.ref = "jmh" }
 
 [plugins]
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
+allopen = { id = "org.jetbrains.kotlin.plugin.allopen", version.ref = "kotlin" }
+jmh = { id = "org.jetbrains.kotlinx.benchmark", version.ref = "jmh" }

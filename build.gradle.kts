@@ -1,8 +1,9 @@
 import org.jetbrains.kotlin.gradle.plugin.KotlinPluginWrapper
 
 plugins {
-    alias(libs.plugins.kotlin.jvm)
     application
+    alias(libs.plugins.kotlin.jvm)
+    alias(libs.plugins.jmh)
 }
 
 allprojects {
