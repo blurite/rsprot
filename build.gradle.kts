@@ -15,7 +15,10 @@ allprojects {
 
     plugins.withType<KotlinPluginWrapper> {
         dependencies {
-            testImplementation(kotlin("test"))
+            testImplementation(kotlin("test-junit5"))
+            testImplementation(libs.junit.api)
+            testRuntimeOnly(libs.junit.engine)
+            testRuntimeOnly(libs.junit.launcher)
         }
 
         tasks.test {
