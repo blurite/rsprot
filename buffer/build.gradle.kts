@@ -28,4 +28,10 @@ benchmark {
     targets {
         register("benchmarks")
     }
+
+    configurations {
+        register("bitbuf") {
+            include("net.rsprot.buffer.BitBufBenchmark")
+        }
+    }
 }
