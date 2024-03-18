@@ -1,8 +1,9 @@
-package net.rsprot.protocol.message.handler
+package net.rsprot.protocol.client.incoming
 
 import net.rsprot.protocol.ClientProt
 import net.rsprot.protocol.ProtRepository
 import net.rsprot.protocol.message.IncomingMessage
+import net.rsprot.protocol.message.codec.MessageDecoder
 
 public class MessageDecoderRepository internal constructor(
     private val protRepository: ProtRepository,

@@ -1,4 +1,4 @@
-package net.rsprot.protocol.message.handler
+package net.rsprot.protocol.message.codec
 
 import io.netty.buffer.ByteBuf
 import net.rsprot.protocol.ServerProt

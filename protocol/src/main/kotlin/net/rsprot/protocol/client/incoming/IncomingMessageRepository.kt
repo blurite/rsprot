@@ -1,7 +1,8 @@
-package net.rsprot.protocol.message.handler
+package net.rsprot.protocol.client.incoming
 
 import net.rsprot.protocol.ProtRepository
 import net.rsprot.protocol.message.IncomingMessage
+import net.rsprot.protocol.message.codec.MessageDecoder
 import java.util.function.BiConsumer
 
 public class IncomingMessageRepository<R> internal constructor(
