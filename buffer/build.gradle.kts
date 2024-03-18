@@ -6,7 +6,7 @@ plugins {
 
 dependencies {
     implementation(libs.netty.buffer)
-    implementation(libs.bundles.logging)
+    testImplementation(libs.bundles.logging)
 }
 
 allOpen {
