@@ -13,4 +13,7 @@ plugins {
 
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
-include("buffer")
+include(
+    "buffer",
+    "protocol",
+)
