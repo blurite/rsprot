@@ -33,5 +33,9 @@ benchmark {
         register("bitbuf") {
             include("net.rsprot.buffer.BitBufBenchmark")
         }
+
+        register("inlinebitbuf") {
+            include("net.rsprot.buffer.InlineBitBufBenchmark")
+        }
     }
 }
