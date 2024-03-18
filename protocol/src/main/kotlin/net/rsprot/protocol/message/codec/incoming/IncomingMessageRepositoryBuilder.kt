@@ -1,4 +1,4 @@
-package net.rsprot.protocol.client.incoming
+package net.rsprot.protocol.message.codec.incoming
 
 import net.rsprot.protocol.ClientProt
 import net.rsprot.protocol.ProtRepository
