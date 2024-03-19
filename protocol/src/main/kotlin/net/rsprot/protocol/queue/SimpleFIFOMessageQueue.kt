@@ -1,58 +1,58 @@
 package net.rsprot.protocol.queue
 
 import net.rsprot.protocol.message.Message
+import java.util.Queue
+import java.util.concurrent.ConcurrentLinkedQueue
 
 /**
- * A simple message first-in-first-out queue that is backed by [ArrayDeque].
+ * A simple message first-in-first-out queue that is backed by [ConcurrentLinkedQueue].
  */
-public class SimpleFIFOMessageQueue<T : Message>(
-    initialCapacity: Int,
-) : MessageQueue<T> {
-    private val arrayDeque: ArrayDeque<T> = ArrayDeque(initialCapacity)
+public class SimpleFIFOMessageQueue<T : Message> : MessageQueue<T> {
+    private val queue: Queue<T> = ConcurrentLinkedQueue()
 
     override fun add(
         message: T,
         filterResult: Int,
     ): Boolean {
-        return arrayDeque.add(message)
+        return queue.add(message)
     }
 
     override fun offer(
         message: T,
         filterResult: Int,
     ): Boolean {
-        return arrayDeque.add(message)
+        return queue.add(message)
     }
 
     override fun remove(): T {
-        return arrayDeque.removeFirst()
+        return queue.remove()
     }
 
     override fun poll(): T? {
-        return arrayDeque.removeFirstOrNull()
+        return queue.poll()
     }
 
     override fun isEmpty(): Boolean {
-        return arrayDeque.isEmpty()
+        return queue.isEmpty()
     }
 
     override fun size(): Int {
-        return arrayDeque.size
+        return queue.size
     }
 
     override fun clear() {
-        arrayDeque.clear()
+        queue.clear()
     }
 
     override fun element(): T {
-        return arrayDeque.first()
+        return queue.first()
     }
 
     override fun peek(): T? {
-        return arrayDeque.firstOrNull()
+        return queue.firstOrNull()
     }
 
     override fun iterator(): Iterator<T> {
-        return arrayDeque.iterator()
+        return queue.iterator()
     }
 }
