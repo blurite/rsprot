@@ -6,6 +6,7 @@ plugins {
 
 dependencies {
     implementation(libs.netty.buffer)
+    implementation(libs.inline.logger)
     testImplementation(libs.bundles.logging)
 }
 
