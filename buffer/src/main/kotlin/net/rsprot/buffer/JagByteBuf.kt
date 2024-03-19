@@ -91,6 +91,11 @@ import java.nio.charset.Charset
 @Suppress("NOTHING_TO_INLINE")
 @JvmInline
 public value class JagByteBuf(public val buffer: ByteBuf) {
+    public inline fun skip(num: Int): JagByteBuf {
+        buffer.skipBytes(num)
+        return this
+    }
+
     public inline fun g1(): Int {
         return buffer.g1()
     }
