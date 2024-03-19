@@ -1,5 +1,6 @@
 package net.rsprot.protocol.loginprot.outgoing.codec
 
+import io.netty.channel.ChannelHandlerContext
 import net.rsprot.buffer.JagByteBuf
 import net.rsprot.protocol.ServerProt
 import net.rsprot.protocol.loginprot.outgoing.LoginResponse
@@ -10,6 +11,7 @@ public class DisallowedByScriptLoginResponseEncoder : MessageEncoder<LoginRespon
     override val prot: ServerProt = LoginServerProt.DISALLOWED_BY_SCRIPT
 
     override fun encode(
+        ctx: ChannelHandlerContext,
         buffer: JagByteBuf,
         message: LoginResponse.DisallowedByScript,
     ) {
