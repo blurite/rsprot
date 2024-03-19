@@ -20,6 +20,7 @@ enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 include(
     "buffer",
     "protocol",
+    "crypto",
 )
 
 includeSubprojects(":protocol")
