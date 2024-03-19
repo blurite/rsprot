@@ -32,6 +32,12 @@ public interface MessageFilter {
 
     public companion object {
         /**
+         * Special constant to denote that no message filter has been implemented.
+         */
+
+        public const val NO_MESSAGE_FILTER: Int = -1
+
+        /**
          * Special constant to accept the message and pass it on to
          * the message queue.
          */
