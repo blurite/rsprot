@@ -2,6 +2,7 @@ package net.rsprot.buffer.extensions
 
 import io.netty.buffer.ByteBuf
 import io.netty.util.ByteProcessor
+import net.rsprot.buffer.JagByteBuf
 import net.rsprot.buffer.util.charset.Cp1252Charset
 import java.nio.charset.Charset
 
@@ -723,4 +724,8 @@ public fun ByteBuf.pdataAlt2(
         writeByte(data.getByte(i) - HALF_UBYTE)
     }
     return this
+}
+
+public fun ByteBuf.toJagByteBuf(): JagByteBuf {
+    return JagByteBuf(this)
 }
