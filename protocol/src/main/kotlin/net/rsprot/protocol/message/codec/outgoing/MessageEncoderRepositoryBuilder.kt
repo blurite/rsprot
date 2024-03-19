@@ -3,7 +3,7 @@ package net.rsprot.protocol.message.codec.outgoing
 import net.rsprot.protocol.ProtRepository
 import net.rsprot.protocol.message.codec.MessageEncoder
 
-public class MessageEncoderRepositoryBuilder internal constructor(
+public class MessageEncoderRepositoryBuilder(
     private val protRepository: ProtRepository,
 ) {
     private val encoders: Array<MessageEncoder<*>?> = arrayOfNulls(protRepository.capacity())
