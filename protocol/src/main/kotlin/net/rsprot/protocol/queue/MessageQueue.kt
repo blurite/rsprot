@@ -12,6 +12,9 @@ import java.lang.ClassCastException
  * In the absence of a [MessageFilter][net.rsprot.protocol.filter.MessageFilter],
  * the property `filterResult` will be set to
  * [NO_MESSAGE_FILTER][net.rsprot.protocol.filter.MessageFilter.NO_MESSAGE_FILTER].
+ *
+ * The implementations of this [MessageQueue] MUST be thread-safe, as they will be
+ * populated by Netty's worker threads, and polled by the main game thread.
  */
 public interface MessageQueue<T : Message> : Iterable<T> {
     /**
