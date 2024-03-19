@@ -65,7 +65,6 @@ public abstract class LoginBlockDecoder<T>(
             constZero1.toUByte(),
             seed,
             sessionId,
-            "",
             username,
             lowDetail,
             resizable,

@@ -11,7 +11,6 @@ public class LoginBlock<T>(
     private val _constZero1: UByte,
     public val seed: IntArray,
     public val sessionId: Long,
-    public val password: String,
     public val username: String,
     public val lowDetail: Boolean,
     public val resizable: Boolean,
@@ -57,7 +56,6 @@ public class LoginBlock<T>(
         if (_constZero1 != other._constZero1) return false
         if (!seed.contentEquals(other.seed)) return false
         if (sessionId != other.sessionId) return false
-        if (password != other.password) return false
         if (username != other.username) return false
         if (lowDetail != other.lowDetail) return false
         if (resizable != other.resizable) return false
@@ -84,7 +82,6 @@ public class LoginBlock<T>(
         result = 31 * result + _constZero1.hashCode()
         result = 31 * result + seed.contentHashCode()
         result = 31 * result + sessionId.hashCode()
-        result = 31 * result + password.hashCode()
         result = 31 * result + username.hashCode()
         result = 31 * result + lowDetail.hashCode()
         result = 31 * result + resizable.hashCode()
@@ -108,7 +105,6 @@ public class LoginBlock<T>(
             "subVersion=$subVersion, " +
             "seed=${seed.contentToString()}, " +
             "sessionId=$sessionId, " +
-            "password='$password', " +
             "username='$username', " +
             "lowDetail=$lowDetail, " +
             "resizable=$resizable, " +

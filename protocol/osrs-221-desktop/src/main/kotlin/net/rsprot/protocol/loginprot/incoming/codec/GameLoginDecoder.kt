@@ -7,6 +7,8 @@ import net.rsprot.protocol.loginprot.incoming.codec.shared.LoginBlockDecoder
 import net.rsprot.protocol.loginprot.incoming.prot.LoginClientProt
 import net.rsprot.protocol.loginprot.incoming.util.AuthenticationType
 import net.rsprot.protocol.loginprot.incoming.util.OtpAuthenticationType
+import net.rsprot.protocol.loginprot.incoming.util.Password
+import net.rsprot.protocol.loginprot.incoming.util.Token
 import net.rsprot.protocol.message.codec.MessageDecoder
 import java.math.BigInteger
 
@@ -25,12 +27,12 @@ public class GameLoginDecoder(
         return when (val authenticationType = buffer.g1()) {
             PASSWORD_AUTHENTICATION ->
                 AuthenticationType.PasswordAuthentication(
-                    buffer.gjstr(),
+                    Password(buffer.gjstr().toByteArray()),
                     otp,
                 )
             TOKEN_AUTHENTICATION ->
                 AuthenticationType.TokenAuthentication(
-                    buffer.gjstr(),
+                    Token(buffer.gjstr().toByteArray()),
                     otp,
                 )
             else -> {
