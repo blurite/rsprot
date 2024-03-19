@@ -263,8 +263,11 @@ public value class InlineBitBuf private constructor(private val buffer: ByteBuf)
         ) {
             // Cannot use AutoCloseable interface here as it causes the buffer to be boxed
             val inlineBuffer = wrap(buffer)
-            block(inlineBuffer)
-            inlineBuffer.close()
+            try {
+                block(inlineBuffer)
+            } finally {
+                inlineBuffer.close()
+            }
         }
     }
 }
