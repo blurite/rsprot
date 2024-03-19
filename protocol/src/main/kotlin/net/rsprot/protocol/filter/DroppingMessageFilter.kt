@@ -15,7 +15,7 @@ public class DroppingMessageFilter(
 ) : MessageFilter {
     init {
         require(threshold in 1..UByte.MAX_VALUE.toInt()) {
-            "Message capacity must be between 1 and ${UByte.MAX_VALUE}."
+            "Message threshold must be between 1 and ${UByte.MAX_VALUE}."
         }
     }
 
