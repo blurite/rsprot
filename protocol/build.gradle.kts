@@ -4,5 +4,7 @@ plugins {
 
 dependencies {
     implementation(libs.netty.buffer)
+    implementation(libs.netty.transport)
     implementation(projects.buffer)
+    implementation(projects.crypto)
 }
