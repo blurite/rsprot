@@ -91,6 +91,28 @@ import java.nio.charset.Charset
 @Suppress("NOTHING_TO_INLINE")
 @JvmInline
 public value class JagByteBuf(public val buffer: ByteBuf) {
+    public inline val isReadable: Boolean
+        get() = buffer.isReadable
+
+    public inline val isWritable: Boolean
+        get() = buffer.isWritable
+
+    public inline fun isReadable(size: Int): Boolean {
+        return buffer.isReadable(size)
+    }
+
+    public inline fun isWritable(size: Int): Boolean {
+        return buffer.isWritable(size)
+    }
+
+    public inline fun readableBytes(): Int {
+        return buffer.readableBytes()
+    }
+
+    public inline fun writableBytes(): Int {
+        return buffer.writableBytes()
+    }
+
     public inline fun skip(num: Int): JagByteBuf {
         buffer.skipBytes(num)
         return this
