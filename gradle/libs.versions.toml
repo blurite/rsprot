@@ -11,6 +11,7 @@ netty-buffer = { module = "io.netty:netty-buffer", version.ref = "netty" }
 netty-transport = { module = "io.netty:netty-transport", version.ref = "netty" }
 junit-api = { module = "org.junit.jupiter:junit-jupiter-api", version.ref = "junit" }
 junit-engine = { module = "org.junit.jupiter:junit-jupiter-engine", version.ref = "junit" }
+junit-params = { module = "org.junit.jupiter:junit-jupiter-params", version.ref = "junit" }
 junit-launcher = { module = "org.junit.platform:junit-platform-launcher", version = "1.10.2" }
 jmh-runtime = { module = "org.jetbrains.kotlinx:kotlinx-benchmark-runtime", version.ref = "jmh" }
 inline-logger = { module = "com.michael-bull.kotlin-inline-logger:kotlin-inline-logger", version.ref = "inlinelogger" }
