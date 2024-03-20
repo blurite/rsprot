@@ -21,6 +21,7 @@ include(
     "buffer",
     "protocol",
     "crypto",
+    "compression",
 )
 
 includeSubprojects(":protocol")
