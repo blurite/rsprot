@@ -12,7 +12,7 @@ private typealias Enc<T> = EmptyLoginResponseEncoder<T>
 
 public object LoginMessageEncoderRepository {
     @ExperimentalStdlibApi
-    public fun build(): MessageEncoderRepository {
+    public fun build(): MessageEncoderRepository<LoginServerProt> {
         val protRepository = ProtRepository.of<LoginServerProt>()
         val builder =
             MessageEncoderRepositoryBuilder(protRepository).apply {

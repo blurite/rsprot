@@ -5,8 +5,8 @@ import net.rsprot.protocol.ProtRepository
 import net.rsprot.protocol.message.IncomingMessage
 import net.rsprot.protocol.message.codec.MessageDecoder
 
-public class MessageDecoderRepository internal constructor(
-    private val protRepository: ProtRepository,
+public class MessageDecoderRepository<P : ClientProt> internal constructor(
+    private val protRepository: ProtRepository<P>,
     private val decoders: Array<MessageDecoder<*>?>,
     private val messageClassToClientProtMap: Map<Class<out IncomingMessage>, ClientProt>,
 ) {
@@ -27,7 +27,7 @@ public class MessageDecoderRepository internal constructor(
         return protRepository.getSize(opcode)
     }
 
-    public fun <T> toIncomingMessageRepositoryBuilder(): IncomingMessageRepositoryBuilder<T> {
+    public fun <T> toIncomingMessageRepositoryBuilder(): IncomingMessageRepositoryBuilder<T, P> {
         return IncomingMessageRepositoryBuilder(
             protRepository,
             decoders,

@@ -6,8 +6,8 @@ import net.rsprot.protocol.message.IncomingMessage
 import net.rsprot.protocol.message.codec.MessageDecoder
 import java.util.function.BiConsumer
 
-public class IncomingMessageRepositoryBuilder<R> internal constructor(
-    private val protRepository: ProtRepository,
+public class IncomingMessageRepositoryBuilder<R, P : ClientProt> internal constructor(
+    private val protRepository: ProtRepository<P>,
     private val decoders: Array<MessageDecoder<*>?>,
     private val messageClassToClientProtMap: Map<Class<out IncomingMessage>, ClientProt>,
 ) {
@@ -32,7 +32,7 @@ public class IncomingMessageRepositoryBuilder<R> internal constructor(
         addListener(T::class.java) { r, t -> listener(r, t) }
     }
 
-    public fun build(): IncomingMessageRepository<R> {
+    public fun build(): IncomingMessageRepository<R, P> {
         return IncomingMessageRepository(
             protRepository,
             decoders,

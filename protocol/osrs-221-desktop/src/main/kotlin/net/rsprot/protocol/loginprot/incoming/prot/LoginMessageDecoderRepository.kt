@@ -20,7 +20,7 @@ public object LoginMessageDecoderRepository {
     public fun build(
         exp: BigInteger,
         mod: BigInteger,
-    ): MessageDecoderRepository {
+    ): MessageDecoderRepository<LoginClientProt> {
         val protRepository = ProtRepository.of<LoginClientProt>()
         val builder =
             MessageDecoderRepositoryBuilder(protRepository).apply {

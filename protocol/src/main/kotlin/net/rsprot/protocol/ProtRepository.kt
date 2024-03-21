@@ -2,7 +2,7 @@ package net.rsprot.protocol
 
 import kotlin.enums.enumEntries
 
-public class ProtRepository internal constructor(
+public class ProtRepository<T : Prot> internal constructor(
     private val sizes: IntArray,
 ) {
     public fun getSize(opcode: Int): Int {
@@ -15,9 +15,9 @@ public class ProtRepository internal constructor(
 
     public companion object {
         @ExperimentalStdlibApi
-        public inline fun <reified T> of(): ProtRepository where T : Prot, T : Enum<T> {
-            val entries = enumEntries<T>()
-            val builder = ProtRepositoryBuilder(256)
+        public inline fun <reified P> of(): ProtRepository<P> where P : Prot, P : Enum<P> {
+            val entries = enumEntries<P>()
+            val builder = ProtRepositoryBuilder<P>(256)
             for (entry in entries) {
                 builder.put(entry)
             }

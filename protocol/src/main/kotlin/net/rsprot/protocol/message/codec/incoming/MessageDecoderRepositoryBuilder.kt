@@ -6,8 +6,8 @@ import net.rsprot.protocol.message.IncomingMessage
 import net.rsprot.protocol.message.codec.MessageDecoder
 
 @Suppress("MemberVisibilityCanBePrivate")
-public class MessageDecoderRepositoryBuilder(
-    private val protRepository: ProtRepository,
+public class MessageDecoderRepositoryBuilder<P : ClientProt>(
+    private val protRepository: ProtRepository<P>,
 ) {
     private val decoders: Array<MessageDecoder<*>?> = arrayOfNulls(protRepository.capacity())
     private val messageClassToClientProtMap: MutableMap<Class<out IncomingMessage>, ClientProt> = hashMapOf()
@@ -24,7 +24,7 @@ public class MessageDecoderRepositoryBuilder(
         messageClassToClientProtMap[messageClass] = clientProt
     }
 
-    public fun build(): MessageDecoderRepository {
+    public fun build(): MessageDecoderRepository<P> {
         return MessageDecoderRepository(
             protRepository,
             decoders.copyOf(),
