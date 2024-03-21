@@ -3,5 +3,6 @@ plugins {
 }
 
 dependencies {
+    implementation(libs.netty.buffer)
     implementation(projects.protocol)
 }
