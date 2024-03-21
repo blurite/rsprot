@@ -33,6 +33,11 @@ internal value class CoordGrid(val packed: Int) {
     val z: Int
         get() = packed and 0x3FFF
 
+    @Suppress("NOTHING_TO_INLINE")
+    inline fun invalid(): Boolean {
+        return this == INVALID
+    }
+
     operator fun component1(): Int {
         return level
     }
@@ -51,5 +56,9 @@ internal value class CoordGrid(val packed: Int) {
             "x=$x, " +
             "z=$z" +
             ")"
+    }
+
+    internal companion object {
+        val INVALID: CoordGrid = CoordGrid(-1)
     }
 }
