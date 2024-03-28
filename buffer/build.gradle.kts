@@ -35,6 +35,10 @@ benchmark {
             include("net.rsprot.buffer.BitBufBenchmark")
         }
 
+        register("bitbuftransfer") {
+            include("net.rsprot.buffer.BitBufTransferBenchmark")
+        }
+
         register("inlinebitbuf") {
             include("net.rsprot.buffer.InlineBitBufBenchmark")
         }
