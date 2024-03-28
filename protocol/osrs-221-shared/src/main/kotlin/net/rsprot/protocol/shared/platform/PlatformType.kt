@@ -1,4 +1,6 @@
-package net.rsprot.protocol.platform
+package net.rsprot.protocol.shared.platform
+
+import net.rsprot.protocol.platform.Platform
 
 public enum class PlatformType(override val id: Int) : Platform {
     /**
