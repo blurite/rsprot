@@ -1,7 +1,7 @@
 package net.rsprot.protocol.game.outgoing.info.playerinfo
 
 import net.rsprot.protocol.game.outgoing.info.util.Avatar
-import net.rsprot.protocol.game.outgoing.info.util.CoordGrid
+import net.rsprot.protocol.internal.game.outgoing.info.CoordGrid
 
 public data class PlayerAvatar internal constructor(
     /**
@@ -18,7 +18,7 @@ public data class PlayerAvatar internal constructor(
      * decrease if there are too many high resolution players nearby. It will naturally
      * restore back to the default size when the pressure starts to decrease.
      */
-    private var resizeRange: Int = preferredResizeRange,
+    internal var resizeRange: Int = preferredResizeRange,
     /**
      * The current cycle counter for resizing logic.
      * Resizing by default will occur after every ten cycles. Once the
@@ -35,13 +35,13 @@ public data class PlayerAvatar internal constructor(
      * The coordinate property will need to be updated for all players prior to computing
      * player info packet for any of them.
      */
-    private var currentCoord: CoordGrid = CoordGrid.INVALID,
+    internal var currentCoord: CoordGrid = CoordGrid.INVALID,
     /**
      * The last known coordinate of this player. This property will be used in conjunction
      * with [currentCoord] to determine the coordinate delta, which is then transmitted
      * to the clients.
      */
-    private var lastCoord: CoordGrid = CoordGrid.INVALID,
+    internal var lastCoord: CoordGrid = CoordGrid.INVALID,
 ) : Avatar {
     internal fun reset() {
         preferredResizeRange = DEFAULT_RESIZE_RANGE
@@ -63,6 +63,32 @@ public data class PlayerAvatar internal constructor(
         this.lastCoord = currentCoord
     }
 
+    internal fun resize(highResCount: Int) {
+        // Resizing is disabled if it is set to max int
+        if (preferredResizeRange == Int.MAX_VALUE) {
+            return
+        }
+        // If there are more than 250 avatars in high resolution,
+        // the range decrements by 1 every cycle.
+        if (highResCount >= PREFERRED_PLAYER_COUNT) {
+            if (resizeRange > 0) {
+                resizeRange--
+            }
+            resizeCounter = 0
+            return
+        }
+        // If our resize counter gets high enough, the protocol will
+        // try to increment the range by 1 if it's less than 15
+        // otherwise, resets the counter.
+        if (++resizeCounter >= DEFAULT_RESIZE_INTERVAL) {
+            if (resizeRange < preferredResizeRange) {
+                resizeRange++
+            } else {
+                resizeCounter = 0
+            }
+        }
+    }
+
     private companion object {
         /**
          * The default range of visibility of other players, in game tiles.
@@ -73,5 +99,7 @@ public data class PlayerAvatar internal constructor(
          * The default interval at which resizing will be checked, in game cycles.
          */
         private const val DEFAULT_RESIZE_INTERVAL = 10
+
+        private const val PREFERRED_PLAYER_COUNT = 250
     }
 }
