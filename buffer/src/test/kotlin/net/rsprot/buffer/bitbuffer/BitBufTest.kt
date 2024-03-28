@@ -91,7 +91,7 @@ class BitBufTest {
     @Test
     fun `non writable buffer writing`() {
         BitBuf(Unpooled.buffer(0, 0)).use { buffer ->
-            assertThrows<IndexOutOfBoundsException> {
+            assertThrows<IllegalArgumentException> {
                 buffer.pBits(1, 0)
             }
         }

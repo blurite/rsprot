@@ -1,7 +1,10 @@
+@file:Suppress("DuplicatedCode")
+
 package net.rsprot.buffer.bitbuffer
 
 import com.github.michaelbull.logging.InlineLogger
 import io.netty.buffer.ByteBuf
+import io.netty.buffer.Unpooled
 import io.netty.util.internal.SystemPropertyUtil
 
 @Suppress("NOTHING_TO_INLINE", "unused", "MemberVisibilityCanBePrivate")
@@ -39,6 +42,13 @@ public class BitBuf(private val buffer: ByteBuf) : AutoCloseable {
         } else {
             req(isWritable(count))
         }
+        pBitsUnsafe(count, value)
+    }
+
+    private fun pBitsUnsafe(
+        count: Int,
+        value: Int,
+    ) {
         var rem = count
         val index = this.writerIndex
         var bytePos = index ushr LOG_BITS_PER_BYTE
@@ -57,6 +67,40 @@ public class BitBuf(private val buffer: ByteBuf) : AutoCloseable {
         val sanitized = (cur and (mask shl offset).inv())
         val addition = (value and mask) shl offset
         buffer.setByte(bytePos, sanitized or addition)
+    }
+
+    private fun pBitsUnsafe(
+        count: Int,
+        value: Long,
+    ) {
+        var rem = count
+        val index = this.writerIndex
+        var bytePos = index ushr LOG_BITS_PER_BYTE
+        var bitPos = BYTE_SIZE_BITS - (index and MASK_BITS_PER_BYTE)
+        this.writerIndex += count
+        while (rem > bitPos) {
+            val ending = (value ushr (rem - bitPos)).toInt() and bitmask(bitPos)
+            val byte = buffer.getByte(bytePos).toInt()
+            buffer.setByte(bytePos++, byte and bitmask(bitPos).inv() or ending)
+            rem -= bitPos
+            bitPos = BYTE_SIZE_BITS
+        }
+        val cur = buffer.getByte(bytePos).toInt()
+        val mask = bitmask(rem)
+        val offset = bitPos - rem
+        val sanitized = (cur and (mask shl offset).inv())
+        val addition = (value.toInt() and mask) shl offset
+        buffer.setByte(bytePos, sanitized or addition)
+    }
+
+    public fun pBits(src: UnsafeLongBackedBitBuf) {
+        val count = src.readableBits()
+        if (bitbufferEnsureWritable) {
+            ensureWritable(count)
+        } else {
+            req(isWritable(count))
+        }
+        pBitsUnsafe(count, src.gBitsLong(src.readerIndex(), src.readableBits()))
     }
 
     public fun gBits(count: Int): Int {
@@ -117,7 +161,11 @@ public class BitBuf(private val buffer: ByteBuf) : AutoCloseable {
 
     public fun isReadable(count: Int): Boolean {
         req(count >= 0)
-        return (readerIndex + count) <= capacity()
+        return (readerIndex + count) <= writerIndex
+    }
+
+    public fun readableBits(): Int {
+        return writerIndex - readerIndex
     }
 
     public fun isWritable(): Boolean {
@@ -171,7 +219,8 @@ public class BitBuf(private val buffer: ByteBuf) : AutoCloseable {
         readerIndex = (readerIndex + MASK_BITS_PER_BYTE) and MASK_BITS_PER_BYTE.inv()
     }
 
-    private companion object {
+    public companion object {
+        public val EMPTY_BITBUF: BitBuf = BitBuf(Unpooled.EMPTY_BUFFER)
         private const val LOG_BITS_PER_BYTE = 3
         private const val BYTE_SIZE_BITS = 1 shl LOG_BITS_PER_BYTE
         private const val MASK_BITS_PER_BYTE = BYTE_SIZE_BITS - 1
@@ -185,7 +234,7 @@ public class BitBuf(private val buffer: ByteBuf) : AutoCloseable {
         private val bitbufferEnsureWritable: Boolean =
             SystemPropertyUtil.getBoolean(
                 "net.rsprot.buffer.bitbufferEnsureWritable",
-                true,
+                false,
             )
 
         init {
