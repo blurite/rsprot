@@ -13,6 +13,7 @@ public class EmptyLoginResponseEncoder<in T : OutgoingMessage>(
         ctx: ChannelHandlerContext,
         buffer: JagByteBuf,
         message: T,
-    ) {
+    ): JagByteBuf {
+        return buffer
     }
 }

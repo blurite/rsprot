@@ -14,9 +14,10 @@ public class DisallowedByScriptLoginResponseEncoder : MessageEncoder<LoginRespon
         ctx: ChannelHandlerContext,
         buffer: JagByteBuf,
         message: LoginResponse.DisallowedByScript,
-    ) {
+    ): JagByteBuf {
         buffer.pjstr(message.line1)
         buffer.pjstr(message.line2)
         buffer.pjstr(message.line3)
+        return buffer
     }
 }

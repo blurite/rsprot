@@ -16,7 +16,7 @@ public class OkLoginResponseEncoder : MessageEncoder<LoginResponse.Ok> {
         ctx: ChannelHandlerContext,
         buffer: JagByteBuf,
         message: LoginResponse.Ok,
-    ) {
+    ): JagByteBuf {
         when (val response = message.authenticatorResponse) {
             is AuthenticatorResponse.AuthenticatorCode -> {
                 val cipherPair =
@@ -42,5 +42,6 @@ public class OkLoginResponseEncoder : MessageEncoder<LoginResponse.Ok> {
         buffer.p8(message.accountHash)
         buffer.p8(message.userId)
         buffer.p8(message.userHash)
+        return buffer
     }
 }
