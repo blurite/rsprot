@@ -1,10 +1,10 @@
-package net.rsprot.protocol.game.outgoing.info.util
+package net.rsprot.protocol.internal.game.outgoing.info
 
 @Suppress("unused", "MemberVisibilityCanBePrivate")
 @JvmInline
-internal value class CoordGrid(val packed: Int) {
+public value class CoordGrid(public val packed: Int) {
     @Suppress("ConvertTwoComparisonsToRangeCheck")
-    constructor(
+    public constructor(
         level: Int,
         x: Int,
         z: Int,
@@ -26,27 +26,46 @@ internal value class CoordGrid(val packed: Int) {
         }
     }
 
-    val level: Int
+    public val level: Int
         get() = packed ushr 28
-    val x: Int
+    public val x: Int
         get() = packed ushr 14 and 0x3FFF
-    val z: Int
+    public val z: Int
         get() = packed and 0x3FFF
 
+    public fun coordNoLevel(): Int {
+        return packed and 0xfffffff
+    }
+
+    public fun inDistance(
+        other: CoordGrid,
+        distance: Int,
+    ): Boolean {
+        if (level != other.level) {
+            return false
+        }
+        val deltaX = x - other.x
+        if (deltaX !in -distance..distance) {
+            return false
+        }
+        val deltaZ = z - other.z
+        return deltaZ in -distance..distance
+    }
+
     @Suppress("NOTHING_TO_INLINE")
-    inline fun invalid(): Boolean {
+    public inline fun invalid(): Boolean {
         return this == INVALID
     }
 
-    operator fun component1(): Int {
+    public operator fun component1(): Int {
         return level
     }
 
-    operator fun component2(): Int {
+    public operator fun component2(): Int {
         return x
     }
 
-    operator fun component3(): Int {
+    public operator fun component3(): Int {
         return z
     }
 
@@ -58,7 +77,7 @@ internal value class CoordGrid(val packed: Int) {
             ")"
     }
 
-    internal companion object {
-        val INVALID: CoordGrid = CoordGrid(-1)
+    public companion object {
+        public val INVALID: CoordGrid = CoordGrid(-1)
     }
 }
