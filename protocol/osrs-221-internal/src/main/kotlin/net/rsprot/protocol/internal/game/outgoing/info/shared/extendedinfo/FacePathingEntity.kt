@@ -3,10 +3,14 @@ package net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo
 import net.rsprot.protocol.internal.game.outgoing.info.TransientExtendedInfo
 
 public class FacePathingEntity : TransientExtendedInfo() {
-    public var index: Int = 0
+    public var index: Int = DEFAULT_VALUE
 
     override fun clear() {
         releaseBuffers()
-        index = 0
+        index = DEFAULT_VALUE
+    }
+
+    public companion object {
+        public const val DEFAULT_VALUE: Int = -1
     }
 }

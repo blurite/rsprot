@@ -271,18 +271,24 @@ public class PlayerAvatarExtendedInfo(
     }
 
     internal fun determineCacheMisses(lastObserverUpdate: Int): Int {
-        return if (isOutOfDate(lastObserverUpdate, appearance)) {
-            APPEARANCE
-        } else {
-            0
+        var flag = 0
+        if (isOutOfDate(lastObserverUpdate, appearance)) {
+            flag = flag or APPEARANCE
         }
+        if (moveSpeed.value != MoveSpeed.DEFAULT_MOVESPEED) {
+            flag = flag or MOVE_SPEED
+        }
+        if (facePathingEntity.index != FacePathingEntity.DEFAULT_VALUE) {
+            flag = flag or FACE_PATHINGENTITY
+        }
+        return flag
     }
 
     private fun isOutOfDate(
         lastObserverUpdate: Int,
         info: CachedExtendedInfo,
     ): Boolean {
-        return lastObserverUpdate < info.cache[localIndex]
+        return lastObserverUpdate != info.cache[localIndex]
     }
 
     private fun clearTransientExtendedInformation() {
