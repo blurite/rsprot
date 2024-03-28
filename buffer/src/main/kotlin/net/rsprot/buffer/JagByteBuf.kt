@@ -1,6 +1,7 @@
 package net.rsprot.buffer
 
 import io.netty.buffer.ByteBuf
+import io.netty.buffer.Unpooled
 import net.rsprot.buffer.extensions.fastgjstring
 import net.rsprot.buffer.extensions.g1
 import net.rsprot.buffer.extensions.g1Alt1
@@ -534,5 +535,9 @@ public value class JagByteBuf(public val buffer: ByteBuf) {
     ): JagByteBuf {
         buffer.pdataAlt2(src, start, end)
         return this
+    }
+
+    public companion object {
+        public val EMPTY_JAG_BUF: JagByteBuf = JagByteBuf(Unpooled.EMPTY_BUFFER)
     }
 }
