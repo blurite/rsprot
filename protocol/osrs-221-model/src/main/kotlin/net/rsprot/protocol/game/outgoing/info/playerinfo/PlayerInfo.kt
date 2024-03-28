@@ -144,10 +144,11 @@ public class PlayerInfo internal constructor(
     internal fun pBitcodes() {
         avatar.resize(highResolutionCount)
         val buffer = allocBuffer()
-        BitBuf(buffer).use { processHighResolution(it, skipUnmodified = true) }
-        BitBuf(buffer).use { processHighResolution(it, skipUnmodified = false) }
-        BitBuf(buffer).use { processLowResolution(it, skipUnmodified = false) }
-        BitBuf(buffer).use { processLowResolution(it, skipUnmodified = true) }
+        val bitbuf = BitBuf(buffer)
+        bitbuf.use { processHighResolution(it, skipUnmodified = true) }
+        bitbuf.use { processHighResolution(it, skipUnmodified = false) }
+        bitbuf.use { processLowResolution(it, skipUnmodified = false) }
+        bitbuf.use { processLowResolution(it, skipUnmodified = true) }
     }
 
     private fun processLowResolution(
