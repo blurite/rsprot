@@ -19,7 +19,7 @@ import java.lang.ref.SoftReference
 @Suppress("MemberVisibilityCanBePrivate", "unused")
 internal class SoftReferencePooledObjectArray<T : ReferencePooledObject>(
     capacity: Int,
-    private val allocator: () -> T,
+    private val allocator: (index: Int) -> T,
 ) {
     /**
      * The backing elements array used to store currently-in-use objects.
@@ -39,7 +39,12 @@ internal class SoftReferencePooledObjectArray<T : ReferencePooledObject>(
      */
     @Suppress("UNCHECKED_CAST")
     fun getOrNull(idx: Int): T? {
-        return elements.getOrNull(idx) as? T?
+        return elements[idx] as? T?
+    }
+
+    @Suppress("UNCHECKED_CAST")
+    operator fun get(idx: Int): T {
+        return requireNotNull(elements[idx] as? T?)
     }
 
     /**
@@ -78,7 +83,7 @@ internal class SoftReferencePooledObjectArray<T : ReferencePooledObject>(
             elements[idx] = cached
             return cached
         }
-        val new = allocator()
+        val new = allocator(idx)
         elements[idx] = new
         return new
     }
