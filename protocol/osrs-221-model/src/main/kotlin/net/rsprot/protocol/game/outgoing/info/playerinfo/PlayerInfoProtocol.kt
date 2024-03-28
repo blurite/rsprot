@@ -7,7 +7,7 @@ public class PlayerInfoProtocol(
     private val capacity: Int,
     private val allocator: ByteBufAllocator,
 ) {
-    private val mapSectorRepository: GlobalLowResolutionPositionRepository =
+    private val lowResolutionPositionRepository: GlobalLowResolutionPositionRepository =
         GlobalLowResolutionPositionRepository(
             capacity,
         )
@@ -30,22 +30,22 @@ public class PlayerInfoProtocol(
     }
 
     public fun prepare() {
-        // Synchronize the known map sectors of everyone for this cycle
+        // Synchronize the known low res positions of everyone for this cycle
         for (i in 1..<capacity) {
             val info = playerInfoRepository.wrapped.getOrNull(i)
             if (info == null) {
-                mapSectorRepository.markUnused(i)
+                lowResolutionPositionRepository.markUnused(i)
             } else {
-                mapSectorRepository.update(i, info.avatar.currentCoord)
+                lowResolutionPositionRepository.update(i, info.avatar.currentCoord)
             }
         }
         for (i in 1..<capacity) {
-            playerInfoRepository.wrapped.getOrNull(i)?.prepareBitcodes(mapSectorRepository)
+            playerInfoRepository.wrapped.getOrNull(i)?.prepareBitcodes(lowResolutionPositionRepository)
         }
     }
 
-    internal fun getSector(idx: Int): LowResolutionPosition {
-        return mapSectorRepository.getCurrentLowResolutionPosition(idx)
+    internal fun getLowResolutionPosition(idx: Int): LowResolutionPosition {
+        return lowResolutionPositionRepository.getCurrentLowResolutionPosition(idx)
     }
 
     public fun putBitcodes() {
@@ -74,6 +74,6 @@ public class PlayerInfoProtocol(
         for (i in 1..<capacity) {
             playerInfoRepository.wrapped.getOrNull(i)?.postUpdate()
         }
-        mapSectorRepository.postUpdate()
+        lowResolutionPositionRepository.postUpdate()
     }
 }

@@ -13,8 +13,8 @@ internal class GlobalLowResolutionPositionRepository(
         idx: Int,
         coordGrid: CoordGrid,
     ) {
-        val sector = LowResolutionPosition(coordGrid)
-        currentLowResPositions[idx] = sector.packed
+        val lowResolutionPosition = LowResolutionPosition(coordGrid)
+        currentLowResPositions[idx] = lowResolutionPosition.packed
     }
 
     internal fun markUnused(idx: Int) {

@@ -114,8 +114,8 @@ public class PlayerInfo internal constructor(
                 if (i == localIndex) {
                     continue
                 }
-                val sector = protocol.getSector(i)
-                buffer.pBits(18, sector.packed)
+                val lowResolutionPosition = protocol.getLowResolutionPosition(i)
+                buffer.pBits(18, lowResolutionPosition.packed)
                 lowResolutionIndices[lowResolutionCount++] = i.toShort()
             }
         }

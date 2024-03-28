@@ -323,11 +323,11 @@ class PlayerInfoClient {
             val player = Player(idx)
             cachedPlayers[idx] = player
             // cached appearance decoding
-            val sector = lowResolutionPositions[idx]
-            val level = sector shr 28
-            val sectorX = sector shr 14 and 0xFF
-            val sectorZ = sector and 0xFF
-            player.coord = CoordGrid(level, (sectorX shl 13) + x, (sectorZ shl 13) + z)
+            val lowResolutionPosition = lowResolutionPositions[idx]
+            val level = lowResolutionPosition shr 28
+            val lowResX = lowResolutionPosition shr 14 and 0xFF
+            val lowResZ = lowResolutionPosition and 0xFF
+            player.coord = CoordGrid(level, (lowResX shl 13) + x, (lowResZ shl 13) + z)
             player.queuedMove = false
             return true
         } else if (opcode == 1) {
