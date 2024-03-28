@@ -1,6 +1,5 @@
 package net.rsprot.protocol.game.outgoing.info.playerinfo
 
-import net.rsprot.protocol.internal.game.outgoing.info.CachedExtendedInfo
 import net.rsprot.protocol.internal.game.outgoing.info.playerinfo.extendedinfo.Appearance
 import net.rsprot.protocol.internal.game.outgoing.info.playerinfo.extendedinfo.Chat
 import net.rsprot.protocol.internal.game.outgoing.info.playerinfo.extendedinfo.FaceAngle
@@ -40,7 +39,6 @@ public class PlayerAvatarExtendedInfo(
     private val tinting: TintingList = TintingList()
 
     internal var flags: Int = 0
-    internal var lastObservations: IntArray = IntArray(capacity)
 
     public fun setMoveSpeed(value: Int) {
         moveSpeed.value = value
@@ -270,9 +268,9 @@ public class PlayerAvatarExtendedInfo(
         flags = 0
     }
 
-    internal fun determineCacheMisses(lastObserverUpdate: Int): Int {
+    internal fun getLowToHighResChangeExtendedInfoFlags(observer: PlayerAvatarExtendedInfo): Int {
         var flag = 0
-        if (isOutOfDate(lastObserverUpdate, appearance)) {
+        if (checkOutOfDate(observer)) {
             flag = flag or APPEARANCE
         }
         if (moveSpeed.value != MoveSpeed.DEFAULT_MOVESPEED) {
@@ -284,11 +282,12 @@ public class PlayerAvatarExtendedInfo(
         return flag
     }
 
-    private fun isOutOfDate(
-        lastObserverUpdate: Int,
-        info: CachedExtendedInfo,
-    ): Boolean {
-        return lastObserverUpdate != info.cache[localIndex]
+    private fun checkOutOfDate(observer: PlayerAvatarExtendedInfo): Boolean {
+        val isOutOfDate = observer.appearance.otherChangesCounter[localIndex] != appearance.changeCounter
+        if (isOutOfDate) {
+            observer.appearance.otherChangesCounter[localIndex] = appearance.changeCounter
+        }
+        return isOutOfDate
     }
 
     private fun clearTransientExtendedInformation() {

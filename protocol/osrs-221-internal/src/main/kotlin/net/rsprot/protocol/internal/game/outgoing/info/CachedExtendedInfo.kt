@@ -1,9 +1,11 @@
 package net.rsprot.protocol.internal.game.outgoing.info
 
 public abstract class CachedExtendedInfo(capacity: Int) : ExtendedInfo() {
-    public val cache: IntArray = IntArray(capacity)
+    public val otherChangesCounter: IntArray = IntArray(capacity)
+    public var changeCounter: Int = 0
 
     protected fun resetCache() {
-        cache.fill(0)
+        otherChangesCounter.fill(0)
+        changeCounter = 0
     }
 }

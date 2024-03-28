@@ -210,9 +210,9 @@ public class PlayerInfo internal constructor(
         buffer.pBits(26, other.avatar.currentCoord.coordNoLevel())
 
         // Get a flags of all the extended info blocks that are 'outdated' to us and must be sent again.
-        val misses = other.extendedInfo.determineCacheMisses(extendedInfo.lastObservations[index])
+        val extraFlags = other.extendedInfo.getLowToHighResChangeExtendedInfoFlags(extendedInfo)
         // Mark those flags as observer-dependent.
-        observerExtendedInfoFlags.addFlag(index, misses)
+        observerExtendedInfoFlags.addFlag(index, extraFlags)
         modificationFlags.markUnmodified(index)
         highResolutionPlayers.set(index)
         val flag = other.extendedInfo.flags or observerExtendedInfoFlags.getFlag(index)
