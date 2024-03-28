@@ -207,21 +207,21 @@ public class PlayerAvatarExtendedInfo(
             }
             val tint = Tinting()
             this.tinting.observerDependent[visibleToIndex] = tint
-            tint.startTime = startTime.toUShort()
-            tint.endTime = endTime.toUShort()
+            tint.start = startTime.toUShort()
+            tint.end = endTime.toUShort()
             tint.hue = hue.toUByte()
             tint.saturation = saturation.toUByte()
-            tint.luminance = luminance.toUByte()
-            tint.opacity = opacity.toUByte()
+            tint.lightness = luminance.toUByte()
+            tint.weight = opacity.toUByte()
             otherPlayerInfo.observerExtendedInfoFlags.addFlag(localIndex, TINTING)
         } else {
             val tint = this.tinting.global
-            tint.startTime = startTime.toUShort()
-            tint.endTime = endTime.toUShort()
+            tint.start = startTime.toUShort()
+            tint.end = endTime.toUShort()
             tint.hue = hue.toUByte()
             tint.saturation = saturation.toUByte()
-            tint.luminance = luminance.toUByte()
-            tint.opacity = opacity.toUByte()
+            tint.lightness = luminance.toUByte()
+            tint.weight = opacity.toUByte()
             flags = flags or TINTING
         }
     }
