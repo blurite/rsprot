@@ -331,65 +331,67 @@ class PlayerInfoClient {
             player.queuedMove = false
             return true
         } else if (opcode == 1) {
-            val var3 = buffer.gBits(2)
-            val var4 = lowResolutionPositions[idx]
-            lowResolutionPositions[idx] = ((var4 shr 28) + var3 and 3 shl 28) + (var4 and 268435455)
+            val levelDelta = buffer.gBits(2)
+            val lowResPosition = lowResolutionPositions[idx]
+            lowResolutionPositions[idx] =
+                ((lowResPosition shr 28) + levelDelta and 3 shl 28)
+                    .plus(lowResPosition and 268435455)
             return false
         } else if (opcode == 2) {
-            val var3 = buffer.gBits(5)
-            val var4 = var3 shr 3
-            val var5 = var3 and 7
-            val var11 = lowResolutionPositions[idx]
-            val var7 = (var11 shr 28) + var4 and 3
-            var var8 = var11 shr 14 and 255
-            var var9 = var11 and 255
-            if (var5 == 0) {
-                --var8
-                --var9
+            val bitpacked = buffer.gBits(5)
+            val levelDelta = bitpacked shr 3
+            val movementCode = bitpacked and 7
+            val lowResPosition = lowResolutionPositions[idx]
+            val level = (lowResPosition shr 28) + levelDelta and 3
+            var x = lowResPosition shr 14 and 255
+            var z = lowResPosition and 255
+            if (movementCode == 0) {
+                --x
+                --z
             }
 
-            if (var5 == 1) {
-                --var9
+            if (movementCode == 1) {
+                --z
             }
 
-            if (var5 == 2) {
-                ++var8
-                --var9
+            if (movementCode == 2) {
+                ++x
+                --z
             }
 
-            if (var5 == 3) {
-                --var8
+            if (movementCode == 3) {
+                --x
             }
 
-            if (var5 == 4) {
-                ++var8
+            if (movementCode == 4) {
+                ++x
             }
 
-            if (var5 == 5) {
-                --var8
-                ++var9
+            if (movementCode == 5) {
+                --x
+                ++z
             }
 
-            if (var5 == 6) {
-                ++var9
+            if (movementCode == 6) {
+                ++z
             }
 
-            if (var5 == 7) {
-                ++var8
-                ++var9
+            if (movementCode == 7) {
+                ++x
+                ++z
             }
-            lowResolutionPositions[idx] = (var8 shl 14) + var9 + (var7 shl 28)
+            lowResolutionPositions[idx] = (x shl 14) + z + (level shl 28)
             return false
         } else {
-            val var3 = buffer.gBits(18)
-            val var4 = var3 shr 16
-            val var5 = var3 shr 8 and 255
-            val var11 = var3 and 255
-            val var7 = lowResolutionPositions[idx]
-            val var8 = (var7 shr 28) + var4 and 3
-            val var9 = var5 + (var7 shr 14) and 255
-            val var10 = var11 + var7 and 255
-            lowResolutionPositions[idx] = (var9 shl 14) + var10 + (var8 shl 28)
+            val bitpacked = buffer.gBits(18)
+            val levelDelta = bitpacked shr 16
+            val xDelta = bitpacked shr 8 and 255
+            val zDelta = bitpacked and 255
+            val lowResPosition = lowResolutionPositions[idx]
+            val level = (lowResPosition shr 28) + levelDelta and 3
+            val x = xDelta + (lowResPosition shr 14) and 255
+            val z = zDelta + lowResPosition and 255
+            lowResolutionPositions[idx] = (x shl 14) + z + (level shl 28)
             return false
         }
     }
