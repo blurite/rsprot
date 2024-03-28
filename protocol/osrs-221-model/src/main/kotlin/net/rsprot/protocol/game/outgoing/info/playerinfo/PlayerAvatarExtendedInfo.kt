@@ -321,22 +321,23 @@ public class PlayerAvatarExtendedInfo(
     }
 
     public companion object {
-        internal const val APPEARANCE = 0x1
-        internal const val SEQUENCE = 0x2
-        internal const val EXTENDED_SHORT = 0x4
-        internal const val HITS = 0x8
-        internal const val FACE_PATHINGENTITY = 0x20
-        internal const val SAY = 0x40
-        internal const val FACE_ANGLE = 0x80
-        internal const val TINTING = 0x100
+        internal const val EXTENDED_SHORT = 0x1
+        internal const val FACE_ANGLE = 0x2
+        internal const val APPEARANCE = 0x4
+        internal const val SAY = 0x8
+        internal const val CHAT_OLD = 0x10
+        internal const val HITS = 0x20
+        internal const val FACE_PATHINGENTITY = 0x40
+        internal const val SEQUENCE = 0x80
         internal const val MOVE_SPEED = 0x200
-        internal const val CHAT = 0x800
-        internal const val EXACT_MOVE = 0x1000
+        internal const val CHAT = 0x400
+        internal const val EXTENDED_MEDIUM = 0x800
+        internal const val TEMP_MOVE_SPEED = 0x1000
+        internal const val TINTING = 0x2000
+        internal const val EXACT_MOVE = 0x4000
+        internal const val SPOTANIM = 0x10000
 
         // Name extras are part of appearance nowadays, and thus will not be used on their own
-        internal const val NAME_EXTRAS = 0x2000
-        internal const val EXTENDED_MEDIUM = 0x4000
-        internal const val TEMP_MOVE_SPEED = 0x8000
-        internal const val SPOTANIM = 0x10000
+        internal const val NAME_EXTRAS = 0x100
     }
 }
