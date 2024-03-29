@@ -2,8 +2,10 @@ package net.rsprot.protocol.game.outgoing.info
 
 import io.netty.buffer.PooledByteBufAllocator
 import io.netty.buffer.Unpooled
+import net.rsprot.compression.HuffmanCodec
 import net.rsprot.protocol.game.outgoing.info.playerinfo.PlayerInfo
 import net.rsprot.protocol.game.outgoing.info.playerinfo.PlayerInfoProtocol
+import net.rsprot.protocol.shared.platform.PlatformType
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
@@ -16,8 +18,14 @@ class PlayerInfoTest {
 
     @BeforeEach
     fun initialize() {
-        protocol = PlayerInfoProtocol(2048, PooledByteBufAllocator.DEFAULT, emptyMap())
-        localPlayerInfo = protocol.alloc(LOCAL_PLAYER_INDEX)
+        protocol =
+            PlayerInfoProtocol(
+                2048,
+                PooledByteBufAllocator.DEFAULT,
+                emptyMap(),
+                createHuffmanCodec(),
+            )
+        localPlayerInfo = protocol.alloc(LOCAL_PLAYER_INDEX, PlatformType.DESKTOP)
         localPlayerInfo.updateCoord(0, 3200, 3220)
         client = PlayerInfoClient()
         gpiInit()
@@ -67,7 +75,7 @@ class PlayerInfoTest {
         val otherPlayerIndices = (1..280)
         val otherPlayers = arrayOfNulls<PlayerInfo>(2048)
         for (index in otherPlayerIndices) {
-            val otherPlayer = protocol.alloc(index)
+            val otherPlayer = protocol.alloc(index, PlatformType.DESKTOP)
             otherPlayers[index] = otherPlayer
             otherPlayer.updateCoord(0, 3205, 3220)
         }
@@ -86,5 +94,13 @@ class PlayerInfoTest {
 
     private companion object {
         private const val LOCAL_PLAYER_INDEX: Int = 499
+
+        private fun createHuffmanCodec(): HuffmanCodec {
+            val resource = PlayerInfoTest::class.java.getResourceAsStream("huffman.dat")
+            checkNotNull(resource) {
+                "huffman.dat could not be found"
+            }
+            return HuffmanCodec.create(Unpooled.wrappedBuffer(resource.readBytes()))
+        }
     }
 }

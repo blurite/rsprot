@@ -1,8 +1,11 @@
 package net.rsprot.protocol.game.outgoing.info
 
 import io.netty.buffer.PooledByteBufAllocator
+import io.netty.buffer.Unpooled
+import net.rsprot.compression.HuffmanCodec
 import net.rsprot.protocol.game.outgoing.info.playerinfo.PlayerInfo
 import net.rsprot.protocol.game.outgoing.info.playerinfo.PlayerInfoProtocol
+import net.rsprot.protocol.shared.platform.PlatformType
 import org.openjdk.jmh.annotations.Benchmark
 import org.openjdk.jmh.annotations.BenchmarkMode
 import org.openjdk.jmh.annotations.Fork
@@ -31,10 +34,16 @@ class PlayerInfoBenchmark {
 
     @Setup
     fun setup() {
-        protocol = PlayerInfoProtocol(2048, PooledByteBufAllocator.DEFAULT)
+        protocol =
+            PlayerInfoProtocol(
+                2048,
+                PooledByteBufAllocator.DEFAULT,
+                emptyMap(),
+                createHuffmanCodec(),
+            )
         players = arrayOfNulls(2048)
         for (i in 1..<2047) {
-            val player = protocol.alloc(i)
+            val player = protocol.alloc(i, PlatformType.DESKTOP)
             players[i] = player
             player.updateCoord(0, random.nextInt(3200, 3213), random.nextInt(3200, 3213))
         }
@@ -66,6 +75,16 @@ class PlayerInfoBenchmark {
     @Benchmark
     fun benchmark() {
         tick()
+    }
+
+    private companion object {
+        private fun createHuffmanCodec(): HuffmanCodec {
+            val resource = PlayerInfoBenchmark::class.java.getResourceAsStream("huffman.dat")
+            checkNotNull(resource) {
+                "huffman.dat could not be found"
+            }
+            return HuffmanCodec.create(Unpooled.wrappedBuffer(resource.readBytes()))
+        }
     }
 }
 

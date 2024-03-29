@@ -12,6 +12,10 @@ public class Hit(
     public val headBarList: HeadBarList = HeadBarList()
     public val hitMarkList: HitMarkList = HitMarkList()
 
+    override fun precompute() {
+        // No-op; hits don't get precomputed
+    }
+
     override fun clear() {
         releaseBuffers()
         headBarList.clear()

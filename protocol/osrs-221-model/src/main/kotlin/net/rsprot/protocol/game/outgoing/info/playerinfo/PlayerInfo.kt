@@ -4,6 +4,8 @@ import io.netty.buffer.ByteBuf
 import io.netty.buffer.ByteBufAllocator
 import net.rsprot.buffer.bitbuffer.BitBuf
 import net.rsprot.buffer.bitbuffer.UnsafeLongBackedBitBuf
+import net.rsprot.buffer.extensions.toJagByteBuf
+import net.rsprot.compression.HuffmanCodec
 import net.rsprot.protocol.game.outgoing.info.playerinfo.util.CellOpcodes
 import net.rsprot.protocol.game.outgoing.info.playerinfo.util.ModificationFlags
 import net.rsprot.protocol.game.outgoing.info.playerinfo.util.ObserverExtendedInfoFlags
@@ -23,7 +25,9 @@ public class PlayerInfo internal constructor(
     private val localIndex: Int,
     private val capacity: Int,
     private val allocator: ByteBufAllocator,
+    private val platformType: PlatformType,
     extendedInfoEncoders: Map<PlatformType, ExtendedInfoEncoders>,
+    huffmanCodec: HuffmanCodec,
 ) : ReferencePooledObject, OutgoingMessage {
     /**
      * The [avatar] represents properties of our local player.
@@ -75,7 +79,15 @@ public class PlayerInfo internal constructor(
      * The [extendedInfo] is also responsible for caching the non-temporary blocks,
      * such as appearance and move speed.
      */
-    private val extendedInfo = PlayerAvatarExtendedInfo(capacity, protocol, localIndex, extendedInfoEncoders)
+    private val extendedInfo =
+        PlayerAvatarExtendedInfo(
+            capacity,
+            protocol,
+            localIndex,
+            extendedInfoEncoders,
+            allocator,
+            huffmanCodec,
+        )
 
     internal val observerExtendedInfoFlags: ObserverExtendedInfoFlags = ObserverExtendedInfoFlags(capacity)
 
@@ -133,12 +145,19 @@ public class PlayerInfo internal constructor(
         prepareLowResMovement(globalLowResolutionPositionRepository)
     }
 
-    /**
-     * Precalculates all the extended information blocks that are observer-independent.
-     * Any extended information blocks which rely on the observer will be calculated on-demand during [pBitcodes].
-     * This function will be thread-safe relative to other players and can be calculated concurrently for all players.
-     */
-    internal fun prepareExtendedInformation(): Unit = TODO()
+    internal fun precomputeExtendedInfo() {
+        extendedInfo.precompute()
+    }
+
+    internal fun putExtendedInfo() {
+        val buffer = backingBuffer().toJagByteBuf()
+        for (i in 0..<extendedInfoCount) {
+            val index = extendedInfoIndices[i].toInt()
+            val other = checkNotNull(protocol.getPlayerInfo(index))
+            val observerFlag = observerExtendedInfoFlags.getFlag(index)
+            other.extendedInfo.pExtendedInfo(platformType, buffer, observerFlag, this.localIndex)
+        }
+    }
 
     /**
      * Writes to the actual buffers the prepared bitcodes and extended information.
@@ -376,6 +395,7 @@ public class PlayerInfo internal constructor(
         }
         modificationFlags.flip()
         observerExtendedInfoFlags.reset()
+        extendedInfo.reset()
     }
 
     override fun onAlloc() {

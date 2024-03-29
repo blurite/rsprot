@@ -1,8 +1,12 @@
 package net.rsprot.protocol.game.outgoing.info.playerinfo
 
+import io.netty.buffer.ByteBufAllocator
+import net.rsprot.buffer.JagByteBuf
+import net.rsprot.compression.HuffmanCodec
 import net.rsprot.protocol.internal.game.outgoing.info.ExtendedInfo
 import net.rsprot.protocol.internal.game.outgoing.info.encoder.ExtendedInfoEncoder
 import net.rsprot.protocol.internal.game.outgoing.info.encoder.ExtendedInfoEncoders
+import net.rsprot.protocol.internal.game.outgoing.info.encoder.OnDemandExtendedInfoEncoder
 import net.rsprot.protocol.internal.game.outgoing.info.playerinfo.extendedinfo.Appearance
 import net.rsprot.protocol.internal.game.outgoing.info.playerinfo.extendedinfo.Chat
 import net.rsprot.protocol.internal.game.outgoing.info.playerinfo.extendedinfo.FaceAngle
@@ -29,47 +33,69 @@ public class PlayerAvatarExtendedInfo(
     private val protocol: PlayerInfoProtocol,
     private val localIndex: Int,
     extendedInfoEncoders: Map<PlatformType, ExtendedInfoEncoders>,
+    allocator: ByteBufAllocator,
+    huffmanCodec: HuffmanCodec,
 ) {
     private val appearance: Appearance =
         Appearance(
             capacity,
             buildPlatformEncoderArray(extendedInfoEncoders, ExtendedInfoEncoders::appearance),
+            allocator,
+            huffmanCodec,
         )
     private val moveSpeed: MoveSpeed =
         MoveSpeed(
             buildPlatformEncoderArray(extendedInfoEncoders, ExtendedInfoEncoders::moveSpeed),
+            allocator,
+            huffmanCodec,
         )
     private val temporaryMoveSpeed: TemporaryMoveSpeed =
         TemporaryMoveSpeed(
             buildPlatformEncoderArray(extendedInfoEncoders, ExtendedInfoEncoders::temporaryMoveSpeed),
+            allocator,
+            huffmanCodec,
         )
     private val sequence: Sequence =
         Sequence(
             buildPlatformEncoderArray(extendedInfoEncoders, ExtendedInfoEncoders::sequence),
+            allocator,
+            huffmanCodec,
         )
     private val facePathingEntity: FacePathingEntity =
         FacePathingEntity(
             buildPlatformEncoderArray(extendedInfoEncoders, ExtendedInfoEncoders::facePathingEntity),
+            allocator,
+            huffmanCodec,
         )
     private val faceAngle: FaceAngle =
         FaceAngle(
             buildPlatformEncoderArray(extendedInfoEncoders, ExtendedInfoEncoders::faceAngle),
+            allocator,
+            huffmanCodec,
         )
     private val say: Say =
         Say(
             buildPlatformEncoderArray(extendedInfoEncoders, ExtendedInfoEncoders::say),
+            allocator,
+            huffmanCodec,
         )
     private val chat: Chat =
         Chat(
             buildPlatformEncoderArray(extendedInfoEncoders, ExtendedInfoEncoders::chat),
+            allocator,
+            huffmanCodec,
         )
     private val exactMove: ExactMove =
         ExactMove(
             buildPlatformEncoderArray(extendedInfoEncoders, ExtendedInfoEncoders::exactMove),
+            allocator,
+            huffmanCodec,
         )
     private val spotAnims: SpotAnimList =
         SpotAnimList(
             buildPlatformEncoderArray(extendedInfoEncoders, ExtendedInfoEncoders::spotAnim),
+            allocator,
+            huffmanCodec,
         )
     private val hit: Hit =
         Hit(
@@ -542,6 +568,122 @@ public class PlayerAvatarExtendedInfo(
             observer.appearance.otherChangesCounter[localIndex] = appearance.changeCounter
         }
         return isOutOfDate
+    }
+
+    internal fun precompute() {
+        // Hits and tinting do not get precomputed
+        if (flags and TEMP_MOVE_SPEED != 0) {
+            temporaryMoveSpeed.precompute()
+        }
+        if (flags and SEQUENCE != 0) {
+            sequence.precompute()
+        }
+        if (flags and FACE_ANGLE != 0) {
+            faceAngle.precompute()
+        }
+        if (flags and SAY != 0) {
+            say.precompute()
+        }
+        if (flags and CHAT != 0) {
+            chat.precompute()
+        }
+        if (flags and EXACT_MOVE != 0) {
+            exactMove.precompute()
+        }
+        if (flags and SPOTANIM != 0) {
+            spotAnims.precompute()
+        }
+    }
+
+    internal fun pExtendedInfo(
+        platformType: PlatformType,
+        buffer: JagByteBuf,
+        observerFlag: Int,
+        observerIndex: Int,
+    ) {
+        var flag = this.flags or observerFlag
+        if (flag and 0xFF.inv() != 0) flag = flag or EXTENDED_SHORT
+        if (flag and 0xFFFF.inv() != 0) flag = flag or EXTENDED_MEDIUM
+        buffer.p1(flag)
+        if (flag and EXTENDED_SHORT != 0) {
+            buffer.p1(flag shr 8)
+        }
+        if (flag and EXTENDED_MEDIUM != 0) {
+            buffer.p1(flag shr 16)
+        }
+
+        if (flag and FACE_ANGLE != 0) {
+            pCachedData(platformType, buffer, faceAngle)
+        }
+        // Old chat
+        if (flag and SEQUENCE != 0) {
+            pCachedData(platformType, buffer, sequence)
+        }
+        if (flag and HITS != 0) {
+            pOnDemandData(platformType, buffer, hit, observerIndex)
+        }
+        if (flag and EXACT_MOVE != 0) {
+            pCachedData(platformType, buffer, exactMove)
+        }
+        if (flag and CHAT != 0) {
+            pCachedData(platformType, buffer, chat)
+        }
+        if (flag and TEMP_MOVE_SPEED != 0) {
+            pCachedData(platformType, buffer, temporaryMoveSpeed)
+        }
+        // name extras
+        if (flag and SAY != 0) {
+            pCachedData(platformType, buffer, say)
+        }
+        if (flag and TINTING != 0) {
+            pOnDemandData(platformType, buffer, tinting, observerIndex)
+        }
+        if (flag and MOVE_SPEED != 0) {
+            pCachedData(platformType, buffer, moveSpeed)
+        }
+        if (flag and APPEARANCE != 0) {
+            pCachedData(platformType, buffer, appearance)
+        }
+        if (flag and FACE_PATHINGENTITY != 0) {
+            pCachedData(platformType, buffer, facePathingEntity)
+        }
+        if (flag and SPOTANIM != 0) {
+            pCachedData(platformType, buffer, spotAnims)
+        }
+    }
+
+    private fun pCachedData(
+        platformType: PlatformType,
+        buffer: JagByteBuf,
+        block: ExtendedInfo<*, *>,
+    ) {
+        val precomputed =
+            checkNotNull(block.getBuffer(platformType)) {
+                "Buffer has not been computed on platform $platformType"
+            }
+        buffer.buffer.writeBytes(
+            precomputed,
+            precomputed.readerIndex(),
+            precomputed.readableBytes(),
+        )
+    }
+
+    private fun <T : ExtendedInfo<T, E>, E : OnDemandExtendedInfoEncoder<T>> pOnDemandData(
+        platformType: PlatformType,
+        buffer: JagByteBuf,
+        block: T,
+        observerIndex: Int,
+    ) {
+        val encoder =
+            checkNotNull(block.getEncoder(platformType)) {
+                "Encoder has not been set for platform $platformType"
+            }
+        encoder.encode(
+            buffer,
+            observerIndex,
+            localIndex,
+            block,
+        )
     }
 
     private fun clearTransientExtendedInformation() {

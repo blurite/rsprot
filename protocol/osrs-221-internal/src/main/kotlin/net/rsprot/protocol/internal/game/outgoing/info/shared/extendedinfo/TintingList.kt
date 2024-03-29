@@ -14,6 +14,10 @@ public class TintingList(
         return observerDependent.getOrDefault(index, global)
     }
 
+    override fun precompute() {
+        // No-op, tinting doesn't get precomputed
+    }
+
     override fun clear() {
         releaseBuffers()
         global.reset()

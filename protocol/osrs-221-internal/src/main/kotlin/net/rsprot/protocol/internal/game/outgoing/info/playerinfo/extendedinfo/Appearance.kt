@@ -1,5 +1,7 @@
 package net.rsprot.protocol.internal.game.outgoing.info.playerinfo.extendedinfo
 
+import io.netty.buffer.ByteBufAllocator
+import net.rsprot.compression.HuffmanCodec
 import net.rsprot.protocol.internal.game.outgoing.info.CachedExtendedInfo
 import net.rsprot.protocol.internal.game.outgoing.info.encoder.PrecomputedExtendedInfoEncoder
 import net.rsprot.protocol.shared.platform.PlatformType
@@ -7,6 +9,8 @@ import net.rsprot.protocol.shared.platform.PlatformType
 public class Appearance(
     capacity: Int,
     encoders: Array<PrecomputedExtendedInfoEncoder<Appearance>?> = arrayOfNulls(PlatformType.COUNT),
+    private val allocator: ByteBufAllocator,
+    private val huffmanCodec: HuffmanCodec,
 ) : CachedExtendedInfo<Appearance, PrecomputedExtendedInfoEncoder<Appearance>>(
         capacity,
         encoders,
@@ -35,6 +39,14 @@ public class Appearance(
     public var beforeName: String = ""
     public var afterName: String = ""
     public var afterCombatLevel: String = ""
+
+    override fun precompute() {
+        for (id in 0..<PlatformType.COUNT) {
+            val encoder = encoders[id] ?: continue
+            val encoded = encoder.precompute(allocator, huffmanCodec, this)
+            setBuffer(id, encoded.buffer)
+        }
+    }
 
     override fun clear() {
         releaseBuffers()

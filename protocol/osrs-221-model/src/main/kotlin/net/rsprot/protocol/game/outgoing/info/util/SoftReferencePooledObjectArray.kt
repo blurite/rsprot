@@ -1,5 +1,6 @@
 package net.rsprot.protocol.game.outgoing.info.util
 
+import net.rsprot.protocol.shared.platform.PlatformType
 import java.lang.ref.ReferenceQueue
 import java.lang.ref.SoftReference
 
@@ -19,7 +20,7 @@ import java.lang.ref.SoftReference
 @Suppress("MemberVisibilityCanBePrivate", "unused")
 internal class SoftReferencePooledObjectArray<T : ReferencePooledObject>(
     capacity: Int,
-    private val allocator: (index: Int) -> T,
+    private val allocator: (index: Int, platformType: PlatformType) -> T,
 ) {
     /**
      * The backing elements array used to store currently-in-use objects.
@@ -69,7 +70,10 @@ internal class SoftReferencePooledObjectArray<T : ReferencePooledObject>(
      */
     @Throws(IllegalArgumentException::class, IllegalStateException::class)
     @Suppress("UNCHECKED_CAST")
-    fun alloc(idx: Int): T {
+    fun alloc(
+        idx: Int,
+        platformType: PlatformType,
+    ): T {
         require(idx in elements.indices) {
             "Index out of boundaries: $idx, ${elements.indices}"
         }
@@ -83,7 +87,7 @@ internal class SoftReferencePooledObjectArray<T : ReferencePooledObject>(
             elements[idx] = cached
             return cached
         }
-        val new = allocator(idx)
+        val new = allocator(idx, platformType)
         elements[idx] = new
         return new
     }
