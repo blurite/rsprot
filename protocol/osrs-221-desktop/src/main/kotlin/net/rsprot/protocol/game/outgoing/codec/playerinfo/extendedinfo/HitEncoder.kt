@@ -1,10 +1,10 @@
 package net.rsprot.protocol.game.outgoing.codec.playerinfo.extendedinfo
 
 import net.rsprot.buffer.JagByteBuf
-import net.rsprot.protocol.game.outgoing.info.extendedinfo.ExtendedInfoEncoder
+import net.rsprot.protocol.game.outgoing.info.extendedinfo.OnDemandExtendedInfoEncoder
 import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.Hit
 
-public class HitEncoder : ExtendedInfoEncoder<Hit> {
+public class HitEncoder : OnDemandExtendedInfoEncoder<Hit> {
     override fun encode(
         buffer: JagByteBuf,
         localPlayerIndex: Int,

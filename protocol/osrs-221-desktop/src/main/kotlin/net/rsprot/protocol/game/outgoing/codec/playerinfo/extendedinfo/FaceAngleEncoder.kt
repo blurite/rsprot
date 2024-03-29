@@ -1,16 +1,21 @@
 package net.rsprot.protocol.game.outgoing.codec.playerinfo.extendedinfo
 
+import io.netty.buffer.ByteBufAllocator
 import net.rsprot.buffer.JagByteBuf
-import net.rsprot.protocol.game.outgoing.info.extendedinfo.ExtendedInfoEncoder
+import net.rsprot.buffer.extensions.toJagByteBuf
+import net.rsprot.protocol.game.outgoing.info.extendedinfo.PrecomputedExtendedInfoEncoder
 import net.rsprot.protocol.internal.game.outgoing.info.playerinfo.extendedinfo.FaceAngle
 
-public class FaceAngleEncoder : ExtendedInfoEncoder<FaceAngle> {
-    override fun encode(
-        buffer: JagByteBuf,
-        localPlayerIndex: Int,
-        updatedPlayerIndex: Int,
+public class FaceAngleEncoder : PrecomputedExtendedInfoEncoder<FaceAngle> {
+    override fun precompute(
+        alloc: ByteBufAllocator,
         extendedInfo: FaceAngle,
-    ) {
+    ): JagByteBuf {
+        val buffer =
+            alloc
+                .buffer(2, 2)
+                .toJagByteBuf()
         buffer.p2(extendedInfo.angle)
+        return buffer
     }
 }
