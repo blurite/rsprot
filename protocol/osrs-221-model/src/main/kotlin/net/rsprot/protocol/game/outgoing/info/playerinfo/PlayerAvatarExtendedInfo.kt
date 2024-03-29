@@ -572,6 +572,9 @@ public class PlayerAvatarExtendedInfo(
 
     internal fun precompute() {
         // Hits and tinting do not get precomputed
+        if (flags and APPEARANCE != 0) {
+            appearance.precompute()
+        }
         if (flags and TEMP_MOVE_SPEED != 0) {
             temporaryMoveSpeed.precompute()
         }
@@ -601,6 +604,11 @@ public class PlayerAvatarExtendedInfo(
         observerFlag: Int,
         observerIndex: Int,
     ) {
+        // TODO: Figure out a way to cap this out
+        if (buffer.writerIndex() >= 35_000) {
+            buffer.p1(0)
+            return
+        }
         var flag = this.flags or observerFlag
         if (flag and 0xFF.inv() != 0) flag = flag or EXTENDED_SHORT
         if (flag and 0xFFFF.inv() != 0) flag = flag or EXTENDED_MEDIUM
@@ -659,13 +667,9 @@ public class PlayerAvatarExtendedInfo(
     ) {
         val precomputed =
             checkNotNull(block.getBuffer(platformType)) {
-                "Buffer has not been computed on platform $platformType"
+                "Buffer has not been computed on platform $platformType, ${block.javaClass.name}"
             }
-        buffer.buffer.writeBytes(
-            precomputed,
-            precomputed.readerIndex(),
-            precomputed.readableBytes(),
-        )
+        buffer.buffer.writeBytes(precomputed)
     }
 
     private fun <T : ExtendedInfo<T, E>, E : OnDemandExtendedInfoEncoder<T>> pOnDemandData(
