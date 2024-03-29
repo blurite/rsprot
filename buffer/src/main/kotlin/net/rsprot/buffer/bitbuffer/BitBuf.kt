@@ -10,15 +10,7 @@ import io.netty.util.internal.SystemPropertyUtil
 @Suppress("NOTHING_TO_INLINE", "unused", "MemberVisibilityCanBePrivate")
 public class BitBuf(private val buffer: ByteBuf) : AutoCloseable {
     private var writerIndex: Int = buffer.writerIndex() shl LOG_BITS_PER_BYTE
-        private set(value) {
-            field = value
-            buffer.writerIndex(value ushr LOG_BITS_PER_BYTE)
-        }
     private var readerIndex: Int = buffer.readerIndex() shl LOG_BITS_PER_BYTE
-        private set(value) {
-            field = value
-            buffer.readerIndex(value ushr LOG_BITS_PER_BYTE)
-        }
 
     init {
         req(buffer.capacity() <= Int.MAX_VALUE ushr LOG_BITS_PER_BYTE) {
@@ -217,6 +209,8 @@ public class BitBuf(private val buffer: ByteBuf) : AutoCloseable {
             pBits(bits, 0)
         }
         readerIndex = (readerIndex + MASK_BITS_PER_BYTE) and MASK_BITS_PER_BYTE.inv()
+        buffer.writerIndex(writerIndex ushr LOG_BITS_PER_BYTE)
+        buffer.readerIndex(readerIndex ushr LOG_BITS_PER_BYTE)
     }
 
     public companion object {
