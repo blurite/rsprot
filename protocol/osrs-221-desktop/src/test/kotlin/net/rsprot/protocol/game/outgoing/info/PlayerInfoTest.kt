@@ -3,8 +3,21 @@ package net.rsprot.protocol.game.outgoing.info
 import io.netty.buffer.PooledByteBufAllocator
 import io.netty.buffer.Unpooled
 import net.rsprot.compression.HuffmanCodec
+import net.rsprot.protocol.game.outgoing.codec.playerinfo.extendedinfo.AppearanceEncoder
+import net.rsprot.protocol.game.outgoing.codec.playerinfo.extendedinfo.ChatEncoder
+import net.rsprot.protocol.game.outgoing.codec.playerinfo.extendedinfo.ExactMoveEncoder
+import net.rsprot.protocol.game.outgoing.codec.playerinfo.extendedinfo.FaceAngleEncoder
+import net.rsprot.protocol.game.outgoing.codec.playerinfo.extendedinfo.FacePathingEntityEncoder
+import net.rsprot.protocol.game.outgoing.codec.playerinfo.extendedinfo.HitEncoder
+import net.rsprot.protocol.game.outgoing.codec.playerinfo.extendedinfo.MoveSpeedEncoder
+import net.rsprot.protocol.game.outgoing.codec.playerinfo.extendedinfo.SayEncoder
+import net.rsprot.protocol.game.outgoing.codec.playerinfo.extendedinfo.SequenceEncoder
+import net.rsprot.protocol.game.outgoing.codec.playerinfo.extendedinfo.SpotAnimEncoder
+import net.rsprot.protocol.game.outgoing.codec.playerinfo.extendedinfo.TemporaryMoveSpeedEncoder
+import net.rsprot.protocol.game.outgoing.codec.playerinfo.extendedinfo.TintingEncoder
 import net.rsprot.protocol.game.outgoing.info.playerinfo.PlayerInfo
 import net.rsprot.protocol.game.outgoing.info.playerinfo.PlayerInfoProtocol
+import net.rsprot.protocol.internal.game.outgoing.info.encoder.ExtendedInfoEncoders
 import net.rsprot.protocol.shared.platform.PlatformType
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -18,18 +31,73 @@ class PlayerInfoTest {
 
     @BeforeEach
     fun initialize() {
+        val encoders = mapOf(PlatformType.DESKTOP to getExtendedInfoEncoders())
         protocol =
             PlayerInfoProtocol(
                 2048,
                 PooledByteBufAllocator.DEFAULT,
-                emptyMap(),
+                encoders,
                 createHuffmanCodec(),
             )
         localPlayerInfo = protocol.alloc(LOCAL_PLAYER_INDEX, PlatformType.DESKTOP)
         localPlayerInfo.updateCoord(0, 3200, 3220)
         client = PlayerInfoClient()
         gpiInit()
+        initializeAppearance(localPlayerInfo, LOCAL_PLAYER_INDEX)
+        protocol.prepareExtendedInfo()
         postUpdate()
+    }
+
+    private fun initializeAppearance(
+        player: PlayerInfo,
+        index: Int,
+    ) {
+        player.extendedInfo.initializeAppearance(
+            name = "Bot $index",
+            combatLevel = 126,
+            skillLevel = 0,
+            hidden = false,
+            male = true,
+            textGender = 0,
+            skullIcon = -1,
+            overheadIcon = -1,
+        )
+        for (colIdx in 0..<5) {
+            player.extendedInfo.setColour(colIdx, colIdx * 10)
+        }
+        player.extendedInfo.setIdentKit(8, 0)
+        player.extendedInfo.setIdentKit(11, 10)
+        player.extendedInfo.setIdentKit(4, 18)
+        player.extendedInfo.setIdentKit(6, 26)
+        player.extendedInfo.setIdentKit(9, 33)
+        player.extendedInfo.setIdentKit(7, 36)
+        player.extendedInfo.setIdentKit(10, 42)
+        player.extendedInfo.setBaseAnimationSet(
+            808,
+            823,
+            819,
+            820,
+            821,
+            822,
+            824,
+        )
+    }
+
+    private fun getExtendedInfoEncoders(): ExtendedInfoEncoders {
+        return ExtendedInfoEncoders(
+            AppearanceEncoder(),
+            ChatEncoder(),
+            ExactMoveEncoder(),
+            FaceAngleEncoder(),
+            FacePathingEntityEncoder(),
+            HitEncoder(),
+            MoveSpeedEncoder(),
+            SayEncoder(),
+            SequenceEncoder(),
+            SpotAnimEncoder(),
+            TemporaryMoveSpeedEncoder(),
+            TintingEncoder(),
+        )
     }
 
     private fun postUpdate() {
@@ -51,6 +119,8 @@ class PlayerInfoTest {
     private fun tick() {
         protocol.prepare()
         protocol.putBitcodes()
+        protocol.prepareExtendedInfo()
+        protocol.putExtendedInfo()
         client.decode(localPlayerInfo.backingBuffer())
         postUpdate()
     }
@@ -68,6 +138,10 @@ class PlayerInfoTest {
         localPlayerInfo.updateCoord(0, 1, 0)
         tick()
         assertCoordEquals()
+
+        localPlayerInfo.updateCoord(0, 3205, 3220)
+        tick()
+        assertCoordEquals()
     }
 
     @Test
@@ -78,14 +152,23 @@ class PlayerInfoTest {
             val otherPlayer = protocol.alloc(index, PlatformType.DESKTOP)
             otherPlayers[index] = otherPlayer
             otherPlayer.updateCoord(0, 3205, 3220)
+            initializeAppearance(otherPlayer, index)
         }
         tick()
-        assertCoordEquals()
+        assertAllCoordsEqual(otherPlayers)
         for (player in otherPlayers.filterNotNull()) {
             player.updateCoord(0, 3204, 3220)
         }
         tick()
-        assertCoordEquals()
+        assertAllCoordsEqual(otherPlayers)
+    }
+
+    private fun assertAllCoordsEqual(otherPlayers: Array<PlayerInfo?>) {
+        for (i in otherPlayers.indices) {
+            val otherPlayer = otherPlayers[i] ?: continue
+            val clientPlayer = client.cachedPlayers[i]!!
+            assertEquals(otherPlayer.avatar.currentCoord, clientPlayer.coord)
+        }
     }
 
     private fun assertCoordEquals() {

@@ -1,7 +1,10 @@
 package net.rsprot.protocol.game.outgoing.info
 
 import io.netty.buffer.ByteBuf
+import io.netty.buffer.Unpooled
+import net.rsprot.buffer.JagByteBuf
 import net.rsprot.buffer.bitbuffer.BitBuf
+import net.rsprot.buffer.extensions.toJagByteBuf
 import net.rsprot.protocol.internal.game.outgoing.info.CoordGrid
 
 @Suppress("MemberVisibilityCanBePrivate", "CascadeIf")
@@ -158,7 +161,96 @@ class PlayerInfoClient {
                 lowResolutionIndices[lowResolutionCount++] = i
             }
         }
-        // TODO: Extended info blocks
+        decodeExtendedInfo(byteBuf.toJagByteBuf())
+    }
+
+    private fun decodeExtendedInfo(buffer: JagByteBuf) {
+        for (i in 0..<extendedInfoCount) {
+            val index = extendedInfoIndices[i]
+            val player = checkNotNull(cachedPlayers[index])
+            var flag = buffer.g1()
+            if (flag and 0x1 != 0) {
+                flag += buffer.g1() shl 8
+            }
+            if (flag and 0x800 != 0) {
+                flag += buffer.g1() shl 16
+            }
+            decodeExtendedInfoBlocks(buffer, index, player, flag)
+        }
+    }
+
+    private fun decodeExtendedInfoBlocks(
+        buffer: JagByteBuf,
+        index: Int,
+        player: Player,
+        flag: Int,
+    ) {
+        if (flag and 0x4 != 0) {
+            val len = buffer.g1Alt2()
+            val data = ByteArray(len)
+            buffer.gdataAlt2(data, 0, len)
+            decodeAppearance(Unpooled.wrappedBuffer(data).toJagByteBuf(), player)
+        }
+        require(flag and 0x4.inv() == 0)
+    }
+
+    private fun decodeAppearance(
+        buffer: JagByteBuf,
+        player: Player,
+    ) {
+        player.gender = buffer.g1s()
+        player.skullIcon = buffer.g1s()
+        player.headIcon = buffer.g1s()
+        val equipment = IntArray(12)
+        player.equipment = equipment
+        for (i in 0..<12) {
+            val flag = buffer.g1()
+            if (flag == 0) {
+                equipment[i] = 0
+                continue
+            }
+            val extra = buffer.g1()
+            equipment[i] = (flag shl 8) + extra
+            if (i == 0 && equipment[i] == 65535) {
+                player.npcId = buffer.g2()
+                break
+            }
+        }
+        val identKit = IntArray(12)
+        player.identKit = identKit
+        for (i in 0..<12) {
+            val value = buffer.g1()
+            if (value == 0) {
+                identKit[i] = 0
+            } else {
+                identKit[i] = (value shl 8) + buffer.g1()
+            }
+        }
+        val colours = IntArray(5)
+        player.colours = colours
+        for (i in 0..<5) {
+            colours[i] = buffer.g1()
+        }
+        player.readyAnim = buffer.g2()
+        player.turnAnim = buffer.g2()
+        player.walkAnim = buffer.g2()
+        player.walkAnimBack = buffer.g2()
+        player.walkAnimLeft = buffer.g2()
+        player.walkAnimRight = buffer.g2()
+        player.runAnim = buffer.g2()
+        player.name = buffer.gjstr()
+        player.combatLevel = buffer.g1()
+        player.skillLevel = buffer.g2()
+        player.hidden = buffer.g1() == 1
+        val customisationFlag = buffer.g2()
+        val hasCustomisations = customisationFlag shr 15 and 0x1 == 1
+        if (hasCustomisations) {
+            error("Not supported")
+        }
+        for (i in 0..<3) {
+            player.nameExtras[i] = buffer.gjstr()
+        }
+        player.textGender = buffer.g1s()
     }
 
     private fun getHighResolutionPlayerPosition(
@@ -413,9 +505,53 @@ class PlayerInfoClient {
         class Player(val playerId: Int) {
             var queuedMove: Boolean = false
             var coord: CoordGrid = CoordGrid.INVALID
+            var skullIcon: Int = -1
+            var headIcon: Int = -1
+            var npcId: Int = -1
+            var readyAnim: Int = -1
+            var turnAnim: Int = -1
+            var walkAnim: Int = -1
+            var walkAnimBack: Int = -1
+            var walkAnimLeft: Int = -1
+            var walkAnimRight: Int = -1
+            var runAnim: Int = -1
+            var name: String? = null
+            var combatLevel: Int = 0
+            var skillLevel: Int = 0
+            var hidden: Boolean = false
+            var nameExtras: Array<String> = Array(3) { "" }
+            var textGender: Int = 0
+            var gender: Int = 0
+            var equipment: IntArray = IntArray(12)
+            var identKit: IntArray = IntArray(12)
+            var colours: IntArray = IntArray(5)
 
             override fun toString(): String {
-                return "Player(playerId=$playerId, queuedMove=$queuedMove, coord=$coord)"
+                return "Player(" +
+                    "playerId=$playerId, " +
+                    "queuedMove=$queuedMove, " +
+                    "coord=$coord, " +
+                    "skullIcon=$skullIcon, " +
+                    "headIcon=$headIcon, " +
+                    "npcId=$npcId, " +
+                    "readyAnim=$readyAnim, " +
+                    "turnAnim=$turnAnim, " +
+                    "walkAnim=$walkAnim, " +
+                    "walkAnimBack=$walkAnimBack, " +
+                    "walkAnimLeft=$walkAnimLeft, " +
+                    "walkAnimRight=$walkAnimRight, " +
+                    "runAnim=$runAnim, " +
+                    "name=$name, " +
+                    "combatLevel=$combatLevel, " +
+                    "skillLevel=$skillLevel, " +
+                    "hidden=$hidden, " +
+                    "nameExtras=${nameExtras.contentToString()}, " +
+                    "textGender=$textGender, " +
+                    "gender=$gender, " +
+                    "equipment=${equipment.contentToString()}, " +
+                    "identKit=${identKit.contentToString()}, " +
+                    "colours=${colours.contentToString()}" +
+                    ")"
             }
         }
     }
