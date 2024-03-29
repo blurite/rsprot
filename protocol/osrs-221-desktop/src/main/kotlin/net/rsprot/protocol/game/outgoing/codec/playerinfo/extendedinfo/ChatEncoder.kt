@@ -24,7 +24,18 @@ public class ChatEncoder : PrecomputedExtendedInfoEncoder<Chat> {
         buffer.p2Alt1(colour shl 8 or extendedInfo.effects.toInt())
         buffer.p1Alt2(extendedInfo.modicon.toInt())
         buffer.p1(if (extendedInfo.autotyper) 1 else 0)
+        // Skip huffman payload size
+        buffer.skip(1)
+        val marker = buffer.writerIndex()
         huffmanCodec.encode(buffer, text)
+
+        // Update huffman payload size
+        val writerIndex = buffer.writerIndex()
+        val written = writerIndex - marker
+        buffer.writerIndex(marker - 1)
+        buffer.p1Alt1(written)
+        buffer.writerIndex(writerIndex)
+
         if (patternLength in 1..8) {
             val pattern = checkNotNull(extendedInfo.pattern)
             for (i in 0..<patternLength) {
