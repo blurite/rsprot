@@ -27,7 +27,7 @@ public class SpotAnimList : TransientExtendedInfo() {
             return
         }
         do {
-            spotanims[nextSetBit ushr SPOTANIM_SHIFT] = UNINITIALIZED_SPOTANIM
+            spotanims[nextSetBit] = UNINITIALIZED_SPOTANIM
             nextSetBit = changelist.nextSetBit(nextSetBit + 1)
         } while (nextSetBit != -1)
         changelist.clear()
@@ -36,6 +36,5 @@ public class SpotAnimList : TransientExtendedInfo() {
     public companion object {
         private const val UNINITIALIZED_SPOTANIM = -1L
         private const val MAX_SPOTANIM_COUNT = 256
-        private const val SPOTANIM_SHIFT = MAX_SPOTANIM_COUNT / Long.SIZE_BITS
     }
 }
