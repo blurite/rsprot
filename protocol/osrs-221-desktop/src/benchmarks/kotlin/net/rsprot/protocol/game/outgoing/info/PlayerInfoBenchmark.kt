@@ -125,9 +125,14 @@ class PlayerInfoBenchmark {
         for (i in 1..<MAX_IDX) {
             val player = checkNotNull(players[i])
             player.updateCoord(0, random.nextInt(3200, 3213), random.nextInt(3200, 3213))
-            player.extendedInfo.setSay(
+            player.extendedInfo.setChat(
+                0,
+                0,
+                0,
+                false,
                 "Neque porro quisquam est qui dolorem " +
                     "ipsum quia dolor sit amet, consectetur, adipisci velit",
+                null,
             )
         }
         protocol.prepare()
