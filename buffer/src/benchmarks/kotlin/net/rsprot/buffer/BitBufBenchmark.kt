@@ -34,7 +34,7 @@ class BitBufBenchmark {
         // Ensuring writable however is very costly, costing us ~50% of the performance
         // It is very likely we can just ignore ensureWritable in production,
         // as all our bit buffers will be 40kb in size, and we can never exceed that anyway.
-        System.setProperty("net.rsprot.buffer.bitbufferEnsureWritable", "true")
+        System.setProperty("net.rsprot.buffer.bitbufferEnsureWritable", "false")
     }
 
     @Setup
