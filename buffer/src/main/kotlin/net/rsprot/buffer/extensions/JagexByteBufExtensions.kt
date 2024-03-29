@@ -718,9 +718,9 @@ public fun ByteBuf.pdataAlt2(
 public fun ByteBuf.pdataAlt2(
     data: ByteBuf,
     start: Int = data.readerIndex(),
-    end: Int = (start + data.readableBytes()),
+    length: Int = data.readableBytes(),
 ): ByteBuf {
-    for (i in (start + end - 1) downTo start) {
+    for (i in (start + length - 1) downTo start) {
         writeByte(data.getByte(i) - HALF_UBYTE)
     }
     return this
