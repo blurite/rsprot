@@ -1,8 +1,12 @@
 package net.rsprot.protocol.internal.game.outgoing.info.playerinfo.extendedinfo
 
 import net.rsprot.protocol.internal.game.outgoing.info.TransientExtendedInfo
+import net.rsprot.protocol.internal.game.outgoing.info.encoder.PrecomputedExtendedInfoEncoder
+import net.rsprot.protocol.shared.platform.PlatformType
 
-public class Chat : TransientExtendedInfo() {
+public class Chat(
+    encoders: Array<PrecomputedExtendedInfoEncoder<Chat>?> = arrayOfNulls(PlatformType.COUNT),
+) : TransientExtendedInfo<Chat, PrecomputedExtendedInfoEncoder<Chat>>(encoders) {
     public var colour: UByte = 0u
     public var effects: UByte = 0u
     public var modicon: UByte = 0u

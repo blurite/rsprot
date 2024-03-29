@@ -6,7 +6,7 @@ import net.rsprot.buffer.extensions.p1Alt2
 import net.rsprot.buffer.extensions.pdataAlt2
 import net.rsprot.buffer.extensions.toJagByteBuf
 import net.rsprot.compression.HuffmanCodec
-import net.rsprot.protocol.game.outgoing.info.extendedinfo.PrecomputedExtendedInfoEncoder
+import net.rsprot.protocol.internal.game.outgoing.info.encoder.PrecomputedExtendedInfoEncoder
 import net.rsprot.protocol.internal.game.outgoing.info.playerinfo.extendedinfo.Appearance
 import net.rsprot.protocol.internal.game.outgoing.info.playerinfo.extendedinfo.ObjTypeCustomisation
 

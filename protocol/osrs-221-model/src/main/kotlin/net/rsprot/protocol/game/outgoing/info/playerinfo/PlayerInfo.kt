@@ -9,7 +9,9 @@ import net.rsprot.protocol.game.outgoing.info.playerinfo.util.ModificationFlags
 import net.rsprot.protocol.game.outgoing.info.playerinfo.util.ObserverExtendedInfoFlags
 import net.rsprot.protocol.game.outgoing.info.util.Avatar
 import net.rsprot.protocol.game.outgoing.info.util.ReferencePooledObject
+import net.rsprot.protocol.internal.game.outgoing.info.encoder.ExtendedInfoEncoders
 import net.rsprot.protocol.message.OutgoingMessage
+import net.rsprot.protocol.shared.platform.PlatformType
 import java.util.BitSet
 import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.contract
@@ -21,6 +23,7 @@ public class PlayerInfo internal constructor(
     private val localIndex: Int,
     private val capacity: Int,
     private val allocator: ByteBufAllocator,
+    extendedInfoEncoders: Map<PlatformType, ExtendedInfoEncoders>,
 ) : ReferencePooledObject, OutgoingMessage {
     /**
      * The [avatar] represents properties of our local player.
@@ -72,7 +75,7 @@ public class PlayerInfo internal constructor(
      * The [extendedInfo] is also responsible for caching the non-temporary blocks,
      * such as appearance and move speed.
      */
-    private val extendedInfo = PlayerAvatarExtendedInfo(capacity, protocol, localIndex)
+    private val extendedInfo = PlayerAvatarExtendedInfo(capacity, protocol, localIndex, extendedInfoEncoders)
 
     internal val observerExtendedInfoFlags: ObserverExtendedInfoFlags = ObserverExtendedInfoFlags(capacity)
 

@@ -1,8 +1,12 @@
 package net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo
 
 import net.rsprot.protocol.internal.game.outgoing.info.TransientExtendedInfo
+import net.rsprot.protocol.internal.game.outgoing.info.encoder.PrecomputedExtendedInfoEncoder
+import net.rsprot.protocol.shared.platform.PlatformType
 
-public class ExactMove : TransientExtendedInfo() {
+public class ExactMove(
+    encoders: Array<PrecomputedExtendedInfoEncoder<ExactMove>?> = arrayOfNulls(PlatformType.COUNT),
+) : TransientExtendedInfo<ExactMove, PrecomputedExtendedInfoEncoder<ExactMove>>(encoders) {
     public var deltaX1: UByte = 0u
     public var deltaZ1: UByte = 0u
     public var delay1: UShort = 0u

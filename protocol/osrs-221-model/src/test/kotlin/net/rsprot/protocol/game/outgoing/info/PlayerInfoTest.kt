@@ -16,7 +16,7 @@ class PlayerInfoTest {
 
     @BeforeEach
     fun initialize() {
-        protocol = PlayerInfoProtocol(2048, PooledByteBufAllocator.DEFAULT)
+        protocol = PlayerInfoProtocol(2048, PooledByteBufAllocator.DEFAULT, emptyMap())
         localPlayerInfo = protocol.alloc(LOCAL_PLAYER_INDEX)
         localPlayerInfo.updateCoord(0, 3200, 3220)
         client = PlayerInfoClient()

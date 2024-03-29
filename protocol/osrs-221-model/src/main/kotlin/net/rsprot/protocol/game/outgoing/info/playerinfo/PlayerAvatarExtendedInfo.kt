@@ -1,5 +1,8 @@
 package net.rsprot.protocol.game.outgoing.info.playerinfo
 
+import net.rsprot.protocol.internal.game.outgoing.info.ExtendedInfo
+import net.rsprot.protocol.internal.game.outgoing.info.encoder.ExtendedInfoEncoder
+import net.rsprot.protocol.internal.game.outgoing.info.encoder.ExtendedInfoEncoders
 import net.rsprot.protocol.internal.game.outgoing.info.playerinfo.extendedinfo.Appearance
 import net.rsprot.protocol.internal.game.outgoing.info.playerinfo.extendedinfo.Chat
 import net.rsprot.protocol.internal.game.outgoing.info.playerinfo.extendedinfo.FaceAngle
@@ -17,6 +20,7 @@ import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.Tinti
 import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.util.HeadBar
 import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.util.HitMark
 import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.util.SpotAnim
+import net.rsprot.protocol.shared.platform.PlatformType
 
 // TODO: Optional bound checks (hits, etc)
 @Suppress("MemberVisibilityCanBePrivate")
@@ -24,19 +28,57 @@ public class PlayerAvatarExtendedInfo(
     capacity: Int,
     private val protocol: PlayerInfoProtocol,
     private val localIndex: Int,
+    extendedInfoEncoders: Map<PlatformType, ExtendedInfoEncoders>,
 ) {
-    private val appearance: Appearance = Appearance(capacity)
-    private val moveSpeed: MoveSpeed = MoveSpeed()
-    private val temporaryMoveSpeed: TemporaryMoveSpeed = TemporaryMoveSpeed()
-    private val sequence: Sequence = Sequence()
-    private val facePathingEntity: FacePathingEntity = FacePathingEntity()
-    private val faceAngle: FaceAngle = FaceAngle()
-    private val say: Say = Say()
-    private val chat: Chat = Chat()
-    private val exactMove: ExactMove = ExactMove()
-    private val spotAnims: SpotAnimList = SpotAnimList()
-    private val hit: Hit = Hit()
-    private val tinting: TintingList = TintingList()
+    private val appearance: Appearance =
+        Appearance(
+            capacity,
+            buildPlatformEncoderArray(extendedInfoEncoders, ExtendedInfoEncoders::appearance),
+        )
+    private val moveSpeed: MoveSpeed =
+        MoveSpeed(
+            buildPlatformEncoderArray(extendedInfoEncoders, ExtendedInfoEncoders::moveSpeed),
+        )
+    private val temporaryMoveSpeed: TemporaryMoveSpeed =
+        TemporaryMoveSpeed(
+            buildPlatformEncoderArray(extendedInfoEncoders, ExtendedInfoEncoders::temporaryMoveSpeed),
+        )
+    private val sequence: Sequence =
+        Sequence(
+            buildPlatformEncoderArray(extendedInfoEncoders, ExtendedInfoEncoders::sequence),
+        )
+    private val facePathingEntity: FacePathingEntity =
+        FacePathingEntity(
+            buildPlatformEncoderArray(extendedInfoEncoders, ExtendedInfoEncoders::facePathingEntity),
+        )
+    private val faceAngle: FaceAngle =
+        FaceAngle(
+            buildPlatformEncoderArray(extendedInfoEncoders, ExtendedInfoEncoders::faceAngle),
+        )
+    private val say: Say =
+        Say(
+            buildPlatformEncoderArray(extendedInfoEncoders, ExtendedInfoEncoders::say),
+        )
+    private val chat: Chat =
+        Chat(
+            buildPlatformEncoderArray(extendedInfoEncoders, ExtendedInfoEncoders::chat),
+        )
+    private val exactMove: ExactMove =
+        ExactMove(
+            buildPlatformEncoderArray(extendedInfoEncoders, ExtendedInfoEncoders::exactMove),
+        )
+    private val spotAnims: SpotAnimList =
+        SpotAnimList(
+            buildPlatformEncoderArray(extendedInfoEncoders, ExtendedInfoEncoders::spotAnim),
+        )
+    private val hit: Hit =
+        Hit(
+            buildPlatformEncoderArray(extendedInfoEncoders, ExtendedInfoEncoders::hit),
+        )
+    private val tinting: TintingList =
+        TintingList(
+            buildPlatformEncoderArray(extendedInfoEncoders, ExtendedInfoEncoders::tinting),
+        )
 
     internal var flags: Int = 0
 
@@ -551,5 +593,17 @@ public class PlayerAvatarExtendedInfo(
 
         // Name extras are part of appearance nowadays, and thus will not be used on their own
         internal const val NAME_EXTRAS = 0x100
+
+        private inline fun <T : ExtendedInfo<T, E>, reified E : ExtendedInfoEncoder<T>> buildPlatformEncoderArray(
+            allEncoders: Map<PlatformType, ExtendedInfoEncoders>,
+            selector: (ExtendedInfoEncoders) -> E,
+        ): Array<E?> {
+            val array = arrayOfNulls<E>(PlatformType.COUNT)
+            for ((platform, encoders) in allEncoders) {
+                val encoder = selector(encoders)
+                array[platform.id] = encoder
+            }
+            return array
+        }
     }
 }

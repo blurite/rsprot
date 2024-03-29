@@ -1,4 +1,4 @@
-package net.rsprot.protocol.game.outgoing.info.extendedinfo
+package net.rsprot.protocol.internal.game.outgoing.info.encoder
 
 import io.netty.buffer.ByteBufAllocator
 import net.rsprot.buffer.JagByteBuf
@@ -10,7 +10,7 @@ import net.rsprot.protocol.internal.game.outgoing.info.ExtendedInfo
  * early on in the process. This allows us to do a simple native buffer copy to transfer the data over,
  * and avoids us having to re-calculate all the little properties that end up being encoded.
  */
-public interface PrecomputedExtendedInfoEncoder<in T : ExtendedInfo> : ExtendedInfoEncoder<T> {
+public interface PrecomputedExtendedInfoEncoder<in T : ExtendedInfo<T, *>> : ExtendedInfoEncoder<T> {
     public fun precompute(
         alloc: ByteBufAllocator,
         huffmanCodec: HuffmanCodec,

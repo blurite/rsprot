@@ -1,8 +1,16 @@
 package net.rsprot.protocol.internal.game.outgoing.info.playerinfo.extendedinfo
 
 import net.rsprot.protocol.internal.game.outgoing.info.CachedExtendedInfo
+import net.rsprot.protocol.internal.game.outgoing.info.encoder.PrecomputedExtendedInfoEncoder
+import net.rsprot.protocol.shared.platform.PlatformType
 
-public class Appearance(capacity: Int) : CachedExtendedInfo(capacity) {
+public class Appearance(
+    capacity: Int,
+    encoders: Array<PrecomputedExtendedInfoEncoder<Appearance>?> = arrayOfNulls(PlatformType.COUNT),
+) : CachedExtendedInfo<Appearance, PrecomputedExtendedInfoEncoder<Appearance>>(
+        capacity,
+        encoders,
+    ) {
     public var name: String = ""
     public var combatLevel: UByte = 0u
     public var skillLevel: UShort = 0u

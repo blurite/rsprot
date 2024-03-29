@@ -1,11 +1,15 @@
 package net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo
 
 import net.rsprot.protocol.internal.game.outgoing.info.TransientExtendedInfo
+import net.rsprot.protocol.internal.game.outgoing.info.encoder.PrecomputedExtendedInfoEncoder
 import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.util.SpotAnim
+import net.rsprot.protocol.shared.platform.PlatformType
 import java.util.BitSet
 
 @Suppress("MemberVisibilityCanBePrivate")
-public class SpotAnimList : TransientExtendedInfo() {
+public class SpotAnimList(
+    encoders: Array<PrecomputedExtendedInfoEncoder<SpotAnimList>?> = arrayOfNulls(PlatformType.COUNT),
+) : TransientExtendedInfo<SpotAnimList, PrecomputedExtendedInfoEncoder<SpotAnimList>>(encoders) {
     public val changelist: BitSet = BitSet(MAX_SPOTANIM_COUNT)
     public val spotanims: LongArray =
         LongArray(MAX_SPOTANIM_COUNT) {

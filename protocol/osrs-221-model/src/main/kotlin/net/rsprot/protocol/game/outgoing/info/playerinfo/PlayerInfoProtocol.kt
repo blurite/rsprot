@@ -2,10 +2,13 @@ package net.rsprot.protocol.game.outgoing.info.playerinfo
 
 import io.netty.buffer.ByteBufAllocator
 import net.rsprot.protocol.game.outgoing.info.playerinfo.util.LowResolutionPosition
+import net.rsprot.protocol.internal.game.outgoing.info.encoder.ExtendedInfoEncoders
+import net.rsprot.protocol.shared.platform.PlatformType
 
 public class PlayerInfoProtocol(
     private val capacity: Int,
     private val allocator: ByteBufAllocator,
+    extendedInfoEncoders: Map<PlatformType, ExtendedInfoEncoders>,
 ) {
     private val lowResolutionPositionRepository: GlobalLowResolutionPositionRepository =
         GlobalLowResolutionPositionRepository(
@@ -18,6 +21,7 @@ public class PlayerInfoProtocol(
                 localIndex,
                 capacity,
                 allocator,
+                extendedInfoEncoders,
             )
         }
 
