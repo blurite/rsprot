@@ -3,7 +3,7 @@ package net.rsprot.protocol.game.outgoing.info.playerinfo
 import net.rsprot.protocol.game.outgoing.info.util.Avatar
 import net.rsprot.protocol.internal.game.outgoing.info.CoordGrid
 
-public data class PlayerAvatar internal constructor(
+public class PlayerAvatar internal constructor() : Avatar {
     /**
      * The preferred resize range. The player information protocol will attempt to
      * add everyone within [preferredResizeRange] tiles to high resolution.
@@ -11,14 +11,16 @@ public data class PlayerAvatar internal constructor(
      * and everyone will be put to high resolution. The extended information may be
      * disabled for these players as a result, to avoid buffer overflows.
      */
-    private var preferredResizeRange: Int = DEFAULT_RESIZE_RANGE,
+    private var preferredResizeRange: Int = DEFAULT_RESIZE_RANGE
+
     /**
      * The current range at which other players can be observed.
      * By default, this value is equal to 15 game squares, however, it may dynamically
      * decrease if there are too many high resolution players nearby. It will naturally
      * restore back to the default size when the pressure starts to decrease.
      */
-    internal var resizeRange: Int = preferredResizeRange,
+    internal var resizeRange: Int = preferredResizeRange
+
     /**
      * The current cycle counter for resizing logic.
      * Resizing by default will occur after every ten cycles. Once the
@@ -29,20 +31,23 @@ public data class PlayerAvatar internal constructor(
      * If it however fails, it will set the range lower by one tile and remain there
      * for the next ten cycles.
      */
-    private var resizeCounter: Int = DEFAULT_RESIZE_INTERVAL,
+    private var resizeCounter: Int = DEFAULT_RESIZE_INTERVAL
+
     /**
      * The current known coordinate of the given player.
      * The coordinate property will need to be updated for all players prior to computing
      * player info packet for any of them.
      */
-    internal var currentCoord: CoordGrid = CoordGrid.INVALID,
+    public var currentCoord: CoordGrid = CoordGrid.INVALID
+        private set
+
     /**
      * The last known coordinate of this player. This property will be used in conjunction
      * with [currentCoord] to determine the coordinate delta, which is then transmitted
      * to the clients.
      */
-    internal var lastCoord: CoordGrid = CoordGrid.INVALID,
-) : Avatar {
+    internal var lastCoord: CoordGrid = CoordGrid.INVALID
+
     internal fun reset() {
         preferredResizeRange = DEFAULT_RESIZE_RANGE
         resizeRange = preferredResizeRange
