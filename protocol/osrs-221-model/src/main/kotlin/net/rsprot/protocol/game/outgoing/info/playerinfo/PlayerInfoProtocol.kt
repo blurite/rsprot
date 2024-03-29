@@ -5,6 +5,8 @@ import net.rsprot.compression.HuffmanCodec
 import net.rsprot.protocol.game.outgoing.info.playerinfo.util.LowResolutionPosition
 import net.rsprot.protocol.internal.game.outgoing.info.encoder.ExtendedInfoEncoders
 import net.rsprot.protocol.shared.platform.PlatformType
+import java.util.concurrent.Callable
+import java.util.concurrent.ForkJoinPool
 
 public class PlayerInfoProtocol(
     private val capacity: Int,
@@ -60,37 +62,51 @@ public class PlayerInfoProtocol(
     }
 
     public fun putBitcodes() {
-        // TODO: A thread pool supplier for asynchronous computation support
-
-        /*val jobs = ArrayList<Callable<Unit>>(playerInfoRepository.wrapped.capacity())
-        for (i in 1..<capacity) {
-            jobs +=
-                Callable {
-                    playerInfoRepository.wrapped.getOrNull(i)?.pBitcodes()
-                }
-        }
-        ForkJoinPool.commonPool().invokeAll(jobs)*/
-        for (i in 1..<capacity) {
-            playerInfoRepository.wrapped.getOrNull(i)?.pBitcodes()
+        execute {
+            pBitcodes()
         }
     }
 
     public fun prepareExtendedInfo() {
-        for (i in 1..<capacity) {
-            playerInfoRepository.wrapped.getOrNull(i)?.precomputeExtendedInfo()
+        execute {
+            precomputeExtendedInfo()
         }
     }
 
     public fun putExtendedInfo() {
-        for (i in 1..<capacity) {
-            playerInfoRepository.wrapped.getOrNull(i)?.putExtendedInfo()
+        execute {
+            putExtendedInfo()
         }
     }
 
     public fun postUpdate() {
-        for (i in 1..<capacity) {
-            playerInfoRepository.wrapped.getOrNull(i)?.postUpdate()
+        execute {
+            postUpdate()
         }
         lowResolutionPositionRepository.postUpdate()
+    }
+
+    private fun execute(block: PlayerInfo.() -> Unit) {
+        // TODO: A thread pool supplier for asynchronous computation support
+        if (ASYNC) {
+            val jobs = ArrayList<Callable<Unit>>(2048)
+            for (i in 1..<capacity) {
+                val info = playerInfoRepository.wrapped.getOrNull(i) ?: continue
+                jobs +=
+                    Callable {
+                        block(info)
+                    }
+            }
+            ForkJoinPool.commonPool().invokeAll(jobs)
+        } else {
+            for (i in 1..<capacity) {
+                val info = playerInfoRepository.wrapped.getOrNull(i) ?: continue
+                block(info)
+            }
+        }
+    }
+
+    private companion object {
+        private const val ASYNC: Boolean = true
     }
 }
