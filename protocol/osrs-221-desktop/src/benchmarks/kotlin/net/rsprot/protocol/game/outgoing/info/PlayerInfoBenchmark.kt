@@ -29,8 +29,8 @@ import org.openjdk.jmh.annotations.Scope
 import org.openjdk.jmh.annotations.Setup
 import org.openjdk.jmh.annotations.State
 import org.openjdk.jmh.annotations.Warmup
-import java.util.concurrent.ThreadLocalRandom
 import java.util.concurrent.TimeUnit
+import kotlin.random.Random
 import kotlin.time.measureTime
 
 @State(Scope.Benchmark)
@@ -42,7 +42,7 @@ import kotlin.time.measureTime
 class PlayerInfoBenchmark {
     private lateinit var protocol: PlayerInfoProtocol
     private lateinit var players: Array<PlayerInfo?>
-    private val random: ThreadLocalRandom get() = ThreadLocalRandom.current()
+    private val random: Random = Random(0)
 
     @Setup
     fun setup() {
