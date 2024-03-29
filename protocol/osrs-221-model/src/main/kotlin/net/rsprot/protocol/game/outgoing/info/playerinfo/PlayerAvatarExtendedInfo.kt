@@ -75,12 +75,23 @@ public class PlayerAvatarExtendedInfo(
     }
 
     public fun setChat(
+        colour: Int,
         effects: Int,
         modicon: Int,
         autotyper: Boolean,
         text: String,
         pattern: ByteArray?,
     ) {
+        val patternLength = if (colour in 13..20) colour - 12 else 0
+        if (patternLength in 1..8) {
+            requireNotNull(pattern) {
+                "Pattern cannot be null if pattern length is defined."
+            }
+            require(pattern.size == patternLength) {
+                "Pattern length does not match the size configured in the colour property."
+            }
+        }
+        chat.colour = colour.toUByte()
         chat.effects = effects.toUByte()
         chat.modicon = modicon.toUByte()
         chat.autotyper = autotyper
