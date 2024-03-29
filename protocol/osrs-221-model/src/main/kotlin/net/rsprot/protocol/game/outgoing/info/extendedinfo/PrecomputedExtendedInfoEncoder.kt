@@ -2,6 +2,7 @@ package net.rsprot.protocol.game.outgoing.info.extendedinfo
 
 import io.netty.buffer.ByteBufAllocator
 import net.rsprot.buffer.JagByteBuf
+import net.rsprot.compression.HuffmanCodec
 import net.rsprot.protocol.internal.game.outgoing.info.ExtendedInfo
 
 /**
@@ -12,6 +13,7 @@ import net.rsprot.protocol.internal.game.outgoing.info.ExtendedInfo
 public interface PrecomputedExtendedInfoEncoder<in T : ExtendedInfo> : ExtendedInfoEncoder<T> {
     public fun precompute(
         alloc: ByteBufAllocator,
+        huffmanCodec: HuffmanCodec,
         extendedInfo: T,
     ): JagByteBuf
 }
