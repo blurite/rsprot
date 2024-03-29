@@ -7,7 +7,6 @@ import net.rsprot.buffer.bitbuffer.UnsafeLongBackedBitBuf
 import net.rsprot.buffer.extensions.toJagByteBuf
 import net.rsprot.compression.HuffmanCodec
 import net.rsprot.protocol.game.outgoing.info.playerinfo.util.CellOpcodes
-import net.rsprot.protocol.game.outgoing.info.playerinfo.util.ModificationFlags
 import net.rsprot.protocol.game.outgoing.info.playerinfo.util.ObserverExtendedInfoFlags
 import net.rsprot.protocol.game.outgoing.info.util.Avatar
 import net.rsprot.protocol.game.outgoing.info.util.ReferencePooledObject
@@ -73,6 +72,8 @@ public class PlayerInfo internal constructor(
     private val extendedInfoIndices: ShortArray = ShortArray(capacity)
     private var extendedInfoCount: Int = 0
 
+    private val stationary = ByteArray(capacity)
+
     /**
      * Extended info repository, commonly referred to as "masks", will track everything relevant
      * inside itself. Setting properties such as a spotanim would be done through this.
@@ -90,8 +91,6 @@ public class PlayerInfo internal constructor(
         )
 
     internal val observerExtendedInfoFlags: ObserverExtendedInfoFlags = ObserverExtendedInfoFlags(capacity)
-
-    private val modificationFlags: ModificationFlags = ModificationFlags()
 
     private val highResMovementBuffer: UnsafeLongBackedBitBuf = UnsafeLongBackedBitBuf()
     private val lowResMovementBuffer: UnsafeLongBackedBitBuf = UnsafeLongBackedBitBuf()
@@ -180,14 +179,14 @@ public class PlayerInfo internal constructor(
         var skips = 0
         for (i in 0 until lowResolutionCount) {
             val index = lowResolutionIndices[i].toInt()
-            val isUnmodified = modificationFlags.isUnmodified(index)
+            val isUnmodified = stationary[index].toInt() and 0x1 != 0
             if (skipUnmodified == isUnmodified) {
                 continue
             }
             val other = protocol.getPlayerInfo(index)
             if (other == null) {
                 skips++
-                modificationFlags.markUnmodified(index)
+                stationary[index] = (stationary[index].toInt() or 0x2).toByte()
             } else if (isVisible(other)) {
                 if (skips > 0) {
                     pStationary(buffer, skips)
@@ -231,7 +230,7 @@ public class PlayerInfo internal constructor(
         val extraFlags = other.extendedInfo.getLowToHighResChangeExtendedInfoFlags(extendedInfo)
         // Mark those flags as observer-dependent.
         observerExtendedInfoFlags.addFlag(index, extraFlags)
-        modificationFlags.markUnmodified(index)
+        stationary[index] = (stationary[index].toInt() or 0x2).toByte()
         highResolutionPlayers.set(index)
         val flag = other.extendedInfo.flags or observerExtendedInfoFlags.getFlag(index)
         val hasExtendedInfoBlock = flag != 0
@@ -250,7 +249,7 @@ public class PlayerInfo internal constructor(
         var skips = 0
         for (i in 0 until highResolutionCount) {
             val index = highResolutionIndices[i].toInt()
-            val isUnmodified = modificationFlags.isUnmodified(index)
+            val isUnmodified = (stationary[index].toInt() and 0x1) != 0
             if (skipUnmodified == isUnmodified) {
                 continue
             }
@@ -277,7 +276,7 @@ public class PlayerInfo internal constructor(
                 continue
             }
             skips++
-            modificationFlags.markUnmodified(index)
+            stationary[index] = (stationary[index].toInt() or 0x2).toByte()
         }
         if (skips > 0) {
             pStationary(buffer, skips)
@@ -382,13 +381,13 @@ public class PlayerInfo internal constructor(
         // Only need to reset the count here, the actual numbers don't matter.
         extendedInfoCount = 0
         for (i in 1 until capacity) {
+            stationary[i] = (stationary[i].toInt() shr 1).toByte()
             if (highResolutionPlayers.get(i)) {
                 highResolutionIndices[highResolutionCount++] = i.toShort()
             } else {
                 lowResolutionIndices[lowResolutionCount++] = i.toShort()
             }
         }
-        modificationFlags.flip()
         observerExtendedInfoFlags.reset()
         extendedInfo.reset()
     }
