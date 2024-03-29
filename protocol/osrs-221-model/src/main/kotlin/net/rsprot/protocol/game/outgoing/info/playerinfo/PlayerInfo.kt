@@ -79,7 +79,7 @@ public class PlayerInfo internal constructor(
      * The [extendedInfo] is also responsible for caching the non-temporary blocks,
      * such as appearance and move speed.
      */
-    private val extendedInfo =
+    public val extendedInfo: PlayerAvatarExtendedInfo =
         PlayerAvatarExtendedInfo(
             capacity,
             protocol,
