@@ -19,7 +19,7 @@ import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.contract
 import kotlin.math.abs
 
-@Suppress("DuplicatedCode")
+@Suppress("DuplicatedCode", "ReplaceUntilWithRangeUntil")
 public class PlayerInfo internal constructor(
     private val protocol: PlayerInfoProtocol,
     private val localIndex: Int,
@@ -108,8 +108,8 @@ public class PlayerInfo internal constructor(
      * @param level the current height level of the avatar.
      * @param x the x coordinate of the avatar.
      * @param z the z coordinate of the avatar (this is commonly referred to as 'y' coordinate).
-     * @throws IllegalArgumentException if [level] is not in range of 0..<4, or [x]/[z] are
-     * not in range of 0..<16384.
+     * @throws IllegalArgumentException if [level] is not in range of 0 until 4, or [x]/[z] are
+     * not in range of 0 until 16384.
      */
     @Throws(IllegalArgumentException::class)
     public fun updateCoord(
@@ -125,7 +125,7 @@ public class PlayerInfo internal constructor(
             buffer.pBits(30, avatar.currentCoord.packed)
             highResolutionPlayers.set(localIndex)
             highResolutionIndices[highResolutionCount++] = localIndex.toShort()
-            for (i in 1..<capacity) {
+            for (i in 1 until capacity) {
                 if (i == localIndex) {
                     continue
                 }
@@ -151,7 +151,7 @@ public class PlayerInfo internal constructor(
 
     internal fun putExtendedInfo() {
         val buffer = backingBuffer().toJagByteBuf()
-        for (i in 0..<extendedInfoCount) {
+        for (i in 0 until extendedInfoCount) {
             val index = extendedInfoIndices[i].toInt()
             val other = checkNotNull(protocol.getPlayerInfo(index))
             val observerFlag = observerExtendedInfoFlags.getFlag(index)
@@ -178,7 +178,7 @@ public class PlayerInfo internal constructor(
         skipUnmodified: Boolean,
     ) {
         var skips = 0
-        for (i in 0..<lowResolutionCount) {
+        for (i in 0 until lowResolutionCount) {
             val index = lowResolutionIndices[i].toInt()
             val isUnmodified = modificationFlags.isUnmodified(index)
             if (skipUnmodified == isUnmodified) {
@@ -248,7 +248,7 @@ public class PlayerInfo internal constructor(
         skipUnmodified: Boolean,
     ) {
         var skips = 0
-        for (i in 0..<highResolutionCount) {
+        for (i in 0 until highResolutionCount) {
             val index = highResolutionIndices[i].toInt()
             val isUnmodified = modificationFlags.isUnmodified(index)
             if (skipUnmodified == isUnmodified) {
@@ -381,7 +381,7 @@ public class PlayerInfo internal constructor(
         highResolutionCount = 0
         // Only need to reset the count here, the actual numbers don't matter.
         extendedInfoCount = 0
-        for (i in 1..<capacity) {
+        for (i in 1 until capacity) {
             if (highResolutionPlayers.get(i)) {
                 highResolutionIndices[highResolutionCount++] = i.toShort()
             } else {
