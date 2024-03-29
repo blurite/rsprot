@@ -22,7 +22,7 @@ public class HitEncoder : OnDemandExtendedInfoEncoder<Hit> {
         info: Hit,
     ) {
         val countMarker = buffer.writerIndex()
-        buffer.skip(1)
+        buffer.skipWrite(1)
         var count = 0
         for (hit in info.hitMarkList) {
             // If the hit appears on us, or we were the source of the hit in the first place
@@ -64,7 +64,7 @@ public class HitEncoder : OnDemandExtendedInfoEncoder<Hit> {
         info: Hit,
     ) {
         val countMarker = buffer.writerIndex()
-        buffer.skip(1)
+        buffer.skipWrite(1)
         var count = 0
         for (headBar in info.headBarList) {
             buffer.pSmart1or2(headBar.id.toInt())

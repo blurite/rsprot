@@ -25,7 +25,7 @@ public class ChatEncoder : PrecomputedExtendedInfoEncoder<Chat> {
         buffer.p1Alt2(extendedInfo.modicon.toInt())
         buffer.p1(if (extendedInfo.autotyper) 1 else 0)
         // Skip huffman payload size
-        buffer.skip(1)
+        buffer.skipWrite(1)
         val marker = buffer.writerIndex()
         huffmanCodec.encode(buffer, text)
 

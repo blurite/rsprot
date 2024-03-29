@@ -132,7 +132,13 @@ public value class JagByteBuf(public val buffer: ByteBuf) {
         return this
     }
 
-    public inline fun skip(num: Int): JagByteBuf {
+    public inline fun skipWrite(num: Int): JagByteBuf {
+        buffer.ensureWritable(num)
+        buffer.writerIndex(buffer.writerIndex() + num)
+        return this
+    }
+
+    public inline fun skipRead(num: Int): JagByteBuf {
         buffer.skipBytes(num)
         return this
     }

@@ -90,7 +90,7 @@ public class AppearanceEncoder : PrecomputedExtendedInfoEncoder<Appearance> {
                 continue
             }
             val identKitValue = identKit[wearpos].toInt() and 0xFFFF
-            if (identKitValue != 0xFFFF) {
+            if (identKitValue == 0xFFFF) {
                 intermediate.p1(0)
             } else {
                 intermediate.p2(identKitValue + 0x100)
@@ -105,7 +105,7 @@ public class AppearanceEncoder : PrecomputedExtendedInfoEncoder<Appearance> {
         val identKit = extendedInfo.identKit
         for (wearpos in 0..<12) {
             val identKitValue = identKit[wearpos].toInt() and 0xFFFF
-            if (identKitValue != 0xFFFF) {
+            if (identKitValue == 0xFFFF) {
                 intermediate.p1(0)
             } else {
                 intermediate.p2(identKitValue + 0x100)
@@ -141,7 +141,7 @@ public class AppearanceEncoder : PrecomputedExtendedInfoEncoder<Appearance> {
         extendedInfo: Appearance,
     ) {
         val marker = intermediate.writerIndex()
-        intermediate.skip(2)
+        intermediate.skipWrite(2)
         val objTypeCustomisations = extendedInfo.objTypeCustomisation
         var flag = 0
         for (wearpos in objTypeCustomisations.indices) {
