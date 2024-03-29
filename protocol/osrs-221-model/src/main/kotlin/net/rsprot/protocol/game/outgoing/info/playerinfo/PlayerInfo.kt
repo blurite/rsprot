@@ -228,9 +228,9 @@ public class PlayerInfo internal constructor(
         } else {
             buffer.pBits(1, 0)
         }
-        // buffer.pBits(13, other.avatar.currentCoord.x)
-        // buffer.pBits(13, other.avatar.currentCoord.z)
-        buffer.pBits(26, other.avatar.currentCoord.coordNoLevel())
+        // Can't merge this nicely as we need to exclude the last bit of both coords
+        buffer.pBits(13, other.avatar.currentCoord.x)
+        buffer.pBits(13, other.avatar.currentCoord.z)
 
         // Get a flags of all the extended info blocks that are 'outdated' to us and must be sent again.
         val extraFlags = other.extendedInfo.getLowToHighResChangeExtendedInfoFlags(extendedInfo)
