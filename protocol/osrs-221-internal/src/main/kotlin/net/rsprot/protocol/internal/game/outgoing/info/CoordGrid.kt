@@ -33,10 +33,6 @@ public value class CoordGrid(public val packed: Int) {
     public val z: Int
         get() = packed and 0x3FFF
 
-    public fun coordNoLevel(): Int {
-        return packed and 0xfffffff
-    }
-
     public fun inDistance(
         other: CoordGrid,
         distance: Int,
