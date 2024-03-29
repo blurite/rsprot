@@ -40,7 +40,7 @@ internal class SoftReferencePooledObjectArray<T : ReferencePooledObject>(
      */
     @Suppress("UNCHECKED_CAST")
     fun getOrNull(idx: Int): T? {
-        return elements[idx] as? T?
+        return elements[idx] as T?
     }
 
     @Suppress("UNCHECKED_CAST")
