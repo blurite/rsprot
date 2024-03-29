@@ -4,9 +4,8 @@ import net.rsprot.protocol.internal.game.outgoing.info.playerinfo.extendedinfo.A
 import net.rsprot.protocol.internal.game.outgoing.info.playerinfo.extendedinfo.Chat
 import net.rsprot.protocol.internal.game.outgoing.info.playerinfo.extendedinfo.FaceAngle
 import net.rsprot.protocol.internal.game.outgoing.info.playerinfo.extendedinfo.MoveSpeed
+import net.rsprot.protocol.internal.game.outgoing.info.playerinfo.extendedinfo.ObjTypeCustomisation
 import net.rsprot.protocol.internal.game.outgoing.info.playerinfo.extendedinfo.TemporaryMoveSpeed
-import net.rsprot.protocol.internal.game.outgoing.info.playerinfo.extendedinfo.util.NpcBodyType
-import net.rsprot.protocol.internal.game.outgoing.info.playerinfo.extendedinfo.util.PlayerBodyType
 import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.ExactMove
 import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.FacePathingEntity
 import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.Hit
@@ -20,6 +19,7 @@ import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.util.
 import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.util.SpotAnim
 
 // TODO: Optional bound checks (hits, etc)
+@Suppress("MemberVisibilityCanBePrivate")
 public class PlayerAvatarExtendedInfo(
     capacity: Int,
     private val protocol: PlayerInfoProtocol,
@@ -237,8 +237,7 @@ public class PlayerAvatarExtendedInfo(
         }
     }
 
-    // TODO: Implement appearance in full
-    public fun setAppearanceDetails(
+    public fun initializeAppearance(
         name: String,
         combatLevel: Int,
         skillLevel: Int,
@@ -256,22 +255,224 @@ public class PlayerAvatarExtendedInfo(
         appearance.textGender = textGender.toUByte()
         appearance.skullIcon = skullIcon.toUByte()
         appearance.overheadIcon = overheadIcon.toUByte()
-        flags = flags or APPEARANCE
+        flagAppearance()
     }
 
-    public fun setPlayerColours(colours: ByteArray) {
-        appearance.colours = colours
-        flags = flags or APPEARANCE
+    public fun setName(name: String) {
+        if (appearance.name == name) {
+            return
+        }
+        appearance.name = name
+        flagAppearance()
     }
 
-    public fun setNpcBodyType(npcId: Int) {
-        appearance.bodyType = NpcBodyType(npcId)
-        flags = flags or APPEARANCE
+    public fun setCombatLevel(combatLevel: Int) {
+        val level = combatLevel.toUByte()
+        if (appearance.combatLevel == level) {
+            return
+        }
+        appearance.combatLevel = level
+        flagAppearance()
     }
 
-    public fun setPlayerBodyType(values: ShortArray) {
-        appearance.bodyType = PlayerBodyType(values)
+    public fun setSkillLevel(skillLevel: Int) {
+        val level = skillLevel.toUShort()
+        if (appearance.skillLevel == level) {
+            return
+        }
+        appearance.skillLevel = level
+        flagAppearance()
+    }
+
+    public fun setHidden(hidden: Boolean) {
+        if (appearance.hidden == hidden) {
+            return
+        }
+        appearance.hidden = hidden
+        flagAppearance()
+    }
+
+    public fun setMale(isMale: Boolean) {
+        if (appearance.male == isMale) {
+            return
+        }
+        appearance.male = isMale
+        flagAppearance()
+    }
+
+    public fun setTextGender(num: Int) {
+        val textGender = num.toUByte()
+        if (appearance.textGender == textGender) {
+            return
+        }
+        appearance.textGender = textGender
+        flagAppearance()
+    }
+
+    public fun setSkullIcon(icon: Int) {
+        val skullIcon = icon.toUByte()
+        if (appearance.skullIcon == skullIcon) {
+            return
+        }
+        appearance.skullIcon = skullIcon
+        flagAppearance()
+    }
+
+    public fun setOverheadIcon(icon: Int) {
+        val overheadIcon = icon.toUByte()
+        if (appearance.overheadIcon == overheadIcon) {
+            return
+        }
+        appearance.overheadIcon = overheadIcon
+        flagAppearance()
+    }
+
+    public fun transformToNpc(id: Int) {
+        val npcId = id.toUShort()
+        if (appearance.transformedNpcId == npcId) {
+            return
+        }
+        appearance.transformedNpcId = npcId
+        flagAppearance()
+    }
+
+    public fun setIdentKit(
+        wearPos: Int,
+        value: Int,
+    ) {
+        val valueAsShort = value.toShort()
+        val cur = appearance.identKit[wearPos]
+        if (cur == valueAsShort) {
+            return
+        }
+        appearance.identKit[wearPos] = valueAsShort
+        flagAppearance()
+    }
+
+    public fun setWornObj(
+        wearpos: Int,
+        id: Int,
+        wearpos2: Int,
+        wearpos3: Int,
+    ) {
+        val valueAsShort = id.toShort()
+        val cur = appearance.wornObjs[wearpos]
+        if (cur == valueAsShort) {
+            return
+        }
+        appearance.wornObjs[wearpos] = valueAsShort
+        val hiddenSlotsBitpacked = (wearpos2 and 0xF shl 4) or wearpos3 and 0xF
+        appearance.hiddenWearPos[wearpos] = hiddenSlotsBitpacked.toByte()
+        flagAppearance()
+    }
+
+    public fun setColour(
+        slot: Int,
+        value: Int,
+    ) {
+        val valueAsByte = value.toByte()
+        val cur = appearance.colours[slot]
+        if (cur == valueAsByte) {
+            return
+        }
+        appearance.colours[slot] = valueAsByte
+        flagAppearance()
+    }
+
+    public fun setBaseAnimationSet(
+        readyAnim: Int,
+        turnAnim: Int,
+        walkAnim: Int,
+        walkAnimBack: Int,
+        walkAnimLeft: Int,
+        walkAnimRight: Int,
+        runAnim: Int,
+    ) {
+        appearance.readyAnim = readyAnim.toUShort()
+        appearance.turnAnim = turnAnim.toUShort()
+        appearance.walkAnim = walkAnim.toUShort()
+        appearance.walkAnimBack = walkAnimBack.toUShort()
+        appearance.walkAnimLeft = walkAnimLeft.toUShort()
+        appearance.walkAnimRight = walkAnimRight.toUShort()
+        appearance.runAnim = runAnim.toUShort()
+        flagAppearance()
+    }
+
+    public fun nameExtras(
+        beforeName: String,
+        afterName: String,
+        afterCombatLevel: String,
+    ) {
+        appearance.beforeName = beforeName
+        appearance.afterName = afterName
+        appearance.afterCombatLevel = afterCombatLevel
+        flagAppearance()
+    }
+
+    public fun clearObjTypeCustomisation(wearpos: Int) {
+        if (appearance.objTypeCustomisation[wearpos] == null) {
+            return
+        }
+        appearance.objTypeCustomisation[wearpos] = null
+        flagAppearance()
+    }
+
+    private fun allocObjCustomisation(wearpos: Int): ObjTypeCustomisation {
+        var customisation = appearance.objTypeCustomisation[wearpos]
+        if (customisation == null) {
+            customisation = ObjTypeCustomisation()
+            appearance.objTypeCustomisation[wearpos] = customisation
+        }
+        return customisation
+    }
+
+    public fun objRecol1(
+        wearpos: Int,
+        index: Int,
+        value: Int,
+    ) {
+        val customisation = allocObjCustomisation(wearpos)
+        customisation.recolIndices = ((customisation.recolIndices.toInt() and 0xF0) or (index and 0xF)).toUByte()
+        customisation.recol1 = value.toUShort()
+        flagAppearance()
+    }
+
+    public fun objRecol2(
+        wearpos: Int,
+        index: Int,
+        value: Int,
+    ) {
+        val customisation = allocObjCustomisation(wearpos)
+        customisation.recolIndices = ((customisation.recolIndices.toInt() and 0xF) or ((index and 0xF) shl 4)).toUByte()
+        customisation.recol2 = value.toUShort()
+        flagAppearance()
+    }
+
+    public fun objRetex1(
+        wearpos: Int,
+        index: Int,
+        value: Int,
+    ) {
+        val customisation = allocObjCustomisation(wearpos)
+        customisation.retexIndices = ((customisation.retexIndices.toInt() and 0xF0) or (index and 0xF)).toUByte()
+        customisation.retex1 = value.toUShort()
+        flagAppearance()
+    }
+
+    public fun objRetex2(
+        wearpos: Int,
+        index: Int,
+        value: Int,
+    ) {
+        val customisation = allocObjCustomisation(wearpos)
+        customisation.retexIndices = ((customisation.retexIndices.toInt() and 0xF) or ((index and 0xF) shl 4)).toUByte()
+        customisation.retex2 = value.toUShort()
+        flagAppearance()
+    }
+
+    private fun flagAppearance() {
         flags = flags or APPEARANCE
+        appearance.changeCounter++
     }
 
     internal fun reset() {

@@ -1,8 +1,6 @@
 package net.rsprot.protocol.internal.game.outgoing.info.playerinfo.extendedinfo
 
 import net.rsprot.protocol.internal.game.outgoing.info.CachedExtendedInfo
-import net.rsprot.protocol.internal.game.outgoing.info.playerinfo.extendedinfo.util.BodyType
-import net.rsprot.protocol.internal.game.outgoing.info.playerinfo.extendedinfo.util.PlayerBodyType
 
 public class Appearance(capacity: Int) : CachedExtendedInfo(capacity) {
     public var name: String = ""
@@ -13,9 +11,11 @@ public class Appearance(capacity: Int) : CachedExtendedInfo(capacity) {
     public var textGender: UByte = MAX_UNSIGNED_BYTE
     public var skullIcon: UByte = MAX_UNSIGNED_BYTE
     public var overheadIcon: UByte = MAX_UNSIGNED_BYTE
-    public var bodyType: BodyType = PlayerBodyType.DEFAULT
-    public var colours: ByteArray = DEFAULT_COLOUR
-    public var interfaceIdentKit: ShortArray = DEFAULT_INTERFACE_IDENT_KIT
+    public var transformedNpcId: UShort = MAX_UNSIGNED_SHORT
+    public val identKit: ShortArray = ShortArray(SLOT_COUNT) { -1 }
+    public val wornObjs: ShortArray = ShortArray(SLOT_COUNT) { -1 }
+    public val hiddenWearPos: ByteArray = ByteArray(SLOT_COUNT) { -1 }
+    public var colours: ByteArray = ByteArray(COLOUR_COUNT)
     public var readyAnim: UShort = MAX_UNSIGNED_SHORT
     public var turnAnim: UShort = MAX_UNSIGNED_SHORT
     public var walkAnim: UShort = MAX_UNSIGNED_SHORT
@@ -23,7 +23,10 @@ public class Appearance(capacity: Int) : CachedExtendedInfo(capacity) {
     public var walkAnimLeft: UShort = MAX_UNSIGNED_SHORT
     public var walkAnimRight: UShort = MAX_UNSIGNED_SHORT
     public var runAnim: UShort = MAX_UNSIGNED_SHORT
-    // TODO: ObjTypeCustomisation
+    public val objTypeCustomisation: Array<ObjTypeCustomisation?> = arrayOfNulls(12)
+    public var beforeName: String = ""
+    public var afterName: String = ""
+    public var afterCombatLevel: String = ""
 
     override fun clear() {
         releaseBuffers()
@@ -36,9 +39,12 @@ public class Appearance(capacity: Int) : CachedExtendedInfo(capacity) {
         textGender = MAX_UNSIGNED_BYTE
         skullIcon = MAX_UNSIGNED_BYTE
         overheadIcon = MAX_UNSIGNED_BYTE
-        bodyType = PlayerBodyType.DEFAULT
-        colours = DEFAULT_COLOUR
-        interfaceIdentKit = DEFAULT_INTERFACE_IDENT_KIT
+        transformedNpcId = MAX_UNSIGNED_SHORT
+        identKit.fill(-1)
+        wornObjs.fill(-1)
+        hiddenWearPos.fill(-1)
+        colours.fill(0)
+        objTypeCustomisation.fill(null)
         readyAnim = MAX_UNSIGNED_SHORT
         turnAnim = MAX_UNSIGNED_SHORT
         walkAnim = MAX_UNSIGNED_SHORT
@@ -49,9 +55,9 @@ public class Appearance(capacity: Int) : CachedExtendedInfo(capacity) {
     }
 
     private companion object {
+        private const val SLOT_COUNT: Int = 12
+        private const val COLOUR_COUNT: Int = 5
         private const val MAX_UNSIGNED_BYTE: UByte = 0xFFu
         private const val MAX_UNSIGNED_SHORT: UShort = 0xFFFFu
-        private val DEFAULT_INTERFACE_IDENT_KIT: ShortArray = ShortArray(12)
-        private val DEFAULT_COLOUR: ByteArray = ByteArray(5)
     }
 }
