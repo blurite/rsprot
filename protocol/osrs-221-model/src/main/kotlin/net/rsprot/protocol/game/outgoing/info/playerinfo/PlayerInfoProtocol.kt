@@ -32,33 +32,33 @@ public class PlayerInfoProtocol(
         }
 
     internal fun getPlayerInfo(idx: Int): PlayerInfo? {
-        return playerInfoRepository.wrapped.getOrNull(idx)
+        return playerInfoRepository.getOrNull(idx)
     }
 
     public fun alloc(
         idx: Int,
         platformType: PlatformType,
     ): PlayerInfo {
-        return playerInfoRepository.wrapped.alloc(idx, platformType)
+        return playerInfoRepository.alloc(idx, platformType)
+    }
+
+    internal fun getLowResolutionPosition(idx: Int): LowResolutionPosition {
+        return lowResolutionPositionRepository.getCurrentLowResolutionPosition(idx)
     }
 
     public fun prepare() {
         // Synchronize the known low res positions of everyone for this cycle
         for (i in 1..<capacity) {
-            val info = playerInfoRepository.wrapped.getOrNull(i)
+            val info = playerInfoRepository.getOrNull(i)
             if (info == null) {
                 lowResolutionPositionRepository.markUnused(i)
             } else {
                 lowResolutionPositionRepository.update(i, info.avatar.currentCoord)
             }
         }
-        for (i in 1..<capacity) {
-            playerInfoRepository.wrapped.getOrNull(i)?.prepareBitcodes(lowResolutionPositionRepository)
+        execute {
+            prepareBitcodes(lowResolutionPositionRepository)
         }
-    }
-
-    internal fun getLowResolutionPosition(idx: Int): LowResolutionPosition {
-        return lowResolutionPositionRepository.getCurrentLowResolutionPosition(idx)
     }
 
     public fun putBitcodes() {
@@ -91,7 +91,7 @@ public class PlayerInfoProtocol(
         if (ASYNC) {
             val jobs = ArrayList<Callable<Unit>>(2048)
             for (i in 1..<capacity) {
-                val info = playerInfoRepository.wrapped.getOrNull(i) ?: continue
+                val info = playerInfoRepository.getOrNull(i) ?: continue
                 jobs +=
                     Callable {
                         block(info)
@@ -100,13 +100,13 @@ public class PlayerInfoProtocol(
             ForkJoinPool.commonPool().invokeAll(jobs)
         } else {
             for (i in 1..<capacity) {
-                val info = playerInfoRepository.wrapped.getOrNull(i) ?: continue
+                val info = playerInfoRepository.getOrNull(i) ?: continue
                 block(info)
             }
         }
     }
 
     private companion object {
-        private const val ASYNC: Boolean = true
+        private const val ASYNC: Boolean = false
     }
 }
