@@ -669,7 +669,7 @@ public class PlayerAvatarExtendedInfo(
             checkNotNull(block.getBuffer(platformType)) {
                 "Buffer has not been computed on platform $platformType, ${block.javaClass.name}"
             }
-        buffer.buffer.writeBytes(precomputed)
+        buffer.buffer.writeBytes(precomputed, precomputed.readerIndex(), precomputed.readableBytes())
     }
 
     private fun <T : ExtendedInfo<T, E>, E : OnDemandExtendedInfoEncoder<T>> pOnDemandData(
