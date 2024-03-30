@@ -3,6 +3,11 @@ package net.rsprot.protocol.game.outgoing.info.playerinfo
 import net.rsprot.protocol.game.outgoing.info.util.Avatar
 import net.rsprot.protocol.internal.game.outgoing.info.CoordGrid
 
+/**
+ * The player avatar class represents an avatar for the purposes of player information packet.
+ * Every player will have a respective avatar that contains basic information about that player,
+ * such as their coordinates and how far to render other players.
+ */
 public class PlayerAvatar internal constructor() : Avatar {
     /**
      * The preferred resize range. The player information protocol will attempt to
@@ -48,6 +53,9 @@ public class PlayerAvatar internal constructor() : Avatar {
      */
     internal var lastCoord: CoordGrid = CoordGrid.INVALID
 
+    /**
+     * Resets all the properties of the given avatar to their default values.
+     */
     internal fun reset() {
         preferredResizeRange = DEFAULT_RESIZE_RANGE
         resizeRange = preferredResizeRange
@@ -56,6 +64,12 @@ public class PlayerAvatar internal constructor() : Avatar {
         lastCoord = CoordGrid.INVALID
     }
 
+    /**
+     * Updates the current cycle's coordinate of the given avatar.
+     * @param level the height level of the avatar
+     * @param x the absolute x coordinate of the avatar
+     * @param z the absolute z coordinate of the avatar
+     */
     override fun updateCoord(
         level: Int,
         x: Int,
@@ -64,10 +78,32 @@ public class PlayerAvatar internal constructor() : Avatar {
         this.currentCoord = CoordGrid(level, x, z)
     }
 
+    /**
+     * Updates the previous cycle's coordinate to be the current cycle's coordinate.
+     * This is called at the end of the cycle, to prepare for the next cycle.
+     */
     override fun postUpdate() {
         this.lastCoord = currentCoord
     }
 
+    /**
+     * Resizes the view range according to the number of high resolution players currently observed.
+     * This function will aim to keep the number of high resolution avatars at 250 or less.
+     * It does so by checking if the number of high resolution avatars is greater than 250 every
+     * 11 cycle interval. Once the condition is hit, every cycle thereafter, the range will decrement
+     * by one, until the first cycle where the high resolution count is below the 250 threshold.
+     * Once it reaches that state, it will remain there for another 11 cycles, before re-validating.
+     * After those 11 cycles, if the count is less than 250, but our range is below the default of 15,
+     * it will attempt to start increasing the range. It will continue to increase it by 1 tile every
+     * cycle until the first cycle during which the high resolution count reaches 250+, or if the range
+     * reaches the default value. If the high resolution count hits above 250 again, the cycle after that,
+     * it will decrease the range back by 1 and remain there for the next 11 cycles.
+     *
+     * If the [preferredResizeRange] is set to [Int.MAX_VALUE], resizing is halted.
+     * This is useful in cases such as heat maps, where we need all avatars to be in high resolution
+     * in order for them to be drawn on the world map.
+     * @param highResCount the number of avatars in high resolution view.
+     */
     internal fun resize(highResCount: Int) {
         // Resizing is disabled if it is set to max int
         if (preferredResizeRange == Int.MAX_VALUE) {
@@ -105,6 +141,10 @@ public class PlayerAvatar internal constructor() : Avatar {
          */
         private const val DEFAULT_RESIZE_INTERVAL = 10
 
+        /**
+         * The maximum preferred number of players in high resolution.
+         * Exceeding this count will cause the view range to start lowering.
+         */
         private const val PREFERRED_PLAYER_COUNT = 250
     }
 }
