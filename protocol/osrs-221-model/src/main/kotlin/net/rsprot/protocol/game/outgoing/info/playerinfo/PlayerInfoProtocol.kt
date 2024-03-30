@@ -131,8 +131,8 @@ public class PlayerInfoProtocol(
                 lowResolutionPositionRepository.update(i, info.avatar.currentCoord)
             }
         }
-        execute {
-            prepareBitcodes(lowResolutionPositionRepository)
+        for (i in 1..<PROTOCOL_CAPACITY) {
+            playerInfoRepository.getOrNull(i)?.prepareBitcodes(lowResolutionPositionRepository)
         }
     }
 
