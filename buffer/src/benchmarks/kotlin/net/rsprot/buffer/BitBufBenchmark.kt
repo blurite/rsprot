@@ -1,7 +1,7 @@
 package net.rsprot.buffer
 
 import io.netty.buffer.Unpooled
-import net.rsprot.buffer.bitbuffer.BitBuf
+import net.rsprot.buffer.bitbuffer.WrappedBitBuf
 import org.openjdk.jmh.annotations.Benchmark
 import org.openjdk.jmh.annotations.BenchmarkMode
 import org.openjdk.jmh.annotations.Fork
@@ -21,7 +21,7 @@ import java.util.concurrent.TimeUnit
 @Measurement(iterations = 3, time = 10, timeUnit = TimeUnit.SECONDS)
 @Fork(3)
 class BitBufBenchmark {
-    private lateinit var nettyDirectBitBuf: BitBuf
+    private lateinit var nettyDirectBitBuf: WrappedBitBuf
     private lateinit var openrs2DirectBitBuffer: OpenRs2BitBuf
 
     init {
@@ -39,7 +39,7 @@ class BitBufBenchmark {
 
     @Setup
     fun setup() {
-        nettyDirectBitBuf = BitBuf(Unpooled.directBuffer(BUFFER_SIZE))
+        nettyDirectBitBuf = WrappedBitBuf(Unpooled.directBuffer(BUFFER_SIZE))
         openrs2DirectBitBuffer = OpenRs2BitBuf(Unpooled.directBuffer(BUFFER_SIZE))
     }
 

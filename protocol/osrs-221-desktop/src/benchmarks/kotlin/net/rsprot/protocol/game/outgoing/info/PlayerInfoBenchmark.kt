@@ -167,7 +167,7 @@ class PlayerInfoBenchmark {
 fun main() {
     val bench = PlayerInfoBenchmark()
     bench.setup()
-    val count = 1
+    val count = 50
     val time =
         measureTime {
             repeat(count) {

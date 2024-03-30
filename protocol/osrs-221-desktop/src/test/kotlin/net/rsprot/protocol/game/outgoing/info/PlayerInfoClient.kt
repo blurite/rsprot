@@ -4,6 +4,7 @@ import io.netty.buffer.ByteBuf
 import io.netty.buffer.Unpooled
 import net.rsprot.buffer.JagByteBuf
 import net.rsprot.buffer.bitbuffer.BitBuf
+import net.rsprot.buffer.bitbuffer.toBitBuf
 import net.rsprot.buffer.extensions.toJagByteBuf
 import net.rsprot.protocol.internal.game.outgoing.info.CoordGrid
 
@@ -25,7 +26,7 @@ class PlayerInfoClient {
         bytebuf: ByteBuf,
     ) {
         this.localIndex = localIndex
-        BitBuf(bytebuf).use { buffer ->
+        bytebuf.toBitBuf().use { buffer ->
             val localPlayer = Player(localIndex)
             cachedPlayers[localIndex] = localPlayer
             val coord = CoordGrid(buffer.gBits(30))
@@ -57,7 +58,7 @@ class PlayerInfoClient {
     }
 
     private fun decodeBitCodes(byteBuf: ByteBuf) {
-        BitBuf(byteBuf).use { buffer ->
+        byteBuf.toBitBuf().use { buffer ->
             var skipped = 0
             for (i in 0..<highResolutionCount) {
                 val idx = highResolutionIndices[i]
@@ -80,7 +81,7 @@ class PlayerInfoClient {
                 throw RuntimeException()
             }
         }
-        BitBuf(byteBuf).use { buffer ->
+        byteBuf.toBitBuf().use { buffer ->
             var skipped = 0
             for (i in 0..<highResolutionCount) {
                 val idx = highResolutionIndices[i]
@@ -104,7 +105,7 @@ class PlayerInfoClient {
             }
         }
 
-        BitBuf(byteBuf).use { buffer ->
+        byteBuf.toBitBuf().use { buffer ->
             var skipped = 0
             for (i in 0..<lowResolutionCount) {
                 val idx = lowResolutionIndices[i]
@@ -127,7 +128,7 @@ class PlayerInfoClient {
                 throw RuntimeException()
             }
         }
-        BitBuf(byteBuf).use { buffer ->
+        byteBuf.toBitBuf().use { buffer ->
             var skipped = 0
             for (i in 0..<lowResolutionCount) {
                 val idx = lowResolutionIndices[i]

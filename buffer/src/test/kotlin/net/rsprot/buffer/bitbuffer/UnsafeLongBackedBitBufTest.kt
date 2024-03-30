@@ -54,7 +54,7 @@ class UnsafeLongBackedBitBufTest {
         buffer.pBits(7, 71)
         buffer.pBits(8, 1)
         buffer.pBits(9, 80)
-        val copy = BitBuf(Unpooled.buffer())
+        val copy = Unpooled.buffer().toBitBuf()
         copy.pBits(buffer)
         assertEquals(1, copy.gBits(1))
         assertEquals(2, copy.gBits(2))

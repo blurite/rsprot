@@ -2,8 +2,8 @@ package net.rsprot.buffer
 
 import io.netty.buffer.ByteBuf
 import io.netty.buffer.Unpooled
-import net.rsprot.buffer.bitbuffer.BitBuf
 import net.rsprot.buffer.bitbuffer.InlineBitBuf
+import net.rsprot.buffer.bitbuffer.WrappedBitBuf
 import org.openjdk.jmh.annotations.Benchmark
 import org.openjdk.jmh.annotations.BenchmarkMode
 import org.openjdk.jmh.annotations.Fork
@@ -49,7 +49,7 @@ class InlineBitBufBenchmark {
     fun largeAllocatedBitBufferWrite() {
         byteBuf.readerIndex(0)
         byteBuf.writerIndex(0)
-        BitBuf(byteBuf).use {
+        WrappedBitBuf(byteBuf).use {
             for (i in 0..<ITERATION_COUNT) {
                 it.pBits(WRITTEN_BIT_COUNT, 100)
             }
@@ -71,7 +71,7 @@ class InlineBitBufBenchmark {
     fun smallAllocatedBitBufferWrite() {
         byteBuf.readerIndex(0)
         byteBuf.writerIndex(0)
-        BitBuf(byteBuf).use {
+        WrappedBitBuf(byteBuf).use {
             for (i in 0..<SMALL_ITERATION_COUNT) {
                 it.pBits(WRITTEN_BIT_COUNT, 100)
             }

@@ -3,7 +3,8 @@ package net.rsprot.compression
 import com.github.michaelbull.logging.InlineLogger
 import io.netty.buffer.ByteBuf
 import net.rsprot.buffer.JagByteBuf
-import net.rsprot.buffer.bitbuffer.BitBuf
+import net.rsprot.buffer.bitbuffer.WrappedBitBuf
+import net.rsprot.buffer.bitbuffer.toBitBuf
 import net.rsprot.buffer.extensions.toJagByteBuf
 import net.rsprot.buffer.util.charset.Cp1252Charset
 import java.io.IOException
@@ -41,7 +42,7 @@ public data class HuffmanCodec(
          * tree works. We do the same sort of thing here, but we're reading
          * instead of writing.
          */
-        BitBuf(buf.buffer).use { bitBuf ->
+        buf.buffer.toBitBuf().use { bitBuf ->
             var node = 0 // Start at the root node.
             var i = 0
             while (i < len) {
@@ -90,7 +91,7 @@ public data class HuffmanCodec(
             "Encoded text length must be strictly less than 32,768 bytes"
         }
         buf.pSmart1or2(bytes.size)
-        BitBuf(buf.buffer).use { bitBuf ->
+        WrappedBitBuf(buf.buffer).use { bitBuf ->
             for (b in bytes) {
                 val chr = b.toInt() and 0xFF
                 val codeword = codewords[chr]

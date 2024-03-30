@@ -4,6 +4,7 @@ import io.netty.buffer.ByteBuf
 import io.netty.buffer.ByteBufAllocator
 import net.rsprot.buffer.bitbuffer.BitBuf
 import net.rsprot.buffer.bitbuffer.UnsafeLongBackedBitBuf
+import net.rsprot.buffer.bitbuffer.toBitBuf
 import net.rsprot.buffer.extensions.toJagByteBuf
 import net.rsprot.compression.HuffmanCodec
 import net.rsprot.protocol.game.outgoing.info.playerinfo.util.CellOpcodes
@@ -120,7 +121,7 @@ public class PlayerInfo internal constructor(
     }
 
     public fun handleAbsolutePlayerPositions(byteBuf: ByteBuf) {
-        BitBuf(byteBuf).use { buffer ->
+        byteBuf.toBitBuf().use { buffer ->
             buffer.pBits(30, avatar.currentCoord.packed)
             highResolutionPlayers.set(localIndex)
             highResolutionIndices[highResolutionCount++] = localIndex.toShort()
@@ -149,12 +150,12 @@ public class PlayerInfo internal constructor(
     }
 
     internal fun putExtendedInfo() {
-        val buffer = backingBuffer().toJagByteBuf()
+        val jagBuffer = backingBuffer().toJagByteBuf()
         for (i in 0 until extendedInfoCount) {
             val index = extendedInfoIndices[i].toInt()
             val other = checkNotNull(protocol.getPlayerInfo(index))
             val observerFlag = observerExtendedInfoFlags.getFlag(index)
-            other.extendedInfo.pExtendedInfo(platformType, buffer, observerFlag, this.localIndex)
+            other.extendedInfo.pExtendedInfo(platformType, jagBuffer, observerFlag, this.localIndex)
         }
     }
 
@@ -165,11 +166,11 @@ public class PlayerInfo internal constructor(
     internal fun pBitcodes() {
         avatar.resize(highResolutionCount)
         val buffer = allocBuffer()
-        val bitbuf = BitBuf(buffer)
-        bitbuf.use { processHighResolution(it, skipUnmodified = true) }
-        bitbuf.use { processHighResolution(it, skipUnmodified = false) }
-        bitbuf.use { processLowResolution(it, skipUnmodified = false) }
-        bitbuf.use { processLowResolution(it, skipUnmodified = true) }
+        val bitBuf = buffer.toBitBuf()
+        bitBuf.use { processHighResolution(it, skipUnmodified = true) }
+        bitBuf.use { processHighResolution(it, skipUnmodified = false) }
+        bitBuf.use { processLowResolution(it, skipUnmodified = false) }
+        bitBuf.use { processLowResolution(it, skipUnmodified = true) }
     }
 
     private fun processLowResolution(
