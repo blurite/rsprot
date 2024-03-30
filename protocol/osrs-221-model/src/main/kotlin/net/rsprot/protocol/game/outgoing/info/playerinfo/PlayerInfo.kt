@@ -410,25 +410,10 @@ public class PlayerInfo internal constructor(
         buffer: BitBuf,
         count: Int,
     ) {
-        // We subtract one as the protocol naturally expects one to be skipped
-        // if the skip block is written in the first place
         val countMinusOne = count - 1
-
-        // Surprisingly enough, the below code is much faster than having
-        // buffer.pBits inside each if block
-        var bitCount = 3
-        var value = 0
-        if (countMinusOne > 0xFF) {
-            bitCount = 14
-            value = 3 shl 11 or countMinusOne
-        } else if (countMinusOne > 0x1F) {
-            bitCount = 11
-            value = 2 shl 8 or countMinusOne
-        } else if (countMinusOne > 0) {
-            bitCount = 8
-            value = 1 shl 5 or countMinusOne
-        }
-        buffer.pBits(bitCount, value)
+        val i = (-countMinusOne ushr 31) + (-(countMinusOne shr 5) ushr 31) + (-(countMinusOne shr 8) ushr 31)
+        val valueBitCount = i * 3
+        buffer.pBits(5 + valueBitCount, (countMinusOne) or (i shl (2 + valueBitCount)))
     }
 
     /**
