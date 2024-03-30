@@ -290,31 +290,22 @@ public class PlayerInfo internal constructor(
                 continue
             }
             val other = protocol.getPlayerInfo(index)
-            if (other == null) {
+            val readable = other != null && other.lowResMovementBuffer.isReadable()
+            if (other == null || !readable && !isVisible(other)) {
                 skips++
                 stationary[index] = (stationary[index].toInt() or IS_STATIONARY).toByte()
                 continue
             }
-            if (isVisible(other)) {
-                if (skips > 0) {
-                    pStationary(buffer, skips)
-                    skips = 0
-                }
-                pLowResToHighRes(buffer, other)
-                continue
+            if (skips > 0) {
+                pStationary(buffer, skips)
+                skips = 0
             }
-            val lowResMovementBuffer = other.lowResMovementBuffer
-            if (lowResMovementBuffer.isReadable()) {
-                if (skips > 0) {
-                    pStationary(buffer, skips)
-                    skips = 0
-                }
+            if (readable) {
                 buffer.pBits(1, 1)
                 buffer.pBits(other.lowResMovementBuffer)
                 continue
             }
-            skips++
-            stationary[index] = (stationary[index].toInt() or IS_STATIONARY).toByte()
+            pLowResToHighRes(buffer, other)
         }
         if (skips > 0) {
             pStationary(buffer, skips)
