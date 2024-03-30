@@ -17,6 +17,7 @@ import net.rsprot.protocol.game.outgoing.codec.playerinfo.extendedinfo.Temporary
 import net.rsprot.protocol.game.outgoing.codec.playerinfo.extendedinfo.TintingEncoder
 import net.rsprot.protocol.game.outgoing.info.playerinfo.PlayerInfo
 import net.rsprot.protocol.game.outgoing.info.playerinfo.PlayerInfoProtocol
+import net.rsprot.protocol.game.outgoing.info.worker.DefaultProtocolWorker
 import net.rsprot.protocol.internal.game.outgoing.info.encoder.ExtendedInfoEncoders
 import net.rsprot.protocol.shared.platform.PlatformType
 import org.openjdk.jmh.annotations.Benchmark
@@ -51,6 +52,7 @@ class PlayerInfoBenchmark {
             PlayerInfoProtocol(
                 2048,
                 PooledByteBufAllocator.DEFAULT,
+                DefaultProtocolWorker(),
                 encoders,
                 createHuffmanCodec(),
             )
