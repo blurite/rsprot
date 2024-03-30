@@ -739,6 +739,8 @@ public class PlayerAvatarExtendedInfo(
         internal const val FACE_ANGLE = 0x2
         internal const val APPEARANCE = 0x4
         internal const val SAY = 0x8
+
+        @Suppress("unused")
         internal const val CHAT_OLD = 0x10
         internal const val HITS = 0x20
         internal const val FACE_PATHINGENTITY = 0x40
@@ -752,6 +754,7 @@ public class PlayerAvatarExtendedInfo(
         internal const val SPOTANIM = 0x10000
 
         // Name extras are part of appearance nowadays, and thus will not be used on their own
+        @Suppress("unused")
         internal const val NAME_EXTRAS = 0x100
 
         private inline fun <T : ExtendedInfo<T, E>, reified E : ExtendedInfoEncoder<T>> buildPlatformEncoderArray(
