@@ -1,5 +1,7 @@
 package net.rsprot.protocol.game.outgoing.info.playerinfo.util
 
+import net.rsprot.protocol.game.outgoing.info.playerinfo.PlayerAvatarExtendedInfo
+
 /**
  * A data structure holding information about observer-dependent extended info flags.
  * An example of this would be any extended info blocks that get written when an avatar is
@@ -15,7 +17,7 @@ internal class ObserverExtendedInfoFlags(capacity: Int) {
     /**
      * The observer-dependent flags. This array will not include "static" flags.
      */
-    private val flags: IntArray = IntArray(capacity)
+    private val flags: ByteArray = ByteArray(capacity)
 
     /**
      * Resets the observer-dependent flags by filling the array with zeros.
@@ -33,7 +35,7 @@ internal class ObserverExtendedInfoFlags(capacity: Int) {
         index: Int,
         flag: Int,
     ) {
-        flags[index] = flags[index] or flag
+        flags[index] = (flags[index].toInt() or flag).toByte()
     }
 
     /**
@@ -42,6 +44,6 @@ internal class ObserverExtendedInfoFlags(capacity: Int) {
      * @return the observer-dependent flag value
      */
     fun getFlag(index: Int): Int {
-        return flags[index]
+        return PlayerAvatarExtendedInfo.COMPRESSOR.decompress(flags[index].toInt())
     }
 }

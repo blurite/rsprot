@@ -290,7 +290,10 @@ public class PlayerAvatarExtendedInfo(
             tint.saturation = saturation.toUByte()
             tint.lightness = luminance.toUByte()
             tint.weight = opacity.toUByte()
-            otherPlayerInfo.observerExtendedInfoFlags.addFlag(localIndex, TINTING)
+            otherPlayerInfo.observerExtendedInfoFlags.addFlag(
+                localIndex,
+                ExtendedInfoFlagCompressor.COMPRESSED_TINTING,
+            )
         } else {
             val tint = this.tinting.global
             tint.start = startTime.toUShort()
@@ -565,13 +568,13 @@ public class PlayerAvatarExtendedInfo(
     internal fun getLowToHighResChangeExtendedInfoFlags(observer: PlayerAvatarExtendedInfo): Int {
         var flag = 0
         if (checkOutOfDate(observer)) {
-            flag = flag or APPEARANCE
+            flag = flag or ExtendedInfoFlagCompressor.COMPRESSED_APPEARANCE
         }
         if (moveSpeed.value != MoveSpeed.DEFAULT_MOVESPEED) {
-            flag = flag or MOVE_SPEED
+            flag = flag or ExtendedInfoFlagCompressor.COMPRESSED_MOVE_SPEED
         }
         if (facePathingEntity.index != FacePathingEntity.DEFAULT_VALUE) {
-            flag = flag or FACE_PATHINGENTITY
+            flag = flag or ExtendedInfoFlagCompressor.COMPRESSED_FACE_PATHINGENTITY
         }
         return flag
     }
@@ -756,6 +759,14 @@ public class PlayerAvatarExtendedInfo(
         // Name extras are part of appearance nowadays, and thus will not be used on their own
         @Suppress("unused")
         internal const val NAME_EXTRAS = 0x100
+
+        public val COMPRESSOR: ExtendedInfoFlagCompressor =
+            ExtendedInfoFlagCompressor(
+                APPEARANCE,
+                MOVE_SPEED,
+                FACE_PATHINGENTITY,
+                TINTING,
+            )
 
         private inline fun <T : ExtendedInfo<T, E>, reified E : ExtendedInfoEncoder<T>> buildPlatformEncoderArray(
             allEncoders: Map<PlatformType, ExtendedInfoEncoders>,
