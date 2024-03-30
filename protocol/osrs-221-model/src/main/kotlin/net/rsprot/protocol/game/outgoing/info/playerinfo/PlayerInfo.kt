@@ -179,14 +179,14 @@ public class PlayerInfo internal constructor(
         var skips = 0
         for (i in 0 until lowResolutionCount) {
             val index = lowResolutionIndices[i].toInt()
-            val isUnmodified = stationary[index].toInt() and 0x1 != 0
+            val isUnmodified = stationary[index].toInt() and WAS_STATIONARY != 0
             if (skipUnmodified == isUnmodified) {
                 continue
             }
             val other = protocol.getPlayerInfo(index)
             if (other == null) {
                 skips++
-                stationary[index] = (stationary[index].toInt() or 0x2).toByte()
+                stationary[index] = (stationary[index].toInt() or IS_STATIONARY).toByte()
                 continue
             }
             if (skips > 0) {
@@ -231,7 +231,7 @@ public class PlayerInfo internal constructor(
         val extraFlags = other.extendedInfo.getLowToHighResChangeExtendedInfoFlags(extendedInfo)
         // Mark those flags as observer-dependent.
         observerExtendedInfoFlags.addFlag(index, extraFlags)
-        stationary[index] = (stationary[index].toInt() or 0x2).toByte()
+        stationary[index] = (stationary[index].toInt() or IS_STATIONARY).toByte()
         highResolutionPlayers.set(index)
         val flag = other.extendedInfo.flags or observerExtendedInfoFlags.getFlag(index)
         val hasExtendedInfoBlock = flag != 0
@@ -250,7 +250,7 @@ public class PlayerInfo internal constructor(
         var skips = 0
         for (i in 0 until highResolutionCount) {
             val index = highResolutionIndices[i].toInt()
-            val isUnmodified = (stationary[index].toInt() and 0x1) != 0
+            val isUnmodified = (stationary[index].toInt() and WAS_STATIONARY) != 0
             if (skipUnmodified == isUnmodified) {
                 continue
             }
@@ -277,7 +277,7 @@ public class PlayerInfo internal constructor(
                 continue
             }
             skips++
-            stationary[index] = (stationary[index].toInt() or 0x2).toByte()
+            stationary[index] = (stationary[index].toInt() or IS_STATIONARY).toByte()
         }
         if (skips > 0) {
             pStationary(buffer, skips)
@@ -512,5 +512,7 @@ public class PlayerInfo internal constructor(
 
     public companion object {
         private const val BUF_CAPACITY: Int = 40_000
+        private const val WAS_STATIONARY: Int = 0x1
+        private const val IS_STATIONARY: Int = 0x2
     }
 }
