@@ -332,7 +332,7 @@ public class PlayerInfo internal constructor(
         } else {
             buffer.pBits(1, 0)
         }
-        val (x, z) = other.avatar.currentCoord
+        val (_, x, z) = other.avatar.currentCoord
 
         buffer.pBits(13, x)
         buffer.pBits(13, z)
