@@ -410,6 +410,26 @@ public class PlayerInfo internal constructor(
         buffer: BitBuf,
         count: Int,
     ) {
+        // The below code is a branchless variant of this:
+        // buffer.pBits(1, 0)
+        // when {
+        //     count == 0 -> buffer.pBits(2, 0)
+        //     count <= 0x1F -> {
+        //         buffer.pBits(2, 1)
+        //         buffer.pBits(5, count)
+        //     }
+        //     count <= 0xFF -> {
+        //         buffer.pBits(2, 2)
+        //         buffer.pBits(8, count)
+        //     }
+        //     else -> {
+        //         buffer.pBits(2, 3)
+        //         buffer.pBits(11, count)
+        //     }
+        // }
+        //
+        // The branching causes a significant (~15-20%) performance loss in the extreme
+        // end-case benchmarks, so it's best to eliminate it.
         val bitCountOpcode = (-count ushr 31) + (-(count shr 5) ushr 31) + (-(count shr 8) ushr 31)
         val valueBitCount = 2 + bitCountOpcode * 3
         buffer.pBits(3 + valueBitCount, count or (bitCountOpcode shl valueBitCount))
