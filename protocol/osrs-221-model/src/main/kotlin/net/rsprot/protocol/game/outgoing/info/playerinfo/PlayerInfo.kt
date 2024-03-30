@@ -376,7 +376,7 @@ public class PlayerInfo internal constructor(
      */
     internal fun postUpdate() {
         this.avatar.postUpdate()
-        extendedInfo.reset()
+        extendedInfo.postUpdate()
         lowResolutionCount = 0
         highResolutionCount = 0
         // Only need to reset the count here, the actual numbers don't matter.
@@ -390,25 +390,29 @@ public class PlayerInfo internal constructor(
             }
         }
         observerExtendedInfoFlags.reset()
-        extendedInfo.reset()
+        extendedInfo.postUpdate()
     }
 
     override fun onAlloc() {
         avatar.reset()
-    }
-
-    override fun onDealloc() {
-    }
-
-    internal fun reset() {
-        // TODO: Reset all the properties properly
         lowResolutionIndices.fill(0)
         lowResolutionCount = 0
         highResolutionIndices.fill(0)
         highResolutionCount = 0
+        highResolutionPlayers.clear()
         extendedInfoCount = 0
         extendedInfoIndices.fill(0)
+        stationary.fill(0)
+        observerExtendedInfoFlags.reset()
+    }
+
+    override fun onDealloc() {
+        // We do not release the buffer as the Netty encoders are responsible for it.
+        // However, we do reset any references to buffers and whatnot in this step.
+        this.buffer = null
         extendedInfo.reset()
+        highResMovementBuffer.clear()
+        lowResMovementBuffer.clear()
     }
 
     private fun prepareLowResMovement(

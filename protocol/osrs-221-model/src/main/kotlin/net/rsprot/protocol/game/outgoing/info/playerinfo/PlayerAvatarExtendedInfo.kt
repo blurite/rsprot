@@ -541,9 +541,25 @@ public class PlayerAvatarExtendedInfo(
         appearance.changeCounter++
     }
 
-    internal fun reset() {
+    internal fun postUpdate() {
         clearTransientExtendedInformation()
         flags = 0
+    }
+
+    internal fun reset() {
+        flags = 0
+        appearance.clear()
+        moveSpeed.clear()
+        temporaryMoveSpeed.clear()
+        sequence.clear()
+        facePathingEntity.clear()
+        faceAngle.clear()
+        say.clear()
+        chat.clear()
+        exactMove.clear()
+        spotAnims.clear()
+        hit.clear()
+        tinting.clear()
     }
 
     internal fun getLowToHighResChangeExtendedInfoFlags(observer: PlayerAvatarExtendedInfo): Int {
