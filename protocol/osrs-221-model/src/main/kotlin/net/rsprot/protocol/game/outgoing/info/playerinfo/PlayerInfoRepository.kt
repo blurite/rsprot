@@ -13,19 +13,17 @@ import java.lang.ref.SoftReference
  * objects. Soft references only release their object if the JVM is about to run out of
  * memory, as a last resort.
  *
- * @param capacity the capacity of the backing array.
  * @param allocator the function that yields new elements on-demand, if none
  * are available within the reference queue.
  */
 @Suppress("MemberVisibilityCanBePrivate", "unused")
 internal class PlayerInfoRepository(
-    capacity: Int,
     private val allocator: (index: Int, platformType: PlatformType) -> PlayerInfo,
 ) {
     /**
      * The backing elements array used to store currently-in-use objects.
      */
-    private val elements: Array<PlayerInfo?> = arrayOfNulls(capacity)
+    private val elements: Array<PlayerInfo?> = arrayOfNulls(PlayerInfoProtocol.PROTOCOL_CAPACITY)
 
     /**
      * The reference queue used to store soft references of the objects after they have been

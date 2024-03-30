@@ -50,7 +50,7 @@ public class PlayerInfoProtocol(
      * all the avatars that exist.
      */
     private val playerInfoRepository: PlayerInfoRepository =
-        PlayerInfoRepository(PROTOCOL_CAPACITY) { localIndex, platformType ->
+        PlayerInfoRepository { localIndex, platformType ->
             PlayerInfo(
                 this,
                 localIndex,
@@ -71,7 +71,8 @@ public class PlayerInfoProtocol(
     /**
      * Gets the current element at index [idx], or null if it doesn't exist.
      * @param idx the index of the player info object to obtain
-     * @throws ArrayIndexOutOfBoundsException if the index is below zero, or above [capacity].
+     * @throws ArrayIndexOutOfBoundsException if the index is below zero,
+     * or above [PlayerInfoProtocol.PROTOCOL_CAPACITY].
      */
     @Throws(ArrayIndexOutOfBoundsException::class)
     internal fun getPlayerInfo(idx: Int): PlayerInfo? {
