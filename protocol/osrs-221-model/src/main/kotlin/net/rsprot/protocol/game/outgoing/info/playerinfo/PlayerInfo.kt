@@ -282,7 +282,7 @@ public class PlayerInfo internal constructor(
         buffer: BitBuf,
         skipStationary: Boolean,
     ) {
-        var skips = 0
+        var skips = -1
         for (i in 0 until lowResolutionCount) {
             val index = lowResolutionIndices[i].toInt()
             val wasStationary = stationary[index].toInt() and WAS_STATIONARY != 0
@@ -296,9 +296,9 @@ public class PlayerInfo internal constructor(
                 stationary[index] = (stationary[index].toInt() or IS_STATIONARY).toByte()
                 continue
             }
-            if (skips > 0) {
+            if (skips > -1) {
                 pStationary(buffer, skips)
-                skips = 0
+                skips = -1
             }
             if (readable) {
                 buffer.pBits(1, 1)
@@ -307,7 +307,7 @@ public class PlayerInfo internal constructor(
             }
             pLowResToHighRes(buffer, other)
         }
-        if (skips > 0) {
+        if (skips > -1) {
             pStationary(buffer, skips)
         }
     }
@@ -361,7 +361,7 @@ public class PlayerInfo internal constructor(
         buffer: BitBuf,
         skipStationary: Boolean,
     ) {
-        var skips = 0
+        var skips = -1
         for (i in 0 until highResolutionCount) {
             val index = highResolutionIndices[i].toInt()
             val wasStationary = (stationary[index].toInt() and WAS_STATIONARY) != 0
@@ -370,9 +370,9 @@ public class PlayerInfo internal constructor(
             }
             val other = protocol.getPlayerInfo(index)
             if (!isVisible(other)) {
-                if (skips > 0) {
+                if (skips > -1) {
                     pStationary(buffer, skips)
-                    skips = 0
+                    skips = -1
                 }
                 pHighToLowResChange(buffer, index)
                 continue
@@ -383,9 +383,9 @@ public class PlayerInfo internal constructor(
             val highResBuf = other.highResMovementBuffer
             val skipped = !hasExtendedInfoBlock && !highResBuf.isReadable()
             if (!skipped) {
-                if (skips > 0) {
+                if (skips > -1) {
                     pStationary(buffer, skips)
-                    skips = 0
+                    skips = -1
                 }
                 pHighRes(buffer, index, hasExtendedInfoBlock, highResBuf)
                 continue
@@ -393,7 +393,7 @@ public class PlayerInfo internal constructor(
             skips++
             stationary[index] = (stationary[index].toInt() or IS_STATIONARY).toByte()
         }
-        if (skips > 0) {
+        if (skips > -1) {
             pStationary(buffer, skips)
         }
     }
@@ -410,10 +410,9 @@ public class PlayerInfo internal constructor(
         buffer: BitBuf,
         count: Int,
     ) {
-        val countMinusOne = count - 1
-        val i = (-countMinusOne ushr 31) + (-(countMinusOne shr 5) ushr 31) + (-(countMinusOne shr 8) ushr 31)
-        val valueBitCount = i * 3
-        buffer.pBits(5 + valueBitCount, (countMinusOne) or (i shl (2 + valueBitCount)))
+        val bitCountOpcode = (-count ushr 31) + (-(count shr 5) ushr 31) + (-(count shr 8) ushr 31)
+        val valueBitCount = 2 + bitCountOpcode * 3
+        buffer.pBits(3 + valueBitCount, count or (bitCountOpcode shl valueBitCount))
     }
 
     /**
