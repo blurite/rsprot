@@ -80,7 +80,7 @@ internal class PlayerInfoRepository(
         }
         val cached = queue.poll()?.get()
         if (cached != null) {
-            cached.onAlloc()
+            cached.onAlloc(idx, platformType)
             elements[idx] = cached
             return cached
         }
