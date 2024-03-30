@@ -1,5 +1,9 @@
 package net.rsprot.protocol.game.outgoing.info.playerinfo.util
 
+/**
+ * An object containing all the opcodes used for transmission in player info protocol.
+ * These opcodes are used as a means to compress short-distance movement deltas sent to the client.
+ */
 internal object CellOpcodes {
     // Single cell opcodes
     private const val SW: Int = 0
@@ -28,9 +32,24 @@ internal object CellOpcodes {
     private const val NN: Int = 13
     private const val NNE: Int = 14
     private const val NNEE: Int = 15
+
+    /**
+     * Single cell movement opcodes in a len-16 array.
+     */
     private val singleCellMovementOpcodes: IntArray = buildSingleCellMovementOpcodes()
+
+    /**
+     * Dual cell movement opcodes in a len-64 array.
+     */
     private val dualCellMovementOpcodes: IntArray = buildDualCellMovementOpcodes()
 
+    /**
+     * Gets the index for a single cell movement opcode based on the deltas,
+     * where the deltas are expected to be either -1, 0 or 1.
+     * @param deltaX the x-coordinate delta
+     * @param deltaZ the z-coordinate delta
+     * @return the index of the single cell opcode stored in [singleCellMovementOpcodes]
+     */
     private fun singleCellIndex(
         deltaX: Int,
         deltaZ: Int,
@@ -38,6 +57,13 @@ internal object CellOpcodes {
         return (deltaX + 1).or((deltaZ + 1) shl 2)
     }
 
+    /**
+     * Gets the index of the dual cell movement opcode based on the deltas,
+     * where the deltas are expected to be in range of -2..2.
+     * @param deltaX the x-coordinate delta
+     * @param deltaZ the z-coordinate delta
+     * @return the index of the dual cell opcode stored in [dualCellMovementOpcodes]
+     */
     private fun dualCellIndex(
         deltaX: Int,
         deltaZ: Int,
@@ -45,6 +71,15 @@ internal object CellOpcodes {
         return (deltaX + 2).or((deltaZ + 2) shl 3)
     }
 
+    /**
+     * Gets the single cell movement opcode value for the provided deltas.
+     * @param deltaX the x-coordinate delta
+     * @param deltaZ the z-coordinate delta
+     * @return the movement opcode as expected by the client, or -1 if the deltas are in range,
+     * but the deltas do not result in any movement.
+     * @throws ArrayIndexOutOfBoundsException if either of the deltas is not in range of -1..1.
+     */
+    @Throws(ArrayIndexOutOfBoundsException::class)
     internal fun singleCellMovementOpcode(
         deltaX: Int,
         deltaZ: Int,
@@ -52,6 +87,15 @@ internal object CellOpcodes {
         return singleCellMovementOpcodes[singleCellIndex(deltaX, deltaZ)]
     }
 
+    /**
+     * Gets the dual cell movement opcode value for the provided deltas.
+     * @param deltaX the x-coordinate delta
+     * @param deltaZ the z-coordinate delta
+     * @return the movement opcode as expected by the client, or -1 if the deltas are in range,
+     * but the deltas do not result in any movement.
+     * @throws ArrayIndexOutOfBoundsException if either of the deltas is not in range of -2..2.
+     */
+    @Throws(ArrayIndexOutOfBoundsException::class)
     internal fun dualCellMovementOpcode(
         deltaX: Int,
         deltaZ: Int,
