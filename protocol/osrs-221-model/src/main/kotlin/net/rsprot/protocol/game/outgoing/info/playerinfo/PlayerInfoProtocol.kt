@@ -10,29 +10,25 @@ import net.rsprot.protocol.shared.platform.PlatformType
 import java.util.concurrent.Callable
 
 public class PlayerInfoProtocol(
-    private val capacity: Int,
     private val allocator: ByteBufAllocator,
     private val worker: ProtocolWorker = DefaultProtocolWorker(),
     extendedInfoEncoders: Map<PlatformType, ExtendedInfoEncoders>,
     huffmanCodec: HuffmanCodec,
 ) {
     private val lowResolutionPositionRepository: GlobalLowResolutionPositionRepository =
-        GlobalLowResolutionPositionRepository(
-            capacity,
-        )
+        GlobalLowResolutionPositionRepository()
     private val playerInfoRepository: PlayerInfoRepository =
-        PlayerInfoRepository(capacity) { localIndex, platformType ->
+        PlayerInfoRepository(PROTOCOL_CAPACITY) { localIndex, platformType ->
             PlayerInfo(
                 this,
                 localIndex,
-                capacity,
                 allocator,
                 platformType,
                 extendedInfoEncoders,
                 huffmanCodec,
             )
         }
-    private val callables: MutableList<Callable<Unit>> = ArrayList(capacity)
+    private val callables: MutableList<Callable<Unit>> = ArrayList(PROTOCOL_CAPACITY)
 
     internal fun getPlayerInfo(idx: Int): PlayerInfo? {
         return playerInfoRepository.getOrNull(idx)
@@ -51,7 +47,7 @@ public class PlayerInfoProtocol(
 
     public fun prepare() {
         // Synchronize the known low res positions of everyone for this cycle
-        for (i in 1..<capacity) {
+        for (i in 1..<PROTOCOL_CAPACITY) {
             val info = playerInfoRepository.getOrNull(i)
             if (info == null) {
                 lowResolutionPositionRepository.markUnused(i)
@@ -90,11 +86,15 @@ public class PlayerInfoProtocol(
     }
 
     private inline fun execute(crossinline block: PlayerInfo.() -> Unit) {
-        for (i in 1..<capacity) {
+        for (i in 1..<PROTOCOL_CAPACITY) {
             val info = playerInfoRepository.getOrNull(i) ?: continue
             callables += Callable { block(info) }
         }
         worker.execute(callables)
         callables.clear()
+    }
+
+    public companion object {
+        public const val PROTOCOL_CAPACITY: Int = 2048
     }
 }

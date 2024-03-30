@@ -35,7 +35,6 @@ class PlayerInfoTest {
         val encoders = mapOf(PlatformType.DESKTOP to getExtendedInfoEncoders())
         protocol =
             PlayerInfoProtocol(
-                2048,
                 PooledByteBufAllocator.DEFAULT,
                 DefaultProtocolWorker(),
                 encoders,

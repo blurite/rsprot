@@ -1,13 +1,12 @@
 package net.rsprot.protocol.game.outgoing.info.playerinfo
 
+import net.rsprot.protocol.game.outgoing.info.playerinfo.PlayerInfoProtocol.Companion.PROTOCOL_CAPACITY
 import net.rsprot.protocol.game.outgoing.info.playerinfo.util.LowResolutionPosition
 import net.rsprot.protocol.internal.game.outgoing.info.CoordGrid
 
-internal class GlobalLowResolutionPositionRepository(
-    capacity: Int,
-) {
-    private val previousLowResPositions: IntArray = IntArray(capacity)
-    private val currentLowResPositions: IntArray = IntArray(capacity)
+internal class GlobalLowResolutionPositionRepository() {
+    private val previousLowResPositions: IntArray = IntArray(PROTOCOL_CAPACITY)
+    private val currentLowResPositions: IntArray = IntArray(PROTOCOL_CAPACITY)
 
     internal fun update(
         idx: Int,

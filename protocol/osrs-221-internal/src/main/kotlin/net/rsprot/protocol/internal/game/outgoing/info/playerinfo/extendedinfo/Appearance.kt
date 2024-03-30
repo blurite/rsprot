@@ -7,12 +7,10 @@ import net.rsprot.protocol.internal.game.outgoing.info.encoder.PrecomputedExtend
 import net.rsprot.protocol.shared.platform.PlatformType
 
 public class Appearance(
-    capacity: Int,
     encoders: Array<PrecomputedExtendedInfoEncoder<Appearance>?> = arrayOfNulls(PlatformType.COUNT),
     private val allocator: ByteBufAllocator,
     private val huffmanCodec: HuffmanCodec,
 ) : CachedExtendedInfo<Appearance, PrecomputedExtendedInfoEncoder<Appearance>>(
-        capacity,
         encoders,
     ) {
     public var name: String = ""

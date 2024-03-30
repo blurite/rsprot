@@ -29,7 +29,6 @@ import net.rsprot.protocol.shared.platform.PlatformType
 // TODO: Optional bound checks (hits, etc)
 @Suppress("MemberVisibilityCanBePrivate")
 public class PlayerAvatarExtendedInfo(
-    capacity: Int,
     private val protocol: PlayerInfoProtocol,
     private val localIndex: Int,
     extendedInfoEncoders: Map<PlatformType, ExtendedInfoEncoders>,
@@ -38,7 +37,6 @@ public class PlayerAvatarExtendedInfo(
 ) {
     private val appearance: Appearance =
         Appearance(
-            capacity,
             buildPlatformEncoderArray(extendedInfoEncoders, ExtendedInfoEncoders::appearance),
             allocator,
             huffmanCodec,

@@ -7,6 +7,7 @@ import net.rsprot.buffer.bitbuffer.UnsafeLongBackedBitBuf
 import net.rsprot.buffer.bitbuffer.toBitBuf
 import net.rsprot.buffer.extensions.toJagByteBuf
 import net.rsprot.compression.HuffmanCodec
+import net.rsprot.protocol.game.outgoing.info.playerinfo.PlayerInfoProtocol.Companion.PROTOCOL_CAPACITY
 import net.rsprot.protocol.game.outgoing.info.playerinfo.util.CellOpcodes
 import net.rsprot.protocol.game.outgoing.info.playerinfo.util.ObserverExtendedInfoFlags
 import net.rsprot.protocol.game.outgoing.info.util.Avatar
@@ -23,7 +24,6 @@ import kotlin.math.abs
 public class PlayerInfo internal constructor(
     private val protocol: PlayerInfoProtocol,
     private val localIndex: Int,
-    private val capacity: Int,
     private val allocator: ByteBufAllocator,
     private val platformType: PlatformType,
     extendedInfoEncoders: Map<PlatformType, ExtendedInfoEncoders>,
@@ -41,7 +41,7 @@ public class PlayerInfo internal constructor(
      * is incremented by one.
      * At the end of each cycle, the [lowResolutionIndices] are rebuilt to sort the indices.
      */
-    private val lowResolutionIndices: ShortArray = ShortArray(capacity)
+    private val lowResolutionIndices: ShortArray = ShortArray(PROTOCOL_CAPACITY)
 
     /**
      * The number of players in low resolution according to the protocol.
@@ -54,7 +54,7 @@ public class PlayerInfo internal constructor(
      * We do not need to use references to players as we can then refer to the [PlayerInfoRepository]
      * to find the actual [PlayerInfo] implementation.
      */
-    private val highResolutionPlayers: BitSet = BitSet(capacity)
+    private val highResolutionPlayers: BitSet = BitSet(PROTOCOL_CAPACITY)
 
     /**
      * High resolution indices are tracked together with [highResolutionCount].
@@ -63,17 +63,17 @@ public class PlayerInfo internal constructor(
      * is incremented by one.
      * At the end of each cycle, the [highResolutionIndices] are rebuilt to sort the indices.
      */
-    private val highResolutionIndices: ShortArray = ShortArray(capacity)
+    private val highResolutionIndices: ShortArray = ShortArray(PROTOCOL_CAPACITY)
 
     /**
      * The number of players in high resolution according to the protocol.
      */
     private var highResolutionCount: Int = 0
 
-    private val extendedInfoIndices: ShortArray = ShortArray(capacity)
+    private val extendedInfoIndices: ShortArray = ShortArray(PROTOCOL_CAPACITY)
     private var extendedInfoCount: Int = 0
 
-    private val stationary = ByteArray(capacity)
+    private val stationary = ByteArray(PROTOCOL_CAPACITY)
 
     /**
      * Extended info repository, commonly referred to as "masks", will track everything relevant
@@ -83,7 +83,6 @@ public class PlayerInfo internal constructor(
      */
     public val extendedInfo: PlayerAvatarExtendedInfo =
         PlayerAvatarExtendedInfo(
-            capacity,
             protocol,
             localIndex,
             extendedInfoEncoders,
@@ -91,7 +90,7 @@ public class PlayerInfo internal constructor(
             huffmanCodec,
         )
 
-    internal val observerExtendedInfoFlags: ObserverExtendedInfoFlags = ObserverExtendedInfoFlags(capacity)
+    internal val observerExtendedInfoFlags: ObserverExtendedInfoFlags = ObserverExtendedInfoFlags(PROTOCOL_CAPACITY)
 
     private val highResMovementBuffer: UnsafeLongBackedBitBuf = UnsafeLongBackedBitBuf()
     private val lowResMovementBuffer: UnsafeLongBackedBitBuf = UnsafeLongBackedBitBuf()
@@ -125,7 +124,7 @@ public class PlayerInfo internal constructor(
             buffer.pBits(30, avatar.currentCoord.packed)
             highResolutionPlayers.set(localIndex)
             highResolutionIndices[highResolutionCount++] = localIndex.toShort()
-            for (i in 1 until capacity) {
+            for (i in 1 until PROTOCOL_CAPACITY) {
                 if (i == localIndex) {
                     continue
                 }
@@ -382,7 +381,7 @@ public class PlayerInfo internal constructor(
         highResolutionCount = 0
         // Only need to reset the count here, the actual numbers don't matter.
         extendedInfoCount = 0
-        for (i in 1 until capacity) {
+        for (i in 1 until PROTOCOL_CAPACITY) {
             stationary[i] = (stationary[i].toInt() shr 1).toByte()
             if (highResolutionPlayers.get(i)) {
                 highResolutionIndices[highResolutionCount++] = i.toShort()
