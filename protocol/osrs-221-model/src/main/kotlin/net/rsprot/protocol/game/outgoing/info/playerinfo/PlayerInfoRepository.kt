@@ -36,14 +36,27 @@ internal class PlayerInfoRepository(
     private val queue: ReferenceQueue<PlayerInfo> = ReferenceQueue()
 
     /**
-     * Gets the current element at index [idx].
+     * Gets the current element at index [idx], or null if it doesn't exist.
+     * @param idx the index of the player info object to obtain
+     * @throws ArrayIndexOutOfBoundsException if the index is below zero, or above [capacity].
      */
+    @Throws(ArrayIndexOutOfBoundsException::class)
     fun getOrNull(idx: Int): PlayerInfo? {
         return elements[idx]
     }
 
+    /**
+     * Gets the current element at index [idx].
+     * @param idx the index of the player info object to obtain
+     * @throws ArrayIndexOutOfBoundsException if the index is below zero, or above [capacity].
+     * @throws IllegalStateException if the element at index [idx] is null.
+     */
+    @Throws(
+        ArrayIndexOutOfBoundsException::class,
+        IllegalStateException::class,
+    )
     operator fun get(idx: Int): PlayerInfo {
-        return requireNotNull(elements[idx])
+        return checkNotNull(elements[idx])
     }
 
     /**
@@ -57,23 +70,24 @@ internal class PlayerInfoRepository(
      * Allocates a new element at the specified [idx].
      * This function will first check if there are any unused objects
      * left in the [queue]. If there are, obtains the reference and executes
-     * [ReferencePooledObject.onAlloc] in it, which is responsible for cleaning
-     * the object so that it can be re-used again. This is preferably done on allocations,
-     * rather than de-allocations, as there's a chance the JVM will just garbage collect
+     * [net.rsprot.protocol.game.outgoing.info.util.ReferencePooledObject.onAlloc] in it,
+     * which is responsible for cleaning the object so that it can be re-used again.
+     * This is preferably done on allocations, rather than de-allocations,
+     * as there's a chance the JVM will just garbage collect
      * the object without it ever being re-allocated.
      *
      * @param idx the index of the element to obtain.
-     * @throws IllegalArgumentException if the [idx] is below zero, or above [capacity].
+     * @throws ArrayIndexOutOfBoundsException if the [idx] is below zero, or above [capacity].
      * @throws IllegalStateException if the element at index [idx] is already in use.
      */
-    @Throws(IllegalArgumentException::class, IllegalStateException::class)
+    @Throws(
+        ArrayIndexOutOfBoundsException::class,
+        IllegalStateException::class,
+    )
     fun alloc(
         idx: Int,
         platformType: PlatformType,
     ): PlayerInfo {
-        require(idx in elements.indices) {
-            "Index out of boundaries: $idx, ${elements.indices}"
-        }
         val element = elements[idx]
         check(element == null) {
             "Overriding existing element: $idx"
@@ -91,15 +105,16 @@ internal class PlayerInfoRepository(
 
     /**
      * Deallocates the element at [idx], if there is one.
-     * If an object was found, [ReferencePooledObject.onDealloc] function is called on it.
+     * If an object was found, [net.rsprot.protocol.game.outgoing.info.util.ReferencePooledObject.onDealloc]
+     * function is called on it.
      * This is to clean up any potential memory leaks for objects which may incur such.
      * It should not reset indices and other properties, that should be left to be done
      * during [alloc].
      * @param idx the index of the element to deallocate.
-     * @throws IllegalArgumentException if the [idx] is below zero, or above [capacity].
+     * @throws ArrayIndexOutOfBoundsException if the [idx] is below zero, or above [capacity].
      * @return true if the object was deallocated, false if there was nothing to deallocate.
      */
-    @Throws(IllegalArgumentException::class)
+    @Throws(ArrayIndexOutOfBoundsException::class)
     fun dealloc(idx: Int): Boolean {
         require(idx in elements.indices) {
             "Index out of boundaries: $idx, ${elements.indices}"
