@@ -295,19 +295,26 @@ public class PlayerInfo internal constructor(
                 stationary[index] = (stationary[index].toInt() or IS_STATIONARY).toByte()
                 continue
             }
-            if (skips > 0) {
-                pStationary(buffer, skips)
-                skips = 0
-            }
             if (isVisible(other)) {
+                if (skips > 0) {
+                    pStationary(buffer, skips)
+                    skips = 0
+                }
                 pLowResToHighRes(buffer, other)
                 continue
             }
             val lowResMovementBuffer = other.lowResMovementBuffer
             if (lowResMovementBuffer.isReadable()) {
+                if (skips > 0) {
+                    pStationary(buffer, skips)
+                    skips = 0
+                }
                 buffer.pBits(1, 1)
                 buffer.pBits(other.lowResMovementBuffer)
+                continue
             }
+            skips++
+            stationary[index] = (stationary[index].toInt() or IS_STATIONARY).toByte()
         }
         if (skips > 0) {
             pStationary(buffer, skips)
