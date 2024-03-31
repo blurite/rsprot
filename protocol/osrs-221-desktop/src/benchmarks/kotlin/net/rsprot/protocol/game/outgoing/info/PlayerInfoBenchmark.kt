@@ -23,7 +23,6 @@ import org.openjdk.jmh.annotations.Warmup
 import java.util.concurrent.ForkJoinPool
 import java.util.concurrent.TimeUnit
 import kotlin.random.Random
-import kotlin.time.measureTime
 
 @State(Scope.Benchmark)
 @BenchmarkMode(Mode.AverageTime)
@@ -138,17 +137,4 @@ class PlayerInfoBenchmark {
             return HuffmanCodec.create(Unpooled.wrappedBuffer(resource.readBytes()))
         }
     }
-}
-
-fun main() {
-    val bench = PlayerInfoBenchmark()
-    bench.setup()
-    val count = 50
-    val time =
-        measureTime {
-            repeat(count) {
-                bench.benchmark()
-            }
-        }
-    println(time / count)
 }
