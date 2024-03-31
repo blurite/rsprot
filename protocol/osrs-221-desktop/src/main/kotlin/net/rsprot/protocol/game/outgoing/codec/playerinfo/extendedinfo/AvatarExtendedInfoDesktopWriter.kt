@@ -4,12 +4,12 @@ import net.rsprot.buffer.JagByteBuf
 import net.rsprot.protocol.game.outgoing.info.playerinfo.AvatarExtendedInfoWriter
 import net.rsprot.protocol.game.outgoing.info.playerinfo.PlayerAvatarExtendedInfo
 import net.rsprot.protocol.game.outgoing.info.playerinfo.PlayerAvatarExtendedInfoBlocks
-import net.rsprot.protocol.internal.game.outgoing.info.encoder.ExtendedInfoEncoders
+import net.rsprot.protocol.internal.game.outgoing.info.playerinfo.encoder.PlayerExtendedInfoEncoders
 import net.rsprot.protocol.shared.platform.PlatformType
 
 public class AvatarExtendedInfoDesktopWriter : AvatarExtendedInfoWriter(
     PlatformType.DESKTOP,
-    ExtendedInfoEncoders(
+    PlayerExtendedInfoEncoders(
         PlatformType.DESKTOP,
         AppearanceEncoder(),
         ChatEncoder(),

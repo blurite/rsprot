@@ -1,5 +1,7 @@
-package net.rsprot.protocol.internal.game.outgoing.info.encoder
+package net.rsprot.protocol.internal.game.outgoing.info.playerinfo.encoder
 
+import net.rsprot.protocol.internal.game.outgoing.info.encoder.OnDemandExtendedInfoEncoder
+import net.rsprot.protocol.internal.game.outgoing.info.encoder.PrecomputedExtendedInfoEncoder
 import net.rsprot.protocol.internal.game.outgoing.info.playerinfo.extendedinfo.Appearance
 import net.rsprot.protocol.internal.game.outgoing.info.playerinfo.extendedinfo.Chat
 import net.rsprot.protocol.internal.game.outgoing.info.playerinfo.extendedinfo.FaceAngle
@@ -14,7 +16,7 @@ import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.SpotA
 import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.TintingList
 import net.rsprot.protocol.shared.platform.PlatformType
 
-public data class ExtendedInfoEncoders(
+public data class PlayerExtendedInfoEncoders(
     public val platformType: PlatformType,
     public val appearance: PrecomputedExtendedInfoEncoder<Appearance>,
     public val chat: PrecomputedExtendedInfoEncoder<Chat>,

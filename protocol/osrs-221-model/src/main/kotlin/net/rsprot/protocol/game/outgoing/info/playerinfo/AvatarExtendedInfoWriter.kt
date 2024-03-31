@@ -2,13 +2,13 @@ package net.rsprot.protocol.game.outgoing.info.playerinfo
 
 import net.rsprot.buffer.JagByteBuf
 import net.rsprot.protocol.internal.game.outgoing.info.ExtendedInfo
-import net.rsprot.protocol.internal.game.outgoing.info.encoder.ExtendedInfoEncoders
 import net.rsprot.protocol.internal.game.outgoing.info.encoder.OnDemandExtendedInfoEncoder
+import net.rsprot.protocol.internal.game.outgoing.info.playerinfo.encoder.PlayerExtendedInfoEncoders
 import net.rsprot.protocol.shared.platform.PlatformType
 
 public abstract class AvatarExtendedInfoWriter(
     public val platformType: PlatformType,
-    public val encoders: ExtendedInfoEncoders,
+    public val encoders: PlayerExtendedInfoEncoders,
 ) {
     public abstract fun pExtendedInfo(
         buffer: JagByteBuf,

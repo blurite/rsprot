@@ -4,7 +4,7 @@ import io.netty.buffer.ByteBufAllocator
 import net.rsprot.compression.HuffmanCodec
 import net.rsprot.protocol.internal.game.outgoing.info.ExtendedInfo
 import net.rsprot.protocol.internal.game.outgoing.info.encoder.ExtendedInfoEncoder
-import net.rsprot.protocol.internal.game.outgoing.info.encoder.ExtendedInfoEncoders
+import net.rsprot.protocol.internal.game.outgoing.info.playerinfo.encoder.PlayerExtendedInfoEncoders
 import net.rsprot.protocol.internal.game.outgoing.info.playerinfo.extendedinfo.Appearance
 import net.rsprot.protocol.internal.game.outgoing.info.playerinfo.extendedinfo.Chat
 import net.rsprot.protocol.internal.game.outgoing.info.playerinfo.extendedinfo.FaceAngle
@@ -26,77 +26,77 @@ public class PlayerAvatarExtendedInfoBlocks(
 ) {
     public val appearance: Appearance =
         Appearance(
-            buildPlatformEncoderArray(writers, ExtendedInfoEncoders::appearance),
+            buildPlatformEncoderArray(writers, PlayerExtendedInfoEncoders::appearance),
             allocator,
             huffmanCodec,
         )
     public val moveSpeed: MoveSpeed =
         MoveSpeed(
-            buildPlatformEncoderArray(writers, ExtendedInfoEncoders::moveSpeed),
+            buildPlatformEncoderArray(writers, PlayerExtendedInfoEncoders::moveSpeed),
             allocator,
             huffmanCodec,
         )
     public val temporaryMoveSpeed: TemporaryMoveSpeed =
         TemporaryMoveSpeed(
-            buildPlatformEncoderArray(writers, ExtendedInfoEncoders::temporaryMoveSpeed),
+            buildPlatformEncoderArray(writers, PlayerExtendedInfoEncoders::temporaryMoveSpeed),
             allocator,
             huffmanCodec,
         )
     public val sequence: Sequence =
         Sequence(
-            buildPlatformEncoderArray(writers, ExtendedInfoEncoders::sequence),
+            buildPlatformEncoderArray(writers, PlayerExtendedInfoEncoders::sequence),
             allocator,
             huffmanCodec,
         )
     public val facePathingEntity: FacePathingEntity =
         FacePathingEntity(
-            buildPlatformEncoderArray(writers, ExtendedInfoEncoders::facePathingEntity),
+            buildPlatformEncoderArray(writers, PlayerExtendedInfoEncoders::facePathingEntity),
             allocator,
             huffmanCodec,
         )
     public val faceAngle: FaceAngle =
         FaceAngle(
-            buildPlatformEncoderArray(writers, ExtendedInfoEncoders::faceAngle),
+            buildPlatformEncoderArray(writers, PlayerExtendedInfoEncoders::faceAngle),
             allocator,
             huffmanCodec,
         )
     public val say: Say =
         Say(
-            buildPlatformEncoderArray(writers, ExtendedInfoEncoders::say),
+            buildPlatformEncoderArray(writers, PlayerExtendedInfoEncoders::say),
             allocator,
             huffmanCodec,
         )
     public val chat: Chat =
         Chat(
-            buildPlatformEncoderArray(writers, ExtendedInfoEncoders::chat),
+            buildPlatformEncoderArray(writers, PlayerExtendedInfoEncoders::chat),
             allocator,
             huffmanCodec,
         )
     public val exactMove: ExactMove =
         ExactMove(
-            buildPlatformEncoderArray(writers, ExtendedInfoEncoders::exactMove),
+            buildPlatformEncoderArray(writers, PlayerExtendedInfoEncoders::exactMove),
             allocator,
             huffmanCodec,
         )
     public val spotAnims: SpotAnimList =
         SpotAnimList(
-            buildPlatformEncoderArray(writers, ExtendedInfoEncoders::spotAnim),
+            buildPlatformEncoderArray(writers, PlayerExtendedInfoEncoders::spotAnim),
             allocator,
             huffmanCodec,
         )
     public val hit: Hit =
         Hit(
-            buildPlatformEncoderArray(writers, ExtendedInfoEncoders::hit),
+            buildPlatformEncoderArray(writers, PlayerExtendedInfoEncoders::hit),
         )
     public val tinting: TintingList =
         TintingList(
-            buildPlatformEncoderArray(writers, ExtendedInfoEncoders::tinting),
+            buildPlatformEncoderArray(writers, PlayerExtendedInfoEncoders::tinting),
         )
 
     private companion object {
         private inline fun <T : ExtendedInfo<T, E>, reified E : ExtendedInfoEncoder<T>> buildPlatformEncoderArray(
             allEncoders: List<AvatarExtendedInfoWriter>,
-            selector: (ExtendedInfoEncoders) -> E,
+            selector: (PlayerExtendedInfoEncoders) -> E,
         ): Array<E?> {
             val array = arrayOfNulls<E>(PlatformType.COUNT)
             for (writer in allEncoders) {
