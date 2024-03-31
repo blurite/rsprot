@@ -12,6 +12,8 @@ import net.rsprot.protocol.shared.platform.PlatformType
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
+import kotlin.test.assertNotNull
 
 class PlayerInfoTest {
     private lateinit var protocol: PlayerInfoProtocol
@@ -34,44 +36,7 @@ class PlayerInfoTest {
         localPlayerInfo.updateCoord(0, 3200, 3220)
         client = PlayerInfoClient()
         gpiInit()
-        initializeAppearance(localPlayerInfo, LOCAL_PLAYER_INDEX)
-        protocol.prepareExtendedInfo()
         postUpdate()
-    }
-
-    private fun initializeAppearance(
-        player: PlayerInfo,
-        index: Int,
-    ) {
-        player.extendedInfo.initializeAppearance(
-            name = "Bot $index",
-            combatLevel = 126,
-            skillLevel = 0,
-            hidden = false,
-            male = true,
-            textGender = 0,
-            skullIcon = -1,
-            overheadIcon = -1,
-        )
-        for (colIdx in 0..<5) {
-            player.extendedInfo.setColour(colIdx, colIdx * 10)
-        }
-        player.extendedInfo.setIdentKit(8, 0)
-        player.extendedInfo.setIdentKit(11, 10)
-        player.extendedInfo.setIdentKit(4, 18)
-        player.extendedInfo.setIdentKit(6, 26)
-        player.extendedInfo.setIdentKit(9, 33)
-        player.extendedInfo.setIdentKit(7, 36)
-        player.extendedInfo.setIdentKit(10, 42)
-        player.extendedInfo.setBaseAnimationSet(
-            808,
-            823,
-            819,
-            820,
-            821,
-            822,
-            824,
-        )
     }
 
     private fun postUpdate() {
@@ -95,12 +60,14 @@ class PlayerInfoTest {
         protocol.putBitcodes()
         protocol.prepareExtendedInfo()
         protocol.putExtendedInfo()
-        client.decode(localPlayerInfo.backingBuffer())
+        val buffer = localPlayerInfo.backingBuffer()
+        client.decode(buffer)
+        assertFalse(buffer.isReadable)
         postUpdate()
     }
 
     @Test
-    fun `test consecutive movements`() {
+    fun `test single player consecutive movements`() {
         localPlayerInfo.updateCoord(1, 3210, 3225)
         tick()
         assertCoordEquals()
@@ -119,14 +86,13 @@ class PlayerInfoTest {
     }
 
     @Test
-    fun `test multiplayer movements`() {
+    fun `test multi player movements`() {
         val otherPlayerIndices = (1..280)
         val otherPlayers = arrayOfNulls<PlayerInfo>(2048)
         for (index in otherPlayerIndices) {
             val otherPlayer = protocol.alloc(index, PlatformType.DESKTOP)
             otherPlayers[index] = otherPlayer
             otherPlayer.updateCoord(0, 3205, 3220)
-            initializeAppearance(otherPlayer, index)
         }
         tick()
         assertAllCoordsEqual(otherPlayers)
@@ -135,6 +101,63 @@ class PlayerInfoTest {
         }
         tick()
         assertAllCoordsEqual(otherPlayers)
+    }
+
+    @Test
+    fun `test single player appearance extended info`() {
+        localPlayerInfo.extendedInfo.initializeAppearance(
+            name = "Local Player",
+            combatLevel = 126,
+            skillLevel = 1258,
+            hidden = false,
+            male = false,
+            textGender = 2,
+            skullIcon = -1,
+            overheadIcon = -1,
+        )
+        tick()
+        assertEquals("Local Player", clientLocalPlayer.name)
+        assertEquals(126, clientLocalPlayer.combatLevel)
+        assertEquals(1258, clientLocalPlayer.skillLevel)
+        assertEquals(false, clientLocalPlayer.hidden)
+        assertEquals(0, clientLocalPlayer.gender)
+        assertEquals(2, clientLocalPlayer.textGender)
+        assertEquals(-1, clientLocalPlayer.skullIcon)
+        assertEquals(-1, clientLocalPlayer.headIcon)
+    }
+
+    @Test
+    fun `test multi player appearance extended info`() {
+        val otherPlayerIndices = (1..280)
+        val otherPlayers = arrayOfNulls<PlayerInfo>(2048)
+        for (index in otherPlayerIndices) {
+            val otherPlayer = protocol.alloc(index, PlatformType.DESKTOP)
+            otherPlayers[index] = otherPlayer
+            otherPlayer.updateCoord(0, 3205, 3220)
+            otherPlayer.extendedInfo.initializeAppearance(
+                name = "Local Player $index",
+                combatLevel = 126,
+                skillLevel = index,
+                hidden = false,
+                male = false,
+                textGender = 2,
+                skullIcon = -1,
+                overheadIcon = -1,
+            )
+        }
+        tick()
+        for (index in otherPlayerIndices) {
+            val clientPlayer = client.cachedPlayers[index]
+            assertNotNull(clientPlayer)
+            assertEquals("Local Player $index", clientPlayer.name)
+            assertEquals(126, clientPlayer.combatLevel)
+            assertEquals(index, clientPlayer.skillLevel)
+            assertEquals(false, clientPlayer.hidden)
+            assertEquals(0, clientPlayer.gender)
+            assertEquals(2, clientPlayer.textGender)
+            assertEquals(-1, clientPlayer.skullIcon)
+            assertEquals(-1, clientPlayer.headIcon)
+        }
     }
 
     private fun assertAllCoordsEqual(otherPlayers: Array<PlayerInfo?>) {
