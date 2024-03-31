@@ -48,7 +48,6 @@ public class Appearance(
 
     override fun clear() {
         releaseBuffers()
-        resetCache()
         name = ""
         combatLevel = 0u
         skillLevel = 0u

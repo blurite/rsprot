@@ -30,6 +30,10 @@ public class PlayerAvatarExtendedInfo(
         )
     private val writers: Array<AvatarExtendedInfoWriter?> = buildPlatformWriterArray(extendedInfoWriters)
 
+    // Appearance has built-in engine support for caching, so we use a changes counter to track this
+    private val otherAppearanceChangesCounter: IntArray = IntArray(PlayerInfoProtocol.PROTOCOL_CAPACITY)
+    private var appearanceChangesCounter: Int = 0
+
     public fun setMoveSpeed(value: Int) {
         blocks.moveSpeed.value = value
         flags = flags or MOVE_SPEED
@@ -465,7 +469,7 @@ public class PlayerAvatarExtendedInfo(
 
     private fun flagAppearance() {
         flags = flags or APPEARANCE
-        blocks.appearance.changeCounter++
+        appearanceChangesCounter++
     }
 
     internal fun postUpdate() {
@@ -475,6 +479,8 @@ public class PlayerAvatarExtendedInfo(
 
     internal fun reset() {
         flags = 0
+        this.appearanceChangesCounter = 0
+        this.otherAppearanceChangesCounter.fill(0)
         blocks.appearance.clear()
         blocks.moveSpeed.clear()
         blocks.temporaryMoveSpeed.clear()
@@ -510,7 +516,7 @@ public class PlayerAvatarExtendedInfo(
     }
 
     private fun checkOutOfDate(observer: PlayerAvatarExtendedInfo): Boolean {
-        return observer.blocks.appearance.otherChangesCounter[localIndex] != blocks.appearance.changeCounter
+        return observer.otherAppearanceChangesCounter[localIndex] != appearanceChangesCounter
     }
 
     internal fun precompute() {
@@ -560,7 +566,7 @@ public class PlayerAvatarExtendedInfo(
 
         // If appearance is flagged, ensure we synchronize the changes counter
         if (flag and APPEARANCE != 0) {
-            observer.blocks.appearance.otherChangesCounter[localIndex] = blocks.appearance.changeCounter
+            observer.otherAppearanceChangesCounter[localIndex] = appearanceChangesCounter
         }
         writer.pExtendedInfo(
             buffer,
