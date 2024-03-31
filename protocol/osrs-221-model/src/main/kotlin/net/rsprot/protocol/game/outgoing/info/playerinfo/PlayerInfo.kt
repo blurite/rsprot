@@ -8,6 +8,7 @@ import net.rsprot.buffer.bitbuffer.toBitBuf
 import net.rsprot.buffer.extensions.toJagByteBuf
 import net.rsprot.compression.HuffmanCodec
 import net.rsprot.protocol.game.outgoing.info.playerinfo.PlayerInfoProtocol.Companion.PROTOCOL_CAPACITY
+import net.rsprot.protocol.game.outgoing.info.playerinfo.filter.ExtendedInfoFilter
 import net.rsprot.protocol.game.outgoing.info.playerinfo.util.CellOpcodes
 import net.rsprot.protocol.game.outgoing.info.playerinfo.util.ObserverExtendedInfoFlags
 import net.rsprot.protocol.game.outgoing.info.util.Avatar
@@ -53,6 +54,7 @@ public class PlayerInfo internal constructor(
     private var localIndex: Int,
     private val allocator: ByteBufAllocator,
     private var platformType: PlatformType,
+    extendedInfoFilter: ExtendedInfoFilter,
     extendedInfoWriters: List<AvatarExtendedInfoWriter>,
     huffmanCodec: HuffmanCodec,
 ) : ReferencePooledObject, OutgoingMessage {
@@ -129,6 +131,7 @@ public class PlayerInfo internal constructor(
         PlayerAvatarExtendedInfo(
             protocol,
             localIndex,
+            extendedInfoFilter,
             extendedInfoWriters,
             allocator,
             huffmanCodec,
@@ -253,7 +256,13 @@ public class PlayerInfo internal constructor(
             val index = extendedInfoIndices[i].toInt()
             val other = checkNotNull(protocol.getPlayerInfo(index))
             val observerFlag = observerExtendedInfoFlags.getFlag(index)
-            other.extendedInfo.pExtendedInfo(platformType, jagBuffer, observerFlag, extendedInfo)
+            other.extendedInfo.pExtendedInfo(
+                platformType,
+                jagBuffer,
+                observerFlag,
+                extendedInfo,
+                extendedInfoCount - i,
+            )
         }
     }
 

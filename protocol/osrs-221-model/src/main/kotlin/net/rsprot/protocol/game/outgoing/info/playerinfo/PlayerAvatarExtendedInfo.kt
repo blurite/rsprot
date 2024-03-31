@@ -3,6 +3,7 @@ package net.rsprot.protocol.game.outgoing.info.playerinfo
 import io.netty.buffer.ByteBufAllocator
 import net.rsprot.buffer.JagByteBuf
 import net.rsprot.compression.HuffmanCodec
+import net.rsprot.protocol.game.outgoing.info.playerinfo.filter.ExtendedInfoFilter
 import net.rsprot.protocol.internal.game.outgoing.info.playerinfo.extendedinfo.MoveSpeed
 import net.rsprot.protocol.internal.game.outgoing.info.playerinfo.extendedinfo.ObjTypeCustomisation
 import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.FacePathingEntity
@@ -17,6 +18,7 @@ import net.rsprot.protocol.shared.platform.PlatformType
 public class PlayerAvatarExtendedInfo(
     private val protocol: PlayerInfoProtocol,
     private val localIndex: Int,
+    private val filter: ExtendedInfoFilter,
     extendedInfoWriters: List<AvatarExtendedInfoWriter>,
     allocator: ByteBufAllocator,
     huffmanCodec: HuffmanCodec,
@@ -552,9 +554,16 @@ public class PlayerAvatarExtendedInfo(
         buffer: JagByteBuf,
         observerFlag: Int,
         observer: PlayerAvatarExtendedInfo,
+        remainingAvatars: Int,
     ) {
-        // TODO: Figure out a way to cap this out
-        if (buffer.writerIndex() >= 35_000) {
+        val flag = this.flags or observerFlag
+        if (!filter.accept(
+                buffer.writableBytes(),
+                flag,
+                remainingAvatars,
+                observer.otherAppearanceChangesCounter[localIndex] != 0,
+            )
+        ) {
             buffer.p1(0)
             return
         }
@@ -562,7 +571,6 @@ public class PlayerAvatarExtendedInfo(
             requireNotNull(writers[platformType.id]) {
                 "Extended info writer missing for platform $platformType"
             }
-        val flag = this.flags or observerFlag
 
         // If appearance is flagged, ensure we synchronize the changes counter
         if (flag and APPEARANCE != 0) {

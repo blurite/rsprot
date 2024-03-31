@@ -7,6 +7,7 @@ import net.rsprot.protocol.game.outgoing.codec.playerinfo.extendedinfo.AvatarExt
 import net.rsprot.protocol.game.outgoing.info.playerinfo.PlayerInfo
 import net.rsprot.protocol.game.outgoing.info.playerinfo.PlayerInfoProtocol
 import net.rsprot.protocol.game.outgoing.info.playerinfo.PlayerInfoProtocol.Companion.PROTOCOL_CAPACITY
+import net.rsprot.protocol.game.outgoing.info.playerinfo.filter.DefaultExtendedInfoFilter
 import net.rsprot.protocol.game.outgoing.info.worker.DefaultProtocolWorker
 import net.rsprot.protocol.shared.platform.PlatformType
 import org.openjdk.jmh.annotations.Benchmark
@@ -42,6 +43,7 @@ class PlayerInfoBenchmark {
             PlayerInfoProtocol(
                 PooledByteBufAllocator.DEFAULT,
                 DefaultProtocolWorker(Int.MAX_VALUE, ForkJoinPool.commonPool()),
+                DefaultExtendedInfoFilter(),
                 writers,
                 createHuffmanCodec(),
             )

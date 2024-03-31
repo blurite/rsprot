@@ -3,6 +3,8 @@ package net.rsprot.protocol.game.outgoing.info.playerinfo
 import io.netty.buffer.ByteBuf
 import io.netty.buffer.ByteBufAllocator
 import net.rsprot.compression.HuffmanCodec
+import net.rsprot.protocol.game.outgoing.info.playerinfo.filter.DefaultExtendedInfoFilter
+import net.rsprot.protocol.game.outgoing.info.playerinfo.filter.ExtendedInfoFilter
 import net.rsprot.protocol.game.outgoing.info.playerinfo.util.LowResolutionPosition
 import net.rsprot.protocol.game.outgoing.info.worker.DefaultProtocolWorker
 import net.rsprot.protocol.game.outgoing.info.worker.ProtocolWorker
@@ -34,6 +36,7 @@ import java.util.concurrent.ForkJoinPool
 public class PlayerInfoProtocol(
     private val allocator: ByteBufAllocator,
     private val worker: ProtocolWorker = DefaultProtocolWorker(),
+    extendedInfoFilter: ExtendedInfoFilter = DefaultExtendedInfoFilter(),
     extendedInfoWriters: List<AvatarExtendedInfoWriter>,
     huffmanCodec: HuffmanCodec,
 ) {
@@ -55,6 +58,7 @@ public class PlayerInfoProtocol(
                 localIndex,
                 allocator,
                 platformType,
+                extendedInfoFilter,
                 extendedInfoWriters,
                 huffmanCodec,
             )
