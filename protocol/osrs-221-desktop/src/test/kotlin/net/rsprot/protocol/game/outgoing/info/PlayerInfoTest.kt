@@ -3,7 +3,7 @@ package net.rsprot.protocol.game.outgoing.info
 import io.netty.buffer.PooledByteBufAllocator
 import io.netty.buffer.Unpooled
 import net.rsprot.compression.HuffmanCodec
-import net.rsprot.protocol.game.outgoing.codec.playerinfo.extendedinfo.AvatarExtendedInfoDesktopWriter
+import net.rsprot.protocol.game.outgoing.codec.playerinfo.extendedinfo.writer.PlayerAvatarExtendedInfoDesktopWriter
 import net.rsprot.protocol.game.outgoing.info.playerinfo.PlayerInfo
 import net.rsprot.protocol.game.outgoing.info.playerinfo.PlayerInfoProtocol
 import net.rsprot.protocol.game.outgoing.info.playerinfo.filter.DefaultExtendedInfoFilter
@@ -23,7 +23,7 @@ class PlayerInfoTest {
 
     @BeforeEach
     fun initialize() {
-        val writers = listOf(AvatarExtendedInfoDesktopWriter())
+        val writers = listOf(PlayerAvatarExtendedInfoDesktopWriter())
         protocol =
             PlayerInfoProtocol(
                 PooledByteBufAllocator.DEFAULT,

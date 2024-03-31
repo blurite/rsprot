@@ -10,7 +10,7 @@ import net.rsprot.protocol.internal.game.outgoing.info.encoder.PrecomputedExtend
 import net.rsprot.protocol.internal.game.outgoing.info.playerinfo.extendedinfo.Appearance
 import net.rsprot.protocol.internal.game.outgoing.info.playerinfo.extendedinfo.ObjTypeCustomisation
 
-public class AppearanceEncoder : PrecomputedExtendedInfoEncoder<Appearance> {
+public class PlayerAppearanceEncoder : PrecomputedExtendedInfoEncoder<Appearance> {
     override fun precompute(
         alloc: ByteBufAllocator,
         huffmanCodec: HuffmanCodec,

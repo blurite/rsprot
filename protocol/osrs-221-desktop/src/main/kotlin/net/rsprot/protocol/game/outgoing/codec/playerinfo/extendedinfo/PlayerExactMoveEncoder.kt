@@ -7,7 +7,7 @@ import net.rsprot.compression.HuffmanCodec
 import net.rsprot.protocol.internal.game.outgoing.info.encoder.PrecomputedExtendedInfoEncoder
 import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.ExactMove
 
-public class ExactMoveEncoder : PrecomputedExtendedInfoEncoder<ExactMove> {
+public class PlayerExactMoveEncoder : PrecomputedExtendedInfoEncoder<ExactMove> {
     override fun precompute(
         alloc: ByteBufAllocator,
         huffmanCodec: HuffmanCodec,

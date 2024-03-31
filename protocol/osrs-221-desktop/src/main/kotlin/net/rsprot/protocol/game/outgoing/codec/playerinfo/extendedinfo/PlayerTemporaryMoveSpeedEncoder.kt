@@ -5,21 +5,19 @@ import net.rsprot.buffer.JagByteBuf
 import net.rsprot.buffer.extensions.toJagByteBuf
 import net.rsprot.compression.HuffmanCodec
 import net.rsprot.protocol.internal.game.outgoing.info.encoder.PrecomputedExtendedInfoEncoder
-import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.Say
+import net.rsprot.protocol.internal.game.outgoing.info.playerinfo.extendedinfo.TemporaryMoveSpeed
 
-public class SayEncoder : PrecomputedExtendedInfoEncoder<Say> {
+public class PlayerTemporaryMoveSpeedEncoder : PrecomputedExtendedInfoEncoder<TemporaryMoveSpeed> {
     override fun precompute(
         alloc: ByteBufAllocator,
         huffmanCodec: HuffmanCodec,
-        extendedInfo: Say,
+        extendedInfo: TemporaryMoveSpeed,
     ): JagByteBuf {
-        val text = extendedInfo.text ?: ""
-        val capacity = text.length + 1
         val buffer =
             alloc
-                .buffer(capacity, capacity)
+                .buffer(1, 1)
                 .toJagByteBuf()
-        buffer.pjstr(text)
+        buffer.p1Alt3(extendedInfo.value)
         return buffer
     }
 }

@@ -4,7 +4,7 @@ import net.rsprot.buffer.JagByteBuf
 import net.rsprot.protocol.internal.game.outgoing.info.encoder.OnDemandExtendedInfoEncoder
 import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.Hit
 
-public class HitEncoder : OnDemandExtendedInfoEncoder<Hit> {
+public class PlayerHitEncoder : OnDemandExtendedInfoEncoder<Hit> {
     override fun encode(
         buffer: JagByteBuf,
         localPlayerIndex: Int,

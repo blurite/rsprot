@@ -4,7 +4,7 @@ import net.rsprot.buffer.JagByteBuf
 import net.rsprot.protocol.internal.game.outgoing.info.encoder.OnDemandExtendedInfoEncoder
 import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.TintingList
 
-public class TintingEncoder : OnDemandExtendedInfoEncoder<TintingList> {
+public class PlayerTintingEncoder : OnDemandExtendedInfoEncoder<TintingList> {
     override fun encode(
         buffer: JagByteBuf,
         localPlayerIndex: Int,

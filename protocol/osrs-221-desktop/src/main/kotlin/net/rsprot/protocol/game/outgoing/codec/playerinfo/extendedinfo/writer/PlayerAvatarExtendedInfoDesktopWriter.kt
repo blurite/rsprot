@@ -1,28 +1,40 @@
-package net.rsprot.protocol.game.outgoing.codec.playerinfo.extendedinfo
+package net.rsprot.protocol.game.outgoing.codec.playerinfo.extendedinfo.writer
 
 import net.rsprot.buffer.JagByteBuf
+import net.rsprot.protocol.game.outgoing.codec.playerinfo.extendedinfo.PlayerAppearanceEncoder
+import net.rsprot.protocol.game.outgoing.codec.playerinfo.extendedinfo.PlayerChatEncoder
+import net.rsprot.protocol.game.outgoing.codec.playerinfo.extendedinfo.PlayerExactMoveEncoder
+import net.rsprot.protocol.game.outgoing.codec.playerinfo.extendedinfo.PlayerFaceAngleEncoder
+import net.rsprot.protocol.game.outgoing.codec.playerinfo.extendedinfo.PlayerFacePathingEntityEncoder
+import net.rsprot.protocol.game.outgoing.codec.playerinfo.extendedinfo.PlayerHitEncoder
+import net.rsprot.protocol.game.outgoing.codec.playerinfo.extendedinfo.PlayerMoveSpeedEncoder
+import net.rsprot.protocol.game.outgoing.codec.playerinfo.extendedinfo.PlayerSayEncoder
+import net.rsprot.protocol.game.outgoing.codec.playerinfo.extendedinfo.PlayerSequenceEncoder
+import net.rsprot.protocol.game.outgoing.codec.playerinfo.extendedinfo.PlayerSpotAnimEncoder
+import net.rsprot.protocol.game.outgoing.codec.playerinfo.extendedinfo.PlayerTemporaryMoveSpeedEncoder
+import net.rsprot.protocol.game.outgoing.codec.playerinfo.extendedinfo.PlayerTintingEncoder
 import net.rsprot.protocol.game.outgoing.info.playerinfo.AvatarExtendedInfoWriter
 import net.rsprot.protocol.game.outgoing.info.playerinfo.PlayerAvatarExtendedInfo
 import net.rsprot.protocol.game.outgoing.info.playerinfo.PlayerAvatarExtendedInfoBlocks
 import net.rsprot.protocol.internal.game.outgoing.info.playerinfo.encoder.PlayerExtendedInfoEncoders
 import net.rsprot.protocol.shared.platform.PlatformType
 
-public class AvatarExtendedInfoDesktopWriter : AvatarExtendedInfoWriter(
+public class PlayerAvatarExtendedInfoDesktopWriter : AvatarExtendedInfoWriter(
     PlatformType.DESKTOP,
     PlayerExtendedInfoEncoders(
         PlatformType.DESKTOP,
-        AppearanceEncoder(),
-        ChatEncoder(),
-        ExactMoveEncoder(),
-        FaceAngleEncoder(),
-        FacePathingEntityEncoder(),
-        HitEncoder(),
-        MoveSpeedEncoder(),
-        SayEncoder(),
-        SequenceEncoder(),
-        SpotAnimEncoder(),
-        TemporaryMoveSpeedEncoder(),
-        TintingEncoder(),
+        PlayerAppearanceEncoder(),
+        PlayerChatEncoder(),
+        PlayerExactMoveEncoder(),
+        PlayerFaceAngleEncoder(),
+        PlayerFacePathingEntityEncoder(),
+        PlayerHitEncoder(),
+        PlayerMoveSpeedEncoder(),
+        PlayerSayEncoder(),
+        PlayerSequenceEncoder(),
+        PlayerSpotAnimEncoder(),
+        PlayerTemporaryMoveSpeedEncoder(),
+        PlayerTintingEncoder(),
     ),
 ) {
     private fun convertFlags(constantFlags: Int): Int {

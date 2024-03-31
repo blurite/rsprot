@@ -8,7 +8,7 @@ import net.rsprot.protocol.internal.game.outgoing.info.encoder.PrecomputedExtend
 import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.SpotAnimList
 import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.util.SpotAnim
 
-public class SpotAnimEncoder : PrecomputedExtendedInfoEncoder<SpotAnimList> {
+public class PlayerSpotAnimEncoder : PrecomputedExtendedInfoEncoder<SpotAnimList> {
     override fun precompute(
         alloc: ByteBufAllocator,
         huffmanCodec: HuffmanCodec,

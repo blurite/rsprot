@@ -7,7 +7,7 @@ import net.rsprot.compression.HuffmanCodec
 import net.rsprot.protocol.internal.game.outgoing.info.encoder.PrecomputedExtendedInfoEncoder
 import net.rsprot.protocol.internal.game.outgoing.info.playerinfo.extendedinfo.Chat
 
-public class ChatEncoder : PrecomputedExtendedInfoEncoder<Chat> {
+public class PlayerChatEncoder : PrecomputedExtendedInfoEncoder<Chat> {
     override fun precompute(
         alloc: ByteBufAllocator,
         huffmanCodec: HuffmanCodec,
