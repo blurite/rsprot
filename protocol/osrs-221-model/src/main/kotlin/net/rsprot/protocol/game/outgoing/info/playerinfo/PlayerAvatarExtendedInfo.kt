@@ -491,24 +491,26 @@ public class PlayerAvatarExtendedInfo(
 
     internal fun getLowToHighResChangeExtendedInfoFlags(observer: PlayerAvatarExtendedInfo): Int {
         var flag = 0
-        if (checkOutOfDate(observer)) {
+        if (this.flags and APPEARANCE == 0 &&
+            checkOutOfDate(observer)
+        ) {
             flag = flag or APPEARANCE
         }
-        if (blocks.moveSpeed.value != MoveSpeed.DEFAULT_MOVESPEED) {
+        if (this.flags and MOVE_SPEED == 0 &&
+            blocks.moveSpeed.value != MoveSpeed.DEFAULT_MOVESPEED
+        ) {
             flag = flag or MOVE_SPEED
         }
-        if (blocks.facePathingEntity.index != FacePathingEntity.DEFAULT_VALUE) {
+        if (this.flags and FACE_PATHINGENTITY == 0 &&
+            blocks.facePathingEntity.index != FacePathingEntity.DEFAULT_VALUE
+        ) {
             flag = flag or FACE_PATHINGENTITY
         }
         return flag
     }
 
     private fun checkOutOfDate(observer: PlayerAvatarExtendedInfo): Boolean {
-        val isOutOfDate = observer.blocks.appearance.otherChangesCounter[localIndex] != blocks.appearance.changeCounter
-        if (isOutOfDate) {
-            observer.blocks.appearance.otherChangesCounter[localIndex] = blocks.appearance.changeCounter
-        }
-        return isOutOfDate
+        return observer.blocks.appearance.otherChangesCounter[localIndex] != blocks.appearance.changeCounter
     }
 
     internal fun precompute() {
@@ -543,7 +545,7 @@ public class PlayerAvatarExtendedInfo(
         platformType: PlatformType,
         buffer: JagByteBuf,
         observerFlag: Int,
-        observerIndex: Int,
+        observer: PlayerAvatarExtendedInfo,
     ) {
         // TODO: Figure out a way to cap this out
         if (buffer.writerIndex() >= 35_000) {
@@ -554,11 +556,17 @@ public class PlayerAvatarExtendedInfo(
             requireNotNull(writers[platformType.id]) {
                 "Extended info writer missing for platform $platformType"
             }
+        val flag = this.flags or observerFlag
+
+        // If appearance is flagged, ensure we synchronize the changes counter
+        if (flag and APPEARANCE != 0) {
+            observer.blocks.appearance.otherChangesCounter[localIndex] = blocks.appearance.changeCounter
+        }
         writer.pExtendedInfo(
             buffer,
             localIndex,
-            observerIndex,
-            this.flags or observerFlag,
+            observer.localIndex,
+            flag,
             blocks,
         )
     }

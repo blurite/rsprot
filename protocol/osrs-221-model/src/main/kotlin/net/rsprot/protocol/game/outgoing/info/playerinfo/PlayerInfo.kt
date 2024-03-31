@@ -253,7 +253,7 @@ public class PlayerInfo internal constructor(
             val index = extendedInfoIndices[i].toInt()
             val other = checkNotNull(protocol.getPlayerInfo(index))
             val observerFlag = observerExtendedInfoFlags.getFlag(index)
-            other.extendedInfo.pExtendedInfo(platformType, jagBuffer, observerFlag, this.localIndex)
+            other.extendedInfo.pExtendedInfo(platformType, jagBuffer, observerFlag, extendedInfo)
         }
     }
 
