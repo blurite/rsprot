@@ -12,8 +12,10 @@ import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.Say
 import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.Sequence
 import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.SpotAnimList
 import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.TintingList
+import net.rsprot.protocol.shared.platform.PlatformType
 
 public data class ExtendedInfoEncoders(
+    public val platformType: PlatformType,
     public val appearance: PrecomputedExtendedInfoEncoder<Appearance>,
     public val chat: PrecomputedExtendedInfoEncoder<Chat>,
     public val exactMove: PrecomputedExtendedInfoEncoder<ExactMove>,

@@ -12,7 +12,6 @@ import net.rsprot.protocol.game.outgoing.info.playerinfo.util.CellOpcodes
 import net.rsprot.protocol.game.outgoing.info.playerinfo.util.ObserverExtendedInfoFlags
 import net.rsprot.protocol.game.outgoing.info.util.Avatar
 import net.rsprot.protocol.game.outgoing.info.util.ReferencePooledObject
-import net.rsprot.protocol.internal.game.outgoing.info.encoder.ExtendedInfoEncoders
 import net.rsprot.protocol.message.OutgoingMessage
 import net.rsprot.protocol.shared.platform.PlatformType
 import java.util.BitSet
@@ -42,8 +41,8 @@ import kotlin.math.abs
  * copying from and to the heap.
  * @param platformType the platform on which the player is logging into. This is utilized
  * to determine what encoders to use for extended info blocks.
- * @param extendedInfoEncoders a map of platform type to a wrapper of extended info encoders.
- * This map must provide encoders for all platform types that will be in use.
+ * @param extendedInfoWriters a list of platform-specific extended info writers.
+ * This map must provide writers for all platform types that will be in use.
  * It is also worth noting that pre-computations for extended info blocks will be done
  * for all platforms if multiple platforms are registered.
  * @param huffmanCodec the huffman codec responsible for compressing public chat extended info block.
@@ -54,7 +53,7 @@ public class PlayerInfo internal constructor(
     private var localIndex: Int,
     private val allocator: ByteBufAllocator,
     private var platformType: PlatformType,
-    extendedInfoEncoders: Map<PlatformType, ExtendedInfoEncoders>,
+    extendedInfoWriters: List<AvatarExtendedInfoWriter>,
     huffmanCodec: HuffmanCodec,
 ) : ReferencePooledObject, OutgoingMessage {
     /**
@@ -130,7 +129,7 @@ public class PlayerInfo internal constructor(
         PlayerAvatarExtendedInfo(
             protocol,
             localIndex,
-            extendedInfoEncoders,
+            extendedInfoWriters,
             allocator,
             huffmanCodec,
         )

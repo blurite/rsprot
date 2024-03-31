@@ -3,24 +3,10 @@ package net.rsprot.protocol.game.outgoing.info.playerinfo
 import io.netty.buffer.ByteBufAllocator
 import net.rsprot.buffer.JagByteBuf
 import net.rsprot.compression.HuffmanCodec
-import net.rsprot.protocol.internal.game.outgoing.info.ExtendedInfo
-import net.rsprot.protocol.internal.game.outgoing.info.encoder.ExtendedInfoEncoder
-import net.rsprot.protocol.internal.game.outgoing.info.encoder.ExtendedInfoEncoders
-import net.rsprot.protocol.internal.game.outgoing.info.encoder.OnDemandExtendedInfoEncoder
-import net.rsprot.protocol.internal.game.outgoing.info.playerinfo.extendedinfo.Appearance
-import net.rsprot.protocol.internal.game.outgoing.info.playerinfo.extendedinfo.Chat
-import net.rsprot.protocol.internal.game.outgoing.info.playerinfo.extendedinfo.FaceAngle
 import net.rsprot.protocol.internal.game.outgoing.info.playerinfo.extendedinfo.MoveSpeed
 import net.rsprot.protocol.internal.game.outgoing.info.playerinfo.extendedinfo.ObjTypeCustomisation
-import net.rsprot.protocol.internal.game.outgoing.info.playerinfo.extendedinfo.TemporaryMoveSpeed
-import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.ExactMove
 import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.FacePathingEntity
-import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.Hit
-import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.Say
-import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.Sequence
-import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.SpotAnimList
 import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.Tinting
-import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.TintingList
 import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.util.HeadBar
 import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.util.HitMark
 import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.util.SpotAnim
@@ -31,88 +17,26 @@ import net.rsprot.protocol.shared.platform.PlatformType
 public class PlayerAvatarExtendedInfo(
     private val protocol: PlayerInfoProtocol,
     private val localIndex: Int,
-    extendedInfoEncoders: Map<PlatformType, ExtendedInfoEncoders>,
+    extendedInfoWriters: List<AvatarExtendedInfoWriter>,
     allocator: ByteBufAllocator,
     huffmanCodec: HuffmanCodec,
 ) {
-    private val appearance: Appearance =
-        Appearance(
-            buildPlatformEncoderArray(extendedInfoEncoders, ExtendedInfoEncoders::appearance),
-            allocator,
-            huffmanCodec,
-        )
-    private val moveSpeed: MoveSpeed =
-        MoveSpeed(
-            buildPlatformEncoderArray(extendedInfoEncoders, ExtendedInfoEncoders::moveSpeed),
-            allocator,
-            huffmanCodec,
-        )
-    private val temporaryMoveSpeed: TemporaryMoveSpeed =
-        TemporaryMoveSpeed(
-            buildPlatformEncoderArray(extendedInfoEncoders, ExtendedInfoEncoders::temporaryMoveSpeed),
-            allocator,
-            huffmanCodec,
-        )
-    private val sequence: Sequence =
-        Sequence(
-            buildPlatformEncoderArray(extendedInfoEncoders, ExtendedInfoEncoders::sequence),
-            allocator,
-            huffmanCodec,
-        )
-    private val facePathingEntity: FacePathingEntity =
-        FacePathingEntity(
-            buildPlatformEncoderArray(extendedInfoEncoders, ExtendedInfoEncoders::facePathingEntity),
-            allocator,
-            huffmanCodec,
-        )
-    private val faceAngle: FaceAngle =
-        FaceAngle(
-            buildPlatformEncoderArray(extendedInfoEncoders, ExtendedInfoEncoders::faceAngle),
-            allocator,
-            huffmanCodec,
-        )
-    private val say: Say =
-        Say(
-            buildPlatformEncoderArray(extendedInfoEncoders, ExtendedInfoEncoders::say),
-            allocator,
-            huffmanCodec,
-        )
-    private val chat: Chat =
-        Chat(
-            buildPlatformEncoderArray(extendedInfoEncoders, ExtendedInfoEncoders::chat),
-            allocator,
-            huffmanCodec,
-        )
-    private val exactMove: ExactMove =
-        ExactMove(
-            buildPlatformEncoderArray(extendedInfoEncoders, ExtendedInfoEncoders::exactMove),
-            allocator,
-            huffmanCodec,
-        )
-    private val spotAnims: SpotAnimList =
-        SpotAnimList(
-            buildPlatformEncoderArray(extendedInfoEncoders, ExtendedInfoEncoders::spotAnim),
-            allocator,
-            huffmanCodec,
-        )
-    private val hit: Hit =
-        Hit(
-            buildPlatformEncoderArray(extendedInfoEncoders, ExtendedInfoEncoders::hit),
-        )
-    private val tinting: TintingList =
-        TintingList(
-            buildPlatformEncoderArray(extendedInfoEncoders, ExtendedInfoEncoders::tinting),
-        )
-
     internal var flags: Int = 0
+    private val blocks: PlayerAvatarExtendedInfoBlocks =
+        PlayerAvatarExtendedInfoBlocks(
+            extendedInfoWriters,
+            allocator,
+            huffmanCodec,
+        )
+    private val writers: Array<AvatarExtendedInfoWriter?> = buildPlatformWriterArray(extendedInfoWriters)
 
     public fun setMoveSpeed(value: Int) {
-        moveSpeed.value = value
+        blocks.moveSpeed.value = value
         flags = flags or MOVE_SPEED
     }
 
     public fun setTempMoveSpeed(value: Int) {
-        temporaryMoveSpeed.value = value
+        blocks.temporaryMoveSpeed.value = value
         flags = flags or TEMP_MOVE_SPEED
     }
 
@@ -120,23 +44,23 @@ public class PlayerAvatarExtendedInfo(
         id: Int,
         delay: Int,
     ) {
-        sequence.id = id.toUShort()
-        sequence.delay = delay.toUShort()
+        blocks.sequence.id = id.toUShort()
+        blocks.sequence.delay = delay.toUShort()
         flags = flags or SEQUENCE
     }
 
     public fun setFacePathingEntity(index: Int) {
-        facePathingEntity.index = index
+        blocks.facePathingEntity.index = index
         flags = flags or FACE_PATHINGENTITY
     }
 
     public fun setFaceAngle(angle: Int) {
-        faceAngle.angle = angle
+        blocks.faceAngle.angle = angle
         flags = flags or FACE_ANGLE
     }
 
     public fun setSay(text: String) {
-        say.text = text
+        blocks.say.text = text
         flags = flags or SAY
     }
 
@@ -157,12 +81,12 @@ public class PlayerAvatarExtendedInfo(
                 "Pattern length does not match the size configured in the colour property."
             }
         }
-        chat.colour = colour.toUByte()
-        chat.effects = effects.toUByte()
-        chat.modicon = modicon.toUByte()
-        chat.autotyper = autotyper
-        chat.text = text
-        chat.pattern = pattern
+        blocks.chat.colour = colour.toUByte()
+        blocks.chat.effects = effects.toUByte()
+        blocks.chat.modicon = modicon.toUByte()
+        blocks.chat.autotyper = autotyper
+        blocks.chat.text = text
+        blocks.chat.pattern = pattern
         flags = flags or CHAT
     }
 
@@ -175,13 +99,13 @@ public class PlayerAvatarExtendedInfo(
         delay2: Int,
         direction: Int,
     ) {
-        exactMove.deltaX1 = deltaX1.toUByte()
-        exactMove.deltaZ1 = deltaZ1.toUByte()
-        exactMove.delay1 = delay1.toUShort()
-        exactMove.deltaX2 = deltaX2.toUByte()
-        exactMove.deltaZ2 = deltaZ2.toUByte()
-        exactMove.delay2 = delay2.toUShort()
-        exactMove.direction = direction.toUShort()
+        blocks.exactMove.deltaX1 = deltaX1.toUByte()
+        blocks.exactMove.deltaZ1 = deltaZ1.toUByte()
+        blocks.exactMove.delay1 = delay1.toUShort()
+        blocks.exactMove.deltaX2 = deltaX2.toUByte()
+        blocks.exactMove.deltaZ2 = deltaZ2.toUByte()
+        blocks.exactMove.delay2 = delay2.toUShort()
+        blocks.exactMove.direction = direction.toUShort()
         flags = flags or EXACT_MOVE
     }
 
@@ -191,7 +115,7 @@ public class PlayerAvatarExtendedInfo(
         delay: Int,
         height: Int,
     ) {
-        spotAnims.set(slot, SpotAnim(id, delay, height))
+        blocks.spotAnims.set(slot, SpotAnim(id, delay, height))
         flags = flags or SPOTANIM
     }
 
@@ -202,7 +126,7 @@ public class PlayerAvatarExtendedInfo(
         value: Int,
         delay: Int = 0,
     ) {
-        hit.hitMarkList +=
+        blocks.hit.hitMarkList +=
             HitMark(
                 sourceIndex,
                 selfType.toUShort(),
@@ -214,7 +138,7 @@ public class PlayerAvatarExtendedInfo(
     }
 
     public fun removeHitMark(delay: Int = 0) {
-        hit.hitMarkList += HitMark(0x7FFEu, delay.toUShort())
+        blocks.hit.hitMarkList += HitMark(0x7FFEu, delay.toUShort())
         flags = flags or HITS
     }
 
@@ -228,7 +152,7 @@ public class PlayerAvatarExtendedInfo(
         soakValue: Int,
         delay: Int = 0,
     ) {
-        hit.hitMarkList +=
+        blocks.hit.hitMarkList +=
             HitMark(
                 sourceIndex,
                 selfType.toUShort(),
@@ -249,7 +173,7 @@ public class PlayerAvatarExtendedInfo(
         startTime: Int = 0,
         endTime: Int = 0,
     ) {
-        hit.headBarList +=
+        blocks.hit.headBarList +=
             HeadBar(
                 id.toUShort(),
                 startFill.toUByte(),
@@ -283,7 +207,7 @@ public class PlayerAvatarExtendedInfo(
                 "Player at index $visibleToIndex does not exist."
             }
             val tint = Tinting()
-            this.tinting.observerDependent[visibleToIndex] = tint
+            blocks.tinting.observerDependent[visibleToIndex] = tint
             tint.start = startTime.toUShort()
             tint.end = endTime.toUShort()
             tint.hue = hue.toUByte()
@@ -292,10 +216,10 @@ public class PlayerAvatarExtendedInfo(
             tint.weight = opacity.toUByte()
             otherPlayerInfo.observerExtendedInfoFlags.addFlag(
                 localIndex,
-                ExtendedInfoFlagCompressor.COMPRESSED_TINTING,
+                TINTING,
             )
         } else {
-            val tint = this.tinting.global
+            val tint = blocks.tinting.global
             tint.start = startTime.toUShort()
             tint.end = endTime.toUShort()
             tint.hue = hue.toUByte()
@@ -316,92 +240,92 @@ public class PlayerAvatarExtendedInfo(
         skullIcon: Int,
         overheadIcon: Int,
     ) {
-        appearance.name = name
-        appearance.combatLevel = combatLevel.toUByte()
-        appearance.skillLevel = skillLevel.toUShort()
-        appearance.hidden = hidden
-        appearance.male = male
-        appearance.textGender = textGender.toUByte()
-        appearance.skullIcon = skullIcon.toUByte()
-        appearance.overheadIcon = overheadIcon.toUByte()
+        blocks.appearance.name = name
+        blocks.appearance.combatLevel = combatLevel.toUByte()
+        blocks.appearance.skillLevel = skillLevel.toUShort()
+        blocks.appearance.hidden = hidden
+        blocks.appearance.male = male
+        blocks.appearance.textGender = textGender.toUByte()
+        blocks.appearance.skullIcon = skullIcon.toUByte()
+        blocks.appearance.overheadIcon = overheadIcon.toUByte()
         flagAppearance()
     }
 
     public fun setName(name: String) {
-        if (appearance.name == name) {
+        if (blocks.appearance.name == name) {
             return
         }
-        appearance.name = name
+        blocks.appearance.name = name
         flagAppearance()
     }
 
     public fun setCombatLevel(combatLevel: Int) {
         val level = combatLevel.toUByte()
-        if (appearance.combatLevel == level) {
+        if (blocks.appearance.combatLevel == level) {
             return
         }
-        appearance.combatLevel = level
+        blocks.appearance.combatLevel = level
         flagAppearance()
     }
 
     public fun setSkillLevel(skillLevel: Int) {
         val level = skillLevel.toUShort()
-        if (appearance.skillLevel == level) {
+        if (blocks.appearance.skillLevel == level) {
             return
         }
-        appearance.skillLevel = level
+        blocks.appearance.skillLevel = level
         flagAppearance()
     }
 
     public fun setHidden(hidden: Boolean) {
-        if (appearance.hidden == hidden) {
+        if (blocks.appearance.hidden == hidden) {
             return
         }
-        appearance.hidden = hidden
+        blocks.appearance.hidden = hidden
         flagAppearance()
     }
 
     public fun setMale(isMale: Boolean) {
-        if (appearance.male == isMale) {
+        if (blocks.appearance.male == isMale) {
             return
         }
-        appearance.male = isMale
+        blocks.appearance.male = isMale
         flagAppearance()
     }
 
     public fun setTextGender(num: Int) {
         val textGender = num.toUByte()
-        if (appearance.textGender == textGender) {
+        if (blocks.appearance.textGender == textGender) {
             return
         }
-        appearance.textGender = textGender
+        blocks.appearance.textGender = textGender
         flagAppearance()
     }
 
     public fun setSkullIcon(icon: Int) {
         val skullIcon = icon.toUByte()
-        if (appearance.skullIcon == skullIcon) {
+        if (blocks.appearance.skullIcon == skullIcon) {
             return
         }
-        appearance.skullIcon = skullIcon
+        blocks.appearance.skullIcon = skullIcon
         flagAppearance()
     }
 
     public fun setOverheadIcon(icon: Int) {
         val overheadIcon = icon.toUByte()
-        if (appearance.overheadIcon == overheadIcon) {
+        if (blocks.appearance.overheadIcon == overheadIcon) {
             return
         }
-        appearance.overheadIcon = overheadIcon
+        blocks.appearance.overheadIcon = overheadIcon
         flagAppearance()
     }
 
     public fun transformToNpc(id: Int) {
         val npcId = id.toUShort()
-        if (appearance.transformedNpcId == npcId) {
+        if (blocks.appearance.transformedNpcId == npcId) {
             return
         }
-        appearance.transformedNpcId = npcId
+        blocks.appearance.transformedNpcId = npcId
         flagAppearance()
     }
 
@@ -410,11 +334,11 @@ public class PlayerAvatarExtendedInfo(
         value: Int,
     ) {
         val valueAsShort = value.toShort()
-        val cur = appearance.identKit[wearPos]
+        val cur = blocks.appearance.identKit[wearPos]
         if (cur == valueAsShort) {
             return
         }
-        appearance.identKit[wearPos] = valueAsShort
+        blocks.appearance.identKit[wearPos] = valueAsShort
         flagAppearance()
     }
 
@@ -425,13 +349,13 @@ public class PlayerAvatarExtendedInfo(
         wearpos3: Int,
     ) {
         val valueAsShort = id.toShort()
-        val cur = appearance.wornObjs[wearpos]
+        val cur = blocks.appearance.wornObjs[wearpos]
         if (cur == valueAsShort) {
             return
         }
-        appearance.wornObjs[wearpos] = valueAsShort
+        blocks.appearance.wornObjs[wearpos] = valueAsShort
         val hiddenSlotsBitpacked = (wearpos2 and 0xF shl 4) or wearpos3 and 0xF
-        appearance.hiddenWearPos[wearpos] = hiddenSlotsBitpacked.toByte()
+        blocks.appearance.hiddenWearPos[wearpos] = hiddenSlotsBitpacked.toByte()
         flagAppearance()
     }
 
@@ -440,11 +364,11 @@ public class PlayerAvatarExtendedInfo(
         value: Int,
     ) {
         val valueAsByte = value.toByte()
-        val cur = appearance.colours[slot]
+        val cur = blocks.appearance.colours[slot]
         if (cur == valueAsByte) {
             return
         }
-        appearance.colours[slot] = valueAsByte
+        blocks.appearance.colours[slot] = valueAsByte
         flagAppearance()
     }
 
@@ -457,13 +381,13 @@ public class PlayerAvatarExtendedInfo(
         walkAnimRight: Int,
         runAnim: Int,
     ) {
-        appearance.readyAnim = readyAnim.toUShort()
-        appearance.turnAnim = turnAnim.toUShort()
-        appearance.walkAnim = walkAnim.toUShort()
-        appearance.walkAnimBack = walkAnimBack.toUShort()
-        appearance.walkAnimLeft = walkAnimLeft.toUShort()
-        appearance.walkAnimRight = walkAnimRight.toUShort()
-        appearance.runAnim = runAnim.toUShort()
+        blocks.appearance.readyAnim = readyAnim.toUShort()
+        blocks.appearance.turnAnim = turnAnim.toUShort()
+        blocks.appearance.walkAnim = walkAnim.toUShort()
+        blocks.appearance.walkAnimBack = walkAnimBack.toUShort()
+        blocks.appearance.walkAnimLeft = walkAnimLeft.toUShort()
+        blocks.appearance.walkAnimRight = walkAnimRight.toUShort()
+        blocks.appearance.runAnim = runAnim.toUShort()
         flagAppearance()
     }
 
@@ -472,25 +396,25 @@ public class PlayerAvatarExtendedInfo(
         afterName: String,
         afterCombatLevel: String,
     ) {
-        appearance.beforeName = beforeName
-        appearance.afterName = afterName
-        appearance.afterCombatLevel = afterCombatLevel
+        blocks.appearance.beforeName = beforeName
+        blocks.appearance.afterName = afterName
+        blocks.appearance.afterCombatLevel = afterCombatLevel
         flagAppearance()
     }
 
     public fun clearObjTypeCustomisation(wearpos: Int) {
-        if (appearance.objTypeCustomisation[wearpos] == null) {
+        if (blocks.appearance.objTypeCustomisation[wearpos] == null) {
             return
         }
-        appearance.objTypeCustomisation[wearpos] = null
+        blocks.appearance.objTypeCustomisation[wearpos] = null
         flagAppearance()
     }
 
     private fun allocObjCustomisation(wearpos: Int): ObjTypeCustomisation {
-        var customisation = appearance.objTypeCustomisation[wearpos]
+        var customisation = blocks.appearance.objTypeCustomisation[wearpos]
         if (customisation == null) {
             customisation = ObjTypeCustomisation()
-            appearance.objTypeCustomisation[wearpos] = customisation
+            blocks.appearance.objTypeCustomisation[wearpos] = customisation
         }
         return customisation
     }
@@ -541,7 +465,7 @@ public class PlayerAvatarExtendedInfo(
 
     private fun flagAppearance() {
         flags = flags or APPEARANCE
-        appearance.changeCounter++
+        blocks.appearance.changeCounter++
     }
 
     internal fun postUpdate() {
@@ -551,38 +475,38 @@ public class PlayerAvatarExtendedInfo(
 
     internal fun reset() {
         flags = 0
-        appearance.clear()
-        moveSpeed.clear()
-        temporaryMoveSpeed.clear()
-        sequence.clear()
-        facePathingEntity.clear()
-        faceAngle.clear()
-        say.clear()
-        chat.clear()
-        exactMove.clear()
-        spotAnims.clear()
-        hit.clear()
-        tinting.clear()
+        blocks.appearance.clear()
+        blocks.moveSpeed.clear()
+        blocks.temporaryMoveSpeed.clear()
+        blocks.sequence.clear()
+        blocks.facePathingEntity.clear()
+        blocks.faceAngle.clear()
+        blocks.say.clear()
+        blocks.chat.clear()
+        blocks.exactMove.clear()
+        blocks.spotAnims.clear()
+        blocks.hit.clear()
+        blocks.tinting.clear()
     }
 
     internal fun getLowToHighResChangeExtendedInfoFlags(observer: PlayerAvatarExtendedInfo): Int {
         var flag = 0
         if (checkOutOfDate(observer)) {
-            flag = flag or ExtendedInfoFlagCompressor.COMPRESSED_APPEARANCE
+            flag = flag or APPEARANCE
         }
-        if (moveSpeed.value != MoveSpeed.DEFAULT_MOVESPEED) {
-            flag = flag or ExtendedInfoFlagCompressor.COMPRESSED_MOVE_SPEED
+        if (blocks.moveSpeed.value != MoveSpeed.DEFAULT_MOVESPEED) {
+            flag = flag or MOVE_SPEED
         }
-        if (facePathingEntity.index != FacePathingEntity.DEFAULT_VALUE) {
-            flag = flag or ExtendedInfoFlagCompressor.COMPRESSED_FACE_PATHINGENTITY
+        if (blocks.facePathingEntity.index != FacePathingEntity.DEFAULT_VALUE) {
+            flag = flag or FACE_PATHINGENTITY
         }
         return flag
     }
 
     private fun checkOutOfDate(observer: PlayerAvatarExtendedInfo): Boolean {
-        val isOutOfDate = observer.appearance.otherChangesCounter[localIndex] != appearance.changeCounter
+        val isOutOfDate = observer.blocks.appearance.otherChangesCounter[localIndex] != blocks.appearance.changeCounter
         if (isOutOfDate) {
-            observer.appearance.otherChangesCounter[localIndex] = appearance.changeCounter
+            observer.blocks.appearance.otherChangesCounter[localIndex] = blocks.appearance.changeCounter
         }
         return isOutOfDate
     }
@@ -590,28 +514,28 @@ public class PlayerAvatarExtendedInfo(
     internal fun precompute() {
         // Hits and tinting do not get precomputed
         if (flags and APPEARANCE != 0) {
-            appearance.precompute()
+            blocks.appearance.precompute()
         }
         if (flags and TEMP_MOVE_SPEED != 0) {
-            temporaryMoveSpeed.precompute()
+            blocks.temporaryMoveSpeed.precompute()
         }
         if (flags and SEQUENCE != 0) {
-            sequence.precompute()
+            blocks.sequence.precompute()
         }
         if (flags and FACE_ANGLE != 0) {
-            faceAngle.precompute()
+            blocks.faceAngle.precompute()
         }
         if (flags and SAY != 0) {
-            say.precompute()
+            blocks.say.precompute()
         }
         if (flags and CHAT != 0) {
-            chat.precompute()
+            blocks.chat.precompute()
         }
         if (flags and EXACT_MOVE != 0) {
-            exactMove.precompute()
+            blocks.exactMove.precompute()
         }
         if (flags and SPOTANIM != 0) {
-            spotAnims.precompute()
+            blocks.spotAnims.precompute()
         }
     }
 
@@ -626,156 +550,73 @@ public class PlayerAvatarExtendedInfo(
             buffer.p1(0)
             return
         }
-        var flag = this.flags or observerFlag
-        if (flag and 0xFF.inv() != 0) flag = flag or EXTENDED_SHORT
-        if (flag and 0xFFFF.inv() != 0) flag = flag or EXTENDED_MEDIUM
-        buffer.p1(flag)
-        if (flag and EXTENDED_SHORT != 0) {
-            buffer.p1(flag shr 8)
-        }
-        if (flag and EXTENDED_MEDIUM != 0) {
-            buffer.p1(flag shr 16)
-        }
-
-        if (flag and FACE_ANGLE != 0) {
-            pCachedData(platformType, buffer, faceAngle)
-        }
-        // Old chat
-        if (flag and SEQUENCE != 0) {
-            pCachedData(platformType, buffer, sequence)
-        }
-        if (flag and HITS != 0) {
-            pOnDemandData(platformType, buffer, hit, observerIndex)
-        }
-        if (flag and EXACT_MOVE != 0) {
-            pCachedData(platformType, buffer, exactMove)
-        }
-        if (flag and CHAT != 0) {
-            pCachedData(platformType, buffer, chat)
-        }
-        if (flag and TEMP_MOVE_SPEED != 0) {
-            pCachedData(platformType, buffer, temporaryMoveSpeed)
-        }
-        // name extras
-        if (flag and SAY != 0) {
-            pCachedData(platformType, buffer, say)
-        }
-        if (flag and TINTING != 0) {
-            pOnDemandData(platformType, buffer, tinting, observerIndex)
-        }
-        if (flag and MOVE_SPEED != 0) {
-            pCachedData(platformType, buffer, moveSpeed)
-        }
-        if (flag and APPEARANCE != 0) {
-            pCachedData(platformType, buffer, appearance)
-        }
-        if (flag and FACE_PATHINGENTITY != 0) {
-            pCachedData(platformType, buffer, facePathingEntity)
-        }
-        if (flag and SPOTANIM != 0) {
-            pCachedData(platformType, buffer, spotAnims)
-        }
-    }
-
-    private fun pCachedData(
-        platformType: PlatformType,
-        buffer: JagByteBuf,
-        block: ExtendedInfo<*, *>,
-    ) {
-        val precomputed =
-            checkNotNull(block.getBuffer(platformType)) {
-                "Buffer has not been computed on platform $platformType, ${block.javaClass.name}"
+        val writer =
+            requireNotNull(writers[platformType.id]) {
+                "Extended info writer missing for platform $platformType"
             }
-        buffer.buffer.writeBytes(precomputed, precomputed.readerIndex(), precomputed.readableBytes())
-    }
-
-    private fun <T : ExtendedInfo<T, E>, E : OnDemandExtendedInfoEncoder<T>> pOnDemandData(
-        platformType: PlatformType,
-        buffer: JagByteBuf,
-        block: T,
-        observerIndex: Int,
-    ) {
-        val encoder =
-            checkNotNull(block.getEncoder(platformType)) {
-                "Encoder has not been set for platform $platformType"
-            }
-        encoder.encode(
+        writer.pExtendedInfo(
             buffer,
-            observerIndex,
             localIndex,
-            block,
+            observerFlag,
+            observerIndex,
+            this.flags,
+            blocks,
         )
     }
 
     private fun clearTransientExtendedInformation() {
         if (flags and TEMP_MOVE_SPEED != 0) {
-            temporaryMoveSpeed.clear()
+            blocks.temporaryMoveSpeed.clear()
         }
         if (flags and SEQUENCE != 0) {
-            sequence.clear()
+            blocks.sequence.clear()
         }
         if (flags and FACE_ANGLE != 0) {
-            faceAngle.clear()
+            blocks.faceAngle.clear()
         }
         if (flags and SAY != 0) {
-            say.clear()
+            blocks.say.clear()
         }
         if (flags and CHAT != 0) {
-            chat.clear()
+            blocks.chat.clear()
         }
         if (flags and EXACT_MOVE != 0) {
-            exactMove.clear()
+            blocks.exactMove.clear()
         }
         if (flags and SPOTANIM != 0) {
-            spotAnims.clear()
+            blocks.spotAnims.clear()
         }
         if (flags and HITS != 0) {
-            hit.clear()
+            blocks.hit.clear()
         }
         if (flags and TINTING != 0) {
-            tinting.clear()
+            blocks.tinting.clear()
         }
     }
 
     public companion object {
-        internal const val EXTENDED_SHORT = 0x1
-        internal const val FACE_ANGLE = 0x2
-        internal const val APPEARANCE = 0x4
-        internal const val SAY = 0x8
+        // Observer-dependent flags, utilizing the lowest bits as we store observer flags in a byte array
+        public const val APPEARANCE: Int = 0x1
+        public const val MOVE_SPEED: Int = 0x2
+        public const val FACE_PATHINGENTITY: Int = 0x4
+        public const val TINTING: Int = 0x8
 
-        @Suppress("unused")
-        internal const val CHAT_OLD = 0x10
-        internal const val HITS = 0x20
-        internal const val FACE_PATHINGENTITY = 0x40
-        internal const val SEQUENCE = 0x80
-        internal const val MOVE_SPEED = 0x200
-        internal const val CHAT = 0x400
-        internal const val EXTENDED_MEDIUM = 0x800
-        internal const val TEMP_MOVE_SPEED = 0x1000
-        internal const val TINTING = 0x2000
-        internal const val EXACT_MOVE = 0x4000
-        internal const val SPOTANIM = 0x10000
+        // "Static" flags, the bit values here are irrelevant
+        public const val FACE_ANGLE: Int = 0x10
+        public const val SAY: Int = 0x20
+        public const val HITS: Int = 0x40
+        public const val SEQUENCE: Int = 0x80
+        public const val CHAT: Int = 0x100
+        public const val TEMP_MOVE_SPEED: Int = 0x200
+        public const val EXACT_MOVE: Int = 0x400
+        public const val SPOTANIM: Int = 0x800
 
-        // Name extras are part of appearance nowadays, and thus will not be used on their own
-        @Suppress("unused")
-        internal const val NAME_EXTRAS = 0x100
-
-        public val COMPRESSOR: ExtendedInfoFlagCompressor =
-            ExtendedInfoFlagCompressor(
-                APPEARANCE,
-                MOVE_SPEED,
-                FACE_PATHINGENTITY,
-                TINTING,
-            )
-
-        private inline fun <T : ExtendedInfo<T, E>, reified E : ExtendedInfoEncoder<T>> buildPlatformEncoderArray(
-            allEncoders: Map<PlatformType, ExtendedInfoEncoders>,
-            selector: (ExtendedInfoEncoders) -> E,
-        ): Array<E?> {
-            val array = arrayOfNulls<E>(PlatformType.COUNT)
-            for ((platform, encoders) in allEncoders) {
-                val encoder = selector(encoders)
-                array[platform.id] = encoder
+        private fun buildPlatformWriterArray(
+            extendedInfoWriters: List<AvatarExtendedInfoWriter>,
+        ): Array<AvatarExtendedInfoWriter?> {
+            val array = arrayOfNulls<AvatarExtendedInfoWriter>(PlatformType.COUNT)
+            for (writer in extendedInfoWriters) {
+                array[writer.platformType.id] = writer
             }
             return array
         }

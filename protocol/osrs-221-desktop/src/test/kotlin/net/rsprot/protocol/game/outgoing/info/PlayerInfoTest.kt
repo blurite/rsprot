@@ -3,22 +3,10 @@ package net.rsprot.protocol.game.outgoing.info
 import io.netty.buffer.PooledByteBufAllocator
 import io.netty.buffer.Unpooled
 import net.rsprot.compression.HuffmanCodec
-import net.rsprot.protocol.game.outgoing.codec.playerinfo.extendedinfo.AppearanceEncoder
-import net.rsprot.protocol.game.outgoing.codec.playerinfo.extendedinfo.ChatEncoder
-import net.rsprot.protocol.game.outgoing.codec.playerinfo.extendedinfo.ExactMoveEncoder
-import net.rsprot.protocol.game.outgoing.codec.playerinfo.extendedinfo.FaceAngleEncoder
-import net.rsprot.protocol.game.outgoing.codec.playerinfo.extendedinfo.FacePathingEntityEncoder
-import net.rsprot.protocol.game.outgoing.codec.playerinfo.extendedinfo.HitEncoder
-import net.rsprot.protocol.game.outgoing.codec.playerinfo.extendedinfo.MoveSpeedEncoder
-import net.rsprot.protocol.game.outgoing.codec.playerinfo.extendedinfo.SayEncoder
-import net.rsprot.protocol.game.outgoing.codec.playerinfo.extendedinfo.SequenceEncoder
-import net.rsprot.protocol.game.outgoing.codec.playerinfo.extendedinfo.SpotAnimEncoder
-import net.rsprot.protocol.game.outgoing.codec.playerinfo.extendedinfo.TemporaryMoveSpeedEncoder
-import net.rsprot.protocol.game.outgoing.codec.playerinfo.extendedinfo.TintingEncoder
+import net.rsprot.protocol.game.outgoing.codec.playerinfo.extendedinfo.AvatarExtendedInfoDesktopWriter
 import net.rsprot.protocol.game.outgoing.info.playerinfo.PlayerInfo
 import net.rsprot.protocol.game.outgoing.info.playerinfo.PlayerInfoProtocol
 import net.rsprot.protocol.game.outgoing.info.worker.DefaultProtocolWorker
-import net.rsprot.protocol.internal.game.outgoing.info.encoder.ExtendedInfoEncoders
 import net.rsprot.protocol.shared.platform.PlatformType
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -32,12 +20,12 @@ class PlayerInfoTest {
 
     @BeforeEach
     fun initialize() {
-        val encoders = mapOf(PlatformType.DESKTOP to getExtendedInfoEncoders())
+        val writers = listOf(AvatarExtendedInfoDesktopWriter())
         protocol =
             PlayerInfoProtocol(
                 PooledByteBufAllocator.DEFAULT,
                 DefaultProtocolWorker(),
-                encoders,
+                writers,
                 createHuffmanCodec(),
             )
         localPlayerInfo = protocol.alloc(LOCAL_PLAYER_INDEX, PlatformType.DESKTOP)
@@ -81,23 +69,6 @@ class PlayerInfoTest {
             821,
             822,
             824,
-        )
-    }
-
-    private fun getExtendedInfoEncoders(): ExtendedInfoEncoders {
-        return ExtendedInfoEncoders(
-            AppearanceEncoder(),
-            ChatEncoder(),
-            ExactMoveEncoder(),
-            FaceAngleEncoder(),
-            FacePathingEntityEncoder(),
-            HitEncoder(),
-            MoveSpeedEncoder(),
-            SayEncoder(),
-            SequenceEncoder(),
-            SpotAnimEncoder(),
-            TemporaryMoveSpeedEncoder(),
-            TintingEncoder(),
         )
     }
 

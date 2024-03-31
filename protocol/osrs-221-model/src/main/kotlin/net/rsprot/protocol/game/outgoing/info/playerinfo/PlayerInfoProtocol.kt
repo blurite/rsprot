@@ -6,7 +6,6 @@ import net.rsprot.compression.HuffmanCodec
 import net.rsprot.protocol.game.outgoing.info.playerinfo.util.LowResolutionPosition
 import net.rsprot.protocol.game.outgoing.info.worker.DefaultProtocolWorker
 import net.rsprot.protocol.game.outgoing.info.worker.ProtocolWorker
-import net.rsprot.protocol.internal.game.outgoing.info.encoder.ExtendedInfoEncoders
 import net.rsprot.protocol.shared.platform.PlatformType
 import java.util.concurrent.Callable
 import java.util.concurrent.ForkJoinPool
@@ -26,8 +25,8 @@ import java.util.concurrent.ForkJoinPool
  * The default worker will remain single-threaded if there are less than `coreCount * 4` players
  * in the world. Otherwise, it will use [ForkJoinPool] to execute these jobs. Both of these
  * are configurable within the [DefaultProtocolWorker] constructor.
- * @param extendedInfoEncoders a map of platform type to a wrapper of extended info encoders.
- * This map must provide encoders for all platform types that will be in use.
+ * @param extendedInfoWriters a list of platform-specific extended info writers.
+ * This map must provide writers for all platform types that will be in use.
  * It is also worth noting that pre-computations for extended info blocks will be done
  * for all platforms if multiple platforms are registered.
  * @param huffmanCodec the huffman codec responsible for compressing public chat extended info block.
@@ -35,7 +34,7 @@ import java.util.concurrent.ForkJoinPool
 public class PlayerInfoProtocol(
     private val allocator: ByteBufAllocator,
     private val worker: ProtocolWorker = DefaultProtocolWorker(),
-    extendedInfoEncoders: Map<PlatformType, ExtendedInfoEncoders>,
+    extendedInfoWriters: List<AvatarExtendedInfoWriter>,
     huffmanCodec: HuffmanCodec,
 ) {
     /**
@@ -56,7 +55,7 @@ public class PlayerInfoProtocol(
                 localIndex,
                 allocator,
                 platformType,
-                extendedInfoEncoders,
+                extendedInfoWriters,
                 huffmanCodec,
             )
         }
