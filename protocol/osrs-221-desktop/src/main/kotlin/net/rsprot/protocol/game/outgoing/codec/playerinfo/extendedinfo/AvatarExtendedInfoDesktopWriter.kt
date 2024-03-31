@@ -69,58 +69,57 @@ public class AvatarExtendedInfoDesktopWriter : AvatarExtendedInfoWriter(
     override fun pExtendedInfo(
         buffer: JagByteBuf,
         localIndex: Int,
-        observerFlag: Int,
         observerIndex: Int,
-        staticFlag: Int,
+        flag: Int,
         blocks: PlayerAvatarExtendedInfoBlocks,
     ) {
-        var flag = convertFlags(staticFlag or observerFlag)
-        if (flag and 0xFF.inv() != 0) flag = flag or EXTENDED_SHORT
-        if (flag and 0xFFFF.inv() != 0) flag = flag or EXTENDED_MEDIUM
-        buffer.p1(flag)
-        if (flag and EXTENDED_SHORT != 0) {
-            buffer.p1(flag shr 8)
+        var platformFlag = convertFlags(flag)
+        if (platformFlag and 0xFF.inv() != 0) platformFlag = platformFlag or EXTENDED_SHORT
+        if (platformFlag and 0xFFFF.inv() != 0) platformFlag = platformFlag or EXTENDED_MEDIUM
+        buffer.p1(platformFlag)
+        if (platformFlag and EXTENDED_SHORT != 0) {
+            buffer.p1(platformFlag shr 8)
         }
-        if (flag and EXTENDED_MEDIUM != 0) {
-            buffer.p1(flag shr 16)
+        if (platformFlag and EXTENDED_MEDIUM != 0) {
+            buffer.p1(platformFlag shr 16)
         }
 
-        if (flag and FACE_ANGLE != 0) {
+        if (platformFlag and FACE_ANGLE != 0) {
             pCachedData(buffer, blocks.faceAngle)
         }
         // Old chat
-        if (flag and SEQUENCE != 0) {
+        if (platformFlag and SEQUENCE != 0) {
             pCachedData(buffer, blocks.sequence)
         }
-        if (flag and HITS != 0) {
+        if (platformFlag and HITS != 0) {
             pOnDemandData(buffer, localIndex, blocks.hit, observerIndex)
         }
-        if (flag and EXACT_MOVE != 0) {
+        if (platformFlag and EXACT_MOVE != 0) {
             pCachedData(buffer, blocks.exactMove)
         }
-        if (flag and CHAT != 0) {
+        if (platformFlag and CHAT != 0) {
             pCachedData(buffer, blocks.chat)
         }
-        if (flag and TEMP_MOVE_SPEED != 0) {
+        if (platformFlag and TEMP_MOVE_SPEED != 0) {
             pCachedData(buffer, blocks.temporaryMoveSpeed)
         }
         // name extras
-        if (flag and SAY != 0) {
+        if (platformFlag and SAY != 0) {
             pCachedData(buffer, blocks.say)
         }
-        if (flag and TINTING != 0) {
+        if (platformFlag and TINTING != 0) {
             pOnDemandData(buffer, localIndex, blocks.tinting, observerIndex)
         }
-        if (flag and MOVE_SPEED != 0) {
+        if (platformFlag and MOVE_SPEED != 0) {
             pCachedData(buffer, blocks.moveSpeed)
         }
-        if (flag and APPEARANCE != 0) {
+        if (platformFlag and APPEARANCE != 0) {
             pCachedData(buffer, blocks.appearance)
         }
-        if (flag and FACE_PATHINGENTITY != 0) {
+        if (platformFlag and FACE_PATHINGENTITY != 0) {
             pCachedData(buffer, blocks.facePathingEntity)
         }
-        if (flag and SPOTANIM != 0) {
+        if (platformFlag and SPOTANIM != 0) {
             pCachedData(buffer, blocks.spotAnims)
         }
     }

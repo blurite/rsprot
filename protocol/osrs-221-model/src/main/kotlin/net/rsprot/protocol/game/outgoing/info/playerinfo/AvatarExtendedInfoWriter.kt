@@ -13,9 +13,8 @@ public abstract class AvatarExtendedInfoWriter(
     public abstract fun pExtendedInfo(
         buffer: JagByteBuf,
         localIndex: Int,
-        observerFlag: Int,
         observerIndex: Int,
-        staticFlag: Int,
+        flag: Int,
         blocks: PlayerAvatarExtendedInfoBlocks,
     )
 

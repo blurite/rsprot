@@ -557,9 +557,8 @@ public class PlayerAvatarExtendedInfo(
         writer.pExtendedInfo(
             buffer,
             localIndex,
-            observerFlag,
             observerIndex,
-            this.flags,
+            this.flags or observerFlag,
             blocks,
         )
     }
