@@ -19,6 +19,17 @@ import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.SpotA
 import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.TintingList
 import net.rsprot.protocol.shared.platform.PlatformType
 
+/**
+ * A data structure to bring all the extended info blocks together,
+ * so the information can be passed onto various platform-specific encoders.
+ * @param writers the list of platform-specific writers.
+ * The writers must be platform-specific too, not just encoders, as
+ * the order in which the extended info blocks get written must follow
+ * the exact order described by the client.
+ * @param allocator the buffer allocator used for pre-computed extended
+ * info blocks.
+ * @param huffmanCodec the Huffman codec is used to compress public chat extended info blocks.
+ */
 public class PlayerAvatarExtendedInfoBlocks(
     writers: List<PlayerAvatarExtendedInfoWriter>,
     allocator: ByteBufAllocator,
@@ -94,6 +105,16 @@ public class PlayerAvatarExtendedInfoBlocks(
         )
 
     private companion object {
+        /**
+         * Builds a platform-specific array of encoders for a specific extended info block,
+         * indexed by [PlatformType.id].
+         * If a platform hasn't been registered, the encoder at that index will be null.
+         * @param allEncoders all the platform-specific extended info writers for the given type.
+         * @param selector a higher order function to retrieve a specific extended info block from
+         * the full structure of all the extended info blocks.
+         * @return an array of platform-specific encoders of the given extended info block,
+         * indexed by [PlatformType.id].
+         */
         private inline fun <T : ExtendedInfo<T, E>, reified E : ExtendedInfoEncoder<T>> buildPlatformEncoderArray(
             allEncoders: List<PlayerAvatarExtendedInfoWriter>,
             selector: (PlayerExtendedInfoEncoders) -> E,
