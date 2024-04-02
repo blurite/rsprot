@@ -125,8 +125,23 @@ internal class PlayerInfoRepository(
         } finally {
             elements[idx] = null
         }
+        informDeallocation(idx)
         val reference = SoftReference(element, queue)
         reference.enqueue()
         return true
+    }
+
+    /**
+     * Informs all the other avatars of a given avatar being deallocated.
+     * This is necessary to reset our cached properties (such as the appearance cache)
+     * of other players.
+     */
+    private fun informDeallocation(idx: Int) {
+        for (element in elements) {
+            if (element == null) {
+                continue
+            }
+            element.extendedInfo.onOtherAvatarDeallocated(idx)
+        }
     }
 }

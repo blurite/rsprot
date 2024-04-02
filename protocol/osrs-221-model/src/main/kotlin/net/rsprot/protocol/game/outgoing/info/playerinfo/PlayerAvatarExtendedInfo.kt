@@ -17,6 +17,21 @@ import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.util.
 import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.util.SpotAnim
 import net.rsprot.protocol.shared.platform.PlatformType
 
+/**
+ * This data structure keeps track of all the extended info blocks for a given player avatar.
+ *  @param protocol the player info protocol of the entire world, necessary,
+ *  as some extended info blocks are observer-dependent and need to reference other avatars.
+ *  @param localIndex the index of the avatar who owns this extended info block.
+ *  @param filter the filter responsible for ensuring the total packet size constraint
+ *  is not broken in any way. If this filter does not conform to the contract correctly,
+ *  crashes are likely to happen during encoding.
+ *  @param extendedInfoWriters the list of platform-specific writers & encoders of all extended
+ *  info blocks. During caching procedure, all registered platform buffers will be built
+ *  concurrently among players.
+ *  @param allocator the byte buffer allocator used to allocate buffers during the caching procedure.
+ *  Any extended info block which is built on-demand is written directly into the main buffer.
+ *  @param huffmanCodec the Huffman codec is used to compress public chat extended info blocks.
+ */
 @Suppress("MemberVisibilityCanBePrivate")
 public class PlayerAvatarExtendedInfo(
     private val protocol: PlayerInfoProtocol,
@@ -26,19 +41,63 @@ public class PlayerAvatarExtendedInfo(
     allocator: ByteBufAllocator,
     huffmanCodec: HuffmanCodec,
 ) {
+    /**
+     * The flags currently enabled for this avatar.
+     * When an update is requested, the respective flag of that update is appended
+     * onto this flag. At the end of each cycle, the flag is reset.
+     * Worth noting, however, that this flag only contains constants within
+     * the [Companion] of this class. For platform-specific encoders, a translation
+     * occurs to turn these constants into a platform-specific flag.
+     */
     internal var flags: Int = 0
+
+    /**
+     * Extended info blocks used to transmit changes to the client,
+     * wrapped in its own class as we must pass this onto the platform-specific
+     * implementations.
+     */
     private val blocks: PlayerAvatarExtendedInfoBlocks =
         PlayerAvatarExtendedInfoBlocks(
             extendedInfoWriters,
             allocator,
             huffmanCodec,
         )
+
+    /**
+     * The platform-specific extended info writers, indexed by the respective [PlatformType]'s id.
+     * All platforms in use must be registered, or an exception will occur during player info encoding.
+     */
     private val writers: Array<AvatarExtendedInfoWriter?> = buildPlatformWriterArray(extendedInfoWriters)
 
-    // Appearance has built-in engine support for caching, so we use a changes counter to track this
+    /**
+     * An int array to keep track of the number of times we've seen someone modify their appearance.
+     * During low to high resolution transition, if our counter of their changes does not align
+     * with their own counter of their appearance changes, their appearance will be re-transmitted
+     * to our client, in order to synchronize it. If the values align, the client will utilize its
+     * previously cached variant.
+     */
     private val otherAppearanceChangesCounter: IntArray = IntArray(PlayerInfoProtocol.PROTOCOL_CAPACITY)
+
+    /**
+     * The number of times our appearance has changed.
+     */
     private var appearanceChangesCounter: Int = 0
 
+    /**
+     * Sets the movement speed for this avatar. This move speed will be used whenever
+     * the player moves, unless a temporary move speed is utilized, which will take priority.
+     * The known values are:
+     *
+     * ```
+     * | Type       | Id |
+     * |------------|----|
+     * | Stationary | -1 |
+     * | Crawl      | 0  |
+     * | Walk       | 1  |
+     * | Run        | 2  |
+     * ```
+     * @param value the move speed value.
+     */
     public fun setMoveSpeed(value: Int) {
         verify {
             require(value in -1..2) {
@@ -49,6 +108,21 @@ public class PlayerAvatarExtendedInfo(
         flags = flags or MOVE_SPEED
     }
 
+    /**
+     * Sets the temporary movement speed for this avatar - this move speed will only
+     * apply for a single game cycle.
+     * The known values are:
+     * ```
+     * | Type            | Id  |
+     * |-----------------|-----|
+     * | Stationary      | -1  |
+     * | Crawl           |  0  |
+     * | Walk            |  1  |
+     * | Run             |  2  |
+     * | Teleport        | 127 |
+     * ```
+     * @param value the temporary move speed value.
+     */
     public fun setTempMoveSpeed(value: Int) {
         verify {
             require(value in -1..2 || value == 127) {
@@ -59,6 +133,11 @@ public class PlayerAvatarExtendedInfo(
         flags = flags or TEMP_MOVE_SPEED
     }
 
+    /**
+     * Sets the sequence for this avatar to play.
+     * @param id the id of the sequence to play, or -1 to stop playing current sequence.
+     * @param delay the delay in client cycles (20ms/cc) until the avatar starts playing this sequence.
+     */
     public fun setSequence(
         id: Int,
         delay: Int,
@@ -76,6 +155,13 @@ public class PlayerAvatarExtendedInfo(
         flags = flags or SEQUENCE
     }
 
+    /**
+     * Sets the face-locking onto the avatar with index [index].
+     * If the target avatar is a player, add 0x10000 to the real index value (0-2048).
+     * If the target avatar is a NPC, set the index as it is.
+     * In order to stop facing an entity, set the index value to -1.
+     * @param index the index of the target to face-lock onto (read above)
+     */
     public fun setFacePathingEntity(index: Int) {
         verify {
             require(index == -1 || index in 0..0x107FF) {
@@ -87,6 +173,12 @@ public class PlayerAvatarExtendedInfo(
         flags = flags or FACE_PATHINGENTITY
     }
 
+    /**
+     * Sets the angle for this avatar to face.
+     * @param angle the angle to face, value range is 0..<2048,
+     * with 0 implying south, 512 west, 1024 north and 1536 east; interpolate
+     * between to get finer directions.
+     */
     public fun setFaceAngle(angle: Int) {
         verify {
             require(angle in 0..2047) {
@@ -97,6 +189,14 @@ public class PlayerAvatarExtendedInfo(
         flags = flags or FACE_ANGLE
     }
 
+    /**
+     * Sets the overhead chat of this avatar.
+     * If the [text] starts with the character `~`, the message will additionally
+     * also be rendered in the chatbox of everyone nearby, although no chat icons
+     * will appear alongside. The first `~` character itself will not be rendered
+     * in that scenario.
+     * @param text the text to render overhead.
+     */
     public fun setSay(text: String) {
         verify {
             require(text.length <= 80) {
@@ -108,6 +208,47 @@ public class PlayerAvatarExtendedInfo(
         flags = flags or SAY
     }
 
+    /**
+     * Sets the public chat of this avatar.
+     *
+     * Colour table:
+     * ```
+     * | Id    | Prefix    |          Hex Value         |
+     * |-------|-----------|:--------------------------:|
+     * | 0     | yellow:   |          0xFFFF00          |
+     * | 1     | red:      |          0xFF0000          |
+     * | 2     | green:    |          0x00FF00          |
+     * | 3     | cyan:     |          0x00FFFF          |
+     * | 4     | purple:   |          0xFF00FF          |
+     * | 5     | white:    |          0xFFFFFF          |
+     * | 6     | flash1:   |      0xFF0000/0xFFFF00     |
+     * | 7     | flash2:   |      0x0000FF/0x00FFFF     |
+     * | 8     | flash3:   |      0x00B000/0x80FF80     |
+     * | 9     | glow1:    | 0xFF0000-0xFFFF00-0x00FFFF |
+     * | 10    | glow2:    | 0xFF0000-0x00FF00-0x0000FF |
+     * | 11    | glow3:    | 0xFFFFFF-0x00FF00-0x00FFFF |
+     * | 12    | rainbow:  |             N/A            |
+     * | 13-20 | pattern*: |             N/A            |
+     * ```
+     *
+     * Effects table:
+     * ```
+     * | Id | Prefix  |
+     * |----|---------|
+     * | 1  | wave:   |
+     * | 2  | wave2:  |
+     * | 3  | shake:  |
+     * | 4  | scroll: |
+     * | 5  | slide:  |
+     * ```
+     *
+     * @param colour the colour id to render (see above)
+     * @param effects the effects to apply to the text (see above)
+     * @param modicon the index of the sprite in the modicons group to render before the name
+     * @param autotyper whether the avatar is using built-in autotyper
+     * @param text the text to render overhead and in chat
+     * @param pattern the pattern description if the user is using the pattern colour type
+     */
     public fun setChat(
         colour: Int,
         effects: Int,
@@ -145,6 +286,29 @@ public class PlayerAvatarExtendedInfo(
         flags = flags or CHAT
     }
 
+    /**
+     * Sets an exact movement for this avatar. It should be noted
+     * that this is done in conjunction with actual movement, as the
+     * exact move extended info block is only responsible for visualizing
+     * precise movement, and will synchronize to the real coordinate once
+     * the exact movement has finished.
+     *
+     * @param deltaX1 the coordinate delta between the current absolute
+     * x coordinate and where the avatar is going.
+     * @param deltaZ1 the coordinate delta between the current absolute
+     * z coordinate and where the avatar is going.
+     * @param delay1 how many client cycles (20ms/cc) until the avatar arrives
+     * at x/z 1 coordinate.
+     * @param deltaX2 the coordinate delta between the current absolute
+     * x coordinate and where the avatar is going.
+     * @param deltaZ2 the coordinate delta between the current absolute
+     * z coordinate and where the avatar is going.
+     * @param delay2 how many client cycles (20ms/cc) until the avatar arrives
+     * at x/z 2 coordinate.
+     * @param angle the angle the avatar will be facing throughout the exact movement,
+     * with 0 implying south, 512 west, 1024 north and 1536 east; interpolate
+     * between to get finer directions.
+     */
     public fun setExactMove(
         deltaX1: Int,
         deltaZ1: Int,
@@ -152,7 +316,7 @@ public class PlayerAvatarExtendedInfo(
         deltaX2: Int,
         deltaZ2: Int,
         delay2: Int,
-        direction: Int,
+        angle: Int,
     ) {
         verify {
             require(delay1 >= 0) {
@@ -164,8 +328,8 @@ public class PlayerAvatarExtendedInfo(
             require(delay2 > delay1) {
                 "Second delay must be greater than the first: $delay1 > $delay2"
             }
-            require(direction in 0..2047) {
-                "Unexpected direction value: $direction, expected range: 0..2047"
+            require(angle in 0..2047) {
+                "Unexpected angle value: $angle, expected range: 0..2047"
             }
             require(deltaX1 in SIGNED_BYTE_RANGE) {
                 "Unexpected deltaX1: $deltaX1, expected range: $SIGNED_BYTE_RANGE"
@@ -186,10 +350,18 @@ public class PlayerAvatarExtendedInfo(
         blocks.exactMove.deltaX2 = deltaX2.toUByte()
         blocks.exactMove.deltaZ2 = deltaZ2.toUByte()
         blocks.exactMove.delay2 = delay2.toUShort()
-        blocks.exactMove.direction = direction.toUShort()
+        blocks.exactMove.direction = angle.toUShort()
         flags = flags or EXACT_MOVE
     }
 
+    /**
+     * Sets the spotanim in slot [slot], overriding any previous spotanim
+     * in that slot in doing so.
+     * @param slot the slot of the spotanim.
+     * @param id the id of the spotanim.
+     * @param delay the delay in client cycles (20ms/cc) until the given spotanim begins rendering.
+     * @param height the height at which to render the spotanim.
+     */
     public fun setSpotAnim(
         slot: Int,
         id: Int,
@@ -214,6 +386,24 @@ public class PlayerAvatarExtendedInfo(
         flags = flags or SPOTANIM
     }
 
+    /**
+     * Adds a simple hitmark on this avatar.
+     * @param sourceIndex the index of the character that dealt the hit.
+     * If the target avatar is a player, add 0x10000 to the real index value (0-2048).
+     * If the target avatar is a NPC, set the index as it is.
+     * If there is no source, set the index to -1.
+     * The index will be used for tinting purposes, as both the player who dealt
+     * the hit, and the recipient will see a tinted variant.
+     * Everyone else, however, will see a regular darkened hit mark.
+     * @param selfType the multi hitmark id that supports tinted and darkened variants.
+     * @param otherType the hitmark id to render to anyone that isn't the recipient,
+     * or the one who dealt the hit. This will generally be a darkened variant.
+     * If the hitmark should only render to the local player, set the [otherType]
+     * value to -1, forcing it to only render to the recipient (and in the case of
+     * a [sourceIndex] being defined, the one who dealt the hit)
+     * @param value the value to show over the hitmark.
+     * @param delay the delay in client cycles (20ms/cc) until the hitmark renders.
+     */
     public fun addHitMark(
         sourceIndex: Int,
         selfType: Int,
@@ -229,8 +419,8 @@ public class PlayerAvatarExtendedInfo(
             require(selfType in UNSIGNED_SMART_1_OR_2_RANGE) {
                 "Unexpected selfType: $selfType, expected range $UNSIGNED_SMART_1_OR_2_RANGE"
             }
-            require(otherType in UNSIGNED_SMART_1_OR_2_RANGE) {
-                "Unexpected otherType: $otherType, expected range $UNSIGNED_SMART_1_OR_2_RANGE"
+            require(otherType == -1 || otherType in UNSIGNED_SMART_1_OR_2_RANGE) {
+                "Unexpected otherType: $otherType, expected value -1 or range $UNSIGNED_SMART_1_OR_2_RANGE"
             }
             require(value in UNSIGNED_SMART_1_OR_2_RANGE) {
                 "Unexpected value: $value, expected range $UNSIGNED_SMART_1_OR_2_RANGE"
@@ -250,6 +440,11 @@ public class PlayerAvatarExtendedInfo(
         flags = flags or HITS
     }
 
+    /**
+     * Removes the oldest currently showing hitmark on this avatar,
+     * if one exists.
+     * @param delay the delay in client cycles (20ms/cc) until the hitmark is removed.
+     */
     public fun removeHitMark(delay: Int = 0) {
         verify {
             require(delay in UNSIGNED_SMART_1_OR_2_RANGE) {
@@ -260,6 +455,31 @@ public class PlayerAvatarExtendedInfo(
         flags = flags or HITS
     }
 
+    /**
+     * Adds a simple hitmark on this avatar.
+     * @param sourceIndex the index of the character that dealt the hit.
+     * If the target avatar is a player, add 0x10000 to the real index value (0-2048).
+     * If the target avatar is a NPC, set the index as it is.
+     * If there is no source, set the index to -1.
+     * The index will be used for tinting purposes, as both the player who dealt
+     * the hit, and the recipient will see a tinted variant.
+     * Everyone else, however, will see a regular darkened hit mark.
+     * @param selfType the multi hitmark id that supports tinted and darkened variants.
+     * @param otherType the hitmark id to render to anyone that isn't the recipient,
+     * or the one who dealt the hit. This will generally be a darkened variant.
+     * If the hitmark should only render to the local player, set the [otherType]
+     * value to -1, forcing it to only render to the recipient (and in the case of
+     * a [sourceIndex] being defined, the one who dealt the hit)
+     * @param value the value to show over the hitmark.
+     * @param selfSoakType the multi hitmark id that supports tinted and darkened variants,
+     * shown as soaking next to the normal hitmark.
+     * @param otherSoakType the hitmark id to render to anyone that isn't the recipient,
+     * or the one who dealt the hit. This will generally be a darkened variant.
+     * Unlike the [otherType], this does not support -1, as it is not possible to show partial
+     * soaked hitmarks.
+     * @param delay the delay in client cycles (20ms/cc) until the hitmark renders.
+     */
+    @JvmOverloads
     public fun addSoakedHitMark(
         sourceIndex: Int,
         selfType: Int,
@@ -278,8 +498,8 @@ public class PlayerAvatarExtendedInfo(
             require(selfType in UNSIGNED_SMART_1_OR_2_RANGE) {
                 "Unexpected selfType: $selfType, expected range $UNSIGNED_SMART_1_OR_2_RANGE"
             }
-            require(otherType in UNSIGNED_SMART_1_OR_2_RANGE) {
-                "Unexpected otherType: $otherType, expected range $UNSIGNED_SMART_1_OR_2_RANGE"
+            require(otherType == -1 || otherType in UNSIGNED_SMART_1_OR_2_RANGE) {
+                "Unexpected otherType: $otherType, expected value -1 or in range $UNSIGNED_SMART_1_OR_2_RANGE"
             }
             require(value in UNSIGNED_SMART_1_OR_2_RANGE) {
                 "Unexpected value: $value, expected range $UNSIGNED_SMART_1_OR_2_RANGE"
@@ -311,6 +531,20 @@ public class PlayerAvatarExtendedInfo(
         flags = flags or HITS
     }
 
+    /**
+     * Adds a headbar onto the avatar.
+     * If a headbar by the same id already exists, updates the status of the old one.
+     * Up to four distinct headbars can be rendered simultaneously.
+     *
+     * @param id the id of the headbar to render
+     * @param startFill the number of pixels to render of this headbar at in the start.
+     * The number of pixels that a headbar supports is defined in its respective headbar config.
+     * @param endFill the number of pixels to render of this headbar at in the end,
+     * if a [startTime] and [endTime] are defined.
+     * @param startTime the delay in client cycles (20ms/cc) until the headbar renders at [startFill]
+     * @param endTime the delay in client cycles (20ms/cc) until the headbar arrives at [endFill].
+     */
+    @JvmOverloads
     public fun addHeadBar(
         id: Int,
         startFill: Int,
@@ -334,6 +568,9 @@ public class PlayerAvatarExtendedInfo(
             require(endTime in UNSIGNED_SMART_1_OR_2_RANGE) {
                 "Unexpected endTime: $endTime, expected range $UNSIGNED_SMART_1_OR_2_RANGE"
             }
+            require(endTime >= startTime) {
+                "End time must be greater than or equal to start time: $startTime <= $endTime"
+            }
         }
         blocks.hit.headBarList +=
             HeadBar(
@@ -346,6 +583,10 @@ public class PlayerAvatarExtendedInfo(
         flags = flags or HITS
     }
 
+    /**
+     * Removes a headbar on this avatar by the id of [id], if one renders.
+     * @param id the id of the head bar to remove.
+     */
     public fun removeHeadBar(id: Int) {
         addHeadBar(
             id,
@@ -354,6 +595,19 @@ public class PlayerAvatarExtendedInfo(
         )
     }
 
+    /**
+     * Applies a tint over the non-textured parts of the character.
+     * @param startTime the delay in client cycles (20ms/cc) until the tinting is applied.
+     * @param endTime the timestamp in client cycles (20ms/cc) until the tinting finishes.
+     * @param hue the hue of the tint.
+     * @param saturation the saturation of the tint.
+     * @param lightness the lightness of the tint.
+     * @param weight the weight (or opacity) of the tint.
+     * @param visibleToIndex the index of the player who will see the tint applied,
+     * or -1 if it is meant to be global. Note that this only accepts player indices,
+     * and not NPC ones like many other extended info blocks.
+     */
+    @JvmOverloads
     public fun tinting(
         startTime: Int,
         endTime: Int,
@@ -415,47 +669,10 @@ public class PlayerAvatarExtendedInfo(
         }
     }
 
-    public fun initializeAppearance(
-        name: String,
-        combatLevel: Int,
-        skillLevel: Int,
-        hidden: Boolean,
-        male: Boolean,
-        textGender: Int,
-        skullIcon: Int,
-        overheadIcon: Int,
-    ) {
-        verify {
-            require(name.length in 1..12) {
-                "Unexpected name length, expected range 1..12"
-            }
-            require(combatLevel in UNSIGNED_BYTE_RANGE) {
-                "Unexpected combatLevel $combatLevel, expected range $UNSIGNED_BYTE_RANGE"
-            }
-            require(skillLevel in UNSIGNED_SHORT_RANGE) {
-                "Unexpected skill level $skillLevel, expected range $UNSIGNED_SHORT_RANGE"
-            }
-            require(textGender in UNSIGNED_BYTE_RANGE) {
-                "Unexpected textGender $textGender, expected range $UNSIGNED_BYTE_RANGE"
-            }
-            require(skullIcon == -1 || skullIcon in UNSIGNED_BYTE_RANGE) {
-                "Unexpected skullIcon $skullIcon, expected value -1 or in range $UNSIGNED_BYTE_RANGE"
-            }
-            require(overheadIcon == -1 || overheadIcon in UNSIGNED_BYTE_RANGE) {
-                "Unexpected overheadIcon $overheadIcon, expected value -1 or in range $UNSIGNED_BYTE_RANGE"
-            }
-        }
-        blocks.appearance.name = name
-        blocks.appearance.combatLevel = combatLevel.toUByte()
-        blocks.appearance.skillLevel = skillLevel.toUShort()
-        blocks.appearance.hidden = hidden
-        blocks.appearance.male = male
-        blocks.appearance.textGender = textGender.toUByte()
-        blocks.appearance.skullIcon = skullIcon.toUByte()
-        blocks.appearance.overheadIcon = overheadIcon.toUByte()
-        flagAppearance()
-    }
-
+    /**
+     * Sets the name of the avatar.
+     * @param name the name to assign.
+     */
     public fun setName(name: String) {
         verify {
             require(name.length in 1..12) {
@@ -469,6 +686,10 @@ public class PlayerAvatarExtendedInfo(
         flagAppearance()
     }
 
+    /**
+     * Sets the combat level of the avatar.
+     * @param combatLevel the level to assign.
+     */
     public fun setCombatLevel(combatLevel: Int) {
         verify {
             require(combatLevel in UNSIGNED_BYTE_RANGE) {
@@ -483,6 +704,11 @@ public class PlayerAvatarExtendedInfo(
         flagAppearance()
     }
 
+    /**
+     * Sets the skill level of the avatar, seen when right-clicking players as "skill: value",
+     * instead of the usual combat level. Set to 0 to render combat level instead.
+     * @param skillLevel the level to render
+     */
     public fun setSkillLevel(skillLevel: Int) {
         verify {
             require(skillLevel in UNSIGNED_SHORT_RANGE) {
@@ -497,6 +723,13 @@ public class PlayerAvatarExtendedInfo(
         flagAppearance()
     }
 
+    /**
+     * Sets this avatar hidden (or un-hidden) client-sided.
+     * If the observer is a J-Mod or above, the character will render regardless.
+     * It is worth noting that plugin clients such as RuneLite will render information
+     * about these avatars regardless of their hidden status.
+     * @param hidden whether to hide the avatar.
+     */
     public fun setHidden(hidden: Boolean) {
         if (blocks.appearance.hidden == hidden) {
             return
@@ -505,6 +738,10 @@ public class PlayerAvatarExtendedInfo(
         flagAppearance()
     }
 
+    /**
+     * Sets the character male or female.
+     * @param isMale whether to set the character male (or female, if false)
+     */
     public fun setMale(isMale: Boolean) {
         if (blocks.appearance.male == isMale) {
             return
@@ -513,6 +750,11 @@ public class PlayerAvatarExtendedInfo(
         flagAppearance()
     }
 
+    /**
+     * Sets the text gender of this avatar.
+     * @param num the number to set, with the value 0 being male, 1 being female,
+     * and 2 being 'other'.
+     */
     public fun setTextGender(num: Int) {
         verify {
             require(num in UNSIGNED_BYTE_RANGE) {
@@ -527,6 +769,10 @@ public class PlayerAvatarExtendedInfo(
         flagAppearance()
     }
 
+    /**
+     * Sets the skull icon over this avatar.
+     * @param icon the id of the icon to render, or -1 to not show any.
+     */
     public fun setSkullIcon(icon: Int) {
         verify {
             require(icon == -1 || icon in UNSIGNED_BYTE_RANGE) {
@@ -541,6 +787,10 @@ public class PlayerAvatarExtendedInfo(
         flagAppearance()
     }
 
+    /**
+     * Sets the overhead icon over this avatar (e.g. prayer icons)
+     * @param icon the id of the icon to render, or -1 to not show any.
+     */
     public fun setOverheadIcon(icon: Int) {
         verify {
             require(icon == -1 || icon in UNSIGNED_BYTE_RANGE) {
@@ -555,6 +805,10 @@ public class PlayerAvatarExtendedInfo(
         flagAppearance()
     }
 
+    /**
+     * Transforms this avatar to the respective NPC, or back to player if the [id] is -1.
+     * @param id the id of the NPC to transform to, or -1 if resetting.
+     */
     public fun transformToNpc(id: Int) {
         verify {
             require(id == -1 || id in UNSIGNED_SHORT_RANGE) {
@@ -569,6 +823,11 @@ public class PlayerAvatarExtendedInfo(
         flagAppearance()
     }
 
+    /**
+     * Sets an ident kit.
+     * @param wearpos the position in which to set this ident kit.
+     * @param value the value of the ident kit config, or -1 if hidden.
+     */
     public fun setIdentKit(
         wearpos: Int,
         value: Int,
@@ -577,8 +836,8 @@ public class PlayerAvatarExtendedInfo(
             require(wearpos in 0..11) {
                 "Unexpected wearPos $wearpos, expected range 0..11"
             }
-            require(value in UNSIGNED_BYTE_RANGE) {
-                "Unexpected value $value, expected range $UNSIGNED_BYTE_RANGE"
+            require(value == -1 || value in UNSIGNED_BYTE_RANGE) {
+                "Unexpected value $value, expected value -1 or in range $UNSIGNED_BYTE_RANGE"
             }
         }
         val valueAsShort = value.toShort()
@@ -590,6 +849,15 @@ public class PlayerAvatarExtendedInfo(
         flagAppearance()
     }
 
+    /**
+     * Sets a worn object in the given [wearpos].
+     * @param wearpos the main wearpos in which the obj equips.
+     * @param id the obj id to set in that wearpos, or -1 to not have anything.
+     * @param wearpos2 the secondary wearpos that this obj utilizes, hiding whatever
+     * ident kit was in that specific wearpos (e.g. hair, beard), or -1 to not use any.
+     * @param wearpos3 the tertiary wearpos that this obj utilizes, hiding whatever
+     * ident kit was in that specific wearpos (e.g. hair, beard), or -1 to not use any.
+     */
     public fun setWornObj(
         wearpos: Int,
         id: Int,
@@ -621,6 +889,11 @@ public class PlayerAvatarExtendedInfo(
         flagAppearance()
     }
 
+    /**
+     * Sets the colour of this avatar's appearance.
+     * @param slot the slot of the element to colour
+     * @param value the 16-bit HSL colour value
+     */
     public fun setColour(
         slot: Int,
         value: Int,
@@ -642,6 +915,16 @@ public class PlayerAvatarExtendedInfo(
         flagAppearance()
     }
 
+    /**
+     * Sets the base animations of this avatar.
+     * @param readyAnim the animation used when the avatar is standing still.
+     * @param turnAnim the animation used when the avatar is turning on-spot without movement.
+     * @param walkAnim the animation used when the avatar is walking forward.
+     * @param walkAnimBack the animation used when the avatar is walking backwards.
+     * @param walkAnimLeft the animation used when the avatar is walking to the left.
+     * @param walkAnimRight the animation used when the avatar is walking to the right.
+     * @param runAnim the animation used when the avatar is running.
+     */
     public fun setBaseAnimationSet(
         readyAnim: Int,
         turnAnim: Int,
@@ -684,6 +967,12 @@ public class PlayerAvatarExtendedInfo(
         flagAppearance()
     }
 
+    /**
+     * Sets the name extras of this avatar, rendered when right-clicking users.
+     * @param beforeName the text to render before this avatar's name.
+     * @param afterName the text to render after this avatar's name, but before the combat level.
+     * @param afterCombatLevel the text to render after this avatar's combat level.
+     */
     public fun nameExtras(
         beforeName: String,
         afterName: String,
@@ -706,6 +995,10 @@ public class PlayerAvatarExtendedInfo(
         flagAppearance()
     }
 
+    /**
+     * Clears any obj type customisations applied to [wearpos].
+     * @param wearpos the worn item slot.
+     */
     public fun clearObjTypeCustomisation(wearpos: Int) {
         verify {
             require(wearpos in 0..11) {
@@ -719,6 +1012,11 @@ public class PlayerAvatarExtendedInfo(
         flagAppearance()
     }
 
+    /**
+     * Allocates an obj type customisation in [wearpos] if it doesn't already exist.
+     * @param wearpos the wearpos in which a customisation is being made.
+     * @return the customisation class holding the state overrides of this obj.
+     */
     private fun allocObjCustomisation(wearpos: Int): ObjTypeCustomisation {
         var customisation = blocks.appearance.objTypeCustomisation[wearpos]
         if (customisation == null) {
@@ -728,6 +1026,12 @@ public class PlayerAvatarExtendedInfo(
         return customisation
     }
 
+    /**
+     * Recolours part of an obj in the first slot (out of two).
+     * @param wearpos the position in which the obj is worn.
+     * @param index the source index of the colour to override.
+     * @param value the 16 bit HSL colour to override with.
+     */
     public fun objRecol1(
         wearpos: Int,
         index: Int,
@@ -750,6 +1054,12 @@ public class PlayerAvatarExtendedInfo(
         flagAppearance()
     }
 
+    /**
+     * Recolours part of an obj in the second slot (out of two).
+     * @param wearpos the position in which the obj is worn.
+     * @param index the source index of the colour to override.
+     * @param value the 16 bit HSL colour to override with.
+     */
     public fun objRecol2(
         wearpos: Int,
         index: Int,
@@ -772,6 +1082,12 @@ public class PlayerAvatarExtendedInfo(
         flagAppearance()
     }
 
+    /**
+     * Retextures part of an obj in the first slot (out of two).
+     * @param wearpos the position in which the obj is worn.
+     * @param index the source index of the texture to override.
+     * @param value the id of the texture to override with.
+     */
     public fun objRetex1(
         wearpos: Int,
         index: Int,
@@ -794,6 +1110,12 @@ public class PlayerAvatarExtendedInfo(
         flagAppearance()
     }
 
+    /**
+     * Retextures part of an obj in the second slot (out of two).
+     * @param wearpos the position in which the obj is worn.
+     * @param index the source index of the texture to override.
+     * @param value the id of the texture to override with.
+     */
     public fun objRetex2(
         wearpos: Int,
         index: Int,
@@ -816,16 +1138,27 @@ public class PlayerAvatarExtendedInfo(
         flagAppearance()
     }
 
+    /**
+     * Flags appearance to have changed, in order for it to be synchronized to all observers.
+     */
     private fun flagAppearance() {
         flags = flags or APPEARANCE
         appearanceChangesCounter++
     }
 
+    /**
+     * Clears any transient extended info blocks which only applied for this cycle,
+     * making it ready for the next.
+     */
     internal fun postUpdate() {
         clearTransientExtendedInformation()
         flags = 0
     }
 
+    /**
+     * Resets all the properties of this extended info object, making it ready for use
+     * by another avatar.
+     */
     internal fun reset() {
         flags = 0
         this.appearanceChangesCounter = 0
@@ -844,6 +1177,12 @@ public class PlayerAvatarExtendedInfo(
         blocks.tinting.clear()
     }
 
+    /**
+     * Gets all the extended info flags which must be updated for the given [observer],
+     * based on what is out of date with what they last saw (if they saw the player before).
+     * @param observer the avatar observing us.
+     * @return the flags that need updating.
+     */
     internal fun getLowToHighResChangeExtendedInfoFlags(observer: PlayerAvatarExtendedInfo): Int {
         var flag = 0
         if (this.flags and APPEARANCE == 0 &&
@@ -864,10 +1203,22 @@ public class PlayerAvatarExtendedInfo(
         return flag
     }
 
+    /**
+     * Checks if the cached version of our appearance is out for date for the [observer].
+     * @param observer the avatar observing us.
+     * @return true if the [observer] needs an updated version of our avatar, false if the cached
+     * variant is still up to date.
+     */
     private fun checkOutOfDate(observer: PlayerAvatarExtendedInfo): Boolean {
         return observer.otherAppearanceChangesCounter[localIndex] != appearanceChangesCounter
     }
 
+    /**
+     * Pre-computes all the buffers for this avatar.
+     * Pre-computation is done so we don't have to calculate these extended info blocks
+     * for every avatar that observes us. Instead, we can do more performance-efficient
+     * operations of native memory copying to get the latest extended info blocks.
+     */
     internal fun precompute() {
         // Hits and tinting do not get precomputed
         if (flags and APPEARANCE != 0) {
@@ -896,6 +1247,16 @@ public class PlayerAvatarExtendedInfo(
         }
     }
 
+    /**
+     * Writes the extended info block of this avatar for the given observer.
+     * @param platformType the platform that the observer is using.
+     * @param buffer the buffer into which the extended info block should be written.
+     * @param observerFlag the dynamic out-of-date flags that we must send to the observer
+     * on-top of everything that was pre-computed earlier.
+     * @param observer the avatar that is observing us.
+     * @param remainingAvatars the number of avatars that must still be updated for
+     * the given [observer], necessary to avoid memory overflow.
+     */
     internal fun pExtendedInfo(
         platformType: PlatformType,
         buffer: JagByteBuf,
@@ -932,6 +1293,9 @@ public class PlayerAvatarExtendedInfo(
         )
     }
 
+    /**
+     * Clears any flagged transient extended information blocks from this cycle.
+     */
     private fun clearTransientExtendedInformation() {
         if (flags and TEMP_MOVE_SPEED != 0) {
             blocks.temporaryMoveSpeed.clear()
@@ -960,6 +1324,14 @@ public class PlayerAvatarExtendedInfo(
         if (flags and TINTING != 0) {
             blocks.tinting.clear()
         }
+    }
+
+    /**
+     * Resets our tracked version of the target's appearance,
+     * so it will be updated whenever someone else takes their index.
+     */
+    public fun onOtherAvatarDeallocated(idx: Int) {
+        otherAppearanceChangesCounter[idx] = -1
     }
 
     public companion object {
@@ -997,12 +1369,23 @@ public class PlayerAvatarExtendedInfo(
             }
         }
 
+        /**
+         * Executes the [block] if input verification is enabled,
+         * otherwise does nothing. Verification should be enabled for
+         * development environments, to catch problems mid-development.
+         * In production, or during benchmarking, verification should be disabled,
+         * as there is still some overhead to running verifications.
+         */
         private inline fun verify(crossinline block: () -> Unit) {
             if (inputVerification) {
                 block()
             }
         }
 
+        /**
+         * Builds an extended info writer array indexed by provided platform types.
+         * All platform types which are utilized must be registered to avoid runtime errors.
+         */
         private fun buildPlatformWriterArray(
             extendedInfoWriters: List<AvatarExtendedInfoWriter>,
         ): Array<AvatarExtendedInfoWriter?> {
