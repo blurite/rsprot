@@ -6,6 +6,10 @@ import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.util.
 import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.util.HitMarkList
 import net.rsprot.protocol.shared.platform.PlatformType
 
+/**
+ * The hit extended info, responsible for tracking all hitmarks and headbars for a given avatar.
+ * @param encoders the array of platform-specific encoders for hits.
+ */
 public class Hit(
     encoders: Array<OnDemandExtendedInfoEncoder<Hit>?> = arrayOfNulls(PlatformType.COUNT),
 ) : TransientExtendedInfo<Hit, OnDemandExtendedInfoEncoder<Hit>>(encoders) {

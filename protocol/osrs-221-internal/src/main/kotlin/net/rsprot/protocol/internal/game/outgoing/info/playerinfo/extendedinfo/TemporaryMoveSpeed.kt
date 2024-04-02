@@ -12,7 +12,7 @@ import net.rsprot.protocol.shared.platform.PlatformType
  * Rather than to switch the main mode over to walking, it utilizes the temporary move speed
  * so the primary one will remain as running after this one cycle, as they are far more likely
  * to utilize the move speed described by their run orb.
- * @param encoders the array of platform-specific encoders for appearance.
+ * @param encoders the array of platform-specific encoders for temporary move speed.
  * @param allocator the byte buffer allocator, used to pre-computation purposes.
  * @param huffmanCodec the huffman codec responsible for compressing public chat extended info block.
  */

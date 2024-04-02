@@ -8,7 +8,7 @@ import net.rsprot.protocol.shared.platform.PlatformType
 
 /**
  * The chat extended info block, responsible for any public messages.
- * @param encoders the array of platform-specific encoders for appearance.
+ * @param encoders the array of platform-specific encoders for chat.
  * @param allocator the byte buffer allocator, used to pre-computation purposes.
  * @param huffmanCodec the huffman codec responsible for compressing the [text] property.
  */

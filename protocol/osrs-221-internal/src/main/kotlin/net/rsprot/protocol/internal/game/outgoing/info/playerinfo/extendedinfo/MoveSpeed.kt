@@ -15,7 +15,7 @@ import net.rsprot.protocol.shared.platform.PlatformType
  * If an avatar goes from high resolution to low resolution, the client **will not** cache this,
  * and a new status update must be written when the opposite transition occurs.
  * This move speed status should typically be synchronized with the state of the "Run orb".
- * @param encoders the array of platform-specific encoders for appearance.
+ * @param encoders the array of platform-specific encoders for move speed.
  * @param allocator the byte buffer allocator, used to pre-computation purposes.
  * @param huffmanCodec the huffman codec responsible for compressing public chat extended info block.
  */

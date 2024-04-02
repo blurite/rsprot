@@ -1,7 +1,16 @@
 package net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.util
 
+/**
+ * A value class to represent a spotanim in a primitive 'long'.
+ * @param packed the bitpacked long value of this spotanim.
+ */
 @JvmInline
 public value class SpotAnim(internal val packed: Long) {
+    /**
+     * @param id the id of the spotanim.
+     * @param delay the delay in client cycles (20ms/cc) until the given spotanim begins rendering.
+     * @param height the height at which to render the spotanim.
+     */
     public constructor(
         id: Int,
         delay: Int,
@@ -20,6 +29,9 @@ public value class SpotAnim(internal val packed: Long) {
         get() = (packed ushr 32 and 0xFFFF).toInt()
 
     public companion object {
+        /**
+         * The default value to initialize spotanim extended info as.
+         */
         public val INVALID: SpotAnim = SpotAnim(-1L)
     }
 }

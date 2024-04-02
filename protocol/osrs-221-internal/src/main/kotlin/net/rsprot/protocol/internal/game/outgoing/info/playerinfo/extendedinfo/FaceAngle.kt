@@ -9,7 +9,7 @@ import net.rsprot.protocol.shared.platform.PlatformType
 /**
  * The extended info block responsible for making an avatar turn towards a specific
  * angle.
- * @param encoders the array of platform-specific encoders for appearance.
+ * @param encoders the array of platform-specific encoders for face angle.
  * @param allocator the byte buffer allocator, used to pre-computation purposes.
  * @param huffmanCodec the huffman codec responsible for compressing public chat extended info block.
  */
