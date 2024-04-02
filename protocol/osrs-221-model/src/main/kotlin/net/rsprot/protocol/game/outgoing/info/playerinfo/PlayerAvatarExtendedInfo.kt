@@ -185,7 +185,7 @@ public class PlayerAvatarExtendedInfo(
                 "Unexpected angle: $angle, expected range: 0-2047"
             }
         }
-        blocks.faceAngle.angle = angle
+        blocks.faceAngle.angle = angle.toUShort()
         flags = flags or FACE_ANGLE
     }
 
