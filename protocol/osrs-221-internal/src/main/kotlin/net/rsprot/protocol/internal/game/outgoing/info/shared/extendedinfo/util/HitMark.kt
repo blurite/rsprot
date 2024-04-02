@@ -32,7 +32,7 @@ public class HitMark(
         selfType: UShort,
         delay: UShort,
     ) : this(
-        sourceIndex = 0,
+        sourceIndex = -1,
         selfType = selfType,
         otherType = selfType,
         value = UShort.MAX_VALUE,

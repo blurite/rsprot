@@ -1,6 +1,10 @@
+@file:Suppress("DuplicatedCode")
+
 package net.rsprot.protocol.game.outgoing.info.playerinfo
 
+import com.github.michaelbull.logging.InlineLogger
 import io.netty.buffer.ByteBufAllocator
+import io.netty.util.internal.SystemPropertyUtil
 import net.rsprot.buffer.JagByteBuf
 import net.rsprot.compression.HuffmanCodec
 import net.rsprot.protocol.game.outgoing.info.playerinfo.filter.ExtendedInfoFilter
@@ -13,7 +17,6 @@ import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.util.
 import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.util.SpotAnim
 import net.rsprot.protocol.shared.platform.PlatformType
 
-// TODO: Optional bound checks (hits, etc)
 @Suppress("MemberVisibilityCanBePrivate")
 public class PlayerAvatarExtendedInfo(
     private val protocol: PlayerInfoProtocol,
@@ -37,11 +40,21 @@ public class PlayerAvatarExtendedInfo(
     private var appearanceChangesCounter: Int = 0
 
     public fun setMoveSpeed(value: Int) {
+        verify {
+            require(value in -1..2) {
+                "Unexpected move speed: $value, expected values: -1, 0, 1, 2"
+            }
+        }
         blocks.moveSpeed.value = value
         flags = flags or MOVE_SPEED
     }
 
     public fun setTempMoveSpeed(value: Int) {
+        verify {
+            require(value in -1..2 || value == 127) {
+                "Unexpected temporary move speed: $value, expected values: -1, 0, 1, 2, 127"
+            }
+        }
         blocks.temporaryMoveSpeed.value = value
         flags = flags or TEMP_MOVE_SPEED
     }
@@ -50,22 +63,47 @@ public class PlayerAvatarExtendedInfo(
         id: Int,
         delay: Int,
     ) {
+        verify {
+            require(id == -1 || id in UNSIGNED_SHORT_RANGE) {
+                "Unexpected sequence id: $id, expected value -1 or in range $UNSIGNED_SHORT_RANGE"
+            }
+            require(delay in UNSIGNED_SHORT_RANGE) {
+                "Unexpected sequence delay: $delay, expected range: $UNSIGNED_SHORT_RANGE"
+            }
+        }
         blocks.sequence.id = id.toUShort()
         blocks.sequence.delay = delay.toUShort()
         flags = flags or SEQUENCE
     }
 
     public fun setFacePathingEntity(index: Int) {
+        verify {
+            require(index == -1 || index in 0..0x107FF) {
+                "Unexpected pathing entity index: $index, expected values: -1 to reset, " +
+                    "0-65535 for NPCs, 65536-67583 for players"
+            }
+        }
         blocks.facePathingEntity.index = index
         flags = flags or FACE_PATHINGENTITY
     }
 
     public fun setFaceAngle(angle: Int) {
+        verify {
+            require(angle in 0..2047) {
+                "Unexpected angle: $angle, expected range: 0-2047"
+            }
+        }
         blocks.faceAngle.angle = angle
         flags = flags or FACE_ANGLE
     }
 
     public fun setSay(text: String) {
+        verify {
+            require(text.length <= 80) {
+                "Unexpected say input; expected value 80 characters or less, " +
+                    "input len: ${text.length}, input: $text"
+            }
+        }
         blocks.say.text = text
         flags = flags or SAY
     }
@@ -78,7 +116,18 @@ public class PlayerAvatarExtendedInfo(
         text: String,
         pattern: ByteArray?,
     ) {
+        verify {
+            require(text.length <= 80) {
+                "Unexpected chat input; expected value 80 characters or less, " +
+                    "input len: ${text.length}, input: $text"
+            }
+            require(colour in 0..20) {
+                "Unexpected colour value: $colour, expected range: 0-20"
+            }
+            // No verification for mod icons, as servers often create custom ranks
+        }
         val patternLength = if (colour in 13..20) colour - 12 else 0
+        // Unlike most inputs, these are necessary to avoid crashes, so these can't be turned off.
         if (patternLength in 1..8) {
             requireNotNull(pattern) {
                 "Pattern cannot be null if pattern length is defined."
@@ -105,6 +154,32 @@ public class PlayerAvatarExtendedInfo(
         delay2: Int,
         direction: Int,
     ) {
+        verify {
+            require(delay1 >= 0) {
+                "First delay cannot be negative: $delay1"
+            }
+            require(delay2 >= 0) {
+                "Second delay cannot be negative: $delay2"
+            }
+            require(delay2 > delay1) {
+                "Second delay must be greater than the first: $delay1 > $delay2"
+            }
+            require(direction in 0..2047) {
+                "Unexpected direction value: $direction, expected range: 0..2047"
+            }
+            require(deltaX1 in SIGNED_BYTE_RANGE) {
+                "Unexpected deltaX1: $deltaX1, expected range: $SIGNED_BYTE_RANGE"
+            }
+            require(deltaZ1 in SIGNED_BYTE_RANGE) {
+                "Unexpected deltaZ1: $deltaZ1, expected range: $SIGNED_BYTE_RANGE"
+            }
+            require(deltaX2 in SIGNED_BYTE_RANGE) {
+                "Unexpected deltaX1: $deltaX2, expected range: $SIGNED_BYTE_RANGE"
+            }
+            require(deltaZ2 in SIGNED_BYTE_RANGE) {
+                "Unexpected deltaZ1: $deltaZ2, expected range: $SIGNED_BYTE_RANGE"
+            }
+        }
         blocks.exactMove.deltaX1 = deltaX1.toUByte()
         blocks.exactMove.deltaZ1 = deltaZ1.toUByte()
         blocks.exactMove.delay1 = delay1.toUShort()
@@ -121,6 +196,20 @@ public class PlayerAvatarExtendedInfo(
         delay: Int,
         height: Int,
     ) {
+        verify {
+            require(slot in UNSIGNED_BYTE_RANGE) {
+                "Unexpected slot: $slot, expected range: $UNSIGNED_BYTE_RANGE"
+            }
+            require(id in UNSIGNED_SHORT_RANGE) {
+                "Unexpected id: $id, expected range: $UNSIGNED_SHORT_RANGE"
+            }
+            require(delay in UNSIGNED_SHORT_RANGE) {
+                "Unexpected delay: $delay, expected range: $UNSIGNED_SHORT_RANGE"
+            }
+            require(height in UNSIGNED_SHORT_RANGE) {
+                "Unexpected delay: $height, expected range: $UNSIGNED_SHORT_RANGE"
+            }
+        }
         blocks.spotAnims.set(slot, SpotAnim(id, delay, height))
         flags = flags or SPOTANIM
     }
@@ -132,6 +221,24 @@ public class PlayerAvatarExtendedInfo(
         value: Int,
         delay: Int = 0,
     ) {
+        verify {
+            require(sourceIndex == -1 || sourceIndex in 0..0x107FF) {
+                "Unexpected source index: $sourceIndex, expected values: -1 to reset, " +
+                    "0-65535 for NPCs, 65536-67583 for players"
+            }
+            require(selfType in UNSIGNED_SMART_1_OR_2_RANGE) {
+                "Unexpected selfType: $selfType, expected range $UNSIGNED_SMART_1_OR_2_RANGE"
+            }
+            require(otherType in UNSIGNED_SMART_1_OR_2_RANGE) {
+                "Unexpected otherType: $otherType, expected range $UNSIGNED_SMART_1_OR_2_RANGE"
+            }
+            require(value in UNSIGNED_SMART_1_OR_2_RANGE) {
+                "Unexpected value: $value, expected range $UNSIGNED_SMART_1_OR_2_RANGE"
+            }
+            require(delay in UNSIGNED_SMART_1_OR_2_RANGE) {
+                "Unexpected delay: $delay, expected range $UNSIGNED_SMART_1_OR_2_RANGE"
+            }
+        }
         blocks.hit.hitMarkList +=
             HitMark(
                 sourceIndex,
@@ -144,6 +251,11 @@ public class PlayerAvatarExtendedInfo(
     }
 
     public fun removeHitMark(delay: Int = 0) {
+        verify {
+            require(delay in UNSIGNED_SMART_1_OR_2_RANGE) {
+                "Unexpected delay: $delay, expected range $UNSIGNED_SMART_1_OR_2_RANGE"
+            }
+        }
         blocks.hit.hitMarkList += HitMark(0x7FFEu, delay.toUShort())
         flags = flags or HITS
     }
@@ -158,6 +270,33 @@ public class PlayerAvatarExtendedInfo(
         soakValue: Int,
         delay: Int = 0,
     ) {
+        verify {
+            require(sourceIndex == -1 || sourceIndex in 0..0x107FF) {
+                "Unexpected source index: $sourceIndex, expected values: -1 to reset, " +
+                    "0-65535 for NPCs, 65536-67583 for players"
+            }
+            require(selfType in UNSIGNED_SMART_1_OR_2_RANGE) {
+                "Unexpected selfType: $selfType, expected range $UNSIGNED_SMART_1_OR_2_RANGE"
+            }
+            require(otherType in UNSIGNED_SMART_1_OR_2_RANGE) {
+                "Unexpected otherType: $otherType, expected range $UNSIGNED_SMART_1_OR_2_RANGE"
+            }
+            require(value in UNSIGNED_SMART_1_OR_2_RANGE) {
+                "Unexpected value: $value, expected range $UNSIGNED_SMART_1_OR_2_RANGE"
+            }
+            require(selfSoakType in UNSIGNED_SMART_1_OR_2_RANGE) {
+                "Unexpected selfType: $selfSoakType, expected range $UNSIGNED_SMART_1_OR_2_RANGE"
+            }
+            require(otherSoakType in UNSIGNED_SMART_1_OR_2_RANGE) {
+                "Unexpected otherType: $otherSoakType, expected range $UNSIGNED_SMART_1_OR_2_RANGE"
+            }
+            require(soakValue in UNSIGNED_SMART_1_OR_2_RANGE) {
+                "Unexpected value: $soakValue, expected range $UNSIGNED_SMART_1_OR_2_RANGE"
+            }
+            require(delay in UNSIGNED_SMART_1_OR_2_RANGE) {
+                "Unexpected delay: $delay, expected range $UNSIGNED_SMART_1_OR_2_RANGE"
+            }
+        }
         blocks.hit.hitMarkList +=
             HitMark(
                 sourceIndex,
@@ -179,6 +318,23 @@ public class PlayerAvatarExtendedInfo(
         startTime: Int = 0,
         endTime: Int = 0,
     ) {
+        verify {
+            require(id in UNSIGNED_SMART_1_OR_2_RANGE) {
+                "Unexpected id: $id, expected range $UNSIGNED_SMART_1_OR_2_RANGE"
+            }
+            require(startFill in UNSIGNED_BYTE_RANGE) {
+                "Unexpected startFill: $startFill, expected range $UNSIGNED_BYTE_RANGE"
+            }
+            require(endFill in UNSIGNED_BYTE_RANGE) {
+                "Unexpected endFill: $endFill, expected range $UNSIGNED_BYTE_RANGE"
+            }
+            require(startTime in UNSIGNED_SMART_1_OR_2_RANGE) {
+                "Unexpected startTime: $startTime, expected range $UNSIGNED_SMART_1_OR_2_RANGE"
+            }
+            require(endTime in UNSIGNED_SMART_1_OR_2_RANGE) {
+                "Unexpected endTime: $endTime, expected range $UNSIGNED_SMART_1_OR_2_RANGE"
+            }
+        }
         blocks.hit.headBarList +=
             HeadBar(
                 id.toUShort(),
@@ -203,10 +359,33 @@ public class PlayerAvatarExtendedInfo(
         endTime: Int,
         hue: Int,
         saturation: Int,
-        luminance: Int,
-        opacity: Int,
+        lightness: Int,
+        weight: Int,
         visibleToIndex: Int = -1,
     ) {
+        verify {
+            require(startTime in UNSIGNED_SHORT_RANGE) {
+                "Unexpected startTime: $startTime, expected range $UNSIGNED_SHORT_RANGE"
+            }
+            require(endTime in UNSIGNED_SHORT_RANGE) {
+                "Unexpected endTime: $endTime, expected range $UNSIGNED_SHORT_RANGE"
+            }
+            require(endTime >= startTime) {
+                "End time should be equal to or greater than start time: $endTime > $startTime"
+            }
+            require(hue in UNSIGNED_BYTE_RANGE) {
+                "Unexpected hue: $hue, expected range $UNSIGNED_BYTE_RANGE"
+            }
+            require(saturation in UNSIGNED_BYTE_RANGE) {
+                "Unexpected saturation: $saturation, expected range $UNSIGNED_BYTE_RANGE"
+            }
+            require(lightness in UNSIGNED_BYTE_RANGE) {
+                "Unexpected lightness: $lightness, expected range $UNSIGNED_BYTE_RANGE"
+            }
+            require(weight in UNSIGNED_BYTE_RANGE) {
+                "Unexpected weight: $weight, expected range $UNSIGNED_BYTE_RANGE"
+            }
+        }
         if (visibleToIndex != -1) {
             val otherPlayerInfo = protocol.getPlayerInfo(visibleToIndex)
             requireNotNull(otherPlayerInfo) {
@@ -218,8 +397,8 @@ public class PlayerAvatarExtendedInfo(
             tint.end = endTime.toUShort()
             tint.hue = hue.toUByte()
             tint.saturation = saturation.toUByte()
-            tint.lightness = luminance.toUByte()
-            tint.weight = opacity.toUByte()
+            tint.lightness = lightness.toUByte()
+            tint.weight = weight.toUByte()
             otherPlayerInfo.observerExtendedInfoFlags.addFlag(
                 localIndex,
                 TINTING,
@@ -230,8 +409,8 @@ public class PlayerAvatarExtendedInfo(
             tint.end = endTime.toUShort()
             tint.hue = hue.toUByte()
             tint.saturation = saturation.toUByte()
-            tint.lightness = luminance.toUByte()
-            tint.weight = opacity.toUByte()
+            tint.lightness = lightness.toUByte()
+            tint.weight = weight.toUByte()
             flags = flags or TINTING
         }
     }
@@ -246,6 +425,26 @@ public class PlayerAvatarExtendedInfo(
         skullIcon: Int,
         overheadIcon: Int,
     ) {
+        verify {
+            require(name.length in 1..12) {
+                "Unexpected name length, expected range 1..12"
+            }
+            require(combatLevel in UNSIGNED_BYTE_RANGE) {
+                "Unexpected combatLevel $combatLevel, expected range $UNSIGNED_BYTE_RANGE"
+            }
+            require(skillLevel in UNSIGNED_SHORT_RANGE) {
+                "Unexpected skill level $skillLevel, expected range $UNSIGNED_SHORT_RANGE"
+            }
+            require(textGender in UNSIGNED_BYTE_RANGE) {
+                "Unexpected textGender $textGender, expected range $UNSIGNED_BYTE_RANGE"
+            }
+            require(skullIcon == -1 || skullIcon in UNSIGNED_BYTE_RANGE) {
+                "Unexpected skullIcon $skullIcon, expected value -1 or in range $UNSIGNED_BYTE_RANGE"
+            }
+            require(overheadIcon == -1 || overheadIcon in UNSIGNED_BYTE_RANGE) {
+                "Unexpected overheadIcon $overheadIcon, expected value -1 or in range $UNSIGNED_BYTE_RANGE"
+            }
+        }
         blocks.appearance.name = name
         blocks.appearance.combatLevel = combatLevel.toUByte()
         blocks.appearance.skillLevel = skillLevel.toUShort()
@@ -258,6 +457,11 @@ public class PlayerAvatarExtendedInfo(
     }
 
     public fun setName(name: String) {
+        verify {
+            require(name.length in 1..12) {
+                "Unexpected name length, expected range 1..12"
+            }
+        }
         if (blocks.appearance.name == name) {
             return
         }
@@ -266,6 +470,11 @@ public class PlayerAvatarExtendedInfo(
     }
 
     public fun setCombatLevel(combatLevel: Int) {
+        verify {
+            require(combatLevel in UNSIGNED_BYTE_RANGE) {
+                "Unexpected combatLevel $combatLevel, expected range $UNSIGNED_BYTE_RANGE"
+            }
+        }
         val level = combatLevel.toUByte()
         if (blocks.appearance.combatLevel == level) {
             return
@@ -275,6 +484,11 @@ public class PlayerAvatarExtendedInfo(
     }
 
     public fun setSkillLevel(skillLevel: Int) {
+        verify {
+            require(skillLevel in UNSIGNED_SHORT_RANGE) {
+                "Unexpected skill level $skillLevel, expected range $UNSIGNED_SHORT_RANGE"
+            }
+        }
         val level = skillLevel.toUShort()
         if (blocks.appearance.skillLevel == level) {
             return
@@ -300,6 +514,11 @@ public class PlayerAvatarExtendedInfo(
     }
 
     public fun setTextGender(num: Int) {
+        verify {
+            require(num in UNSIGNED_BYTE_RANGE) {
+                "Unexpected textGender $num, expected range $UNSIGNED_BYTE_RANGE"
+            }
+        }
         val textGender = num.toUByte()
         if (blocks.appearance.textGender == textGender) {
             return
@@ -309,6 +528,11 @@ public class PlayerAvatarExtendedInfo(
     }
 
     public fun setSkullIcon(icon: Int) {
+        verify {
+            require(icon == -1 || icon in UNSIGNED_BYTE_RANGE) {
+                "Unexpected skullIcon $icon, expected value -1 or in range $UNSIGNED_BYTE_RANGE"
+            }
+        }
         val skullIcon = icon.toUByte()
         if (blocks.appearance.skullIcon == skullIcon) {
             return
@@ -318,6 +542,11 @@ public class PlayerAvatarExtendedInfo(
     }
 
     public fun setOverheadIcon(icon: Int) {
+        verify {
+            require(icon == -1 || icon in UNSIGNED_BYTE_RANGE) {
+                "Unexpected overheadIcon $icon, expected value -1 or in range $UNSIGNED_BYTE_RANGE"
+            }
+        }
         val overheadIcon = icon.toUByte()
         if (blocks.appearance.overheadIcon == overheadIcon) {
             return
@@ -327,6 +556,11 @@ public class PlayerAvatarExtendedInfo(
     }
 
     public fun transformToNpc(id: Int) {
+        verify {
+            require(id == -1 || id in UNSIGNED_SHORT_RANGE) {
+                "Unexpected id $id, expected value -1 or in range $UNSIGNED_SHORT_RANGE"
+            }
+        }
         val npcId = id.toUShort()
         if (blocks.appearance.transformedNpcId == npcId) {
             return
@@ -336,15 +570,23 @@ public class PlayerAvatarExtendedInfo(
     }
 
     public fun setIdentKit(
-        wearPos: Int,
+        wearpos: Int,
         value: Int,
     ) {
+        verify {
+            require(wearpos in 0..11) {
+                "Unexpected wearPos $wearpos, expected range 0..11"
+            }
+            require(value in UNSIGNED_BYTE_RANGE) {
+                "Unexpected value $value, expected range $UNSIGNED_BYTE_RANGE"
+            }
+        }
         val valueAsShort = value.toShort()
-        val cur = blocks.appearance.identKit[wearPos]
+        val cur = blocks.appearance.identKit[wearpos]
         if (cur == valueAsShort) {
             return
         }
-        blocks.appearance.identKit[wearPos] = valueAsShort
+        blocks.appearance.identKit[wearpos] = valueAsShort
         flagAppearance()
     }
 
@@ -354,6 +596,20 @@ public class PlayerAvatarExtendedInfo(
         wearpos2: Int,
         wearpos3: Int,
     ) {
+        verify {
+            require(wearpos in 0..11) {
+                "Unexpected wearPos $wearpos, expected range 0..11"
+            }
+            require(id == -1 || id in UNSIGNED_SHORT_RANGE) {
+                "Unexpected id $id, expected value -1 or range $UNSIGNED_SHORT_RANGE"
+            }
+            require(wearpos2 == -1 || wearpos2 in 0..11) {
+                "Unexpected wearpos2 $wearpos2, expected value -1 or in range 0..11"
+            }
+            require(wearpos3 == -1 || wearpos3 in 0..11) {
+                "Unexpected wearpos3 $wearpos3, expected value -1 or in range 0..11"
+            }
+        }
         val valueAsShort = id.toShort()
         val cur = blocks.appearance.wornObjs[wearpos]
         if (cur == valueAsShort) {
@@ -369,6 +625,14 @@ public class PlayerAvatarExtendedInfo(
         slot: Int,
         value: Int,
     ) {
+        verify {
+            require(slot in 0..<5) {
+                "Unexpected slot $slot, expected range 0..<5"
+            }
+            require(value in UNSIGNED_BYTE_RANGE) {
+                "Unexpected value $value, expected range $UNSIGNED_BYTE_RANGE"
+            }
+        }
         val valueAsByte = value.toByte()
         val cur = blocks.appearance.colours[slot]
         if (cur == valueAsByte) {
@@ -387,6 +651,29 @@ public class PlayerAvatarExtendedInfo(
         walkAnimRight: Int,
         runAnim: Int,
     ) {
+        verify {
+            require(readyAnim == -1 || readyAnim in UNSIGNED_SHORT_RANGE) {
+                "Unexpected readyAnim $readyAnim, expected value -1 or range $UNSIGNED_SHORT_RANGE"
+            }
+            require(turnAnim == -1 || turnAnim in UNSIGNED_SHORT_RANGE) {
+                "Unexpected turnAnim $turnAnim, expected value -1 or range $UNSIGNED_SHORT_RANGE"
+            }
+            require(walkAnim == -1 || walkAnim in UNSIGNED_SHORT_RANGE) {
+                "Unexpected walkAnim $walkAnim, expected value -1 or range $UNSIGNED_SHORT_RANGE"
+            }
+            require(walkAnimBack == -1 || walkAnimBack in UNSIGNED_SHORT_RANGE) {
+                "Unexpected walkAnimBack $walkAnimBack, expected value -1 or range $UNSIGNED_SHORT_RANGE"
+            }
+            require(walkAnimLeft == -1 || walkAnimLeft in UNSIGNED_SHORT_RANGE) {
+                "Unexpected walkAnimLeft $walkAnimLeft, expected value -1 or range $UNSIGNED_SHORT_RANGE"
+            }
+            require(walkAnimRight == -1 || walkAnimRight in UNSIGNED_SHORT_RANGE) {
+                "Unexpected walkAnimRight $walkAnimRight, expected value -1 or range $UNSIGNED_SHORT_RANGE"
+            }
+            require(runAnim == -1 || runAnim in UNSIGNED_SHORT_RANGE) {
+                "Unexpected runAnim $runAnim, expected value -1 or range $UNSIGNED_SHORT_RANGE"
+            }
+        }
         blocks.appearance.readyAnim = readyAnim.toUShort()
         blocks.appearance.turnAnim = turnAnim.toUShort()
         blocks.appearance.walkAnim = walkAnim.toUShort()
@@ -402,6 +689,17 @@ public class PlayerAvatarExtendedInfo(
         afterName: String,
         afterCombatLevel: String,
     ) {
+        verify {
+            require(beforeName.length in UNSIGNED_BYTE_RANGE) {
+                "Unexpected beforeName length ${beforeName.length}, expected range $UNSIGNED_BYTE_RANGE"
+            }
+            require(afterName.length in UNSIGNED_BYTE_RANGE) {
+                "Unexpected afterName length ${afterName.length}, expected range $UNSIGNED_BYTE_RANGE"
+            }
+            require(afterCombatLevel.length in UNSIGNED_BYTE_RANGE) {
+                "Unexpected afterCombatLevel length ${afterCombatLevel.length}, expected range $UNSIGNED_BYTE_RANGE"
+            }
+        }
         blocks.appearance.beforeName = beforeName
         blocks.appearance.afterName = afterName
         blocks.appearance.afterCombatLevel = afterCombatLevel
@@ -409,6 +707,11 @@ public class PlayerAvatarExtendedInfo(
     }
 
     public fun clearObjTypeCustomisation(wearpos: Int) {
+        verify {
+            require(wearpos in 0..11) {
+                "Unexpected wearpos $wearpos, expected range 0..11"
+            }
+        }
         if (blocks.appearance.objTypeCustomisation[wearpos] == null) {
             return
         }
@@ -430,6 +733,17 @@ public class PlayerAvatarExtendedInfo(
         index: Int,
         value: Int,
     ) {
+        verify {
+            require(wearpos in 0..11) {
+                "Unexpected wearpos $wearpos, expected range 0..11"
+            }
+            require(index in 0..14) {
+                "Unexpected recol index $index, expected range 0..14"
+            }
+            require(value in UNSIGNED_SHORT_RANGE) {
+                "Unexpected value $value, expected range $UNSIGNED_SHORT_RANGE"
+            }
+        }
         val customisation = allocObjCustomisation(wearpos)
         customisation.recolIndices = ((customisation.recolIndices.toInt() and 0xF0) or (index and 0xF)).toUByte()
         customisation.recol1 = value.toUShort()
@@ -441,6 +755,17 @@ public class PlayerAvatarExtendedInfo(
         index: Int,
         value: Int,
     ) {
+        verify {
+            require(wearpos in 0..11) {
+                "Unexpected wearpos $wearpos, expected range 0..11"
+            }
+            require(index in 0..14) {
+                "Unexpected recol index $index, expected range 0..14"
+            }
+            require(value in UNSIGNED_SHORT_RANGE) {
+                "Unexpected value $value, expected range $UNSIGNED_SHORT_RANGE"
+            }
+        }
         val customisation = allocObjCustomisation(wearpos)
         customisation.recolIndices = ((customisation.recolIndices.toInt() and 0xF) or ((index and 0xF) shl 4)).toUByte()
         customisation.recol2 = value.toUShort()
@@ -452,6 +777,17 @@ public class PlayerAvatarExtendedInfo(
         index: Int,
         value: Int,
     ) {
+        verify {
+            require(wearpos in 0..11) {
+                "Unexpected wearpos $wearpos, expected range 0..11"
+            }
+            require(index in 0..14) {
+                "Unexpected retex index $index, expected range 0..14"
+            }
+            require(value in UNSIGNED_SHORT_RANGE) {
+                "Unexpected value $value, expected range $UNSIGNED_SHORT_RANGE"
+            }
+        }
         val customisation = allocObjCustomisation(wearpos)
         customisation.retexIndices = ((customisation.retexIndices.toInt() and 0xF0) or (index and 0xF)).toUByte()
         customisation.retex1 = value.toUShort()
@@ -463,6 +799,17 @@ public class PlayerAvatarExtendedInfo(
         index: Int,
         value: Int,
     ) {
+        verify {
+            require(wearpos in 0..11) {
+                "Unexpected wearpos $wearpos, expected range 0..11"
+            }
+            require(index in 0..14) {
+                "Unexpected retex index $index, expected range 0..14"
+            }
+            require(value in UNSIGNED_SHORT_RANGE) {
+                "Unexpected value $value, expected range $UNSIGNED_SHORT_RANGE"
+            }
+        }
         val customisation = allocObjCustomisation(wearpos)
         customisation.retexIndices = ((customisation.retexIndices.toInt() and 0xF) or ((index and 0xF) shl 4)).toUByte()
         customisation.retex2 = value.toUShort()
@@ -631,6 +978,30 @@ public class PlayerAvatarExtendedInfo(
         public const val TEMP_MOVE_SPEED: Int = 0x200
         public const val EXACT_MOVE: Int = 0x400
         public const val SPOTANIM: Int = 0x800
+
+        private val SIGNED_BYTE_RANGE: IntRange = Byte.MIN_VALUE.toInt()..Byte.MAX_VALUE.toInt()
+        private val UNSIGNED_BYTE_RANGE: IntRange = UByte.MIN_VALUE.toInt()..UByte.MAX_VALUE.toInt()
+        private val UNSIGNED_SHORT_RANGE: IntRange = UShort.MIN_VALUE.toInt()..UShort.MAX_VALUE.toInt()
+        private val UNSIGNED_SMART_1_OR_2_RANGE: IntRange = 0..0x7FFF
+
+        private val logger = InlineLogger()
+        public val inputVerification: Boolean =
+            SystemPropertyUtil.getBoolean(
+                "net.rsprot.protocol.game.outgoing.info.playerinfo.inputVerification",
+                true,
+            )
+
+        init {
+            logger.debug {
+                "-Dnet.rsprot.protocol.game.outgoing.info.playerinfo.inputVerification: $inputVerification"
+            }
+        }
+
+        private inline fun verify(crossinline block: () -> Unit) {
+            if (inputVerification) {
+                block()
+            }
+        }
 
         private fun buildPlatformWriterArray(
             extendedInfoWriters: List<AvatarExtendedInfoWriter>,

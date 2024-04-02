@@ -26,7 +26,9 @@ public class PlayerHitEncoder : OnDemandExtendedInfoEncoder<Hit> {
         var count = 0
         for (hit in info.hitMarkList) {
             // If the hit appears on us, or we were the source of the hit in the first place
-            val tinted = localPlayerIndex == updatedPlayerIndex || localPlayerIndex == hit.sourceIndex
+            val tinted =
+                localPlayerIndex == updatedPlayerIndex ||
+                    localPlayerIndex == (hit.sourceIndex - 0x10_000)
             // Skip the hitsplat if it isn't meant to render to us
             // Should be noted that we only check this on the main types, and not soak ones
             if (hit.otherType == UShort.MAX_VALUE && !tinted) {
