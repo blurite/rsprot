@@ -8,7 +8,7 @@ import kotlin.test.assertEquals
 
 class BitBufTest {
     private fun buffer(): BitBuf {
-        return BitBuf(Unpooled.buffer(100))
+        return Unpooled.buffer(100).toBitBuf()
     }
 
     @Test
@@ -48,7 +48,7 @@ class BitBufTest {
     @Test
     fun `buffer wrapping on close`() {
         val buffer = Unpooled.buffer()
-        BitBuf(buffer).use { bitbuf ->
+        WrappedBitBuf(buffer).use { bitbuf ->
             bitbuf.pBits(1, 1)
         }
         assertEquals(1, buffer.readableBytes())
@@ -81,7 +81,7 @@ class BitBufTest {
 
     @Test
     fun `unreadable buffer reading`() {
-        BitBuf(Unpooled.buffer(0, 0)).use { buffer ->
+        WrappedBitBuf(Unpooled.buffer(0, 0)).use { buffer ->
             assertThrows<IllegalArgumentException> {
                 buffer.gBits(1)
             }
@@ -90,8 +90,8 @@ class BitBufTest {
 
     @Test
     fun `non writable buffer writing`() {
-        BitBuf(Unpooled.buffer(0, 0)).use { buffer ->
-            assertThrows<IndexOutOfBoundsException> {
+        WrappedBitBuf(Unpooled.buffer(0, 0)).use { buffer ->
+            assertThrows<IllegalArgumentException> {
                 buffer.pBits(1, 0)
             }
         }

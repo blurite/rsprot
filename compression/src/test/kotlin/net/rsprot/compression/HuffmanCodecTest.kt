@@ -13,7 +13,7 @@ class HuffmanCodecTest {
     @MethodSource("readSampleText")
     fun `lorem ipsum encodes correctly`(sample: Pair<String, ByteArray>) {
         val huffman = createHuffmanCodec()
-        val buffer = Unpooled.buffer()
+        val buffer = Unpooled.buffer(15_000)
         huffman.encode(buffer, sample.first)
         val array = buffer.toByteArray()
         assertContentEquals(sample.second, array)

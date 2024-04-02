@@ -1,6 +1,7 @@
 package net.rsprot.buffer
 
 import io.netty.buffer.ByteBuf
+import io.netty.buffer.Unpooled
 import net.rsprot.buffer.extensions.fastgjstring
 import net.rsprot.buffer.extensions.g1
 import net.rsprot.buffer.extensions.g1Alt1
@@ -109,11 +110,35 @@ public value class JagByteBuf(public val buffer: ByteBuf) {
         return buffer.readableBytes()
     }
 
+    public inline fun readerIndex(): Int {
+        return buffer.readerIndex()
+    }
+
+    public inline fun readerIndex(readerIndex: Int): JagByteBuf {
+        buffer.readerIndex(readerIndex)
+        return this
+    }
+
     public inline fun writableBytes(): Int {
         return buffer.writableBytes()
     }
 
-    public inline fun skip(num: Int): JagByteBuf {
+    public inline fun writerIndex(): Int {
+        return buffer.writerIndex()
+    }
+
+    public inline fun writerIndex(writerIndex: Int): JagByteBuf {
+        buffer.writerIndex(writerIndex)
+        return this
+    }
+
+    public inline fun skipWrite(num: Int): JagByteBuf {
+        buffer.ensureWritable(num)
+        buffer.writerIndex(buffer.writerIndex() + num)
+        return this
+    }
+
+    public inline fun skipRead(num: Int): JagByteBuf {
         buffer.skipBytes(num)
         return this
     }
@@ -534,5 +559,9 @@ public value class JagByteBuf(public val buffer: ByteBuf) {
     ): JagByteBuf {
         buffer.pdataAlt2(src, start, end)
         return this
+    }
+
+    public companion object {
+        public val EMPTY_JAG_BUF: JagByteBuf = JagByteBuf(Unpooled.EMPTY_BUFFER)
     }
 }
