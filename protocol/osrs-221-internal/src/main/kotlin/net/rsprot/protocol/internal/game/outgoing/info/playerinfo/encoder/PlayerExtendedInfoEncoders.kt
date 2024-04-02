@@ -16,6 +16,10 @@ import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.SpotA
 import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.TintingList
 import net.rsprot.protocol.shared.platform.PlatformType
 
+/**
+ * A data class to bring all the extended info encoders for a given platform together.
+ * @param platformType the platform for which these encoders are created.
+ */
 public data class PlayerExtendedInfoEncoders(
     public val platformType: PlatformType,
     public val appearance: PrecomputedExtendedInfoEncoder<Appearance>,

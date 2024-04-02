@@ -1,8 +1,18 @@
 package net.rsprot.protocol.internal.game.outgoing.info
 
+/**
+ * Coord grid, commonly referred to just as Coordinate or Location,
+ * is responsible for tracking absolute positions of avatars in the game.
+ * @param packed the 30-bit bitpacked integer representing the coord grid.
+ */
 @Suppress("unused", "MemberVisibilityCanBePrivate")
 @JvmInline
 public value class CoordGrid(public val packed: Int) {
+    /**
+     * @param level the height level of the avatar.
+     * @param x the absolute x coordinate of the avatar.
+     * @param z the absolute z coordinate of the avatar.
+     */
     @Suppress("ConvertTwoComparisonsToRangeCheck")
     public constructor(
         level: Int,
@@ -33,6 +43,13 @@ public value class CoordGrid(public val packed: Int) {
     public val z: Int
         get() = packed and 0x3FFF
 
+    /**
+     * Checks whether this coord grid is within [distance] of the [other] coord grid.
+     * If the coord grids are on different levels, this function will always return false.
+     * @param other the other coord grid to check against.
+     * @param distance the distance to check (inclusive). A distance of 0 implies same coordinate.
+     * @return true if the [other] coord grid is within [distance] of this coord grid.
+     */
     public fun inDistance(
         other: CoordGrid,
         distance: Int,
@@ -48,6 +65,14 @@ public value class CoordGrid(public val packed: Int) {
         return deltaZ in -distance..distance
     }
 
+    /**
+     * Checks if this coord grid is uninitialized.
+     * Uninitialized coord grids are determined by checking if all 32 bits of
+     * the [packed] property are enabled (including sign bit, which would be the opposite).
+     * As the main constructor of this class only takes in the components that build a coord grid,
+     * it is impossible to make an instance of this that matches the invalid value,
+     * unless directly using the single-argument constructor.
+     */
     @Suppress("NOTHING_TO_INLINE")
     public inline fun invalid(): Boolean {
         return this == INVALID
