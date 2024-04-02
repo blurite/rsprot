@@ -37,7 +37,7 @@ public class PlayerAvatarExtendedInfo(
     private val protocol: PlayerInfoProtocol,
     private val localIndex: Int,
     private val filter: ExtendedInfoFilter,
-    extendedInfoWriters: List<AvatarExtendedInfoWriter>,
+    extendedInfoWriters: List<PlayerAvatarExtendedInfoWriter>,
     allocator: ByteBufAllocator,
     huffmanCodec: HuffmanCodec,
 ) {
@@ -67,7 +67,7 @@ public class PlayerAvatarExtendedInfo(
      * The platform-specific extended info writers, indexed by the respective [PlatformType]'s id.
      * All platforms in use must be registered, or an exception will occur during player info encoding.
      */
-    private val writers: Array<AvatarExtendedInfoWriter?> = buildPlatformWriterArray(extendedInfoWriters)
+    private val writers: Array<PlayerAvatarExtendedInfoWriter?> = buildPlatformWriterArray(extendedInfoWriters)
 
     /**
      * An int array to keep track of the number of times we've seen someone modify their appearance.
@@ -1387,9 +1387,9 @@ public class PlayerAvatarExtendedInfo(
          * All platform types which are utilized must be registered to avoid runtime errors.
          */
         private fun buildPlatformWriterArray(
-            extendedInfoWriters: List<AvatarExtendedInfoWriter>,
-        ): Array<AvatarExtendedInfoWriter?> {
-            val array = arrayOfNulls<AvatarExtendedInfoWriter>(PlatformType.COUNT)
+            extendedInfoWriters: List<PlayerAvatarExtendedInfoWriter>,
+        ): Array<PlayerAvatarExtendedInfoWriter?> {
+            val array = arrayOfNulls<PlayerAvatarExtendedInfoWriter>(PlatformType.COUNT)
             for (writer in extendedInfoWriters) {
                 array[writer.platformType.id] = writer
             }

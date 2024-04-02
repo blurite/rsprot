@@ -20,7 +20,7 @@ import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.Tinti
 import net.rsprot.protocol.shared.platform.PlatformType
 
 public class PlayerAvatarExtendedInfoBlocks(
-    writers: List<AvatarExtendedInfoWriter>,
+    writers: List<PlayerAvatarExtendedInfoWriter>,
     allocator: ByteBufAllocator,
     huffmanCodec: HuffmanCodec,
 ) {
@@ -95,7 +95,7 @@ public class PlayerAvatarExtendedInfoBlocks(
 
     private companion object {
         private inline fun <T : ExtendedInfo<T, E>, reified E : ExtendedInfoEncoder<T>> buildPlatformEncoderArray(
-            allEncoders: List<AvatarExtendedInfoWriter>,
+            allEncoders: List<PlayerAvatarExtendedInfoWriter>,
             selector: (PlayerExtendedInfoEncoders) -> E,
         ): Array<E?> {
             val array = arrayOfNulls<E>(PlatformType.COUNT)

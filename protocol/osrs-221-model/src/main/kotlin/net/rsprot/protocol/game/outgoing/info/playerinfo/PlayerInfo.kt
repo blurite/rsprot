@@ -55,7 +55,7 @@ public class PlayerInfo internal constructor(
     private val allocator: ByteBufAllocator,
     private var platformType: PlatformType,
     extendedInfoFilter: ExtendedInfoFilter,
-    extendedInfoWriters: List<AvatarExtendedInfoWriter>,
+    extendedInfoWriters: List<PlayerAvatarExtendedInfoWriter>,
     huffmanCodec: HuffmanCodec,
 ) : ReferencePooledObject, OutgoingMessage {
     /**

@@ -37,7 +37,7 @@ public class PlayerInfoProtocol(
     private val allocator: ByteBufAllocator,
     private val worker: ProtocolWorker = DefaultProtocolWorker(),
     extendedInfoFilter: ExtendedInfoFilter = DefaultExtendedInfoFilter(),
-    extendedInfoWriters: List<AvatarExtendedInfoWriter>,
+    extendedInfoWriters: List<PlayerAvatarExtendedInfoWriter>,
     huffmanCodec: HuffmanCodec,
 ) {
     /**

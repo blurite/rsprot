@@ -13,13 +13,13 @@ import net.rsprot.protocol.game.outgoing.codec.playerinfo.extendedinfo.PlayerSeq
 import net.rsprot.protocol.game.outgoing.codec.playerinfo.extendedinfo.PlayerSpotAnimEncoder
 import net.rsprot.protocol.game.outgoing.codec.playerinfo.extendedinfo.PlayerTemporaryMoveSpeedEncoder
 import net.rsprot.protocol.game.outgoing.codec.playerinfo.extendedinfo.PlayerTintingEncoder
-import net.rsprot.protocol.game.outgoing.info.playerinfo.AvatarExtendedInfoWriter
 import net.rsprot.protocol.game.outgoing.info.playerinfo.PlayerAvatarExtendedInfo
 import net.rsprot.protocol.game.outgoing.info.playerinfo.PlayerAvatarExtendedInfoBlocks
+import net.rsprot.protocol.game.outgoing.info.playerinfo.PlayerAvatarExtendedInfoWriter
 import net.rsprot.protocol.internal.game.outgoing.info.playerinfo.encoder.PlayerExtendedInfoEncoders
 import net.rsprot.protocol.shared.platform.PlatformType
 
-public class PlayerAvatarExtendedInfoDesktopWriter : AvatarExtendedInfoWriter(
+public class PlayerAvatarExtendedInfoDesktopWriter : PlayerAvatarExtendedInfoWriter(
     PlatformType.DESKTOP,
     PlayerExtendedInfoEncoders(
         PlatformType.DESKTOP,
