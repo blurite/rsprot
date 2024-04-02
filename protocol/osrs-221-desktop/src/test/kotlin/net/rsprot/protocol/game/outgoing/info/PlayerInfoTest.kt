@@ -105,16 +105,14 @@ class PlayerInfoTest {
 
     @Test
     fun `test single player appearance extended info`() {
-        localPlayerInfo.extendedInfo.initializeAppearance(
-            name = "Local Player",
-            combatLevel = 126,
-            skillLevel = 1258,
-            hidden = false,
-            male = false,
-            textGender = 2,
-            skullIcon = -1,
-            overheadIcon = -1,
-        )
+        localPlayerInfo.extendedInfo.setName("Local Player")
+        localPlayerInfo.extendedInfo.setCombatLevel(126)
+        localPlayerInfo.extendedInfo.setSkillLevel(1258)
+        localPlayerInfo.extendedInfo.setHidden(false)
+        localPlayerInfo.extendedInfo.setMale(false)
+        localPlayerInfo.extendedInfo.setTextGender(2)
+        localPlayerInfo.extendedInfo.setSkullIcon(-1)
+        localPlayerInfo.extendedInfo.setOverheadIcon(-1)
         tick()
         assertEquals("Local Player", clientLocalPlayer.name)
         assertEquals(126, clientLocalPlayer.combatLevel)
@@ -134,22 +132,20 @@ class PlayerInfoTest {
             val otherPlayer = protocol.alloc(index, PlatformType.DESKTOP)
             otherPlayers[index] = otherPlayer
             otherPlayer.updateCoord(0, 3205, 3220)
-            otherPlayer.extendedInfo.initializeAppearance(
-                name = "Local Player $index",
-                combatLevel = 126,
-                skillLevel = index,
-                hidden = false,
-                male = false,
-                textGender = 2,
-                skullIcon = -1,
-                overheadIcon = -1,
-            )
+            otherPlayer.extendedInfo.setName("Player $index")
+            otherPlayer.extendedInfo.setCombatLevel(126)
+            otherPlayer.extendedInfo.setSkillLevel(index)
+            otherPlayer.extendedInfo.setHidden(false)
+            otherPlayer.extendedInfo.setMale(false)
+            otherPlayer.extendedInfo.setTextGender(2)
+            otherPlayer.extendedInfo.setSkullIcon(-1)
+            otherPlayer.extendedInfo.setOverheadIcon(-1)
         }
         tick()
         for (index in otherPlayerIndices) {
             val clientPlayer = client.cachedPlayers[index]
             assertNotNull(clientPlayer)
-            assertEquals("Local Player $index", clientPlayer.name)
+            assertEquals("Player $index", clientPlayer.name)
             assertEquals(126, clientPlayer.combatLevel)
             assertEquals(index, clientPlayer.skillLevel)
             assertEquals(false, clientPlayer.hidden)
