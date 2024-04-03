@@ -34,20 +34,20 @@ measurement.
 
 Single-threaded measurements:
 ```
-Benchmark                      Mode  Cnt    Score    Error  Units
-PlayerInfoBenchmark.benchmark  avgt    3  176.429 ± 21.290  ms/op
+Benchmark                      Mode  Cnt    Score   Error  Units
+PlayerInfoBenchmark.benchmark  avgt    3  170.230 ± 7.278  ms/op
 ```
 
 Multi-threaded measurements (default):
 ```
 Benchmark                      Mode  Cnt   Score   Error  Units
-PlayerInfoBenchmark.benchmark  avgt    3  11.765 ± 0.345  ms/op
+PlayerInfoBenchmark.benchmark  avgt    3  11.544 ± 0.154  ms/op
 ```
 
 > [!TIP]
 > 1 operation is equal to 1 game cycle.
 
-Multi-threaded ratio[^1]: 0.937x
+Multi-threaded ratio[^1]: 0.92x
 
 #### Benchmark Description
 - 2046 players are spawned into the world,
