@@ -154,7 +154,7 @@ public class PlayerInfo internal constructor(
      * This implementation will store all the information inside a 'long' primitive, as the maximum
      * data size will always fit in under 50 bits.
      */
-    private val highResMovementBuffer: UnsafeLongBackedBitBuf = UnsafeLongBackedBitBuf()
+    private var highResMovementBuffer: UnsafeLongBackedBitBuf? = null
 
     /**
      * Low resolution bit buffers are cached to avoid small computations for each observer,
@@ -162,7 +162,7 @@ public class PlayerInfo internal constructor(
      * This implementation will store all the information inside a 'long' primitive, as the maximum
      * data size will always fit in under 50 bits.
      */
-    private val lowResMovementBuffer: UnsafeLongBackedBitBuf = UnsafeLongBackedBitBuf()
+    private var lowResMovementBuffer: UnsafeLongBackedBitBuf? = null
 
     /**
      * The buffer into which all the information is written in this cycle.
@@ -227,8 +227,8 @@ public class PlayerInfo internal constructor(
      * This function will be thread-safe relative to other players and can be calculated concurrently for all players.
      */
     internal fun prepareBitcodes(globalLowResolutionPositionRepository: GlobalLowResolutionPositionRepository) {
-        prepareHighResMovement()
-        prepareLowResMovement(globalLowResolutionPositionRepository)
+        this.highResMovementBuffer = prepareHighResMovement()
+        this.lowResMovementBuffer = prepareLowResMovement(globalLowResolutionPositionRepository)
     }
 
     /**
@@ -299,7 +299,7 @@ public class PlayerInfo internal constructor(
                 continue
             }
             val other = protocol.getPlayerInfo(index)
-            val readable = other != null && other.lowResMovementBuffer.isReadable()
+            val readable = other?.lowResMovementBuffer != null
             if (other == null || !readable && !isVisible(other)) {
                 skips++
                 stationary[index] = (stationary[index].toInt() or IS_STATIONARY).toByte()
@@ -311,7 +311,7 @@ public class PlayerInfo internal constructor(
             }
             if (readable) {
                 buffer.pBits(1, 1)
-                buffer.pBits(other.lowResMovementBuffer)
+                buffer.pBits(other.lowResMovementBuffer!!)
                 continue
             }
             pLowResToHighRes(buffer, other)
@@ -333,7 +333,7 @@ public class PlayerInfo internal constructor(
         val index = other.localIndex
         buffer.pBits(3, 1 shl 2)
         val lowResBuf = other.lowResMovementBuffer
-        if (lowResBuf.isReadable()) {
+        if (lowResBuf != null) {
             buffer.pBits(1, 1)
             buffer.pBits(lowResBuf)
         } else {
@@ -392,7 +392,7 @@ public class PlayerInfo internal constructor(
             val flag = other.extendedInfo.flags or observerExtendedInfoFlags.getFlag(index)
             val hasExtendedInfoBlock = flag != 0
             val highResBuf = other.highResMovementBuffer
-            val skipped = !hasExtendedInfoBlock && !highResBuf.isReadable()
+            val skipped = !hasExtendedInfoBlock && highResBuf == null
             if (!skipped) {
                 if (skips > -1) {
                     pStationary(buffer, skips)
@@ -461,7 +461,7 @@ public class PlayerInfo internal constructor(
         buffer: BitBuf,
         index: Int,
         extendedInfo: Boolean,
-        highResBuf: UnsafeLongBackedBitBuf,
+        highResBuf: UnsafeLongBackedBitBuf?,
     ): Boolean {
         buffer.pBits(1, 1)
         if (extendedInfo) {
@@ -470,7 +470,7 @@ public class PlayerInfo internal constructor(
         } else {
             buffer.pBits(1, 0)
         }
-        if (highResBuf.isReadable()) {
+        if (highResBuf != null) {
             buffer.pBits(highResBuf)
         } else {
             buffer.pBits(2, 0)
@@ -586,8 +586,8 @@ public class PlayerInfo internal constructor(
         // However, we do reset any references to buffers and whatnot in this step.
         this.buffer = null
         extendedInfo.reset()
-        highResMovementBuffer.clear()
-        lowResMovementBuffer.clear()
+        highResMovementBuffer = null
+        lowResMovementBuffer = null
     }
 
     /**
@@ -600,13 +600,13 @@ public class PlayerInfo internal constructor(
      */
     private fun prepareLowResMovement(
         globalLowResolutionPositionRepository: GlobalLowResolutionPositionRepository,
-    ): UnsafeLongBackedBitBuf {
+    ): UnsafeLongBackedBitBuf? {
         val old = globalLowResolutionPositionRepository.getPreviousLowResolutionPosition(localIndex)
         val cur = globalLowResolutionPositionRepository.getCurrentLowResolutionPosition(localIndex)
         if (old == cur) {
-            return this.lowResMovementBuffer.clear()
+            return null
         }
-        val buffer = this.lowResMovementBuffer.clear()
+        val buffer = UnsafeLongBackedBitBuf()
         val deltaX = cur.x - old.x
         val deltaZ = cur.z - old.z
         val deltaLevel = cur.level - old.level
@@ -632,13 +632,13 @@ public class PlayerInfo internal constructor(
      * @return unsafe long-backed bit buffer that encodes the information into a 'long' primitive,
      * rather than a real byte buffer, in order to reduce unnecessary computations.
      */
-    private fun prepareHighResMovement(): UnsafeLongBackedBitBuf {
+    private fun prepareHighResMovement(): UnsafeLongBackedBitBuf? {
         val oldCoord = avatar.lastCoord
         val newCoord = avatar.currentCoord
         if (oldCoord == newCoord) {
-            return this.highResMovementBuffer.clear()
+            return null
         }
-        val buffer = this.highResMovementBuffer.clear()
+        val buffer = UnsafeLongBackedBitBuf()
         val deltaX = newCoord.x - oldCoord.x
         val deltaZ = newCoord.z - oldCoord.z
         val deltaLevel = newCoord.level - oldCoord.level
