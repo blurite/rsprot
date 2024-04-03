@@ -12,15 +12,15 @@ public class IfButtonTDecoder : MessageDecoder<IfButtonTEvent> {
 
     override fun decode(buffer: JagByteBuf): IfButtonTEvent {
         val targetCombinedId = buffer.gCombinedIdAlt2()
-        val sourceObj = buffer.g2Alt3()
+        val selectedObj = buffer.g2Alt3()
         val targetSub = buffer.g2Alt3()
-        val sourceCombinedId = buffer.gCombinedIdAlt2()
-        val sourceSub = buffer.g2Alt1()
+        val selectedCombinedId = buffer.gCombinedIdAlt2()
+        val selectedSub = buffer.g2Alt1()
         val targetObj = buffer.g2Alt2()
         return IfButtonTEvent(
-            sourceCombinedId,
-            sourceSub,
-            sourceObj,
+            selectedCombinedId,
+            selectedSub,
+            selectedObj,
             targetCombinedId,
             targetSub,
             targetObj,

@@ -6,51 +6,51 @@ import net.rsprot.protocol.util.CombinedId
 
 /**
  * If button target events are used whenever one button is targeted against another.
- * @property sourceInterfaceId the source interface id of the component that is being used
- * @property sourceComponentId the source component id that is being used
- * @property sourceSub the subcomponent id of the source, or -1 if none exists
- * @property sourceObj the obj in the source subcomponent, or -1 if none exists
- * @property targetInterfaceId the target interface id on which the source component
+ * @property selectedInterfaceId the selected interface id of the component that is being used
+ * @property selectedComponentId the selected component id that is being used
+ * @property selectedSub the subcomponent id of the selected, or -1 if none exists
+ * @property selectedObj the obj in the selected subcomponent, or -1 if none exists
+ * @property targetInterfaceId the target interface id on which the selected component
  * is being used
- * @property targetComponentId the target component id on which the source component
+ * @property targetComponentId the target component id on which the selected component
  * is being used
- * @property targetSub the target subcomponent id on which the source component is
+ * @property targetSub the target subcomponent id on which the selected component is
  * being used, or -1 if none exists
  * @property targetObj the obj within the target subcomponent, or -1 if none exists.
  */
 @Suppress("DuplicatedCode", "MemberVisibilityCanBePrivate")
 public class IfButtonTEvent private constructor(
-    private val sourceCombinedId: CombinedId,
-    private val _sourceSub: UShort,
-    private val _sourceObj: UShort,
+    private val selectedCombinedId: CombinedId,
+    private val _selectedSub: UShort,
+    private val _selectedObj: UShort,
     private val targetCombinedId: CombinedId,
     private val _targetSub: UShort,
     private val _targetObj: UShort,
 ) : IncomingMessage {
     public constructor(
-        sourceCombinedId: CombinedId,
-        sourceSub: Int,
-        sourceObj: Int,
+        selectedCombinedId: CombinedId,
+        selectedSub: Int,
+        selectedObj: Int,
         targetCombinedId: CombinedId,
         targetSub: Int,
         targetObj: Int,
     ) : this(
-        sourceCombinedId,
-        sourceSub.toUShort(),
-        sourceObj.toUShort(),
+        selectedCombinedId,
+        selectedSub.toUShort(),
+        selectedObj.toUShort(),
         targetCombinedId,
         targetSub.toUShort(),
         targetObj.toUShort(),
     )
 
-    public val sourceInterfaceId: Int
-        get() = sourceCombinedId.interfaceId
-    public val sourceComponentId: Int
-        get() = sourceCombinedId.componentId
-    public val sourceSub: Int
-        get() = _sourceSub.toIntOrMinusOne()
-    public val sourceObj: Int
-        get() = _sourceObj.toIntOrMinusOne()
+    public val selectedInterfaceId: Int
+        get() = selectedCombinedId.interfaceId
+    public val selectedComponentId: Int
+        get() = selectedCombinedId.componentId
+    public val selectedSub: Int
+        get() = _selectedSub.toIntOrMinusOne()
+    public val selectedObj: Int
+        get() = _selectedObj.toIntOrMinusOne()
     public val targetInterfaceId: Int
         get() = targetCombinedId.interfaceId
     public val targetComponentId: Int
@@ -66,9 +66,9 @@ public class IfButtonTEvent private constructor(
 
         other as IfButtonTEvent
 
-        if (sourceCombinedId != other.sourceCombinedId) return false
-        if (_sourceSub != other._sourceSub) return false
-        if (_sourceObj != other._sourceObj) return false
+        if (selectedCombinedId != other.selectedCombinedId) return false
+        if (_selectedSub != other._selectedSub) return false
+        if (_selectedObj != other._selectedObj) return false
         if (targetCombinedId != other.targetCombinedId) return false
         if (_targetSub != other._targetSub) return false
         if (_targetObj != other._targetObj) return false
@@ -77,9 +77,9 @@ public class IfButtonTEvent private constructor(
     }
 
     override fun hashCode(): Int {
-        var result = sourceCombinedId.hashCode()
-        result = 31 * result + _sourceSub.hashCode()
-        result = 31 * result + _sourceObj.hashCode()
+        var result = selectedCombinedId.hashCode()
+        result = 31 * result + _selectedSub.hashCode()
+        result = 31 * result + _selectedObj.hashCode()
         result = 31 * result + targetCombinedId.hashCode()
         result = 31 * result + _targetSub.hashCode()
         result = 31 * result + _targetObj.hashCode()
@@ -88,10 +88,10 @@ public class IfButtonTEvent private constructor(
 
     override fun toString(): String {
         return "IfButtonT(" +
-            "sourceInterfaceId=$sourceInterfaceId, " +
-            "sourceComponentId=$sourceComponentId, " +
-            "sourceSub=$sourceSub, " +
-            "sourceObj=$sourceObj, " +
+            "selectedInterfaceId=$selectedInterfaceId, " +
+            "selectedComponentId=$selectedComponentId, " +
+            "selectedSub=$selectedSub, " +
+            "selectedObj=$selectedObj, " +
             "targetInterfaceId=$targetInterfaceId, " +
             "targetComponentId=$targetComponentId, " +
             "targetSub=$targetSub, " +

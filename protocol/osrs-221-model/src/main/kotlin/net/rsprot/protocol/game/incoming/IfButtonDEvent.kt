@@ -7,12 +7,12 @@ import net.rsprot.protocol.util.CombinedId
 /**
  * If button drag events are sent whenever an obj is dragged from one subcomponent
  * to another.
- * @property sourceInterfaceId the interface id from which the obj is dragged
- * @property sourceComponentId the component on that source interface from which
+ * @property selectedInterfaceId the interface id from which the obj is dragged
+ * @property selectedComponentId the component on that selected interface from which
  * the obj is dragged
- * @property sourceSub the subcomponent from which the obj is dragged,
+ * @property selectedSub the subcomponent from which the obj is dragged,
  * or -1 if none exists
- * @property sourceObj the obj that is being dragged, or -1 if none exists
+ * @property selectedObj the obj that is being dragged, or -1 if none exists
  * @property targetInterfaceId the interface id to which the obj is being dragged
  * @property targetComponentId the component of the target interface to which
  * the obj is being dragged
@@ -23,37 +23,37 @@ import net.rsprot.protocol.util.CombinedId
  */
 @Suppress("DuplicatedCode", "MemberVisibilityCanBePrivate")
 public class IfButtonDEvent private constructor(
-    private val sourceCombinedId: CombinedId,
-    private val _sourceSub: UShort,
-    private val _sourceObj: UShort,
+    private val selectedCombinedId: CombinedId,
+    private val _selectedSub: UShort,
+    private val _selectedObj: UShort,
     private val targetCombinedId: CombinedId,
     private val _targetSub: UShort,
     private val _targetObj: UShort,
 ) : IncomingMessage {
     public constructor(
-        sourceCombinedId: CombinedId,
-        sourceSub: Int,
-        sourceObj: Int,
+        selectedCombinedId: CombinedId,
+        selectedSub: Int,
+        selectedObj: Int,
         targetCombinedId: CombinedId,
         targetSub: Int,
         targetObj: Int,
     ) : this(
-        sourceCombinedId,
-        sourceSub.toUShort(),
-        sourceObj.toUShort(),
+        selectedCombinedId,
+        selectedSub.toUShort(),
+        selectedObj.toUShort(),
         targetCombinedId,
         targetSub.toUShort(),
         targetObj.toUShort(),
     )
 
-    public val sourceInterfaceId: Int
-        get() = sourceCombinedId.interfaceId
-    public val sourceComponentId: Int
-        get() = sourceCombinedId.componentId
-    public val sourceSub: Int
-        get() = _sourceSub.toIntOrMinusOne()
-    public val sourceObj: Int
-        get() = _sourceObj.toIntOrMinusOne()
+    public val selectedInterfaceId: Int
+        get() = selectedCombinedId.interfaceId
+    public val selectedComponentId: Int
+        get() = selectedCombinedId.componentId
+    public val selectedSub: Int
+        get() = _selectedSub.toIntOrMinusOne()
+    public val selectedObj: Int
+        get() = _selectedObj.toIntOrMinusOne()
     public val targetInterfaceId: Int
         get() = targetCombinedId.interfaceId
     public val targetComponentId: Int
@@ -69,9 +69,9 @@ public class IfButtonDEvent private constructor(
 
         other as IfButtonDEvent
 
-        if (sourceCombinedId != other.sourceCombinedId) return false
-        if (_sourceSub != other._sourceSub) return false
-        if (_sourceObj != other._sourceObj) return false
+        if (selectedCombinedId != other.selectedCombinedId) return false
+        if (_selectedSub != other._selectedSub) return false
+        if (_selectedObj != other._selectedObj) return false
         if (targetCombinedId != other.targetCombinedId) return false
         if (_targetSub != other._targetSub) return false
         if (_targetObj != other._targetObj) return false
@@ -80,9 +80,9 @@ public class IfButtonDEvent private constructor(
     }
 
     override fun hashCode(): Int {
-        var result = sourceCombinedId.hashCode()
-        result = 31 * result + _sourceSub.hashCode()
-        result = 31 * result + _sourceObj.hashCode()
+        var result = selectedCombinedId.hashCode()
+        result = 31 * result + _selectedSub.hashCode()
+        result = 31 * result + _selectedObj.hashCode()
         result = 31 * result + targetCombinedId.hashCode()
         result = 31 * result + _targetSub.hashCode()
         result = 31 * result + _targetObj.hashCode()
@@ -91,10 +91,10 @@ public class IfButtonDEvent private constructor(
 
     override fun toString(): String {
         return "IfButtonD(" +
-            "sourceInterfaceId=$sourceInterfaceId, " +
-            "sourceComponentId=$sourceComponentId, " +
-            "sourceSub=$sourceSub, " +
-            "sourceObj=$sourceObj, " +
+            "selectedInterfaceId=$selectedInterfaceId, " +
+            "selectedComponentId=$selectedComponentId, " +
+            "selectedSub=$selectedSub, " +
+            "selectedObj=$selectedObj, " +
             "targetInterfaceId=$targetInterfaceId, " +
             "targetComponentId=$targetComponentId, " +
             "targetSub=$targetSub, " +
