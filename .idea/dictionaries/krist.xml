@@ -2,8 +2,10 @@
   <dictionary name="krist">
     <words>
       <w>accumsan</w>
+      <w>addbanned</w>
       <w>adipiscing</w>
       <w>aenean</w>
+      <w>affinedclansettings</w>
       <w>aliquam</w>
       <w>aliquet</w>
       <w>alnum</w>
@@ -28,12 +30,16 @@
       <w>branchless</w>
       <w>burthorpe</w>
       <w>burthorpe's</w>
+      <w>buttond</w>
+      <w>buttont</w>
       <w>bytebuf</w>
       <w>cdpath</w>
       <w>chatbox</w>
+      <w>chatfiltersettings</w>
       <w>clanchannel</w>
       <w>clansettings</w>
       <w>clearinv</w>
+      <w>clickworldmap</w>
       <w>clientscripts</w>
       <w>closesub</w>
       <w>commodo</w>
@@ -45,7 +51,9 @@
       <w>convallis</w>
       <w>coord</w>
       <w>coords</w>
+      <w>countdialog</w>
       <w>cras</w>
+      <w>crmview</w>
       <w>cubilia</w>
       <w>curabitur</w>
       <w>curae</w>
@@ -88,7 +96,9 @@
       <w>friendchat</w>
       <w>friendlist</w>
       <w>fringilla</w>
+      <w>fromchannel</w>
       <w>fusce</w>
+      <w>gameclick</w>
       <w>gamelogin</w>
       <w>gamereconnect</w>
       <w>gboolean</w>
@@ -118,7 +128,9 @@
       <w>ints</w>
       <w>ironmen</w>
       <w>javacmd</w>
+      <w>jingleend</w>
       <w>jvm's</w>
+      <w>kickuser</w>
       <w>lacinia</w>
       <w>lacus</w>
       <w>laoreet</w>
@@ -136,6 +148,7 @@
       <w>mattis</w>
       <w>mauris</w>
       <w>metus</w>
+      <w>minimapclick</w>
       <w>modicon</w>
       <w>modicons</w>
       <w>molestie</w>
@@ -144,6 +157,7 @@
       <w>movespeed</w>
       <w>movesub</w>
       <w>moveto</w>
+      <w>namedialog</w>
       <w>nascetur</w>
       <w>natoque</w>
       <w>neque</w>
@@ -159,6 +173,7 @@
       <w>nullam</w>
       <w>nunc</w>
       <w>obj's</w>
+      <w>objdialog</w>
       <w>objs</w>
       <w>odio</w>
       <w>ondialogabort</w>
@@ -166,11 +181,25 @@
       <w>opensub</w>
       <w>opentop</w>
       <w>opfilter</w>
+      <w>opheld</w>
+      <w>oploc</w>
+      <w>oploct</w>
+      <w>oplocu</w>
+      <w>opnpc</w>
+      <w>opnpct</w>
+      <w>opnpcu</w>
+      <w>opobj</w>
+      <w>opobjt</w>
+      <w>opobju</w>
+      <w>opplayer</w>
+      <w>opplayert</w>
+      <w>opplayeru</w>
       <w>orci</w>
       <w>ornare</w>
       <w>osrs</w>
       <w>parturient</w>
       <w>pathingentity</w>
+      <w>pausebutton</w>
       <w>pboolean</w>
       <w>pdata</w>
       <w>pellentesque</w>
@@ -224,11 +253,13 @@
       <w>sethide</w>
       <w>setlocal</w>
       <w>setmodel</w>
+      <w>setmuted</w>
       <w>setnpchead</w>
       <w>setobject</w>
       <w>setplayerhead</w>
       <w>setplayermodel</w>
       <w>setposition</w>
+      <w>setrank</w>
       <w>setrotatespeed</w>
       <w>setscrollpos</w>
       <w>settext</w>
@@ -247,6 +278,7 @@
       <w>ssww</w>
       <w>stockmarket</w>
       <w>stoptransmit</w>
+      <w>stringdialog</w>
       <w>suscipit</w>
       <w>suspendisse</w>
       <w>taciti</w>
