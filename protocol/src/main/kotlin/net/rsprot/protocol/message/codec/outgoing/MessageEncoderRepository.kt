@@ -3,8 +3,10 @@ package net.rsprot.protocol.message.codec.outgoing
 import net.rsprot.protocol.ProtRepository
 import net.rsprot.protocol.ServerProt
 import net.rsprot.protocol.message.codec.MessageEncoder
+import net.rsprot.protocol.platform.Platform
 
-public class MessageEncoderRepository<P : ServerProt> internal constructor(
+public class MessageEncoderRepository<P : ServerProt, T : Platform> internal constructor(
+    private val platform: T,
     private val protRepository: ProtRepository<P>,
     private val encoders: Array<MessageEncoder<*>?>,
 ) {

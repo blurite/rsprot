@@ -7,15 +7,19 @@ import net.rsprot.protocol.loginprot.outgoing.codec.EmptyLoginResponseEncoder
 import net.rsprot.protocol.loginprot.outgoing.codec.OkLoginResponseEncoder
 import net.rsprot.protocol.message.codec.outgoing.MessageEncoderRepository
 import net.rsprot.protocol.message.codec.outgoing.MessageEncoderRepositoryBuilder
+import net.rsprot.protocol.shared.platform.PlatformType
 
 private typealias Enc<T> = EmptyLoginResponseEncoder<T>
 
 public object LoginMessageEncoderRepository {
     @ExperimentalStdlibApi
-    public fun build(): MessageEncoderRepository<LoginServerProt> {
+    public fun build(): MessageEncoderRepository<LoginServerProt, PlatformType> {
         val protRepository = ProtRepository.of<LoginServerProt>()
         val builder =
-            MessageEncoderRepositoryBuilder(protRepository).apply {
+            MessageEncoderRepositoryBuilder(
+                PlatformType.DESKTOP,
+                protRepository,
+            ).apply {
                 bind(OkLoginResponseEncoder())
                 bind(DisallowedByScriptLoginResponseEncoder())
                 bind(Enc<LoginResponse.Successful>(LoginServerProt.SUCCESSFUL))

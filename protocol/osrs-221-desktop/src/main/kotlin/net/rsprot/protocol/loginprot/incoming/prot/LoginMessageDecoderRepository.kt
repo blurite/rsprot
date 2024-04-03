@@ -13,6 +13,7 @@ import net.rsprot.protocol.loginprot.incoming.codec.InitJs5RemoteConnectionDecod
 import net.rsprot.protocol.loginprot.incoming.codec.ProofOfWorkReplyDecoder
 import net.rsprot.protocol.message.codec.incoming.MessageDecoderRepository
 import net.rsprot.protocol.message.codec.incoming.MessageDecoderRepositoryBuilder
+import net.rsprot.protocol.shared.platform.PlatformType
 import java.math.BigInteger
 
 public object LoginMessageDecoderRepository {
@@ -20,10 +21,13 @@ public object LoginMessageDecoderRepository {
     public fun build(
         exp: BigInteger,
         mod: BigInteger,
-    ): MessageDecoderRepository<LoginClientProt> {
+    ): MessageDecoderRepository<LoginClientProt, PlatformType> {
         val protRepository = ProtRepository.of<LoginClientProt>()
         val builder =
-            MessageDecoderRepositoryBuilder(protRepository).apply {
+            MessageDecoderRepositoryBuilder(
+                PlatformType.DESKTOP,
+                protRepository,
+            ).apply {
                 bind(InitGameConnection::class.java, InitGameConnectionDecoder())
                 bind(InitJs5RemoteConnection::class.java, InitJs5RemoteConnectionDecoder())
                 bind(GameLogin::class.java, GameLoginDecoder(exp, mod))

@@ -4,9 +4,11 @@ import net.rsprot.protocol.ClientProt
 import net.rsprot.protocol.ProtRepository
 import net.rsprot.protocol.message.IncomingMessage
 import net.rsprot.protocol.message.codec.MessageDecoder
+import net.rsprot.protocol.platform.Platform
 
 @Suppress("MemberVisibilityCanBePrivate")
-public class MessageDecoderRepositoryBuilder<P : ClientProt>(
+public class MessageDecoderRepositoryBuilder<P : ClientProt, T : Platform>(
+    private val platform: T,
     private val protRepository: ProtRepository<P>,
 ) {
     private val decoders: Array<MessageDecoder<*>?> = arrayOfNulls(protRepository.capacity())
@@ -24,8 +26,9 @@ public class MessageDecoderRepositoryBuilder<P : ClientProt>(
         messageClassToClientProtMap[messageClass] = clientProt
     }
 
-    public fun build(): MessageDecoderRepository<P> {
+    public fun build(): MessageDecoderRepository<P, T> {
         return MessageDecoderRepository(
+            platform,
             protRepository,
             decoders.copyOf(),
             messageClassToClientProtMap.toMap(),
