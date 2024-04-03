@@ -15,7 +15,6 @@ import net.rsprot.protocol.game.outgoing.info.util.Avatar
 import net.rsprot.protocol.game.outgoing.info.util.ReferencePooledObject
 import net.rsprot.protocol.message.OutgoingMessage
 import net.rsprot.protocol.shared.platform.PlatformType
-import java.util.BitSet
 import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.contract
 import kotlin.math.abs
@@ -83,7 +82,7 @@ public class PlayerInfo internal constructor(
      * We do not need to use references to players as we can then refer to the [PlayerInfoRepository]
      * to find the actual [PlayerInfo] implementation.
      */
-    private val highResolutionPlayers: BitSet = BitSet(PROTOCOL_CAPACITY)
+    private val highResolutionPlayers: LongArray = LongArray(PROTOCOL_CAPACITY ushr 6)
 
     /**
      * High resolution indices are tracked together with [highResolutionCount].
@@ -208,7 +207,9 @@ public class PlayerInfo internal constructor(
     public fun handleAbsolutePlayerPositions(byteBuf: ByteBuf) {
         byteBuf.toBitBuf().use { buffer ->
             buffer.pBits(30, avatar.currentCoord.packed)
-            highResolutionPlayers.set(localIndex)
+            val longIndex = localIndex ushr 6
+            val cur = highResolutionPlayers[longIndex]
+            highResolutionPlayers[longIndex] = cur or (1L shl (localIndex and 0x3F))
             highResolutionIndices[highResolutionCount++] = localIndex.toShort()
             for (i in 1 until PROTOCOL_CAPACITY) {
                 if (i == localIndex) {
@@ -348,7 +349,9 @@ public class PlayerInfo internal constructor(
         // Mark those flags as observer-dependent.
         observerExtendedInfoFlags.addFlag(index, extraFlags)
         stationary[index] = (stationary[index].toInt() or IS_STATIONARY).toByte()
-        highResolutionPlayers.set(index)
+        val longIndex = index ushr 6
+        val cur = highResolutionPlayers[longIndex]
+        highResolutionPlayers[longIndex] = cur or (1L shl (index and 0x3F))
         val flag = other.extendedInfo.flags or observerExtendedInfoFlags.getFlag(index)
         val hasExtendedInfoBlock = flag != 0
         if (hasExtendedInfoBlock) {
@@ -484,7 +487,8 @@ public class PlayerInfo internal constructor(
         buffer: BitBuf,
         index: Int,
     ) {
-        highResolutionPlayers.set(index, false)
+        val cur = highResolutionPlayers[index ushr 6]
+        highResolutionPlayers[index ushr 6] = cur and (1L shl (index and 0x3F)).inv()
         buffer.pBits(4, 1 shl 3)
     }
 
@@ -536,7 +540,7 @@ public class PlayerInfo internal constructor(
         extendedInfoCount = 0
         for (i in 1 until PROTOCOL_CAPACITY) {
             stationary[i] = (stationary[i].toInt() shr 1).toByte()
-            if (highResolutionPlayers.get(i)) {
+            if (highResolutionPlayers[i ushr 6] and (1L shl (i and 0x3F)) != 0L) {
                 highResolutionIndices[highResolutionCount++] = i.toShort()
             } else {
                 lowResolutionIndices[lowResolutionCount++] = i.toShort()
@@ -566,7 +570,7 @@ public class PlayerInfo internal constructor(
         lowResolutionCount = 0
         highResolutionIndices.fill(0)
         highResolutionCount = 0
-        highResolutionPlayers.clear()
+        highResolutionPlayers.fill(0L)
         extendedInfoCount = 0
         extendedInfoIndices.fill(0)
         stationary.fill(0)
