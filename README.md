@@ -197,6 +197,10 @@ In the case of the traditional implementation, since it is already a multiple of
 > While the compressed code may be harder to read and take longer to implement, this is a one-time job as the models rarely change.
 > On the larger scale, this could result in a considerably smaller footprint of the library for servers, and less work for garbage collectors.
 
+## Benchmarks
+Benchmarks can be found [here](BENCHMARKS.md). Only performance-critical
+aspects of the application will be benchmarked.
+
 [^1]: [Compressed ordinary object pointers](https://www.baeldung.com/jvm-compressed-oops) are a trick utilized by the 64-bit JVM to compress object references into 4 bytes instead of the traditional 8. This is only possible if the Xmx is set to 32GB or less. Since Java 7, compressed OOPs are enabled by default if available.
 
 [actions-badge]: https://github.com/blurite/rsprot/actions/workflows/ci.yml/badge.svg
