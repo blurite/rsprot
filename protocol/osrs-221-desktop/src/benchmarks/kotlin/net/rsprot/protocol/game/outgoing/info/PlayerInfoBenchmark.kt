@@ -61,16 +61,15 @@ class PlayerInfoBenchmark {
         player: PlayerInfo,
         index: Int,
     ) {
-        player.extendedInfo.initializeAppearance(
-            name = "Bot $index",
-            combatLevel = 126,
-            skillLevel = 0,
-            hidden = false,
-            male = true,
-            textGender = 0,
-            skullIcon = -1,
-            overheadIcon = -1,
-        )
+        player.extendedInfo.setName("Bot $index")
+        player.extendedInfo.setCombatLevel(126)
+        player.extendedInfo.setSkillLevel(0)
+        player.extendedInfo.setHidden(false)
+        player.extendedInfo.setMale(true)
+        player.extendedInfo.setTextGender(0)
+        player.extendedInfo.setSkullIcon(-1)
+        player.extendedInfo.setOverheadIcon(-1)
+
         for (colIdx in 0..<5) {
             player.extendedInfo.setColour(colIdx, colIdx * 10)
         }
