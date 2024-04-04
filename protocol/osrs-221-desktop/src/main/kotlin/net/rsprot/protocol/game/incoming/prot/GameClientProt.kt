@@ -88,6 +88,11 @@ public enum class GameClientProt(
     OPPLAYERU(GameClientProtId.OPPLAYERU, 11),
 
     // Op held
+    @Deprecated(
+        "Deprecated since revision 211, when a new variant that transmits " +
+            "the absolute coordinates was introduced for objs on the ground.",
+        replaceWith = ReplaceWith("IF_BUTTON10"),
+    )
     OPHELD6(GameClientProtId.OPHELD6, 2),
 
     // Events
