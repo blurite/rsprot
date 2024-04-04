@@ -5,9 +5,9 @@ import net.rsprot.protocol.message.toIntOrMinusOne
 import net.rsprot.protocol.util.CombinedId
 
 /**
- * OpObjT events are fired whenever an interface component is targeted
+ * OpObjT messages are fired whenever an interface component is targeted
  * on an obj on the ground, which, as of revision 204, includes using items from
- * the player's inventory on objs - the OpObjU event was deprecated.
+ * the player's inventory on objs - the OpObjU message was deprecated.
  * @property id the id of the obj the component was used on
  * @property x the absolute x coordinate of the obj
  * @property z the absolute z coordinate of the obj
@@ -18,7 +18,7 @@ import net.rsprot.protocol.util.CombinedId
  * @property selectedObj the obj on the selected subcomponent, or -1 if none exists
  */
 @Suppress("DuplicatedCode", "MemberVisibilityCanBePrivate")
-public class OpObjTEvent private constructor(
+public class OpObjTMessage private constructor(
     private val _id: UShort,
     private val _x: UShort,
     private val _z: UShort,
@@ -64,7 +64,7 @@ public class OpObjTEvent private constructor(
         if (this === other) return true
         if (javaClass != other?.javaClass) return false
 
-        other as OpObjTEvent
+        other as OpObjTMessage
 
         if (_id != other._id) return false
         if (_x != other._x) return false
@@ -89,7 +89,7 @@ public class OpObjTEvent private constructor(
     }
 
     override fun toString(): String {
-        return "OpObjTEvent(" +
+        return "OpObjTMessage(" +
             "id=$id, " +
             "x=$x, " +
             "z=$z, " +

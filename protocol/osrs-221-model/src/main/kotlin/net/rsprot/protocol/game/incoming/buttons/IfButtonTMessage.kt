@@ -5,7 +5,7 @@ import net.rsprot.protocol.message.toIntOrMinusOne
 import net.rsprot.protocol.util.CombinedId
 
 /**
- * If button target events are used whenever one button is targeted against another.
+ * If button target messages are used whenever one button is targeted against another.
  * @property selectedInterfaceId the selected interface id of the component that is being used
  * @property selectedComponentId the selected component id that is being used
  * @property selectedSub the subcomponent id of the selected, or -1 if none exists
@@ -19,7 +19,7 @@ import net.rsprot.protocol.util.CombinedId
  * @property targetObj the obj within the target subcomponent, or -1 if none exists.
  */
 @Suppress("DuplicatedCode", "MemberVisibilityCanBePrivate")
-public class IfButtonTEvent private constructor(
+public class IfButtonTMessage private constructor(
     private val selectedCombinedId: CombinedId,
     private val _selectedSub: UShort,
     private val _selectedObj: UShort,
@@ -64,7 +64,7 @@ public class IfButtonTEvent private constructor(
         if (this === other) return true
         if (javaClass != other?.javaClass) return false
 
-        other as IfButtonTEvent
+        other as IfButtonTMessage
 
         if (selectedCombinedId != other.selectedCombinedId) return false
         if (_selectedSub != other._selectedSub) return false

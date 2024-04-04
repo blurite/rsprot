@@ -5,9 +5,9 @@ import net.rsprot.protocol.message.toIntOrMinusOne
 import net.rsprot.protocol.util.CombinedId
 
 /**
- * OpPlayerT events are fired whenever an interface component is targeted
+ * OpPlayerT messages are fired whenever an interface component is targeted
  * on another player, which, as of revision 204, includes using items from
- * the player's inventory on players - the OpPlayerU event was deprecated.
+ * the player's inventory on players - the OpPlayerU message was deprecated.
  * @property index the index of the player clicked on
  * @property controlKey whether the control key was held down, used to invert movement speed
  * @property selectedInterfaceId the interface id of the selected component
@@ -16,7 +16,7 @@ import net.rsprot.protocol.util.CombinedId
  * @property selectedObj the obj on the selected subcomponent, or -1 if none exists
  */
 @Suppress("MemberVisibilityCanBePrivate", "DuplicatedCode")
-public class OpPlayerTEvent private constructor(
+public class OpPlayerTMessage private constructor(
     private val _index: UShort,
     public val controlKey: Boolean,
     private val selectedCombinedId: CombinedId,
@@ -52,7 +52,7 @@ public class OpPlayerTEvent private constructor(
         if (this === other) return true
         if (javaClass != other?.javaClass) return false
 
-        other as OpPlayerTEvent
+        other as OpPlayerTMessage
 
         if (_index != other._index) return false
         if (controlKey != other.controlKey) return false
@@ -73,7 +73,7 @@ public class OpPlayerTEvent private constructor(
     }
 
     override fun toString(): String {
-        return "OpPlayerTEvent(" +
+        return "OpPlayerTMessage(" +
             "index=$index, " +
             "controlKey=$controlKey, " +
             "selectedInterfaceId=$selectedInterfaceId, " +

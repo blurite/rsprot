@@ -5,9 +5,9 @@ import net.rsprot.protocol.message.toIntOrMinusOne
 import net.rsprot.protocol.util.CombinedId
 
 /**
- * OpNpcT events are fired whenever an interface component is targeted
+ * OpNpcT messages are fired whenever an interface component is targeted
  * on a NPC, which, as of revision 204, includes using items from
- * the player's inventory on NPCs - the OpNpcU event was deprecated.
+ * the player's inventory on NPCs - the OpNpcU message was deprecated.
  * @property index the index of the npc the component was used on
  * @property controlKey whether the control key was held down, used to invert movement speed
  * @property selectedInterfaceId the interface id of the selected component
@@ -16,7 +16,7 @@ import net.rsprot.protocol.util.CombinedId
  * @property selectedObj the obj on the selected subcomponent, or -1 if none exists
  */
 @Suppress("DuplicatedCode", "MemberVisibilityCanBePrivate")
-public class OpNpcTEvent private constructor(
+public class OpNpcTMessage private constructor(
     private val _index: UShort,
     public val controlKey: Boolean,
     private val selectedCombinedId: CombinedId,
@@ -52,7 +52,7 @@ public class OpNpcTEvent private constructor(
         if (this === other) return true
         if (javaClass != other?.javaClass) return false
 
-        other as OpNpcTEvent
+        other as OpNpcTMessage
 
         if (_index != other._index) return false
         if (controlKey != other.controlKey) return false
@@ -73,7 +73,7 @@ public class OpNpcTEvent private constructor(
     }
 
     override fun toString(): String {
-        return "OpNpcTEvent(" +
+        return "OpNpcTMessage(" +
             "index=$index, " +
             "controlKey=$controlKey, " +
             "selectedInterfaceId=$selectedInterfaceId, " +

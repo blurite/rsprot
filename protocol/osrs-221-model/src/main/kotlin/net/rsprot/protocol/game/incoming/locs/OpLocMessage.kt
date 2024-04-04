@@ -3,7 +3,7 @@ package net.rsprot.protocol.game.incoming.locs
 import net.rsprot.protocol.message.IncomingMessage
 
 /**
- * OpLoc events are fired when a player clicks one of the five (excluding oploc6)
+ * OpLoc messages are fired when a player clicks one of the five (excluding oploc6)
  * options on a loc in the game.
  * @property id the base(non-multi-transformed) id of the loc the player clicked on
  * @property x the absolute x coordinate of the south-western corner of the loc
@@ -12,7 +12,7 @@ import net.rsprot.protocol.message.IncomingMessage
  * @property op the option clicked, ranging from 1 to 5 (inclusive)
  */
 @Suppress("DuplicatedCode", "MemberVisibilityCanBePrivate")
-public class OpLocEvent private constructor(
+public class OpLocMessage private constructor(
     private val _id: UShort,
     private val _x: UShort,
     private val _z: UShort,
@@ -46,7 +46,7 @@ public class OpLocEvent private constructor(
         if (this === other) return true
         if (javaClass != other?.javaClass) return false
 
-        other as OpLocEvent
+        other as OpLocMessage
 
         if (_id != other._id) return false
         if (_x != other._x) return false
@@ -67,7 +67,7 @@ public class OpLocEvent private constructor(
     }
 
     override fun toString(): String {
-        return "OpLocEvent(" +
+        return "OpLocMessage(" +
             "id=$id, " +
             "x=$x, " +
             "z=$z, " +

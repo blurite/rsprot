@@ -1,7 +1,7 @@
 package net.rsprot.protocol.game.incoming.codec.buttons
 
 import net.rsprot.buffer.JagByteBuf
-import net.rsprot.protocol.game.incoming.buttons.If3ButtonEvent
+import net.rsprot.protocol.game.incoming.buttons.If3ButtonMessage
 import net.rsprot.protocol.game.incoming.prot.GameClientProt
 import net.rsprot.protocol.message.codec.MessageDecoder
 import net.rsprot.protocol.metadata.Consistent
@@ -11,12 +11,12 @@ import net.rsprot.protocol.util.gCombinedId
 public class If3ButtonDecoder(
     override val prot: GameClientProt,
     private val op: Int,
-) : MessageDecoder<If3ButtonEvent> {
-    override fun decode(buffer: JagByteBuf): If3ButtonEvent {
+) : MessageDecoder<If3ButtonMessage> {
+    override fun decode(buffer: JagByteBuf): If3ButtonMessage {
         val combinedId = buffer.gCombinedId()
         val sub = buffer.g2()
         val obj = buffer.g2()
-        return If3ButtonEvent(
+        return If3ButtonMessage(
             combinedId,
             sub,
             obj,

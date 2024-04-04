@@ -5,9 +5,9 @@ import net.rsprot.protocol.message.toIntOrMinusOne
 import net.rsprot.protocol.util.CombinedId
 
 /**
- * OpLocT events are fired whenever an interface component is targeted
+ * OpLocT messages are fired whenever an interface component is targeted
  * on a loc, which, as of revision 204, includes using items from
- * the player's inventory on locs - the OpLocU event was deprecated.
+ * the player's inventory on locs - the OpLocU message was deprecated.
  * @property id the base(non-multi-transformed) id of the loc the component was used on
  * @property x the absolute x coordinate of the south-western corner of the loc
  * @property z the absolute z coordinate of the south-western corner of the loc
@@ -18,7 +18,7 @@ import net.rsprot.protocol.util.CombinedId
  * @property selectedObj the obj on the selected subcomponent, or -1 if none exists
  */
 @Suppress("DuplicatedCode", "MemberVisibilityCanBePrivate")
-public class OpLocTEvent private constructor(
+public class OpLocTMessage private constructor(
     private val _id: UShort,
     private val _x: UShort,
     private val _z: UShort,
@@ -64,7 +64,7 @@ public class OpLocTEvent private constructor(
         if (this === other) return true
         if (javaClass != other?.javaClass) return false
 
-        other as OpLocTEvent
+        other as OpLocTMessage
 
         if (_id != other._id) return false
         if (controlKey != other.controlKey) return false
@@ -85,7 +85,7 @@ public class OpLocTEvent private constructor(
     }
 
     override fun toString(): String {
-        return "OpLocTEvent(" +
+        return "OpLocTMessage(" +
             "id=$id, " +
             "x=$x, " +
             "z=$z, " +

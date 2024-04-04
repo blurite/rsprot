@@ -1,17 +1,17 @@
-package net.rsprot.protocol.game.incoming.players
+package net.rsprot.protocol.game.incoming.npcs
 
 import net.rsprot.protocol.message.IncomingMessage
 
 /**
- * Opplayer events are fired whenever a player clicks an option on another player,
- * or if messages such as "* wishes to trade with you." are clicked.
- * In the case of latter, only ops 1, 4, 6 and 7 will fire the packet.
- * @property index the index of the player who was interacted with
+ * OpNpc messages are sent when a player clicks one of the five primary options on a NPC.
+ * It should be noted that this message will not handle 'OPNPC6', as that message requires
+ * different arguments.
+ * @property index the index of the npc that was clicked
  * @property controlKey whether the control key was held down, used to invert movement speed
- * @property op the option clicked, ranging from 1 to 8 (inclusive)
+ * @property op the option clicked, ranging from 1 to 5(inclusive).
  */
 @Suppress("MemberVisibilityCanBePrivate")
-public class OpPlayerEvent private constructor(
+public class OpNpcMessage private constructor(
     private val _index: UShort,
     public val controlKey: Boolean,
     private val _op: UByte,
@@ -35,7 +35,7 @@ public class OpPlayerEvent private constructor(
         if (this === other) return true
         if (javaClass != other?.javaClass) return false
 
-        other as OpPlayerEvent
+        other as OpNpcMessage
 
         if (_index != other._index) return false
         if (controlKey != other.controlKey) return false
@@ -52,7 +52,7 @@ public class OpPlayerEvent private constructor(
     }
 
     override fun toString(): String {
-        return "OpPlayerEvent(" +
+        return "OpNpcMessage(" +
             "index=$index, " +
             "controlKey=$controlKey, " +
             "op=$op" +

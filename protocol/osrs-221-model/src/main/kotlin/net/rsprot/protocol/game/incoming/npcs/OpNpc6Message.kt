@@ -1,21 +1,20 @@
-package net.rsprot.protocol.game.incoming.locs
+package net.rsprot.protocol.game.incoming.npcs
 
 import net.rsprot.protocol.message.IncomingMessage
 
 /**
- * OpLoc6 event is fired whenever a player clicks examine on a loc.
- * @property id the id of the loc (if multiloc, transformed to the
- * currently visible variant)
+ * OpNpc6 message is fired when a player clicks the 'Examine' option on a npc.
+ * @property id the config id of the npc clicked
  */
-@Suppress("DuplicatedCode", "MemberVisibilityCanBePrivate")
-public class OpLoc6Event(
+@Suppress("MemberVisibilityCanBePrivate")
+public class OpNpc6Message(
     public val id: Int,
 ) : IncomingMessage {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (javaClass != other?.javaClass) return false
 
-        other as OpLoc6Event
+        other as OpNpc6Message
 
         return id == other.id
     }
@@ -25,6 +24,6 @@ public class OpLoc6Event(
     }
 
     override fun toString(): String {
-        return "OpLoc6Event(id=$id)"
+        return "OpNpc6Message(id=$id)"
     }
 }

@@ -4,13 +4,13 @@ import net.rsprot.protocol.message.IncomingMessage
 import net.rsprot.protocol.util.CombinedId
 
 /**
- * If1 button events are sent whenever a player clicks on an older
+ * If1 button messages are sent whenever a player clicks on an older
  * if1-type component.
  * @property interfaceId the interface id the player interacted with
  * @property componentId the component id on that interface the player interacted with
  */
 @Suppress("MemberVisibilityCanBePrivate")
-public class If1ButtonEvent(
+public class If1ButtonMessage(
     private val combinedId: CombinedId,
 ) : IncomingMessage {
     public val interfaceId: Int
@@ -22,7 +22,7 @@ public class If1ButtonEvent(
         if (this === other) return true
         if (javaClass != other?.javaClass) return false
 
-        other as If1ButtonEvent
+        other as If1ButtonMessage
 
         return combinedId == other.combinedId
     }
@@ -32,7 +32,7 @@ public class If1ButtonEvent(
     }
 
     override fun toString(): String {
-        return "If1ButtonEvent(" +
+        return "If1ButtonMessage(" +
             "interfaceId=$interfaceId, " +
             "componentId=$componentId" +
             ")"

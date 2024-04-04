@@ -5,7 +5,7 @@ import net.rsprot.protocol.message.toIntOrMinusOne
 import net.rsprot.protocol.util.CombinedId
 
 /**
- * If button drag events are sent whenever an obj is dragged from one subcomponent
+ * If button drag messages are sent whenever an obj is dragged from one subcomponent
  * to another.
  * @property selectedInterfaceId the interface id from which the obj is dragged
  * @property selectedComponentId the component on that selected interface from which
@@ -22,7 +22,7 @@ import net.rsprot.protocol.util.CombinedId
  * or -1 if there is no obj in the target position
  */
 @Suppress("DuplicatedCode", "MemberVisibilityCanBePrivate")
-public class IfButtonDEvent private constructor(
+public class IfButtonDMessage private constructor(
     private val selectedCombinedId: CombinedId,
     private val _selectedSub: UShort,
     private val _selectedObj: UShort,
@@ -67,7 +67,7 @@ public class IfButtonDEvent private constructor(
         if (this === other) return true
         if (javaClass != other?.javaClass) return false
 
-        other as IfButtonDEvent
+        other as IfButtonDMessage
 
         if (selectedCombinedId != other.selectedCombinedId) return false
         if (_selectedSub != other._selectedSub) return false

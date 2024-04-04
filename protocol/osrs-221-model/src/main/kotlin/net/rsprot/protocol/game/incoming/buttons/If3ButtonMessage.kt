@@ -5,7 +5,7 @@ import net.rsprot.protocol.message.toIntOrMinusOne
 import net.rsprot.protocol.util.CombinedId
 
 /**
- * If3 button events are sent whenever a player clicks on a newer
+ * If3 button messages are sent whenever a player clicks on a newer
  * if3-type component.
  * @property interfaceId the interface id the player interacted with
  * @property componentId the component id on that interface the player interacted with
@@ -14,7 +14,7 @@ import net.rsprot.protocol.util.CombinedId
  * @property op the option clicked, ranging from 1 to 10
  */
 @Suppress("MemberVisibilityCanBePrivate")
-public class If3ButtonEvent private constructor(
+public class If3ButtonMessage private constructor(
     private val combinedId: CombinedId,
     private val _sub: UShort,
     private val _obj: UShort,
@@ -48,7 +48,7 @@ public class If3ButtonEvent private constructor(
         if (this === other) return true
         if (javaClass != other?.javaClass) return false
 
-        other as If3ButtonEvent
+        other as If3ButtonMessage
 
         if (combinedId != other.combinedId) return false
         if (_sub != other._sub) return false
@@ -67,7 +67,7 @@ public class If3ButtonEvent private constructor(
     }
 
     override fun toString(): String {
-        return "If3ButtonEvent(" +
+        return "If3ButtonMessage(" +
             "interfaceId=$interfaceId, " +
             "componentId=$componentId, " +
             "sub=$sub, " +
