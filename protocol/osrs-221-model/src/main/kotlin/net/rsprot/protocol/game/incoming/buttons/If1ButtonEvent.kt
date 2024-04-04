@@ -1,4 +1,4 @@
-package net.rsprot.protocol.game.incoming
+package net.rsprot.protocol.game.incoming.buttons
 
 import net.rsprot.protocol.message.IncomingMessage
 import net.rsprot.protocol.util.CombinedId

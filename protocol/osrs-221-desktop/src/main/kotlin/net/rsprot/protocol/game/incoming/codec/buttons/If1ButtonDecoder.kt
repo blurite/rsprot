@@ -1,8 +1,8 @@
-package net.rsprot.protocol.game.incoming.codec
+package net.rsprot.protocol.game.incoming.codec.buttons
 
 import net.rsprot.buffer.JagByteBuf
 import net.rsprot.protocol.ClientProt
-import net.rsprot.protocol.game.incoming.If1ButtonEvent
+import net.rsprot.protocol.game.incoming.buttons.If1ButtonEvent
 import net.rsprot.protocol.game.incoming.prot.GameClientProt
 import net.rsprot.protocol.message.codec.MessageDecoder
 import net.rsprot.protocol.metadata.Consistent
