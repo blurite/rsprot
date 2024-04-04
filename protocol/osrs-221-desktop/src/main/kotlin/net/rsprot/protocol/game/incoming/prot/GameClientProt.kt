@@ -28,8 +28,14 @@ public enum class GameClientProt(
     OPNPC4(GameClientProtId.OPNPC4, 3),
     OPNPC5(GameClientProtId.OPNPC5, 3),
     OPNPC6(GameClientProtId.OPNPC6, 2),
-    OPNPCU(GameClientProtId.OPNPCU, 11),
     OPNPCT(GameClientProtId.OPNPCT, 11),
+
+    @Deprecated(
+        "Deprecated since inventory rework in revision 204, " +
+            "use all usages go through OPNPCT now.",
+        replaceWith = ReplaceWith("OPNPCT"),
+    )
+    OPNPCU(GameClientProtId.OPNPCU, 11),
 
     // Op loc
     OPLOC1(GameClientProtId.OPLOC1, 7),
@@ -38,8 +44,14 @@ public enum class GameClientProt(
     OPLOC4(GameClientProtId.OPLOC4, 7),
     OPLOC5(GameClientProtId.OPLOC5, 7),
     OPLOC6(GameClientProtId.OPLOC6, 2),
-    OPLOCU(GameClientProtId.OPLOCU, 15),
     OPLOCT(GameClientProtId.OPLOCT, 15),
+
+    @Deprecated(
+        "Deprecated since inventory rework in revision 204, " +
+            "use all usages go through OPLOCT now.",
+        replaceWith = ReplaceWith("OPLOCT"),
+    )
+    OPLOCU(GameClientProtId.OPLOCU, 15),
 
     // Op obj
     OPOBJ1(GameClientProtId.OPOBJ1, 7),
@@ -48,8 +60,14 @@ public enum class GameClientProt(
     OPOBJ4(GameClientProtId.OPOBJ4, 7),
     OPOBJ5(GameClientProtId.OPOBJ5, 7),
     OPOBJ6(GameClientProtId.OPOBJ6, 6),
-    OPOBJU(GameClientProtId.OPOBJU, 15),
     OPOBJT(GameClientProtId.OPOBJT, 15),
+
+    @Deprecated(
+        "Deprecated since inventory rework in revision 204, " +
+            "use all usages go through OPOBJT now.",
+        replaceWith = ReplaceWith("OPOBJT"),
+    )
+    OPOBJU(GameClientProtId.OPOBJU, 15),
 
     // Op player
     OPPLAYER1(GameClientProtId.OPPLAYER1, 3),
@@ -60,8 +78,14 @@ public enum class GameClientProt(
     OPPLAYER6(GameClientProtId.OPPLAYER6, 3),
     OPPLAYER7(GameClientProtId.OPPLAYER7, 3),
     OPPLAYER8(GameClientProtId.OPPLAYER8, 3),
-    OPPLAYERU(GameClientProtId.OPPLAYERU, 11),
     OPPLAYERT(GameClientProtId.OPPLAYERT, 11),
+
+    @Deprecated(
+        "Deprecated since inventory rework in revision 204, " +
+            "use all usages go through OPPLAYERT now.",
+        replaceWith = ReplaceWith("OPPLAYERT"),
+    )
+    OPPLAYERU(GameClientProtId.OPPLAYERU, 11),
 
     // Op held
     OPHELD6(GameClientProtId.OPHELD6, 2),
