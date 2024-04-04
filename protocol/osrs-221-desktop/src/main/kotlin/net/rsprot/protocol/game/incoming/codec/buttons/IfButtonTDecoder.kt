@@ -5,12 +5,16 @@ import net.rsprot.protocol.ClientProt
 import net.rsprot.protocol.game.incoming.buttons.IfButtonTMessage
 import net.rsprot.protocol.game.incoming.prot.GameClientProt
 import net.rsprot.protocol.message.codec.MessageDecoder
+import net.rsprot.protocol.tools.MessageDecodingTools
 import net.rsprot.protocol.util.gCombinedIdAlt2
 
 public class IfButtonTDecoder : MessageDecoder<IfButtonTMessage> {
     override val prot: ClientProt = GameClientProt.IF_BUTTONT
 
-    override fun decode(buffer: JagByteBuf): IfButtonTMessage {
+    override fun decode(
+        buffer: JagByteBuf,
+        tools: MessageDecodingTools,
+    ): IfButtonTMessage {
         val targetCombinedId = buffer.gCombinedIdAlt2()
         val selectedObj = buffer.g2Alt3()
         val targetSub = buffer.g2Alt3()

@@ -6,13 +6,17 @@ import net.rsprot.protocol.game.incoming.buttons.If1ButtonMessage
 import net.rsprot.protocol.game.incoming.prot.GameClientProt
 import net.rsprot.protocol.message.codec.MessageDecoder
 import net.rsprot.protocol.metadata.Consistent
+import net.rsprot.protocol.tools.MessageDecodingTools
 import net.rsprot.protocol.util.gCombinedId
 
 @Consistent
 public class If1ButtonDecoder : MessageDecoder<If1ButtonMessage> {
     override val prot: ClientProt = GameClientProt.IF_BUTTON
 
-    override fun decode(buffer: JagByteBuf): If1ButtonMessage {
+    override fun decode(
+        buffer: JagByteBuf,
+        tools: MessageDecodingTools,
+    ): If1ButtonMessage {
         val combinedId = buffer.gCombinedId()
         return If1ButtonMessage(combinedId)
     }

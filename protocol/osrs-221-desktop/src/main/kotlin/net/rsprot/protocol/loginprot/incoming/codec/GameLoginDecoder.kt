@@ -10,6 +10,7 @@ import net.rsprot.protocol.loginprot.incoming.util.OtpAuthenticationType
 import net.rsprot.protocol.loginprot.incoming.util.Password
 import net.rsprot.protocol.loginprot.incoming.util.Token
 import net.rsprot.protocol.message.codec.MessageDecoder
+import net.rsprot.protocol.tools.MessageDecodingTools
 import java.math.BigInteger
 
 public class GameLoginDecoder(
@@ -18,7 +19,10 @@ public class GameLoginDecoder(
 ) : MessageDecoder<GameLogin>, LoginBlockDecoder<AuthenticationType<*>>(exp, mod) {
     override val prot: ClientProt = LoginClientProt.GAMELOGIN
 
-    override fun decode(buffer: JagByteBuf): GameLogin {
+    override fun decode(
+        buffer: JagByteBuf,
+        tools: MessageDecodingTools,
+    ): GameLogin {
         return GameLogin(decodeLoginBlock(buffer))
     }
 

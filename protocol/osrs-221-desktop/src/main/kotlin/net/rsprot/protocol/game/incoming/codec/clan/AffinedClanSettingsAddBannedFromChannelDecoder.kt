@@ -6,13 +6,17 @@ import net.rsprot.protocol.game.incoming.clan.AffinedClanSettingsAddBannedFromCh
 import net.rsprot.protocol.game.incoming.prot.GameClientProt
 import net.rsprot.protocol.message.codec.MessageDecoder
 import net.rsprot.protocol.metadata.Consistent
+import net.rsprot.protocol.tools.MessageDecodingTools
 
 @Consistent
 public class AffinedClanSettingsAddBannedFromChannelDecoder :
     MessageDecoder<AffinedClanSettingsAddBannedFromChannelMessage> {
     override val prot: ClientProt = GameClientProt.AFFINEDCLANSETTINGS_ADDBANNED_FROMCHANNEL
 
-    override fun decode(buffer: JagByteBuf): AffinedClanSettingsAddBannedFromChannelMessage {
+    override fun decode(
+        buffer: JagByteBuf,
+        tools: MessageDecodingTools,
+    ): AffinedClanSettingsAddBannedFromChannelMessage {
         val clanId = buffer.g1()
         val memberIndex = buffer.g2()
         val name = buffer.gjstr()

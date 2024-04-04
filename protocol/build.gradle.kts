@@ -7,4 +7,5 @@ dependencies {
     implementation(libs.netty.transport)
     implementation(projects.buffer)
     implementation(projects.crypto)
+    implementation(projects.compression)
 }

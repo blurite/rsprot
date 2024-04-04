@@ -6,12 +6,16 @@ import net.rsprot.protocol.game.incoming.prot.GameClientProt
 import net.rsprot.protocol.game.incoming.resumed.ResumePCountDialogMessage
 import net.rsprot.protocol.message.codec.MessageDecoder
 import net.rsprot.protocol.metadata.Consistent
+import net.rsprot.protocol.tools.MessageDecodingTools
 
 @Consistent
 public class ResumePCountDialogDecoder : MessageDecoder<ResumePCountDialogMessage> {
     override val prot: ClientProt = GameClientProt.RESUME_P_COUNTDIALOG
 
-    override fun decode(buffer: JagByteBuf): ResumePCountDialogMessage {
+    override fun decode(
+        buffer: JagByteBuf,
+        tools: MessageDecodingTools,
+    ): ResumePCountDialogMessage {
         val count = buffer.g4()
         return ResumePCountDialogMessage(count)
     }

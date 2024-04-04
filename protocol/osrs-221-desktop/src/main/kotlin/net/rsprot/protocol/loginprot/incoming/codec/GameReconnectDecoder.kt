@@ -7,6 +7,7 @@ import net.rsprot.protocol.loginprot.incoming.codec.shared.LoginBlockDecoder
 import net.rsprot.protocol.loginprot.incoming.prot.LoginClientProt
 import net.rsprot.protocol.loginprot.incoming.util.XteaKey
 import net.rsprot.protocol.message.codec.MessageDecoder
+import net.rsprot.protocol.tools.MessageDecodingTools
 import java.math.BigInteger
 
 public class GameReconnectDecoder(
@@ -15,7 +16,10 @@ public class GameReconnectDecoder(
 ) : MessageDecoder<GameReconnect>, LoginBlockDecoder<XteaKey>(exp, mod) {
     override val prot: ClientProt = LoginClientProt.GAMELOGIN
 
-    override fun decode(buffer: JagByteBuf): GameReconnect {
+    override fun decode(
+        buffer: JagByteBuf,
+        tools: MessageDecodingTools,
+    ): GameReconnect {
         return GameReconnect(decodeLoginBlock(buffer))
     }
 

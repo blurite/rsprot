@@ -6,12 +6,16 @@ import net.rsprot.protocol.game.incoming.events.EventMouseMoveMessage
 import net.rsprot.protocol.game.incoming.prot.GameClientProt
 import net.rsprot.protocol.message.codec.MessageDecoder
 import net.rsprot.protocol.metadata.Consistent
+import net.rsprot.protocol.tools.MessageDecodingTools
 
 @Consistent
 public class EventMouseMoveDecoder : MessageDecoder<EventMouseMoveMessage> {
     override val prot: ClientProt = GameClientProt.EVENT_MOUSE_MOVE
 
-    override fun decode(buffer: JagByteBuf): EventMouseMoveMessage {
+    override fun decode(
+        buffer: JagByteBuf,
+        tools: MessageDecodingTools,
+    ): EventMouseMoveMessage {
         val averageTime = buffer.g1()
         val remainingTime = buffer.g1()
         val array = threadLocalArray.get()

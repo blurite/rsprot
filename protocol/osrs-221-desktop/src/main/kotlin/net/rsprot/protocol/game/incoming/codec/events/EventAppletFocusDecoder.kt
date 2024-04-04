@@ -6,12 +6,16 @@ import net.rsprot.protocol.game.incoming.events.EventAppletFocusMessage
 import net.rsprot.protocol.game.incoming.prot.GameClientProt
 import net.rsprot.protocol.message.codec.MessageDecoder
 import net.rsprot.protocol.metadata.Consistent
+import net.rsprot.protocol.tools.MessageDecodingTools
 
 @Consistent
 public class EventAppletFocusDecoder : MessageDecoder<EventAppletFocusMessage> {
     override val prot: ClientProt = GameClientProt.EVENT_APPLET_FOCUS
 
-    override fun decode(buffer: JagByteBuf): EventAppletFocusMessage {
+    override fun decode(
+        buffer: JagByteBuf,
+        tools: MessageDecodingTools,
+    ): EventAppletFocusMessage {
         val inFocus = buffer.g1() == 1
         return EventAppletFocusMessage(inFocus)
     }
