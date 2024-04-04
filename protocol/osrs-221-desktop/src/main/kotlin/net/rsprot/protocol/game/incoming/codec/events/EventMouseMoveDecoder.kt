@@ -23,17 +23,17 @@ public class EventMouseMoveDecoder : MessageDecoder<EventMouseMoveMessage> {
             var timeSinceLastMovement: Int
             if (packed and 0xE0 == 0xE0) {
                 timeSinceLastMovement = packed and 0x1f shl 8 or buffer.g1()
-                deltaY = buffer.g2s()
                 deltaX = buffer.g2s()
-                if (deltaX == 0 && deltaY == -0x8000) {
+                deltaY = buffer.g2s()
+                if (deltaY == 0 && deltaX == -0x8000) {
                     deltaX = -1
                     deltaY = -1
                 }
             } else if (packed and 0xC0 == 0xC0) {
                 timeSinceLastMovement = packed and 0x3f
-                deltaY = buffer.g2s()
                 deltaX = buffer.g2s()
-                if (deltaX == 0 && deltaY == -0x8000) {
+                deltaY = buffer.g2s()
+                if (deltaY == 0 && deltaX == -0x8000) {
                     deltaX = -1
                     deltaY = -1
                 }
