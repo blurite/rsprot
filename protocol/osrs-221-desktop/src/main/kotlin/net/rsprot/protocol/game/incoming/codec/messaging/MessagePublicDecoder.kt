@@ -2,20 +2,20 @@ package net.rsprot.protocol.game.incoming.codec.messaging
 
 import net.rsprot.buffer.JagByteBuf
 import net.rsprot.protocol.ClientProt
-import net.rsprot.protocol.game.incoming.messaging.MessagePublicMessage
+import net.rsprot.protocol.game.incoming.messaging.MessagePublic
 import net.rsprot.protocol.game.incoming.prot.GameClientProt
 import net.rsprot.protocol.message.codec.MessageDecoder
 import net.rsprot.protocol.metadata.Consistent
 import net.rsprot.protocol.tools.MessageDecodingTools
 
 @Consistent
-public class MessagePublicDecoder : MessageDecoder<MessagePublicMessage> {
+public class MessagePublicDecoder : MessageDecoder<MessagePublic> {
     override val prot: ClientProt = GameClientProt.MESSAGE_PUBLIC
 
     override fun decode(
         buffer: JagByteBuf,
         tools: MessageDecodingTools,
-    ): MessagePublicMessage {
+    ): MessagePublic {
         val type = buffer.g1()
         val colour = buffer.g1()
         val effect = buffer.g1()
@@ -36,11 +36,11 @@ public class MessagePublicDecoder : MessageDecoder<MessagePublicMessage> {
             }
         val pattern =
             if (patternArray != null) {
-                MessagePublicMessage.MessageColourPattern(patternArray)
+                MessagePublic.MessageColourPattern(patternArray)
             } else {
                 null
             }
-        return MessagePublicMessage(
+        return MessagePublic(
             type,
             colour,
             effect,
