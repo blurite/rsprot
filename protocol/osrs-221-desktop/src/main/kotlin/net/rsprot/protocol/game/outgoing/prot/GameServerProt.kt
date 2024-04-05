@@ -98,7 +98,7 @@ public enum class GameServerProt(
     CAM_LOOKAT_EASED_ANGLE_RELATIVE(GameServerProtId.CAM_LOOKAT_EASED_ANGLE_RELATIVE, 7),
     CAM_LOOKAT_EASED_ANGLE_ABSOLUTE(GameServerProtId.CAM_LOOKAT_EASED_ANGLE_ABSOLUTE, 7),
     CAM_MODE(GameServerProtId.CAM_MODE, 1),
-    CAM_UNKNOWN(GameServerProtId.CAM_UNKNOWN, 4),
+    OCULUS_SYNC(GameServerProtId.OCULUS_SYNC, 4),
 
     // Inventory packets
     UPDATE_INV_FULL(GameServerProtId.UPDATE_INV_FULL, Prot.VAR_SHORT),

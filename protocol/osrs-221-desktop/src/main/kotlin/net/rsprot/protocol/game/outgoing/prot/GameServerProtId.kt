@@ -39,7 +39,7 @@ internal object GameServerProtId {
     const val PLAYER_INFO = 35
     const val HISCORE_REPLY = 36
     const val CLANSETTINGS_FULL = 37
-    const val CAM_UNKNOWN = 38
+    const val OCULUS_SYNC = 38
     const val UPDATE_SITESETTINGS = 39
     const val IF_SETTEXT = 40
     const val UPDATE_FRIENDCHAT_CHANNEL_FULL_V1 = 41
