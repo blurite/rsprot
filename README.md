@@ -2,6 +2,13 @@
 
 [![GitHub Actions][actions-badge]][actions] [![MIT license][mit-badge]][mit]
 
+## Status
+> [!NOTE]
+> This library is currently **in-progress** and **not** yet usable.
+
+See [the roadmap](https://github.com/orgs/blurite/projects/3/) for a better
+overview of how far the library is from being usable.
+
 ## Introduction
 RSProt is an all-in-one networking library for private servers,
 primarily targeting the OldSchool RuneScape scene. Contributions for
