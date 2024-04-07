@@ -14,7 +14,7 @@ import net.rsprot.protocol.internal.game.outgoing.codec.zone.payload.ZoneProt
  * @property endTime the end time in client cycles (20ms/cc) until the
  * projectile arrives at its destination
  * @property angle the angle that the projectile takes during its flight
- * @property distanceOffset the fine coord distance offset that the projectile
+ * @property progress the fine coord distance offset that the projectile
  * begins flying at. If the value is 0, the projectile begins flying
  * at the defined start coordinate. For every 128 units of value, the projectile
  * is moved 1 game square towards the end position. Interpolate between 0-128 for
@@ -48,7 +48,7 @@ public class MapProjAnim private constructor(
     private val _startTime: UShort,
     private val _endTime: UShort,
     private val _angle: UByte,
-    private val _distanceOffset: UShort,
+    private val _progress: UShort,
     private val compressedInfo: CompressedMapProjAnimInfo,
     private val coordInZone: CoordInZone,
     private val _deltaX: Byte,
@@ -61,7 +61,7 @@ public class MapProjAnim private constructor(
         startTime: Int,
         endTime: Int,
         angle: Int,
-        distanceOffset: Int,
+        progress: Int,
         sourceIndex: Int,
         targetIndex: Int,
         xInZone: Int,
@@ -73,7 +73,7 @@ public class MapProjAnim private constructor(
         startTime.toUShort(),
         endTime.toUShort(),
         angle.toUByte(),
-        distanceOffset.toUShort(),
+        progress.toUShort(),
         CompressedMapProjAnimInfo(
             sourceIndex,
             targetIndex,
@@ -97,8 +97,8 @@ public class MapProjAnim private constructor(
         get() = _endTime.toInt()
     public val angle: Int
         get() = _angle.toInt()
-    public val distanceOffset: Int
-        get() = _distanceOffset.toInt()
+    public val progress: Int
+        get() = _progress.toInt()
     public val sourceIndex: Int
         get() = compressedInfo.sourceIndex
     public val targetIndex: Int
@@ -127,7 +127,7 @@ public class MapProjAnim private constructor(
         if (_startTime != other._startTime) return false
         if (_endTime != other._endTime) return false
         if (_angle != other._angle) return false
-        if (_distanceOffset != other._distanceOffset) return false
+        if (_progress != other._progress) return false
         if (compressedInfo != other.compressedInfo) return false
         if (coordInZone != other.coordInZone) return false
         if (_deltaX != other._deltaX) return false
@@ -141,7 +141,7 @@ public class MapProjAnim private constructor(
         result = 31 * result + _startTime.hashCode()
         result = 31 * result + _endTime.hashCode()
         result = 31 * result + _angle.hashCode()
-        result = 31 * result + _distanceOffset.hashCode()
+        result = 31 * result + _progress.hashCode()
         result = 31 * result + compressedInfo.hashCode()
         result = 31 * result + coordInZone.hashCode()
         result = 31 * result + _deltaX
@@ -157,7 +157,7 @@ public class MapProjAnim private constructor(
             "startTime=$startTime, " +
             "endTime=$endTime, " +
             "angle=$angle, " +
-            "distanceOffset=$distanceOffset, " +
+            "progress=$progress, " +
             "sourceIndex=$sourceIndex, " +
             "targetIndex=$targetIndex, " +
             "xInZone=$xInZone, " +

@@ -16,10 +16,10 @@ public class MapProjAnimEncoder : ZoneProtEncoder<MapProjAnim> {
         // The function at the bottom of the MAP_PROJANIM has a consistent order,
         // making it easy to identify all the properties of this packet:
         // map_projanim(level, startX, startZ, endX, endZ, targetIndex, id,
-        // startHeight, endHeight, startTime, endTime, angle, distanceOffset, sourceIndex)
+        // startHeight, endHeight, startTime, endTime, angle, progress, sourceIndex)
         buffer.p1Alt2(message.endHeight)
         buffer.p1Alt2(message.deltaZ)
-        buffer.p2Alt1(message.distanceOffset)
+        buffer.p2Alt1(message.progress)
         buffer.p2Alt1(message.endTime)
         buffer.p1Alt1(message.startHeight)
         buffer.p3Alt1(message.targetIndex)
