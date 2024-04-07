@@ -9,13 +9,13 @@ package net.rsprot.protocol.game.outgoing.zone.payload.util
  * @property xInZone the x coordinate within the zone (0-7 value)
  * @property zoneZ the south-western z coordinate of the zone (multiples of 8 value)
  * @property zInZone the z coordinate within the zone (0-7 value)
- * @property bitpackedMedium the coordinates bitpacked into a 24-bit integer,
+ * @property packedMedium the coordinates bitpacked into a 24-bit integer,
  * as this is how they tend to be transmitted to the client.
  */
 @Suppress("MemberVisibilityCanBePrivate", "unused")
 @JvmInline
 internal value class CoordInBuildArea private constructor(
-    private val packed: UShort,
+    private val packedShort: UShort,
 ) {
     constructor(
         zoneX: Int,
@@ -29,15 +29,15 @@ internal value class CoordInBuildArea private constructor(
     )
 
     val zoneX: Int
-        get() = packed.toInt() ushr 8 and 0xF8
+        get() = packedShort.toInt() ushr 8 and 0xF8
     val xInZone: Int
-        get() = packed.toInt() ushr 8 and 0x7
+        get() = packedShort.toInt() ushr 8 and 0x7
     val zoneZ: Int
-        get() = packed.toInt() and 0xF8
+        get() = packedShort.toInt() and 0xF8
     val zInZone: Int
-        get() = packed.toInt() and 0x7
+        get() = packedShort.toInt() and 0x7
 
-    val bitpackedMedium: Int
+    val packedMedium: Int
         get() =
             (zoneX shl 16)
                 .or(zoneZ shl 8)

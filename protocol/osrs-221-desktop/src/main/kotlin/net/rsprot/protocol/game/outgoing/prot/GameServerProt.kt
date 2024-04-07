@@ -62,6 +62,12 @@ public enum class GameServerProt(
 
     // Specific packets
     PROJANIM_SPECIFIC(GameServerProtId.PROJANIM_SPECIFIC, 19),
+
+    @Deprecated(
+        "Deprecated as it is bugged(size: 17; payload: 18) and " +
+            "a newer variant with greater property ranges is introduced",
+        replaceWith = ReplaceWith("PROJANIM_SPECIFIC"),
+    )
     PROJANIM_SPECIFIC_OLD(GameServerProtId.PROJANIM_SPECIFIC_OLD, 17),
     MAP_ANIM_SPECIFIC(GameServerProtId.MAP_ANIM_SPECIFIC, 8),
     LOC_ANIM_SPECIFIC(GameServerProtId.LOC_ANIM_SPECIFIC, 6),
