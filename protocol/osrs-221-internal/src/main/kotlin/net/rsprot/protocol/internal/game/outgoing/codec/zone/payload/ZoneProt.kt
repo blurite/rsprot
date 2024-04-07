@@ -1,4 +1,4 @@
-package net.rsprot.protocol.game.outgoing.zone.payload
+package net.rsprot.protocol.internal.game.outgoing.codec.zone.payload
 
 import net.rsprot.protocol.message.OutgoingMessage
 

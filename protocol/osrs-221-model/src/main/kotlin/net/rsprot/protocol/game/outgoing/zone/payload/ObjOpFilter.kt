@@ -2,6 +2,7 @@ package net.rsprot.protocol.game.outgoing.zone.payload
 
 import net.rsprot.protocol.game.outgoing.util.OpFlags
 import net.rsprot.protocol.game.outgoing.zone.payload.util.CoordInZone
+import net.rsprot.protocol.internal.game.outgoing.codec.zone.payload.ZoneProt
 
 /**
  * Obj opfilter is used to change the right-click options on an obj

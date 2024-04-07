@@ -1,6 +1,7 @@
 package net.rsprot.protocol.game.outgoing.zone.payload
 
 import net.rsprot.protocol.game.outgoing.zone.payload.util.CoordInZone
+import net.rsprot.protocol.internal.game.outgoing.codec.zone.payload.ZoneProt
 
 /**
  * Obj del packets are used to delete an existing obj from the build area,

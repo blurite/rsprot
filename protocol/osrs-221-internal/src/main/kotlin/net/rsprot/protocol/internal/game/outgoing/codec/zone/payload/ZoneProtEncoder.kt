@@ -1,8 +1,7 @@
-package net.rsprot.protocol.game.outgoing.codec.zone.payload
+package net.rsprot.protocol.internal.game.outgoing.codec.zone.payload
 
 import io.netty.channel.ChannelHandlerContext
 import net.rsprot.buffer.JagByteBuf
-import net.rsprot.protocol.game.outgoing.zone.payload.ZoneProt
 import net.rsprot.protocol.message.codec.MessageEncoder
 
 /**

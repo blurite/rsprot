@@ -3,6 +3,7 @@ package net.rsprot.protocol.game.outgoing.zone.payload
 import net.rsprot.protocol.game.outgoing.util.OpFlags
 import net.rsprot.protocol.game.outgoing.zone.payload.util.CoordInZone
 import net.rsprot.protocol.game.outgoing.zone.payload.util.LocProperties
+import net.rsprot.protocol.internal.game.outgoing.codec.zone.payload.ZoneProt
 
 /**
  * Loc add-change packed is used to either add or change a loc in the world.
