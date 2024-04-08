@@ -1,11 +1,11 @@
 package net.rsprot.protocol.loginprot.incoming.codec
 
 import net.rsprot.buffer.JagByteBuf
+import net.rsprot.crypto.util.XteaKey
 import net.rsprot.protocol.ClientProt
 import net.rsprot.protocol.loginprot.incoming.GameReconnect
 import net.rsprot.protocol.loginprot.incoming.codec.shared.LoginBlockDecoder
 import net.rsprot.protocol.loginprot.incoming.prot.LoginClientProt
-import net.rsprot.protocol.loginprot.incoming.util.XteaKey
 import net.rsprot.protocol.message.codec.MessageDecoder
 import net.rsprot.protocol.tools.MessageDecodingTools
 import java.math.BigInteger
