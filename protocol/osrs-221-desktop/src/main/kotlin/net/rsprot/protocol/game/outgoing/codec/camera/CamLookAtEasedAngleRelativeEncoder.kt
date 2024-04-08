@@ -20,6 +20,6 @@ public class CamLookAtEasedAngleRelativeEncoder : MessageEncoder<CamLookAtEasedA
         buffer.p2(message.yAngle)
         buffer.p2(message.xAngle)
         buffer.p2(message.duration)
-        buffer.p2Alt1(message.function.id)
+        buffer.p1(message.function.id)
     }
 }

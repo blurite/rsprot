@@ -18,7 +18,7 @@ public class CamMoveToEasedEncoder : MessageEncoder<CamMoveToEased> {
         message: CamMoveToEased,
     ) {
         buffer.p1(message.destinationXInBuildArea)
-        buffer.p2Alt1(message.destinationZInBuildArea)
+        buffer.p1(message.destinationZInBuildArea)
         buffer.p2(message.height)
         buffer.p2(message.duration)
         buffer.pboolean(!message.maintainFixedAltitude)

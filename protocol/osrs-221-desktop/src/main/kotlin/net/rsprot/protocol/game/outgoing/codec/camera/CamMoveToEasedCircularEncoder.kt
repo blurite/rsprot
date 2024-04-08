@@ -18,7 +18,7 @@ public class CamMoveToEasedCircularEncoder : MessageEncoder<CamMoveToEasedCircul
         message: CamMoveToEasedCircular,
     ) {
         buffer.p1(message.destinationXInBuildArea)
-        buffer.p2Alt1(message.destinationZInBuildArea)
+        buffer.p1(message.destinationZInBuildArea)
         buffer.p2(message.height)
         buffer.p1(message.centerXInBuildArea)
         buffer.p1(message.centerZInBuildArea)
