@@ -2,7 +2,7 @@ package net.rsprot.protocol.game.outgoing.map
 
 import net.rsprot.crypto.util.XteaKey
 import net.rsprot.protocol.game.outgoing.map.util.XteaProvider
-import net.rsprot.protocol.message.OutgoingMessage
+import net.rsprot.protocol.game.outgoing.map.util.buildXteaKeyList
 
 /**
  * Rebuild normal is sent when the game requires a map reload without being in instances.
@@ -13,8 +13,8 @@ import net.rsprot.protocol.message.OutgoingMessage
 public class RebuildNormal private constructor(
     private val _zoneX: UShort,
     private val _zoneZ: UShort,
-    public val keys: List<XteaKey>,
-) : OutgoingMessage {
+    override val keys: List<XteaKey>,
+) : StaticRebuildMessage {
     public constructor(
         zoneX: Int,
         zoneZ: Int,
@@ -25,9 +25,9 @@ public class RebuildNormal private constructor(
         buildXteaKeyList(zoneX, zoneZ, keyProvider),
     )
 
-    public val zoneX: Int
+    override val zoneX: Int
         get() = _zoneX.toInt()
-    public val zoneZ: Int
+    override val zoneZ: Int
         get() = _zoneZ.toInt()
 
     override fun equals(other: Any?): Boolean {
@@ -56,30 +56,5 @@ public class RebuildNormal private constructor(
             "zoneZ=$zoneZ, " +
             "keys=$keys" +
             ")"
-    }
-
-    private companion object {
-        /**
-         * A helper function to build the mapsquare key list the same way the client does,
-         * as the keys must be in the same specific order as the client reads it.
-         */
-        private fun buildXteaKeyList(
-            zoneX: Int,
-            zoneZ: Int,
-            keyProvider: XteaProvider,
-        ): List<XteaKey> {
-            val minMapsquareX = (zoneX - 6) ushr 3
-            val maxMapsquareX = (zoneX + 6) ushr 3
-            val minMapsquareZ = (zoneZ - 6) ushr 3
-            val maxMapsquareZ = (zoneZ + 6) ushr 3
-            val count = (maxMapsquareX - minMapsquareZ + 1) * (maxMapsquareZ - minMapsquareZ + 1)
-            val keys = ArrayList<XteaKey>(count)
-            for (mapsquareX in minMapsquareX..maxMapsquareX) {
-                for (mapsquareZ in minMapsquareZ..maxMapsquareZ) {
-                    keys += keyProvider.provide((mapsquareX shl 8) or mapsquareZ)
-                }
-            }
-            return keys
-        }
     }
 }
