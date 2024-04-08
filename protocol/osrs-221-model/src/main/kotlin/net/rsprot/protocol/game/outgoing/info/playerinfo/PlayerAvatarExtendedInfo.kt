@@ -2,12 +2,11 @@
 
 package net.rsprot.protocol.game.outgoing.info.playerinfo
 
-import com.github.michaelbull.logging.InlineLogger
 import io.netty.buffer.ByteBufAllocator
-import io.netty.util.internal.SystemPropertyUtil
 import net.rsprot.buffer.JagByteBuf
 import net.rsprot.compression.HuffmanCodec
 import net.rsprot.protocol.game.outgoing.info.playerinfo.filter.ExtendedInfoFilter
+import net.rsprot.protocol.internal.RSProtFlags
 import net.rsprot.protocol.internal.game.outgoing.info.playerinfo.extendedinfo.MoveSpeed
 import net.rsprot.protocol.internal.game.outgoing.info.playerinfo.extendedinfo.ObjTypeCustomisation
 import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.FacePathingEntity
@@ -1356,19 +1355,6 @@ public class PlayerAvatarExtendedInfo(
         private val UNSIGNED_SHORT_RANGE: IntRange = UShort.MIN_VALUE.toInt()..UShort.MAX_VALUE.toInt()
         private val UNSIGNED_SMART_1_OR_2_RANGE: IntRange = 0..0x7FFF
 
-        private val logger = InlineLogger()
-        public val inputVerification: Boolean =
-            SystemPropertyUtil.getBoolean(
-                "net.rsprot.protocol.game.outgoing.info.playerinfo.inputVerification",
-                true,
-            )
-
-        init {
-            logger.debug {
-                "-Dnet.rsprot.protocol.game.outgoing.info.playerinfo.inputVerification: $inputVerification"
-            }
-        }
-
         /**
          * Executes the [block] if input verification is enabled,
          * otherwise does nothing. Verification should be enabled for
@@ -1377,7 +1363,7 @@ public class PlayerAvatarExtendedInfo(
          * as there is still some overhead to running verifications.
          */
         private inline fun verify(crossinline block: () -> Unit) {
-            if (inputVerification) {
+            if (RSProtFlags.extendedInfoInputVerification) {
                 block()
             }
         }

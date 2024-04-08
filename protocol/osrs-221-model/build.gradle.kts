@@ -5,6 +5,7 @@ plugins {
 dependencies {
     implementation(libs.netty.buffer)
     implementation(libs.inline.logger)
+    implementation(libs.commons.pool2)
     implementation(projects.buffer)
     implementation(projects.compression)
     implementation(projects.crypto)

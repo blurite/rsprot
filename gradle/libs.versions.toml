@@ -5,6 +5,7 @@ junit = "5.10.2"
 jmh = "0.4.10"
 inlinelogger = "1.0.6"
 log4j = "2.23.1"
+commons-pool2 = "2.12.0"
 
 [libraries]
 netty-buffer = { module = "io.netty:netty-buffer", version.ref = "netty" }
@@ -18,6 +19,7 @@ inline-logger = { module = "com.michael-bull.kotlin-inline-logger:kotlin-inline-
 log4j-core = { module = "org.apache.logging.log4j:log4j-core", version.ref = "log4j" }
 log4j-api = { module = "org.apache.logging.log4j:log4j-api", version.ref = "log4j" }
 log4j-slf4j-impl = { module = "org.apache.logging.log4j:log4j-slf4j2-impl", version.ref = "log4j" }
+commons-pool2 = { module = "org.apache.commons:commons-pool2", version.ref = "commons-pool2" }
 
 [plugins]
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
