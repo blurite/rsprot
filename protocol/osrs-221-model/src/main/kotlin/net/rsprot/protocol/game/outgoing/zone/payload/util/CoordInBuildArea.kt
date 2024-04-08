@@ -28,6 +28,15 @@ internal value class CoordInBuildArea private constructor(
             .toUShort(),
     )
 
+    constructor(
+        xinBuildArea: Int,
+        zInBuildArea: Int,
+    ) : this(
+        ((xinBuildArea and 0xFF) shl 8)
+            .or(zInBuildArea)
+            .toUShort(),
+    )
+
     val zoneX: Int
         get() = packedShort.toInt() ushr 8 and 0xF8
     val xInZone: Int
@@ -37,10 +46,22 @@ internal value class CoordInBuildArea private constructor(
     val zInZone: Int
         get() = packedShort.toInt() and 0x7
 
+    val xInBuildArea: Int
+        get() = packedShort.toInt() ushr 8
+    val zInBuildArea: Int
+        get() = packedShort.toInt() and 0xFF
+
     val packedMedium: Int
         get() =
             (zoneX shl 16)
                 .or(zoneZ shl 8)
                 .or(xInZone shl 4)
                 .or(zInZone)
+
+    override fun toString(): String {
+        return "CoordInBuildArea(" +
+            "xInBuildArea=$xInBuildArea, " +
+            "zInBuildArea=$zInBuildArea" +
+            ")"
+    }
 }
