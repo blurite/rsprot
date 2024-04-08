@@ -30,7 +30,7 @@ import org.apache.commons.pool2.impl.SoftReferenceObjectPool
  * it still ends up consuming 24 bytes per obj, all of which would be discarded shortly after.
  * Given the assumption that 1,000 players log in at once, and they all have a bank
  * of 1000 objs - which is a fairly conservative estimate -, the resulting waste of memory
- * is 50 megabytes alone. All of this can be avoided through the use of an object pool,
+ * is 24 megabytes alone. All of this can be avoided through the use of an object pool,
  * as done below.
  */
 public data object InventoryPool {
