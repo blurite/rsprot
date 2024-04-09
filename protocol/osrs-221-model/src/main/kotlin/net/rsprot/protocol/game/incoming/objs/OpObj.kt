@@ -11,6 +11,7 @@ import net.rsprot.protocol.message.IncomingMessage
  * @property controlKey whether the control key was held down, used to invert movement speed
  * @property op the option clicked, ranging from 1 to 5 (inclusive)
  */
+@Suppress("DuplicatedCode", "MemberVisibilityCanBePrivate")
 public class OpObj private constructor(
     private val _id: UShort,
     private val _x: UShort,

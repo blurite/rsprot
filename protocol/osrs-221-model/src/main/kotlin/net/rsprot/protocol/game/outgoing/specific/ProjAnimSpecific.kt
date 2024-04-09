@@ -59,7 +59,7 @@ import net.rsprot.protocol.message.OutgoingMessage
  * The client will add up the respective [zoneX] + [xInZone] properties together,
  * along with [zoneZ] + [zInZone] to re-create the effects of a normal zone packet.
  */
-@Suppress("MemberVisibilityCanBePrivate", "DuplicatedCode")
+@Suppress("DuplicatedCode")
 public class ProjAnimSpecific private constructor(
     private val _id: UShort,
     private val _startHeight: UByte,

@@ -3,7 +3,6 @@ package net.rsprot.protocol.game.outgoing.interfaces
 import net.rsprot.protocol.message.OutgoingMessage
 import net.rsprot.protocol.util.CombinedId
 
-@Suppress("MemberVisibilityCanBePrivate")
 public class IfSetModel private constructor(
     public val combinedId: CombinedId,
     private val _model: UShort,

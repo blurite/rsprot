@@ -6,7 +6,6 @@ import net.rsprot.protocol.message.IncomingMessage
  * OpNpc6 message is fired when a player clicks the 'Examine' option on a npc.
  * @property id the config id of the npc clicked
  */
-@Suppress("MemberVisibilityCanBePrivate")
 public class OpNpc6(
     public val id: Int,
 ) : IncomingMessage {

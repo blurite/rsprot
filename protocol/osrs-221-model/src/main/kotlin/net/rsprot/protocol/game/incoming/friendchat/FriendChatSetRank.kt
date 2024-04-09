@@ -8,6 +8,7 @@ import net.rsprot.protocol.message.IncomingMessage
  * @property name the name of the player whose rank to change
  * @property rank the id of the new rank to set to that player
  */
+@Suppress("MemberVisibilityCanBePrivate")
 public class FriendChatSetRank private constructor(
     public val name: String,
     private val _rank: UByte,

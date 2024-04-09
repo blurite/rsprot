@@ -1,6 +1,5 @@
 package net.rsprot.protocol.loginprot.outgoing.prot
 
-@Suppress("unused")
 internal object LoginServerProtId {
     /**
      * TFU responses

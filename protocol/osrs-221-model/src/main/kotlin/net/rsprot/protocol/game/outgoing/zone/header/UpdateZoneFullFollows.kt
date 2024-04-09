@@ -22,7 +22,6 @@ import net.rsprot.protocol.message.OutgoingMessage
  * the expected coordinates to transmit here would be 48, 40, as that would
  * point to the south-western corner of the zone in which the player is standing in.
  */
-@Suppress("MemberVisibilityCanBePrivate")
 public class UpdateZoneFullFollows private constructor(
     private val _zoneX: UByte,
     private val _zoneZ: UByte,

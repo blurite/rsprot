@@ -6,7 +6,7 @@ import net.rsprot.protocol.message.OutgoingMessage
 public sealed interface LoginResponse : OutgoingMessage {
     public data object Successful : LoginResponse
 
-    @Suppress("DataClassPrivateConstructor", "MemberVisibilityCanBePrivate")
+    @Suppress("DataClassPrivateConstructor")
     public data class Ok private constructor(
         public val authenticatorResponse: AuthenticatorResponse,
         private val _staffModLevel: UByte,

@@ -33,7 +33,7 @@ import net.rsprot.protocol.internal.game.outgoing.codec.zone.payload.ZoneProt
  * @property neverBecomesPublic whether the item turns public in the future.
  * This property is only used on the c++-based clients.
  */
-@Suppress("DuplicatedCode", "MemberVisibilityCanBePrivate")
+@Suppress("DuplicatedCode")
 public class ObjAdd private constructor(
     private val _id: UShort,
     public val quantity: Int,

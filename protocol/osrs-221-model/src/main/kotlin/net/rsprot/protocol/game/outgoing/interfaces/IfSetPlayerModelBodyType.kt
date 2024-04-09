@@ -11,7 +11,6 @@ import net.rsprot.protocol.util.CombinedId
  * @property componentId the id of the component on which the model resides
  * @property bodyType the new body-type to set to the player model
  */
-@Suppress("MemberVisibilityCanBePrivate")
 public class IfSetPlayerModelBodyType private constructor(
     public val combinedId: CombinedId,
     private val _bodyType: UByte,

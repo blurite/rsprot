@@ -23,7 +23,6 @@ import net.rsprot.protocol.message.OutgoingMessage
  * of sprites.
  * @throws IllegalArgumentException if the [headIconSlot] is not in range of 0 to 7 (inclusive)
  */
-@Suppress("MemberVisibilityCanBePrivate")
 public class NpcHeadIconSpecific private constructor(
     private val _index: UShort,
     private val _headIconSlot: UByte,

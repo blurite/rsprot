@@ -1,6 +1,5 @@
 package net.rsprot.protocol.util
 
-@Suppress("MemberVisibilityCanBePrivate")
 @JvmInline
 public value class CombinedId(public val combinedId: Int) {
     public constructor(

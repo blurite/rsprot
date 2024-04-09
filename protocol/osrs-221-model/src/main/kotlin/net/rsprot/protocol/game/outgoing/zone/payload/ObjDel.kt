@@ -16,7 +16,6 @@ import net.rsprot.protocol.internal.game.outgoing.codec.zone.payload.ZoneProt
  * @property zInZone the z coordinate of the obj within the zone it is in,
  * a value in range of 0 to 7 (inclusive) is expected. Any bits outside that are ignored.
  */
-@Suppress("MemberVisibilityCanBePrivate")
 public class ObjDel private constructor(
     private val _id: UShort,
     public val quantity: Int,

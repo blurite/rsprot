@@ -8,7 +8,6 @@ import net.rsprot.protocol.message.OutgoingMessage
  * @property loops the number of times to loop the sound effect
  * @property delay the delay in client cycles (20ms/cc) until the sound effect begins playing
  */
-@Suppress("MemberVisibilityCanBePrivate")
 public class SynthSound private constructor(
     private val _id: UShort,
     private val _loops: UByte,

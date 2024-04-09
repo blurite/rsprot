@@ -35,7 +35,7 @@ import net.rsprot.protocol.internal.game.outgoing.codec.zone.payload.ZoneProt
  * @property zInZone the z coordinate of the sound effect within the zone it is in,
  * a value in range of 0 to 7 (inclusive) is expected. Any bits outside that are ignored.
  */
-@Suppress("DuplicatedCode", "MemberVisibilityCanBePrivate")
+@Suppress("DuplicatedCode")
 public class SoundArea private constructor(
     private val _id: UShort,
     private val _delay: UByte,

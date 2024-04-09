@@ -10,7 +10,7 @@ import net.rsprot.protocol.message.IncomingMessage
  * @property value1 the first integer value sent by the serer
  * @property value2 the second integer value sent by the server
  */
-@Suppress("DuplicatedCode", "MemberVisibilityCanBePrivate")
+@Suppress("MemberVisibilityCanBePrivate")
 public class SendPingReply private constructor(
     private val _fps: UByte,
     private val _gcPercentTime: UByte,

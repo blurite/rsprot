@@ -462,7 +462,7 @@ public class PlayerInfo internal constructor(
         index: Int,
         extendedInfo: Boolean,
         highResBuf: UnsafeLongBackedBitBuf?,
-    ): Boolean {
+    ) {
         buffer.pBits(1, 1)
         if (extendedInfo) {
             extendedInfoIndices[extendedInfoCount++] = index.toShort()
@@ -475,7 +475,6 @@ public class PlayerInfo internal constructor(
         } else {
             buffer.pBits(2, 0)
         }
-        return true
     }
 
     /**

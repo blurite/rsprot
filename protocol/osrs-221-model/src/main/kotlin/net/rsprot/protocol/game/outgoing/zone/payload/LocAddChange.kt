@@ -19,7 +19,6 @@ import net.rsprot.protocol.internal.game.outgoing.codec.zone.payload.ZoneProt
  * @property rotation the rotation of the loc, a value of 0 to 3 (inclusive) is expected.
  * @property opFlags the right-click options enabled on this loc.
  */
-@Suppress("DuplicatedCode", "MemberVisibilityCanBePrivate")
 public class LocAddChange private constructor(
     private val _id: UShort,
     private val coordInZone: CoordInZone,

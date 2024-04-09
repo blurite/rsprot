@@ -7,7 +7,6 @@ import net.rsprot.protocol.message.OutgoingMessage
  * @property fadeOutDelay the delay in client cycles (20ms/cc) until the song begins fading out.
  * @property fadeOutSpeed the speed at which the song fades out in client cycles (20ms/cc).
  */
-@Suppress("MemberVisibilityCanBePrivate")
 public class MidiSongStop private constructor(
     private val _fadeOutDelay: UShort,
     private val _fadeOutSpeed: UShort,

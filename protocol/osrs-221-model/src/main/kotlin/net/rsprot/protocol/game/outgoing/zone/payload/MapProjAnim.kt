@@ -42,7 +42,7 @@ import net.rsprot.protocol.internal.game.outgoing.codec.zone.payload.ZoneProt
  * @property deltaZ the z coordinate delta that the projectile will move to
  * relative to the starting position.
  */
-@Suppress("DuplicatedCode", "MemberVisibilityCanBePrivate")
+@Suppress("DuplicatedCode")
 public class MapProjAnim private constructor(
     private val _id: UShort,
     private val _startTime: UShort,

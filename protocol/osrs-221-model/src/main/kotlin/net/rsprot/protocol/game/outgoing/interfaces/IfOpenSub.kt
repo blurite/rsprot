@@ -14,6 +14,7 @@ import net.rsprot.protocol.util.CombinedId
  * @property interfaceId the sub interface id
  * @property type the type of the interface to be opened as (modal, overlay, client)
  */
+@Suppress("MemberVisibilityCanBePrivate")
 public class IfOpenSub(
     public val destinationCombinedId: CombinedId,
     private val _interfaceId: UShort,

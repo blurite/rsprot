@@ -12,7 +12,6 @@ package net.rsprot.protocol.game.outgoing.zone.payload.util
  * @property packedMedium the coordinates bitpacked into a 24-bit integer,
  * as this is how they tend to be transmitted to the client.
  */
-@Suppress("MemberVisibilityCanBePrivate", "unused")
 @JvmInline
 internal value class CoordInBuildArea private constructor(
     private val packedShort: UShort,

@@ -16,7 +16,7 @@ import java.lang.ref.SoftReference
  * @param allocator the function that yields new elements on-demand, if none
  * are available within the reference queue.
  */
-@Suppress("MemberVisibilityCanBePrivate", "unused")
+@Suppress("unused")
 internal class PlayerInfoRepository(
     private val allocator: (index: Int, platformType: PlatformType) -> PlayerInfo,
 ) {

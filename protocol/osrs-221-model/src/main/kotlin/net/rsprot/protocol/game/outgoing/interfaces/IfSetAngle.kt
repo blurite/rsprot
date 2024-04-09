@@ -12,7 +12,6 @@ import net.rsprot.protocol.util.CombinedId
  * @property zoom the zoom of the model, defaults to a value of 100 in the client.
  * The greater the [zoom] value, the smaller the model will appear - it is inverted.
  */
-@Suppress("MemberVisibilityCanBePrivate", "DuplicatedCode")
 public class IfSetAngle private constructor(
     public val combinedId: CombinedId,
     private val _angleX: UShort,

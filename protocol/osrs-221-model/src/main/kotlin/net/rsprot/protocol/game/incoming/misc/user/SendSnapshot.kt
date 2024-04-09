@@ -40,6 +40,7 @@ import net.rsprot.protocol.message.IncomingMessage
  * @property mute whether to mute the player. This option is only possible
  * by Player and Jagex moderators.
  */
+@Suppress("MemberVisibilityCanBePrivate")
 public class SendSnapshot private constructor(
     public val name: String,
     private val _ruleId: UByte,

@@ -11,7 +11,6 @@ import net.rsprot.protocol.util.CombinedId
  * @property componentId the component id clicked
  * @property sub the subcomponent id, or -1 if it doesn't exist
  */
-@Suppress("MemberVisibilityCanBePrivate")
 public class ResumePauseButton private constructor(
     private val combinedId: CombinedId,
     private val _sub: UShort,

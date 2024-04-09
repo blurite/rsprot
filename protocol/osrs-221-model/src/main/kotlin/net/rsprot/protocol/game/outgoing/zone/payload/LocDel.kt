@@ -13,7 +13,6 @@ import net.rsprot.protocol.internal.game.outgoing.codec.zone.payload.ZoneProt
  * @property shape the shape of the loc, a value of 0 to 22 (inclusive) is expected.
  * @property rotation the rotation of the loc, a value of 0 to 3 (inclusive) is expected.
  */
-@Suppress("MemberVisibilityCanBePrivate")
 public class LocDel private constructor(
     private val coordInZone: CoordInZone,
     private val locProperties: LocProperties,

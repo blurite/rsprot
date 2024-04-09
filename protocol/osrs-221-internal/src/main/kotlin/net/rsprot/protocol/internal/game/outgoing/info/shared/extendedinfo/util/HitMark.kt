@@ -24,7 +24,6 @@ package net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.util
  * soaked hitmarks.
  * @param delay the delay in client cycles (20ms/cc) until the hitmark renders.
  */
-@Suppress("MemberVisibilityCanBePrivate")
 public class HitMark(
     public var sourceIndex: Int,
     public var selfType: UShort,

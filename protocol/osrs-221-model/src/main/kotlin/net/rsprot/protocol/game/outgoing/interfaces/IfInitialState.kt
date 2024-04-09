@@ -134,7 +134,6 @@ public class IfInitialState private constructor(
      * @property end the end subcomponent id (inclusive)
      * @property events the bitpacked events
      */
-    @Suppress("MemberVisibilityCanBePrivate", "DuplicatedCode")
     public class InterfaceEventsMessage private constructor(
         public val combinedId: CombinedId,
         private val _start: UShort,

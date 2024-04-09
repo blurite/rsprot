@@ -9,7 +9,7 @@ import net.rsprot.protocol.internal.game.outgoing.info.encoder.ExtendedInfoEncod
  * such as [net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.FacePathingEntity],
  * In those cases, this structure is responsible for holding the state necessary to synchronize
  * the avatars later on in the future. If the respective extended info block is then reset to
- * the default value, new avatars should not receive this anymore, as the client will also
+ * the default value, new avatars should not receive this any more, as the client will also
  * use the default value.
  * @param T the extended info block
  * @param E the encoder for the given extended info block

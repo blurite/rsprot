@@ -17,7 +17,6 @@ import net.rsprot.protocol.util.CombinedId
  * each client cycle (20ms/cc), with a value of 1 being equal to 1/2048th of a
  * full circle
  */
-@Suppress("MemberVisibilityCanBePrivate")
 public class IfSetRotateSpeed private constructor(
     public val combinedId: CombinedId,
     private val _xSpeed: UShort,

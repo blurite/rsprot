@@ -17,7 +17,6 @@ import net.rsprot.protocol.message.OutgoingMessage
  * than this one.
  * @property zones the list of zones to build, in a specific order.
  */
-@Suppress("MemberVisibilityCanBePrivate")
 public class RebuildRegion private constructor(
     private val _zoneX: UShort,
     private val _zoneZ: UShort,

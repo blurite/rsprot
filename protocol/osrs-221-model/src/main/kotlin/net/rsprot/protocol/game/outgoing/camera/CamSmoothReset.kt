@@ -15,7 +15,6 @@ import net.rsprot.protocol.message.OutgoingMessage
  * at the bottom of the function and the player will be kicked out of
  * the game!
  */
-@Suppress("MemberVisibilityCanBePrivate")
 public class CamSmoothReset private constructor(
     private val _cameraMoveConstantSpeed: UByte,
     private val _cameraMoveProportionalSpeed: UByte,

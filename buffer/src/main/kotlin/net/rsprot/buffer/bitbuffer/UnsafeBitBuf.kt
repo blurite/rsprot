@@ -5,7 +5,7 @@ package net.rsprot.buffer.bitbuffer
 import io.netty.buffer.ByteBuf
 import io.netty.util.internal.shaded.org.jctools.util.UnsafeAccess
 
-@Suppress("NOTHING_TO_INLINE", "unused", "MemberVisibilityCanBePrivate")
+@Suppress("NOTHING_TO_INLINE", "unused")
 public class UnsafeBitBuf(
     buffer: ByteBuf,
 ) : BitBuf(buffer) {

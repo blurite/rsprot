@@ -21,7 +21,6 @@ import net.rsprot.protocol.message.IncomingMessage
  * @property z the absolute z coordinate to set the destination to
  * @property level the level to set the destination to
  */
-@Suppress("MemberVisibilityCanBePrivate")
 public class ClickWorldMap(
     private val coordGrid: CoordGrid,
 ) : IncomingMessage {

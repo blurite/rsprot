@@ -1,6 +1,6 @@
 package net.rsprot.buffer.bitbuffer
 
-@Suppress("NOTHING_TO_INLINE", "unused", "MemberVisibilityCanBePrivate")
+@Suppress("NOTHING_TO_INLINE", "unused")
 public class UnsafeLongBackedBitBuf {
     internal var value: Long = 0L
         private set

@@ -9,7 +9,6 @@ import net.rsprot.protocol.util.CombinedId
  * @property interfaceId the interface id the player interacted with
  * @property componentId the component id on that interface the player interacted with
  */
-@Suppress("MemberVisibilityCanBePrivate")
 public class If1Button(
     private val combinedId: CombinedId,
 ) : IncomingMessage {

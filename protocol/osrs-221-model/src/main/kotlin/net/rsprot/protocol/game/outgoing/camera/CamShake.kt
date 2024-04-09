@@ -34,7 +34,6 @@ import net.rsprot.protocol.message.OutgoingMessage
  * @property sineFrequency the sine frequency.
  * This property is called 'speed' in the event inspector.
  */
-@Suppress("MemberVisibilityCanBePrivate")
 public class CamShake private constructor(
     private val _type: UByte,
     private val _randomAmount: UByte,

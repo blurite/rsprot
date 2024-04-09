@@ -1,5 +1,3 @@
-@file:Suppress("MemberVisibilityCanBePrivate")
-
 package net.rsprot.protocol.loginprot.incoming
 
 import net.rsprot.protocol.loginprot.incoming.util.AuthenticationType

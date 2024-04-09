@@ -7,7 +7,7 @@ import net.rsprot.protocol.message.codec.MessageEncoder
 /**
  * Zone prot encoder is an extension on message encoders, with the intent being
  * that this encoder can be passed on-to
- * [net.rsprot.protocol.game.outgoing.codec.zone.header.UpdateZonePartialEnclosedEncoder],
+ * [net.rsprot.protocol.game.outgoing.codec.zone.header.DesktopUpdateZonePartialEnclosedEncoder],
  * as that packet combines multiple zone payloads into a single packet.
  */
 public interface ZoneProtEncoder<T : ZoneProt> : MessageEncoder<T> {

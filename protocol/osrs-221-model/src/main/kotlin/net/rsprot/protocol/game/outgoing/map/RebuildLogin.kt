@@ -17,7 +17,6 @@ import net.rsprot.protocol.game.outgoing.map.util.buildXteaKeyList
  * @property gpiInitBlock the initialization block of the player info protocol,
  * used to inform the client of all the low resolution coordinates of everyone in the game.
  */
-@Suppress("MemberVisibilityCanBePrivate")
 public class RebuildLogin private constructor(
     private val _zoneX: UShort,
     private val _zoneZ: UShort,

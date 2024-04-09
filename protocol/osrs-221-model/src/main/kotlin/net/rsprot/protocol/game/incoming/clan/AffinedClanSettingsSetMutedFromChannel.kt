@@ -14,7 +14,7 @@ import net.rsprot.protocol.message.IncomingMessage
  * the index within this clan.
  * @property muted whether to mute or unmute this player
  */
-@Suppress("MemberVisibilityCanBePrivate", "DuplicatedCode")
+@Suppress("MemberVisibilityCanBePrivate")
 public class AffinedClanSettingsSetMutedFromChannel private constructor(
     public val name: String,
     private val _clanId: UByte,

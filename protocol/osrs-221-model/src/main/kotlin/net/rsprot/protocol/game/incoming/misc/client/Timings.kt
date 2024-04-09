@@ -15,7 +15,7 @@ import net.rsprot.protocol.message.IncomingMessage
  * @property clientState the state the client is in
  * @property loginCount how many login attempts have occurred.
  */
-@Suppress("MemberVisibilityCanBePrivate", "DuplicatedCode")
+@Suppress("MemberVisibilityCanBePrivate")
 public class Timings private constructor(
     private val _connectionLostDuration: UShort,
     private val _loginDuration: UShort,

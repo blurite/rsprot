@@ -38,7 +38,7 @@ Benchmark                      Mode  Cnt    Score   Error  Units
 PlayerInfoBenchmark.benchmark  avgt    3  170.230 ± 7.278  ms/op
 ```
 
-Multi-threaded measurements (default):
+Multithreaded measurements (default):
 ```
 Benchmark                      Mode  Cnt   Score   Error  Units
 PlayerInfoBenchmark.benchmark  avgt    3  11.544 ± 0.154  ms/op
@@ -47,7 +47,7 @@ PlayerInfoBenchmark.benchmark  avgt    3  11.544 ± 0.154  ms/op
 > [!TIP]
 > 1 operation is equal to 1 game cycle.
 
-Multi-threaded ratio[^1]: 0.92x
+Multithreaded ratio[^1]: 0.92x
 
 #### Benchmark Description
 - 2046 players are spawned into the world,
@@ -72,8 +72,8 @@ buffer is additionally released back into the pool for every player.
 
 [^1]: Multi-threaded ratio refers to how well the application multi-threads.
 This is calculated by dividing the single-threaded measurements by
-multi-threaded measurements, and further dividing that by the number of
+multithreaded measurements, and further dividing that by the number of
 CPU cores. This gives us an effective rate of how well all the CPU threads
 are being utilized (on average), with a number of 1.0 implying a perfect rate
-of "every CPU core is utilized as well in multi-threaded environment as it is
+of "every CPU core is utilized as well in multithreaded environment as it is
 in the single-threaded benchmark".

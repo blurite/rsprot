@@ -31,7 +31,7 @@ import net.rsprot.protocol.internal.game.outgoing.codec.zone.payload.ZoneProt
  * @property maxX the max x coordinate at which the merge occurs (see explanation above)
  * @property maxZ the max z coordinate at which the merge occurs (see explanation above)
  */
-@Suppress("MemberVisibilityCanBePrivate", "DuplicatedCode")
+@Suppress("DuplicatedCode")
 public class LocMerge private constructor(
     private val _index: UShort,
     private val _id: UShort,

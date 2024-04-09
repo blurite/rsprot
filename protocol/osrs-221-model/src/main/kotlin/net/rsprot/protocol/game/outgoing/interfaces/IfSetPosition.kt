@@ -10,7 +10,6 @@ import net.rsprot.protocol.util.CombinedId
  * @property x the x coordinate to move to
  * @property y the y coordinate to move to
  */
-@Suppress("MemberVisibilityCanBePrivate")
 public class IfSetPosition private constructor(
     public val combinedId: CombinedId,
     private val _x: UShort,

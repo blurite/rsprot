@@ -43,7 +43,6 @@ public class If3Button private constructor(
     public val op: Int
         get() = _op.toInt()
 
-    @Suppress("DuplicatedCode")
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (javaClass != other?.javaClass) return false

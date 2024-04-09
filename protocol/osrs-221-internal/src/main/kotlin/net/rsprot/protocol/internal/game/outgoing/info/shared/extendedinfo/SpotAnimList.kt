@@ -19,7 +19,6 @@ import java.util.BitSet
  * @param allocator the byte buffer allocator, used to pre-computation purposes.
  * @param huffmanCodec the huffman codec responsible for compressing public chat extended info block.
  */
-@Suppress("MemberVisibilityCanBePrivate")
 public class SpotAnimList(
     encoders: Array<PrecomputedExtendedInfoEncoder<SpotAnimList>?> = arrayOfNulls(PlatformType.COUNT),
     private val allocator: ByteBufAllocator,

@@ -10,7 +10,6 @@ import net.rsprot.protocol.util.CombinedId
  * @property componentId the component id of the scroll layer
  * @property scrollPos the scroll position to set to
  */
-@Suppress("MemberVisibilityCanBePrivate")
 public class IfSetScrollPos private constructor(
     public val combinedId: CombinedId,
     private val _scrollPos: UShort,

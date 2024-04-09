@@ -7,7 +7,6 @@ import net.rsprot.protocol.message.IncomingMessage
  * @property id the id of the loc (if multiloc, transformed to the
  * currently visible variant)
  */
-@Suppress("DuplicatedCode", "MemberVisibilityCanBePrivate")
 public class OpLoc6(
     public val id: Int,
 ) : IncomingMessage {

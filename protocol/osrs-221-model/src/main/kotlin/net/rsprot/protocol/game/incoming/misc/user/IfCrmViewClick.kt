@@ -19,7 +19,6 @@ import net.rsprot.protocol.util.CombinedId
  * @property behaviour2 the second CRM behaviour, an integer
  * @property behaviour3 the third CRM behaviour, an integer
  */
-@Suppress("MemberVisibilityCanBePrivate", "DuplicatedCode")
 public class IfCrmViewClick private constructor(
     public val crmServerTarget: Int,
     private val combinedId: CombinedId,

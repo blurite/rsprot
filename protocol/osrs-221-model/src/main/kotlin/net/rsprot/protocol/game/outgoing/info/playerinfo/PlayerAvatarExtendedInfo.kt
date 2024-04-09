@@ -31,7 +31,6 @@ import net.rsprot.protocol.shared.platform.PlatformType
  *  Any extended info block which is built on-demand is written directly into the main buffer.
  *  @param huffmanCodec the Huffman codec is used to compress public chat extended info blocks.
  */
-@Suppress("MemberVisibilityCanBePrivate")
 public class PlayerAvatarExtendedInfo(
     private val protocol: PlayerInfoProtocol,
     private val localIndex: Int,
@@ -1206,7 +1205,7 @@ public class PlayerAvatarExtendedInfo(
      * Checks if the cached version of our appearance is out for date for the [observer].
      * @param observer the avatar observing us.
      * @return true if the [observer] needs an updated version of our avatar, false if the cached
-     * variant is still up to date.
+     * variant is still up-to-date.
      */
     private fun checkOutOfDate(observer: PlayerAvatarExtendedInfo): Boolean {
         return observer.otherAppearanceChangesCounter[localIndex] != appearanceChangesCounter
@@ -1214,7 +1213,7 @@ public class PlayerAvatarExtendedInfo(
 
     /**
      * Pre-computes all the buffers for this avatar.
-     * Pre-computation is done so we don't have to calculate these extended info blocks
+     * Pre-computation is done, so we don't have to calculate these extended info blocks
      * for every avatar that observes us. Instead, we can do more performance-efficient
      * operations of native memory copying to get the latest extended info blocks.
      */

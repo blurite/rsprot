@@ -6,7 +6,6 @@ import net.rsprot.protocol.message.IncomingMessage
 import net.rsprot.protocol.message.codec.MessageDecoder
 import net.rsprot.protocol.platform.Platform
 
-@Suppress("MemberVisibilityCanBePrivate")
 public class MessageDecoderRepositoryBuilder<P : ClientProt, T : Platform>(
     private val platform: T,
     private val protRepository: ProtRepository<P>,

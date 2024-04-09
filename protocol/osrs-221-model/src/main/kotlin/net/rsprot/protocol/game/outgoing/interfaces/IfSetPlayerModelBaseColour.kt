@@ -13,7 +13,6 @@ import net.rsprot.protocol.util.CombinedId
  * @property index the index of the colour, ranging from 0 to 4 (inclusive)
  * @property colour the value of the colour, ranging from 0 to 255 (inclusive)
  */
-@Suppress("MemberVisibilityCanBePrivate")
 public class IfSetPlayerModelBaseColour private constructor(
     public val combinedId: CombinedId,
     private val _index: UByte,

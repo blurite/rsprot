@@ -4,7 +4,6 @@ package net.rsprot.buffer.bitbuffer
 
 import io.netty.buffer.ByteBuf
 
-@Suppress("unused", "MemberVisibilityCanBePrivate")
 public class WrappedBitBuf(buffer: ByteBuf) : BitBuf(buffer) {
     init {
         req(buffer.capacity() <= Int.MAX_VALUE ushr LOG_BITS_PER_BYTE) {

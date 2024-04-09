@@ -24,7 +24,6 @@ import net.rsprot.protocol.message.OutgoingMessage
  * @property function the camera easing function, allowing for finer
  * control over the way it moves from the start coordinate to the end.
  */
-@Suppress("MemberVisibilityCanBePrivate")
 public class CamLookAtEasedAngleRelative private constructor(
     private val _xAngle: Short,
     private val _yAngle: Short,

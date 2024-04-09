@@ -11,7 +11,7 @@ import net.rsprot.protocol.message.OutgoingMessage
  * @property height the height of the spotanim
  * @property delay the delay of the spotanim in client cycles (20ms/cc)
  */
-@Suppress("MemberVisibilityCanBePrivate", "DuplicatedCode")
+@Suppress("DuplicatedCode")
 public class PlayerSpotAnimSpecific private constructor(
     private val _index: UShort,
     private val _id: UShort,

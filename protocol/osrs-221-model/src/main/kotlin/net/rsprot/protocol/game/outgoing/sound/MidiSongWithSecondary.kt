@@ -20,7 +20,7 @@ import net.rsprot.protocol.message.OutgoingMessage
  * @property fadeInSpeed the speed at which the new song fades in, in client cycles (20ms/cc).
  * The default value for this, based on the old midi song packet is 0.
  */
-@Suppress("DuplicatedCode", "MemberVisibilityCanBePrivate")
+@Suppress("DuplicatedCode")
 public class MidiSongWithSecondary private constructor(
     private val _primaryId: UShort,
     private val _secondaryId: UShort,

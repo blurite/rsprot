@@ -5,7 +5,6 @@ package net.rsprot.protocol.internal.game.outgoing.info
  * is responsible for tracking absolute positions of avatars in the game.
  * @param packed the 30-bit bitpacked integer representing the coord grid.
  */
-@Suppress("unused", "MemberVisibilityCanBePrivate")
 @JvmInline
 public value class CoordGrid(public val packed: Int) {
     /**

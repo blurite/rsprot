@@ -7,7 +7,7 @@ import net.rsprot.protocol.message.codec.MessageDecoder
 import net.rsprot.protocol.platform.Platform
 
 public class MessageDecoderRepository<P : ClientProt, T : Platform> internal constructor(
-    private val platform: T,
+    @Suppress("unused") private val platform: T,
     private val protRepository: ProtRepository<P>,
     private val decoders: Array<MessageDecoder<*>?>,
     private val messageClassToClientProtMap: Map<Class<out IncomingMessage>, ClientProt>,

@@ -8,9 +8,8 @@ import net.rsprot.protocol.util.CombinedId
  * If set-anim is used to make a model animate on a component.
  * @property interfaceId the id of the interface on which the model resides
  * @property componentId the id of the component on which the model resides
- * @property anim the if of the animation to play, or -1 to reset the animation
+ * @property anim the id of the animation to play, or -1 to reset the animation
  */
-@Suppress("MemberVisibilityCanBePrivate")
 public class IfSetAnim private constructor(
     public val combinedId: CombinedId,
     private val _anim: UShort,

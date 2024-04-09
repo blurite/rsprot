@@ -15,7 +15,7 @@ import net.rsprot.protocol.message.IncomingMessage
  * @property y the y coordinate clicked, always a positive integer, capped to the
  * client frame height.
  */
-@Suppress("MemberVisibilityCanBePrivate", "DuplicatedCode")
+@Suppress("MemberVisibilityCanBePrivate")
 public class EventMouseClick private constructor(
     private val _lastTransmittedMouseClick: UShort,
     public val rightClick: Boolean,

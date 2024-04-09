@@ -48,7 +48,7 @@ public class EventMouseMove private constructor(
      * with the encoding specified by [MousePosChange].
      * @property length the number of mouse movements in this packet.
      */
-    @Suppress("unused", "MemberVisibilityCanBePrivate")
+    @Suppress("MemberVisibilityCanBePrivate")
     @JvmInline
     public value class MouseMovements(private val movements: LongArray) {
         public val length: Int

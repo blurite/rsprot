@@ -20,7 +20,6 @@ import net.rsprot.protocol.message.OutgoingMessage
  * @property acceleration the speed increase as the camera looks
  * towards the end coordinate.
  */
-@Suppress("MemberVisibilityCanBePrivate")
 public class CamLookAt private constructor(
     private val destinationCoordInBuildArea: CoordInBuildArea,
     private val _height: UShort,

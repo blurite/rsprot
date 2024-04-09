@@ -14,7 +14,6 @@ import java.io.IOException
  * This implementation was shared by Graham on Rune-Server.
  * The below implementation has been converted to Kotlin and slightly cleaned up.
  */
-@Suppress("MemberVisibilityCanBePrivate")
 public data class HuffmanCodec(
     private val bits: IntArray,
     private val codewords: IntArray,

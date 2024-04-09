@@ -1,6 +1,5 @@
 package net.rsprot.protocol.game.outgoing.zone.payload.util
 
-@Suppress("MemberVisibilityCanBePrivate", "unused")
 @JvmInline
 internal value class LocProperties private constructor(
     val packed: UByte,

@@ -12,7 +12,6 @@ import net.rsprot.protocol.util.CombinedId
  * @property end the end subcomponent id (inclusive)
  * @property events the bitpacked events
  */
-@Suppress("MemberVisibilityCanBePrivate", "DuplicatedCode")
 public class IfSetEvents private constructor(
     public val combinedId: CombinedId,
     private val _start: UShort,

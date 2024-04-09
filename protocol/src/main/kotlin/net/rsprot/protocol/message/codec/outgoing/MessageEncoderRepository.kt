@@ -6,7 +6,7 @@ import net.rsprot.protocol.message.codec.MessageEncoder
 import net.rsprot.protocol.platform.Platform
 
 public class MessageEncoderRepository<P : ServerProt, T : Platform> internal constructor(
-    private val platform: T,
+    @Suppress("unused") private val platform: T,
     private val protRepository: ProtRepository<P>,
     private val encoders: Array<MessageEncoder<*>?>,
 ) {

@@ -17,6 +17,7 @@
       <w>arcu</w>
       <w>auctor</w>
       <w>augue</w>
+      <w>autochat</w>
       <w>autotyper</w>
       <w>basecolour</w>
       <w>bibendum</w>
@@ -25,6 +26,7 @@
       <w>bitbuftransfer</w>
       <w>bitcodes</w>
       <w>bitpacked</w>
+      <w>bitpacks</w>
       <w>bitpos</w>
       <w>blandit</w>
       <w>bodytype</w>
@@ -37,6 +39,7 @@
       <w>cdpath</w>
       <w>chatbox</w>
       <w>chatfiltersettings</w>
+      <w>circ</w>
       <w>clanchannel</w>
       <w>clansettings</w>
       <w>clearinv</w>
@@ -62,6 +65,7 @@
       <w>dapibus</w>
       <w>deadman</w>
       <w>deallocation</w>
+      <w>deobs</w>
       <w>dest</w>
       <w>diango's</w>
       <w>dignissim</w>
@@ -133,6 +137,7 @@
       <w>jagex's</w>
       <w>javacmd</w>
       <w>jingleend</w>
+      <w>jlleitschuh</w>
       <w>jvm's</w>
       <w>kickuser</w>
       <w>lacinia</w>
@@ -147,6 +152,7 @@
       <w>lookat</w>
       <w>lookupswitch</w>
       <w>luctus</w>
+      <w>macroing</w>
       <w>maecenas</w>
       <w>magnis</w>
       <w>malesuada</w>
@@ -277,6 +283,7 @@
       <w>singleuser</w>
       <w>sitesettings</w>
       <w>sizel</w>
+      <w>smoothreset</w>
       <w>sociosqu</w>
       <w>sodales</w>
       <w>sollicitudin</w>
@@ -311,6 +318,7 @@
       <w>varclan</w>
       <w>varius</w>
       <w>varp</w>
+      <w>varplayer</w>
       <w>vehicula</w>
       <w>velit</w>
       <w>venenatis</w>
@@ -323,6 +331,7 @@
       <w>withreason</w>
       <w>withsecondary</w>
       <w>xtea</w>
+      <w>zero'd</w>
     </words>
   </dictionary>
 </component>

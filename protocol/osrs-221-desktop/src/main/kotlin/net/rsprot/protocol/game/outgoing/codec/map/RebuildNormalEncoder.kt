@@ -8,7 +8,6 @@ import net.rsprot.protocol.game.outgoing.map.StaticRebuildMessage
 import net.rsprot.protocol.game.outgoing.prot.GameServerProt
 import net.rsprot.protocol.message.codec.MessageEncoder
 
-@Suppress("DuplicatedCode")
 public class RebuildNormalEncoder : MessageEncoder<StaticRebuildMessage> {
     override val prot: ServerProt = GameServerProt.REBUILD_NORMAL
 

@@ -13,7 +13,6 @@ import net.rsprot.protocol.message.OutgoingMessage
  * @property fadeInDelay the delay until the new song begins playing, in client cycles (20ms/cc).
  * @property fadeInSpeed the speed at which the new song fades in, in client cycles (20ms/cc).
  */
-@Suppress("MemberVisibilityCanBePrivate", "DuplicatedCode")
 public class MidiSwap private constructor(
     private val _fadeOutDelay: UShort,
     private val _fadeOutSpeed: UShort,

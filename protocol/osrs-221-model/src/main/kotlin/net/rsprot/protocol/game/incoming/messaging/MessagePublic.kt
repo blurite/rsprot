@@ -66,7 +66,7 @@ import net.rsprot.protocol.message.IncomingMessage
  * a value of 0 to 2 (inclusive) is provided. If the clan type is not defined,
  * the value of -1 is given.
  */
-@Suppress("MemberVisibilityCanBePrivate", "DuplicatedCode")
+@Suppress("MemberVisibilityCanBePrivate")
 public class MessagePublic private constructor(
     private val _type: UByte,
     private val _colour: UByte,

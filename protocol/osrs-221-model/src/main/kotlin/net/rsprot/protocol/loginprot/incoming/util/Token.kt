@@ -5,7 +5,6 @@ package net.rsprot.protocol.loginprot.incoming.util
  * This class offers additional functionality to clear the data from memory,
  * to avoid any potential memory attacks.
  */
-@Suppress("MemberVisibilityCanBePrivate")
 @JvmInline
 public value class Token(
     public val data: ByteArray,
