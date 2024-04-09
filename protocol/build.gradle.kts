@@ -3,6 +3,7 @@ plugins {
 }
 
 dependencies {
+    implementation(platform(libs.netty.bom))
     implementation(libs.netty.buffer)
     implementation(libs.netty.transport)
     implementation(projects.buffer)

@@ -9,17 +9,20 @@ commons-pool2 = "2.12.0"
 ktlint = "12.1.0"
 
 [libraries]
-netty-buffer = { module = "io.netty:netty-buffer", version.ref = "netty" }
-netty-transport = { module = "io.netty:netty-transport", version.ref = "netty" }
-junit-api = { module = "org.junit.jupiter:junit-jupiter-api", version.ref = "junit" }
-junit-engine = { module = "org.junit.jupiter:junit-jupiter-engine", version.ref = "junit" }
-junit-params = { module = "org.junit.jupiter:junit-jupiter-params", version.ref = "junit" }
+netty-bom = { module = "io.netty:netty-bom", version.ref = "netty" }
+netty-buffer = { module = "io.netty:netty-buffer" }
+netty-transport = { module = "io.netty:netty-transport" }
+junit-bom = { module = "org.junit:junit-bom", version.ref = "junit" }
+junit-api = { module = "org.junit.jupiter:junit-jupiter-api" }
+junit-engine = { module = "org.junit.jupiter:junit-jupiter-engine" }
+junit-params = { module = "org.junit.jupiter:junit-jupiter-params" }
 junit-launcher = { module = "org.junit.platform:junit-platform-launcher", version = "1.10.2" }
+log4j-bom = { module = "org.apache.logging.log4j:log4j-bom", version.ref = "log4j" }
+log4j-core = { module = "org.apache.logging.log4j:log4j-core" }
+log4j-api = { module = "org.apache.logging.log4j:log4j-api" }
+log4j-slf4j-impl = { module = "org.apache.logging.log4j:log4j-slf4j2-impl" }
 jmh-runtime = { module = "org.jetbrains.kotlinx:kotlinx-benchmark-runtime", version.ref = "jmh" }
 inline-logger = { module = "com.michael-bull.kotlin-inline-logger:kotlin-inline-logger", version.ref = "inlinelogger" }
-log4j-core = { module = "org.apache.logging.log4j:log4j-core", version.ref = "log4j" }
-log4j-api = { module = "org.apache.logging.log4j:log4j-api", version.ref = "log4j" }
-log4j-slf4j-impl = { module = "org.apache.logging.log4j:log4j-slf4j2-impl", version.ref = "log4j" }
 commons-pool2 = { module = "org.apache.commons:commons-pool2", version.ref = "commons-pool2" }
 
 [plugins]
