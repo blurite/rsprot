@@ -4,6 +4,7 @@ plugins {
     application
     alias(libs.plugins.kotlin.jvm)
     alias(libs.plugins.jmh)
+    alias(libs.plugins.ktlint)
 }
 
 allprojects {
@@ -12,6 +13,7 @@ allprojects {
 
     repositories {
         mavenCentral()
+        gradlePluginPortal()
     }
 
     plugins.withType<KotlinPluginWrapper> {
@@ -32,6 +34,10 @@ allprojects {
             explicitApi()
         }
     }
+}
+
+subprojects {
+    apply(plugin = "org.jlleitschuh.gradle.ktlint")
 }
 
 // fixes some weird error with "Entry classpath.index is a duplicate but no duplicate handling strategy has been set"
