@@ -1,6 +1,7 @@
 package net.rsprot.protocol.channel
 
 import io.netty.util.AttributeKey
+import net.rsprot.compression.HuffmanCodec
 import net.rsprot.protocol.cryptography.StreamCipherPair
 import net.rsprot.protocol.filter.MessageFilter
 import net.rsprot.protocol.message.IncomingMessage
@@ -15,4 +16,7 @@ public object ChannelAttributes {
 
     public val GAME_MESSAGE_INCOMING_QUEUE: AttributeKey<MessageQueue<IncomingMessage>> =
         AttributeKey.newInstance("prot_game_message_incoming_queue")
+
+    public val HUFFMAN_CODEC: AttributeKey<HuffmanCodec> =
+        AttributeKey.newInstance("prot_huffman_codec")
 }
