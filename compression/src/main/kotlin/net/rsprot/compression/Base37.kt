@@ -1,3 +1,5 @@
+@file:Suppress("DuplicatedCode")
+
 package net.rsprot.compression
 
 /**
@@ -6,6 +8,7 @@ package net.rsprot.compression
 public data object Base37 {
     private const val BASE_37: Long = 37
     private const val MAXIMUM_POSSIBLE_12_CHARACTER_VALUE: Long = 6582952005840035280L
+    private const val NBSP: Int = 160
     private val ALPHABET: CharArray =
         charArrayOf(
             '_',
@@ -132,5 +135,52 @@ public data object Base37 {
         return builder
             .reverse()
             .toString()
+    }
+
+    /**
+     * Decodes a base-37 encoded long into the respective string,
+     * replacing all underscores with spaces, as well as all first
+     * letters of each individual word to begin with an uppercase
+     * letter.
+     * If the input long is within the correct range, but isn't v
+     * @param encoded the base-37 encoded long value.
+     * @return the string that was encoded in base-37 encoding.
+     * @throws IllegalArgumentException if the encoded value exceeds
+     * the maximum 12-character long value, or if the value
+     * isn't in base-37 representation.
+     */
+    public fun decodeWithCase(encoded: Long): String {
+        if (encoded == 0L) {
+            return ""
+        }
+        require(encoded in 0..MAXIMUM_POSSIBLE_12_CHARACTER_VALUE) {
+            "Invalid encoded value: $encoded"
+        }
+        require(encoded % BASE_37 != 0L) {
+            "Encoded value not in base-37: $encoded"
+        }
+        var length = 0
+        var lengthCounter = encoded
+        while (lengthCounter != 0L) {
+            ++length
+            lengthCounter /= BASE_37
+        }
+        val builder = StringBuilder(length)
+        var rem = encoded
+        while (rem != 0L) {
+            val var6 = rem
+            rem /= BASE_37
+            var char = ALPHABET[(var6 - rem * BASE_37).toInt()]
+            if (char == '_') {
+                val lastIndex = builder.length - 1
+                builder.setCharAt(lastIndex, builder[lastIndex].uppercaseChar())
+                char = NBSP.toChar()
+            }
+            builder.append(char)
+        }
+
+        builder.reverse()
+        builder.setCharAt(0, builder[0].uppercaseChar())
+        return builder.toString()
     }
 }

@@ -1,14 +1,13 @@
-package net.rsprot.protocol.game.outgoing.social
+package net.rsprot.protocol.game.outgoing.friendchat
 
+import net.rsprot.compression.Base37
 import net.rsprot.protocol.message.OutgoingMessage
 
 /**
- * Message private packets are used to send private messages between
- * players across multiple worlds.
- * This specific packet results in the `From name: message` being shown
- * on the target's client.
- * @property sender name of the player who is sending the message
- * @property worldId the id of the world from which the message is sent
+ * Message friendchannel is used to transmit messages within a friend
+ * chat channel.
+ * @property sender the name of the player who is sending the message
+ * @property channelName the name of the friend chat channel
  * @property worldMessageCounter the world-local message counter.
  * Each world must have its own message counter which is used to create
  * a unique id for each message. This message counter must be
@@ -31,10 +30,12 @@ import net.rsprot.protocol.message.OutgoingMessage
  * idea remains the same.
  * @property chatCrownType the id of the crown to render next to the
  * name of the sender.
- * @property message the message to be forwarded to the recipient.
+ * @property message the message to be sent in the friend chat
+ * channel.
  */
-public class MessagePrivate private constructor(
+public class MessageFriendChannel private constructor(
     public val sender: String,
+    public val channelNameBase37: Long,
     private val _worldId: UShort,
     public val worldMessageCounter: Int,
     private val _chatCrownType: UByte,
@@ -42,18 +43,22 @@ public class MessagePrivate private constructor(
 ) : OutgoingMessage {
     public constructor(
         sender: String,
+        channelName: String,
         worldId: Int,
         worldMessageCounter: Int,
         chatCrownType: Int,
         message: String,
     ) : this(
         sender,
+        Base37.encode(channelName),
         worldId.toUShort(),
         worldMessageCounter,
         chatCrownType.toUByte(),
         message,
     )
 
+    public val channelName: String
+        get() = Base37.decodeWithCase(channelNameBase37)
     public val worldId: Int
         get() = _worldId.toInt()
     public val chatCrownType: Int
@@ -63,9 +68,10 @@ public class MessagePrivate private constructor(
         if (this === other) return true
         if (javaClass != other?.javaClass) return false
 
-        other as MessagePrivate
+        other as MessageFriendChannel
 
         if (sender != other.sender) return false
+        if (channelNameBase37 != other.channelNameBase37) return false
         if (_worldId != other._worldId) return false
         if (worldMessageCounter != other.worldMessageCounter) return false
         if (_chatCrownType != other._chatCrownType) return false
@@ -76,6 +82,7 @@ public class MessagePrivate private constructor(
 
     override fun hashCode(): Int {
         var result = sender.hashCode()
+        result = 31 * result + channelNameBase37.hashCode()
         result = 31 * result + _worldId.hashCode()
         result = 31 * result + worldMessageCounter
         result = 31 * result + _chatCrownType.hashCode()
@@ -84,8 +91,9 @@ public class MessagePrivate private constructor(
     }
 
     override fun toString(): String {
-        return "MessagePrivate(" +
+        return "MessageFriendChannel(" +
             "sender='$sender', " +
+            "channelName='$channelName', " +
             "worldId=$worldId, " +
             "worldMessageCounter=$worldMessageCounter, " +
             "chatCrownType=$chatCrownType, " +
