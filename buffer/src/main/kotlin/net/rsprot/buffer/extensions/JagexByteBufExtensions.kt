@@ -396,7 +396,7 @@ public fun ByteBuf.pboolean(value: Boolean): ByteBuf {
     return writeByte(if (value) 0x1 else 0)
 }
 
-public fun ByteBuf.fastgjstring(): String? {
+public fun ByteBuf.gjstrnull(): String? {
     if (getByte(readerIndex()).toInt() == 0) {
         readerIndex(readerIndex() + 1)
         return null
@@ -413,6 +413,17 @@ public fun ByteBuf.pjstr(
     charset: Charset = Cp1252Charset,
 ): ByteBuf {
     writeCharSequence(s, charset)
+    writeByte(0)
+    return this
+}
+
+public fun ByteBuf.pjstrnull(
+    s: CharSequence?,
+    charset: Charset = Cp1252Charset,
+): ByteBuf {
+    if (s != null) {
+        writeCharSequence(s, charset)
+    }
     writeByte(0)
     return this
 }

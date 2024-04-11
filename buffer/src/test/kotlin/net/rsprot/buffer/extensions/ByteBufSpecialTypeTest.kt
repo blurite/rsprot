@@ -60,7 +60,7 @@ class ByteBufSpecialTypeTest {
     fun `test fastgjstr`() {
         val buffer = buffer()
         buffer.pjstr("Hello world")
-        assertEquals("Hello world", buffer.fastgjstring())
+        assertEquals("Hello world", buffer.gjstrnull())
         assertTrue(!buffer.isReadable)
     }
 

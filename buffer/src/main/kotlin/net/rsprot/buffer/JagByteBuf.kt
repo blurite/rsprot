@@ -2,7 +2,6 @@ package net.rsprot.buffer
 
 import io.netty.buffer.ByteBuf
 import io.netty.buffer.Unpooled
-import net.rsprot.buffer.extensions.fastgjstring
 import net.rsprot.buffer.extensions.g1
 import net.rsprot.buffer.extensions.g1Alt1
 import net.rsprot.buffer.extensions.g1Alt2
@@ -47,6 +46,7 @@ import net.rsprot.buffer.extensions.gdataAlt1
 import net.rsprot.buffer.extensions.gdataAlt2
 import net.rsprot.buffer.extensions.gjstr
 import net.rsprot.buffer.extensions.gjstr2
+import net.rsprot.buffer.extensions.gjstrnull
 import net.rsprot.buffer.extensions.p1
 import net.rsprot.buffer.extensions.p1Alt1
 import net.rsprot.buffer.extensions.p1Alt2
@@ -79,6 +79,7 @@ import net.rsprot.buffer.extensions.pdataAlt1
 import net.rsprot.buffer.extensions.pdataAlt2
 import net.rsprot.buffer.extensions.pjstr
 import net.rsprot.buffer.extensions.pjstr2
+import net.rsprot.buffer.extensions.pjstrnull
 import net.rsprot.buffer.util.charset.Cp1252Charset
 import java.nio.charset.Charset
 
@@ -371,8 +372,8 @@ public value class JagByteBuf(public val buffer: ByteBuf) {
         return this
     }
 
-    public inline fun fastgjstring(): String? {
-        return buffer.fastgjstring()
+    public inline fun gjstrnull(): String? {
+        return buffer.gjstrnull()
     }
 
     public inline fun gjstr(): String {
@@ -384,6 +385,14 @@ public value class JagByteBuf(public val buffer: ByteBuf) {
         charset: Charset = Cp1252Charset,
     ): JagByteBuf {
         buffer.pjstr(s, charset)
+        return this
+    }
+
+    public inline fun pjstrnull(
+        s: CharSequence?,
+        charset: Charset = Cp1252Charset,
+    ): JagByteBuf {
+        buffer.pjstrnull(s, charset)
         return this
     }
 
