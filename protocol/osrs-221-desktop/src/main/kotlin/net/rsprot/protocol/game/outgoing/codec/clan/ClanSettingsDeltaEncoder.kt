@@ -122,5 +122,6 @@ public class ClanSettingsDeltaEncoder : MessageEncoder<ClanSettingsDelta> {
                 }
             }
         }
+        buffer.p1(0)
     }
 }
