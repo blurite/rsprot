@@ -46,6 +46,7 @@
       <w>clickworldmap</w>
       <w>clientscripts</w>
       <w>closesub</w>
+      <w>coinshare</w>
       <w>commodo</w>
       <w>condimentum</w>
       <w>congue</w>
@@ -110,6 +111,7 @@
       <w>gamereconnect</w>
       <w>gboolean</w>
       <w>gjstr</w>
+      <w>gjstrnull</w>
       <w>gravida</w>
       <w>gvarint</w>
       <w>habitant</w>
@@ -151,6 +153,7 @@
       <w>loginserver</w>
       <w>lookat</w>
       <w>lookupswitch</w>
+      <w>lootshare</w>
       <w>luctus</w>
       <w>macroing</w>
       <w>maecenas</w>
@@ -222,6 +225,7 @@
       <w>pharetra</w>
       <w>phasellus</w>
       <w>pjstr</w>
+      <w>pjstrnull</w>
       <w>placerat</w>
       <w>playerinfo</w>
       <w>porro</w>
@@ -315,7 +319,9 @@
       <w>ullamcorper</w>
       <w>ultrices</w>
       <w>ultricies</w>
+      <w>unaffined</w>
       <w>unmute</w>
+      <w>unmuted</w>
       <w>urna</w>
       <w>varclan</w>
       <w>varius</w>

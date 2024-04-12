@@ -45,10 +45,17 @@ public object RSProtFlags {
             development,
         )
 
+    public val clientscriptVerification: Boolean =
+        getBoolean(
+            "clientscriptVerification",
+            development,
+        )
+
     init {
         log("development", development)
         log("inventoryObjCheck", inventoryObjCheck)
         log("extendedInfoInputVerification", extendedInfoInputVerification)
+        log("clientscriptVerification", clientscriptVerification)
     }
 
     private fun getBoolean(
