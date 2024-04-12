@@ -4,6 +4,7 @@ import io.netty.buffer.ByteBuf
 import io.netty.util.ByteProcessor
 import net.rsprot.buffer.JagByteBuf
 import net.rsprot.buffer.util.charset.Cp1252Charset
+import net.rsprot.crypto.crc.CyclicRedundancyCheck
 import java.nio.charset.Charset
 
 private const val HALF_UBYTE = 0x80
@@ -739,4 +740,30 @@ public fun ByteBuf.pdataAlt2(
 
 public fun ByteBuf.toJagByteBuf(): JagByteBuf {
     return JagByteBuf(this)
+}
+
+/**
+ * Adds a 32-bit checksum of the buffer's slice, computed by
+ * starting from [startIndex] and ending at [io.netty.buffer.ByteBuf.writerIndex].
+ * @param startIndex the writer index to begin computing the checksum from
+ * @return the checksum of this buffer's slice.
+ */
+public fun ByteBuf.addCRC32(startIndex: Int): Int {
+    val checksum = CyclicRedundancyCheck.computeCrc32(this, startIndex, writerIndex())
+    p4(checksum)
+    return checksum
+}
+
+/**
+ * Checks whether the checksum written with the payload matches the checksum
+ * of the payload itself.
+ * Note that the checksum is computed starting at the readerIndex = 0.
+ * The readerIndex is expected to be at the end of the crc32 value itself.
+ * @return whether the written crc32 matches with the crc32 that we computed.
+ */
+public fun ByteBuf.checkCRC32(): Boolean {
+    val length = readerIndex()
+    readerIndex(length - 4)
+    val checksum = CyclicRedundancyCheck.computeCrc32(this, 0, length - 4)
+    return checksum == g4()
 }

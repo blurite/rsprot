@@ -10,6 +10,7 @@ dependencies {
     implementation(libs.inline.logger)
     testImplementation(platform(libs.log4j.bom))
     testImplementation(libs.bundles.logging)
+    implementation(projects.crypto)
 }
 
 allOpen {
