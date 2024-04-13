@@ -37,8 +37,10 @@
       <w>buttont</w>
       <w>bytebuf</w>
       <w>cdpath</w>
+      <w>chalreq</w>
       <w>chatbox</w>
       <w>chatfiltersettings</w>
+      <w>chattype</w>
       <w>circ</w>
       <w>clanchannel</w>
       <w>clansettings</w>
@@ -103,6 +105,9 @@
       <w>friendchannel</w>
       <w>friendchat</w>
       <w>friendlist</w>
+      <w>friendnotification</w>
+      <w>friendschat</w>
+      <w>friendschatnotification</w>
       <w>fringilla</w>
       <w>fromchannel</w>
       <w>fusce</w>
@@ -128,6 +133,7 @@
       <w>iaculis</w>
       <w>ident</w>
       <w>ignorelist</w>
+      <w>ignorenotification</w>
       <w>imperdiet</w>
       <w>inceptos</w>
       <w>initialstate</w>
@@ -150,6 +156,7 @@
       <w>litora</w>
       <w>loaddelay</w>
       <w>lobortis</w>
+      <w>loginlogoutnotification</w>
       <w>loginserver</w>
       <w>lookat</w>
       <w>lookupswitch</w>
@@ -164,8 +171,11 @@
       <w>mauris</w>
       <w>metus</w>
       <w>minimapclick</w>
+      <w>modautotyper</w>
+      <w>modchat</w>
       <w>modicon</w>
       <w>modicons</w>
+      <w>modprivatechat</w>
       <w>molestie</w>
       <w>mollis</w>
       <w>morbi</w>
@@ -228,6 +238,7 @@
       <w>pjstrnull</w>
       <w>placerat</w>
       <w>playerinfo</w>
+      <w>playerrelated</w>
       <w>porro</w>
       <w>porta</w>
       <w>porttitor</w>
@@ -237,11 +248,13 @@
       <w>pretium</w>
       <w>primis</w>
       <w>privatechat</w>
+      <w>privatechatout</w>
       <w>procs</w>
       <w>proin</w>
       <w>projanim</w>
       <w>prot</w>
       <w>prots</w>
+      <w>publicchat</w>
       <w>pulvinar</w>
       <w>quam</w>
       <w>quia</w>
@@ -264,6 +277,7 @@
       <w>sagittis</w>
       <w>sapien</w>
       <w>scelerisque</w>
+      <w>sectimeout</w>
       <w>semper</w>
       <w>senectus</w>
       <w>setangle</w>
@@ -290,6 +304,7 @@
       <w>sitesettings</w>
       <w>sizel</w>
       <w>smoothreset</w>
+      <w>snapshotfeedback</w>
       <w>sociosqu</w>
       <w>sodales</w>
       <w>sollicitudin</w>
@@ -310,6 +325,7 @@
       <w>tincidunt</w>
       <w>torquent</w>
       <w>tortor</w>
+      <w>tradereq</w>
       <w>tradingpost</w>
       <w>transmog</w>
       <w>tristique</w>
@@ -320,6 +336,7 @@
       <w>ultrices</w>
       <w>ultricies</w>
       <w>unaffined</w>
+      <w>unclickable</w>
       <w>unmute</w>
       <w>unmuted</w>
       <w>urna</w>
