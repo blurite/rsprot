@@ -1,19 +1,22 @@
 package net.rsprot.protocol.internal.game.outgoing.info
 
 import io.netty.buffer.ByteBuf
+import io.netty.buffer.ByteBufAllocator
+import net.rsprot.compression.HuffmanCodec
 import net.rsprot.protocol.internal.game.outgoing.info.encoder.ExtendedInfoEncoder
+import net.rsprot.protocol.internal.game.outgoing.info.encoder.PrecomputedExtendedInfoEncoder
+import net.rsprot.protocol.internal.platform.PlatformMap
 import net.rsprot.protocol.shared.platform.PlatformType
 
 /**
  * The abstract extended info class, responsible for holding some
  * information about a specific avatar.
- * @param encoders the array of encoders for this extended info block, indexed by [PlatformType.id].
  * @param T the extended info block type.
  * @param E the encoder for the given extended info block [T].
  */
-public abstract class ExtendedInfo<in T : ExtendedInfo<T, E>, E : ExtendedInfoEncoder<T>>(
-    protected val encoders: Array<E?>,
-) {
+public abstract class ExtendedInfo<in T : ExtendedInfo<T, E>, E : ExtendedInfoEncoder<T>> {
+    public abstract val encoders: PlatformMap<E>
+
     /**
      * An array of platform-specific pre-computed buffers of this extended info block.
      * These buffers get pre-computed during player info building process,
@@ -24,18 +27,11 @@ public abstract class ExtendedInfo<in T : ExtendedInfo<T, E>, E : ExtendedInfoEn
     private val buffers: Array<ByteBuf?> = arrayOfNulls(PlatformType.COUNT)
 
     /**
-     * A function to pre-compute this extended info block.
-     * Extended info blocks which do not support pre-computing (meaning they are observer-dependent)
-     * will build the buffer on-demand per observer.
-     */
-    public abstract fun precompute()
-
-    /**
      * Sets the platform-specific [buffer] at index [platformTypeId].
      * @param platformTypeId the id of the platform, additionally used as the key to the [buffers] array.
      * @param buffer the pre-computed buffer for this extended info block.
      */
-    protected fun setBuffer(
+    public fun setBuffer(
         platformTypeId: Int,
         buffer: ByteBuf,
     ) {
@@ -58,7 +54,7 @@ public abstract class ExtendedInfo<in T : ExtendedInfo<T, E>, E : ExtendedInfoEn
      * if one has not been registered.
      */
     public fun getEncoder(platformType: PlatformType): E? {
-        return encoders[platformType.id]
+        return encoders.getOrNull(platformType)
     }
 
     /**
@@ -77,4 +73,25 @@ public abstract class ExtendedInfo<in T : ExtendedInfo<T, E>, E : ExtendedInfoEn
      * Clears this extended info block, making it ready for use by another avatar.
      */
     public abstract fun clear()
+}
+
+/**
+ * A function to pre-compute this extended info block.
+ * Extended info blocks which do not support pre-computing (meaning they are observer-dependent)
+ * will build the buffer on-demand per observer.
+ */
+public fun <T : ExtendedInfo<T, E>, E : PrecomputedExtendedInfoEncoder<T>> T.precompute(
+    allocator: ByteBufAllocator,
+    huffmanCodec: HuffmanCodec,
+) {
+    for (id in 0..<PlatformType.COUNT) {
+        val encoder = encoders.getOrNull(id) ?: continue
+        val encoded =
+            encoder.precompute(
+                allocator,
+                huffmanCodec,
+                this,
+            )
+        setBuffer(id, encoded.buffer)
+    }
 }

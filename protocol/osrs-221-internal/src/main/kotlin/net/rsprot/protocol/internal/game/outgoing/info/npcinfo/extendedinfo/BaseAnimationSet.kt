@@ -1,16 +1,12 @@
 package net.rsprot.protocol.internal.game.outgoing.info.npcinfo.extendedinfo
 
-import io.netty.buffer.ByteBufAllocator
-import net.rsprot.compression.HuffmanCodec
 import net.rsprot.protocol.internal.game.outgoing.info.TransientExtendedInfo
 import net.rsprot.protocol.internal.game.outgoing.info.encoder.PrecomputedExtendedInfoEncoder
-import net.rsprot.protocol.shared.platform.PlatformType
+import net.rsprot.protocol.internal.platform.PlatformMap
 
 public class BaseAnimationSet(
-    encoders: Array<PrecomputedExtendedInfoEncoder<BaseAnimationSet>?> = arrayOfNulls(PlatformType.COUNT),
-    private val allocator: ByteBufAllocator,
-    private val huffmanCodec: HuffmanCodec,
-) : TransientExtendedInfo<BaseAnimationSet, PrecomputedExtendedInfoEncoder<BaseAnimationSet>>(encoders) {
+    override val encoders: PlatformMap<PrecomputedExtendedInfoEncoder<BaseAnimationSet>>,
+) : TransientExtendedInfo<BaseAnimationSet, PrecomputedExtendedInfoEncoder<BaseAnimationSet>>() {
     public var overrides: Int = 0
     public var turnLeftAnim: UShort = 0xFFFFu
     public var turnRightAnim: UShort = 0xFFFFu
@@ -27,14 +23,6 @@ public class BaseAnimationSet(
     public var crawlAnimLeft: UShort = 0xFFFFu
     public var crawAnimRight: UShort = 0xFFFFu
     public var readyAnim: UShort = 0xFFFFu
-
-    override fun precompute() {
-        for (id in 0..<PlatformType.COUNT) {
-            val encoder = encoders[id] ?: continue
-            val encoded = encoder.precompute(allocator, huffmanCodec, this)
-            setBuffer(id, encoded.buffer)
-        }
-    }
 
     override fun clear() {
         releaseBuffers()

@@ -1,10 +1,8 @@
 package net.rsprot.protocol.internal.game.outgoing.info.playerinfo.extendedinfo
 
-import io.netty.buffer.ByteBufAllocator
-import net.rsprot.compression.HuffmanCodec
 import net.rsprot.protocol.internal.game.outgoing.info.TransientExtendedInfo
 import net.rsprot.protocol.internal.game.outgoing.info.encoder.PrecomputedExtendedInfoEncoder
-import net.rsprot.protocol.shared.platform.PlatformType
+import net.rsprot.protocol.internal.platform.PlatformMap
 
 /**
  * The movement speed extended info block.
@@ -16,26 +14,14 @@ import net.rsprot.protocol.shared.platform.PlatformType
  * and a new status update must be written when the opposite transition occurs.
  * This move speed status should typically be synchronized with the state of the "Run orb".
  * @param encoders the array of platform-specific encoders for move speed.
- * @param allocator the byte buffer allocator, used to pre-computation purposes.
- * @param huffmanCodec the huffman codec responsible for compressing public chat extended info block.
  */
 public class MoveSpeed(
-    encoders: Array<PrecomputedExtendedInfoEncoder<MoveSpeed>?> = arrayOfNulls(PlatformType.COUNT),
-    private val allocator: ByteBufAllocator,
-    private val huffmanCodec: HuffmanCodec,
-) : TransientExtendedInfo<MoveSpeed, PrecomputedExtendedInfoEncoder<MoveSpeed>>(encoders) {
+    override val encoders: PlatformMap<PrecomputedExtendedInfoEncoder<MoveSpeed>>,
+) : TransientExtendedInfo<MoveSpeed, PrecomputedExtendedInfoEncoder<MoveSpeed>>() {
     /**
      * The current movement speed of this avatar.
      */
     public var value: Int = DEFAULT_MOVESPEED
-
-    override fun precompute() {
-        for (id in 0..<PlatformType.COUNT) {
-            val encoder = encoders[id] ?: continue
-            val encoded = encoder.precompute(allocator, huffmanCodec, this)
-            setBuffer(id, encoded.buffer)
-        }
-    }
 
     override fun clear() {
         releaseBuffers()

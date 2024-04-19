@@ -1,22 +1,16 @@
 package net.rsprot.protocol.internal.game.outgoing.info.playerinfo.extendedinfo
 
-import io.netty.buffer.ByteBufAllocator
-import net.rsprot.compression.HuffmanCodec
 import net.rsprot.protocol.internal.game.outgoing.info.TransientExtendedInfo
 import net.rsprot.protocol.internal.game.outgoing.info.encoder.PrecomputedExtendedInfoEncoder
-import net.rsprot.protocol.shared.platform.PlatformType
+import net.rsprot.protocol.internal.platform.PlatformMap
 
 /**
  * The chat extended info block, responsible for any public messages.
  * @param encoders the array of platform-specific encoders for chat.
- * @param allocator the byte buffer allocator, used to pre-computation purposes.
- * @param huffmanCodec the huffman codec responsible for compressing the [text] property.
  */
 public class Chat(
-    encoders: Array<PrecomputedExtendedInfoEncoder<Chat>?> = arrayOfNulls(PlatformType.COUNT),
-    private val allocator: ByteBufAllocator,
-    private val huffmanCodec: HuffmanCodec,
-) : TransientExtendedInfo<Chat, PrecomputedExtendedInfoEncoder<Chat>>(encoders) {
+    override val encoders: PlatformMap<PrecomputedExtendedInfoEncoder<Chat>>,
+) : TransientExtendedInfo<Chat, PrecomputedExtendedInfoEncoder<Chat>>() {
     /**
      * The colour to apply to this chat message.
      */
@@ -38,7 +32,7 @@ public class Chat(
     public var autotyper: Boolean = false
 
     /**
-     * The text itself to render. This will be compressed using the [huffmanCodec].
+     * The text itself to render. This will be compressed using the [net.rsprot.compression.HuffmanCodec].
      */
     public var text: String? = null
 
@@ -46,14 +40,6 @@ public class Chat(
      * The colour pattern for specialized chat message colours,
      */
     public var pattern: ByteArray? = null
-
-    override fun precompute() {
-        for (id in 0..<PlatformType.COUNT) {
-            val encoder = encoders[id] ?: continue
-            val encoded = encoder.precompute(allocator, huffmanCodec, this)
-            setBuffer(id, encoded.buffer)
-        }
-    }
 
     override fun clear() {
         releaseBuffers()

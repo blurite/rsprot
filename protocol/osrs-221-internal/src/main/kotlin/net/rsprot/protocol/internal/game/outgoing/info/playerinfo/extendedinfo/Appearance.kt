@@ -1,10 +1,8 @@
 package net.rsprot.protocol.internal.game.outgoing.info.playerinfo.extendedinfo
 
-import io.netty.buffer.ByteBufAllocator
-import net.rsprot.compression.HuffmanCodec
 import net.rsprot.protocol.internal.game.outgoing.info.CachedExtendedInfo
 import net.rsprot.protocol.internal.game.outgoing.info.encoder.PrecomputedExtendedInfoEncoder
-import net.rsprot.protocol.shared.platform.PlatformType
+import net.rsprot.protocol.internal.platform.PlatformMap
 
 /**
  * The appearance extended info block.
@@ -15,16 +13,10 @@ import net.rsprot.protocol.shared.platform.PlatformType
  * a comparison is done against the cache, if the counters match, no extended info block is written.
  * If an avatar logs out, every observer will have their counter set back to -1.
  * @param encoders the array of platform-specific encoders for appearance.
- * @param allocator the byte buffer allocator, used to pre-computation purposes.
- * @param huffmanCodec the huffman codec responsible for compressing public chat extended info block.
  */
 public class Appearance(
-    encoders: Array<PrecomputedExtendedInfoEncoder<Appearance>?> = arrayOfNulls(PlatformType.COUNT),
-    private val allocator: ByteBufAllocator,
-    private val huffmanCodec: HuffmanCodec,
-) : CachedExtendedInfo<Appearance, PrecomputedExtendedInfoEncoder<Appearance>>(
-        encoders,
-    ) {
+    override val encoders: PlatformMap<PrecomputedExtendedInfoEncoder<Appearance>>,
+) : CachedExtendedInfo<Appearance, PrecomputedExtendedInfoEncoder<Appearance>>() {
     /**
      * The name of this avatar.
      */
@@ -156,14 +148,6 @@ public class Appearance(
      * used within the Burthorpe games' room.
      */
     public var afterCombatLevel: String = ""
-
-    override fun precompute() {
-        for (id in 0..<PlatformType.COUNT) {
-            val encoder = encoders[id] ?: continue
-            val encoded = encoder.precompute(allocator, huffmanCodec, this)
-            setBuffer(id, encoded.buffer)
-        }
-    }
 
     override fun clear() {
         releaseBuffers()

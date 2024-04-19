@@ -4,7 +4,8 @@ import net.rsprot.protocol.internal.game.outgoing.info.CoordGrid
 
 public class NpcAvatarDetails(
     public var index: Int,
-    public var id: Int, // sync with type changes
+    // sync with type changes
+    public var id: Int,
     public var currentCoord: CoordGrid = CoordGrid.INVALID,
     public var lastCoord: CoordGrid = CoordGrid.INVALID,
     public var stepCount: Int = 0,
@@ -12,8 +13,9 @@ public class NpcAvatarDetails(
     public var secondStep: Int = -1,
     public var movementType: Int = 0,
     public var spawnCycle: Int = 0,
-    // // 768, 1024, 1280, 512, 1536, 256, 0, 1792
-    public var direction: Int = 0, // TODO: Figure out a nice design for direction
+    // 768, 1024, 1280, 512, 1536, 256, 0, 1792
+    // TODO: Figure out a nice design for direction
+    public var direction: Int = 0,
     public var inaccessible: Boolean = false,
 ) {
     public fun isJumping(): Boolean {

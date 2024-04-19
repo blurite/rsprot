@@ -9,6 +9,7 @@ import net.rsprot.protocol.game.outgoing.info.playerinfo.filter.ExtendedInfoFilt
 import net.rsprot.protocol.internal.RSProtFlags
 import net.rsprot.protocol.internal.game.outgoing.info.playerinfo.extendedinfo.MoveSpeed
 import net.rsprot.protocol.internal.game.outgoing.info.playerinfo.extendedinfo.ObjTypeCustomisation
+import net.rsprot.protocol.internal.game.outgoing.info.precompute
 import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.FacePathingEntity
 import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.Tinting
 import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.util.HeadBar
@@ -36,8 +37,8 @@ public class PlayerAvatarExtendedInfo(
     private val localIndex: Int,
     private val filter: ExtendedInfoFilter,
     extendedInfoWriters: List<PlayerAvatarExtendedInfoWriter>,
-    allocator: ByteBufAllocator,
-    huffmanCodec: HuffmanCodec,
+    private val allocator: ByteBufAllocator,
+    private val huffmanCodec: HuffmanCodec,
 ) {
     /**
      * The flags currently enabled for this avatar.
@@ -54,12 +55,7 @@ public class PlayerAvatarExtendedInfo(
      * wrapped in its own class as we must pass this onto the platform-specific
      * implementations.
      */
-    private val blocks: PlayerAvatarExtendedInfoBlocks =
-        PlayerAvatarExtendedInfoBlocks(
-            extendedInfoWriters,
-            allocator,
-            huffmanCodec,
-        )
+    private val blocks: PlayerAvatarExtendedInfoBlocks = PlayerAvatarExtendedInfoBlocks(extendedInfoWriters)
 
     /**
      * The platform-specific extended info writers, indexed by the respective [PlatformType]'s id.
@@ -1220,28 +1216,28 @@ public class PlayerAvatarExtendedInfo(
     internal fun precompute() {
         // Hits and tinting do not get precomputed
         if (flags and APPEARANCE != 0) {
-            blocks.appearance.precompute()
+            blocks.appearance.precompute(allocator, huffmanCodec)
         }
         if (flags and TEMP_MOVE_SPEED != 0) {
-            blocks.temporaryMoveSpeed.precompute()
+            blocks.temporaryMoveSpeed.precompute(allocator, huffmanCodec)
         }
         if (flags and SEQUENCE != 0) {
-            blocks.sequence.precompute()
+            blocks.sequence.precompute(allocator, huffmanCodec)
         }
         if (flags and FACE_ANGLE != 0) {
-            blocks.faceAngle.precompute()
+            blocks.faceAngle.precompute(allocator, huffmanCodec)
         }
         if (flags and SAY != 0) {
-            blocks.say.precompute()
+            blocks.say.precompute(allocator, huffmanCodec)
         }
         if (flags and CHAT != 0) {
-            blocks.chat.precompute()
+            blocks.chat.precompute(allocator, huffmanCodec)
         }
         if (flags and EXACT_MOVE != 0) {
-            blocks.exactMove.precompute()
+            blocks.exactMove.precompute(allocator, huffmanCodec)
         }
         if (flags and SPOTANIM != 0) {
-            blocks.spotAnims.precompute()
+            blocks.spotAnims.precompute(allocator, huffmanCodec)
         }
     }
 

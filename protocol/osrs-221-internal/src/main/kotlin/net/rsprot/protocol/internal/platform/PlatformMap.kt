@@ -23,6 +23,10 @@ public class PlatformMap<T>
             return array[platform.id]
         }
 
+        public fun getOrNull(platformId: Int): T? {
+            return array[platformId]
+        }
+
         public operator fun contains(platform: Platform): Boolean {
             return array[platform.id] != null
         }
@@ -36,6 +40,22 @@ public class PlatformMap<T>
                 val array = arrayOfNulls<T>(platformCapacity)
                 for (element in elements) {
                     val platform = platformSelector(element)
+                    check(array[platform.id] == null) {
+                        "A platform is registered more than once: $elements"
+                    }
+                    array[platform.id] = element
+                }
+                return PlatformMap(array)
+            }
+
+            public inline fun <T, reified E> ofType(
+                elements: List<T>,
+                platformCapacity: Int,
+                platformSelector: (T) -> Pair<Platform, E>,
+            ): PlatformMap<E> {
+                val array = arrayOfNulls<E>(platformCapacity)
+                for (pair in elements) {
+                    val (platform, element) = platformSelector(pair)
                     check(array[platform.id] == null) {
                         "A platform is registered more than once: $elements"
                     }
