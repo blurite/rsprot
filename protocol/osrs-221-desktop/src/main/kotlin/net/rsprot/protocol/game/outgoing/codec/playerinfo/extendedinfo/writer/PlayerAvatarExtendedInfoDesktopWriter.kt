@@ -13,30 +13,31 @@ import net.rsprot.protocol.game.outgoing.codec.playerinfo.extendedinfo.PlayerSeq
 import net.rsprot.protocol.game.outgoing.codec.playerinfo.extendedinfo.PlayerSpotAnimEncoder
 import net.rsprot.protocol.game.outgoing.codec.playerinfo.extendedinfo.PlayerTemporaryMoveSpeedEncoder
 import net.rsprot.protocol.game.outgoing.codec.playerinfo.extendedinfo.PlayerTintingEncoder
+import net.rsprot.protocol.game.outgoing.info.playerinfo.AvatarExtendedInfoWriter
 import net.rsprot.protocol.game.outgoing.info.playerinfo.PlayerAvatarExtendedInfo
 import net.rsprot.protocol.game.outgoing.info.playerinfo.PlayerAvatarExtendedInfoBlocks
-import net.rsprot.protocol.game.outgoing.info.playerinfo.PlayerAvatarExtendedInfoWriter
 import net.rsprot.protocol.internal.game.outgoing.info.playerinfo.encoder.PlayerExtendedInfoEncoders
 import net.rsprot.protocol.shared.platform.PlatformType
 
-public class PlayerAvatarExtendedInfoDesktopWriter : PlayerAvatarExtendedInfoWriter(
-    PlatformType.DESKTOP,
-    PlayerExtendedInfoEncoders(
+public class PlayerAvatarExtendedInfoDesktopWriter :
+    AvatarExtendedInfoWriter<PlayerExtendedInfoEncoders, PlayerAvatarExtendedInfoBlocks>(
         PlatformType.DESKTOP,
-        PlayerAppearanceEncoder(),
-        PlayerChatEncoder(),
-        PlayerExactMoveEncoder(),
-        PlayerFaceAngleEncoder(),
-        PlayerFacePathingEntityEncoder(),
-        PlayerHitEncoder(),
-        PlayerMoveSpeedEncoder(),
-        PlayerSayEncoder(),
-        PlayerSequenceEncoder(),
-        PlayerSpotAnimEncoder(),
-        PlayerTemporaryMoveSpeedEncoder(),
-        PlayerTintingEncoder(),
-    ),
-) {
+        PlayerExtendedInfoEncoders(
+            PlatformType.DESKTOP,
+            PlayerAppearanceEncoder(),
+            PlayerChatEncoder(),
+            PlayerExactMoveEncoder(),
+            PlayerFaceAngleEncoder(),
+            PlayerFacePathingEntityEncoder(),
+            PlayerHitEncoder(),
+            PlayerMoveSpeedEncoder(),
+            PlayerSayEncoder(),
+            PlayerSequenceEncoder(),
+            PlayerSpotAnimEncoder(),
+            PlayerTemporaryMoveSpeedEncoder(),
+            PlayerTintingEncoder(),
+        ),
+    ) {
     private fun convertFlags(constantFlags: Int): Int {
         var platformFlags = 0
         if (constantFlags and PlayerAvatarExtendedInfo.APPEARANCE != 0) {
