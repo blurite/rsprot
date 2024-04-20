@@ -4,28 +4,38 @@ import io.netty.buffer.ByteBufAllocator
 import net.rsprot.compression.HuffmanCodec
 import net.rsprot.protocol.game.outgoing.info.playerinfo.filter.ExtendedInfoFilter
 
+@ExperimentalUnsignedTypes
 public class NpcAvatarFactory(
-    private val allocator: ByteBufAllocator,
-    private val extendedInfoFilter: ExtendedInfoFilter,
-    private val extendedInfoWriter: List<NpcAvatarExtendedInfoWriter>,
-    private val huffmanCodec: HuffmanCodec,
+    allocator: ByteBufAllocator,
+    extendedInfoFilter: ExtendedInfoFilter,
+    extendedInfoWriter: List<NpcAvatarExtendedInfoWriter>,
+    huffmanCodec: HuffmanCodec,
 ) {
+    internal val avatarRepository: NpcAvatarRepository =
+        NpcAvatarRepository(
+            allocator,
+            extendedInfoFilter,
+            extendedInfoWriter,
+            huffmanCodec,
+        )
+
     public fun alloc(
         index: Int,
         id: Int,
+        level: Int,
+        x: Int,
+        z: Int,
+        spawnCycle: Int = 0,
+        direction: Int = 0,
     ): NpcAvatar {
-        val extendedInfo =
-            NpcAvatarExtendedInfo(
-                index,
-                extendedInfoFilter,
-                extendedInfoWriter,
-                allocator,
-                huffmanCodec,
-            )
-        return NpcAvatar(
+        return avatarRepository.getOrAlloc(
             index,
             id,
-            extendedInfo,
+            level,
+            x,
+            z,
+            spawnCycle,
+            direction,
         )
     }
 }

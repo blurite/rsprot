@@ -10,6 +10,11 @@ import java.util.concurrent.atomic.AtomicInteger
 public class NpcAvatar internal constructor(
     index: Int,
     id: Int,
+    level: Int,
+    x: Int,
+    z: Int,
+    spawnCycle: Int = 0,
+    direction: Int = 0,
     /**
      * Extended info repository, commonly referred to as "masks", will track everything relevant
      * inside itself. Setting properties such as a spotanim would be done through this.
@@ -18,7 +23,16 @@ public class NpcAvatar internal constructor(
      */
     public val extendedInfo: NpcAvatarExtendedInfo,
 ) : Avatar {
-    public val details: NpcAvatarDetails = NpcAvatarDetails(index, id)
+    public val details: NpcAvatarDetails =
+        NpcAvatarDetails(
+            index,
+            id,
+            level,
+            x,
+            z,
+            spawnCycle,
+            direction,
+        )
     private val observerCount: AtomicInteger = AtomicInteger()
 
     internal var highResMovementBuffer: UnsafeLongBackedBitBuf? = null

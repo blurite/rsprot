@@ -2,7 +2,7 @@ package net.rsprot.protocol.internal.game.outgoing.info.npcinfo
 
 import net.rsprot.protocol.internal.game.outgoing.info.CoordGrid
 
-public class NpcAvatarDetails(
+public class NpcAvatarDetails internal constructor(
     public var index: Int,
     // sync with type changes
     public var id: Int,
@@ -18,6 +18,23 @@ public class NpcAvatarDetails(
     public var direction: Int = 0,
     public var inaccessible: Boolean = false,
 ) {
+    public constructor(
+        index: Int,
+        id: Int,
+        level: Int,
+        x: Int,
+        z: Int,
+        spawnCycle: Int = 0,
+        direction: Int = 0,
+    ) : this(
+        index,
+        id,
+        CoordGrid(level, x, z),
+        CoordGrid(level, x, z),
+        spawnCycle = spawnCycle,
+        direction = direction,
+    )
+
     public fun isJumping(): Boolean {
         return movementType and TELEJUMP != 0
     }

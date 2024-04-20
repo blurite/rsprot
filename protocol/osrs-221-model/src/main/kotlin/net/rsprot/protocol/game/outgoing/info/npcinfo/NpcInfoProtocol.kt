@@ -5,16 +5,19 @@ import net.rsprot.protocol.game.outgoing.info.worker.DefaultProtocolWorker
 import net.rsprot.protocol.game.outgoing.info.worker.ProtocolWorker
 import net.rsprot.protocol.internal.game.outgoing.info.npcinfo.encoder.NpcResolutionChangeEncoder
 import net.rsprot.protocol.internal.platform.PlatformMap
+import net.rsprot.protocol.shared.platform.PlatformType
 import java.util.concurrent.Callable
 
+@Suppress("CanBeParameter")
 @ExperimentalUnsignedTypes
 public class NpcInfoProtocol(
     private val allocator: ByteBufAllocator,
-    private val worker: ProtocolWorker = DefaultProtocolWorker(),
     private val npcIndexSupplier: NpcIndexSupplier,
     private val resolutionChangeEncoders: PlatformMap<NpcResolutionChangeEncoder>,
+    private val avatarFactory: NpcAvatarFactory,
+    private val worker: ProtocolWorker = DefaultProtocolWorker(),
 ) {
-    private val avatarRepository: NpcAvatarRepository = NpcAvatarRepository()
+    private val avatarRepository = avatarFactory.avatarRepository
 
     private val npcInfoRepository: NpcInfoRepository =
         NpcInfoRepository { localIndex, platformType ->
@@ -35,11 +38,19 @@ public class NpcInfoProtocol(
      */
     private val callables: MutableList<Callable<Unit>> = ArrayList(PROTOCOL_CAPACITY)
 
+    public fun alloc(
+        idx: Int,
+        platformType: PlatformType,
+    ): NpcInfo {
+        return npcInfoRepository.alloc(idx, platformType)
+    }
+
     public fun compute() {
         prepareBitcodes()
         putBitcodes()
         prepareExtendedInfo()
         putExtendedInfo()
+        postUpdate()
     }
 
     private fun prepareBitcodes() {
