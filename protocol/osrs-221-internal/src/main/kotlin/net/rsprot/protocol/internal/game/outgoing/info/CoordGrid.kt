@@ -25,13 +25,13 @@ public value class CoordGrid(public val packed: Int) {
         // https://youtrack.jetbrains.com/issue/KT-62798/in-range-checks-are-not-intrinsified-in-kotlin-stdlib
         // Using traditional checks to avoid generating range objects (seen by decompiling this class)
         require(level >= 0 && level < 4) {
-            "Level must be in range of 0..<4"
+            "Level must be in range of 0..<4: $level"
         }
         require(x >= 0 && x <= 16384) {
-            "X coordinate must be in range of 0..<16384"
+            "X coordinate must be in range of 0..<16384: $x"
         }
         require(z >= 0 && z <= 16384) {
-            "Y coordinate must be in range of 0..<16384"
+            "Z coordinate must be in range of 0..<16384, $z"
         }
     }
 
