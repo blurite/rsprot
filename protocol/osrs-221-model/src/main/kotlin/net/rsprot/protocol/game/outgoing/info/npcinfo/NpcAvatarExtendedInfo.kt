@@ -891,7 +891,7 @@ public class NpcAvatarExtendedInfo(
 
     internal fun getLowToHighResChangeExtendedInfoFlags(): Int {
         var flag = 0
-        if (this.flags and OPS == 0 && blocks.visibleOps.ops.toInt() != 0) {
+        if (this.flags and OPS == 0 && blocks.visibleOps.ops.toInt() != 0b11111) {
             flag = flag or OPS
         }
         if (this.flags and HEADICON_CUSTOMISATION == 0 && blocks.headIconCustomisation.flag != 0) {
