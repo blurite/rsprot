@@ -21,7 +21,7 @@ public class BaseAnimationSet(
     public var crawlAnim: UShort = 0xFFFFu
     public var crawlAnimBack: UShort = 0xFFFFu
     public var crawlAnimLeft: UShort = 0xFFFFu
-    public var crawAnimRight: UShort = 0xFFFFu
+    public var crawlAnimRight: UShort = 0xFFFFu
     public var readyAnim: UShort = 0xFFFFu
 
     override fun clear() {
@@ -40,7 +40,7 @@ public class BaseAnimationSet(
         crawlAnim = 0xFFFFu
         crawlAnimBack = 0xFFFFu
         crawlAnimLeft = 0xFFFFu
-        crawAnimRight = 0xFFFFu
+        crawlAnimRight = 0xFFFFu
         readyAnim = 0xFFFFu
     }
 

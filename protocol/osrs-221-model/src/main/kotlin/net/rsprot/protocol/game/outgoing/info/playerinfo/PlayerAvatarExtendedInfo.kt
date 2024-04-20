@@ -7,6 +7,7 @@ import net.rsprot.buffer.JagByteBuf
 import net.rsprot.compression.HuffmanCodec
 import net.rsprot.protocol.game.outgoing.info.playerinfo.filter.ExtendedInfoFilter
 import net.rsprot.protocol.internal.RSProtFlags
+import net.rsprot.protocol.internal.game.outgoing.info.playerinfo.encoder.PlayerExtendedInfoEncoders
 import net.rsprot.protocol.internal.game.outgoing.info.playerinfo.extendedinfo.MoveSpeed
 import net.rsprot.protocol.internal.game.outgoing.info.playerinfo.extendedinfo.ObjTypeCustomisation
 import net.rsprot.protocol.internal.game.outgoing.info.precompute
@@ -16,6 +17,9 @@ import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.util.
 import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.util.HitMark
 import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.util.SpotAnim
 import net.rsprot.protocol.shared.platform.PlatformType
+
+public typealias PlayerAvatarExtendedInfoWriter =
+    AvatarExtendedInfoWriter<PlayerExtendedInfoEncoders, PlayerAvatarExtendedInfoBlocks>
 
 /**
  * This data structure keeps track of all the extended info blocks for a given player avatar.
@@ -33,8 +37,7 @@ import net.rsprot.protocol.shared.platform.PlatformType
  *  @param huffmanCodec the Huffman codec is used to compress public chat extended info blocks.
  */
 public class PlayerAvatarExtendedInfo(
-    private val protocol: PlayerInfoProtocol,
-    private val localIndex: Int,
+    internal var localIndex: Int,
     private val filter: ExtendedInfoFilter,
     extendedInfoWriters: List<PlayerAvatarExtendedInfoWriter>,
     private val allocator: ByteBufAllocator,
@@ -61,7 +64,8 @@ public class PlayerAvatarExtendedInfo(
      * The platform-specific extended info writers, indexed by the respective [PlatformType]'s id.
      * All platforms in use must be registered, or an exception will occur during player info encoding.
      */
-    private val writers: Array<PlayerAvatarExtendedInfoWriter?> = buildPlatformWriterArray(extendedInfoWriters)
+    private val writers: Array<PlayerAvatarExtendedInfoWriter?> =
+        buildPlatformWriterArray(extendedInfoWriters)
 
     /**
      * An int array to keep track of the number of times we've seen someone modify their appearance.
@@ -597,11 +601,7 @@ public class PlayerAvatarExtendedInfo(
      * @param saturation the saturation of the tint.
      * @param lightness the lightness of the tint.
      * @param weight the weight (or opacity) of the tint.
-     * @param visibleToIndex the index of the player who will see the tint applied,
-     * or -1 if it is meant to be global. Note that this only accepts player indices,
-     * and not NPC ones like many other extended info blocks.
      */
-    @JvmOverloads
     public fun tinting(
         startTime: Int,
         endTime: Int,
@@ -609,7 +609,6 @@ public class PlayerAvatarExtendedInfo(
         saturation: Int,
         lightness: Int,
         weight: Int,
-        visibleToIndex: Int = -1,
     ) {
         verify {
             require(startTime in UNSIGNED_SHORT_RANGE) {
@@ -634,33 +633,71 @@ public class PlayerAvatarExtendedInfo(
                 "Unexpected weight: $weight, expected range $UNSIGNED_BYTE_RANGE"
             }
         }
-        if (visibleToIndex != -1) {
-            val otherPlayerInfo = protocol.getPlayerInfo(visibleToIndex)
-            requireNotNull(otherPlayerInfo) {
-                "Player at index $visibleToIndex does not exist."
+        val tint = blocks.tinting.global
+        tint.start = startTime.toUShort()
+        tint.end = endTime.toUShort()
+        tint.hue = hue.toUByte()
+        tint.saturation = saturation.toUByte()
+        tint.lightness = lightness.toUByte()
+        tint.weight = weight.toUByte()
+        flags = flags or TINTING
+    }
+
+    /**
+     * Applies a tint over the non-textured parts of the character.
+     * @param startTime the delay in client cycles (20ms/cc) until the tinting is applied.
+     * @param endTime the timestamp in client cycles (20ms/cc) until the tinting finishes.
+     * @param hue the hue of the tint.
+     * @param saturation the saturation of the tint.
+     * @param lightness the lightness of the tint.
+     * @param weight the weight (or opacity) of the tint.
+     * @param visibleTo the player who will see the tint applied.
+     * Note that this only accepts player indices, and not NPC ones like many other extended info blocks.
+     */
+    public fun specificTinting(
+        startTime: Int,
+        endTime: Int,
+        hue: Int,
+        saturation: Int,
+        lightness: Int,
+        weight: Int,
+        visibleTo: PlayerInfo,
+    ) {
+        verify {
+            require(startTime in UNSIGNED_SHORT_RANGE) {
+                "Unexpected startTime: $startTime, expected range $UNSIGNED_SHORT_RANGE"
             }
-            val tint = Tinting()
-            blocks.tinting.observerDependent[visibleToIndex] = tint
-            tint.start = startTime.toUShort()
-            tint.end = endTime.toUShort()
-            tint.hue = hue.toUByte()
-            tint.saturation = saturation.toUByte()
-            tint.lightness = lightness.toUByte()
-            tint.weight = weight.toUByte()
-            otherPlayerInfo.observerExtendedInfoFlags.addFlag(
-                localIndex,
-                TINTING,
-            )
-        } else {
-            val tint = blocks.tinting.global
-            tint.start = startTime.toUShort()
-            tint.end = endTime.toUShort()
-            tint.hue = hue.toUByte()
-            tint.saturation = saturation.toUByte()
-            tint.lightness = lightness.toUByte()
-            tint.weight = weight.toUByte()
-            flags = flags or TINTING
+            require(endTime in UNSIGNED_SHORT_RANGE) {
+                "Unexpected endTime: $endTime, expected range $UNSIGNED_SHORT_RANGE"
+            }
+            require(endTime >= startTime) {
+                "End time should be equal to or greater than start time: $endTime > $startTime"
+            }
+            require(hue in UNSIGNED_BYTE_RANGE) {
+                "Unexpected hue: $hue, expected range $UNSIGNED_BYTE_RANGE"
+            }
+            require(saturation in UNSIGNED_BYTE_RANGE) {
+                "Unexpected saturation: $saturation, expected range $UNSIGNED_BYTE_RANGE"
+            }
+            require(lightness in UNSIGNED_BYTE_RANGE) {
+                "Unexpected lightness: $lightness, expected range $UNSIGNED_BYTE_RANGE"
+            }
+            require(weight in UNSIGNED_BYTE_RANGE) {
+                "Unexpected weight: $weight, expected range $UNSIGNED_BYTE_RANGE"
+            }
         }
+        val tint = Tinting()
+        blocks.tinting.observerDependent[visibleTo.avatar.extendedInfo.localIndex] = tint
+        tint.start = startTime.toUShort()
+        tint.end = endTime.toUShort()
+        tint.hue = hue.toUByte()
+        tint.saturation = saturation.toUByte()
+        tint.lightness = lightness.toUByte()
+        tint.weight = weight.toUByte()
+        visibleTo.observerExtendedInfoFlags.addFlag(
+            localIndex,
+            TINTING,
+        )
     }
 
     /**
@@ -1239,6 +1276,12 @@ public class PlayerAvatarExtendedInfo(
         if (flags and SPOTANIM != 0) {
             blocks.spotAnims.precompute(allocator, huffmanCodec)
         }
+        if (flags and FACE_PATHINGENTITY != 0) {
+            blocks.facePathingEntity.precompute(allocator, huffmanCodec)
+        }
+        if (flags and MOVE_SPEED != 0) {
+            blocks.moveSpeed.precompute(allocator, huffmanCodec)
+        }
     }
 
     /**
@@ -1370,7 +1413,10 @@ public class PlayerAvatarExtendedInfo(
         private fun buildPlatformWriterArray(
             extendedInfoWriters: List<PlayerAvatarExtendedInfoWriter>,
         ): Array<PlayerAvatarExtendedInfoWriter?> {
-            val array = arrayOfNulls<PlayerAvatarExtendedInfoWriter>(PlatformType.COUNT)
+            val array =
+                arrayOfNulls<PlayerAvatarExtendedInfoWriter>(
+                    PlatformType.COUNT,
+                )
             for (writer in extendedInfoWriters) {
                 array[writer.platformType.id] = writer
             }

@@ -141,7 +141,7 @@ internal class PlayerInfoRepository(
             if (element == null) {
                 continue
             }
-            element.extendedInfo.onOtherAvatarDeallocated(idx)
+            element.avatar.extendedInfo.onOtherAvatarDeallocated(idx)
         }
     }
 }

@@ -1,14 +1,24 @@
 package net.rsprot.protocol.game.outgoing.info.playerinfo
 
+import io.netty.buffer.ByteBufAllocator
+import net.rsprot.compression.HuffmanCodec
+import net.rsprot.protocol.game.outgoing.info.playerinfo.filter.ExtendedInfoFilter
 import net.rsprot.protocol.game.outgoing.info.util.Avatar
 import net.rsprot.protocol.internal.game.outgoing.info.CoordGrid
+import net.rsprot.protocol.internal.game.outgoing.info.playerinfo.encoder.PlayerExtendedInfoEncoders
 
 /**
  * The player avatar class represents an avatar for the purposes of player information packet.
  * Every player will have a respective avatar that contains basic information about that player,
  * such as their coordinates and how far to render other players.
  */
-public class PlayerAvatar internal constructor() : Avatar {
+public class PlayerAvatar internal constructor(
+    allocator: ByteBufAllocator,
+    localIndex: Int,
+    extendedInfoFilter: ExtendedInfoFilter,
+    extendedInfoWriters: List<AvatarExtendedInfoWriter<PlayerExtendedInfoEncoders, PlayerAvatarExtendedInfoBlocks>>,
+    huffmanCodec: HuffmanCodec,
+) : Avatar {
     /**
      * The preferred resize range. The player information protocol will attempt to
      * add everyone within [preferredResizeRange] tiles to high resolution.
@@ -54,6 +64,21 @@ public class PlayerAvatar internal constructor() : Avatar {
     internal var lastCoord: CoordGrid = CoordGrid.INVALID
 
     /**
+     * Extended info repository, commonly referred to as "masks", will track everything relevant
+     * inside itself. Setting properties such as a spotanim would be done through this.
+     * The [extendedInfo] is also responsible for caching the non-temporary blocks,
+     * such as appearance and move speed.
+     */
+    public val extendedInfo: PlayerAvatarExtendedInfo =
+        PlayerAvatarExtendedInfo(
+            localIndex,
+            extendedInfoFilter,
+            extendedInfoWriters,
+            allocator,
+            huffmanCodec,
+        )
+
+    /**
      * Resets all the properties of the given avatar to their default values.
      */
     internal fun reset() {
@@ -65,12 +90,15 @@ public class PlayerAvatar internal constructor() : Avatar {
     }
 
     /**
-     * Updates the current cycle's coordinate of the given avatar.
-     * @param level the height level of the avatar
-     * @param x the absolute x coordinate of the avatar
-     * @param z the absolute z coordinate of the avatar
+     * Updates the current known coordinate of the given [PlayerAvatar].
+     * This function must be called on each avatar before player info is computed.
+     * @param level the current height level of the avatar.
+     * @param x the x coordinate of the avatar.
+     * @param z the z coordinate of the avatar (this is commonly referred to as 'y' coordinate).
+     * @throws IllegalArgumentException if [level] is not in range of 0..<4, or [x]/[z] are
+     * not in range of 0..<16384.
      */
-    override fun updateCoord(
+    public fun updateCoord(
         level: Int,
         x: Int,
         z: Int,

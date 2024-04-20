@@ -1,4 +1,4 @@
-package net.rsprot.protocol.game.outgoing.codec.playerinfo.extendedinfo
+package net.rsprot.protocol.game.outgoing.codec.npcinfo.extendedinfo
 
 import io.netty.buffer.ByteBufAllocator
 import net.rsprot.buffer.JagByteBuf

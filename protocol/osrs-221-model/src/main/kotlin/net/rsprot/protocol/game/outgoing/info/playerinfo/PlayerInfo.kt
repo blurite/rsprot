@@ -6,9 +6,7 @@ import net.rsprot.buffer.bitbuffer.BitBuf
 import net.rsprot.buffer.bitbuffer.UnsafeLongBackedBitBuf
 import net.rsprot.buffer.bitbuffer.toBitBuf
 import net.rsprot.buffer.extensions.toJagByteBuf
-import net.rsprot.compression.HuffmanCodec
 import net.rsprot.protocol.game.outgoing.info.playerinfo.PlayerInfoProtocol.Companion.PROTOCOL_CAPACITY
-import net.rsprot.protocol.game.outgoing.info.playerinfo.filter.ExtendedInfoFilter
 import net.rsprot.protocol.game.outgoing.info.playerinfo.util.CellOpcodes
 import net.rsprot.protocol.game.outgoing.info.playerinfo.util.ObserverExtendedInfoFlags
 import net.rsprot.protocol.game.outgoing.info.util.Avatar
@@ -41,27 +39,15 @@ import kotlin.math.abs
  * copying from and to the heap.
  * @param platformType the platform on which the player is logging into. This is utilized
  * to determine what encoders to use for extended info blocks.
- * @param extendedInfoWriters a list of platform-specific extended info writers.
- * This map must provide writers for all platform types that will be in use.
- * It is also worth noting that pre-computations for extended info blocks will be done
- * for all platforms if multiple platforms are registered.
- * @param huffmanCodec the huffman codec responsible for compressing public chat extended info block.
  */
-@Suppress("DuplicatedCode", "ReplaceUntilWithRangeUntil")
+@Suppress("DuplicatedCode")
 public class PlayerInfo internal constructor(
     private val protocol: PlayerInfoProtocol,
     private var localIndex: Int,
     private val allocator: ByteBufAllocator,
     private var platformType: PlatformType,
-    extendedInfoFilter: ExtendedInfoFilter,
-    extendedInfoWriters: List<PlayerAvatarExtendedInfoWriter>,
-    huffmanCodec: HuffmanCodec,
+    public val avatar: PlayerAvatar,
 ) : ReferencePooledObject, OutgoingMessage {
-    /**
-     * The [avatar] represents properties of our local player.
-     */
-    public val avatar: PlayerAvatar = PlayerAvatar()
-
     /**
      * Low resolution indices are tracked together with [lowResolutionCount].
      * Whenever a player enters the low resolution view, their index
@@ -119,22 +105,6 @@ public class PlayerInfo internal constructor(
      * as they were in the last cycle.
      */
     private val stationary = ByteArray(PROTOCOL_CAPACITY)
-
-    /**
-     * Extended info repository, commonly referred to as "masks", will track everything relevant
-     * inside itself. Setting properties such as a spotanim would be done through this.
-     * The [extendedInfo] is also responsible for caching the non-temporary blocks,
-     * such as appearance and move speed.
-     */
-    public val extendedInfo: PlayerAvatarExtendedInfo =
-        PlayerAvatarExtendedInfo(
-            protocol,
-            localIndex,
-            extendedInfoFilter,
-            extendedInfoWriters,
-            allocator,
-            huffmanCodec,
-        )
 
     /**
      * The observer info flags are used for us to track extended info blocks which weren't necessarily
@@ -237,7 +207,7 @@ public class PlayerInfo internal constructor(
      * extended info blocks excluded in pre-computations altogether.
      */
     internal fun precomputeExtendedInfo() {
-        extendedInfo.precompute()
+        avatar.extendedInfo.precompute()
     }
 
     /**
@@ -257,11 +227,11 @@ public class PlayerInfo internal constructor(
             val index = extendedInfoIndices[i].toInt()
             val other = checkNotNull(protocol.getPlayerInfo(index))
             val observerFlag = observerExtendedInfoFlags.getFlag(index)
-            other.extendedInfo.pExtendedInfo(
+            other.avatar.extendedInfo.pExtendedInfo(
                 platformType,
                 jagBuffer,
                 observerFlag,
-                extendedInfo,
+                avatar.extendedInfo,
                 extendedInfoCount - i,
             )
         }
@@ -345,14 +315,14 @@ public class PlayerInfo internal constructor(
         buffer.pBits(13, z)
 
         // Get a flags of all the extended info blocks that are 'outdated' to us and must be sent again.
-        val extraFlags = other.extendedInfo.getLowToHighResChangeExtendedInfoFlags(extendedInfo)
+        val extraFlags = other.avatar.extendedInfo.getLowToHighResChangeExtendedInfoFlags(avatar.extendedInfo)
         // Mark those flags as observer-dependent.
         observerExtendedInfoFlags.addFlag(index, extraFlags)
         stationary[index] = (stationary[index].toInt() or IS_STATIONARY).toByte()
         val longIndex = index ushr 6
         val cur = highResolutionPlayers[longIndex]
         highResolutionPlayers[longIndex] = cur or (1L shl (index and 0x3F))
-        val flag = other.extendedInfo.flags or observerExtendedInfoFlags.getFlag(index)
+        val flag = other.avatar.extendedInfo.flags or observerExtendedInfoFlags.getFlag(index)
         val hasExtendedInfoBlock = flag != 0
         if (hasExtendedInfoBlock) {
             extendedInfoIndices[extendedInfoCount++] = index.toShort()
@@ -389,7 +359,7 @@ public class PlayerInfo internal constructor(
                 continue
             }
 
-            val flag = other.extendedInfo.flags or observerExtendedInfoFlags.getFlag(index)
+            val flag = other.avatar.extendedInfo.flags or observerExtendedInfoFlags.getFlag(index)
             val hasExtendedInfoBlock = flag != 0
             val highResBuf = other.highResMovementBuffer
             val skipped = !hasExtendedInfoBlock && highResBuf == null
@@ -532,7 +502,7 @@ public class PlayerInfo internal constructor(
      */
     internal fun postUpdate() {
         this.avatar.postUpdate()
-        extendedInfo.postUpdate()
+        avatar.extendedInfo.postUpdate()
         lowResolutionCount = 0
         highResolutionCount = 0
         // Only need to reset the count here, the actual numbers don't matter.
@@ -546,7 +516,7 @@ public class PlayerInfo internal constructor(
             }
         }
         observerExtendedInfoFlags.reset()
-        extendedInfo.postUpdate()
+        avatar.extendedInfo.postUpdate()
     }
 
     /**
@@ -563,6 +533,7 @@ public class PlayerInfo internal constructor(
         platformType: PlatformType,
     ) {
         this.localIndex = index
+        avatar.extendedInfo.localIndex = index
         this.platformType = platformType
         avatar.reset()
         lowResolutionIndices.fill(0)
@@ -584,7 +555,7 @@ public class PlayerInfo internal constructor(
         // We do not release the buffer as the Netty encoders are responsible for it.
         // However, we do reset any references to buffers and whatnot in this step.
         this.buffer = null
-        extendedInfo.reset()
+        avatar.extendedInfo.reset()
         highResMovementBuffer = null
         lowResMovementBuffer = null
     }

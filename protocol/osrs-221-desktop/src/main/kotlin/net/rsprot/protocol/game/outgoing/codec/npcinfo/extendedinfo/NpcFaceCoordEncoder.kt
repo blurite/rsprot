@@ -1,25 +1,25 @@
-package net.rsprot.protocol.game.outgoing.codec.playerinfo.extendedinfo
+package net.rsprot.protocol.game.outgoing.codec.npcinfo.extendedinfo
 
 import io.netty.buffer.ByteBufAllocator
 import net.rsprot.buffer.JagByteBuf
 import net.rsprot.buffer.extensions.toJagByteBuf
 import net.rsprot.compression.HuffmanCodec
 import net.rsprot.protocol.internal.game.outgoing.info.encoder.PrecomputedExtendedInfoEncoder
-import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.Say
+import net.rsprot.protocol.internal.game.outgoing.info.npcinfo.extendedinfo.FaceCoord
 
-public class NpcSayEncoder : PrecomputedExtendedInfoEncoder<Say> {
+public class NpcFaceCoordEncoder : PrecomputedExtendedInfoEncoder<FaceCoord> {
     override fun precompute(
         alloc: ByteBufAllocator,
         huffmanCodec: HuffmanCodec,
-        extendedInfo: Say,
+        extendedInfo: FaceCoord,
     ): JagByteBuf {
-        val text = extendedInfo.text ?: ""
-        val capacity = text.length + 1
         val buffer =
             alloc
-                .buffer(capacity, capacity)
+                .buffer(5, 5)
                 .toJagByteBuf()
-        buffer.pjstr(text)
+        buffer.p2Alt3(extendedInfo.x.toInt())
+        buffer.p2Alt3(extendedInfo.z.toInt())
+        buffer.p1(if (extendedInfo.instant) 1 else 0)
         return buffer
     }
 }

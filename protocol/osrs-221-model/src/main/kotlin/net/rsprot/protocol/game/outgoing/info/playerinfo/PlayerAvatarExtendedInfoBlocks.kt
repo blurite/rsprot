@@ -7,6 +7,7 @@ import net.rsprot.protocol.internal.game.outgoing.info.playerinfo.extendedinfo.A
 import net.rsprot.protocol.internal.game.outgoing.info.playerinfo.extendedinfo.Chat
 import net.rsprot.protocol.internal.game.outgoing.info.playerinfo.extendedinfo.FaceAngle
 import net.rsprot.protocol.internal.game.outgoing.info.playerinfo.extendedinfo.MoveSpeed
+import net.rsprot.protocol.internal.game.outgoing.info.playerinfo.extendedinfo.PlayerTintingList
 import net.rsprot.protocol.internal.game.outgoing.info.playerinfo.extendedinfo.TemporaryMoveSpeed
 import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.ExactMove
 import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.FacePathingEntity
@@ -14,11 +15,10 @@ import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.Hit
 import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.Say
 import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.Sequence
 import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.SpotAnimList
-import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.TintingList
 import net.rsprot.protocol.internal.platform.PlatformMap
 import net.rsprot.protocol.shared.platform.PlatformType
 
-private typealias Encoders = PlayerExtendedInfoEncoders
+private typealias PEnc = PlayerExtendedInfoEncoders
 private typealias TempMoveSpeed = TemporaryMoveSpeed
 
 /**
@@ -30,20 +30,20 @@ private typealias TempMoveSpeed = TemporaryMoveSpeed
  * the exact order described by the client.
  */
 public class PlayerAvatarExtendedInfoBlocks(
-    writers: List<PlayerAvatarExtendedInfoWriter>,
+    writers: List<AvatarExtendedInfoWriter<PlayerExtendedInfoEncoders, PlayerAvatarExtendedInfoBlocks>>,
 ) {
-    public val appearance: Appearance = Appearance(encoders(writers, Encoders::appearance))
-    public val moveSpeed: MoveSpeed = MoveSpeed(encoders(writers, Encoders::moveSpeed))
-    public val temporaryMoveSpeed: TempMoveSpeed = TempMoveSpeed(encoders(writers, Encoders::temporaryMoveSpeed))
-    public val sequence: Sequence = Sequence(encoders(writers, Encoders::sequence))
-    public val facePathingEntity: FacePathingEntity = FacePathingEntity(encoders(writers, Encoders::facePathingEntity))
-    public val faceAngle: FaceAngle = FaceAngle(encoders(writers, Encoders::faceAngle))
-    public val say: Say = Say(encoders(writers, Encoders::say))
-    public val chat: Chat = Chat(encoders(writers, Encoders::chat))
-    public val exactMove: ExactMove = ExactMove(encoders(writers, Encoders::exactMove))
-    public val spotAnims: SpotAnimList = SpotAnimList(encoders(writers, Encoders::spotAnim))
-    public val hit: Hit = Hit(encoders(writers, Encoders::hit))
-    public val tinting: TintingList = TintingList(encoders(writers, Encoders::tinting))
+    public val appearance: Appearance = Appearance(encoders(writers, PEnc::appearance))
+    public val moveSpeed: MoveSpeed = MoveSpeed(encoders(writers, PEnc::moveSpeed))
+    public val temporaryMoveSpeed: TempMoveSpeed = TempMoveSpeed(encoders(writers, PEnc::temporaryMoveSpeed))
+    public val sequence: Sequence = Sequence(encoders(writers, PEnc::sequence))
+    public val facePathingEntity: FacePathingEntity = FacePathingEntity(encoders(writers, PEnc::facePathingEntity))
+    public val faceAngle: FaceAngle = FaceAngle(encoders(writers, PEnc::faceAngle))
+    public val say: Say = Say(encoders(writers, PEnc::say))
+    public val chat: Chat = Chat(encoders(writers, PEnc::chat))
+    public val exactMove: ExactMove = ExactMove(encoders(writers, PEnc::exactMove))
+    public val spotAnims: SpotAnimList = SpotAnimList(encoders(writers, PEnc::spotAnim))
+    public val hit: Hit = Hit(encoders(writers, PEnc::hit))
+    public val tinting: PlayerTintingList = PlayerTintingList(encoders(writers, PEnc::tinting))
 
     private companion object {
         /**
@@ -57,7 +57,7 @@ public class PlayerAvatarExtendedInfoBlocks(
          * keyed by [PlatformType.id].
          */
         private inline fun <T : ExtendedInfo<T, E>, reified E : ExtendedInfoEncoder<T>> encoders(
-            allEncoders: List<PlayerAvatarExtendedInfoWriter>,
+            allEncoders: List<AvatarExtendedInfoWriter<PlayerExtendedInfoEncoders, PlayerAvatarExtendedInfoBlocks>>,
             selector: (PlayerExtendedInfoEncoders) -> E,
         ): PlatformMap<E> {
             return PlatformMap.ofType(allEncoders, PlatformType.COUNT) {

@@ -8,13 +8,19 @@ public class HeadIconCustomisation(
     override val encoders: PlatformMap<PrecomputedExtendedInfoEncoder<HeadIconCustomisation>>,
 ) : TransientExtendedInfo<HeadIconCustomisation, PrecomputedExtendedInfoEncoder<HeadIconCustomisation>>() {
     public var flag: Int = 0
-    public val headIconGroups: IntArray = IntArray(8)
-    public val headIconIndices: ShortArray = ShortArray(8)
+    public val headIconGroups: IntArray =
+        IntArray(8) {
+            -1
+        }
+    public val headIconIndices: ShortArray =
+        ShortArray(8) {
+            -1
+        }
 
     override fun clear() {
         releaseBuffers()
         flag = 0
-        headIconGroups.fill(0)
-        headIconIndices.fill(0)
+        headIconGroups.fill(-1)
+        headIconIndices.fill(-1)
     }
 }

@@ -1,24 +1,23 @@
-package net.rsprot.protocol.game.outgoing.codec.playerinfo.extendedinfo
+package net.rsprot.protocol.game.outgoing.codec.npcinfo.extendedinfo
 
 import io.netty.buffer.ByteBufAllocator
 import net.rsprot.buffer.JagByteBuf
 import net.rsprot.buffer.extensions.toJagByteBuf
 import net.rsprot.compression.HuffmanCodec
 import net.rsprot.protocol.internal.game.outgoing.info.encoder.PrecomputedExtendedInfoEncoder
-import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.Sequence
+import net.rsprot.protocol.internal.game.outgoing.info.npcinfo.extendedinfo.CombatLevelChange
 
-public class NpcSequenceEncoder : PrecomputedExtendedInfoEncoder<Sequence> {
+public class NpcCombatLevelChangeEncoder : PrecomputedExtendedInfoEncoder<CombatLevelChange> {
     override fun precompute(
         alloc: ByteBufAllocator,
         huffmanCodec: HuffmanCodec,
-        extendedInfo: Sequence,
+        extendedInfo: CombatLevelChange,
     ): JagByteBuf {
         val buffer =
             alloc
-                .buffer(3, 3)
+                .buffer(4, 4)
                 .toJagByteBuf()
-        buffer.p2Alt3(extendedInfo.id.toInt())
-        buffer.p1(extendedInfo.delay.toInt())
+        buffer.p4Alt3(extendedInfo.level)
         return buffer
     }
 }

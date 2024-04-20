@@ -3,7 +3,6 @@ package net.rsprot.protocol.game.outgoing.info.playerinfo
 import net.rsprot.buffer.JagByteBuf
 import net.rsprot.protocol.internal.game.outgoing.info.ExtendedInfo
 import net.rsprot.protocol.internal.game.outgoing.info.encoder.OnDemandExtendedInfoEncoder
-import net.rsprot.protocol.internal.game.outgoing.info.playerinfo.encoder.PlayerExtendedInfoEncoders
 import net.rsprot.protocol.shared.platform.PlatformType
 
 /**
@@ -11,9 +10,9 @@ import net.rsprot.protocol.shared.platform.PlatformType
  * @param platformType the platform for which the encoders are created.
  * @param encoders the set of extended info encoders for the given [platformType].
  */
-public abstract class PlayerAvatarExtendedInfoWriter(
+public abstract class AvatarExtendedInfoWriter<E, B>(
     public val platformType: PlatformType,
-    public val encoders: PlayerExtendedInfoEncoders,
+    public val encoders: E,
 ) {
     /**
      * Main function to write all the extended info blocks over.
@@ -34,7 +33,7 @@ public abstract class PlayerAvatarExtendedInfoWriter(
         localIndex: Int,
         observerIndex: Int,
         flag: Int,
-        blocks: PlayerAvatarExtendedInfoBlocks,
+        blocks: B,
     )
 
     /**

@@ -1,4 +1,4 @@
-package net.rsprot.protocol.game.outgoing.codec.playerinfo.extendedinfo
+package net.rsprot.protocol.game.outgoing.codec.npcinfo.extendedinfo
 
 import net.rsprot.buffer.JagByteBuf
 import net.rsprot.protocol.internal.game.outgoing.info.encoder.OnDemandExtendedInfoEncoder

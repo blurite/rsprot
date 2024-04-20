@@ -4,6 +4,7 @@ import io.netty.buffer.PooledByteBufAllocator
 import io.netty.buffer.Unpooled
 import net.rsprot.compression.HuffmanCodec
 import net.rsprot.protocol.game.outgoing.codec.playerinfo.extendedinfo.writer.PlayerAvatarExtendedInfoDesktopWriter
+import net.rsprot.protocol.game.outgoing.info.playerinfo.PlayerAvatarFactory
 import net.rsprot.protocol.game.outgoing.info.playerinfo.PlayerInfo
 import net.rsprot.protocol.game.outgoing.info.playerinfo.PlayerInfoProtocol
 import net.rsprot.protocol.game.outgoing.info.playerinfo.filter.DefaultExtendedInfoFilter
@@ -23,14 +24,19 @@ class PlayerInfoTest {
 
     @BeforeEach
     fun initialize() {
-        val writers = listOf(PlayerAvatarExtendedInfoDesktopWriter())
+        val allocator = PooledByteBufAllocator.DEFAULT
+        val factory =
+            PlayerAvatarFactory(
+                allocator,
+                DefaultExtendedInfoFilter(),
+                listOf(PlayerAvatarExtendedInfoDesktopWriter()),
+                createHuffmanCodec(),
+            )
         protocol =
             PlayerInfoProtocol(
-                PooledByteBufAllocator.DEFAULT,
+                allocator,
                 DefaultProtocolWorker(),
-                DefaultExtendedInfoFilter(),
-                writers,
-                createHuffmanCodec(),
+                factory,
             )
         localPlayerInfo = protocol.alloc(LOCAL_PLAYER_INDEX, PlatformType.DESKTOP)
         localPlayerInfo.updateCoord(0, 3200, 3220)
@@ -105,14 +111,14 @@ class PlayerInfoTest {
 
     @Test
     fun `test single player appearance extended info`() {
-        localPlayerInfo.extendedInfo.setName("Local Player")
-        localPlayerInfo.extendedInfo.setCombatLevel(126)
-        localPlayerInfo.extendedInfo.setSkillLevel(1258)
-        localPlayerInfo.extendedInfo.setHidden(false)
-        localPlayerInfo.extendedInfo.setMale(false)
-        localPlayerInfo.extendedInfo.setTextGender(2)
-        localPlayerInfo.extendedInfo.setSkullIcon(-1)
-        localPlayerInfo.extendedInfo.setOverheadIcon(-1)
+        localPlayerInfo.avatar.extendedInfo.setName("Local Player")
+        localPlayerInfo.avatar.extendedInfo.setCombatLevel(126)
+        localPlayerInfo.avatar.extendedInfo.setSkillLevel(1258)
+        localPlayerInfo.avatar.extendedInfo.setHidden(false)
+        localPlayerInfo.avatar.extendedInfo.setMale(false)
+        localPlayerInfo.avatar.extendedInfo.setTextGender(2)
+        localPlayerInfo.avatar.extendedInfo.setSkullIcon(-1)
+        localPlayerInfo.avatar.extendedInfo.setOverheadIcon(-1)
         tick()
         assertEquals("Local Player", clientLocalPlayer.name)
         assertEquals(126, clientLocalPlayer.combatLevel)
@@ -132,14 +138,14 @@ class PlayerInfoTest {
             val otherPlayer = protocol.alloc(index, PlatformType.DESKTOP)
             otherPlayers[index] = otherPlayer
             otherPlayer.updateCoord(0, 3205, 3220)
-            otherPlayer.extendedInfo.setName("Player $index")
-            otherPlayer.extendedInfo.setCombatLevel(126)
-            otherPlayer.extendedInfo.setSkillLevel(index)
-            otherPlayer.extendedInfo.setHidden(false)
-            otherPlayer.extendedInfo.setMale(false)
-            otherPlayer.extendedInfo.setTextGender(2)
-            otherPlayer.extendedInfo.setSkullIcon(-1)
-            otherPlayer.extendedInfo.setOverheadIcon(-1)
+            otherPlayer.avatar.extendedInfo.setName("Player $index")
+            otherPlayer.avatar.extendedInfo.setCombatLevel(126)
+            otherPlayer.avatar.extendedInfo.setSkillLevel(index)
+            otherPlayer.avatar.extendedInfo.setHidden(false)
+            otherPlayer.avatar.extendedInfo.setMale(false)
+            otherPlayer.avatar.extendedInfo.setTextGender(2)
+            otherPlayer.avatar.extendedInfo.setSkullIcon(-1)
+            otherPlayer.avatar.extendedInfo.setOverheadIcon(-1)
         }
         tick()
         for (index in otherPlayerIndices) {
