@@ -2,7 +2,7 @@ package net.rsprot.protocol.internal.platform
 
 import net.rsprot.protocol.platform.Platform
 
-public class PlatformMap<T>
+public class PlatformMap<out T>
     @PublishedApi
     internal constructor(
         private val array: Array<T?>,
