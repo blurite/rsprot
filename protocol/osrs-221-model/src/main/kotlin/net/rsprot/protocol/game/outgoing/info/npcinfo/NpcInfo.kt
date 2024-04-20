@@ -280,7 +280,7 @@ public class NpcInfo internal constructor(
             if (index == MAX_USHORT || isHighResolution(index)) {
                 continue
             }
-            if (this.highResolutionNpcIndexCount < MAX_HIGH_RESOLUTION_NPCS) {
+            if (this.highResolutionNpcIndexCount >= MAX_HIGH_RESOLUTION_NPCS) {
                 break
             }
             val avatar = repository.getOrNull(index) ?: continue
