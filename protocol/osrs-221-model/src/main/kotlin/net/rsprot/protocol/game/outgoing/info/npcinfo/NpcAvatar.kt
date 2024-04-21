@@ -340,5 +340,6 @@ public class NpcAvatar internal constructor(
         details.firstStep = -1
         details.secondStep = -1
         details.movementType = 0
+        extendedInfo.postUpdate()
     }
 }
