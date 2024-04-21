@@ -196,6 +196,7 @@ public class NpcInfo internal constructor(
      */
     public fun afterUpdate() {
         this.localPlayerLastCoord = localPlayerCurrentCoord
+        extendedInfoCount = 0
     }
 
     /**
