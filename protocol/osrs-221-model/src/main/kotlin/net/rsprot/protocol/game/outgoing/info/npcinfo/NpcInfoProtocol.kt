@@ -70,6 +70,17 @@ public class NpcInfoProtocol(
     }
 
     /**
+     * Gets the npc info at the provided index.
+     * @param idx the index of the npc info
+     * @return npc info object at that index
+     * @throws IllegalStateException if the npc info is null at that index
+     * @throws ArrayIndexOutOfBoundsException if the index is out of bounds
+     */
+    public operator fun get(idx: Int): NpcInfo {
+        return npcInfoRepository[idx]
+    }
+
+    /**
      * Computes the npc info protocol for this cycle.
      * The jobs here will be executed according to the [worker] specified,
      * allowing multithreaded execution if selected.

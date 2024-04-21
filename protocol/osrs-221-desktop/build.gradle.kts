@@ -45,5 +45,8 @@ benchmark {
         register("PlayerInfoBenchmark") {
             include("net.rsprot.protocol.game.outgoing.info.PlayerInfoBenchmark")
         }
+        register("NpcInfoBenchmark") {
+            include("net.rsprot.protocol.game.outgoing.info.NpcInfoBenchmark")
+        }
     }
 }
