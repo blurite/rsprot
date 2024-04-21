@@ -131,7 +131,7 @@ public class NpcAvatar internal constructor(
     }
 
     private fun pExtendedInfo(buffer: UnsafeLongBackedBitBuf) {
-        buffer.pBits(1, 0)
+        buffer.pBits(1, 1)
         buffer.pBits(2, 0)
     }
 
