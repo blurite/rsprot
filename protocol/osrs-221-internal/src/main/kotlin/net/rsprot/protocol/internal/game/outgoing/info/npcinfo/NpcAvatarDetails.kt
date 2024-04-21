@@ -43,6 +43,18 @@ public class NpcAvatarDetails internal constructor(
         return movementType and (TELE or TELEJUMP) != 0
     }
 
+    public fun level(): Int {
+        return currentCoord.level
+    }
+
+    public fun x(): Int {
+        return currentCoord.x
+    }
+
+    public fun z(): Int {
+        return currentCoord.z
+    }
+
     public companion object {
         public const val CRAWL: Int = 0x1
         public const val WALK: Int = 0x2
