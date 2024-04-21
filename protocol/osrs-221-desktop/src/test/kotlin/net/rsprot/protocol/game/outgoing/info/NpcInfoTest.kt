@@ -5,12 +5,12 @@ import io.netty.buffer.Unpooled
 import net.rsprot.compression.HuffmanCodec
 import net.rsprot.protocol.game.outgoing.codec.npcinfo.DesktopLowResolutionChangeEncoder
 import net.rsprot.protocol.game.outgoing.codec.npcinfo.extendedinfo.writer.NpcAvatarExtendedInfoDesktopWriter
+import net.rsprot.protocol.game.outgoing.info.filter.DefaultExtendedInfoFilter
 import net.rsprot.protocol.game.outgoing.info.npcinfo.NpcAvatar
 import net.rsprot.protocol.game.outgoing.info.npcinfo.NpcAvatarFactory
 import net.rsprot.protocol.game.outgoing.info.npcinfo.NpcIndexSupplier
 import net.rsprot.protocol.game.outgoing.info.npcinfo.NpcInfo
 import net.rsprot.protocol.game.outgoing.info.npcinfo.NpcInfoProtocol
-import net.rsprot.protocol.game.outgoing.info.playerinfo.filter.DefaultExtendedInfoFilter
 import net.rsprot.protocol.internal.game.outgoing.info.CoordGrid
 import net.rsprot.protocol.internal.platform.PlatformMap
 import net.rsprot.protocol.shared.platform.PlatformType
@@ -279,7 +279,7 @@ class NpcInfoTest {
 
     private companion object {
         private fun NpcAvatar.getCoordGrid(): CoordGrid {
-            return CoordGrid(details.level(), details.x(), details.z())
+            return CoordGrid(level(), x(), z())
         }
 
         private fun createHuffmanCodec(): HuffmanCodec {

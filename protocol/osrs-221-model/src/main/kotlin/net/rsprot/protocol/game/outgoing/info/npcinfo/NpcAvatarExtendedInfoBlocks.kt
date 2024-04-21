@@ -1,6 +1,6 @@
 package net.rsprot.protocol.game.outgoing.info.npcinfo
 
-import net.rsprot.protocol.game.outgoing.info.playerinfo.AvatarExtendedInfoWriter
+import net.rsprot.protocol.game.outgoing.info.AvatarExtendedInfoWriter
 import net.rsprot.protocol.internal.game.outgoing.info.ExtendedInfo
 import net.rsprot.protocol.internal.game.outgoing.info.encoder.ExtendedInfoEncoder
 import net.rsprot.protocol.internal.game.outgoing.info.npcinfo.encoder.NpcExtendedInfoEncoders
@@ -25,6 +25,8 @@ import net.rsprot.protocol.shared.platform.PlatformType
 
 private typealias NEnc = NpcExtendedInfoEncoders
 private typealias HeadIcon = HeadIconCustomisation
+private typealias NpcExtendedInfoWriters =
+    List<AvatarExtendedInfoWriter<NpcExtendedInfoEncoders, NpcAvatarExtendedInfoBlocks>>
 
 /**
  * A data structure to bring all the extended info blocks together,
@@ -35,7 +37,7 @@ private typealias HeadIcon = HeadIconCustomisation
  * the exact order described by the client.
  */
 public class NpcAvatarExtendedInfoBlocks(
-    writers: List<AvatarExtendedInfoWriter<NpcExtendedInfoEncoders, NpcAvatarExtendedInfoBlocks>>,
+    writers: NpcExtendedInfoWriters,
 ) {
     public val spotAnims: SpotAnimList = SpotAnimList(encoders(writers, NEnc::spotAnim))
     public val say: Say = Say(encoders(writers, NEnc::say))
@@ -66,7 +68,7 @@ public class NpcAvatarExtendedInfoBlocks(
          * keyed by [PlatformType.id].
          */
         private inline fun <T : ExtendedInfo<T, E>, reified E : ExtendedInfoEncoder<T>> encoders(
-            allEncoders: List<AvatarExtendedInfoWriter<NpcExtendedInfoEncoders, NpcAvatarExtendedInfoBlocks>>,
+            allEncoders: NpcExtendedInfoWriters,
             selector: (NpcExtendedInfoEncoders) -> E,
         ): PlatformMap<E> {
             return PlatformMap.ofType(allEncoders, PlatformType.COUNT) {

@@ -1,3 +1,5 @@
+@file:Suppress("DuplicatedCode")
+
 package net.rsprot.protocol.game.outgoing.info.npcinfo.util
 
 internal object NpcCellOpcodes {

@@ -7,10 +7,14 @@ import net.rsprot.protocol.internal.platform.PlatformMap
 public class CombatLevelChange(
     override val encoders: PlatformMap<PrecomputedExtendedInfoEncoder<CombatLevelChange>>,
 ) : TransientExtendedInfo<CombatLevelChange, PrecomputedExtendedInfoEncoder<CombatLevelChange>>() {
-    public var level: Int = -1
+    public var level: Int = DEFAULT_LEVEL_OVERRIDE
 
     override fun clear() {
         releaseBuffers()
-        this.level = -1
+        this.level = DEFAULT_LEVEL_OVERRIDE
+    }
+
+    public companion object {
+        public const val DEFAULT_LEVEL_OVERRIDE: Int = -1
     }
 }

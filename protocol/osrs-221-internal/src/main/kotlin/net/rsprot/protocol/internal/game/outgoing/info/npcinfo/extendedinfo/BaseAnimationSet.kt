@@ -7,7 +7,7 @@ import net.rsprot.protocol.internal.platform.PlatformMap
 public class BaseAnimationSet(
     override val encoders: PlatformMap<PrecomputedExtendedInfoEncoder<BaseAnimationSet>>,
 ) : TransientExtendedInfo<BaseAnimationSet, PrecomputedExtendedInfoEncoder<BaseAnimationSet>>() {
-    public var overrides: Int = 0
+    public var overrides: Int = DEFAULT_OVERRIDES_FLAG
     public var turnLeftAnim: UShort = 0xFFFFu
     public var turnRightAnim: UShort = 0xFFFFu
     public var walkAnim: UShort = 0xFFFFu
@@ -26,7 +26,7 @@ public class BaseAnimationSet(
 
     override fun clear() {
         releaseBuffers()
-        overrides = 0
+        overrides = DEFAULT_OVERRIDES_FLAG
         turnLeftAnim = 0xFFFFu
         turnRightAnim = 0xFFFFu
         walkAnim = 0xFFFFu
@@ -45,6 +45,7 @@ public class BaseAnimationSet(
     }
 
     public companion object {
+        public const val DEFAULT_OVERRIDES_FLAG: Int = 0
         public const val TURN_LEFT_ANIM_FLAG: Int = 0x1
         public const val TURN_RIGHT_ANIM_FLAG: Int = 0x2
         public const val WALK_ANIM_FLAG: Int = 0x4

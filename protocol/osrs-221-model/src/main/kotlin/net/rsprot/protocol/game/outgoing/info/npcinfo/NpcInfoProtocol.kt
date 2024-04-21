@@ -8,17 +8,36 @@ import net.rsprot.protocol.internal.platform.PlatformMap
 import net.rsprot.protocol.shared.platform.PlatformType
 import java.util.concurrent.Callable
 
-@Suppress("CanBeParameter")
+/**
+ * NPC info protocol is the root class bringing everything together about NPC info.
+ * @property allocator the byte buffer allocator used for pre-computing bit codes and
+ * extended info blocks.
+ * @property npcIndexSupplier the interface that supplies indices of NPCs near the player
+ * that need to be added to the high resolution view.
+ * @property resolutionChangeEncoders a platform-specific map of resolution change encoders,
+ * as the low to high resolution change is scrambled between platforms and revision,
+ * it needs to be supplied by the respective platform module.
+ * @param avatarFactory the factory responsible for allocating new npc avatars.
+ * @property worker the protocol worker used to execute the jobs involved with
+ * npc info computations.
+ */
 @ExperimentalUnsignedTypes
 public class NpcInfoProtocol(
     private val allocator: ByteBufAllocator,
     private val npcIndexSupplier: NpcIndexSupplier,
     private val resolutionChangeEncoders: PlatformMap<NpcResolutionChangeEncoder>,
-    private val avatarFactory: NpcAvatarFactory,
+    avatarFactory: NpcAvatarFactory,
     private val worker: ProtocolWorker = DefaultProtocolWorker(),
 ) {
+    /**
+     * The avatar repository keeps track of all the avatars currently in the game.
+     */
     private val avatarRepository = avatarFactory.avatarRepository
 
+    /**
+     * Npc info repository keeps track of the main npc info objects which are allocated
+     * by players at a 1:1 ratio.
+     */
     private val npcInfoRepository: NpcInfoRepository =
         NpcInfoRepository { localIndex, platformType ->
             NpcInfo(
@@ -38,6 +57,11 @@ public class NpcInfoProtocol(
      */
     private val callables: MutableList<Callable<Unit>> = ArrayList(PROTOCOL_CAPACITY)
 
+    /**
+     * Allocates a new npc info object, or re-uses an older one if possible.
+     * @param idx the index of the player allocating the npc info object.
+     * @param platformType the platform on which the player has logged into.
+     */
     public fun alloc(
         idx: Int,
         platformType: PlatformType,
@@ -45,6 +69,11 @@ public class NpcInfoProtocol(
         return npcInfoRepository.alloc(idx, platformType)
     }
 
+    /**
+     * Computes the npc info protocol for this cycle.
+     * The jobs here will be executed according to the [worker] specified,
+     * allowing multithreaded execution if selected.
+     */
     public fun compute() {
         prepareBitcodes()
         putBitcodes()
@@ -53,6 +82,10 @@ public class NpcInfoProtocol(
         postUpdate()
     }
 
+    /**
+     * Prepares the high resolution bitcodes of all the NPC avatars which have
+     * at least one observer.
+     */
     private fun prepareBitcodes() {
         for (i in 0..<NpcAvatarRepository.AVATAR_CAPACITY) {
             val avatar = avatarRepository.getOrNull(i) ?: continue
@@ -61,6 +94,11 @@ public class NpcInfoProtocol(
         }
     }
 
+    /**
+     * Precomputes the extended info blocks of all the NPCs which have at least one
+     * observer (after calculating all the bitcodes, to ensure any new additions are included).
+     * Extended info blocks such as hits will still be computed on-demand though.
+     */
     private fun prepareExtendedInfo() {
         for (i in 0..<NpcAvatarRepository.AVATAR_CAPACITY) {
             val avatar = avatarRepository.getOrNull(i) ?: continue
@@ -69,18 +107,29 @@ public class NpcInfoProtocol(
         }
     }
 
+    /**
+     * Writes the bitcodes of npc info objects over into the buffer.
+     * The work is split across according to the [worker] specified.
+     */
     private fun putBitcodes() {
         execute {
             compute()
         }
     }
 
+    /**
+     * Writes the extended info blocks over into the buffer.
+     * The work is split across according to the [worker] specified.
+     */
     private fun putExtendedInfo() {
         execute {
             putExtendedInfo()
         }
     }
 
+    /**
+     * Cleans up any single-cycle temporary information for npc info protocol.
+     */
     private fun postUpdate() {
         for (i in 1..<PROTOCOL_CAPACITY) {
             val info = npcInfoRepository.getOrNull(i) ?: continue
@@ -106,6 +155,9 @@ public class NpcInfoProtocol(
     }
 
     public companion object {
+        /**
+         * The maximum number of players in a world.
+         */
         public const val PROTOCOL_CAPACITY: Int = 2048
     }
 }

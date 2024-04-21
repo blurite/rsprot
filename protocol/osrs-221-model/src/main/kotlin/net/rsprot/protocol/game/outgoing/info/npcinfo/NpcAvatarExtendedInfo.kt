@@ -3,12 +3,15 @@ package net.rsprot.protocol.game.outgoing.info.npcinfo
 import io.netty.buffer.ByteBufAllocator
 import net.rsprot.buffer.JagByteBuf
 import net.rsprot.compression.HuffmanCodec
-import net.rsprot.protocol.game.outgoing.info.playerinfo.AvatarExtendedInfoWriter
-import net.rsprot.protocol.game.outgoing.info.playerinfo.filter.ExtendedInfoFilter
+import net.rsprot.protocol.game.outgoing.info.AvatarExtendedInfoWriter
+import net.rsprot.protocol.game.outgoing.info.filter.ExtendedInfoFilter
 import net.rsprot.protocol.internal.RSProtFlags
 import net.rsprot.protocol.internal.game.outgoing.info.npcinfo.encoder.NpcExtendedInfoEncoders
 import net.rsprot.protocol.internal.game.outgoing.info.npcinfo.extendedinfo.BaseAnimationSet
+import net.rsprot.protocol.internal.game.outgoing.info.npcinfo.extendedinfo.CombatLevelChange
+import net.rsprot.protocol.internal.game.outgoing.info.npcinfo.extendedinfo.HeadIconCustomisation
 import net.rsprot.protocol.internal.game.outgoing.info.npcinfo.extendedinfo.TypeCustomisation
+import net.rsprot.protocol.internal.game.outgoing.info.npcinfo.extendedinfo.VisibleOps
 import net.rsprot.protocol.internal.game.outgoing.info.precompute
 import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.FacePathingEntity
 import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.util.HeadBar
@@ -19,13 +22,27 @@ import net.rsprot.protocol.shared.platform.PlatformType
 public typealias NpcAvatarExtendedInfoWriter =
     AvatarExtendedInfoWriter<NpcExtendedInfoEncoders, NpcAvatarExtendedInfoBlocks>
 
+/**
+ * Npc avatar extended info is a data structure used to keep track of all the extended info
+ * properties of the given avatar.
+ * @property avatarIndex the index of the avatar npc
+ * @property filter the filter used to ensure that the buffer does not exceed the 40kb limit.
+ * @param extendedInfoWriters the list of platform-specific extended info writers.
+ * @property allocator the byte buffer allocator used to pre-compute extended info blocks.
+ * @property huffmanCodec the huffman codec is used to compress chat messages, though
+ * none are used for NPCs, the writer function still expects it.
+ */
+@Suppress("DuplicatedCode")
 public class NpcAvatarExtendedInfo(
-    internal var avatarIndex: Int,
+    private var avatarIndex: Int,
     private val filter: ExtendedInfoFilter,
     extendedInfoWriters: List<NpcAvatarExtendedInfoWriter>,
     private val allocator: ByteBufAllocator,
     private val huffmanCodec: HuffmanCodec,
 ) {
+    /**
+     * The extended info blocks enabled on this NPC in a given cycle.
+     */
     internal var flags: Int = 0
 
     /**
@@ -53,10 +70,10 @@ public class NpcAvatarExtendedInfo(
     ) {
         verify {
             require(id == -1 || id in UNSIGNED_SHORT_RANGE) {
-                "Unexpected sequence id: $id, expected value -1 or in range ${UNSIGNED_SHORT_RANGE}"
+                "Unexpected sequence id: $id, expected value -1 or in range $UNSIGNED_SHORT_RANGE"
             }
             require(delay in UNSIGNED_SHORT_RANGE) {
-                "Unexpected sequence delay: $delay, expected range: ${UNSIGNED_SHORT_RANGE}"
+                "Unexpected sequence delay: $delay, expected range: $UNSIGNED_SHORT_RANGE"
             }
         }
         blocks.sequence.id = id.toUShort()
@@ -147,16 +164,16 @@ public class NpcAvatarExtendedInfo(
                 "Unexpected angle value: $angle, expected range: 0..2047"
             }
             require(deltaX1 in SIGNED_BYTE_RANGE) {
-                "Unexpected deltaX1: $deltaX1, expected range: ${SIGNED_BYTE_RANGE}"
+                "Unexpected deltaX1: $deltaX1, expected range: $SIGNED_BYTE_RANGE"
             }
             require(deltaZ1 in SIGNED_BYTE_RANGE) {
-                "Unexpected deltaZ1: $deltaZ1, expected range: ${SIGNED_BYTE_RANGE}"
+                "Unexpected deltaZ1: $deltaZ1, expected range: $SIGNED_BYTE_RANGE"
             }
             require(deltaX2 in SIGNED_BYTE_RANGE) {
-                "Unexpected deltaX1: $deltaX2, expected range: ${SIGNED_BYTE_RANGE}"
+                "Unexpected deltaX1: $deltaX2, expected range: $SIGNED_BYTE_RANGE"
             }
             require(deltaZ2 in SIGNED_BYTE_RANGE) {
-                "Unexpected deltaZ1: $deltaZ2, expected range: ${SIGNED_BYTE_RANGE}"
+                "Unexpected deltaZ1: $deltaZ2, expected range: $SIGNED_BYTE_RANGE"
             }
         }
         blocks.exactMove.deltaX1 = deltaX1.toUByte()
@@ -185,16 +202,16 @@ public class NpcAvatarExtendedInfo(
     ) {
         verify {
             require(slot in UNSIGNED_BYTE_RANGE) {
-                "Unexpected slot: $slot, expected range: ${UNSIGNED_BYTE_RANGE}"
+                "Unexpected slot: $slot, expected range: $UNSIGNED_BYTE_RANGE"
             }
             require(id in UNSIGNED_SHORT_RANGE) {
-                "Unexpected id: $id, expected range: ${UNSIGNED_SHORT_RANGE}"
+                "Unexpected id: $id, expected range: $UNSIGNED_SHORT_RANGE"
             }
             require(delay in UNSIGNED_SHORT_RANGE) {
-                "Unexpected delay: $delay, expected range: ${UNSIGNED_SHORT_RANGE}"
+                "Unexpected delay: $delay, expected range: $UNSIGNED_SHORT_RANGE"
             }
             require(height in UNSIGNED_SHORT_RANGE) {
-                "Unexpected delay: $height, expected range: ${UNSIGNED_SHORT_RANGE}"
+                "Unexpected delay: $height, expected range: $UNSIGNED_SHORT_RANGE"
             }
         }
         blocks.spotAnims.set(slot, SpotAnim(id, delay, height))
@@ -232,16 +249,16 @@ public class NpcAvatarExtendedInfo(
                     "0-65535 for NPCs, 65536-67583 for players"
             }
             require(selfType in UNSIGNED_SMART_1_OR_2_RANGE) {
-                "Unexpected selfType: $selfType, expected range ${UNSIGNED_SMART_1_OR_2_RANGE}"
+                "Unexpected selfType: $selfType, expected range $UNSIGNED_SMART_1_OR_2_RANGE"
             }
             require(otherType == -1 || otherType in UNSIGNED_SMART_1_OR_2_RANGE) {
-                "Unexpected otherType: $otherType, expected value -1 or range ${UNSIGNED_SMART_1_OR_2_RANGE}"
+                "Unexpected otherType: $otherType, expected value -1 or range $UNSIGNED_SMART_1_OR_2_RANGE"
             }
             require(value in UNSIGNED_SMART_1_OR_2_RANGE) {
-                "Unexpected value: $value, expected range ${UNSIGNED_SMART_1_OR_2_RANGE}"
+                "Unexpected value: $value, expected range $UNSIGNED_SMART_1_OR_2_RANGE"
             }
             require(delay in UNSIGNED_SMART_1_OR_2_RANGE) {
-                "Unexpected delay: $delay, expected range ${UNSIGNED_SMART_1_OR_2_RANGE}"
+                "Unexpected delay: $delay, expected range $UNSIGNED_SMART_1_OR_2_RANGE"
             }
         }
         blocks.hit.hitMarkList +=
@@ -263,7 +280,7 @@ public class NpcAvatarExtendedInfo(
     public fun removeHitMark(delay: Int = 0) {
         verify {
             require(delay in UNSIGNED_SMART_1_OR_2_RANGE) {
-                "Unexpected delay: $delay, expected range ${UNSIGNED_SMART_1_OR_2_RANGE}"
+                "Unexpected delay: $delay, expected range $UNSIGNED_SMART_1_OR_2_RANGE"
             }
         }
         blocks.hit.hitMarkList += HitMark(0x7FFEu, delay.toUShort())
@@ -311,25 +328,25 @@ public class NpcAvatarExtendedInfo(
                     "0-65535 for NPCs, 65536-67583 for players"
             }
             require(selfType in UNSIGNED_SMART_1_OR_2_RANGE) {
-                "Unexpected selfType: $selfType, expected range ${UNSIGNED_SMART_1_OR_2_RANGE}"
+                "Unexpected selfType: $selfType, expected range $UNSIGNED_SMART_1_OR_2_RANGE"
             }
             require(otherType == -1 || otherType in UNSIGNED_SMART_1_OR_2_RANGE) {
-                "Unexpected otherType: $otherType, expected value -1 or in range ${UNSIGNED_SMART_1_OR_2_RANGE}"
+                "Unexpected otherType: $otherType, expected value -1 or in range $UNSIGNED_SMART_1_OR_2_RANGE"
             }
             require(value in UNSIGNED_SMART_1_OR_2_RANGE) {
-                "Unexpected value: $value, expected range ${UNSIGNED_SMART_1_OR_2_RANGE}"
+                "Unexpected value: $value, expected range $UNSIGNED_SMART_1_OR_2_RANGE"
             }
             require(selfSoakType in UNSIGNED_SMART_1_OR_2_RANGE) {
-                "Unexpected selfType: $selfSoakType, expected range ${UNSIGNED_SMART_1_OR_2_RANGE}"
+                "Unexpected selfType: $selfSoakType, expected range $UNSIGNED_SMART_1_OR_2_RANGE"
             }
             require(otherSoakType in UNSIGNED_SMART_1_OR_2_RANGE) {
-                "Unexpected otherType: $otherSoakType, expected range ${UNSIGNED_SMART_1_OR_2_RANGE}"
+                "Unexpected otherType: $otherSoakType, expected range $UNSIGNED_SMART_1_OR_2_RANGE"
             }
             require(soakValue in UNSIGNED_SMART_1_OR_2_RANGE) {
-                "Unexpected value: $soakValue, expected range ${UNSIGNED_SMART_1_OR_2_RANGE}"
+                "Unexpected value: $soakValue, expected range $UNSIGNED_SMART_1_OR_2_RANGE"
             }
             require(delay in UNSIGNED_SMART_1_OR_2_RANGE) {
-                "Unexpected delay: $delay, expected range ${UNSIGNED_SMART_1_OR_2_RANGE}"
+                "Unexpected delay: $delay, expected range $UNSIGNED_SMART_1_OR_2_RANGE"
             }
         }
         blocks.hit.hitMarkList +=
@@ -369,19 +386,19 @@ public class NpcAvatarExtendedInfo(
     ) {
         verify {
             require(id in UNSIGNED_SMART_1_OR_2_RANGE) {
-                "Unexpected id: $id, expected range ${UNSIGNED_SMART_1_OR_2_RANGE}"
+                "Unexpected id: $id, expected range $UNSIGNED_SMART_1_OR_2_RANGE"
             }
             require(startFill in UNSIGNED_BYTE_RANGE) {
-                "Unexpected startFill: $startFill, expected range ${UNSIGNED_BYTE_RANGE}"
+                "Unexpected startFill: $startFill, expected range $UNSIGNED_BYTE_RANGE"
             }
             require(endFill in UNSIGNED_BYTE_RANGE) {
-                "Unexpected endFill: $endFill, expected range ${UNSIGNED_BYTE_RANGE}"
+                "Unexpected endFill: $endFill, expected range $UNSIGNED_BYTE_RANGE"
             }
             require(startTime in UNSIGNED_SMART_1_OR_2_RANGE) {
-                "Unexpected startTime: $startTime, expected range ${UNSIGNED_SMART_1_OR_2_RANGE}"
+                "Unexpected startTime: $startTime, expected range $UNSIGNED_SMART_1_OR_2_RANGE"
             }
             require(endTime in UNSIGNED_SMART_1_OR_2_RANGE) {
-                "Unexpected endTime: $endTime, expected range ${UNSIGNED_SMART_1_OR_2_RANGE}"
+                "Unexpected endTime: $endTime, expected range $UNSIGNED_SMART_1_OR_2_RANGE"
             }
             require(endTime >= startTime) {
                 "End time must be greater than or equal to start time: $startTime <= $endTime"
@@ -429,25 +446,25 @@ public class NpcAvatarExtendedInfo(
     ) {
         verify {
             require(startTime in UNSIGNED_SHORT_RANGE) {
-                "Unexpected startTime: $startTime, expected range ${UNSIGNED_SHORT_RANGE}"
+                "Unexpected startTime: $startTime, expected range $UNSIGNED_SHORT_RANGE"
             }
             require(endTime in UNSIGNED_SHORT_RANGE) {
-                "Unexpected endTime: $endTime, expected range ${UNSIGNED_SHORT_RANGE}"
+                "Unexpected endTime: $endTime, expected range $UNSIGNED_SHORT_RANGE"
             }
             require(endTime >= startTime) {
                 "End time should be equal to or greater than start time: $endTime > $startTime"
             }
             require(hue in UNSIGNED_BYTE_RANGE) {
-                "Unexpected hue: $hue, expected range ${UNSIGNED_BYTE_RANGE}"
+                "Unexpected hue: $hue, expected range $UNSIGNED_BYTE_RANGE"
             }
             require(saturation in UNSIGNED_BYTE_RANGE) {
-                "Unexpected saturation: $saturation, expected range ${UNSIGNED_BYTE_RANGE}"
+                "Unexpected saturation: $saturation, expected range $UNSIGNED_BYTE_RANGE"
             }
             require(lightness in UNSIGNED_BYTE_RANGE) {
-                "Unexpected lightness: $lightness, expected range ${UNSIGNED_BYTE_RANGE}"
+                "Unexpected lightness: $lightness, expected range $UNSIGNED_BYTE_RANGE"
             }
             require(weight in UNSIGNED_BYTE_RANGE) {
-                "Unexpected weight: $weight, expected range ${UNSIGNED_BYTE_RANGE}"
+                "Unexpected weight: $weight, expected range $UNSIGNED_BYTE_RANGE"
             }
         }
         val tint = blocks.tinting.global
@@ -460,6 +477,16 @@ public class NpcAvatarExtendedInfo(
         flags = flags or TINTING
     }
 
+    /**
+     * Faces the center of the absolute coordinate provided.
+     * @param x the absolute x coordinate to turn towards
+     * @param z the absolute z coordinate to turn towards
+     * @param instant whether to turn towards the coord instantly without any turn anim,
+     * or gradually. The instant property is typically used when spawning in NPCs;
+     * While the low to high resolution change does support a direction, it only supports
+     * in increments of 45 degrees - so utilizing this extended info blocks allows for
+     * more precise control over it.
+     */
     @JvmOverloads
     public fun faceCoord(
         x: Int,
@@ -481,32 +508,62 @@ public class NpcAvatarExtendedInfo(
         flags = flags or FACE_COORD
     }
 
+    /**
+     * Transforms this NPC into the [id] provided.
+     * It should be noted that this extended info block is transient and only applies to one cycle.
+     * The server is expected to additionally change the id of the avatar itself, otherwise
+     * any new observers will get the old variant.
+     * @param id the new id of the npc to transform to.
+     */
     public fun transformation(id: Int) {
         verify {
-            require(id == -1 || id in UNSIGNED_SHORT_RANGE) {
-                "Unexpected id: $id, expected value -1 or in range: $UNSIGNED_SHORT_RANGE"
+            require(id in UNSIGNED_SHORT_RANGE) {
+                "Unexpected id: $id, expected in range: $UNSIGNED_SHORT_RANGE"
             }
         }
         blocks.transformation.id = id.toUShort()
         flags = flags or TRANSFORMATION
     }
 
+    /**
+     * Overrides the combat level of this NPC with the provided level.
+     * @param level the combat leve to render, or -1 to remove the combat level override.
+     */
     public fun combatLevelChange(level: Int) {
         blocks.combatLevelChange.level = level
         flags = flags or LEVEL_CHANGE
     }
 
+    /**
+     * Overrides the name of this NPC with the provided [name].
+     * @param name the name to override with, or null to reset an existing override.
+     */
     public fun nameChange(name: String?) {
         blocks.nameChange.name = name
         flags = flags or NAME_CHANGE
     }
 
+    /**
+     * Sets the visible ops flag of this NPC to the provided value.
+     * @param flag the bit flag to set. Only the 5 lowest bits are used,
+     * and an enabled bit implies the option at that index should render.
+     * Note that this extended info block is not transient and will be transmitted to
+     * future players as well.
+     */
     @Suppress("MemberVisibilityCanBePrivate")
     public fun visibleOps(flag: Int) {
         blocks.visibleOps.ops = flag.toUByte()
         flags = flags or OPS
     }
 
+    /**
+     * Marks the provided right-click options as visible or invisible.
+     * @param op1 whether to render op1
+     * @param op2 whether to render op2
+     * @param op3 whether to render op3
+     * @param op4 whether to render op4
+     * @param op5 whether to render op5
+     */
     public fun visibleOps(
         op1: Boolean,
         op2: Boolean,
@@ -523,14 +580,40 @@ public class NpcAvatarExtendedInfo(
         visibleOps(flag)
     }
 
+    /**
+     * Sets all the right-click options invisible on this NPC.
+     */
     public fun allOpsInvisible() {
         visibleOps(0)
     }
 
+    /**
+     * Sets all the right-click options as visible on this NPC.
+     */
     public fun allOpsVisible() {
         visibleOps(0b11111)
     }
 
+    /**
+     * Sets the base animation set of this NPC with the provided values.
+     * If the value is equal to [Int.MIN_VALUE], the animation will not be overwritten.
+     * Only the 16 lowest bits of the animation ids are used.
+     * @param turnLeftAnim the animation used when the NPC turns to the left
+     * @param turnRightAnim the animation used when the NPC turns to the right
+     * @param walkAnim the animation used when the NPC walks forward
+     * @param walkAnimLeft the animation used when the NPC walks to the left
+     * @param walkAnimRight the animation used when the NPC walks to the right
+     * @param walkAnimBack the animation used when the NPC walks backwards
+     * @param runAnim the animation used when the NPC runs forward
+     * @param runAnimLeft the animation used when the NPC runs to the left
+     * @param runAnimRight the animation used when the NPC runs to the right
+     * @param runAnimBack the animation used when the NPC runs backwards
+     * @param crawlAnim the animation used when the NPC crawls forward
+     * @param crawlAnimLeft the animation used when the NPC crawls to the left
+     * @param crawlAnimRight the animation used when the NPC crawls to the right
+     * @param crawlAnimBack the animation used when the NPC crawls backwards
+     * @param readyAnim the default stance animation of this NPC when it is not moving
+     */
     @JvmSynthetic
     public fun baseAnimationSet(
         turnLeftAnim: Int = Int.MIN_VALUE,
@@ -615,10 +698,21 @@ public class NpcAvatarExtendedInfo(
         flags = flags or BAS_CHANGE
     }
 
-    public fun setReadyAnim(id: Int?) {
-        baseAnimationSet(readyAnim = id ?: Int.MIN_VALUE)
+    /**
+     * Sets the ready animation of this NPC to the provided [id].
+     * @param id the ready animation id
+     */
+    public fun setReadyAnim(id: Int) {
+        baseAnimationSet(readyAnim = id)
     }
 
+    /**
+     * Sets the turn left and turn right animations of this NPC.
+     * @param turnLeftAnim the animation used when the NPC turns to the left, or null if
+     * turn left animation should be skipped
+     * @param turnRightAnim the animation used when the NPC turns to the right, or null if
+     * turn right animation should be skipped.
+     */
     public fun setTurnAnims(
         turnLeftAnim: Int?,
         turnRightAnim: Int?,
@@ -629,6 +723,15 @@ public class NpcAvatarExtendedInfo(
         )
     }
 
+    /**
+     * Sets the walk animations of this NPC. If any of the animations is null, that animation
+     * will not be overwritten by the client, allowing a subset of the below animations
+     * to be overridden.
+     * @param walkAnim the animation used when the NPC walks forward
+     * @param walkAnimBack the animation used when the NPC walks backwards
+     * @param walkAnimLeft the animation used when the NPC walks to the left
+     * @param walkAnimRight the animation used when the NPC walks to the right
+     */
     public fun setWalkAnims(
         walkAnim: Int?,
         walkAnimBack: Int?,
@@ -643,6 +746,15 @@ public class NpcAvatarExtendedInfo(
         )
     }
 
+    /**
+     * Sets the run animations of this NPC. If any of the animations is null, that animation
+     * will not be overwritten by the client, allowing a subset of the below animations
+     * to be overridden.
+     * @param runAnim the animation used when the NPC runs forward
+     * @param runAnimBack the animation used when the NPC runs backwards
+     * @param runAnimLeft the animation used when the NPC runs to the left
+     * @param runAnimRight the animation used when the NPC runs to the right
+     */
     public fun setRunAnims(
         runAnim: Int?,
         runAnimBack: Int?,
@@ -657,6 +769,15 @@ public class NpcAvatarExtendedInfo(
         )
     }
 
+    /**
+     * Sets the crawl animations of this NPC. If any of the animations is null, that animation
+     * will not be overwritten by the client, allowing a subset of the below animations
+     * to be overridden.
+     * @param crawlAnim the animation used when the NPC crawls forward
+     * @param crawlAnimBack the animation used when the NPC crawls backwards
+     * @param crawlAnimLeft the animation used when the NPC crawls to the left
+     * @param crawlAnimRight the animation used when the NPC crawls to the right
+     */
     public fun setCrawlAnims(
         crawlAnim: Int?,
         crawlAnimBack: Int?,
@@ -671,6 +792,13 @@ public class NpcAvatarExtendedInfo(
         )
     }
 
+    /**
+     * Changes the head icon of a NPC to the sprite at the provided group and sprite index.
+     * @param slot the slot of the headicon, a value of 0-8 (exclusive)
+     * @param group the sprite group id in the cache.
+     * @param index the index of the sprite in that sprite file, as sprite files contain
+     * multiple sprites together.
+     */
     public fun headIconChange(
         slot: Int,
         group: Int,
@@ -691,6 +819,10 @@ public class NpcAvatarExtendedInfo(
         flags = flags or HEADICON_CUSTOMISATION
     }
 
+    /**
+     * Resets the head icon at the specified [slot].
+     * @param slot the slot of the head icon to reset.
+     */
     public fun resetHeadIcon(slot: Int) {
         verify {
             require(slot in 0..<8) {
@@ -704,11 +836,17 @@ public class NpcAvatarExtendedInfo(
         flags = flags or HEADICON_CUSTOMISATION
     }
 
+    /**
+     * Resets any chathead customisations applied to this NPC.
+     */
     public fun resetHeadCustomisations() {
         blocks.headCustomisation.customisation = null
         flags = flags or HEAD_CUSTOMISATION
     }
 
+    /**
+     * Sets the chathead of the NPC to be a mirror of the local player's own chathead.
+     */
     public fun setHeadCustomisationMirrored() {
         blocks.headCustomisation.customisation =
             TypeCustomisation(
@@ -720,6 +858,18 @@ public class NpcAvatarExtendedInfo(
         flags = flags or HEAD_CUSTOMISATION
     }
 
+    /**
+     * Sets the chat head customisation for this NPC.
+     * @param models the list of models to override; if the list is empty, models are not overridden.
+     * @param recolours the list of recolours to apply to this NPC; if the list is empty,
+     * recolours are not applied. If recolours are provided, the server MUST ensure that the number of recolours
+     * matches the number of source colours defined on the NPC in the cache, as the client reads based on the
+     * cache configuration.
+     * @param retextures the list of retextures to apply to this NPC; if the list is empty,
+     * retextures are not applied. If retextures are provided, the server MUST ensure that the number of retextures
+     * matches the number of source textures defined on the NPC in the cache, as the client reads based on the
+     * cache configuration.
+     */
     public fun setHeadCustomisation(
         models: List<Int>,
         recolours: List<Int>,
@@ -735,11 +885,17 @@ public class NpcAvatarExtendedInfo(
         flags = flags or HEAD_CUSTOMISATION
     }
 
+    /**
+     * Resets any NPC body customisations applied.
+     */
     public fun resetBodyCustomisations() {
         blocks.bodyCustomisation.customisation = null
         flags = flags or BODY_CUSTOMISATION
     }
 
+    /**
+     * Sets the NPC to mirror the body of the local player in its entirety, including any worn gear.
+     */
     public fun setBodyCustomisationMirrored() {
         blocks.bodyCustomisation.customisation =
             TypeCustomisation(
@@ -751,6 +907,18 @@ public class NpcAvatarExtendedInfo(
         flags = flags or BODY_CUSTOMISATION
     }
 
+    /**
+     * Sets the NPC body customisation for this NPC.
+     * @param models the list of models to override; if the list is empty, models are not overridden.
+     * @param recolours the list of recolours to apply to this NPC; if the list is empty,
+     * recolours are not applied. If recolours are provided, the server MUST ensure that the number of recolours
+     * matches the number of source colours defined on the NPC in the cache, as the client reads based on the
+     * cache configuration.
+     * @param retextures the list of retextures to apply to this NPC; if the list is empty,
+     * retextures are not applied. If retextures are provided, the server MUST ensure that the number of retextures
+     * matches the number of source textures defined on the NPC in the cache, as the client reads based on the
+     * cache configuration.
+     */
     public fun setBodyCustomisation(
         models: List<Int>,
         recolours: List<Int>,
@@ -766,6 +934,9 @@ public class NpcAvatarExtendedInfo(
         flags = flags or BODY_CUSTOMISATION
     }
 
+    /**
+     * Clears any transient information and resets the flag to zero at the end of the cycle.
+     */
     internal fun postUpdate() {
         clearTransientExtendedInformation()
         flags = 0
@@ -889,24 +1060,41 @@ public class NpcAvatarExtendedInfo(
         )
     }
 
+    /**
+     * Gets the set of extended info blocks that were previously set but also
+     * need to be transmitted to any new users.
+     * @return the bit flag of all the non-transient extended info blocks that were previously flagged.
+     */
     internal fun getLowToHighResChangeExtendedInfoFlags(): Int {
         var flag = 0
-        if (this.flags and OPS == 0 && blocks.visibleOps.ops.toInt() != 0b11111) {
+        if (this.flags and OPS == 0 &&
+            blocks.visibleOps.ops != VisibleOps.DEFAULT_OPS
+        ) {
             flag = flag or OPS
         }
-        if (this.flags and HEADICON_CUSTOMISATION == 0 && blocks.headIconCustomisation.flag != 0) {
+        if (this.flags and HEADICON_CUSTOMISATION == 0 &&
+            blocks.headIconCustomisation.flag != HeadIconCustomisation.DEFAULT_FLAG
+        ) {
             flag = flag or HEADICON_CUSTOMISATION
         }
-        if (this.flags and NAME_CHANGE == 0 && blocks.nameChange.name != null) {
+        if (this.flags and NAME_CHANGE == 0 &&
+            blocks.nameChange.name != null
+        ) {
             flag = flag or NAME_CHANGE
         }
-        if (this.flags and HEAD_CUSTOMISATION == 0 && blocks.headCustomisation.customisation != null) {
+        if (this.flags and HEAD_CUSTOMISATION == 0 &&
+            blocks.headCustomisation.customisation != null
+        ) {
             flag = flag or HEAD_CUSTOMISATION
         }
-        if (this.flags and BODY_CUSTOMISATION == 0 && blocks.bodyCustomisation.customisation != null) {
+        if (this.flags and BODY_CUSTOMISATION == 0 &&
+            blocks.bodyCustomisation.customisation != null
+        ) {
             flag = flag or BODY_CUSTOMISATION
         }
-        if (this.flags and LEVEL_CHANGE == 0 && blocks.combatLevelChange.level != -1) {
+        if (this.flags and LEVEL_CHANGE == 0 &&
+            blocks.combatLevelChange.level != CombatLevelChange.DEFAULT_LEVEL_OVERRIDE
+        ) {
             flag = flag or LEVEL_CHANGE
         }
         if (this.flags and FACE_PATHINGENTITY == 0 &&
@@ -914,12 +1102,17 @@ public class NpcAvatarExtendedInfo(
         ) {
             flag = flag or FACE_PATHINGENTITY
         }
-        if (this.flags and BAS_CHANGE == 0 && blocks.baseAnimationSet.overrides != 0) {
+        if (this.flags and BAS_CHANGE == 0 &&
+            blocks.baseAnimationSet.overrides != BaseAnimationSet.DEFAULT_OVERRIDES_FLAG
+        ) {
             flag = flag or BAS_CHANGE
         }
         return flag
     }
 
+    /**
+     * Clears any transient extended info that was flagged in this cycle.
+     */
     private fun clearTransientExtendedInformation() {
         if (flags and SEQUENCE != 0) {
             blocks.sequence.clear()

@@ -5,7 +5,8 @@ package net.rsprot.protocol.game.outgoing.info.playerinfo
 import io.netty.buffer.ByteBufAllocator
 import net.rsprot.buffer.JagByteBuf
 import net.rsprot.compression.HuffmanCodec
-import net.rsprot.protocol.game.outgoing.info.playerinfo.filter.ExtendedInfoFilter
+import net.rsprot.protocol.game.outgoing.info.AvatarExtendedInfoWriter
+import net.rsprot.protocol.game.outgoing.info.filter.ExtendedInfoFilter
 import net.rsprot.protocol.internal.RSProtFlags
 import net.rsprot.protocol.internal.game.outgoing.info.playerinfo.encoder.PlayerExtendedInfoEncoders
 import net.rsprot.protocol.internal.game.outgoing.info.playerinfo.extendedinfo.MoveSpeed
@@ -23,8 +24,6 @@ public typealias PlayerAvatarExtendedInfoWriter =
 
 /**
  * This data structure keeps track of all the extended info blocks for a given player avatar.
- *  @param protocol the player info protocol of the entire world, necessary,
- *  as some extended info blocks are observer-dependent and need to reference other avatars.
  *  @param localIndex the index of the avatar who owns this extended info block.
  *  @param filter the filter responsible for ensuring the total packet size constraint
  *  is not broken in any way. If this filter does not conform to the contract correctly,

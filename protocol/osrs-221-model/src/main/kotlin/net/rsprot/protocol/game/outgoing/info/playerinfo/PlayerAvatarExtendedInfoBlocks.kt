@@ -1,5 +1,6 @@
 package net.rsprot.protocol.game.outgoing.info.playerinfo
 
+import net.rsprot.protocol.game.outgoing.info.AvatarExtendedInfoWriter
 import net.rsprot.protocol.internal.game.outgoing.info.ExtendedInfo
 import net.rsprot.protocol.internal.game.outgoing.info.encoder.ExtendedInfoEncoder
 import net.rsprot.protocol.internal.game.outgoing.info.playerinfo.encoder.PlayerExtendedInfoEncoders

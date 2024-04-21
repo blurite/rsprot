@@ -7,6 +7,33 @@ import net.rsprot.protocol.internal.game.outgoing.info.CoordGrid
 import net.rsprot.protocol.internal.game.outgoing.info.npcinfo.NpcAvatarDetails
 import java.util.concurrent.atomic.AtomicInteger
 
+/**
+ * The npc avatar class represents an NPC as shown by the client.
+ * This class contains all the properties necessary to put a NPC into high resolution.
+ *
+ * Npc direction table:
+ * ```
+ * | Id | Client Angle |  Direction |
+ * |:--:|:------------:|:----------:|
+ * |  0 |      768     | North-West |
+ * |  1 |     1024     |    North   |
+ * |  2 |     1280     | North-East |
+ * |  3 |      512     |    West    |
+ * |  4 |     1536     |    East    |
+ * |  5 |      256     | South-West |
+ * |  6 |       0      |    South   |
+ * |  7 |     1792     | South-East |
+ * ```
+ *
+ * @param index the index of the npc in the world
+ * @param id the id of the npc in the world, limited to range of 0..16383
+ * @param level the height level of the npc
+ * @param x the absolute x coordinate of the npc
+ * @param z the absolute z coordinate of the npc
+ * @param spawnCycle the game cycle on which the npc spawned into the world;
+ * for static NPCs, this would always be zero. This is only used by the C++ clients.
+ * @param direction the direction that the npc will face on spawn (see table above)
+ */
 public class NpcAvatar internal constructor(
     index: Int,
     id: Int,
@@ -23,7 +50,11 @@ public class NpcAvatar internal constructor(
      */
     public val extendedInfo: NpcAvatarExtendedInfo,
 ) : Avatar {
-    public val details: NpcAvatarDetails =
+    /**
+     * Npc avatar details class wraps all the client properties of a NPC in its own
+     * data structure.
+     */
+    internal val details: NpcAvatarDetails =
         NpcAvatarDetails(
             index,
             id,
@@ -33,22 +64,70 @@ public class NpcAvatar internal constructor(
             spawnCycle,
             direction,
         )
+
+    /**
+     * The number of player avatars observing this NPC avatar.
+     * We utilize the count tracking to determine what NPCs require precomputation.
+     * As the game has circa 25,000 NPCs, and even at max world capacity, only 2,000 players,
+     * the majority of NPCs in the game will at all times __not__ be observed by any players.
+     * This means computing their high resolution blocks is unnecessary, as that is strictly
+     * only for players who are already observing a NPC - moving from low resolution to high
+     * resolution has its own set of code.
+     * Additionally, this is used to skip computing extended info blocks later on in the cycle,
+     * given the assumption that no player added this NPC to their high resolution view.
+     * Furthermore, this observer count must be an atomic integer, as certain parts of NPC info
+     * are multithreaded, including the parts which modify this count.
+     */
     private val observerCount: AtomicInteger = AtomicInteger()
 
+    /**
+     * The high resolution movement buffer, used to avoid re-calculating the movement information
+     * for each observer of a given NPC, in cases where there are multiple. It is additionally
+     * more efficient to just do a single bulk pBits() call, than to call it multiple times, which
+     * this accomplishes.
+     */
     internal var highResMovementBuffer: UnsafeLongBackedBitBuf? = null
 
+    /**
+     * Adds an observer to this avatar by incrementing the observer count.
+     * Note that it is necessary for servers to de-register npc info when the player is logging off,
+     * or the protocol will run into issues on multiple levels.
+     */
     internal fun addObserver() {
         observerCount.incrementAndGet()
     }
 
+    /**
+     * Removes an observer from this avatar by decrementing the observer count.
+     * This function must be called when a player logs off for each NPC they were observing.
+     */
     internal fun removeObserver() {
         observerCount.decrementAndGet()
     }
 
+    /**
+     * Checks if this NPC has any observers, necessary to determine whether cached information
+     * must be computed for this NPC.
+     */
     internal fun hasObservers(): Boolean {
         return observerCount.get() > 0
     }
 
+    /**
+     * A helper function to teleport the NPC to a new coordinate.
+     * This will furthermore mark the movement type as teleport, meaning no matter what other
+     * coordinate changes are applied, as teleport has the highest priority, teleportation
+     * will be how it is rendered on the client's end.
+     * @param level the new height level of the NPC
+     * @param x the new absolute x coordinate of the NPC
+     * @param z the new absolute z coordinate of the NPC
+     * @param jump whether to "jump" the NPC to the new coordinate, or to treat it as a
+     * regular walk/run type movement. While this should __almost__ always be true, there are
+     * certain NPCs, such as Sarachnis in OldSchool, that utilize teleporting without jumping.
+     * This effectively makes the NPC appear as it is walking towards the destination. If the
+     * NPC falls visually behind, the client will begin increasing its movement speed, to a
+     * maximum of run speed, until it has caught up visually.
+     */
     public fun teleport(
         level: Int,
         x: Int,
@@ -59,6 +138,16 @@ public class NpcAvatar internal constructor(
         details.movementType = details.movementType or (if (jump) NpcAvatarDetails.TELEJUMP else NpcAvatarDetails.TELE)
     }
 
+    /**
+     * Marks the NPC as moved with the crawl movement type.
+     * If more than one crawl/walks are sent in one cycle, it will instead be treated as run.
+     * If more than two crawl/walks are sent in one cycle, it will be treated as a teleport.
+     * @param deltaX the x coordinate delta that the NPC moved.
+     * @param deltaZ the z coordinate delta that the npc moved.
+     * @throws ArrayIndexOutOfBoundsException if either of the deltas is not in range of -1..1,
+     * or both are 0s.
+     */
+    @Throws(ArrayIndexOutOfBoundsException::class)
     public fun crawl(
         deltaX: Int,
         deltaZ: Int,
@@ -70,6 +159,16 @@ public class NpcAvatar internal constructor(
         )
     }
 
+    /**
+     * Marks the NPC as moved with the walk movement type.
+     * If more than one crawl/walks are sent in one cycle, it will instead be treated as run.
+     * If more than two crawl/walks are sent in one cycle, it will be treated as a teleport.
+     * @param deltaX the x coordinate delta that the NPC moved.
+     * @param deltaZ the z coordinate delta that the npc moved.
+     * @throws ArrayIndexOutOfBoundsException if either of the deltas is not in range of -1..1,
+     * or both are 0s.
+     */
+    @Throws(ArrayIndexOutOfBoundsException::class)
     public fun walk(
         deltaX: Int,
         deltaZ: Int,
@@ -81,6 +180,19 @@ public class NpcAvatar internal constructor(
         )
     }
 
+    /**
+     * Determines the movement opcode for the NPC, adjusting the NPC's underlying coordinate afterwards,
+     * and defines the movement speed based on previous movements in this cycle, as well as the
+     * [flag] requested by the movement.
+     * @param deltaX the x coordinate delta that the NPC moved.
+     * @param deltaZ the z coordinate delta that the npc moved.
+     * @param flag the movement speed flag, used to determine what movement speeds have been used
+     * in one cycle, given it is possible to move a NPC more than one in one cycle, should the
+     * server request it.
+     * @throws ArrayIndexOutOfBoundsException if either of the deltas is not in range of -1..1,
+     * or both are 0s.
+     */
+    @Throws(ArrayIndexOutOfBoundsException::class)
     private fun singleStepMovement(
         deltaX: Int,
         deltaZ: Int,
@@ -104,6 +216,15 @@ public class NpcAvatar internal constructor(
         }
     }
 
+    /**
+     * Prepares the bitcodes of a NPC given the assumption it has at least one player observing it,
+     * and the NPC is not teleporting (or tele-jumping), as both of those cause it to be treated as
+     * remove + re-add client-side, meaning no normal block is used.
+     * While it is possible to additionally make NPC removal as part of this function,
+     * because part of the responsibility is at the NPC info protocol level (coordinate checks,
+     * state checks), it is not possible to fully cover it, so best to leave that for the protocol
+     * to handle.
+     */
     internal fun prepareBitcodes() {
         val movementType = details.movementType
         // If teleporting, or if there are no observers, there's no need to compute this
@@ -126,15 +247,29 @@ public class NpcAvatar internal constructor(
         }
     }
 
+    /**
+     * Informs the client that there will be no movement or extended info update for this NPC.
+     * @param buffer the pre-computed buffer into which to write the bitcodes.
+     */
     private fun pNoUpdate(buffer: UnsafeLongBackedBitBuf) {
         buffer.pBits(1, 0)
     }
 
+    /**
+     * Informs the client that there is no movement occurring for this NPC, but it does have
+     * extended info blocks encoded.
+     * @param buffer the pre-computed buffer into which to write the bitcodes.
+     */
     private fun pExtendedInfo(buffer: UnsafeLongBackedBitBuf) {
         buffer.pBits(1, 1)
         buffer.pBits(2, 0)
     }
 
+    /**
+     * Informs the client that there is a crawl-speed movement occurring for this NPC.
+     * @param buffer the pre-computed buffer into which to write the bitcodes.
+     * @param extendedInfo whether this NPC additionally has extended info updates coming.
+     */
     private fun pCrawl(
         buffer: UnsafeLongBackedBitBuf,
         extendedInfo: Boolean,
@@ -146,6 +281,11 @@ public class NpcAvatar internal constructor(
         buffer.pBits(1, if (extendedInfo) 1 else 0)
     }
 
+    /**
+     * Informs the client that there is a walk-speed movement occurring for this NPC.
+     * @param buffer the pre-computed buffer into which to write the bitcodes.
+     * @param extendedInfo whether this NPC additionally has extended info updates coming.
+     */
     private fun pWalk(
         buffer: UnsafeLongBackedBitBuf,
         extendedInfo: Boolean,
@@ -156,6 +296,11 @@ public class NpcAvatar internal constructor(
         buffer.pBits(1, if (extendedInfo) 1 else 0)
     }
 
+    /**
+     * Informs the client that there is a run-speed movement occurring for this NPC.
+     * @param buffer the pre-computed buffer into which to write the bitcodes.
+     * @param extendedInfo whether this NPC additionally has extended info updates coming.
+     */
     private fun pRun(
         buffer: UnsafeLongBackedBitBuf,
         extendedInfo: Boolean,
@@ -166,6 +311,27 @@ public class NpcAvatar internal constructor(
         buffer.pBits(3, details.firstStep)
         buffer.pBits(3, details.secondStep)
         buffer.pBits(1, if (extendedInfo) 1 else 0)
+    }
+
+    /**
+     * The current height level of this avatar.
+     */
+    public fun level(): Int {
+        return details.currentCoord.level
+    }
+
+    /**
+     * The current absolute x coordinate of this avatar.
+     */
+    public fun x(): Int {
+        return details.currentCoord.x
+    }
+
+    /**
+     * The current absolute z coordinate of this avatar.
+     */
+    public fun z(): Int {
+        return details.currentCoord.z
     }
 
     override fun postUpdate() {

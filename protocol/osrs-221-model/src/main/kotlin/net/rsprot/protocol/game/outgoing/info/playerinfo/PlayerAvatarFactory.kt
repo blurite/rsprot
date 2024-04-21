@@ -2,7 +2,7 @@ package net.rsprot.protocol.game.outgoing.info.playerinfo
 
 import io.netty.buffer.ByteBufAllocator
 import net.rsprot.compression.HuffmanCodec
-import net.rsprot.protocol.game.outgoing.info.playerinfo.filter.ExtendedInfoFilter
+import net.rsprot.protocol.game.outgoing.info.filter.ExtendedInfoFilter
 
 public class PlayerAvatarFactory(
     private val allocator: ByteBufAllocator,

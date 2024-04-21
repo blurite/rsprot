@@ -1,4 +1,4 @@
-package net.rsprot.protocol.game.outgoing.info.playerinfo.filter
+package net.rsprot.protocol.game.outgoing.info.filter
 
 /**
  * A default naive extended info filter. This filter will stop accepting

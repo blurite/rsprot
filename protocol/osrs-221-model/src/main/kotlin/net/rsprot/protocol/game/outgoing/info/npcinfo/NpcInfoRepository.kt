@@ -1,68 +1,39 @@
 package net.rsprot.protocol.game.outgoing.info.npcinfo
 
+import net.rsprot.protocol.game.outgoing.info.InfoRepository
 import net.rsprot.protocol.shared.platform.PlatformType
-import java.lang.ref.ReferenceQueue
-import java.lang.ref.SoftReference
 
-// TODO: Bring it together with player info?
+/**
+ * An array implementation that utilizes a reference queue to re-use objects created in the past.
+ * This is particularly useful when dealing with objects that consume a lot of memory,
+ * pooling in such cases prevents time taken by allocations and garbage collection.
+ *
+ * This particular implementation uses soft references to keep track of the deallocated
+ * objects. Soft references only release their object if the JVM is about to run out of
+ * memory, as a last resort.
+ *
+ * @param allocator the function that yields new elements on-demand, if none
+ * are available within the reference queue.
+ */
 @ExperimentalUnsignedTypes
 internal class NpcInfoRepository(
-    private val allocator: (index: Int, platformType: PlatformType) -> NpcInfo,
-) {
-    private val elements: Array<NpcInfo?> = arrayOfNulls(NpcInfoProtocol.PROTOCOL_CAPACITY)
-    private val queue: ReferenceQueue<NpcInfo> = ReferenceQueue()
+    allocator: (index: Int, platformType: PlatformType) -> NpcInfo,
+) : InfoRepository<NpcInfo>(allocator) {
+    override val elements: Array<NpcInfo?> = arrayOfNulls(NpcInfoProtocol.PROTOCOL_CAPACITY)
 
-    @Throws(ArrayIndexOutOfBoundsException::class)
-    fun getOrNull(idx: Int): NpcInfo? {
-        return elements[idx]
+    override fun informDeallocation(idx: Int) {
+        // No-op
     }
 
-    operator fun get(idx: Int): NpcInfo {
-        return checkNotNull(elements[idx])
+    override fun onDealloc(element: NpcInfo) {
+        element.onDealloc()
     }
 
-    fun capacity(): Int {
-        return elements.size
-    }
-
-    fun alloc(
+    override fun onAlloc(
+        element: NpcInfo,
         idx: Int,
         platformType: PlatformType,
-    ): NpcInfo {
-        val element = elements[idx]
-        check(element == null) {
-            "Overriding existing element: $idx"
-        }
-        val cached = queue.poll()?.get()
-        if (cached != null) {
-            cached.onAlloc(idx, platformType)
-            elements[idx] = cached
-            return cached
-        }
-        val new = allocator(idx, platformType)
-        elements[idx] = new
-        return new
-    }
-
-    fun dealloc(idx: Int): Boolean {
-        require(idx in elements.indices) {
-            "Index out of boundaries: $idx, ${elements.indices}"
-        }
-        val element =
-            elements[idx]
-                ?: return false
-        try {
-            element.onDealloc()
-        } finally {
-            elements[idx] = null
-        }
-        informDeallocation(idx)
-        val reference = SoftReference(element, queue)
-        reference.enqueue()
-        return true
-    }
-
-    fun informDeallocation(idx: Int) {
-        // TODO
+    ) {
+        element.onAlloc(idx, platformType)
     }
 }

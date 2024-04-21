@@ -1,5 +1,10 @@
 package net.rsprot.protocol.game.outgoing.info.npcinfo
 
+/**
+ * NPC index supplier is an interface used to yield NPCs near a player from the server's
+ * perspective. This is necessary as the protocol cannot directly communicate with the server,
+ * so an interface is needed to provide the indices from the server's end.
+ */
 public fun interface NpcIndexSupplier {
     /**
      * The supply function should yield **all** npc indices that are

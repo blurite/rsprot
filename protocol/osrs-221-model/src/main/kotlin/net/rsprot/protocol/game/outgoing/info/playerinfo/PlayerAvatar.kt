@@ -2,7 +2,8 @@ package net.rsprot.protocol.game.outgoing.info.playerinfo
 
 import io.netty.buffer.ByteBufAllocator
 import net.rsprot.compression.HuffmanCodec
-import net.rsprot.protocol.game.outgoing.info.playerinfo.filter.ExtendedInfoFilter
+import net.rsprot.protocol.game.outgoing.info.AvatarExtendedInfoWriter
+import net.rsprot.protocol.game.outgoing.info.filter.ExtendedInfoFilter
 import net.rsprot.protocol.game.outgoing.info.util.Avatar
 import net.rsprot.protocol.internal.game.outgoing.info.CoordGrid
 import net.rsprot.protocol.internal.game.outgoing.info.playerinfo.encoder.PlayerExtendedInfoEncoders

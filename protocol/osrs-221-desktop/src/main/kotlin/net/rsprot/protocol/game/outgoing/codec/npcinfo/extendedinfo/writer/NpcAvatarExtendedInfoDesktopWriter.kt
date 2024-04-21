@@ -17,9 +17,9 @@ import net.rsprot.protocol.game.outgoing.codec.npcinfo.extendedinfo.NpcSpotAnimE
 import net.rsprot.protocol.game.outgoing.codec.npcinfo.extendedinfo.NpcTintingEncoder
 import net.rsprot.protocol.game.outgoing.codec.npcinfo.extendedinfo.NpcTransformationEncoder
 import net.rsprot.protocol.game.outgoing.codec.npcinfo.extendedinfo.NpcVisibleOpsEncoder
+import net.rsprot.protocol.game.outgoing.info.AvatarExtendedInfoWriter
 import net.rsprot.protocol.game.outgoing.info.npcinfo.NpcAvatarExtendedInfo
 import net.rsprot.protocol.game.outgoing.info.npcinfo.NpcAvatarExtendedInfoBlocks
-import net.rsprot.protocol.game.outgoing.info.playerinfo.AvatarExtendedInfoWriter
 import net.rsprot.protocol.internal.game.outgoing.info.npcinfo.encoder.NpcExtendedInfoEncoders
 import net.rsprot.protocol.shared.platform.PlatformType
 
