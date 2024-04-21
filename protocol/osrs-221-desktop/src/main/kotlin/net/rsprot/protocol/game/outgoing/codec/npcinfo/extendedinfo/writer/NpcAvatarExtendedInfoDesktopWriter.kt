@@ -177,19 +177,19 @@ public class NpcAvatarExtendedInfoDesktopWriter :
         // old spotanim: 0x40
         private const val SPOTANIM: Int = 0x10000
         private const val SAY: Int = 0x1
-        private const val OPS: Int = 0x4000 // lt
+        private const val OPS: Int = 0x4000
         private const val EXACT_MOVE: Int = 0x2000
         private const val SEQUENCE: Int = 0x20
         private const val TINTING: Int = 0x1000
-        private const val HEADICON_CUSTOMISATION: Int = 0x20000 // lt
-        private const val NAME_CHANGE: Int = 0x8000 // lt
-        private const val HEAD_CUSTOMISATION: Int = 0x400 // lt
-        private const val BODY_CUSTOMISATION: Int = 0x200 // lt
+        private const val HEADICON_CUSTOMISATION: Int = 0x20000
+        private const val NAME_CHANGE: Int = 0x8000
+        private const val HEAD_CUSTOMISATION: Int = 0x400
+        private const val BODY_CUSTOMISATION: Int = 0x200
         private const val TRANSFORMATION: Int = 0x10
-        private const val LEVEL_CHANGE: Int = 0x800 // lt
+        private const val LEVEL_CHANGE: Int = 0x800
         private const val HITS: Int = 0x4
         private const val FACE_COORD: Int = 0x8
-        private const val FACE_PATHINGENTITY: Int = 0x80 // lt
-        private const val BAS_CHANGE: Int = 0x40000 // lt
+        private const val FACE_PATHINGENTITY: Int = 0x80
+        private const val BAS_CHANGE: Int = 0x40000
     }
 }

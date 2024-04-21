@@ -86,6 +86,148 @@ class NpcInfoTest {
         assertEquals(0, client.npcSlotCount)
     }
 
+    @Test
+    fun `single npc walking`() {
+        val npc = serverNpcs.first()
+        // Skip everyone but the first entry
+        serverNpcs = listOf(npc)
+        tick()
+        client.decode(this.localNpcInfo.backingBuffer(), false, localPlayerCoord)
+        assertEquals(1, client.npcSlotCount)
+        val clientNpc = checkNotNull(client.cachedNpcs[client.npcSlot[0]])
+        assertEquals(npc.id, clientNpc.id)
+        assertEquals(npc.index, clientNpc.index)
+        assertEquals(npc.coordGrid, clientNpc.coord)
+
+        npc.avatar.walk(0, 1)
+        tick()
+        client.decode(this.localNpcInfo.backingBuffer(), false, localPlayerCoord)
+        assertEquals(npc.id, clientNpc.id)
+        assertEquals(npc.index, clientNpc.index)
+        assertEquals(npc.coordGrid, clientNpc.coord)
+    }
+
+    @Test
+    fun `single npc crawling`() {
+        val npc = serverNpcs.first()
+        // Skip everyone but the first entry
+        serverNpcs = listOf(npc)
+        tick()
+        client.decode(this.localNpcInfo.backingBuffer(), false, localPlayerCoord)
+        assertEquals(1, client.npcSlotCount)
+        val clientNpc = checkNotNull(client.cachedNpcs[client.npcSlot[0]])
+        assertEquals(npc.id, clientNpc.id)
+        assertEquals(npc.index, clientNpc.index)
+        assertEquals(npc.coordGrid, clientNpc.coord)
+
+        npc.avatar.crawl(0, 1)
+        tick()
+        client.decode(this.localNpcInfo.backingBuffer(), false, localPlayerCoord)
+        assertEquals(npc.id, clientNpc.id)
+        assertEquals(npc.index, clientNpc.index)
+        assertEquals(npc.coordGrid, clientNpc.coord)
+    }
+
+    @Test
+    fun `single npc running`() {
+        val npc = serverNpcs.first()
+        // Skip everyone but the first entry
+        serverNpcs = listOf(npc)
+        tick()
+        client.decode(this.localNpcInfo.backingBuffer(), false, localPlayerCoord)
+        assertEquals(1, client.npcSlotCount)
+        val clientNpc = checkNotNull(client.cachedNpcs[client.npcSlot[0]])
+        assertEquals(npc.id, clientNpc.id)
+        assertEquals(npc.index, clientNpc.index)
+        assertEquals(npc.coordGrid, clientNpc.coord)
+
+        npc.avatar.walk(0, 1)
+        npc.avatar.walk(0, 1)
+        tick()
+        client.decode(this.localNpcInfo.backingBuffer(), false, localPlayerCoord)
+        assertEquals(npc.id, clientNpc.id)
+        assertEquals(npc.index, clientNpc.index)
+        assertEquals(npc.coordGrid, clientNpc.coord)
+    }
+
+    @Test
+    fun `single npc telejumping`() {
+        val npc = serverNpcs.first()
+        // Skip everyone but the first entry
+        serverNpcs = listOf(npc)
+        tick()
+        client.decode(this.localNpcInfo.backingBuffer(), false, localPlayerCoord)
+        assertEquals(1, client.npcSlotCount)
+        var clientNpc = checkNotNull(client.cachedNpcs[client.npcSlot[0]])
+        assertEquals(npc.id, clientNpc.id)
+        assertEquals(npc.index, clientNpc.index)
+        assertEquals(npc.coordGrid, clientNpc.coord)
+
+        npc.avatar.teleport(
+            localPlayerCoord.level,
+            localPlayerCoord.x + 10,
+            localPlayerCoord.z + 10,
+            true,
+        )
+        tick()
+        client.decode(this.localNpcInfo.backingBuffer(), false, localPlayerCoord)
+        // Re-obtain the instance as teleporting is equal to removal + adding
+        clientNpc = checkNotNull(client.cachedNpcs[client.npcSlot[0]])
+        assertEquals(npc.id, clientNpc.id)
+        assertEquals(npc.index, clientNpc.index)
+        assertEquals(npc.coordGrid, clientNpc.coord)
+    }
+
+    @Test
+    fun `single npc teleporting`() {
+        val npc = serverNpcs.first()
+        // Skip everyone but the first entry
+        serverNpcs = listOf(npc)
+        tick()
+        client.decode(this.localNpcInfo.backingBuffer(), false, localPlayerCoord)
+        assertEquals(1, client.npcSlotCount)
+        var clientNpc = checkNotNull(client.cachedNpcs[client.npcSlot[0]])
+        assertEquals(npc.id, clientNpc.id)
+        assertEquals(npc.index, clientNpc.index)
+        assertEquals(npc.coordGrid, clientNpc.coord)
+
+        npc.avatar.teleport(
+            localPlayerCoord.level,
+            localPlayerCoord.x + 10,
+            localPlayerCoord.z + 10,
+            false,
+        )
+        tick()
+        client.decode(this.localNpcInfo.backingBuffer(), false, localPlayerCoord)
+        // Re-obtain the instance as teleporting is equal to removal + adding
+        clientNpc = checkNotNull(client.cachedNpcs[client.npcSlot[0]])
+        assertEquals(npc.id, clientNpc.id)
+        assertEquals(npc.index, clientNpc.index)
+        assertEquals(npc.coordGrid, clientNpc.coord)
+    }
+
+    @Test
+    fun `single npc overhead chat`() {
+        val npc = serverNpcs.first()
+        // Skip everyone but the first entry
+        serverNpcs = listOf(npc)
+        tick()
+        client.decode(this.localNpcInfo.backingBuffer(), false, localPlayerCoord)
+        assertEquals(1, client.npcSlotCount)
+        val clientNpc = checkNotNull(client.cachedNpcs[client.npcSlot[0]])
+        assertEquals(npc.id, clientNpc.id)
+        assertEquals(npc.index, clientNpc.index)
+        assertEquals(npc.coordGrid, clientNpc.coord)
+
+        npc.avatar.extendedInfo.setSay("Hello world")
+        tick()
+        client.decode(this.localNpcInfo.backingBuffer(), false, localPlayerCoord)
+        assertEquals(npc.id, clientNpc.id)
+        assertEquals(npc.index, clientNpc.index)
+        assertEquals(npc.coordGrid, clientNpc.coord)
+        assertEquals("Hello world", clientNpc.overheadChat)
+    }
+
     private fun createNpcIndexSupplier(): NpcIndexSupplier {
         return NpcIndexSupplier { _, level, x, z, viewDistance ->
             val grid = CoordGrid(level, x, z)
@@ -113,7 +255,6 @@ class NpcInfoTest {
                 Npc(
                     index,
                     id,
-                    coord,
                     factory.alloc(
                         index,
                         id,
@@ -129,19 +270,25 @@ class NpcInfoTest {
     private data class Npc(
         val index: Int,
         val id: Int,
-        val coordGrid: CoordGrid,
         val avatar: NpcAvatar,
     ) {
+        val coordGrid: CoordGrid
+            get() = avatar.getCoordGrid()
+
         override fun toString(): String {
             return "Npc(" +
                 "index=$index, " +
                 "id=$id, " +
-                "coordGrid=$coordGrid" +
+                "coordGrid=${avatar.getCoordGrid()}" +
                 ")"
         }
     }
 
     private companion object {
+        private fun NpcAvatar.getCoordGrid(): CoordGrid {
+            return CoordGrid(details.level(), details.x(), details.z())
+        }
+
         private fun createHuffmanCodec(): HuffmanCodec {
             val resource = PlayerInfoTest::class.java.getResourceAsStream("huffman.dat")
             checkNotNull(resource) {

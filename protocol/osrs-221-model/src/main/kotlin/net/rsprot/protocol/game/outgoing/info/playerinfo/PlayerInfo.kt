@@ -40,7 +40,7 @@ import kotlin.math.abs
  * @param platformType the platform on which the player is logging into. This is utilized
  * to determine what encoders to use for extended info blocks.
  */
-@Suppress("DuplicatedCode")
+@Suppress("DuplicatedCode", "ReplaceUntilWithRangeUntil")
 public class PlayerInfo internal constructor(
     private val protocol: PlayerInfoProtocol,
     private var localIndex: Int,

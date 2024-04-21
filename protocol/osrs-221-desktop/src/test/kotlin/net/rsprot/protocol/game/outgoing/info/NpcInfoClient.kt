@@ -48,7 +48,6 @@ class NpcInfoClient {
         cycle++
     }
 
-    @Suppress("UNUSED_VARIABLE")
     private fun processExtendedInfo(buffer: JagByteBuf) {
         for (i in 0..<updatedNpcSlotCount) {
             val index = updatedNpcSlot[i]
@@ -62,8 +61,12 @@ class NpcInfoClient {
                 val extra: Int = buffer.g1()
                 flag += extra shl 16
             }
-            check(flag and (0x2 or 0x100).inv() == 0) {
-                "Extended info included!"
+            check(flag and (0x2 or 0x100 or 0x1).inv() == 0) {
+                "Extended info other than 'say' included!"
+            }
+            if (flag and 0x1 != 0) {
+                val text = buffer.gjstr()
+                npc.overheadChat = text
             }
         }
     }
@@ -170,8 +173,8 @@ class NpcInfoClient {
                         deltaZ,
                         jump == 1,
                     )
+                    continue
                 }
-                continue
             }
             return
         }
@@ -208,6 +211,7 @@ class NpcInfoClient {
         var spawnCycle = 0
         var turnSpeed = 32
         var jump: Boolean = false
+        var overheadChat: String? = null
 
         fun addRouteWaypoint(
             localPlayerCoord: CoordGrid,
