@@ -230,17 +230,10 @@ class NpcInfoTest {
 
     private fun createNpcIndexSupplier(): NpcIndexSupplier {
         return NpcIndexSupplier { _, level, x, z, viewDistance ->
-            val grid = CoordGrid(level, x, z)
-            val sequence =
-                sequence {
-                    for (npc in serverNpcs) {
-                        if (npc.coordGrid.inDistance(grid, viewDistance)) {
-                            yield(npc.index)
-                        }
-                    }
-                }
-            // Consume the sequence by calling toList()
-            sequence.toList().iterator()
+            serverNpcs
+                .filter { it.coordGrid.inDistance(CoordGrid(level, x, z), viewDistance) }
+                .map { it.index }
+                .iterator()
         }
     }
 
