@@ -1,23 +1,17 @@
 package net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo
 
-import io.netty.buffer.ByteBufAllocator
-import net.rsprot.compression.HuffmanCodec
 import net.rsprot.protocol.internal.game.outgoing.info.TransientExtendedInfo
 import net.rsprot.protocol.internal.game.outgoing.info.encoder.PrecomputedExtendedInfoEncoder
-import net.rsprot.protocol.shared.platform.PlatformType
+import net.rsprot.protocol.internal.platform.PlatformMap
 
 /**
  * The exactmove extended info block is used to provide precise fine-tuned visual movement
  * of an avatar.
  * @param encoders the array of platform-specific encoders for exact move.
- * @param allocator the byte buffer allocator, used to pre-computation purposes.
- * @param huffmanCodec the huffman codec responsible for compressing public chat extended info block.
  */
 public class ExactMove(
-    encoders: Array<PrecomputedExtendedInfoEncoder<ExactMove>?> = arrayOfNulls(PlatformType.COUNT),
-    private val allocator: ByteBufAllocator,
-    private val huffmanCodec: HuffmanCodec,
-) : TransientExtendedInfo<ExactMove, PrecomputedExtendedInfoEncoder<ExactMove>>(encoders) {
+    override val encoders: PlatformMap<PrecomputedExtendedInfoEncoder<ExactMove>>,
+) : TransientExtendedInfo<ExactMove, PrecomputedExtendedInfoEncoder<ExactMove>>() {
     /**
      * The coordinate delta between the current absolute
      * x coordinate and where the avatar is going.
@@ -60,14 +54,6 @@ public class ExactMove(
      * between to get finer directions.
      */
     public var direction: UShort = 0u
-
-    override fun precompute() {
-        for (id in 0..<PlatformType.COUNT) {
-            val encoder = encoders[id] ?: continue
-            val encoded = encoder.precompute(allocator, huffmanCodec, this)
-            setBuffer(id, encoded.buffer)
-        }
-    }
 
     override fun clear() {
         releaseBuffers()

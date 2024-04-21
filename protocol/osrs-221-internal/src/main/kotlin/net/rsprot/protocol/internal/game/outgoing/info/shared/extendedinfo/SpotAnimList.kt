@@ -1,11 +1,9 @@
 package net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo
 
-import io.netty.buffer.ByteBufAllocator
-import net.rsprot.compression.HuffmanCodec
 import net.rsprot.protocol.internal.game.outgoing.info.TransientExtendedInfo
 import net.rsprot.protocol.internal.game.outgoing.info.encoder.PrecomputedExtendedInfoEncoder
 import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.util.SpotAnim
-import net.rsprot.protocol.shared.platform.PlatformType
+import net.rsprot.protocol.internal.platform.PlatformMap
 import java.util.BitSet
 
 /**
@@ -16,14 +14,10 @@ import java.util.BitSet
  * it will follow the bitset's enabled bits to identify which slots to reset, if any.
  * As in most cases the answer is none - this should outperform array fills by quite a bit.
  * @param encoders the array of platform-specific encoders for spotanims.
- * @param allocator the byte buffer allocator, used to pre-computation purposes.
- * @param huffmanCodec the huffman codec responsible for compressing public chat extended info block.
  */
 public class SpotAnimList(
-    encoders: Array<PrecomputedExtendedInfoEncoder<SpotAnimList>?> = arrayOfNulls(PlatformType.COUNT),
-    private val allocator: ByteBufAllocator,
-    private val huffmanCodec: HuffmanCodec,
-) : TransientExtendedInfo<SpotAnimList, PrecomputedExtendedInfoEncoder<SpotAnimList>>(encoders) {
+    override val encoders: PlatformMap<PrecomputedExtendedInfoEncoder<SpotAnimList>>,
+) : TransientExtendedInfo<SpotAnimList, PrecomputedExtendedInfoEncoder<SpotAnimList>>() {
     /**
      * The changelist that tracks all the slots which have been flagged for a spotanim update.
      */
@@ -66,14 +60,6 @@ public class SpotAnimList(
             nextSetBit = changelist.nextSetBit(nextSetBit + 1)
         } while (nextSetBit != -1)
         changelist.clear()
-    }
-
-    override fun precompute() {
-        for (id in 0..<PlatformType.COUNT) {
-            val encoder = encoders[id] ?: continue
-            val encoded = encoder.precompute(allocator, huffmanCodec, this)
-            setBuffer(id, encoded.buffer)
-        }
     }
 
     public companion object {

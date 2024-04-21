@@ -69,6 +69,43 @@ compression during the encoding.
 released back into the pool. The pre-computed chat extended info block's
 buffer is additionally released back into the pool for every player.
 
+### [NPC Info](https://github.com/blurite/rsprot/blob/master/protocol/osrs-221-desktop/src/benchmarks/kotlin/net/rsprot/protocol/game/outgoing/info/NpcInfoBenchmark.kt)
+
+#### Measurements
+
+Single-threaded measurements:
+```
+Benchmark                   Mode  Cnt   Score   Error  Units
+NpcInfoBenchmark.benchmark  avgt    3  64.195 ± 3.336  ms/op
+```
+
+Multithreaded measurements (default):
+```
+Benchmark                   Mode  Cnt   Score   Error  Units
+NpcInfoBenchmark.benchmark  avgt    3  10.904 ± 6.120  ms/op
+```
+
+> [!TIP]
+> 1 operation is equal to 1 game cycle.
+
+
+#### Benchmark Description
+- 2046 players are spawned into the world,
+initialized at random within a 13x13 box. All players will remain in the same
+13x13 box for the duration of the benchmark.
+- 500 NPCs are spawned into the world, in the same box as players.
+- Every cycle, all 500 NPCs use overhead chat (say) of a length-50 string
+and teleport within that aforementioned box.
+- The "server implementation" of index providing is inefficient and costs
+circa 16% of the total time of the benchmark; servers likely have better
+methods of returning indices.
+- The protocol only supports rendering up to 250 NPCs at a time, so the other
+250 are kind of discarded, but still processed.
+- Worth mentioning that the circumstances here are extremely unrealistic,
+as most of the time you are only rendering 10-20 NPCs at a time, which
+significantly lowers the overall pressure. Furthermore, the extended info block
+for say is a rather expensive one and most NPCs realistically only use
+light-weight ones.
 
 [^1]: Multi-threaded ratio refers to how well the application multi-threads.
 This is calculated by dividing the single-threaded measurements by

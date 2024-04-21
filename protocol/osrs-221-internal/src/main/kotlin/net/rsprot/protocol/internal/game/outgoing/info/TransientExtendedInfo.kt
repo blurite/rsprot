@@ -13,9 +13,6 @@ import net.rsprot.protocol.internal.game.outgoing.info.encoder.ExtendedInfoEncod
  * use the default value.
  * @param T the extended info block
  * @param E the encoder for the given extended info block
- * @param encoders the array of platform-specific encoders,
- * indexed by [net.rsprot.protocol.shared.platform.PlatformType.id]
  */
-public abstract class TransientExtendedInfo<in T : ExtendedInfo<T, E>, E : ExtendedInfoEncoder<T>>(
-    encoders: Array<E?>,
-) : ExtendedInfo<T, E>(encoders)
+public abstract class TransientExtendedInfo<in T : ExtendedInfo<T, E>, E : ExtendedInfoEncoder<T>> :
+    ExtendedInfo<T, E>()

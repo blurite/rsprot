@@ -1,4 +1,4 @@
-package net.rsprot.protocol.game.outgoing.info.playerinfo.filter
+package net.rsprot.protocol.game.outgoing.info.filter
 
 /**
  * Extended info filter provides the protocol with a strategy for how to handle

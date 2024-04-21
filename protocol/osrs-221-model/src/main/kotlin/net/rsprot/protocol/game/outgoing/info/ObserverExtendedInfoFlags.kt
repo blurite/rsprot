@@ -1,4 +1,4 @@
-package net.rsprot.protocol.game.outgoing.info.playerinfo.util
+package net.rsprot.protocol.game.outgoing.info
 
 /**
  * A data structure holding information about observer-dependent extended info flags.
@@ -26,7 +26,7 @@ internal class ObserverExtendedInfoFlags(capacity: Int) {
 
     /**
      * Appends the given [flag] for avatar at index [index].
-     * @param index the index of the recipient player
+     * @param index the index of the recipient player or npc
      * @param flag the bit flag to enable
      */
     fun addFlag(
@@ -38,7 +38,7 @@ internal class ObserverExtendedInfoFlags(capacity: Int) {
 
     /**
      * Gets the observer-dependent flag of the avatar at index [index]
-     * @param index the index of the recipient player
+     * @param index the index of the recipient player or npc
      * @return the observer-dependent flag value
      */
     fun getFlag(index: Int): Int {

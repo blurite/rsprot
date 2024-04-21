@@ -9,8 +9,6 @@ import net.rsprot.protocol.internal.game.outgoing.info.encoder.ExtendedInfoEncod
  * de-synchronization), the client will use the old buffer to restore that block.
  * @param T the extended info block
  * @param E the encoder for that extended info block
- * @param encoders the array of platform-specific encoders of type [E].
  */
-public abstract class CachedExtendedInfo<in T : ExtendedInfo<T, E>, E : ExtendedInfoEncoder<T>>(
-    encoders: Array<E?>,
-) : ExtendedInfo<T, E>(encoders)
+public abstract class CachedExtendedInfo<in T : ExtendedInfo<T, E>, E : ExtendedInfoEncoder<T>> :
+    ExtendedInfo<T, E>()

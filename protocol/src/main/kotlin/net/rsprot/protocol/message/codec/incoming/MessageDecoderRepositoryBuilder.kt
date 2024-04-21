@@ -13,6 +13,10 @@ public class MessageDecoderRepositoryBuilder<P : ClientProt, T : Platform>(
     private val decoders: Array<MessageDecoder<*>?> = arrayOfNulls(protRepository.capacity())
     private val messageClassToClientProtMap: MutableMap<Class<out IncomingMessage>, ClientProt> = hashMapOf()
 
+    public inline fun <reified T : IncomingMessage> bind(encoder: MessageDecoder<T>) {
+        bind(T::class.java, encoder)
+    }
+
     public fun <T : IncomingMessage> bind(
         messageClass: Class<T>,
         decoder: MessageDecoder<T>,

@@ -4,10 +4,11 @@ import io.netty.buffer.PooledByteBufAllocator
 import io.netty.buffer.Unpooled
 import net.rsprot.compression.HuffmanCodec
 import net.rsprot.protocol.game.outgoing.codec.playerinfo.extendedinfo.writer.PlayerAvatarExtendedInfoDesktopWriter
+import net.rsprot.protocol.game.outgoing.info.filter.DefaultExtendedInfoFilter
+import net.rsprot.protocol.game.outgoing.info.playerinfo.PlayerAvatarFactory
 import net.rsprot.protocol.game.outgoing.info.playerinfo.PlayerInfo
 import net.rsprot.protocol.game.outgoing.info.playerinfo.PlayerInfoProtocol
 import net.rsprot.protocol.game.outgoing.info.playerinfo.PlayerInfoProtocol.Companion.PROTOCOL_CAPACITY
-import net.rsprot.protocol.game.outgoing.info.playerinfo.filter.DefaultExtendedInfoFilter
 import net.rsprot.protocol.game.outgoing.info.worker.DefaultProtocolWorker
 import net.rsprot.protocol.shared.platform.PlatformType
 import org.openjdk.jmh.annotations.Benchmark
@@ -37,14 +38,19 @@ class PlayerInfoBenchmark {
 
     @Setup
     fun setup() {
-        val writers = listOf(PlayerAvatarExtendedInfoDesktopWriter())
+        val allocator = PooledByteBufAllocator.DEFAULT
+        val factory =
+            PlayerAvatarFactory(
+                allocator,
+                DefaultExtendedInfoFilter(),
+                listOf(PlayerAvatarExtendedInfoDesktopWriter()),
+                createHuffmanCodec(),
+            )
         protocol =
             PlayerInfoProtocol(
-                PooledByteBufAllocator.DEFAULT,
+                allocator,
                 DefaultProtocolWorker(Int.MAX_VALUE, ForkJoinPool.commonPool()),
-                DefaultExtendedInfoFilter(),
-                writers,
-                createHuffmanCodec(),
+                factory,
             )
         players = arrayOfNulls(PROTOCOL_CAPACITY)
         for (i in 1..<MAX_IDX) {
@@ -61,26 +67,26 @@ class PlayerInfoBenchmark {
         player: PlayerInfo,
         index: Int,
     ) {
-        player.extendedInfo.setName("Bot $index")
-        player.extendedInfo.setCombatLevel(126)
-        player.extendedInfo.setSkillLevel(0)
-        player.extendedInfo.setHidden(false)
-        player.extendedInfo.setMale(true)
-        player.extendedInfo.setTextGender(0)
-        player.extendedInfo.setSkullIcon(-1)
-        player.extendedInfo.setOverheadIcon(-1)
+        player.avatar.extendedInfo.setName("Bot $index")
+        player.avatar.extendedInfo.setCombatLevel(126)
+        player.avatar.extendedInfo.setSkillLevel(0)
+        player.avatar.extendedInfo.setHidden(false)
+        player.avatar.extendedInfo.setMale(true)
+        player.avatar.extendedInfo.setTextGender(0)
+        player.avatar.extendedInfo.setSkullIcon(-1)
+        player.avatar.extendedInfo.setOverheadIcon(-1)
 
         for (colIdx in 0..<5) {
-            player.extendedInfo.setColour(colIdx, colIdx * 10)
+            player.avatar.extendedInfo.setColour(colIdx, colIdx * 10)
         }
-        player.extendedInfo.setIdentKit(8, 0)
-        player.extendedInfo.setIdentKit(11, 10)
-        player.extendedInfo.setIdentKit(4, 18)
-        player.extendedInfo.setIdentKit(6, 26)
-        player.extendedInfo.setIdentKit(9, 33)
-        player.extendedInfo.setIdentKit(7, 36)
-        player.extendedInfo.setIdentKit(10, 42)
-        player.extendedInfo.setBaseAnimationSet(
+        player.avatar.extendedInfo.setIdentKit(8, 0)
+        player.avatar.extendedInfo.setIdentKit(11, 10)
+        player.avatar.extendedInfo.setIdentKit(4, 18)
+        player.avatar.extendedInfo.setIdentKit(6, 26)
+        player.avatar.extendedInfo.setIdentKit(9, 33)
+        player.avatar.extendedInfo.setIdentKit(7, 36)
+        player.avatar.extendedInfo.setIdentKit(10, 42)
+        player.avatar.extendedInfo.setBaseAnimationSet(
             808,
             823,
             819,
@@ -99,7 +105,7 @@ class PlayerInfoBenchmark {
         for (i in 1..<MAX_IDX) {
             val player = checkNotNull(players[i])
             player.updateCoord(0, random.nextInt(3200, 3213), random.nextInt(3200, 3213))
-            player.extendedInfo.setChat(
+            player.avatar.extendedInfo.setChat(
                 0,
                 0,
                 0,
