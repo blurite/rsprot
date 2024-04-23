@@ -1,5 +1,6 @@
 package net.rsprot.protocol.loginprot.incoming.pow
 
+import io.netty.util.AttributeKey
 import net.rsprot.protocol.loginprot.incoming.pow.challenges.ChallengeMetaData
 import net.rsprot.protocol.loginprot.incoming.pow.challenges.ChallengeType
 import net.rsprot.protocol.loginprot.incoming.pow.challenges.ChallengeVerifier
@@ -15,4 +16,9 @@ import net.rsprot.protocol.loginprot.incoming.pow.challenges.ChallengeVerifier
 public class ProofOfWork<T : ChallengeType<MetaData>, in MetaData : ChallengeMetaData>(
     public val challengeType: T,
     public val challengeVerifier: ChallengeVerifier<T>,
-)
+) {
+    public companion object {
+        public val PROOF_OF_WORK: AttributeKey<ProofOfWork<*, *>> =
+            AttributeKey.newInstance("prot_proof_of_work_challenge")
+    }
+}

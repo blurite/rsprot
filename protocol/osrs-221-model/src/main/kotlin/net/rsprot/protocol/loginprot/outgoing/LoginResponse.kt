@@ -162,7 +162,9 @@ public sealed interface LoginResponse : OutgoingMessage {
 
     public data object OutOfDateReload : LoginResponse
 
-    public data object ProofOfWork : LoginResponse
+    public class ProofOfWork(
+        public val proofOfWork: net.rsprot.protocol.loginprot.incoming.pow.ProofOfWork<*, *>,
+    ) : LoginResponse
 
     public data object DobError : LoginResponse
 
