@@ -1,8 +1,8 @@
 package net.rsprot.protocol.game.outgoing.codec.npcinfo.extendedinfo
 
 import net.rsprot.buffer.JagByteBuf
-import net.rsprot.protocol.internal.game.outgoing.info.encoder.OnDemandExtendedInfoEncoder
-import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.Hit
+import net.rsprot.protocol.common.game.outgoing.info.encoder.OnDemandExtendedInfoEncoder
+import net.rsprot.protocol.common.game.outgoing.info.shared.extendedinfo.Hit
 
 @Suppress("DuplicatedCode")
 public class NpcHitEncoder : OnDemandExtendedInfoEncoder<Hit> {

@@ -2,7 +2,7 @@ package net.rsprot.protocol.game.outgoing.info.playerinfo
 
 import net.rsprot.protocol.game.outgoing.info.playerinfo.PlayerInfoProtocol.Companion.PROTOCOL_CAPACITY
 import net.rsprot.protocol.game.outgoing.info.playerinfo.util.LowResolutionPosition
-import net.rsprot.protocol.internal.game.outgoing.info.CoordGrid
+import net.rsprot.protocol.common.game.outgoing.info.CoordGrid
 
 /**
  * A repository used to track the low resolution positions of all the player avatars in the world.

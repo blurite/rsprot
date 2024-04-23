@@ -1,7 +1,7 @@
 package net.rsprot.protocol.game.outgoing.info.npcinfo
 
 import net.rsprot.protocol.game.outgoing.info.InfoRepository
-import net.rsprot.protocol.shared.platform.PlatformType
+import net.rsprot.protocol.common.platform.PlatformType
 
 /**
  * An array implementation that utilizes a reference queue to re-use objects created in the past.

@@ -4,7 +4,7 @@ import net.rsprot.buffer.JagByteBuf
 import net.rsprot.protocol.ServerProt
 import net.rsprot.protocol.game.outgoing.prot.GameServerProt
 import net.rsprot.protocol.game.outgoing.zone.payload.LocDel
-import net.rsprot.protocol.internal.game.outgoing.codec.zone.payload.ZoneProtEncoder
+import net.rsprot.protocol.common.game.outgoing.codec.zone.payload.ZoneProtEncoder
 
 public class LocDelEncoder : ZoneProtEncoder<LocDel> {
     override val prot: ServerProt = GameServerProt.LOC_DEL

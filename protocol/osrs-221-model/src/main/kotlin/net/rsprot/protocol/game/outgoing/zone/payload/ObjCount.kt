@@ -1,7 +1,7 @@
 package net.rsprot.protocol.game.outgoing.zone.payload
 
 import net.rsprot.protocol.game.outgoing.zone.payload.util.CoordInZone
-import net.rsprot.protocol.internal.game.outgoing.codec.zone.payload.ZoneProt
+import net.rsprot.protocol.common.game.outgoing.codec.zone.payload.ZoneProt
 
 /**
  * Obj count is a packet used to update the quantity of an obj that's already

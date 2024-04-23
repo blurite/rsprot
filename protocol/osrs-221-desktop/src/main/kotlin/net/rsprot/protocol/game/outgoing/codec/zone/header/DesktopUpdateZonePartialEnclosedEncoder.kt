@@ -19,8 +19,8 @@ import net.rsprot.protocol.game.outgoing.codec.zone.payload.ObjOpFilterEncoder
 import net.rsprot.protocol.game.outgoing.codec.zone.payload.SoundAreaEncoder
 import net.rsprot.protocol.game.outgoing.prot.GameServerProt
 import net.rsprot.protocol.game.outgoing.zone.header.UpdateZonePartialEnclosed
-import net.rsprot.protocol.internal.game.outgoing.codec.zone.payload.ZoneProt
-import net.rsprot.protocol.internal.game.outgoing.codec.zone.payload.ZoneProtEncoder
+import net.rsprot.protocol.common.game.outgoing.codec.zone.payload.ZoneProt
+import net.rsprot.protocol.common.game.outgoing.codec.zone.payload.ZoneProtEncoder
 import net.rsprot.protocol.message.codec.MessageEncoder
 import kotlin.math.min
 

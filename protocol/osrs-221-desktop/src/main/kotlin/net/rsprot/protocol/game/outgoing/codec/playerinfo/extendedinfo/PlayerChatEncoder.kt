@@ -4,8 +4,8 @@ import io.netty.buffer.ByteBufAllocator
 import net.rsprot.buffer.JagByteBuf
 import net.rsprot.buffer.extensions.toJagByteBuf
 import net.rsprot.compression.HuffmanCodec
-import net.rsprot.protocol.internal.game.outgoing.info.encoder.PrecomputedExtendedInfoEncoder
-import net.rsprot.protocol.internal.game.outgoing.info.playerinfo.extendedinfo.Chat
+import net.rsprot.protocol.common.game.outgoing.info.encoder.PrecomputedExtendedInfoEncoder
+import net.rsprot.protocol.common.game.outgoing.info.playerinfo.extendedinfo.Chat
 
 public class PlayerChatEncoder : PrecomputedExtendedInfoEncoder<Chat> {
     override fun precompute(

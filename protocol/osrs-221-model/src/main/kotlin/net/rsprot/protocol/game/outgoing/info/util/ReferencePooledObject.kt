@@ -1,6 +1,6 @@
 package net.rsprot.protocol.game.outgoing.info.util
 
-import net.rsprot.protocol.shared.platform.PlatformType
+import net.rsprot.protocol.common.platform.PlatformType
 
 /**
  * An interface used for info protocols for the purpose of re-using an object.

@@ -7,11 +7,11 @@ import net.rsprot.buffer.bitbuffer.toBitBuf
 import net.rsprot.buffer.extensions.toJagByteBuf
 import net.rsprot.protocol.game.outgoing.info.ObserverExtendedInfoFlags
 import net.rsprot.protocol.game.outgoing.info.util.ReferencePooledObject
-import net.rsprot.protocol.internal.game.outgoing.info.CoordGrid
-import net.rsprot.protocol.internal.game.outgoing.info.npcinfo.encoder.NpcResolutionChangeEncoder
-import net.rsprot.protocol.internal.platform.PlatformMap
+import net.rsprot.protocol.common.game.outgoing.info.CoordGrid
+import net.rsprot.protocol.common.game.outgoing.info.npcinfo.encoder.NpcResolutionChangeEncoder
+import net.rsprot.protocol.common.platform.PlatformMap
 import net.rsprot.protocol.message.OutgoingMessage
-import net.rsprot.protocol.shared.platform.PlatformType
+import net.rsprot.protocol.common.platform.PlatformType
 import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.contract
 

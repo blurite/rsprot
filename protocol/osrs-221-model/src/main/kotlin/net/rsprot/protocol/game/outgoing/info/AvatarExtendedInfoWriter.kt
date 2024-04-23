@@ -1,9 +1,9 @@
 package net.rsprot.protocol.game.outgoing.info
 
 import net.rsprot.buffer.JagByteBuf
-import net.rsprot.protocol.internal.game.outgoing.info.ExtendedInfo
-import net.rsprot.protocol.internal.game.outgoing.info.encoder.OnDemandExtendedInfoEncoder
-import net.rsprot.protocol.shared.platform.PlatformType
+import net.rsprot.protocol.common.game.outgoing.info.ExtendedInfo
+import net.rsprot.protocol.common.game.outgoing.info.encoder.OnDemandExtendedInfoEncoder
+import net.rsprot.protocol.common.platform.PlatformType
 
 /**
  * A base class for platform-specific extended info writers.

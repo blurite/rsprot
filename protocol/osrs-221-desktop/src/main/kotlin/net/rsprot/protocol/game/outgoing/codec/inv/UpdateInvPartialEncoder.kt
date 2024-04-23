@@ -7,7 +7,7 @@ import net.rsprot.protocol.game.outgoing.inv.UpdateInvPartial
 import net.rsprot.protocol.game.outgoing.prot.GameServerProt
 import net.rsprot.protocol.message.codec.MessageEncoder
 import net.rsprot.protocol.metadata.Consistent
-import net.rsprot.protocol.shared.game.outgoing.inv.InventoryObject
+import net.rsprot.protocol.common.game.outgoing.inv.InventoryObject
 
 @Consistent
 public class UpdateInvPartialEncoder : MessageEncoder<UpdateInvPartial> {

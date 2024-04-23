@@ -5,19 +5,19 @@ import net.rsprot.buffer.JagByteBuf
 import net.rsprot.compression.HuffmanCodec
 import net.rsprot.protocol.game.outgoing.info.AvatarExtendedInfoWriter
 import net.rsprot.protocol.game.outgoing.info.filter.ExtendedInfoFilter
-import net.rsprot.protocol.internal.RSProtFlags
-import net.rsprot.protocol.internal.game.outgoing.info.npcinfo.encoder.NpcExtendedInfoEncoders
-import net.rsprot.protocol.internal.game.outgoing.info.npcinfo.extendedinfo.BaseAnimationSet
-import net.rsprot.protocol.internal.game.outgoing.info.npcinfo.extendedinfo.CombatLevelChange
-import net.rsprot.protocol.internal.game.outgoing.info.npcinfo.extendedinfo.HeadIconCustomisation
-import net.rsprot.protocol.internal.game.outgoing.info.npcinfo.extendedinfo.TypeCustomisation
-import net.rsprot.protocol.internal.game.outgoing.info.npcinfo.extendedinfo.VisibleOps
-import net.rsprot.protocol.internal.game.outgoing.info.precompute
-import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.FacePathingEntity
-import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.util.HeadBar
-import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.util.HitMark
-import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.util.SpotAnim
-import net.rsprot.protocol.shared.platform.PlatformType
+import net.rsprot.protocol.common.RSProtFlags
+import net.rsprot.protocol.common.game.outgoing.info.npcinfo.encoder.NpcExtendedInfoEncoders
+import net.rsprot.protocol.common.game.outgoing.info.npcinfo.extendedinfo.BaseAnimationSet
+import net.rsprot.protocol.common.game.outgoing.info.npcinfo.extendedinfo.CombatLevelChange
+import net.rsprot.protocol.common.game.outgoing.info.npcinfo.extendedinfo.HeadIconCustomisation
+import net.rsprot.protocol.common.game.outgoing.info.npcinfo.extendedinfo.TypeCustomisation
+import net.rsprot.protocol.common.game.outgoing.info.npcinfo.extendedinfo.VisibleOps
+import net.rsprot.protocol.common.game.outgoing.info.precompute
+import net.rsprot.protocol.common.game.outgoing.info.shared.extendedinfo.FacePathingEntity
+import net.rsprot.protocol.common.game.outgoing.info.shared.extendedinfo.util.HeadBar
+import net.rsprot.protocol.common.game.outgoing.info.shared.extendedinfo.util.HitMark
+import net.rsprot.protocol.common.game.outgoing.info.shared.extendedinfo.util.SpotAnim
+import net.rsprot.protocol.common.platform.PlatformType
 
 public typealias NpcAvatarExtendedInfoWriter =
     AvatarExtendedInfoWriter<NpcExtendedInfoEncoders, NpcAvatarExtendedInfoBlocks>

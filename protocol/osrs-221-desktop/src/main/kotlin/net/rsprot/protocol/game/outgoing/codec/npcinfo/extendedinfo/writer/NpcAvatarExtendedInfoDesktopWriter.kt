@@ -20,8 +20,8 @@ import net.rsprot.protocol.game.outgoing.codec.npcinfo.extendedinfo.NpcVisibleOp
 import net.rsprot.protocol.game.outgoing.info.AvatarExtendedInfoWriter
 import net.rsprot.protocol.game.outgoing.info.npcinfo.NpcAvatarExtendedInfo
 import net.rsprot.protocol.game.outgoing.info.npcinfo.NpcAvatarExtendedInfoBlocks
-import net.rsprot.protocol.internal.game.outgoing.info.npcinfo.encoder.NpcExtendedInfoEncoders
-import net.rsprot.protocol.shared.platform.PlatformType
+import net.rsprot.protocol.common.game.outgoing.info.npcinfo.encoder.NpcExtendedInfoEncoders
+import net.rsprot.protocol.common.platform.PlatformType
 
 @Suppress("DuplicatedCode")
 public class NpcAvatarExtendedInfoDesktopWriter :

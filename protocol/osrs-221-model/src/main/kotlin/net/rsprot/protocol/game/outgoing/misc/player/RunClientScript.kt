@@ -1,6 +1,6 @@
 package net.rsprot.protocol.game.outgoing.misc.player
 
-import net.rsprot.protocol.internal.RSProtFlags
+import net.rsprot.protocol.common.RSProtFlags
 import net.rsprot.protocol.message.OutgoingMessage
 
 /**

@@ -11,9 +11,9 @@ import net.rsprot.protocol.game.outgoing.info.npcinfo.NpcAvatarFactory
 import net.rsprot.protocol.game.outgoing.info.npcinfo.NpcIndexSupplier
 import net.rsprot.protocol.game.outgoing.info.npcinfo.NpcInfo
 import net.rsprot.protocol.game.outgoing.info.npcinfo.NpcInfoProtocol
-import net.rsprot.protocol.internal.game.outgoing.info.CoordGrid
-import net.rsprot.protocol.internal.platform.PlatformMap
-import net.rsprot.protocol.shared.platform.PlatformType
+import net.rsprot.protocol.common.game.outgoing.info.CoordGrid
+import net.rsprot.protocol.common.platform.PlatformMap
+import net.rsprot.protocol.common.platform.PlatformType
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import kotlin.random.Random

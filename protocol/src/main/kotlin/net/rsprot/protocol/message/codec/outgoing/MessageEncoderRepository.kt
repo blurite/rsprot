@@ -12,12 +12,18 @@ public class MessageEncoderRepository<P : ServerProt, T : Platform> internal con
     private val encoders: Array<MessageEncoder<*>?>,
     private val messageClassToServerProtMap: Map<Class<out OutgoingMessage>, ServerProt>,
 ) {
-    public fun getEncoder(opcode: Int): MessageEncoder<*> {
+    private fun getEncoder(opcode: Int): MessageEncoder<*> {
         return encoders[opcode]
             ?: throw IllegalArgumentException("Opcode $opcode is not registered.")
     }
 
-    public fun getServerProt(clazz: Class<out OutgoingMessage>): ServerProt {
+    public fun <Type : OutgoingMessage> getEncoder(clazz: Class<out Type>): MessageEncoder<Type> {
+        val prot = getServerProt(clazz)
+        @Suppress("UNCHECKED_CAST")
+        return getEncoder(prot.opcode) as MessageEncoder<Type>
+    }
+
+    private fun getServerProt(clazz: Class<out OutgoingMessage>): ServerProt {
         val serverProt = messageClassToServerProtMap[clazz]
         requireNotNull(serverProt) {
             "Encoder not registered for $clazz."

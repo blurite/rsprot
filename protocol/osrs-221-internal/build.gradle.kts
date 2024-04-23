@@ -11,5 +11,5 @@ dependencies {
     implementation(projects.buffer)
     implementation(projects.compression)
     implementation(projects.protocol)
-    implementation(projects.protocol.osrs221Shared)
+    implementation(projects.protocol.osrs221Common)
 }

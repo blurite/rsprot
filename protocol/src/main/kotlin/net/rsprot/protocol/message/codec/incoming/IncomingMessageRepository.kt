@@ -16,6 +16,10 @@ public class IncomingMessageRepository<R, P : ClientProt> internal constructor(
             ?: throw IllegalArgumentException("Opcode $opcode is not registered.")
     }
 
+    public fun getDecoderOrNull(opcode: Int): MessageDecoder<*>? {
+        return decoders[opcode]
+    }
+
     public fun getConsumer(opcode: Int): BiConsumer<R, out IncomingMessage>? {
         return consumers.getOrNull(opcode)
     }

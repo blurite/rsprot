@@ -12,7 +12,7 @@ import net.rsprot.protocol.game.outgoing.info.playerinfo.util.CellOpcodes
 import net.rsprot.protocol.game.outgoing.info.util.Avatar
 import net.rsprot.protocol.game.outgoing.info.util.ReferencePooledObject
 import net.rsprot.protocol.message.OutgoingMessage
-import net.rsprot.protocol.shared.platform.PlatformType
+import net.rsprot.protocol.common.platform.PlatformType
 import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.contract
 import kotlin.math.abs

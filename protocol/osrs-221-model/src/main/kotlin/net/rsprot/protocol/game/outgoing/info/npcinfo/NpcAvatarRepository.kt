@@ -3,8 +3,8 @@ package net.rsprot.protocol.game.outgoing.info.npcinfo
 import io.netty.buffer.ByteBufAllocator
 import net.rsprot.compression.HuffmanCodec
 import net.rsprot.protocol.game.outgoing.info.filter.ExtendedInfoFilter
-import net.rsprot.protocol.internal.game.outgoing.info.CoordGrid
-import net.rsprot.protocol.internal.game.outgoing.info.npcinfo.NpcAvatarDetails
+import net.rsprot.protocol.common.game.outgoing.info.CoordGrid
+import net.rsprot.protocol.common.game.outgoing.info.npcinfo.NpcAvatarDetails
 import java.lang.ref.ReferenceQueue
 
 /**

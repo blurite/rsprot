@@ -6,7 +6,7 @@ import net.rsprot.protocol.ServerProt
 import net.rsprot.protocol.game.outgoing.inv.UpdateInvFull
 import net.rsprot.protocol.game.outgoing.prot.GameServerProt
 import net.rsprot.protocol.message.codec.MessageEncoder
-import net.rsprot.protocol.shared.game.outgoing.inv.InventoryObject
+import net.rsprot.protocol.common.game.outgoing.inv.InventoryObject
 
 public class UpdateInvFullEncoder : MessageEncoder<UpdateInvFull> {
     override val prot: ServerProt = GameServerProt.UPDATE_INV_FULL

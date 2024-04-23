@@ -1,6 +1,6 @@
 package net.rsprot.protocol.game.outgoing.info
 
-import net.rsprot.protocol.shared.platform.PlatformType
+import net.rsprot.protocol.common.platform.PlatformType
 import java.lang.ref.ReferenceQueue
 import java.lang.ref.SoftReference
 

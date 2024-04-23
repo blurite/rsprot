@@ -1,6 +1,6 @@
 package net.rsprot.protocol.game.outgoing.info.playerinfo.util
 
-import net.rsprot.protocol.internal.game.outgoing.info.CoordGrid
+import net.rsprot.protocol.common.game.outgoing.info.CoordGrid
 
 /**
  * A value class for holding low resolution position information in a primitive int.

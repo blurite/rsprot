@@ -4,7 +4,7 @@ import net.rsprot.buffer.JagByteBuf
 import net.rsprot.protocol.ClientProt
 import net.rsprot.protocol.game.incoming.misc.user.ClickWorldMap
 import net.rsprot.protocol.game.incoming.prot.GameClientProt
-import net.rsprot.protocol.internal.game.outgoing.info.CoordGrid
+import net.rsprot.protocol.common.game.outgoing.info.CoordGrid
 import net.rsprot.protocol.message.codec.MessageDecoder
 import net.rsprot.protocol.tools.MessageDecodingTools
 
