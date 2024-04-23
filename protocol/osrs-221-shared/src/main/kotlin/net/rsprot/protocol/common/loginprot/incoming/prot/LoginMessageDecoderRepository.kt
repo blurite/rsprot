@@ -6,7 +6,6 @@ import net.rsprot.protocol.common.loginprot.incoming.codec.GameReconnectDecoder
 import net.rsprot.protocol.common.loginprot.incoming.codec.InitGameConnectionDecoder
 import net.rsprot.protocol.common.loginprot.incoming.codec.InitJs5RemoteConnectionDecoder
 import net.rsprot.protocol.common.loginprot.incoming.codec.ProofOfWorkReplyDecoder
-import net.rsprot.protocol.common.platform.PlatformType
 import net.rsprot.protocol.message.codec.incoming.MessageDecoderRepository
 import net.rsprot.protocol.message.codec.incoming.MessageDecoderRepositoryBuilder
 import java.math.BigInteger
@@ -16,11 +15,10 @@ public object LoginMessageDecoderRepository {
     public fun build(
         exp: BigInteger,
         mod: BigInteger,
-    ): MessageDecoderRepository<LoginClientProt, PlatformType> {
+    ): MessageDecoderRepository<LoginClientProt> {
         val protRepository = ProtRepository.of<LoginClientProt>()
         val builder =
             MessageDecoderRepositoryBuilder(
-                PlatformType.DESKTOP,
                 protRepository,
             ).apply {
                 bind(InitGameConnectionDecoder())

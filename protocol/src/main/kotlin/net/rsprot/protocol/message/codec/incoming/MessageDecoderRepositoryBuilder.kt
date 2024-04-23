@@ -4,10 +4,8 @@ import net.rsprot.protocol.ClientProt
 import net.rsprot.protocol.ProtRepository
 import net.rsprot.protocol.message.IncomingMessage
 import net.rsprot.protocol.message.codec.MessageDecoder
-import net.rsprot.protocol.platform.Platform
 
-public class MessageDecoderRepositoryBuilder<P : ClientProt, T : Platform>(
-    private val platform: T,
+public class MessageDecoderRepositoryBuilder<P : ClientProt>(
     private val protRepository: ProtRepository<P>,
 ) {
     private val decoders: Array<MessageDecoder<*>?> = arrayOfNulls(protRepository.capacity())
@@ -29,9 +27,8 @@ public class MessageDecoderRepositoryBuilder<P : ClientProt, T : Platform>(
         messageClassToClientProtMap[messageClass] = clientProt
     }
 
-    public fun build(): MessageDecoderRepository<P, T> {
+    public fun build(): MessageDecoderRepository<P> {
         return MessageDecoderRepository(
-            platform,
             protRepository,
             decoders.copyOf(),
             messageClassToClientProtMap.toMap(),
