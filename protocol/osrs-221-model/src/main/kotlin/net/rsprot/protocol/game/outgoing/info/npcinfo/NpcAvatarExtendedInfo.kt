@@ -3,8 +3,6 @@ package net.rsprot.protocol.game.outgoing.info.npcinfo
 import io.netty.buffer.ByteBufAllocator
 import net.rsprot.buffer.JagByteBuf
 import net.rsprot.compression.HuffmanCodec
-import net.rsprot.protocol.game.outgoing.info.AvatarExtendedInfoWriter
-import net.rsprot.protocol.game.outgoing.info.filter.ExtendedInfoFilter
 import net.rsprot.protocol.common.RSProtFlags
 import net.rsprot.protocol.common.game.outgoing.info.npcinfo.encoder.NpcExtendedInfoEncoders
 import net.rsprot.protocol.common.game.outgoing.info.npcinfo.extendedinfo.BaseAnimationSet
@@ -18,6 +16,8 @@ import net.rsprot.protocol.common.game.outgoing.info.shared.extendedinfo.util.He
 import net.rsprot.protocol.common.game.outgoing.info.shared.extendedinfo.util.HitMark
 import net.rsprot.protocol.common.game.outgoing.info.shared.extendedinfo.util.SpotAnim
 import net.rsprot.protocol.common.platform.PlatformType
+import net.rsprot.protocol.game.outgoing.info.AvatarExtendedInfoWriter
+import net.rsprot.protocol.game.outgoing.info.filter.ExtendedInfoFilter
 
 public typealias NpcAvatarExtendedInfoWriter =
     AvatarExtendedInfoWriter<NpcExtendedInfoEncoders, NpcAvatarExtendedInfoBlocks>

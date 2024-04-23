@@ -1,7 +1,7 @@
 package net.rsprot.protocol.game.outgoing.zone.payload
 
-import net.rsprot.protocol.game.outgoing.zone.payload.util.CoordInZone
 import net.rsprot.protocol.common.game.outgoing.codec.zone.payload.ZoneProt
+import net.rsprot.protocol.game.outgoing.zone.payload.util.CoordInZone
 
 /**
  * Sound area packed is sent to play a sound effect at a specific coord.

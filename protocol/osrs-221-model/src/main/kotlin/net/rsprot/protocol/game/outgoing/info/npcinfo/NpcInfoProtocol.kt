@@ -1,11 +1,11 @@
 package net.rsprot.protocol.game.outgoing.info.npcinfo
 
 import io.netty.buffer.ByteBufAllocator
-import net.rsprot.protocol.game.outgoing.info.worker.DefaultProtocolWorker
-import net.rsprot.protocol.game.outgoing.info.worker.ProtocolWorker
 import net.rsprot.protocol.common.game.outgoing.info.npcinfo.encoder.NpcResolutionChangeEncoder
 import net.rsprot.protocol.common.platform.PlatformMap
 import net.rsprot.protocol.common.platform.PlatformType
+import net.rsprot.protocol.game.outgoing.info.worker.DefaultProtocolWorker
+import net.rsprot.protocol.game.outgoing.info.worker.ProtocolWorker
 import java.util.concurrent.Callable
 
 /**

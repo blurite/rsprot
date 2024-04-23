@@ -2,10 +2,10 @@ package net.rsprot.protocol.game.outgoing.info.playerinfo
 
 import io.netty.buffer.ByteBuf
 import io.netty.buffer.ByteBufAllocator
+import net.rsprot.protocol.common.platform.PlatformType
 import net.rsprot.protocol.game.outgoing.info.playerinfo.util.LowResolutionPosition
 import net.rsprot.protocol.game.outgoing.info.worker.DefaultProtocolWorker
 import net.rsprot.protocol.game.outgoing.info.worker.ProtocolWorker
-import net.rsprot.protocol.common.platform.PlatformType
 import java.util.concurrent.Callable
 import java.util.concurrent.ForkJoinPool
 

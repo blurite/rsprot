@@ -5,13 +5,13 @@ import io.netty.buffer.ByteBufAllocator
 import net.rsprot.buffer.bitbuffer.BitBuf
 import net.rsprot.buffer.bitbuffer.toBitBuf
 import net.rsprot.buffer.extensions.toJagByteBuf
-import net.rsprot.protocol.game.outgoing.info.ObserverExtendedInfoFlags
-import net.rsprot.protocol.game.outgoing.info.util.ReferencePooledObject
 import net.rsprot.protocol.common.game.outgoing.info.CoordGrid
 import net.rsprot.protocol.common.game.outgoing.info.npcinfo.encoder.NpcResolutionChangeEncoder
 import net.rsprot.protocol.common.platform.PlatformMap
-import net.rsprot.protocol.message.OutgoingMessage
 import net.rsprot.protocol.common.platform.PlatformType
+import net.rsprot.protocol.game.outgoing.info.ObserverExtendedInfoFlags
+import net.rsprot.protocol.game.outgoing.info.util.ReferencePooledObject
+import net.rsprot.protocol.message.OutgoingMessage
 import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.contract
 

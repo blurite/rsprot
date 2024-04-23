@@ -1,7 +1,7 @@
 package net.rsprot.protocol.game.outgoing.zone.payload
 
-import net.rsprot.protocol.game.outgoing.zone.payload.util.CoordInZone
 import net.rsprot.protocol.common.game.outgoing.codec.zone.payload.ZoneProt
+import net.rsprot.protocol.game.outgoing.zone.payload.util.CoordInZone
 
 /**
  * Map anim is sent to play a graphical effect/spotanim on a tile.
