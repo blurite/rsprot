@@ -1,7 +1,6 @@
 package net.rsprot.protocol.game.outgoing.prot
 
 import net.rsprot.protocol.ProtRepository
-import net.rsprot.protocol.common.platform.PlatformType
 import net.rsprot.protocol.game.outgoing.codec.camera.CamLookAtEasedAngleAbsoluteEncoder
 import net.rsprot.protocol.game.outgoing.codec.camera.CamLookAtEasedAngleRelativeEncoder
 import net.rsprot.protocol.game.outgoing.codec.camera.CamLookAtEasedCoordEncoder
@@ -127,11 +126,10 @@ import net.rsprot.protocol.message.codec.outgoing.MessageEncoderRepositoryBuilde
 
 public object DesktopGameMessageEncoderRepository {
     @ExperimentalStdlibApi
-    public fun build(): MessageEncoderRepository<GameServerProt, PlatformType> {
+    public fun build(): MessageEncoderRepository<GameServerProt> {
         val protRepository = ProtRepository.of<GameServerProt>()
         val builder =
             MessageEncoderRepositoryBuilder(
-                PlatformType.DESKTOP,
                 protRepository,
             ).apply {
                 bind(IfInitialStateEncoder())

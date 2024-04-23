@@ -4,10 +4,8 @@ import net.rsprot.protocol.ProtRepository
 import net.rsprot.protocol.ServerProt
 import net.rsprot.protocol.message.OutgoingMessage
 import net.rsprot.protocol.message.codec.MessageEncoder
-import net.rsprot.protocol.platform.Platform
 
-public class MessageEncoderRepository<P : ServerProt, T : Platform> internal constructor(
-    @Suppress("unused") private val platform: T,
+public class MessageEncoderRepository<P : ServerProt> internal constructor(
     private val protRepository: ProtRepository<P>,
     private val encoders: Array<MessageEncoder<*>?>,
     private val messageClassToServerProtMap: Map<Class<out OutgoingMessage>, ServerProt>,

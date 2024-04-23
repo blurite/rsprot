@@ -4,7 +4,6 @@ import net.rsprot.protocol.ProtRepository
 import net.rsprot.protocol.common.loginprot.outgoing.codec.DisallowedByScriptLoginResponseEncoder
 import net.rsprot.protocol.common.loginprot.outgoing.codec.EmptyLoginResponseEncoder
 import net.rsprot.protocol.common.loginprot.outgoing.codec.OkLoginResponseEncoder
-import net.rsprot.protocol.common.platform.PlatformType
 import net.rsprot.protocol.loginprot.outgoing.LoginResponse
 import net.rsprot.protocol.message.codec.outgoing.MessageEncoderRepository
 import net.rsprot.protocol.message.codec.outgoing.MessageEncoderRepositoryBuilder
@@ -13,11 +12,10 @@ private typealias Encoder<T> = EmptyLoginResponseEncoder<T>
 
 public object LoginMessageEncoderRepository {
     @ExperimentalStdlibApi
-    public fun build(): MessageEncoderRepository<LoginServerProt, PlatformType> {
+    public fun build(): MessageEncoderRepository<LoginServerProt> {
         val protRepository = ProtRepository.of<LoginServerProt>()
         val builder =
             MessageEncoderRepositoryBuilder(
-                PlatformType.DESKTOP,
                 protRepository,
             ).apply {
                 bind(OkLoginResponseEncoder())

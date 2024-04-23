@@ -4,10 +4,8 @@ import net.rsprot.protocol.ProtRepository
 import net.rsprot.protocol.ServerProt
 import net.rsprot.protocol.message.OutgoingMessage
 import net.rsprot.protocol.message.codec.MessageEncoder
-import net.rsprot.protocol.platform.Platform
 
-public class MessageEncoderRepositoryBuilder<P : ServerProt, T : Platform>(
-    private val platform: T,
+public class MessageEncoderRepositoryBuilder<P : ServerProt>(
     private val protRepository: ProtRepository<P>,
 ) {
     private val encoders: Array<MessageEncoder<*>?> = arrayOfNulls(protRepository.capacity())
@@ -29,9 +27,8 @@ public class MessageEncoderRepositoryBuilder<P : ServerProt, T : Platform>(
         messageClassToServerProtMap[messageClass] = prot
     }
 
-    public fun build(): MessageEncoderRepository<P, T> {
+    public fun build(): MessageEncoderRepository<P> {
         return MessageEncoderRepository(
-            platform,
             protRepository,
             encoders.copyOf(),
             messageClassToServerProtMap,
