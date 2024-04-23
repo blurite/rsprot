@@ -3,6 +3,7 @@ package net.rsprot.protocol.common.loginprot.incoming.codec.shared
 import net.rsprot.buffer.JagByteBuf
 import net.rsprot.protocol.cryptography.decipherRsa
 import net.rsprot.protocol.cryptography.xteaDecrypt
+import net.rsprot.protocol.loginprot.incoming.util.CyclicRedundancyCheckBlock
 import net.rsprot.protocol.loginprot.incoming.util.HostPlatformStats
 import net.rsprot.protocol.loginprot.incoming.util.LoginBlock
 import java.math.BigInteger
@@ -52,11 +53,7 @@ public abstract class LoginBlockDecoder<T>(
         val hostPlatformStats = decodeHostPlatformStats(xteaBuffer)
         val secondClientType = xteaBuffer.g1()
         val crcBlockHeader = xteaBuffer.g4()
-        // As revision 221 isn't out yet, we will just naively read the values
-        val crc =
-            IntArray(21) {
-                xteaBuffer.g4()
-            }
+        val crc = decodeCrc(xteaBuffer)
         return LoginBlock(
             version,
             subVersion,
@@ -80,6 +77,46 @@ public abstract class LoginBlockDecoder<T>(
             crc,
             authentication,
         )
+    }
+
+    private fun decodeCrc(buffer: JagByteBuf): CyclicRedundancyCheckBlock {
+        val transmittedCount = 21
+        val crc = IntArray(transmittedCount)
+        crc[0] = buffer.g4Alt1()
+        crc[4] = buffer.g4Alt3()
+        crc[15] = buffer.g4Alt3()
+        crc[17] = buffer.g4Alt1()
+        crc[13] = buffer.g4Alt2()
+        crc[16] = buffer.g4Alt1()
+        crc[1] = buffer.g4Alt1()
+        crc[10] = buffer.g4()
+        crc[9] = buffer.g4Alt2()
+        crc[7] = buffer.g4()
+        crc[8] = buffer.g4Alt2()
+        crc[6] = buffer.g4Alt1()
+        crc[20] = buffer.g4Alt3()
+        crc[19] = buffer.g4Alt3()
+        crc[14] = buffer.g4()
+        crc[12] = buffer.g4()
+        crc[5] = buffer.g4Alt2()
+        crc[3] = buffer.g4Alt3()
+        crc[11] = buffer.g4Alt3()
+        crc[2] = buffer.g4Alt3()
+        crc[18] = buffer.g4Alt3()
+
+        return object : CyclicRedundancyCheckBlock(crc) {
+            override fun validate(serverCrc: IntArray): Boolean {
+                require(serverCrc.size >= transmittedCount) {
+                    "Server CRC length less than expected: ${serverCrc.size}, expected >= $transmittedCount"
+                }
+                for (i in 0..<transmittedCount) {
+                    if (serverCrc[i] != this.clientCrc[i]) {
+                        return false
+                    }
+                }
+                return true
+            }
+        }
     }
 
     private fun decodeHostPlatformStats(buffer: JagByteBuf): HostPlatformStats {

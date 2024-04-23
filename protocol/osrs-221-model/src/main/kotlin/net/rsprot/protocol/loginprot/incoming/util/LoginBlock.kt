@@ -23,7 +23,7 @@ public class LoginBlock<T>(
     public val hostPlatformStats: HostPlatformStats,
     private val _secondClientType: UByte,
     private val _crcBlockHeader: UByte,
-    public val crc: IntArray,
+    public val crc: CyclicRedundancyCheckBlock,
     public val authentication: T,
 ) : IncomingMessage {
     public val firstClientType: Int
@@ -68,7 +68,7 @@ public class LoginBlock<T>(
         if (hostPlatformStats != other.hostPlatformStats) return false
         if (_secondClientType != other._secondClientType) return false
         if (_crcBlockHeader != other._crcBlockHeader) return false
-        if (!crc.contentEquals(other.crc)) return false
+        if (crc != other.crc) return false
         if (authentication != other.authentication) return false
 
         return true
@@ -94,7 +94,7 @@ public class LoginBlock<T>(
         result = 31 * result + hostPlatformStats.hashCode()
         result = 31 * result + _secondClientType.hashCode()
         result = 31 * result + _crcBlockHeader.hashCode()
-        result = 31 * result + crc.contentHashCode()
+        result = 31 * result + crc.hashCode()
         result = 31 * result + authentication.hashCode()
         return result
     }
@@ -112,7 +112,7 @@ public class LoginBlock<T>(
             "siteSettings='$siteSettings', " +
             "affiliate=$affiliate, " +
             "hostPlatformStats=$hostPlatformStats, " +
-            "crc=${crc.contentToString()}, " +
+            "crc=$crc, " +
             "firstClientType=$firstClientType, " +
             "platformType=$platformType, " +
             "constZero1=$constZero1, " +
