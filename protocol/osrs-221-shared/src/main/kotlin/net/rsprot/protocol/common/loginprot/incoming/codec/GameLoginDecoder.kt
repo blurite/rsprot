@@ -23,7 +23,9 @@ public class GameLoginDecoder(
         buffer: JagByteBuf,
         tools: MessageDecodingTools,
     ): GameLogin {
-        return GameLogin(decodeLoginBlock(buffer))
+        return GameLogin(buffer) {
+            decodeLoginBlock(it)
+        }
     }
 
     override fun decodeAuthentication(buffer: JagByteBuf): AuthenticationType<*> {

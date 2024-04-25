@@ -20,7 +20,9 @@ public class GameReconnectDecoder(
         buffer: JagByteBuf,
         tools: MessageDecodingTools,
     ): GameReconnect {
-        return GameReconnect(decodeLoginBlock(buffer))
+        return GameReconnect(buffer) {
+            decodeLoginBlock(it)
+        }
     }
 
     override fun decodeAuthentication(buffer: JagByteBuf): XteaKey {

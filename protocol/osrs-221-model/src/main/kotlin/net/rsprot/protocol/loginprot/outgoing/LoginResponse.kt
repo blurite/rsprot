@@ -4,7 +4,9 @@ import net.rsprot.protocol.loginprot.outgoing.util.AuthenticatorResponse
 import net.rsprot.protocol.message.OutgoingMessage
 
 public sealed interface LoginResponse : OutgoingMessage {
-    public data object Successful : LoginResponse
+    public data class Successful(
+        public val sessionId: Long?,
+    ) : LoginResponse
 
     @Suppress("DataClassPrivateConstructor")
     public data class Ok private constructor(
