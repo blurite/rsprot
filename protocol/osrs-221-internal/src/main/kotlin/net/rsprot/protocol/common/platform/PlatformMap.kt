@@ -48,6 +48,20 @@ public class PlatformMap<out T>
                 return PlatformMap(array)
             }
 
+            public inline fun <reified E> of(
+                platformCapacity: Int,
+                elements: List<Pair<Platform, E>>,
+            ): PlatformMap<E> {
+                val array = arrayOfNulls<E>(platformCapacity)
+                for ((platform, element) in elements) {
+                    check(array[platform.id] == null) {
+                        "A platform is registered more than once: $elements"
+                    }
+                    array[platform.id] = element
+                }
+                return PlatformMap(array)
+            }
+
             public inline fun <T, reified E> ofType(
                 elements: List<T>,
                 platformCapacity: Int,
