@@ -5,7 +5,7 @@ import net.rsprot.protocol.ServerProt
 import net.rsprot.protocol.message.OutgoingMessage
 import net.rsprot.protocol.message.codec.MessageEncoder
 
-public class MessageEncoderRepository<P : ServerProt> internal constructor(
+public class MessageEncoderRepository<out P : ServerProt> internal constructor(
     private val protRepository: ProtRepository<P>,
     private val encoders: Array<MessageEncoder<*>?>,
     private val messageClassToServerProtMap: Map<Class<out OutgoingMessage>, ServerProt>,

@@ -5,33 +5,23 @@ import net.rsprot.protocol.ProtRepository
 import net.rsprot.protocol.message.IncomingMessage
 import net.rsprot.protocol.message.codec.MessageDecoder
 
-public class MessageDecoderRepository<P : ClientProt> internal constructor(
+public class MessageDecoderRepository<out P : ClientProt> internal constructor(
     private val protRepository: ProtRepository<P>,
     private val decoders: Array<MessageDecoder<*>?>,
-    private val messageClassToClientProtMap: Map<Class<out IncomingMessage>, ClientProt>,
+    private val decoderToMessageClassMap: Map<Class<out MessageDecoder<IncomingMessage>>, Class<out IncomingMessage>>,
 ) {
     public fun getDecoder(opcode: Int): MessageDecoder<*> {
         return decoders[opcode]
             ?: throw IllegalArgumentException("Opcode $opcode is not registered.")
     }
 
-    public fun getClientProt(clazz: Class<out IncomingMessage>): ClientProt {
-        val clientProt = messageClassToClientProtMap[clazz]
-        requireNotNull(clientProt) {
-            "Decoder not registered for $clazz."
+    public fun getMessageClass(decoderClazz: Class<out MessageDecoder<IncomingMessage>>): Class<out IncomingMessage> {
+        return requireNotNull(decoderToMessageClassMap[decoderClazz]) {
+            "Message class does not exist for $decoderClazz"
         }
-        return clientProt
     }
 
     public fun getSize(opcode: Int): Int {
         return protRepository.getSize(opcode)
-    }
-
-    public fun <T> toIncomingMessageRepositoryBuilder(): IncomingMessageRepositoryBuilder<T, P> {
-        return IncomingMessageRepositoryBuilder(
-            protRepository,
-            decoders,
-            messageClassToClientProtMap,
-        )
     }
 }
