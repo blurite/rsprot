@@ -16,6 +16,11 @@ allprojects {
         gradlePluginPortal()
     }
 
+    tasks.withType<AbstractArchiveTask>().configureEach {
+        isPreserveFileTimestamps = false
+        isReproducibleFileOrder = true
+    }
+
     plugins.withType<KotlinPluginWrapper> {
         dependencies {
             testImplementation(kotlin("test-junit5"))
