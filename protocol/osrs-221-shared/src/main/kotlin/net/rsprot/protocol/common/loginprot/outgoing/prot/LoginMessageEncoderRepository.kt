@@ -5,6 +5,7 @@ import net.rsprot.protocol.common.loginprot.outgoing.codec.DisallowedByScriptLog
 import net.rsprot.protocol.common.loginprot.outgoing.codec.EmptyLoginResponseEncoder
 import net.rsprot.protocol.common.loginprot.outgoing.codec.OkLoginResponseEncoder
 import net.rsprot.protocol.common.loginprot.outgoing.codec.ProofOfWorkResponseEncoder
+import net.rsprot.protocol.common.loginprot.outgoing.codec.SuccessfulLoginResponseEncoder
 import net.rsprot.protocol.loginprot.outgoing.LoginResponse
 import net.rsprot.protocol.message.codec.outgoing.MessageEncoderRepository
 import net.rsprot.protocol.message.codec.outgoing.MessageEncoderRepositoryBuilder
@@ -22,7 +23,7 @@ public object LoginMessageEncoderRepository {
                 bind(OkLoginResponseEncoder())
                 bind(DisallowedByScriptLoginResponseEncoder())
                 bind(ProofOfWorkResponseEncoder())
-                bind(Encoder<LoginResponse.Successful>(LoginServerProt.SUCCESSFUL))
+                bind(SuccessfulLoginResponseEncoder())
                 bind(Encoder<LoginResponse.InvalidUsernameOrPassword>(LoginServerProt.INVALID_USERNAME_OR_PASSWORD))
                 bind(Encoder<LoginResponse.Banned>(LoginServerProt.BANNED))
                 bind(Encoder<LoginResponse.Duplicate>(LoginServerProt.DUPLICATE))
