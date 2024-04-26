@@ -51,21 +51,21 @@ public class GameLoginDecoder(
         return when (val otpType = buffer.g1()) {
             OTP_TOKEN -> {
                 val identifier = buffer.g4()
-                buffer.skipWrite(1)
+                buffer.skipRead(1)
                 OtpAuthenticationType.TrustedComputer(identifier)
             }
             OTP_REMEMBER -> {
                 val otpKey = buffer.g3()
-                buffer.skipWrite(1)
+                buffer.skipRead(1)
                 OtpAuthenticationType.TrustedAuthenticator(otpKey)
             }
             OTP_NONE -> {
-                buffer.skipWrite(4)
+                buffer.skipRead(4)
                 OtpAuthenticationType.NoMultiFactorAuthentication
             }
             OTP_FORGET -> {
                 val otpKey = buffer.g3()
-                buffer.skipWrite(1)
+                buffer.skipRead(1)
                 OtpAuthenticationType.UntrustedAuthentication(otpKey)
             }
             else -> {
