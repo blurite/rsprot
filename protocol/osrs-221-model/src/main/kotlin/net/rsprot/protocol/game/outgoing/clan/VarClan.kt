@@ -1,6 +1,6 @@
 package net.rsprot.protocol.game.outgoing.clan
 
-import net.rsprot.protocol.message.OutgoingMessage
+import net.rsprot.protocol.message.OutgoingGameMessage
 
 /**
  * Var clans are used to transmit a variable of a clan to the user.
@@ -15,7 +15,7 @@ import net.rsprot.protocol.message.OutgoingMessage
 public class VarClan private constructor(
     private val _id: UShort,
     public val value: VarClanData,
-) : OutgoingMessage {
+) : OutgoingGameMessage {
     public constructor(
         id: Int,
         value: VarClanData,

@@ -1,6 +1,6 @@
 package net.rsprot.protocol.game.outgoing.misc.client
 
-import net.rsprot.protocol.message.OutgoingMessage
+import net.rsprot.protocol.message.OutgoingGameMessage
 
 /**
  * Hiscore reply is a packet used in the enhanced clients to do
@@ -13,7 +13,7 @@ import net.rsprot.protocol.message.OutgoingMessage
 public class HiscoreReply private constructor(
     private val _requestId: UByte,
     public val response: HiscoreReplyResponse,
-) : OutgoingMessage {
+) : OutgoingGameMessage {
     public constructor(
         requestId: Int,
         response: HiscoreReplyResponse,

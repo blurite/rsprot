@@ -1,6 +1,6 @@
 package net.rsprot.protocol.game.incoming.misc.user
 
-import net.rsprot.protocol.message.IncomingMessage
+import net.rsprot.protocol.message.IncomingGameMessage
 
 /**
  * Send snapshot message is sent when a player reports another player.
@@ -45,7 +45,7 @@ public class SendSnapshot private constructor(
     public val name: String,
     private val _ruleId: UByte,
     public val mute: Boolean,
-) : IncomingMessage {
+) : IncomingGameMessage {
     public constructor(
         name: String,
         ruleId: Int,

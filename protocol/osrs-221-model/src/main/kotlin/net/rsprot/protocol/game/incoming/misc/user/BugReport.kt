@@ -1,6 +1,6 @@
 package net.rsprot.protocol.game.incoming.misc.user
 
-import net.rsprot.protocol.message.IncomingMessage
+import net.rsprot.protocol.message.IncomingGameMessage
 
 /**
  * Bug report packets are sent when players submit a bug report
@@ -19,7 +19,7 @@ public class BugReport private constructor(
     private val _type: UByte,
     public val description: String,
     public val instructions: String,
-) : IncomingMessage {
+) : IncomingGameMessage {
     public constructor(
         type: Int,
         description: String,

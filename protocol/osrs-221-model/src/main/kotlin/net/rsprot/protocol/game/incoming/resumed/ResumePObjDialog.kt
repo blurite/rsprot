@@ -1,6 +1,6 @@
 package net.rsprot.protocol.game.incoming.resumed
 
-import net.rsprot.protocol.message.IncomingMessage
+import net.rsprot.protocol.message.IncomingGameMessage
 
 /**
  * Resume p obj dialogue is sent when the user selects an obj from the
@@ -10,7 +10,7 @@ import net.rsprot.protocol.message.IncomingMessage
  */
 public class ResumePObjDialog(
     public val obj: Int,
-) : IncomingMessage {
+) : IncomingGameMessage {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (javaClass != other?.javaClass) return false

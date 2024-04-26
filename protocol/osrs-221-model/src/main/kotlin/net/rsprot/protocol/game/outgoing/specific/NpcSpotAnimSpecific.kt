@@ -1,6 +1,6 @@
 package net.rsprot.protocol.game.outgoing.specific
 
-import net.rsprot.protocol.message.OutgoingMessage
+import net.rsprot.protocol.message.OutgoingGameMessage
 
 /**
  * Npc spot-anim specific packets are used to play a spotanim on a NPC
@@ -18,7 +18,7 @@ public class NpcSpotAnimSpecific private constructor(
     private val _slot: UByte,
     private val _height: UShort,
     private val _delay: UShort,
-) : OutgoingMessage {
+) : OutgoingGameMessage {
     public constructor(
         index: Int,
         id: Int,

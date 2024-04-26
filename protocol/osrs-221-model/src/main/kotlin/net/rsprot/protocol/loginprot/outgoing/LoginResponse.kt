@@ -1,9 +1,9 @@
 package net.rsprot.protocol.loginprot.outgoing
 
 import net.rsprot.protocol.loginprot.outgoing.util.AuthenticatorResponse
-import net.rsprot.protocol.message.OutgoingMessage
+import net.rsprot.protocol.message.OutgoingLoginMessage
 
-public sealed interface LoginResponse : OutgoingMessage {
+public sealed interface LoginResponse : OutgoingLoginMessage {
     public data class Successful(
         public val sessionId: Long?,
     ) : LoginResponse

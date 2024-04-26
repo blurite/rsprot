@@ -1,6 +1,6 @@
 package net.rsprot.protocol.game.incoming.clan
 
-import net.rsprot.protocol.message.IncomingMessage
+import net.rsprot.protocol.message.IncomingGameMessage
 
 /**
  * Clan ban messages are sent when a player with sufficient rank
@@ -18,7 +18,7 @@ public class AffinedClanSettingsAddBannedFromChannel private constructor(
     public val name: String,
     private val _clanId: UByte,
     private val _memberIndex: UShort,
-) : IncomingMessage {
+) : IncomingGameMessage {
     public constructor(
         name: String,
         clanId: Int,

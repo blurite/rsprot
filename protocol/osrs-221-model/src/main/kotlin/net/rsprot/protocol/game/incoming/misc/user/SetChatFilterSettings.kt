@@ -1,6 +1,6 @@
 package net.rsprot.protocol.game.incoming.misc.user
 
-import net.rsprot.protocol.message.IncomingMessage
+import net.rsprot.protocol.message.IncomingGameMessage
 
 /**
  * Set chat filter settings is sent when the player changes either their
@@ -29,7 +29,7 @@ public class SetChatFilterSettings private constructor(
     private val _publicChatFilter: UByte,
     private val _privateChatFilter: UByte,
     private val _tradeChatFilter: UByte,
-) : IncomingMessage {
+) : IncomingGameMessage {
     public constructor(
         publicChatFilter: Int,
         privateChatFilter: Int,

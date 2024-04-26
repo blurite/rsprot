@@ -1,6 +1,6 @@
 package net.rsprot.protocol.game.incoming.misc.client
 
-import net.rsprot.protocol.message.IncomingMessage
+import net.rsprot.protocol.message.IncomingGameMessage
 
 /**
  * Timings are sent as part of the first packets during login,
@@ -21,7 +21,7 @@ public class Timings private constructor(
     private val _loginDuration: UShort,
     private val _clientState: UShort,
     private val _loginCount: UShort,
-) : IncomingMessage {
+) : IncomingGameMessage {
     public constructor(
         connectionLostDuration: Int,
         loginDuration: Int,

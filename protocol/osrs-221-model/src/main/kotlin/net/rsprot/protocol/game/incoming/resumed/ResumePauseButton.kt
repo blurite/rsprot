@@ -1,6 +1,6 @@
 package net.rsprot.protocol.game.incoming.resumed
 
-import net.rsprot.protocol.message.IncomingMessage
+import net.rsprot.protocol.message.IncomingGameMessage
 import net.rsprot.protocol.message.toIntOrMinusOne
 import net.rsprot.protocol.util.CombinedId
 
@@ -14,7 +14,7 @@ import net.rsprot.protocol.util.CombinedId
 public class ResumePauseButton private constructor(
     private val combinedId: CombinedId,
     private val _sub: UShort,
-) : IncomingMessage {
+) : IncomingGameMessage {
     public constructor(
         combinedId: CombinedId,
         sub: Int,

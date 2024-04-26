@@ -1,6 +1,6 @@
 package net.rsprot.protocol.game.outgoing.logout
 
-import net.rsprot.protocol.message.OutgoingMessage
+import net.rsprot.protocol.message.OutgoingGameMessage
 
 /**
  * Logout transfer packet is used for world-hopping purposes,
@@ -52,7 +52,7 @@ public class LogoutTransfer private constructor(
     public val host: String,
     private val _id: UShort,
     public val properties: Int,
-) : OutgoingMessage {
+) : OutgoingGameMessage {
     public constructor(
         host: String,
         id: Int,

@@ -1,6 +1,6 @@
 package net.rsprot.protocol.game.incoming.events
 
-import net.rsprot.protocol.message.IncomingMessage
+import net.rsprot.protocol.message.IncomingGameMessage
 
 /**
  * Camera position events are sent whenever the client's camera changes position,
@@ -12,7 +12,7 @@ import net.rsprot.protocol.message.IncomingMessage
 public class EventCameraPosition private constructor(
     private val _angleX: UShort,
     private val _angleY: UShort,
-) : IncomingMessage {
+) : IncomingGameMessage {
     public constructor(
         angleX: Int,
         angleY: Int,

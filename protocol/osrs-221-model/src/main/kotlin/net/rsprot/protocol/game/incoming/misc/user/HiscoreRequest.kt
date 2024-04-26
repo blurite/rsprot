@@ -1,6 +1,6 @@
 package net.rsprot.protocol.game.incoming.misc.user
 
-import net.rsprot.protocol.message.IncomingMessage
+import net.rsprot.protocol.message.IncomingGameMessage
 
 /**
  * A hiscore request message is sent when a player does a lookup of another
@@ -15,7 +15,7 @@ public class HiscoreRequest(
     private val _type: UByte,
     private val _requestId: UByte,
     public val name: String,
-) : IncomingMessage {
+) : IncomingGameMessage {
     public constructor(
         type: Int,
         requestId: Int,

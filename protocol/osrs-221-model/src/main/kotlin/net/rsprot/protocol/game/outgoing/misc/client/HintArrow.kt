@@ -1,6 +1,6 @@
 package net.rsprot.protocol.game.outgoing.misc.client
 
-import net.rsprot.protocol.message.OutgoingMessage
+import net.rsprot.protocol.message.OutgoingGameMessage
 
 /**
  * Hint arrow packets are used to render a hint arrow
@@ -10,7 +10,7 @@ import net.rsprot.protocol.message.OutgoingMessage
  */
 public class HintArrow(
     public val type: HintArrowType,
-) : OutgoingMessage {
+) : OutgoingGameMessage {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (javaClass != other?.javaClass) return false

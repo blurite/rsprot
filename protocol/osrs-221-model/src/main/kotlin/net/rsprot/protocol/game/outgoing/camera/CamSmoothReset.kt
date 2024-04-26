@@ -1,6 +1,6 @@
 package net.rsprot.protocol.game.outgoing.camera
 
-import net.rsprot.protocol.message.OutgoingMessage
+import net.rsprot.protocol.message.OutgoingGameMessage
 
 /**
  * Cam smooth reset is used to smoothly reset camera back to the
@@ -20,7 +20,7 @@ public class CamSmoothReset private constructor(
     private val _cameraMoveProportionalSpeed: UByte,
     private val _cameraLookConstantSpeed: UByte,
     private val _cameraLookProportionalSpeed: UByte,
-) : OutgoingMessage {
+) : OutgoingGameMessage {
     public constructor(
         cameraMoveConstantSpeed: Int,
         cameraMoveProportionalSpeed: Int,

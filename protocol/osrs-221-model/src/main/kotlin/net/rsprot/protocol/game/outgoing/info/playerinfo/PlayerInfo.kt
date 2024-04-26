@@ -12,7 +12,7 @@ import net.rsprot.protocol.game.outgoing.info.playerinfo.PlayerInfoProtocol.Comp
 import net.rsprot.protocol.game.outgoing.info.playerinfo.util.CellOpcodes
 import net.rsprot.protocol.game.outgoing.info.util.Avatar
 import net.rsprot.protocol.game.outgoing.info.util.ReferencePooledObject
-import net.rsprot.protocol.message.OutgoingMessage
+import net.rsprot.protocol.message.OutgoingGameMessage
 import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.contract
 import kotlin.math.abs
@@ -47,7 +47,7 @@ public class PlayerInfo internal constructor(
     private val allocator: ByteBufAllocator,
     private var platformType: PlatformType,
     public val avatar: PlayerAvatar,
-) : ReferencePooledObject, OutgoingMessage {
+) : ReferencePooledObject, OutgoingGameMessage {
     /**
      * Low resolution indices are tracked together with [lowResolutionCount].
      * Whenever a player enters the low resolution view, their index

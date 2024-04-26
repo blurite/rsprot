@@ -1,6 +1,6 @@
 package net.rsprot.protocol.game.incoming.npcs
 
-import net.rsprot.protocol.message.IncomingMessage
+import net.rsprot.protocol.message.IncomingGameMessage
 
 /**
  * OpNpc messages are sent when a player clicks one of the five primary options on a NPC.
@@ -15,7 +15,7 @@ public class OpNpc private constructor(
     private val _index: UShort,
     public val controlKey: Boolean,
     private val _op: UByte,
-) : IncomingMessage {
+) : IncomingGameMessage {
     public constructor(
         index: Int,
         controlKey: Boolean,

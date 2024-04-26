@@ -1,6 +1,6 @@
 package net.rsprot.protocol.game.outgoing.misc.player
 
-import net.rsprot.protocol.message.OutgoingMessage
+import net.rsprot.protocol.message.OutgoingGameMessage
 
 /**
  * Message game packet is used to send a normal game message in
@@ -63,7 +63,7 @@ public class MessageGame private constructor(
     private val _type: UShort,
     public val name: String?,
     public val message: String,
-) : OutgoingMessage {
+) : OutgoingGameMessage {
     public constructor(
         type: Int,
         name: String,

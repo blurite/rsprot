@@ -1,6 +1,6 @@
 package net.rsprot.protocol.game.incoming.players
 
-import net.rsprot.protocol.message.IncomingMessage
+import net.rsprot.protocol.message.IncomingGameMessage
 
 /**
  * Opplayer messages are fired whenever a player clicks an option on another player,
@@ -15,7 +15,7 @@ public class OpPlayer private constructor(
     private val _index: UShort,
     public val controlKey: Boolean,
     private val _op: UByte,
-) : IncomingMessage {
+) : IncomingGameMessage {
     public constructor(
         index: Int,
         controlKey: Boolean,

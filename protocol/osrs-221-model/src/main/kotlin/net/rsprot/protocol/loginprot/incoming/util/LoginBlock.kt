@@ -1,7 +1,5 @@
 package net.rsprot.protocol.loginprot.incoming.util
 
-import net.rsprot.protocol.message.IncomingMessage
-
 @Suppress("MemberVisibilityCanBePrivate", "DuplicatedCode")
 public class LoginBlock<T>(
     public val version: Int,
@@ -25,7 +23,7 @@ public class LoginBlock<T>(
     private val _crcBlockHeader: UByte,
     public val crc: CyclicRedundancyCheckBlock,
     public val authentication: T,
-) : IncomingMessage {
+) {
     public val firstClientType: Int
         get() = _firstClientType.toInt()
     public val platformType: Int

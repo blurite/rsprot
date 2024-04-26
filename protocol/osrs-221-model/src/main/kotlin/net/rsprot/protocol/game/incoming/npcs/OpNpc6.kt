@@ -1,6 +1,6 @@
 package net.rsprot.protocol.game.incoming.npcs
 
-import net.rsprot.protocol.message.IncomingMessage
+import net.rsprot.protocol.message.IncomingGameMessage
 
 /**
  * OpNpc6 message is fired when a player clicks the 'Examine' option on a npc.
@@ -8,7 +8,7 @@ import net.rsprot.protocol.message.IncomingMessage
  */
 public class OpNpc6(
     public val id: Int,
-) : IncomingMessage {
+) : IncomingGameMessage {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (javaClass != other?.javaClass) return false

@@ -1,6 +1,6 @@
 package net.rsprot.protocol.game.outgoing.social
 
-import net.rsprot.protocol.message.OutgoingMessage
+import net.rsprot.protocol.message.OutgoingGameMessage
 
 /**
  * Update friendlist is used to send the initial friend list on login,
@@ -12,7 +12,7 @@ import net.rsprot.protocol.message.OutgoingMessage
 @Suppress("MemberVisibilityCanBePrivate")
 public class UpdateFriendList(
     public val friends: List<Friend>,
-) : OutgoingMessage {
+) : OutgoingGameMessage {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (javaClass != other?.javaClass) return false

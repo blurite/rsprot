@@ -1,6 +1,6 @@
 package net.rsprot.protocol.game.outgoing.misc.client
 
-import net.rsprot.protocol.message.OutgoingMessage
+import net.rsprot.protocol.message.OutgoingGameMessage
 
 /**
  * Server tick end packets are used by the C++ client
@@ -8,4 +8,4 @@ import net.rsprot.protocol.message.OutgoingMessage
  * visible ground item's timers. Without it, all ground
  * items' timers will remain frozen once dropped.
  */
-public data object ServerTickEnd : OutgoingMessage
+public data object ServerTickEnd : OutgoingGameMessage

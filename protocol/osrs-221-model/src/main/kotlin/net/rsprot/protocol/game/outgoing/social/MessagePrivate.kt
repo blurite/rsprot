@@ -1,6 +1,6 @@
 package net.rsprot.protocol.game.outgoing.social
 
-import net.rsprot.protocol.message.OutgoingMessage
+import net.rsprot.protocol.message.OutgoingGameMessage
 
 /**
  * Message private packets are used to send private messages between
@@ -39,7 +39,7 @@ public class MessagePrivate private constructor(
     public val worldMessageCounter: Int,
     private val _chatCrownType: UByte,
     public val message: String,
-) : OutgoingMessage {
+) : OutgoingGameMessage {
     public constructor(
         sender: String,
         worldId: Int,

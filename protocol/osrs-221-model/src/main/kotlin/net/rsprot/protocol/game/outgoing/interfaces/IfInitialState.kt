@@ -1,6 +1,6 @@
 package net.rsprot.protocol.game.outgoing.interfaces
 
-import net.rsprot.protocol.message.OutgoingMessage
+import net.rsprot.protocol.message.OutgoingGameMessage
 import net.rsprot.protocol.message.toIntOrMinusOne
 import net.rsprot.protocol.util.CombinedId
 
@@ -18,7 +18,7 @@ public class IfInitialState private constructor(
     private val _topLevelInterface: UShort,
     public val subInterfaces: List<SubInterfaceMessage>,
     public val events: List<InterfaceEventsMessage>,
-) : OutgoingMessage {
+) : OutgoingGameMessage {
     public constructor(
         topLevelInterface: Int,
         subInterfaces: List<SubInterfaceMessage>,

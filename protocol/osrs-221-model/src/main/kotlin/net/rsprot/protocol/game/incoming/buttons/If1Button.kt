@@ -1,6 +1,6 @@
 package net.rsprot.protocol.game.incoming.buttons
 
-import net.rsprot.protocol.message.IncomingMessage
+import net.rsprot.protocol.message.IncomingGameMessage
 import net.rsprot.protocol.util.CombinedId
 
 /**
@@ -11,7 +11,7 @@ import net.rsprot.protocol.util.CombinedId
  */
 public class If1Button(
     private val combinedId: CombinedId,
-) : IncomingMessage {
+) : IncomingGameMessage {
     public val interfaceId: Int
         get() = combinedId.interfaceId
     public val componentId: Int

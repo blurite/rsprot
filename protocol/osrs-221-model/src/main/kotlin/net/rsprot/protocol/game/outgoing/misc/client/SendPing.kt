@@ -1,6 +1,6 @@
 package net.rsprot.protocol.game.outgoing.misc.client
 
-import net.rsprot.protocol.message.OutgoingMessage
+import net.rsprot.protocol.message.OutgoingGameMessage
 
 /**
  * Send ping packet is used to request a ping response from the client.
@@ -15,7 +15,7 @@ import net.rsprot.protocol.message.OutgoingMessage
 public class SendPing(
     public val value1: Int,
     public val value2: Int,
-) : OutgoingMessage {
+) : OutgoingGameMessage {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (javaClass != other?.javaClass) return false

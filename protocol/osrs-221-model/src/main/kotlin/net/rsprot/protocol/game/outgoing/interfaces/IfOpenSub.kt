@@ -1,6 +1,6 @@
 package net.rsprot.protocol.game.outgoing.interfaces
 
-import net.rsprot.protocol.message.OutgoingMessage
+import net.rsprot.protocol.message.OutgoingGameMessage
 import net.rsprot.protocol.message.toIntOrMinusOne
 import net.rsprot.protocol.util.CombinedId
 
@@ -19,7 +19,7 @@ public class IfOpenSub(
     public val destinationCombinedId: CombinedId,
     private val _interfaceId: UShort,
     private val _type: UByte,
-) : OutgoingMessage {
+) : OutgoingGameMessage {
     public constructor(
         destinationInterfaceId: Int,
         destinationComponentId: Int,

@@ -1,6 +1,6 @@
 package net.rsprot.protocol.game.incoming.buttons
 
-import net.rsprot.protocol.message.IncomingMessage
+import net.rsprot.protocol.message.IncomingGameMessage
 import net.rsprot.protocol.message.toIntOrMinusOne
 import net.rsprot.protocol.util.CombinedId
 
@@ -19,7 +19,7 @@ public class If3Button private constructor(
     private val _sub: UShort,
     private val _obj: UShort,
     private val _op: UByte,
-) : IncomingMessage {
+) : IncomingGameMessage {
     public constructor(
         combinedId: CombinedId,
         sub: Int,

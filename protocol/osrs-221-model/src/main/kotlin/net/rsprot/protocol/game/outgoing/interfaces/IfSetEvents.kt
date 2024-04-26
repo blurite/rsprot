@@ -1,6 +1,6 @@
 package net.rsprot.protocol.game.outgoing.interfaces
 
-import net.rsprot.protocol.message.OutgoingMessage
+import net.rsprot.protocol.message.OutgoingGameMessage
 import net.rsprot.protocol.util.CombinedId
 
 /**
@@ -17,7 +17,7 @@ public class IfSetEvents private constructor(
     private val _start: UShort,
     private val _end: UShort,
     public val events: Int,
-) : OutgoingMessage {
+) : OutgoingGameMessage {
     public constructor(
         interfaceId: Int,
         componentId: Int,

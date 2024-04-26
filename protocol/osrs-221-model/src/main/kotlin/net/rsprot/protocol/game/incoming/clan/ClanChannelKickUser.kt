@@ -1,6 +1,6 @@
 package net.rsprot.protocol.game.incoming.clan
 
-import net.rsprot.protocol.message.IncomingMessage
+import net.rsprot.protocol.message.IncomingGameMessage
 
 /**
  * Clan kick messages are sent when a player with sufficient privileges
@@ -17,7 +17,7 @@ public class ClanChannelKickUser private constructor(
     public val name: String,
     private val _clanId: Byte,
     private val _memberIndex: UShort,
-) : IncomingMessage {
+) : IncomingGameMessage {
     public constructor(
         name: String,
         clanId: Int,

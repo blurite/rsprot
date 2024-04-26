@@ -1,6 +1,6 @@
 package net.rsprot.protocol.game.outgoing.camera
 
-import net.rsprot.protocol.message.OutgoingMessage
+import net.rsprot.protocol.message.OutgoingGameMessage
 
 /**
  * Cam shake packet is used to make the camera shake around.
@@ -39,7 +39,7 @@ public class CamShake private constructor(
     private val _randomAmount: UByte,
     private val _sineAmount: UByte,
     private val _sineFrequency: UByte,
-) : OutgoingMessage {
+) : OutgoingGameMessage {
     public constructor(
         type: Int,
         randomAmount: Int,

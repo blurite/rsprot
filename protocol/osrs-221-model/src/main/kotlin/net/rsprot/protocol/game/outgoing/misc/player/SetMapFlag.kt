@@ -1,7 +1,7 @@
 package net.rsprot.protocol.game.outgoing.misc.player
 
 import net.rsprot.protocol.game.outgoing.zone.payload.util.CoordInBuildArea
-import net.rsprot.protocol.message.OutgoingMessage
+import net.rsprot.protocol.message.OutgoingGameMessage
 
 /**
  * Set map flag is used to set the red map flag on the minimap.
@@ -13,7 +13,7 @@ import net.rsprot.protocol.message.OutgoingMessage
  */
 public class SetMapFlag private constructor(
     private val coordInBuildArea: CoordInBuildArea,
-) : OutgoingMessage {
+) : OutgoingGameMessage {
     public constructor(
         xInBuildArea: Int,
         zInBuildArea: Int,

@@ -1,6 +1,6 @@
 package net.rsprot.protocol.game.incoming.friendchat
 
-import net.rsprot.protocol.message.IncomingMessage
+import net.rsprot.protocol.message.IncomingGameMessage
 
 /**
  * Friend chat set rank message is sent when the owner of a friend chat
@@ -12,7 +12,7 @@ import net.rsprot.protocol.message.IncomingMessage
 public class FriendChatSetRank private constructor(
     public val name: String,
     private val _rank: UByte,
-) : IncomingMessage {
+) : IncomingGameMessage {
     public constructor(
         name: String,
         rank: Int,

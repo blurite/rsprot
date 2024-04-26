@@ -1,7 +1,7 @@
 package net.rsprot.protocol.game.incoming.misc.user
 
 import net.rsprot.protocol.game.incoming.misc.user.internal.MovementRequest
-import net.rsprot.protocol.message.IncomingMessage
+import net.rsprot.protocol.message.IncomingGameMessage
 import kotlin.math.cos
 import kotlin.math.sin
 
@@ -39,7 +39,7 @@ public class MoveMinimapClick private constructor(
     private val _cameraAngleY: UShort,
     private val _fineX: UShort,
     private val _fineZ: UShort,
-) : IncomingMessage {
+) : IncomingGameMessage {
     public constructor(
         x: Int,
         z: Int,

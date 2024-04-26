@@ -1,6 +1,6 @@
 package net.rsprot.protocol.game.outgoing.zone.header
 
-import net.rsprot.protocol.message.OutgoingMessage
+import net.rsprot.protocol.message.OutgoingGameMessage
 
 /**
  * Update zone full-follows packets are used to clear a zone (8x8x1 tiles space)
@@ -26,7 +26,7 @@ public class UpdateZoneFullFollows private constructor(
     private val _zoneX: UByte,
     private val _zoneZ: UByte,
     private val _level: UByte,
-) : OutgoingMessage {
+) : OutgoingGameMessage {
     public constructor(
         zoneX: Int,
         zoneZ: Int,

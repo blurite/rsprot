@@ -2,7 +2,7 @@ package net.rsprot.protocol.game.outgoing.specific
 
 import net.rsprot.protocol.game.outgoing.zone.payload.util.CoordInBuildArea
 import net.rsprot.protocol.game.outgoing.zone.payload.util.LocProperties
-import net.rsprot.protocol.message.OutgoingMessage
+import net.rsprot.protocol.message.OutgoingGameMessage
 
 /**
  * Loc anim specific packets are used to make a loc play an animation,
@@ -31,7 +31,7 @@ public class LocAnimSpecific private constructor(
     private val _id: UShort,
     private val coordInBuildArea: CoordInBuildArea,
     private val locProperties: LocProperties,
-) : OutgoingMessage {
+) : OutgoingGameMessage {
     public constructor(
         id: Int,
         zoneX: Int,

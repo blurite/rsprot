@@ -1,6 +1,6 @@
 package net.rsprot.protocol.game.incoming.objs
 
-import net.rsprot.protocol.message.IncomingMessage
+import net.rsprot.protocol.message.IncomingGameMessage
 import net.rsprot.protocol.message.toIntOrMinusOne
 import net.rsprot.protocol.util.CombinedId
 
@@ -26,7 +26,7 @@ public class OpObjT private constructor(
     private val selectedCombinedId: CombinedId,
     private val _selectedSub: UShort,
     private val _selectedObj: UShort,
-) : IncomingMessage {
+) : IncomingGameMessage {
     public constructor(
         id: Int,
         x: Int,

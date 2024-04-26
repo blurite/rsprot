@@ -1,6 +1,6 @@
 package net.rsprot.protocol.game.outgoing.clan
 
-import net.rsprot.protocol.message.OutgoingMessage
+import net.rsprot.protocol.message.OutgoingGameMessage
 
 /**
  * Clan settings full packet is used to update the clan's primary settings.
@@ -10,7 +10,7 @@ import net.rsprot.protocol.message.OutgoingMessage
 public class ClanSettingsFull private constructor(
     private val _clanType: Byte,
     public val update: ClanSettingsFullUpdate,
-) : OutgoingMessage {
+) : OutgoingGameMessage {
     public constructor(
         clanType: Int,
         update: ClanSettingsFullUpdate,

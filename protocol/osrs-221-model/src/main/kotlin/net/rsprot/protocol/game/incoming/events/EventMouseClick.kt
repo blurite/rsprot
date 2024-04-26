@@ -1,6 +1,6 @@
 package net.rsprot.protocol.game.incoming.events
 
-import net.rsprot.protocol.message.IncomingMessage
+import net.rsprot.protocol.message.IncomingGameMessage
 
 /**
  * Mouse click messages are sent whenever the user clicks with the
@@ -21,7 +21,7 @@ public class EventMouseClick private constructor(
     public val rightClick: Boolean,
     private val _x: UShort,
     private val _y: UShort,
-) : IncomingMessage {
+) : IncomingGameMessage {
     public constructor(
         lastTransmittedMouseClick: Int,
         rightClick: Boolean,

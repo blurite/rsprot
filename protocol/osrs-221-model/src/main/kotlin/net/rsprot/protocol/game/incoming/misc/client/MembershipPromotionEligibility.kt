@@ -1,6 +1,6 @@
 package net.rsprot.protocol.game.incoming.misc.client
 
-import net.rsprot.protocol.message.IncomingMessage
+import net.rsprot.protocol.message.IncomingGameMessage
 
 /**
  * An enhanced-client-only packet to inform the server of the status of
@@ -16,7 +16,7 @@ import net.rsprot.protocol.message.IncomingMessage
 public class MembershipPromotionEligibility private constructor(
     private val _eligibleForIntroductoryPrice: UByte,
     private val _eligibleForTrialPurchase: UByte,
-) : IncomingMessage {
+) : IncomingGameMessage {
     public constructor(
         eligibleForIntroductoryPrice: Int,
         eligibleForTrialPurchase: Int,

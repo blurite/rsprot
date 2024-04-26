@@ -1,6 +1,6 @@
 package net.rsprot.protocol.game.incoming.events
 
-import net.rsprot.protocol.message.IncomingMessage
+import net.rsprot.protocol.message.IncomingGameMessage
 
 /**
  * Applet focus events are sent whenever the client either loses or gains focus.
@@ -9,7 +9,7 @@ import net.rsprot.protocol.message.IncomingMessage
  */
 public class EventAppletFocus(
     public val inFocus: Boolean,
-) : IncomingMessage {
+) : IncomingGameMessage {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (javaClass != other?.javaClass) return false

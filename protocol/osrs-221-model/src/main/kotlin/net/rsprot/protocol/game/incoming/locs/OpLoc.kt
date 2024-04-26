@@ -1,6 +1,6 @@
 package net.rsprot.protocol.game.incoming.locs
 
-import net.rsprot.protocol.message.IncomingMessage
+import net.rsprot.protocol.message.IncomingGameMessage
 
 /**
  * OpLoc messages are fired when a player clicks one of the five (excluding oploc6)
@@ -18,7 +18,7 @@ public class OpLoc private constructor(
     private val _z: UShort,
     public val controlKey: Boolean,
     private val _op: UByte,
-) : IncomingMessage {
+) : IncomingGameMessage {
     public constructor(
         id: Int,
         x: Int,

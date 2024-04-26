@@ -1,6 +1,6 @@
 package net.rsprot.protocol.game.outgoing.misc.player
 
-import net.rsprot.protocol.message.OutgoingMessage
+import net.rsprot.protocol.message.OutgoingGameMessage
 
 /**
  * Update runweight packet is used to modify the player's current
@@ -8,7 +8,7 @@ import net.rsprot.protocol.message.OutgoingMessage
  */
 public class UpdateRunWeight(
     public val runweight: Int,
-) : OutgoingMessage {
+) : OutgoingGameMessage {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (javaClass != other?.javaClass) return false

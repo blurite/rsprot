@@ -1,6 +1,6 @@
 package net.rsprot.protocol.game.outgoing.misc.player
 
-import net.rsprot.protocol.message.OutgoingMessage
+import net.rsprot.protocol.message.OutgoingGameMessage
 
 /**
  * Chat filter settings packed is used to set the public and
@@ -25,7 +25,7 @@ import net.rsprot.protocol.message.OutgoingMessage
 public class ChatFilterSettings private constructor(
     private val _publicChatFilter: UByte,
     private val _tradeChatFilter: UByte,
-) : OutgoingMessage {
+) : OutgoingGameMessage {
     public constructor(
         publicChatFilter: Int,
         tradeChatFilter: Int,

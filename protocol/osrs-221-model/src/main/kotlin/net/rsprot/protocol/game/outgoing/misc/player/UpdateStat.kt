@@ -1,6 +1,6 @@
 package net.rsprot.protocol.game.outgoing.misc.player
 
-import net.rsprot.protocol.message.OutgoingMessage
+import net.rsprot.protocol.message.OutgoingGameMessage
 
 /**
  * Update stat packet is used to set the current experience
@@ -18,7 +18,7 @@ public class UpdateStat private constructor(
     private val _currentLevel: UByte,
     private val _invisibleBoostedLevel: UByte,
     public val experience: Int,
-) : OutgoingMessage {
+) : OutgoingGameMessage {
     public constructor(
         stat: Int,
         currentLevel: Int,

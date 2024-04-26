@@ -1,6 +1,6 @@
 package net.rsprot.protocol.game.incoming.resumed
 
-import net.rsprot.protocol.message.IncomingMessage
+import net.rsprot.protocol.message.IncomingGameMessage
 
 /**
  * Resume p count dialogue is sent whenever a player enters an
@@ -12,7 +12,7 @@ import net.rsprot.protocol.message.IncomingMessage
  */
 public class ResumePCountDialog(
     public val count: Int,
-) : IncomingMessage {
+) : IncomingGameMessage {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (javaClass != other?.javaClass) return false

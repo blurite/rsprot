@@ -1,6 +1,6 @@
 package net.rsprot.protocol.game.outgoing.clan
 
-import net.rsprot.protocol.message.OutgoingMessage
+import net.rsprot.protocol.message.OutgoingGameMessage
 
 /**
  * Clan settings delta updates are used to modify a sub-set of this clan's settings.
@@ -16,7 +16,7 @@ public class ClanSettingsDelta private constructor(
     public val owner: Long,
     public val updateNum: Int,
     public val updates: List<ClanSettingsDeltaUpdate>,
-) : OutgoingMessage {
+) : OutgoingGameMessage {
     public constructor(
         clanType: Int,
         owner: Long,

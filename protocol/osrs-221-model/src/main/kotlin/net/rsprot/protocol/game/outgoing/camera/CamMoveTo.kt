@@ -1,7 +1,7 @@
 package net.rsprot.protocol.game.outgoing.camera
 
 import net.rsprot.protocol.game.outgoing.zone.payload.util.CoordInBuildArea
-import net.rsprot.protocol.message.OutgoingMessage
+import net.rsprot.protocol.message.OutgoingGameMessage
 
 /**
  * Cam move to packet is used to move the position of the camera
@@ -25,7 +25,7 @@ public class CamMoveTo private constructor(
     private val _height: UShort,
     private val _speed: UByte,
     private val _acceleration: UByte,
-) : OutgoingMessage {
+) : OutgoingGameMessage {
     public constructor(
         xInBuildArea: Int,
         zInBuildArea: Int,

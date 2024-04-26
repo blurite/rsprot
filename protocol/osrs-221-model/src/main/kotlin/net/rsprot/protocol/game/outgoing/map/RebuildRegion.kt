@@ -1,7 +1,7 @@
 package net.rsprot.protocol.game.outgoing.map
 
 import net.rsprot.crypto.util.XteaKey
-import net.rsprot.protocol.message.OutgoingMessage
+import net.rsprot.protocol.message.OutgoingGameMessage
 
 /**
  * Rebuild region is used to send a dynamic map to the client,
@@ -22,7 +22,7 @@ public class RebuildRegion private constructor(
     private val _zoneZ: UShort,
     public val reload: Boolean,
     public val zones: List<RebuildRegionZone?>,
-) : OutgoingMessage {
+) : OutgoingGameMessage {
     public constructor(
         zoneX: Int,
         zoneZ: Int,

@@ -1,6 +1,6 @@
 package net.rsprot.protocol.game.outgoing.clan
 
-import net.rsprot.protocol.message.OutgoingMessage
+import net.rsprot.protocol.message.OutgoingGameMessage
 
 /**
  * Clan channel full packets are used to update
@@ -13,7 +13,7 @@ import net.rsprot.protocol.message.OutgoingMessage
 public class ClanChannelFull private constructor(
     private val _clanType: Byte,
     public val update: ClanChannelFullUpdate,
-) : OutgoingMessage {
+) : OutgoingGameMessage {
     public constructor(
         clanType: Int,
         update: ClanChannelFullUpdate,

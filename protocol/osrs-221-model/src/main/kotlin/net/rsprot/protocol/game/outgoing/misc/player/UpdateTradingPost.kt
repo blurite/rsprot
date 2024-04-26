@@ -1,6 +1,6 @@
 package net.rsprot.protocol.game.outgoing.misc.player
 
-import net.rsprot.protocol.message.OutgoingMessage
+import net.rsprot.protocol.message.OutgoingGameMessage
 
 /**
  * Update trading post packed was used to create
@@ -10,7 +10,7 @@ import net.rsprot.protocol.message.OutgoingMessage
  */
 public class UpdateTradingPost(
     public val updateType: TradingPostUpdateType,
-) : OutgoingMessage {
+) : OutgoingGameMessage {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (javaClass != other?.javaClass) return false

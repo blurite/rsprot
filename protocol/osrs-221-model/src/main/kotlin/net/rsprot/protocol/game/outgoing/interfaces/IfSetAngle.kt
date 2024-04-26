@@ -1,6 +1,6 @@
 package net.rsprot.protocol.game.outgoing.interfaces
 
-import net.rsprot.protocol.message.OutgoingMessage
+import net.rsprot.protocol.message.OutgoingGameMessage
 import net.rsprot.protocol.util.CombinedId
 
 /**
@@ -17,7 +17,7 @@ public class IfSetAngle private constructor(
     private val _angleX: UShort,
     private val _angleY: UShort,
     private val _zoom: UShort,
-) : OutgoingMessage {
+) : OutgoingGameMessage {
     public constructor(
         interfaceId: Int,
         componentId: Int,

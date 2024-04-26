@@ -12,7 +12,7 @@ import java.io.File
  */
 public class Js5GroupResponse(
     public val response: Js5GroupResponseType,
-) : OutgoingMessage {
+) : OutgoingJs5Message {
     /**
      * A common binding interface for all the possible JS5 group responses.
      */

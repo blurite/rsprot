@@ -1,6 +1,6 @@
 package net.rsprot.protocol.game.incoming.objs
 
-import net.rsprot.protocol.message.IncomingMessage
+import net.rsprot.protocol.message.IncomingGameMessage
 
 /**
  * OpObj6 messages are fired whenever a player examines an obj on the ground.
@@ -12,7 +12,7 @@ public class OpObj6 private constructor(
     private val _id: UShort,
     private val _x: UShort,
     private val _z: UShort,
-) : IncomingMessage {
+) : IncomingGameMessage {
     public constructor(
         id: Int,
         x: Int,

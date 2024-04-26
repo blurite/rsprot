@@ -1,7 +1,7 @@
 package net.rsprot.protocol.game.outgoing.misc.player
 
 import net.rsprot.protocol.common.RSProtFlags
-import net.rsprot.protocol.message.OutgoingMessage
+import net.rsprot.protocol.message.OutgoingGameMessage
 
 /**
  * Run clientscript packet is used to execute a clientscript in the client
@@ -19,7 +19,7 @@ public class RunClientScript(
     public val id: Int,
     public val types: CharArray,
     public val values: List<Any>,
-) : OutgoingMessage {
+) : OutgoingGameMessage {
     init {
         if (RSProtFlags.clientscriptVerification) {
             require(types.size == values.size) {

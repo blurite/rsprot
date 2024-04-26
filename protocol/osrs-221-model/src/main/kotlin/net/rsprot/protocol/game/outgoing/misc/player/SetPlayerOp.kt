@@ -1,6 +1,6 @@
 package net.rsprot.protocol.game.outgoing.misc.player
 
-import net.rsprot.protocol.message.OutgoingMessage
+import net.rsprot.protocol.message.OutgoingGameMessage
 
 /**
  * Set player op packet is used to set the right-click
@@ -15,7 +15,7 @@ public class SetPlayerOp private constructor(
     private val _id: UByte,
     public val priority: Boolean,
     public val op: String?,
-) : OutgoingMessage {
+) : OutgoingGameMessage {
     public constructor(
         id: Int,
         priority: Boolean,

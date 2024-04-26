@@ -1,7 +1,7 @@
 package net.rsprot.protocol.game.outgoing.friendchat
 
 import net.rsprot.compression.Base37
-import net.rsprot.protocol.message.OutgoingMessage
+import net.rsprot.protocol.message.OutgoingGameMessage
 
 /**
  * Update friendchat channel full V2 is used to send full channel updates
@@ -21,7 +21,7 @@ public class UpdateFriendChatChannelFullV2 private constructor(
     public val channelNameBase37: Long,
     private val _kickRank: Byte,
     override val entries: List<FriendChatEntry>,
-) : UpdateFriendChatChannelFull(), OutgoingMessage {
+) : UpdateFriendChatChannelFull(), OutgoingGameMessage {
     public constructor(
         channelOwner: String,
         channelName: String,

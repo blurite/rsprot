@@ -1,6 +1,6 @@
 package net.rsprot.protocol.game.incoming.misc.user
 
-import net.rsprot.protocol.message.IncomingMessage
+import net.rsprot.protocol.message.IncomingGameMessage
 
 /**
  * Teleport packets are sent in multiple possible scenarios:
@@ -26,7 +26,7 @@ public class Teleport private constructor(
     private val _x: UShort,
     private val _z: UShort,
     private val _level: UByte,
-) : IncomingMessage {
+) : IncomingGameMessage {
     public constructor(
         oculusSyncValue: Int,
         x: Int,

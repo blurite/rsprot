@@ -1,6 +1,6 @@
 package net.rsprot.protocol.game.outgoing.interfaces
 
-import net.rsprot.protocol.message.OutgoingMessage
+import net.rsprot.protocol.message.OutgoingGameMessage
 import net.rsprot.protocol.util.CombinedId
 
 /**
@@ -13,7 +13,7 @@ import net.rsprot.protocol.util.CombinedId
 public class IfSetPlayerModelSelf private constructor(
     public val combinedId: CombinedId,
     public val copyObjs: Boolean,
-) : OutgoingMessage {
+) : OutgoingGameMessage {
     public constructor(
         interfaceId: Int,
         componentId: Int,

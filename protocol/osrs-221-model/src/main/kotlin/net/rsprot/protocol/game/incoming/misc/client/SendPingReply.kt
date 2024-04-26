@@ -1,6 +1,6 @@
 package net.rsprot.protocol.game.incoming.misc.client
 
-import net.rsprot.protocol.message.IncomingMessage
+import net.rsprot.protocol.message.IncomingGameMessage
 
 /**
  * Sends a ping reply to the server whenever the server requests it.
@@ -16,7 +16,7 @@ public class SendPingReply private constructor(
     private val _gcPercentTime: UByte,
     public val value1: Int,
     public val value2: Int,
-) : IncomingMessage {
+) : IncomingGameMessage {
     public constructor(
         fps: Int,
         gcPercentTime: Int,

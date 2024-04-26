@@ -1,6 +1,6 @@
 package net.rsprot.protocol.game.incoming.messaging
 
-import net.rsprot.protocol.message.IncomingMessage
+import net.rsprot.protocol.message.IncomingGameMessage
 
 /**
  * Message private events are sent when a player writes a private
@@ -12,7 +12,7 @@ import net.rsprot.protocol.message.IncomingMessage
 public class MessagePrivate(
     public val name: String,
     public val message: String,
-) : IncomingMessage {
+) : IncomingGameMessage {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (javaClass != other?.javaClass) return false

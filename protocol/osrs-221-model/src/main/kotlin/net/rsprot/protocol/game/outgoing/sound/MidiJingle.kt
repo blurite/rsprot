@@ -1,6 +1,6 @@
 package net.rsprot.protocol.game.outgoing.sound
 
-import net.rsprot.protocol.message.OutgoingMessage
+import net.rsprot.protocol.message.OutgoingGameMessage
 
 /**
  * Midi jingle packet is used to play a short midi song, typically when
@@ -16,7 +16,7 @@ import net.rsprot.protocol.message.OutgoingMessage
 public class MidiJingle private constructor(
     private val _id: UShort,
     public val lengthInMillis: Int,
-) : OutgoingMessage {
+) : OutgoingGameMessage {
     public constructor(
         id: Int,
     ) : this(

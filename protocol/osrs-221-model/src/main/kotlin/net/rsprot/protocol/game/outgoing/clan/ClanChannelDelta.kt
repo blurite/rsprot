@@ -1,6 +1,6 @@
 package net.rsprot.protocol.game.outgoing.clan
 
-import net.rsprot.protocol.message.OutgoingMessage
+import net.rsprot.protocol.message.OutgoingGameMessage
 
 /**
  * Clan channel delta is a packet used to transmit partial updates
@@ -19,7 +19,7 @@ public class ClanChannelDelta private constructor(
     public val clanHash: Long,
     public val updateNum: Long,
     public val events: List<ClanChannelDeltaEvent>,
-) : OutgoingMessage {
+) : OutgoingGameMessage {
     public constructor(
         clanType: Int,
         key: Long,

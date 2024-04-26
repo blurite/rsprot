@@ -1,6 +1,6 @@
 package net.rsprot.protocol.game.outgoing.interfaces
 
-import net.rsprot.protocol.message.OutgoingMessage
+import net.rsprot.protocol.message.OutgoingGameMessage
 import net.rsprot.protocol.util.CombinedId
 
 /**
@@ -17,7 +17,7 @@ public class IfSetPlayerModelBaseColour private constructor(
     public val combinedId: CombinedId,
     private val _index: UByte,
     private val _colour: UByte,
-) : OutgoingMessage {
+) : OutgoingGameMessage {
     public constructor(
         interfaceId: Int,
         componentId: Int,

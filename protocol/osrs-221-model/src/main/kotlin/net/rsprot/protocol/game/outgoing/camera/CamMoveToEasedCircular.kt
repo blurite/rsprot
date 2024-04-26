@@ -2,7 +2,7 @@ package net.rsprot.protocol.game.outgoing.camera
 
 import net.rsprot.protocol.game.outgoing.camera.util.CameraEaseFunction
 import net.rsprot.protocol.game.outgoing.zone.payload.util.CoordInBuildArea
-import net.rsprot.protocol.message.OutgoingMessage
+import net.rsprot.protocol.message.OutgoingGameMessage
 
 /**
  * Camera move to eased circular packet is used to move camera
@@ -39,7 +39,7 @@ public class CamMoveToEasedCircular private constructor(
     private val _duration: UShort,
     public val maintainFixedAltitude: Boolean,
     private val _function: UByte,
-) : OutgoingMessage {
+) : OutgoingGameMessage {
     public constructor(
         centerXInBuildArea: Int,
         centerZInBuildArea: Int,

@@ -1,7 +1,7 @@
 package net.rsprot.protocol.game.outgoing.specific
 
 import net.rsprot.protocol.game.outgoing.zone.payload.util.CoordInBuildArea
-import net.rsprot.protocol.message.OutgoingMessage
+import net.rsprot.protocol.message.OutgoingGameMessage
 
 /**
  * Map anim specific is sent to play a graphical effect/spotanim on a tile,
@@ -31,7 +31,7 @@ public class MapAnimSpecific private constructor(
     private val _delay: UShort,
     private val _height: UByte,
     private val coordInBuildArea: CoordInBuildArea,
-) : OutgoingMessage {
+) : OutgoingGameMessage {
     public constructor(
         id: Int,
         delay: Int,

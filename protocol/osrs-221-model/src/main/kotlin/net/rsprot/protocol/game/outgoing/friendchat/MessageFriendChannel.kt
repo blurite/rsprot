@@ -1,7 +1,7 @@
 package net.rsprot.protocol.game.outgoing.friendchat
 
 import net.rsprot.compression.Base37
-import net.rsprot.protocol.message.OutgoingMessage
+import net.rsprot.protocol.message.OutgoingGameMessage
 
 /**
  * Message friendchannel is used to transmit messages within a friend
@@ -40,7 +40,7 @@ public class MessageFriendChannel private constructor(
     public val worldMessageCounter: Int,
     private val _chatCrownType: UByte,
     public val message: String,
-) : OutgoingMessage {
+) : OutgoingGameMessage {
     public constructor(
         sender: String,
         channelName: String,

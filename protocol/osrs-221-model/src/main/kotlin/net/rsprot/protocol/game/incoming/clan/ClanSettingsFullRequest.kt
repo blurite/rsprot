@@ -1,6 +1,6 @@
 package net.rsprot.protocol.game.incoming.clan
 
-import net.rsprot.protocol.message.IncomingMessage
+import net.rsprot.protocol.message.IncomingGameMessage
 
 /**
  * Clan settings requests are made whenever the server sends a clansettings
@@ -13,7 +13,7 @@ import net.rsprot.protocol.message.IncomingMessage
  */
 public class ClanSettingsFullRequest(
     public val clanId: Int,
-) : IncomingMessage {
+) : IncomingGameMessage {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (javaClass != other?.javaClass) return false

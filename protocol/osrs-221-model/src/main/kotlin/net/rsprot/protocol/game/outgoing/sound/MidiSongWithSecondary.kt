@@ -1,6 +1,6 @@
 package net.rsprot.protocol.game.outgoing.sound
 
-import net.rsprot.protocol.message.OutgoingMessage
+import net.rsprot.protocol.message.OutgoingGameMessage
 
 /**
  * Midi song packets are used to play songs through the music player.
@@ -28,7 +28,7 @@ public class MidiSongWithSecondary private constructor(
     private val _fadeOutSpeed: UShort,
     private val _fadeInDelay: UShort,
     private val _fadeInSpeed: UShort,
-) : OutgoingMessage {
+) : OutgoingGameMessage {
     public constructor(
         primaryId: Int,
         secondaryId: Int,

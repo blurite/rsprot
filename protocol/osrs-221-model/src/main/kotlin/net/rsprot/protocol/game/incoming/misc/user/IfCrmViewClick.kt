@@ -1,6 +1,6 @@
 package net.rsprot.protocol.game.incoming.misc.user
 
-import net.rsprot.protocol.message.IncomingMessage
+import net.rsprot.protocol.message.IncomingGameMessage
 import net.rsprot.protocol.message.toIntOrMinusOne
 import net.rsprot.protocol.util.CombinedId
 
@@ -26,7 +26,7 @@ public class IfCrmViewClick private constructor(
     public val behaviour1: Int,
     public val behaviour2: Int,
     public val behaviour3: Int,
-) : IncomingMessage {
+) : IncomingGameMessage {
     public constructor(
         crmServerTarget: Int,
         combinedId: CombinedId,

@@ -1,6 +1,6 @@
 package net.rsprot.protocol.game.outgoing.camera
 
-import net.rsprot.protocol.message.OutgoingMessage
+import net.rsprot.protocol.message.OutgoingGameMessage
 
 /**
  * Oculus sync is used to re-synchronize the orb of oculus
@@ -15,7 +15,7 @@ import net.rsprot.protocol.message.OutgoingMessage
  */
 public class OculusSync(
     public val value: Int,
-) : OutgoingMessage {
+) : OutgoingGameMessage {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (javaClass != other?.javaClass) return false

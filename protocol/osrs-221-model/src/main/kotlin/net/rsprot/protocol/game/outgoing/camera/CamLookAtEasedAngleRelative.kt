@@ -1,7 +1,7 @@
 package net.rsprot.protocol.game.outgoing.camera
 
 import net.rsprot.protocol.game.outgoing.camera.util.CameraEaseFunction
-import net.rsprot.protocol.message.OutgoingMessage
+import net.rsprot.protocol.message.OutgoingGameMessage
 
 /**
  * Cam look at eased angle relative is used to make the camera look towards
@@ -29,7 +29,7 @@ public class CamLookAtEasedAngleRelative private constructor(
     private val _yAngle: Short,
     private val _duration: UShort,
     private val _function: UByte,
-) : OutgoingMessage {
+) : OutgoingGameMessage {
     public constructor(
         xAngle: Int,
         yAngle: Int,

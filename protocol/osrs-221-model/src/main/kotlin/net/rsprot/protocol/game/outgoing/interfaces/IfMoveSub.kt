@@ -1,6 +1,6 @@
 package net.rsprot.protocol.game.outgoing.interfaces
 
-import net.rsprot.protocol.message.OutgoingMessage
+import net.rsprot.protocol.message.OutgoingGameMessage
 import net.rsprot.protocol.util.CombinedId
 
 /**
@@ -19,7 +19,7 @@ import net.rsprot.protocol.util.CombinedId
 public class IfMoveSub private constructor(
     public val sourceCombinedId: CombinedId,
     public val destinationCombinedId: CombinedId,
-) : OutgoingMessage {
+) : OutgoingGameMessage {
     public constructor(
         sourceInterfaceId: Int,
         sourceComponentId: Int,

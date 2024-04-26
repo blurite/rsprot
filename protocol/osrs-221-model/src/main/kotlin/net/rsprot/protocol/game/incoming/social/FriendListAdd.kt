@@ -1,6 +1,6 @@
 package net.rsprot.protocol.game.incoming.social
 
-import net.rsprot.protocol.message.IncomingMessage
+import net.rsprot.protocol.message.IncomingGameMessage
 
 /**
  * Friend list add messages are sent when the player requests
@@ -9,7 +9,7 @@ import net.rsprot.protocol.message.IncomingMessage
  */
 public class FriendListAdd(
     public val name: String,
-) : IncomingMessage {
+) : IncomingGameMessage {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (javaClass != other?.javaClass) return false

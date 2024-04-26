@@ -1,6 +1,6 @@
 package net.rsprot.protocol.game.outgoing.sound
 
-import net.rsprot.protocol.message.OutgoingMessage
+import net.rsprot.protocol.message.OutgoingGameMessage
 
 /**
  * Midi song stop is used to stop playing an existing midi song.
@@ -10,7 +10,7 @@ import net.rsprot.protocol.message.OutgoingMessage
 public class MidiSongStop private constructor(
     private val _fadeOutDelay: UShort,
     private val _fadeOutSpeed: UShort,
-) : OutgoingMessage {
+) : OutgoingGameMessage {
     public constructor(
         fadeOutDelay: Int,
         fadeOutSpeed: Int,

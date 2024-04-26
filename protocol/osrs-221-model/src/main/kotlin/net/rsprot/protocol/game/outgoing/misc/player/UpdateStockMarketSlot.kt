@@ -1,6 +1,6 @@
 package net.rsprot.protocol.game.outgoing.misc.player
 
-import net.rsprot.protocol.message.OutgoingMessage
+import net.rsprot.protocol.message.OutgoingGameMessage
 
 /**
  * Update stockmarket slot packet is used to set up
@@ -12,7 +12,7 @@ import net.rsprot.protocol.message.OutgoingMessage
 public class UpdateStockMarketSlot private constructor(
     private val _slot: UByte,
     public val update: StockMarketUpdateType,
-) : OutgoingMessage {
+) : OutgoingGameMessage {
     public constructor(
         slot: Int,
         update: StockMarketUpdateType,

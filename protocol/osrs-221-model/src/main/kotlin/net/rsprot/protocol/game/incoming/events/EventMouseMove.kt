@@ -1,6 +1,6 @@
 package net.rsprot.protocol.game.incoming.events
 
-import net.rsprot.protocol.message.IncomingMessage
+import net.rsprot.protocol.message.IncomingGameMessage
 
 /**
  * Mouse move messages are sent when the user moves their mouse across
@@ -23,7 +23,7 @@ public class EventMouseMove private constructor(
     private val _averageTime: UByte,
     private val _remainingTime: UByte,
     public val movements: MouseMovements,
-) : IncomingMessage {
+) : IncomingGameMessage {
     public constructor(
         averageTime: Int,
         remainingTime: Int,

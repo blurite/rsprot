@@ -1,7 +1,7 @@
 package net.rsprot.protocol.game.outgoing.zone.header
 
 import io.netty.buffer.ByteBuf
-import net.rsprot.protocol.message.OutgoingMessage
+import net.rsprot.protocol.message.OutgoingGameMessage
 
 /**
  * Update zone partial-enclosed is used to send a batch of updates for a given
@@ -25,7 +25,7 @@ public class UpdateZonePartialEnclosed private constructor(
     private val _zoneZ: UByte,
     private val _level: UByte,
     public val payload: ByteBuf,
-) : OutgoingMessage {
+) : OutgoingGameMessage {
     public constructor(
         zoneX: Int,
         zoneZ: Int,

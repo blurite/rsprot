@@ -11,7 +11,7 @@ import net.rsprot.protocol.common.platform.PlatformMap
 import net.rsprot.protocol.common.platform.PlatformType
 import net.rsprot.protocol.game.outgoing.info.ObserverExtendedInfoFlags
 import net.rsprot.protocol.game.outgoing.info.util.ReferencePooledObject
-import net.rsprot.protocol.message.OutgoingMessage
+import net.rsprot.protocol.message.OutgoingGameMessage
 import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.contract
 
@@ -42,7 +42,7 @@ public class NpcInfo internal constructor(
     private var localPlayerIndex: Int,
     private val indexSupplier: NpcIndexSupplier,
     private val lowResolutionToHighResolutionEncoders: PlatformMap<NpcResolutionChangeEncoder>,
-) : ReferencePooledObject, OutgoingMessage {
+) : ReferencePooledObject, OutgoingGameMessage {
     /**
      * The last cycle's coordinate of the local player, used to perform faster npc removal.
      * If the player moves a greater distance than the [viewDistance], we can make the assumption

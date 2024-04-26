@@ -1,6 +1,6 @@
 package net.rsprot.protocol.game.outgoing.specific
 
-import net.rsprot.protocol.message.OutgoingMessage
+import net.rsprot.protocol.message.OutgoingGameMessage
 
 /**
  * Npc anim specifics are used to play an animation on a NPC for a specific player,
@@ -13,7 +13,7 @@ public class NpcAnimSpecific private constructor(
     private val _index: UShort,
     private val _id: UShort,
     private val _delay: UByte,
-) : OutgoingMessage {
+) : OutgoingGameMessage {
     public constructor(
         index: Int,
         id: Int,

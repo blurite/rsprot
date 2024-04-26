@@ -1,6 +1,6 @@
 package net.rsprot.protocol.game.outgoing.misc.client
 
-import net.rsprot.protocol.message.OutgoingMessage
+import net.rsprot.protocol.message.OutgoingGameMessage
 
 /**
  * URL open packets are used to open a site on the target's default
@@ -9,7 +9,7 @@ import net.rsprot.protocol.message.OutgoingMessage
  */
 public class UrlOpen(
     public val url: String,
-) : OutgoingMessage {
+) : OutgoingGameMessage {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (javaClass != other?.javaClass) return false

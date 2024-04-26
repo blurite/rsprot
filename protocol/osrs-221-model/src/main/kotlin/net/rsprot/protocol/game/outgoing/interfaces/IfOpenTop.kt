@@ -1,6 +1,6 @@
 package net.rsprot.protocol.game.outgoing.interfaces
 
-import net.rsprot.protocol.message.OutgoingMessage
+import net.rsprot.protocol.message.OutgoingGameMessage
 
 /**
  * If open-top messages are sent to open 'root' interfaces.
@@ -10,7 +10,7 @@ import net.rsprot.protocol.message.OutgoingMessage
  */
 public class IfOpenTop(
     public val interfaceId: Int,
-) : OutgoingMessage {
+) : OutgoingGameMessage {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (javaClass != other?.javaClass) return false

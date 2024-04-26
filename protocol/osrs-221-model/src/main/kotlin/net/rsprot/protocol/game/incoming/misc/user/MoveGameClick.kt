@@ -1,7 +1,7 @@
 package net.rsprot.protocol.game.incoming.misc.user
 
 import net.rsprot.protocol.game.incoming.misc.user.internal.MovementRequest
-import net.rsprot.protocol.message.IncomingMessage
+import net.rsprot.protocol.message.IncomingGameMessage
 
 /**
  * Move gameclick packets are sent when the user clicks to walk within their
@@ -23,7 +23,7 @@ import net.rsprot.protocol.message.IncomingMessage
 @Suppress("MemberVisibilityCanBePrivate")
 public class MoveGameClick private constructor(
     private val movementRequest: MovementRequest,
-) : IncomingMessage {
+) : IncomingGameMessage {
     public constructor(
         x: Int,
         z: Int,

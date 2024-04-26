@@ -1,6 +1,6 @@
 package net.rsprot.protocol.game.outgoing.sound
 
-import net.rsprot.protocol.message.OutgoingMessage
+import net.rsprot.protocol.message.OutgoingGameMessage
 
 /**
  * Synth sound is used to play a short sound effect locally for the given player.
@@ -12,7 +12,7 @@ public class SynthSound private constructor(
     private val _id: UShort,
     private val _loops: UByte,
     private val _delay: UShort,
-) : OutgoingMessage {
+) : OutgoingGameMessage {
     public constructor(
         id: Int,
         loops: Int,

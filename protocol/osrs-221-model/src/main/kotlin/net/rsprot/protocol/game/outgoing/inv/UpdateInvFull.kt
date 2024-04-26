@@ -4,7 +4,7 @@ import net.rsprot.protocol.common.RSProtFlags
 import net.rsprot.protocol.common.game.outgoing.inv.InventoryObject
 import net.rsprot.protocol.common.game.outgoing.inv.internal.Inventory
 import net.rsprot.protocol.common.game.outgoing.inv.internal.InventoryPool
-import net.rsprot.protocol.message.OutgoingMessage
+import net.rsprot.protocol.message.OutgoingGameMessage
 import net.rsprot.protocol.util.CombinedId
 
 /**
@@ -39,7 +39,7 @@ public class UpdateInvFull private constructor(
     public val combinedId: CombinedId,
     private val _inventoryId: UShort,
     private val inventory: Inventory,
-) : OutgoingMessage {
+) : OutgoingGameMessage {
     public constructor(
         interfaceId: Int,
         componentId: Int,

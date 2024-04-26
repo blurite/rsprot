@@ -1,6 +1,6 @@
 package net.rsprot.protocol.game.incoming.buttons
 
-import net.rsprot.protocol.message.IncomingMessage
+import net.rsprot.protocol.message.IncomingGameMessage
 import net.rsprot.protocol.message.toIntOrMinusOne
 import net.rsprot.protocol.util.CombinedId
 
@@ -26,7 +26,7 @@ public class IfButtonT private constructor(
     private val targetCombinedId: CombinedId,
     private val _targetSub: UShort,
     private val _targetObj: UShort,
-) : IncomingMessage {
+) : IncomingGameMessage {
     public constructor(
         selectedCombinedId: CombinedId,
         selectedSub: Int,

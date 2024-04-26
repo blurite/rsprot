@@ -1,6 +1,6 @@
 package net.rsprot.protocol.game.outgoing.camera
 
-import net.rsprot.protocol.message.OutgoingMessage
+import net.rsprot.protocol.message.OutgoingGameMessage
 
 /**
  * Cam mode is used to set the camera into an orb-of-oculus mode,
@@ -10,7 +10,7 @@ import net.rsprot.protocol.message.OutgoingMessage
  */
 public class CamMode(
     public val mode: Int,
-) : OutgoingMessage {
+) : OutgoingGameMessage {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (javaClass != other?.javaClass) return false

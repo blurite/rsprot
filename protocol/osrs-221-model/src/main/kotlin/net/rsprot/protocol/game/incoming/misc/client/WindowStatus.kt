@@ -1,6 +1,6 @@
 package net.rsprot.protocol.game.incoming.misc.client
 
-import net.rsprot.protocol.message.IncomingMessage
+import net.rsprot.protocol.message.IncomingGameMessage
 
 /**
  * Window status is sent first on login, and afterwards whenever
@@ -11,7 +11,7 @@ public class WindowStatus private constructor(
     private val _windowMode: UByte,
     private val _frameWidth: UShort,
     private val _frameHeight: UShort,
-) : IncomingMessage {
+) : IncomingGameMessage {
     public constructor(
         windowMode: Int,
         frameWidth: Int,

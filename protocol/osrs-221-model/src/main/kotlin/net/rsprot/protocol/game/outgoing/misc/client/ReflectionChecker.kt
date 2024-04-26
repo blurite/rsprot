@@ -1,6 +1,6 @@
 package net.rsprot.protocol.game.outgoing.misc.client
 
-import net.rsprot.protocol.message.OutgoingMessage
+import net.rsprot.protocol.message.OutgoingGameMessage
 
 /**
  * Reflection checker packet will attempt to use [java.lang.reflect] to
@@ -25,7 +25,7 @@ import net.rsprot.protocol.message.OutgoingMessage
 public class ReflectionChecker(
     public val id: Int,
     public val checks: List<ReflectionCheck>,
-) : OutgoingMessage {
+) : OutgoingGameMessage {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (javaClass != other?.javaClass) return false

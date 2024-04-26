@@ -1,6 +1,6 @@
 package net.rsprot.protocol.game.outgoing.varp
 
-import net.rsprot.protocol.message.OutgoingMessage
+import net.rsprot.protocol.message.OutgoingGameMessage
 
 /**
  * Varp small messages are used to send a varp to the client that
@@ -13,7 +13,7 @@ import net.rsprot.protocol.message.OutgoingMessage
 public class VarpSmall private constructor(
     private val _id: UShort,
     private val _value: Byte,
-) : OutgoingMessage {
+) : OutgoingGameMessage {
     public constructor(
         id: Int,
         value: Int,

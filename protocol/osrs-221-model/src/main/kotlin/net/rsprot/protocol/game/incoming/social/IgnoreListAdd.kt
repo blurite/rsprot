@@ -1,6 +1,6 @@
 package net.rsprot.protocol.game.incoming.social
 
-import net.rsprot.protocol.message.IncomingMessage
+import net.rsprot.protocol.message.IncomingGameMessage
 
 /**
  * Ignore list addition events are sent whenever the player
@@ -9,7 +9,7 @@ import net.rsprot.protocol.message.IncomingMessage
  */
 public class IgnoreListAdd(
     public val name: String,
-) : IncomingMessage {
+) : IncomingGameMessage {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (javaClass != other?.javaClass) return false

@@ -1,7 +1,7 @@
 package net.rsprot.protocol.js5.incoming
 
-import net.rsprot.protocol.message.IncomingMessage
+import net.rsprot.protocol.message.IncomingJs5Message
 
 public data class XorChange(
     public val key: Int,
-) : IncomingMessage
+) : IncomingJs5Message

@@ -1,6 +1,6 @@
 package net.rsprot.protocol.game.incoming.resumed
 
-import net.rsprot.protocol.message.IncomingMessage
+import net.rsprot.protocol.message.IncomingGameMessage
 
 /**
  * Name dialogs are sent whenever a player enters the name of a player
@@ -10,7 +10,7 @@ import net.rsprot.protocol.message.IncomingMessage
  */
 public class ResumePNameDialog(
     public val name: String,
-) : IncomingMessage {
+) : IncomingGameMessage {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (javaClass != other?.javaClass) return false

@@ -1,6 +1,6 @@
 package net.rsprot.protocol.game.outgoing.misc.client
 
-import net.rsprot.protocol.message.OutgoingMessage
+import net.rsprot.protocol.message.OutgoingGameMessage
 
 /**
  * Update reboot timer is used to start the shut-down timer
@@ -14,7 +14,7 @@ import net.rsprot.protocol.message.OutgoingMessage
  */
 public class UpdateRebootTimer(
     public val gameCycles: Int,
-) : OutgoingMessage {
+) : OutgoingGameMessage {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (javaClass != other?.javaClass) return false

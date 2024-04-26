@@ -1,6 +1,6 @@
 package net.rsprot.protocol.game.outgoing.clan
 
-import net.rsprot.protocol.message.OutgoingMessage
+import net.rsprot.protocol.message.OutgoingGameMessage
 
 /**
  * Message clan channel is used to send messages within a clan channel
@@ -38,7 +38,7 @@ public class MessageClanChannel private constructor(
     public val worldMessageCounter: Int,
     private val _chatCrownType: UByte,
     public val message: String,
-) : OutgoingMessage {
+) : OutgoingGameMessage {
     public constructor(
         clanType: Int,
         name: String,

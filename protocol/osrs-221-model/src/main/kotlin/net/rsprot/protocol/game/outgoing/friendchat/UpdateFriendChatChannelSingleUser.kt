@@ -1,6 +1,6 @@
 package net.rsprot.protocol.game.outgoing.friendchat
 
-import net.rsprot.protocol.message.OutgoingMessage
+import net.rsprot.protocol.message.OutgoingGameMessage
 
 /**
  * Update friendchat singleuser is used to perform a change
@@ -12,7 +12,7 @@ import net.rsprot.protocol.message.OutgoingMessage
  */
 public class UpdateFriendChatChannelSingleUser private constructor(
     public val user: FriendChatUser,
-) : OutgoingMessage {
+) : OutgoingGameMessage {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (javaClass != other?.javaClass) return false

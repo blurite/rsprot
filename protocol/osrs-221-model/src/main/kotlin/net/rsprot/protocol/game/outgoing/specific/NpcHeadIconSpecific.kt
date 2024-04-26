@@ -1,6 +1,6 @@
 package net.rsprot.protocol.game.outgoing.specific
 
-import net.rsprot.protocol.message.OutgoingMessage
+import net.rsprot.protocol.message.OutgoingGameMessage
 
 /**
  * Npc head-icon specific packets are used to render a head icon over
@@ -28,7 +28,7 @@ public class NpcHeadIconSpecific private constructor(
     private val _headIconSlot: UByte,
     private val _spriteGroup: UShort,
     private val _spriteIndex: UShort,
-) : OutgoingMessage {
+) : OutgoingGameMessage {
     public constructor(
         index: Int,
         headIconSlot: Int,

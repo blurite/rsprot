@@ -1,6 +1,6 @@
 package net.rsprot.protocol.game.incoming.misc.client
 
-import net.rsprot.protocol.message.IncomingMessage
+import net.rsprot.protocol.message.IncomingGameMessage
 
 /**
  * Sound jingle end packet is sent when a jingle finishes playing in the client,
@@ -9,7 +9,7 @@ import net.rsprot.protocol.message.IncomingMessage
  */
 public class SoundJingleEnd(
     public val jingleId: Int,
-) : IncomingMessage {
+) : IncomingGameMessage {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (javaClass != other?.javaClass) return false
