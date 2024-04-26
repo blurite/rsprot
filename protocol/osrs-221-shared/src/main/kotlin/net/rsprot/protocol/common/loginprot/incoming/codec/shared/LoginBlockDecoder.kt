@@ -128,7 +128,7 @@ public abstract class LoginBlockDecoder<T>(
         val javaVersionMajor = buffer.g1()
         val javaVersionMinor = buffer.g1()
         val javaVersionPatch = buffer.g1()
-        val unknownConstZero1 = buffer.g1()
+        val applet = buffer.g1() == 0
         val javaMaxMemoryMb = buffer.g2()
         val javaAvailableProcessors = buffer.g1()
         val systemMemory = buffer.g3()
@@ -142,7 +142,7 @@ public abstract class LoginBlockDecoder<T>(
         val cpuManufacturer = buffer.gjstr2()
         val cpuBrand = buffer.gjstr2()
         val cpuCount1 = buffer.g1()
-        val cpuCount2 = buffer.g2()
+        val cpuCount2 = buffer.g1()
         val cpuFeatures =
             IntArray(3) {
                 buffer.g4()
@@ -159,7 +159,7 @@ public abstract class LoginBlockDecoder<T>(
             javaVersionMajor.toUByte(),
             javaVersionMinor.toUByte(),
             javaVersionPatch.toUByte(),
-            unknownConstZero1.toUByte(),
+            applet,
             javaMaxMemoryMb.toUShort(),
             javaAvailableProcessors.toUByte(),
             systemMemory,

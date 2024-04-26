@@ -10,7 +10,7 @@ public class HostPlatformStats(
     private val _javaVersionMajor: UByte,
     private val _javaVersionMinor: UByte,
     private val _javaVersionPatch: UByte,
-    private val _unknownConstZero1: UByte,
+    public val applet: Boolean,
     private val _javaMaxMemoryMb: UShort,
     private val _javaAvailableProcessors: UByte,
     public val systemMemory: Int,
@@ -44,8 +44,6 @@ public class HostPlatformStats(
         get() = _javaVersionMinor.toInt()
     public val javaVersionPatch: Int
         get() = _javaVersionPatch.toInt()
-    public val unknownConstZero: Int
-        get() = _unknownConstZero1.toInt()
     public val javaMaxMemoryMb: Int
         get() = _javaMaxMemoryMb.toInt()
     public val javaAvailableProcessors: Int
@@ -75,7 +73,7 @@ public class HostPlatformStats(
         if (_javaVersionMajor != other._javaVersionMajor) return false
         if (_javaVersionMinor != other._javaVersionMinor) return false
         if (_javaVersionPatch != other._javaVersionPatch) return false
-        if (_unknownConstZero1 != other._unknownConstZero1) return false
+        if (applet != other.applet) return false
         if (_javaMaxMemoryMb != other._javaMaxMemoryMb) return false
         if (_javaAvailableProcessors != other._javaAvailableProcessors) return false
         if (systemMemory != other.systemMemory) return false
@@ -107,7 +105,7 @@ public class HostPlatformStats(
         result = 31 * result + _javaVersionMajor.hashCode()
         result = 31 * result + _javaVersionMinor.hashCode()
         result = 31 * result + _javaVersionPatch.hashCode()
-        result = 31 * result + _unknownConstZero1.hashCode()
+        result = 31 * result + applet.hashCode()
         result = 31 * result + _javaMaxMemoryMb.hashCode()
         result = 31 * result + _javaAvailableProcessors.hashCode()
         result = 31 * result + systemMemory
@@ -150,7 +148,7 @@ public class HostPlatformStats(
             "javaVersionMajor=$javaVersionMajor, " +
             "javaVersionMinor=$javaVersionMinor, " +
             "javaVersionPatch=$javaVersionPatch, " +
-            "unknownConstZero=$unknownConstZero, " +
+            "applet=$applet, " +
             "javaMaxMemoryMb=$javaMaxMemoryMb, " +
             "javaAvailableProcessors=$javaAvailableProcessors, " +
             "systemSpeed=$systemSpeed, " +
