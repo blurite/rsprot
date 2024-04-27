@@ -1,5 +1,7 @@
 package net.rsprot.protocol.game.incoming.misc.user
 
+import net.rsprot.protocol.ProtCategory
+import net.rsprot.protocol.game.incoming.GameClientProtCategory
 import net.rsprot.protocol.message.IncomingGameMessage
 
 /**
@@ -45,6 +47,8 @@ public class Teleport private constructor(
         get() = _z.toInt()
     public val level: Int
         get() = _level.toInt()
+    override val category: ProtCategory
+        get() = GameClientProtCategory.USER_EVENT
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

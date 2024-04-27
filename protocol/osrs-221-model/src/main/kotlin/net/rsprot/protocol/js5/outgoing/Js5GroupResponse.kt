@@ -2,9 +2,8 @@ package net.rsprot.protocol.js5.outgoing
 
 import io.netty.buffer.ByteBuf
 import io.netty.buffer.DefaultByteBufHolder
-import net.rsprot.protocol.js5.incoming.Js5GroupRequest
-import net.rsprot.protocol.message.OutgoingMessage
-import java.io.File
+import net.rsprot.protocol.message.OutgoingJs5Message
+import java.io.RandomAccessFile
 
 /**
  * Js5 group responses are used to feed the cache to the client through the server.
@@ -16,40 +15,10 @@ public class Js5GroupResponse(
     /**
      * A common binding interface for all the possible JS5 group responses.
      */
-    public sealed interface Js5GroupResponseType
-
-    /**
-     * An unprepared JS5 group response is a response that has not been spliced up
-     * into 512 byte blocks, and instead just represents each buffer as it is in
-     * the cache (excluding version, still).
-     * These unprepared responses are less performant than the prepared counterparts,
-     * as they require writing the responses in smaller blocks which requires numerous
-     * calls rather than a single one.
-     */
-    public sealed interface UnpreparedJs5GroupResponse : Js5GroupResponseType
-
-    /**
-     * An unprepared byte buffer response.
-     * This implementation does support XOR encryption.
-     * @property request the request that was made, written as part of the response
-     * so client can identify the initial request.
-     * @param buffer the byte buffer of the group in the cache, excluding the version,
-     * unless the group is part of the master index.
-     * The buffer's writer index and reference count will not be changed by the JS5
-     * implementation, as the buffers are intended to be written to numerous recipients.
-     */
-    public class UnpreparedJs5ByteBufGroupResponse(
-        public val request: Js5GroupRequest,
-        buffer: ByteBuf,
-    ) : DefaultByteBufHolder(buffer), UnpreparedJs5GroupResponse
-
-    /**
-     * A prepared JS5 group response. These are responses which have been prepared to be
-     * in the exact format that the client expects, meaning we can write the contents over
-     * to the client in a single [ByteBuf.writeBytes] call, rather than needing to split
-     * it into 512 byte blocks during the encoding.
-     */
-    public sealed interface PreparedJs5GroupResponse : Js5GroupResponseType
+    public sealed interface Js5GroupResponseType {
+        public val offset: Int
+        public val limit: Int
+    }
 
     /**
      * A prepared ByteBuf based JS5 group response. The byte buffer here is in the exact
@@ -59,9 +28,13 @@ public class Js5GroupResponse(
      * @param buffer the byte buffer containing all the data to be written over to the client.
      * The buffer's writer index and reference count will not be changed by the JS5
      * implementation, as the buffers are intended to be written to numerous recipients.
+     * @property offset the reader index offset, allowing us to only send a slice of the buffer
      */
-    public class PreparedJs5ByteBufGroupResponse(buffer: ByteBuf) :
-        DefaultByteBufHolder(buffer), PreparedJs5GroupResponse
+    public class Js5ByteBufGroupResponse(
+        buffer: ByteBuf,
+        override val offset: Int,
+        override val limit: Int,
+    ) : DefaultByteBufHolder(buffer), Js5GroupResponseType
 
     /**
      * A prepared JS5 file-based group response. This response will make use of Netty's
@@ -74,6 +47,11 @@ public class Js5GroupResponse(
      * does it support XOR encryption.
      * @property file the file containing the fully prepared response to be written
      * to the client.
+     * @property offset the file data offset, allowing us to only send a slice of the file
      */
-    public class PreparedJs5FileGroupResponse(public val file: File) : PreparedJs5GroupResponse
+    public class Js5FileGroupResponse(
+        public val file: RandomAccessFile,
+        override val offset: Int,
+        override val limit: Int,
+    ) : Js5GroupResponseType
 }

@@ -1,5 +1,7 @@
 package net.rsprot.protocol.game.incoming.misc.user
 
+import net.rsprot.protocol.ProtCategory
+import net.rsprot.protocol.game.incoming.GameClientProtCategory
 import net.rsprot.protocol.message.IncomingGameMessage
 
 /**
@@ -7,4 +9,7 @@ import net.rsprot.protocol.message.IncomingGameMessage
  * of a modal interface, or if they press the 'Esc' key while having the
  * "Esc to close interfaces" setting enabled.
  */
-public data object CloseModal : IncomingGameMessage
+public data object CloseModal : IncomingGameMessage {
+    override val category: ProtCategory
+        get() = GameClientProtCategory.USER_EVENT
+}

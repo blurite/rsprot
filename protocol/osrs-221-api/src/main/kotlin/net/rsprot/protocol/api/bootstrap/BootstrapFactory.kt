@@ -1,4 +1,4 @@
-package net.rsprot.protocol.handler.bootstrap
+package net.rsprot.protocol.api.bootstrap
 
 import io.netty.bootstrap.ServerBootstrap
 import io.netty.buffer.ByteBufAllocator
@@ -22,7 +22,16 @@ import io.netty.incubator.channel.uring.IOUringServerSocketChannel
 public class BootstrapFactory(
     private val alloc: ByteBufAllocator,
 ) {
-    public fun createEventLoopGroup(): EventLoopGroup {
+    public fun createParentLoopGroup(): EventLoopGroup {
+        return when {
+            IOUring.isAvailable() -> IOUringEventLoopGroup(1)
+            Epoll.isAvailable() -> EpollEventLoopGroup(1)
+            KQueue.isAvailable() -> KQueueEventLoopGroup(1)
+            else -> NioEventLoopGroup(1)
+        }
+    }
+
+    public fun createChildLoopGroup(): EventLoopGroup {
         return when {
             IOUring.isAvailable() -> IOUringEventLoopGroup()
             Epoll.isAvailable() -> EpollEventLoopGroup()
@@ -31,9 +40,12 @@ public class BootstrapFactory(
         }
     }
 
-    public fun createServerBootstrap(group: EventLoopGroup): ServerBootstrap {
+    public fun createServerBootstrap(
+        parentGroup: EventLoopGroup,
+        childGroup: EventLoopGroup,
+    ): ServerBootstrap {
         val channel =
-            when (group) {
+            when (parentGroup) {
                 is IOUringEventLoopGroup -> IOUringServerSocketChannel::class.java
                 is EpollEventLoopGroup -> EpollServerSocketChannel::class.java
                 is KQueueEventLoopGroup -> KQueueServerSocketChannel::class.java
@@ -42,7 +54,7 @@ public class BootstrapFactory(
             }
 
         return ServerBootstrap()
-            .group(group)
+            .group(parentGroup, childGroup)
             .channel(channel)
             .option(ChannelOption.ALLOCATOR, alloc)
             .childOption(ChannelOption.ALLOCATOR, alloc)
@@ -50,11 +62,10 @@ public class BootstrapFactory(
             .childOption(ChannelOption.TCP_NODELAY, true)
             .childOption(ChannelOption.SO_RCVBUF, 65536)
             .childOption(ChannelOption.SO_SNDBUF, 65536)
-            .childOption(ChannelOption.SO_TIMEOUT, 30_000)
             .childOption(ChannelOption.CONNECT_TIMEOUT_MILLIS, 30_000)
             .childOption(ChannelOption.WRITE_BUFFER_WATER_MARK, WriteBufferWaterMark(524_288, 2_097_152))
             .also {
-                if (group is EpollEventLoopGroup) {
+                if (parentGroup is EpollEventLoopGroup) {
                     it.childOption(EpollChannelOption.EPOLL_MODE, EpollMode.LEVEL_TRIGGERED)
                 }
             }

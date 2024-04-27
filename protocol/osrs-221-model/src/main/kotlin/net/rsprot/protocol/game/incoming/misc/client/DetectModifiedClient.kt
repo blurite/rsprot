@@ -1,5 +1,7 @@
 package net.rsprot.protocol.game.incoming.misc.client
 
+import net.rsprot.protocol.ProtCategory
+import net.rsprot.protocol.game.incoming.GameClientProtCategory
 import net.rsprot.protocol.message.IncomingGameMessage
 
 /**
@@ -11,6 +13,9 @@ import net.rsprot.protocol.message.IncomingGameMessage
 public class DetectModifiedClient(
     public val code: Int,
 ) : IncomingGameMessage {
+    override val category: ProtCategory
+        get() = GameClientProtCategory.CLIENT_EVENT
+
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (javaClass != other?.javaClass) return false

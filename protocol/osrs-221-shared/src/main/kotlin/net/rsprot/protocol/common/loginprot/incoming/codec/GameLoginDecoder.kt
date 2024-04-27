@@ -1,6 +1,7 @@
 package net.rsprot.protocol.common.loginprot.incoming.codec
 
 import net.rsprot.buffer.JagByteBuf
+import net.rsprot.buffer.extensions.toJagByteBuf
 import net.rsprot.protocol.ClientProt
 import net.rsprot.protocol.common.loginprot.incoming.codec.shared.LoginBlockDecoder
 import net.rsprot.protocol.common.loginprot.incoming.prot.LoginClientProt
@@ -23,7 +24,10 @@ public class GameLoginDecoder(
         buffer: JagByteBuf,
         tools: MessageDecodingTools,
     ): GameLogin {
-        return GameLogin(buffer) {
+        val copy = buffer.buffer.copy()
+        // Mark the buffer as "read" as copy function doesn't do it automatically.
+        buffer.buffer.readerIndex(buffer.buffer.writerIndex())
+        return GameLogin(copy.toJagByteBuf()) {
             decodeLoginBlock(it)
         }
     }
@@ -51,7 +55,6 @@ public class GameLoginDecoder(
         return when (val otpType = buffer.g1()) {
             OTP_TOKEN -> {
                 val identifier = buffer.g4()
-                buffer.skipRead(1)
                 OtpAuthenticationType.TrustedComputer(identifier)
             }
             OTP_REMEMBER -> {

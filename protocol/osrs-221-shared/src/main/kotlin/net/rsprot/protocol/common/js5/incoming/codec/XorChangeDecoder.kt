@@ -15,6 +15,7 @@ public class XorChangeDecoder : MessageDecoder<XorChange> {
         tools: MessageDecodingTools,
     ): XorChange {
         val key = buffer.g1()
+        buffer.skipRead(2)
         return XorChange(key)
     }
 }

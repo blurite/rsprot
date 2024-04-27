@@ -1,5 +1,7 @@
 package net.rsprot.protocol.game.incoming.events
 
+import net.rsprot.protocol.ProtCategory
+import net.rsprot.protocol.game.incoming.GameClientProtCategory
 import net.rsprot.protocol.message.IncomingGameMessage
 import java.awt.event.KeyEvent
 
@@ -20,6 +22,9 @@ public class EventKeyboard(
     public val lastTransmittedKeyPress: Int,
     public val keysPressed: KeySequence,
 ) : IncomingGameMessage {
+    override val category: ProtCategory
+        get() = GameClientProtCategory.CLIENT_EVENT
+
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (javaClass != other?.javaClass) return false

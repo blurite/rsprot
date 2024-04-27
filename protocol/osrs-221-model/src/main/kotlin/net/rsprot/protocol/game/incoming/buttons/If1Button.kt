@@ -1,5 +1,7 @@
 package net.rsprot.protocol.game.incoming.buttons
 
+import net.rsprot.protocol.ProtCategory
+import net.rsprot.protocol.game.incoming.GameClientProtCategory
 import net.rsprot.protocol.message.IncomingGameMessage
 import net.rsprot.protocol.util.CombinedId
 
@@ -16,6 +18,8 @@ public class If1Button(
         get() = combinedId.interfaceId
     public val componentId: Int
         get() = combinedId.componentId
+    override val category: ProtCategory
+        get() = GameClientProtCategory.USER_EVENT
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

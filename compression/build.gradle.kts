@@ -8,3 +8,11 @@ dependencies {
     implementation(projects.buffer)
     implementation(libs.inline.logger)
 }
+
+publishing {
+    publications {
+        create<MavenPublication>("maven") {
+            from(components["java"])
+        }
+    }
+}

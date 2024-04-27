@@ -38,7 +38,7 @@ public abstract class MessageConsumerRepositoryBuilder<R> {
         addListener(T::class.java) { r, t -> listener(r, t) }
     }
 
-    public fun build(): MessageConsumerRepository<R> {
-        return MessageConsumerRepository(consumers.toMap(HashMap()))
+    public fun build(): GameMessageConsumerRepository<R> {
+        return GameMessageConsumerRepository(consumers.toMap(HashMap()))
     }
 }

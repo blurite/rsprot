@@ -14,7 +14,7 @@ public class UrgentRequestDecoder : MessageDecoder<UrgentRequest> {
         buffer: JagByteBuf,
         tools: MessageDecodingTools,
     ): UrgentRequest {
-        val archiveId = buffer.g2()
+        val archiveId = buffer.g1()
         val groupId = buffer.g2()
         return UrgentRequest(
             archiveId.toUByte(),

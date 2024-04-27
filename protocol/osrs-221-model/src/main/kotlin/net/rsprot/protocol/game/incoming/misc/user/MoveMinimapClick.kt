@@ -1,5 +1,7 @@
 package net.rsprot.protocol.game.incoming.misc.user
 
+import net.rsprot.protocol.ProtCategory
+import net.rsprot.protocol.game.incoming.GameClientProtCategory
 import net.rsprot.protocol.game.incoming.misc.user.internal.MovementRequest
 import net.rsprot.protocol.message.IncomingGameMessage
 import kotlin.math.cos
@@ -78,6 +80,8 @@ public class MoveMinimapClick private constructor(
         get() = _fineX.toInt()
     public val fineZ: Int
         get() = _fineZ.toInt()
+    override val category: ProtCategory
+        get() = GameClientProtCategory.USER_EVENT
 
     /**
      * Checks if the provided arguments are valid (as in produce the same

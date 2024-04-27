@@ -1,5 +1,7 @@
 package net.rsprot.protocol.game.incoming.misc.user
 
+import net.rsprot.protocol.ProtCategory
+import net.rsprot.protocol.game.incoming.GameClientProtCategory
 import net.rsprot.protocol.message.IncomingGameMessage
 import kotlin.jvm.Throws
 
@@ -31,6 +33,8 @@ public class UpdatePlayerModel private constructor(
 
     public val bodyType: Int
         get() = _bodyType.toInt()
+    override val category: ProtCategory
+        get() = GameClientProtCategory.USER_EVENT
 
     /**
      * Gets the backing ident kits byte array.

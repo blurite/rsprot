@@ -3,6 +3,8 @@ package net.rsprot.protocol.game.incoming.misc.client
 import io.netty.buffer.ByteBuf
 import net.rsprot.buffer.extensions.checkCRC32
 import net.rsprot.buffer.extensions.toJagByteBuf
+import net.rsprot.protocol.ProtCategory
+import net.rsprot.protocol.game.incoming.GameClientProtCategory
 import net.rsprot.protocol.game.outgoing.misc.client.ReflectionChecker
 import net.rsprot.protocol.message.IncomingGameMessage
 import java.io.IOException
@@ -25,6 +27,9 @@ public class ReflectionCheckReply(
     public val id: Int,
     public val result: ByteBuf,
 ) : IncomingGameMessage {
+    override val category: ProtCategory
+        get() = GameClientProtCategory.CLIENT_EVENT
+
     /**
      * Decodes the reply using the original [request] that the server put in.
      * It is worth noting that the [result] buffer will always be released

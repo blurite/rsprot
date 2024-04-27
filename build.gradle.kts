@@ -5,6 +5,7 @@ plugins {
     alias(libs.plugins.kotlin.jvm)
     alias(libs.plugins.jmh)
     alias(libs.plugins.ktlint)
+    `maven-publish`
 }
 
 allprojects {
@@ -43,6 +44,17 @@ allprojects {
 
 subprojects {
     apply(plugin = "org.jlleitschuh.gradle.ktlint")
+    apply(plugin = "maven-publish")
+
+    plugins.withType<MavenPublishPlugin> {
+        configure<PublishingExtension> {
+            publications.withType<MavenPublication> {
+                groupId = "net.rsprot"
+                artifactId = project.name
+                version = "1.0-SNAPSHOT"
+            }
+        }
+    }
 }
 
 // fixes some weird error with "Entry classpath.index is a duplicate but no duplicate handling strategy has been set"

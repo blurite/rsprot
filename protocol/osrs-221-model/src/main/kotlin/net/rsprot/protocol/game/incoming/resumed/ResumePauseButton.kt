@@ -1,5 +1,7 @@
 package net.rsprot.protocol.game.incoming.resumed
 
+import net.rsprot.protocol.ProtCategory
+import net.rsprot.protocol.game.incoming.GameClientProtCategory
 import net.rsprot.protocol.message.IncomingGameMessage
 import net.rsprot.protocol.message.toIntOrMinusOne
 import net.rsprot.protocol.util.CombinedId
@@ -29,6 +31,8 @@ public class ResumePauseButton private constructor(
         get() = combinedId.componentId
     public val sub: Int
         get() = _sub.toIntOrMinusOne()
+    override val category: ProtCategory
+        get() = GameClientProtCategory.USER_EVENT
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

@@ -1,5 +1,7 @@
 package net.rsprot.protocol.game.incoming.events
 
+import net.rsprot.protocol.ProtCategory
+import net.rsprot.protocol.game.incoming.GameClientProtCategory
 import net.rsprot.protocol.message.IncomingGameMessage
 
 /**
@@ -40,6 +42,8 @@ public class EventMouseClick private constructor(
         get() = _x.toInt()
     public val y: Int
         get() = _y.toInt()
+    override val category: ProtCategory
+        get() = GameClientProtCategory.CLIENT_EVENT
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

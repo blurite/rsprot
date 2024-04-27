@@ -1,5 +1,7 @@
 package net.rsprot.protocol.game.incoming.friendchat
 
+import net.rsprot.protocol.ProtCategory
+import net.rsprot.protocol.game.incoming.GameClientProtCategory
 import net.rsprot.protocol.message.IncomingGameMessage
 
 /**
@@ -23,6 +25,8 @@ public class FriendChatSetRank private constructor(
 
     public val rank: Int
         get() = _rank.toInt()
+    override val category: ProtCategory
+        get() = GameClientProtCategory.USER_EVENT
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

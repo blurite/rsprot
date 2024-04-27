@@ -1,5 +1,7 @@
 package net.rsprot.protocol.game.incoming.misc.user
 
+import net.rsprot.protocol.ProtCategory
+import net.rsprot.protocol.game.incoming.GameClientProtCategory
 import net.rsprot.protocol.game.incoming.misc.user.internal.MovementRequest
 import net.rsprot.protocol.message.IncomingGameMessage
 
@@ -42,6 +44,8 @@ public class MoveGameClick private constructor(
         get() = movementRequest.z
     public val keyCombination: Int
         get() = movementRequest.keyCombination
+    override val category: ProtCategory
+        get() = GameClientProtCategory.USER_EVENT
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

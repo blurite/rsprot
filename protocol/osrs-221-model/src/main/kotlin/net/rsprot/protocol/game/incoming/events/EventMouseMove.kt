@@ -1,5 +1,7 @@
 package net.rsprot.protocol.game.incoming.events
 
+import net.rsprot.protocol.ProtCategory
+import net.rsprot.protocol.game.incoming.GameClientProtCategory
 import net.rsprot.protocol.message.IncomingGameMessage
 
 /**
@@ -42,6 +44,8 @@ public class EventMouseMove private constructor(
 
     public val remainingTime: Int
         get() = _remainingTime.toInt()
+    override val category: ProtCategory
+        get() = GameClientProtCategory.CLIENT_EVENT
 
     /**
      * A value class that wraps around an array of mouse movements,

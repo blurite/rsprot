@@ -1,5 +1,7 @@
 package net.rsprot.protocol.game.incoming.misc.client
 
+import net.rsprot.protocol.ProtCategory
+import net.rsprot.protocol.game.incoming.GameClientProtCategory
 import net.rsprot.protocol.message.IncomingGameMessage
 
 /**
@@ -7,4 +9,7 @@ import net.rsprot.protocol.message.IncomingGameMessage
  * mouse nor their keyboard for 15,000 client cycles (20ms/cc) in a row,
  * meaning continuous inactivity for five minutes in a row.
  */
-public data object Idle : IncomingGameMessage
+public data object Idle : IncomingGameMessage {
+    override val category: ProtCategory
+        get() = GameClientProtCategory.CLIENT_EVENT
+}

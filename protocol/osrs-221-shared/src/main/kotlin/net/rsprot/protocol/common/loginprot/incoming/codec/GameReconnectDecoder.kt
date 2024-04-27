@@ -14,7 +14,7 @@ public class GameReconnectDecoder(
     exp: BigInteger,
     mod: BigInteger,
 ) : MessageDecoder<GameReconnect>, LoginBlockDecoder<XteaKey>(exp, mod) {
-    override val prot: ClientProt = LoginClientProt.GAMELOGIN
+    override val prot: ClientProt = LoginClientProt.GAMERECONNECT
 
     override fun decode(
         buffer: JagByteBuf,
