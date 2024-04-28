@@ -24,7 +24,7 @@ public class GameLoginResponseHandler(
     public fun writeSuccessfulResponse(
         response: LoginResponse.Ok,
         loginBlock: LoginBlock<AuthenticationType<*>>,
-        callback: Consumer<Boolean>,
+        callback: Consumer<Session?>,
     ) {
         val oldSchoolClientType =
             when (loginBlock.clientType) {
@@ -39,7 +39,7 @@ public class GameLoginResponseHandler(
             }
         if (!networkService.isSupported(oldSchoolClientType)) {
             ctx.writeAndFlush(LoginResponse.InvalidLoginPacket)
-            callback.accept(false)
+            callback.accept(null)
             logger.debug { "Client $oldSchoolClientType is not supported; rejecting login." }
             return
         }
@@ -48,7 +48,7 @@ public class GameLoginResponseHandler(
                 if (!future.isSuccess) {
                     future.channel().pipeline().fireExceptionCaught(future.cause())
                     future.channel().close()
-                    callback.accept(false)
+                    callback.accept(null)
                     return@ChannelFutureListener
                 }
                 val pipeline = ctx.channel().pipeline()
@@ -79,7 +79,7 @@ public class GameLoginResponseHandler(
                     GameMessageEncoder(networkService, encodingCipher, oldSchoolClientType),
                 )
                 pipeline.replace<GameMessageHandler>(GameMessageHandler(session))
-                callback.accept(true)
+                callback.accept(session)
             },
         )
     }
