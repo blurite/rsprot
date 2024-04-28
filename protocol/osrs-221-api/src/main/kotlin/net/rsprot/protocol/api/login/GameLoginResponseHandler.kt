@@ -1,5 +1,6 @@
 package net.rsprot.protocol.api.login
 
+import com.github.michaelbull.logging.InlineLogger
 import io.netty.channel.ChannelFutureListener
 import io.netty.channel.ChannelHandlerContext
 import net.rsprot.crypto.cipher.IsaacRandom
@@ -25,6 +26,23 @@ public class GameLoginResponseHandler(
         loginBlock: LoginBlock<AuthenticationType<*>>,
         callback: Consumer<Boolean>,
     ) {
+        val oldSchoolClientType =
+            when (loginBlock.clientType) {
+                LoginClientType.DESKTOP -> OldSchoolClientType.DESKTOP
+                LoginClientType.ENHANCED_WINDOWS -> OldSchoolClientType.DESKTOP
+                LoginClientType.ENHANCED_LINUX -> OldSchoolClientType.DESKTOP
+                LoginClientType.ENHANCED_MAC -> OldSchoolClientType.DESKTOP
+                LoginClientType.ANDROID -> OldSchoolClientType.ANDROID
+                LoginClientType.ENHANCED_ANDROID -> OldSchoolClientType.ANDROID
+                LoginClientType.IOS -> OldSchoolClientType.IOS
+                LoginClientType.ENHANCED_IOS -> OldSchoolClientType.IOS
+            }
+        if (!networkService.isSupported(oldSchoolClientType)) {
+            ctx.writeAndFlush(LoginResponse.InvalidLoginPacket)
+            callback.accept(false)
+            logger.debug { "Client $oldSchoolClientType is not supported; rejecting login." }
+            return
+        }
         ctx.writeAndFlush(response).addListener(
             ChannelFutureListener { future ->
                 if (!future.isSuccess) {
@@ -42,17 +60,6 @@ public class GameLoginResponseHandler(
 
                 val encodingCipher = IsaacRandom(decodeSeed)
                 val decodingCipher = IsaacRandom(encodeSeed)
-                val oldSchoolClientType =
-                    when (loginBlock.clientType) {
-                        LoginClientType.DESKTOP -> OldSchoolClientType.DESKTOP
-                        LoginClientType.ENHANCED_WINDOWS -> OldSchoolClientType.DESKTOP
-                        LoginClientType.ENHANCED_LINUX -> OldSchoolClientType.DESKTOP
-                        LoginClientType.ENHANCED_MAC -> OldSchoolClientType.DESKTOP
-                        LoginClientType.ANDROID -> OldSchoolClientType.ANDROID
-                        LoginClientType.ENHANCED_ANDROID -> OldSchoolClientType.ANDROID
-                        LoginClientType.IOS -> OldSchoolClientType.IOS
-                        LoginClientType.ENHANCED_IOS -> OldSchoolClientType.IOS
-                    }
                 val session =
                     Session(
                         ctx,
@@ -89,5 +96,6 @@ public class GameLoginResponseHandler(
 
     private companion object {
         private const val DECODE_SEED_OFFSET: Int = 50
+        private val logger: InlineLogger = InlineLogger()
     }
 }

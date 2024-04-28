@@ -14,6 +14,7 @@ import net.rsprot.protocol.api.js5.Js5Service
 import net.rsprot.protocol.api.repositories.MessageDecoderRepositories
 import net.rsprot.protocol.api.repositories.MessageEncoderRepositories
 import net.rsprot.protocol.api.util.asCompletableFuture
+import net.rsprot.protocol.common.client.OldSchoolClientType
 import net.rsprot.protocol.loginprot.incoming.pow.ProofOfWorkProvider
 import net.rsprot.protocol.loginprot.incoming.pow.challenges.ChallengeWorker
 import net.rsprot.protocol.loginprot.incoming.pow.challenges.DefaultChallengeWorker
@@ -28,6 +29,7 @@ import java.util.concurrent.CompletableFuture
 public class NetworkService<R, T : Js5GroupType>(
     private val bootstrapFactory: BootstrapFactory,
     private val ports: List<Int>,
+    private val clientTypes: List<OldSchoolClientType>,
     exp: BigInteger,
     mod: BigInteger,
     huffmanCodec: HuffmanCodec,
@@ -52,6 +54,7 @@ public class NetworkService<R, T : Js5GroupType>(
     private val js5ServiceExecutor = Thread(js5Service)
 
     public fun start() {
+        verifyClientTypesAreImplemented()
         val bossGroup = bootstrapFactory.createParentLoopGroup()
         val childGroup = bootstrapFactory.createChildLoopGroup()
         val initializer =
@@ -73,6 +76,19 @@ public class NetworkService<R, T : Js5GroupType>(
                 }
             }
         js5ServiceExecutor.start()
+    }
+
+    private fun verifyClientTypesAreImplemented() {
+        check(OldSchoolClientType.IOS !in clientTypes) {
+            "iOS is not currently supported."
+        }
+        check(OldSchoolClientType.ANDROID !in clientTypes) {
+            "Android is not currently supported."
+        }
+    }
+
+    public fun isSupported(clientType: OldSchoolClientType): Boolean {
+        return clientType in clientTypes
     }
 
     public companion object {
