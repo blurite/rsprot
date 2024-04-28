@@ -12,7 +12,7 @@ import net.rsprot.protocol.ClientProt
 import net.rsprot.protocol.Prot
 import net.rsprot.protocol.api.NetworkService
 import net.rsprot.protocol.api.Session
-import net.rsprot.protocol.common.platform.PlatformType
+import net.rsprot.protocol.common.client.OldSchoolClientType
 import net.rsprot.protocol.message.IncomingGameMessage
 import net.rsprot.protocol.message.codec.MessageDecoder
 import net.rsprot.protocol.message.codec.incoming.MessageDecoderRepository
@@ -21,12 +21,12 @@ public class GameMessageDecoder<R>(
     public val networkService: NetworkService<R, *>,
     private val session: Session,
     private val streamCipher: StreamCipher,
-    platformType: PlatformType,
+    oldSchoolClientType: OldSchoolClientType,
 ) : ByteToMessageDecoder() {
     private val decoders: MessageDecoderRepository<ClientProt> =
         networkService
             .decoderRepositories
-            .gameMessageDecoderRepositories[platformType]
+            .gameMessageDecoderRepositories[oldSchoolClientType]
 
     private enum class State {
         READ_OPCODE,

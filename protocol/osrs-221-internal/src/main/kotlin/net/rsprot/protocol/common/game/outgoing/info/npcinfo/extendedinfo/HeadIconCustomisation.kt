@@ -1,11 +1,11 @@
 package net.rsprot.protocol.common.game.outgoing.info.npcinfo.extendedinfo
 
+import net.rsprot.protocol.common.client.ClientTypeMap
 import net.rsprot.protocol.common.game.outgoing.info.TransientExtendedInfo
 import net.rsprot.protocol.common.game.outgoing.info.encoder.PrecomputedExtendedInfoEncoder
-import net.rsprot.protocol.common.platform.PlatformMap
 
 public class HeadIconCustomisation(
-    override val encoders: PlatformMap<PrecomputedExtendedInfoEncoder<HeadIconCustomisation>>,
+    override val encoders: ClientTypeMap<PrecomputedExtendedInfoEncoder<HeadIconCustomisation>>,
 ) : TransientExtendedInfo<HeadIconCustomisation, PrecomputedExtendedInfoEncoder<HeadIconCustomisation>>() {
     public var flag: Int = DEFAULT_FLAG
     public val headIconGroups: IntArray =

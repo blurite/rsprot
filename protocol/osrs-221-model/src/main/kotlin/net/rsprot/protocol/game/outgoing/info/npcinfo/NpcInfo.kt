@@ -5,10 +5,10 @@ import io.netty.buffer.ByteBufAllocator
 import net.rsprot.buffer.bitbuffer.BitBuf
 import net.rsprot.buffer.bitbuffer.toBitBuf
 import net.rsprot.buffer.extensions.toJagByteBuf
+import net.rsprot.protocol.common.client.ClientTypeMap
+import net.rsprot.protocol.common.client.OldSchoolClientType
 import net.rsprot.protocol.common.game.outgoing.info.CoordGrid
 import net.rsprot.protocol.common.game.outgoing.info.npcinfo.encoder.NpcResolutionChangeEncoder
-import net.rsprot.protocol.common.platform.PlatformMap
-import net.rsprot.protocol.common.platform.PlatformType
 import net.rsprot.protocol.game.outgoing.info.ObserverExtendedInfoFlags
 import net.rsprot.protocol.game.outgoing.info.util.ReferencePooledObject
 import net.rsprot.protocol.message.OutgoingGameMessage
@@ -23,25 +23,25 @@ import kotlin.contracts.contract
  * for the npc info packet, as well as the pre-built extended info buffers.
  * @property repository the npc avatar repository, keeping track of every npc avatar that exists
  * in the game.
- * @property platformType the platform the player owning this npc info packet is on
+ * @property oldSchoolClientType the client the player owning this npc info packet is on
  * @property localPlayerIndex the index of the local player that owns this npc info packet.
  * @property indexSupplier a supplier-style interface responsible for yielding npc indices
  * which are within vicinity of the player. This is the primary way the server will be providing
  * information about nearby NPCs to a player, as well as whether to render the NPC in the first place,
  * as some NPCs are meant to only render to a given player if certain conditions are met.
- * @property lowResolutionToHighResolutionEncoders a platform map of low resolution to high resolution
+ * @property lowResolutionToHighResolutionEncoders a client map of low resolution to high resolution
  * change encoders, used to move a npc into high resolution for the given player.
- * As this is scrambled, a separate platform-specific implementation is required.
+ * As this is scrambled, a separate client-specific implementation is required.
  */
 @Suppress("ReplaceUntilWithRangeUntil")
 @ExperimentalUnsignedTypes
 public class NpcInfo internal constructor(
     private val allocator: ByteBufAllocator,
     private val repository: NpcAvatarRepository,
-    private var platformType: PlatformType,
+    private var oldSchoolClientType: OldSchoolClientType,
     private var localPlayerIndex: Int,
     private val indexSupplier: NpcIndexSupplier,
-    private val lowResolutionToHighResolutionEncoders: PlatformMap<NpcResolutionChangeEncoder>,
+    private val lowResolutionToHighResolutionEncoders: ClientTypeMap<NpcResolutionChangeEncoder>,
 ) : ReferencePooledObject, OutgoingGameMessage {
     /**
      * The last cycle's coordinate of the local player, used to perform faster npc removal.
@@ -210,7 +210,7 @@ public class NpcInfo internal constructor(
             val other = checkNotNull(repository.getOrNull(index))
             val observerFlag = other.extendedInfo.flags or observerExtendedInfoFlags.getFlag(i)
             other.extendedInfo.pExtendedInfo(
-                platformType,
+                oldSchoolClientType,
                 jagBuffer,
                 observerFlag,
                 extendedInfoCount - i,
@@ -389,7 +389,7 @@ public class NpcInfo internal constructor(
         if (this.highResolutionNpcIndexCount >= MAX_HIGH_RESOLUTION_NPCS) {
             return
         }
-        val encoder = lowResolutionToHighResolutionEncoders[platformType]
+        val encoder = lowResolutionToHighResolutionEncoders[oldSchoolClientType]
         val largeDistance = viewDistance > MAX_SMALL_PACKET_DISTANCE
         val npcs =
             this.indexSupplier.supply(
@@ -458,10 +458,10 @@ public class NpcInfo internal constructor(
 
     override fun onAlloc(
         index: Int,
-        platformType: PlatformType,
+        oldSchoolClientType: OldSchoolClientType,
     ) {
         this.localPlayerIndex = index
-        this.platformType = platformType
+        this.oldSchoolClientType = oldSchoolClientType
         this.localPlayerLastCoord = CoordGrid.INVALID
         this.viewDistance = MAX_SMALL_PACKET_DISTANCE
         this.highResolutionNpcIndexCount = 0

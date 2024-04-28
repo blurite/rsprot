@@ -1,13 +1,13 @@
 package net.rsprot.protocol.game.outgoing.codec.npcinfo
 
 import net.rsprot.buffer.bitbuffer.BitBuf
+import net.rsprot.protocol.common.client.OldSchoolClientType
 import net.rsprot.protocol.common.game.outgoing.info.CoordGrid
 import net.rsprot.protocol.common.game.outgoing.info.npcinfo.NpcAvatarDetails
 import net.rsprot.protocol.common.game.outgoing.info.npcinfo.encoder.NpcResolutionChangeEncoder
-import net.rsprot.protocol.common.platform.PlatformType
 
 public class DesktopLowResolutionChangeEncoder : NpcResolutionChangeEncoder {
-    override val platform: PlatformType = PlatformType.DESKTOP
+    override val clientType: OldSchoolClientType = OldSchoolClientType.DESKTOP
 
     override fun encode(
         bitBuffer: BitBuf,

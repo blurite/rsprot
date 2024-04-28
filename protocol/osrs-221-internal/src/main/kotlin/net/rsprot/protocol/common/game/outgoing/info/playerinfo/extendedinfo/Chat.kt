@@ -1,15 +1,15 @@
 package net.rsprot.protocol.common.game.outgoing.info.playerinfo.extendedinfo
 
+import net.rsprot.protocol.common.client.ClientTypeMap
 import net.rsprot.protocol.common.game.outgoing.info.TransientExtendedInfo
 import net.rsprot.protocol.common.game.outgoing.info.encoder.PrecomputedExtendedInfoEncoder
-import net.rsprot.protocol.common.platform.PlatformMap
 
 /**
  * The chat extended info block, responsible for any public messages.
- * @param encoders the array of platform-specific encoders for chat.
+ * @param encoders the array of client-specific encoders for chat.
  */
 public class Chat(
-    override val encoders: PlatformMap<PrecomputedExtendedInfoEncoder<Chat>>,
+    override val encoders: ClientTypeMap<PrecomputedExtendedInfoEncoder<Chat>>,
 ) : TransientExtendedInfo<Chat, PrecomputedExtendedInfoEncoder<Chat>>() {
     /**
      * The colour to apply to this chat message.

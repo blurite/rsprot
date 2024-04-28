@@ -56,7 +56,7 @@ public class UpdateFriendList(
      * @property notes the notes on that friend. None of the clients use this value.
      * @property worldName the name of the world the player is logged into,
      * e.g. "Old School 35" for world 335 in OldSchool RuneScape.
-     * @property platform the id of the platform the friend is logged into.
+     * @property platform the id of the client the friend is logged into.
      * Current known values include 0 for RuneScape 3, 4 for RS3's lobby (presumably),
      * and 8 for OldSchool RuneScape. The OldSchool clients do not utilize this,
      * its purpose is to prevent sending quick-chat messages from RuneScape 3 over

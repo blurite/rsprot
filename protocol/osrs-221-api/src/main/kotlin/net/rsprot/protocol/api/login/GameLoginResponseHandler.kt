@@ -9,7 +9,7 @@ import net.rsprot.protocol.api.channel.replace
 import net.rsprot.protocol.api.game.GameMessageDecoder
 import net.rsprot.protocol.api.game.GameMessageEncoder
 import net.rsprot.protocol.api.game.GameMessageHandler
-import net.rsprot.protocol.common.platform.PlatformType
+import net.rsprot.protocol.common.client.OldSchoolClientType
 import net.rsprot.protocol.loginprot.incoming.util.AuthenticationType
 import net.rsprot.protocol.loginprot.incoming.util.LoginBlock
 import net.rsprot.protocol.loginprot.outgoing.LoginResponse
@@ -41,10 +41,22 @@ public class GameLoginResponseHandler(
 
                 val encodingCipher = IsaacRandom(decodeSeed)
                 val decodingCipher = IsaacRandom(encodeSeed)
-                // TODO: Figure out platform type mappings
-                val platformType = PlatformType.DESKTOP
-                // 1 = desktop, java
-                // 4 = desktop, c++
+                // Figure out platform type mappings
+                //                 case 0 -> "^platformtype_default";
+                //                case 1 -> "^platformtype_steam";
+                //                case 2 -> "^platformtype_android";
+                //                case 3 -> "^platformtype_apple";
+                //                case 5 -> "^platformtype_jagex";
+
+                val oldSchoolClientType = OldSchoolClientType.DESKTOP
+                //                case 1 -> "^clienttype_desktop";
+                //                case 2 -> "^clienttype_android";
+                //                case 3 -> "^clienttype_ios";
+                //                case 4 -> "^clienttype_enhanced_windows";
+                //                case 5 -> "^clienttype_enhanced_mac";
+                //                case 7 -> "^clienttype_enhanced_android";
+                //                case 8 -> "^clienttype_enhanced_ios";
+                //                case 10 -> "^clienttype_enhanced_linux";
                 val session =
                     Session(
                         ctx,
@@ -57,10 +69,12 @@ public class GameLoginResponseHandler(
                         networkService,
                         session,
                         decodingCipher,
-                        platformType,
+                        oldSchoolClientType,
                     ),
                 )
-                pipeline.replace<LoginMessageEncoder>(GameMessageEncoder(networkService, encodingCipher, platformType))
+                pipeline.replace<LoginMessageEncoder>(
+                    GameMessageEncoder(networkService, encodingCipher, oldSchoolClientType),
+                )
                 pipeline.replace<GameMessageHandler>(GameMessageHandler(session))
                 callback.accept(true)
             },

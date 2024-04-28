@@ -1,16 +1,16 @@
 package net.rsprot.protocol.common.game.outgoing.info.shared.extendedinfo
 
+import net.rsprot.protocol.common.client.ClientTypeMap
 import net.rsprot.protocol.common.game.outgoing.info.TransientExtendedInfo
 import net.rsprot.protocol.common.game.outgoing.info.encoder.PrecomputedExtendedInfoEncoder
-import net.rsprot.protocol.common.platform.PlatformMap
 
 /**
  * The exactmove extended info block is used to provide precise fine-tuned visual movement
  * of an avatar.
- * @param encoders the array of platform-specific encoders for exact move.
+ * @param encoders the array of client-specific encoders for exact move.
  */
 public class ExactMove(
-    override val encoders: PlatformMap<PrecomputedExtendedInfoEncoder<ExactMove>>,
+    override val encoders: ClientTypeMap<PrecomputedExtendedInfoEncoder<ExactMove>>,
 ) : TransientExtendedInfo<ExactMove, PrecomputedExtendedInfoEncoder<ExactMove>>() {
     /**
      * The coordinate delta between the current absolute

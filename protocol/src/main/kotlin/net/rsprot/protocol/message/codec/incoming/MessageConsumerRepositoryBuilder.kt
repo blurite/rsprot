@@ -5,7 +5,7 @@ import java.util.function.BiConsumer
 
 /**
  * Message consumer repository is a repository of listeners that the server will register
- * for various incoming messages. As there can be multiple platforms, these cannot directly
+ * for various incoming messages. As there can be multiple clients, these cannot directly
  * be stored with the respective decoders.
  *
  * @property consumers the hashmap of consumers, using incoming message classes as keys.

@@ -1,5 +1,7 @@
 package net.rsprot.protocol.game.outgoing.info.playerinfo
 
+import net.rsprot.protocol.common.client.ClientTypeMap
+import net.rsprot.protocol.common.client.OldSchoolClientType
 import net.rsprot.protocol.common.game.outgoing.info.ExtendedInfo
 import net.rsprot.protocol.common.game.outgoing.info.encoder.ExtendedInfoEncoder
 import net.rsprot.protocol.common.game.outgoing.info.playerinfo.encoder.PlayerExtendedInfoEncoders
@@ -15,8 +17,6 @@ import net.rsprot.protocol.common.game.outgoing.info.shared.extendedinfo.Hit
 import net.rsprot.protocol.common.game.outgoing.info.shared.extendedinfo.Say
 import net.rsprot.protocol.common.game.outgoing.info.shared.extendedinfo.Sequence
 import net.rsprot.protocol.common.game.outgoing.info.shared.extendedinfo.SpotAnimList
-import net.rsprot.protocol.common.platform.PlatformMap
-import net.rsprot.protocol.common.platform.PlatformType
 import net.rsprot.protocol.game.outgoing.info.AvatarExtendedInfoWriter
 
 private typealias PEnc = PlayerExtendedInfoEncoders
@@ -24,9 +24,9 @@ private typealias TempMoveSpeed = TemporaryMoveSpeed
 
 /**
  * A data structure to bring all the extended info blocks together,
- * so the information can be passed onto various platform-specific encoders.
- * @param writers the list of platform-specific writers.
- * The writers must be platform-specific too, not just encoders, as
+ * so the information can be passed onto various client-specific encoders.
+ * @param writers the list of client-specific writers.
+ * The writers must be client-specific too, not just encoders, as
  * the order in which the extended info blocks get written must follow
  * the exact order described by the client.
  */
@@ -48,21 +48,21 @@ public class PlayerAvatarExtendedInfoBlocks(
 
     private companion object {
         /**
-         * Builds a platform-specific map of encoders for a specific extended info block,
-         * keyed by [PlatformType.id].
-         * If a platform hasn't been registered, the encoder at that index will be null.
-         * @param allEncoders all the platform-specific extended info writers for the given type.
+         * Builds a client-specific map of encoders for a specific extended info block,
+         * keyed by [OldSchoolClientType.id].
+         * If a client hasn't been registered, the encoder at that index will be null.
+         * @param allEncoders all the client-specific extended info writers for the given type.
          * @param selector a higher order function to retrieve a specific extended info block from
          * the full structure of all the extended info blocks.
-         * @return a map of platform-specific encoders of the given extended info block,
-         * keyed by [PlatformType.id].
+         * @return a map of client-specific encoders of the given extended info block,
+         * keyed by [OldSchoolClientType.id].
          */
         private inline fun <T : ExtendedInfo<T, E>, reified E : ExtendedInfoEncoder<T>> encoders(
             allEncoders: List<AvatarExtendedInfoWriter<PlayerExtendedInfoEncoders, PlayerAvatarExtendedInfoBlocks>>,
             selector: (PlayerExtendedInfoEncoders) -> E,
-        ): PlatformMap<E> {
-            return PlatformMap.ofType(allEncoders, PlatformType.COUNT) {
-                it.encoders.platformType to selector(it.encoders)
+        ): ClientTypeMap<E> {
+            return ClientTypeMap.ofType(allEncoders, OldSchoolClientType.COUNT) {
+                it.encoders.oldSchoolClientType to selector(it.encoders)
             }
         }
     }

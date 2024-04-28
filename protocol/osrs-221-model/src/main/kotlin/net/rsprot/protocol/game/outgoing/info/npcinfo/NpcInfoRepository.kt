@@ -1,6 +1,6 @@
 package net.rsprot.protocol.game.outgoing.info.npcinfo
 
-import net.rsprot.protocol.common.platform.PlatformType
+import net.rsprot.protocol.common.client.OldSchoolClientType
 import net.rsprot.protocol.game.outgoing.info.InfoRepository
 
 /**
@@ -17,7 +17,7 @@ import net.rsprot.protocol.game.outgoing.info.InfoRepository
  */
 @ExperimentalUnsignedTypes
 internal class NpcInfoRepository(
-    allocator: (index: Int, platformType: PlatformType) -> NpcInfo,
+    allocator: (index: Int, oldSchoolClientType: OldSchoolClientType) -> NpcInfo,
 ) : InfoRepository<NpcInfo>(allocator) {
     override val elements: Array<NpcInfo?> = arrayOfNulls(NpcInfoProtocol.PROTOCOL_CAPACITY)
 
@@ -32,8 +32,8 @@ internal class NpcInfoRepository(
     override fun onAlloc(
         element: NpcInfo,
         idx: Int,
-        platformType: PlatformType,
+        oldSchoolClientType: OldSchoolClientType,
     ) {
-        element.onAlloc(idx, platformType)
+        element.onAlloc(idx, oldSchoolClientType)
     }
 }

@@ -1,15 +1,15 @@
 package net.rsprot.protocol.common.game.outgoing.info.shared.extendedinfo
 
+import net.rsprot.protocol.common.client.ClientTypeMap
 import net.rsprot.protocol.common.game.outgoing.info.TransientExtendedInfo
 import net.rsprot.protocol.common.game.outgoing.info.encoder.PrecomputedExtendedInfoEncoder
-import net.rsprot.protocol.common.platform.PlatformMap
 
 /**
  * The sequence mask defines what animation an avatar is playing.
- * @param encoders the array of platform-specific encoders for sequence.
+ * @param encoders the array of client-specific encoders for sequence.
  */
 public class Sequence(
-    override val encoders: PlatformMap<PrecomputedExtendedInfoEncoder<Sequence>>,
+    override val encoders: ClientTypeMap<PrecomputedExtendedInfoEncoder<Sequence>>,
 ) : TransientExtendedInfo<Sequence, PrecomputedExtendedInfoEncoder<Sequence>>() {
     /**
      * The id of the animation to play.

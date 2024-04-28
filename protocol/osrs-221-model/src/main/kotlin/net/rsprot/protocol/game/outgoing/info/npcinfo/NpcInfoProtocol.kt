@@ -1,9 +1,9 @@
 package net.rsprot.protocol.game.outgoing.info.npcinfo
 
 import io.netty.buffer.ByteBufAllocator
+import net.rsprot.protocol.common.client.ClientTypeMap
+import net.rsprot.protocol.common.client.OldSchoolClientType
 import net.rsprot.protocol.common.game.outgoing.info.npcinfo.encoder.NpcResolutionChangeEncoder
-import net.rsprot.protocol.common.platform.PlatformMap
-import net.rsprot.protocol.common.platform.PlatformType
 import net.rsprot.protocol.game.outgoing.info.worker.DefaultProtocolWorker
 import net.rsprot.protocol.game.outgoing.info.worker.ProtocolWorker
 import java.util.concurrent.Callable
@@ -14,9 +14,9 @@ import java.util.concurrent.Callable
  * extended info blocks.
  * @property npcIndexSupplier the interface that supplies indices of NPCs near the player
  * that need to be added to the high resolution view.
- * @property resolutionChangeEncoders a platform-specific map of resolution change encoders,
- * as the low to high resolution change is scrambled between platforms and revision,
- * it needs to be supplied by the respective platform module.
+ * @property resolutionChangeEncoders a client-specific map of resolution change encoders,
+ * as the low to high resolution change is scrambled between clients and revision,
+ * it needs to be supplied by the respective client module.
  * @param avatarFactory the factory responsible for allocating new npc avatars.
  * @property worker the protocol worker used to execute the jobs involved with
  * npc info computations.
@@ -25,7 +25,7 @@ import java.util.concurrent.Callable
 public class NpcInfoProtocol(
     private val allocator: ByteBufAllocator,
     private val npcIndexSupplier: NpcIndexSupplier,
-    private val resolutionChangeEncoders: PlatformMap<NpcResolutionChangeEncoder>,
+    private val resolutionChangeEncoders: ClientTypeMap<NpcResolutionChangeEncoder>,
     avatarFactory: NpcAvatarFactory,
     private val worker: ProtocolWorker = DefaultProtocolWorker(),
 ) {
@@ -39,11 +39,11 @@ public class NpcInfoProtocol(
      * by players at a 1:1 ratio.
      */
     private val npcInfoRepository: NpcInfoRepository =
-        NpcInfoRepository { localIndex, platformType ->
+        NpcInfoRepository { localIndex, clientType ->
             NpcInfo(
                 allocator,
                 avatarRepository,
-                platformType,
+                clientType,
                 localIndex,
                 npcIndexSupplier,
                 resolutionChangeEncoders,
@@ -60,13 +60,13 @@ public class NpcInfoProtocol(
     /**
      * Allocates a new npc info object, or re-uses an older one if possible.
      * @param idx the index of the player allocating the npc info object.
-     * @param platformType the platform on which the player has logged into.
+     * @param oldSchoolClientType the client on which the player has logged into.
      */
     public fun alloc(
         idx: Int,
-        platformType: PlatformType,
+        oldSchoolClientType: OldSchoolClientType,
     ): NpcInfo {
-        return npcInfoRepository.alloc(idx, platformType)
+        return npcInfoRepository.alloc(idx, oldSchoolClientType)
     }
 
     /**

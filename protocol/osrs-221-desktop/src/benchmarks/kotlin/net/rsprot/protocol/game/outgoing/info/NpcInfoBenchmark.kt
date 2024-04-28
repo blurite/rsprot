@@ -5,9 +5,9 @@ package net.rsprot.protocol.game.outgoing.info
 import io.netty.buffer.PooledByteBufAllocator
 import io.netty.buffer.Unpooled
 import net.rsprot.compression.HuffmanCodec
+import net.rsprot.protocol.common.client.ClientTypeMap
+import net.rsprot.protocol.common.client.OldSchoolClientType
 import net.rsprot.protocol.common.game.outgoing.info.CoordGrid
-import net.rsprot.protocol.common.platform.PlatformMap
-import net.rsprot.protocol.common.platform.PlatformType
 import net.rsprot.protocol.game.outgoing.codec.npcinfo.DesktopLowResolutionChangeEncoder
 import net.rsprot.protocol.game.outgoing.codec.npcinfo.extendedinfo.writer.NpcAvatarExtendedInfoDesktopWriter
 import net.rsprot.protocol.game.outgoing.info.filter.DefaultExtendedInfoFilter
@@ -60,11 +60,11 @@ class NpcInfoBenchmark {
         this.supplier = createNpcIndexSupplier()
 
         val encoders =
-            PlatformMap.of(
+            ClientTypeMap.of(
                 listOf(DesktopLowResolutionChangeEncoder()),
-                PlatformType.COUNT,
+                OldSchoolClientType.COUNT,
             ) {
-                it.platform
+                it.clientType
             }
         protocol =
             NpcInfoProtocol(
@@ -74,8 +74,8 @@ class NpcInfoBenchmark {
                 factory,
                 DefaultProtocolWorker(1, ForkJoinPool.commonPool()),
             )
-        this.localNpcInfo = protocol.alloc(1, PlatformType.DESKTOP)
-        otherNpcInfos = (2..2046).map { protocol.alloc(it, PlatformType.DESKTOP) }
+        this.localNpcInfo = protocol.alloc(1, OldSchoolClientType.DESKTOP)
+        otherNpcInfos = (2..2046).map { protocol.alloc(it, OldSchoolClientType.DESKTOP) }
         val infos = otherNpcInfos + localNpcInfo
         for (info in infos) {
             info.updateCoord(localPlayerCoord.level, localPlayerCoord.x, localPlayerCoord.z)

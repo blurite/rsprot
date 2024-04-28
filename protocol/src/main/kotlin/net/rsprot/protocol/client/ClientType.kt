@@ -1,13 +1,13 @@
-package net.rsprot.protocol.platform
+package net.rsprot.protocol.client
 
 /**
- * Platforms are used to distinguish between various devices and
- * their differences in protocol scrambling. Each distinct platform
+ * Client types are used to distinguish between various devices and
+ * their differences in protocol scrambling. Each distinct client
  * needs its own decoders and encoders, though the models are shared between them.
  */
-public interface Platform {
+public interface ClientType {
     /**
-     * The id of the platform.
+     * The id of the client.
      * These ids should be incrementing, starting from zero.
      * The actual value is irrelevant, but this will frequently be used for
      * array accesses throughout the codebase.

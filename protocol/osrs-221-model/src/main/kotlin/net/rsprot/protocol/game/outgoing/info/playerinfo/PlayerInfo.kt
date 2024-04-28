@@ -6,7 +6,7 @@ import net.rsprot.buffer.bitbuffer.BitBuf
 import net.rsprot.buffer.bitbuffer.UnsafeLongBackedBitBuf
 import net.rsprot.buffer.bitbuffer.toBitBuf
 import net.rsprot.buffer.extensions.toJagByteBuf
-import net.rsprot.protocol.common.platform.PlatformType
+import net.rsprot.protocol.common.client.OldSchoolClientType
 import net.rsprot.protocol.game.outgoing.info.ObserverExtendedInfoFlags
 import net.rsprot.protocol.game.outgoing.info.playerinfo.PlayerInfoProtocol.Companion.PROTOCOL_CAPACITY
 import net.rsprot.protocol.game.outgoing.info.playerinfo.util.CellOpcodes
@@ -37,7 +37,7 @@ import kotlin.math.abs
  * written the information out to the network by the time the next cycle comes along and starts
  * writing into this buffer. A direct implementation is also preferred, as this avoids unnecessary
  * copying from and to the heap.
- * @param platformType the platform on which the player is logging into. This is utilized
+ * @param oldSchoolClientType the client on which the player is logging into. This is utilized
  * to determine what encoders to use for extended info blocks.
  */
 @Suppress("DuplicatedCode", "ReplaceUntilWithRangeUntil")
@@ -45,7 +45,7 @@ public class PlayerInfo internal constructor(
     private val protocol: PlayerInfoProtocol,
     private var localIndex: Int,
     private val allocator: ByteBufAllocator,
-    private var platformType: PlatformType,
+    private var oldSchoolClientType: OldSchoolClientType,
     public val avatar: PlayerAvatar,
 ) : ReferencePooledObject, OutgoingGameMessage {
     /**
@@ -228,7 +228,7 @@ public class PlayerInfo internal constructor(
             val other = checkNotNull(protocol.getPlayerInfo(index))
             val observerFlag = observerExtendedInfoFlags.getFlag(index)
             other.avatar.extendedInfo.pExtendedInfo(
-                platformType,
+                oldSchoolClientType,
                 jagBuffer,
                 observerFlag,
                 avatar.extendedInfo,
@@ -526,15 +526,15 @@ public class PlayerInfo internal constructor(
      * for the garbage collector to collect it when it truly needs it. In order to reduce processing
      * time, we skip resetting these properties on de-allocation.
      * @param index the index of the new player who will be utilizing this player info object.
-     * @param platformType the platform the new player is utilizing.
+     * @param oldSchoolClientType the client the new player is utilizing.
      */
     override fun onAlloc(
         index: Int,
-        platformType: PlatformType,
+        oldSchoolClientType: OldSchoolClientType,
     ) {
         this.localIndex = index
         avatar.extendedInfo.localIndex = index
-        this.platformType = platformType
+        this.oldSchoolClientType = oldSchoolClientType
         avatar.reset()
         lowResolutionIndices.fill(0)
         lowResolutionCount = 0

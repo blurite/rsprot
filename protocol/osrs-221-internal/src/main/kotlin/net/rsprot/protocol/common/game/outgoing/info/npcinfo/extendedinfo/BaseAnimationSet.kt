@@ -1,11 +1,11 @@
 package net.rsprot.protocol.common.game.outgoing.info.npcinfo.extendedinfo
 
+import net.rsprot.protocol.common.client.ClientTypeMap
 import net.rsprot.protocol.common.game.outgoing.info.TransientExtendedInfo
 import net.rsprot.protocol.common.game.outgoing.info.encoder.PrecomputedExtendedInfoEncoder
-import net.rsprot.protocol.common.platform.PlatformMap
 
 public class BaseAnimationSet(
-    override val encoders: PlatformMap<PrecomputedExtendedInfoEncoder<BaseAnimationSet>>,
+    override val encoders: ClientTypeMap<PrecomputedExtendedInfoEncoder<BaseAnimationSet>>,
 ) : TransientExtendedInfo<BaseAnimationSet, PrecomputedExtendedInfoEncoder<BaseAnimationSet>>() {
     public var overrides: Int = DEFAULT_OVERRIDES_FLAG
     public var turnLeftAnim: UShort = 0xFFFFu

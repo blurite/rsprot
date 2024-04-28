@@ -1,8 +1,8 @@
 package net.rsprot.protocol.common.game.outgoing.info.playerinfo.extendedinfo
 
+import net.rsprot.protocol.common.client.ClientTypeMap
 import net.rsprot.protocol.common.game.outgoing.info.TransientExtendedInfo
 import net.rsprot.protocol.common.game.outgoing.info.encoder.PrecomputedExtendedInfoEncoder
-import net.rsprot.protocol.common.platform.PlatformMap
 
 /**
  * The temporary move speed is used to set a move speed for a single cycle, commonly done
@@ -10,10 +10,10 @@ import net.rsprot.protocol.common.platform.PlatformMap
  * Rather than to switch the main mode over to walking, it utilizes the temporary move speed
  * so the primary one will remain as running after this one cycle, as they are far more likely
  * to utilize the move speed described by their run orb.
- * @param encoders the array of platform-specific encoders for temporary move speed.
+ * @param encoders the array of client-specific encoders for temporary move speed.
  */
 public class TemporaryMoveSpeed(
-    override val encoders: PlatformMap<PrecomputedExtendedInfoEncoder<TemporaryMoveSpeed>>,
+    override val encoders: ClientTypeMap<PrecomputedExtendedInfoEncoder<TemporaryMoveSpeed>>,
 ) : TransientExtendedInfo<TemporaryMoveSpeed, PrecomputedExtendedInfoEncoder<TemporaryMoveSpeed>>() {
     /**
      * The movement speed of this avatar for a single cycle.

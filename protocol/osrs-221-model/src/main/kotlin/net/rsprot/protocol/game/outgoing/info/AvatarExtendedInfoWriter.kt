@@ -1,24 +1,24 @@
 package net.rsprot.protocol.game.outgoing.info
 
 import net.rsprot.buffer.JagByteBuf
+import net.rsprot.protocol.common.client.OldSchoolClientType
 import net.rsprot.protocol.common.game.outgoing.info.ExtendedInfo
 import net.rsprot.protocol.common.game.outgoing.info.encoder.OnDemandExtendedInfoEncoder
-import net.rsprot.protocol.common.platform.PlatformType
 
 /**
- * A base class for platform-specific extended info writers.
- * @param platformType the platform for which the encoders are created.
- * @param encoders the set of extended info encoders for the given [platformType].
+ * A base class for client-specific extended info writers.
+ * @param oldSchoolClientType the client for which the encoders are created.
+ * @param encoders the set of extended info encoders for the given [oldSchoolClientType].
  */
 public abstract class AvatarExtendedInfoWriter<E, B>(
-    public val platformType: PlatformType,
+    public val oldSchoolClientType: OldSchoolClientType,
     public val encoders: E,
 ) {
     /**
      * Main function to write all the extended info blocks over.
      * The extended info blocks must be in the exact order as they are
      * read within the client, and this function is responsible
-     * for converting library-specific-constants to platform-specific-flags.
+     * for converting library-specific-constants to client-specific-flags.
      *
      * @param buffer the buffer into which to write the extended info block.
      * @param localIndex the index of the avatar that owns these extended info blocks.
@@ -42,15 +42,15 @@ public abstract class AvatarExtendedInfoWriter<E, B>(
      * @param buffer the primary player info buffer.
      * @param block the extended info block which to copy over.
      * @throws IllegalStateException if the given buffer has not been precomputed
-     * for the given platform type.
+     * for the given client type.
      */
     protected fun pCachedData(
         buffer: JagByteBuf,
         block: ExtendedInfo<*, *>,
     ) {
         val precomputed =
-            checkNotNull(block.getBuffer(platformType)) {
-                "Buffer has not been computed on platform $platformType, ${block.javaClass.name}"
+            checkNotNull(block.getBuffer(oldSchoolClientType)) {
+                "Buffer has not been computed on client $oldSchoolClientType, ${block.javaClass.name}"
             }
         buffer.buffer.writeBytes(precomputed, precomputed.readerIndex(), precomputed.readableBytes())
     }
@@ -72,8 +72,8 @@ public abstract class AvatarExtendedInfoWriter<E, B>(
         observerIndex: Int,
     ) {
         val encoder =
-            checkNotNull(block.getEncoder(platformType)) {
-                "Encoder has not been set for platform $platformType"
+            checkNotNull(block.getEncoder(oldSchoolClientType)) {
+                "Encoder has not been set for client $oldSchoolClientType"
             }
         encoder.encode(
             buffer,

@@ -3,9 +3,9 @@ package net.rsprot.protocol.game.outgoing.info
 import io.netty.buffer.PooledByteBufAllocator
 import io.netty.buffer.Unpooled
 import net.rsprot.compression.HuffmanCodec
+import net.rsprot.protocol.common.client.ClientTypeMap
+import net.rsprot.protocol.common.client.OldSchoolClientType
 import net.rsprot.protocol.common.game.outgoing.info.CoordGrid
-import net.rsprot.protocol.common.platform.PlatformMap
-import net.rsprot.protocol.common.platform.PlatformType
 import net.rsprot.protocol.game.outgoing.codec.npcinfo.DesktopLowResolutionChangeEncoder
 import net.rsprot.protocol.game.outgoing.codec.npcinfo.extendedinfo.writer.NpcAvatarExtendedInfoDesktopWriter
 import net.rsprot.protocol.game.outgoing.info.filter.DefaultExtendedInfoFilter
@@ -44,15 +44,15 @@ class NpcInfoTest {
         this.supplier = createNpcIndexSupplier()
 
         val encoders =
-            PlatformMap.of(
+            ClientTypeMap.of(
                 listOf(DesktopLowResolutionChangeEncoder()),
-                PlatformType.COUNT,
+                OldSchoolClientType.COUNT,
             ) {
-                it.platform
+                it.clientType
             }
         protocol = NpcInfoProtocol(allocator, supplier, encoders, factory)
         this.client = NpcInfoClient()
-        this.localNpcInfo = protocol.alloc(500, PlatformType.DESKTOP)
+        this.localNpcInfo = protocol.alloc(500, OldSchoolClientType.DESKTOP)
     }
 
     private fun tick() {

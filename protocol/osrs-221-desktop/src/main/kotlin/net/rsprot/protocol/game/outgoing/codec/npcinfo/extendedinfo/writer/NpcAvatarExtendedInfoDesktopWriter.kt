@@ -1,8 +1,8 @@
 package net.rsprot.protocol.game.outgoing.codec.npcinfo.extendedinfo.writer
 
 import net.rsprot.buffer.JagByteBuf
+import net.rsprot.protocol.common.client.OldSchoolClientType
 import net.rsprot.protocol.common.game.outgoing.info.npcinfo.encoder.NpcExtendedInfoEncoders
-import net.rsprot.protocol.common.platform.PlatformType
 import net.rsprot.protocol.game.outgoing.codec.npcinfo.extendedinfo.NpcBaseAnimationSetEncoder
 import net.rsprot.protocol.game.outgoing.codec.npcinfo.extendedinfo.NpcBodyCustomisationEncoder
 import net.rsprot.protocol.game.outgoing.codec.npcinfo.extendedinfo.NpcCombatLevelChangeEncoder
@@ -26,9 +26,9 @@ import net.rsprot.protocol.game.outgoing.info.npcinfo.NpcAvatarExtendedInfoBlock
 @Suppress("DuplicatedCode")
 public class NpcAvatarExtendedInfoDesktopWriter :
     AvatarExtendedInfoWriter<NpcExtendedInfoEncoders, NpcAvatarExtendedInfoBlocks>(
-        PlatformType.DESKTOP,
+        OldSchoolClientType.DESKTOP,
         NpcExtendedInfoEncoders(
-            PlatformType.DESKTOP,
+            OldSchoolClientType.DESKTOP,
             NpcSpotAnimEncoder(),
             NpcSayEncoder(),
             NpcVisibleOpsEncoder(),
@@ -48,56 +48,56 @@ public class NpcAvatarExtendedInfoDesktopWriter :
         ),
     ) {
     private fun convertFlags(constantFlags: Int): Int {
-        var platformFlags = 0
+        var clientFlags = 0
         if (constantFlags and NpcAvatarExtendedInfo.FACE_PATHINGENTITY != 0) {
-            platformFlags = platformFlags or FACE_PATHINGENTITY
+            clientFlags = clientFlags or FACE_PATHINGENTITY
         }
         if (constantFlags and NpcAvatarExtendedInfo.TINTING != 0) {
-            platformFlags = platformFlags or TINTING
+            clientFlags = clientFlags or TINTING
         }
         if (constantFlags and NpcAvatarExtendedInfo.SAY != 0) {
-            platformFlags = platformFlags or SAY
+            clientFlags = clientFlags or SAY
         }
         if (constantFlags and NpcAvatarExtendedInfo.HITS != 0) {
-            platformFlags = platformFlags or HITS
+            clientFlags = clientFlags or HITS
         }
         if (constantFlags and NpcAvatarExtendedInfo.SEQUENCE != 0) {
-            platformFlags = platformFlags or SEQUENCE
+            clientFlags = clientFlags or SEQUENCE
         }
         if (constantFlags and NpcAvatarExtendedInfo.EXACT_MOVE != 0) {
-            platformFlags = platformFlags or EXACT_MOVE
+            clientFlags = clientFlags or EXACT_MOVE
         }
         if (constantFlags and NpcAvatarExtendedInfo.SPOTANIM != 0) {
-            platformFlags = platformFlags or SPOTANIM
+            clientFlags = clientFlags or SPOTANIM
         }
         if (constantFlags and NpcAvatarExtendedInfo.FACE_COORD != 0) {
-            platformFlags = platformFlags or FACE_COORD
+            clientFlags = clientFlags or FACE_COORD
         }
         if (constantFlags and NpcAvatarExtendedInfo.TRANSFORMATION != 0) {
-            platformFlags = platformFlags or TRANSFORMATION
+            clientFlags = clientFlags or TRANSFORMATION
         }
         if (constantFlags and NpcAvatarExtendedInfo.BODY_CUSTOMISATION != 0) {
-            platformFlags = platformFlags or BODY_CUSTOMISATION
+            clientFlags = clientFlags or BODY_CUSTOMISATION
         }
         if (constantFlags and NpcAvatarExtendedInfo.HEAD_CUSTOMISATION != 0) {
-            platformFlags = platformFlags or HEAD_CUSTOMISATION
+            clientFlags = clientFlags or HEAD_CUSTOMISATION
         }
         if (constantFlags and NpcAvatarExtendedInfo.LEVEL_CHANGE != 0) {
-            platformFlags = platformFlags or LEVEL_CHANGE
+            clientFlags = clientFlags or LEVEL_CHANGE
         }
         if (constantFlags and NpcAvatarExtendedInfo.OPS != 0) {
-            platformFlags = platformFlags or OPS
+            clientFlags = clientFlags or OPS
         }
         if (constantFlags and NpcAvatarExtendedInfo.NAME_CHANGE != 0) {
-            platformFlags = platformFlags or NAME_CHANGE
+            clientFlags = clientFlags or NAME_CHANGE
         }
         if (constantFlags and NpcAvatarExtendedInfo.HEADICON_CUSTOMISATION != 0) {
-            platformFlags = platformFlags or HEADICON_CUSTOMISATION
+            clientFlags = clientFlags or HEADICON_CUSTOMISATION
         }
         if (constantFlags and NpcAvatarExtendedInfo.BAS_CHANGE != 0) {
-            platformFlags = platformFlags or BAS_CHANGE
+            clientFlags = clientFlags or BAS_CHANGE
         }
-        return platformFlags
+        return clientFlags
     }
 
     override fun pExtendedInfo(
@@ -107,64 +107,64 @@ public class NpcAvatarExtendedInfoDesktopWriter :
         flag: Int,
         blocks: NpcAvatarExtendedInfoBlocks,
     ) {
-        var platformFlag = convertFlags(flag)
-        if (platformFlag and 0xFF.inv() != 0) platformFlag = platformFlag or EXTENDED_SHORT
-        if (platformFlag and 0xFFFF.inv() != 0) platformFlag = platformFlag or EXTENDED_MEDIUM
-        buffer.p1(platformFlag)
-        if (platformFlag and EXTENDED_SHORT != 0) {
-            buffer.p1(platformFlag shr 8)
+        var clientFlag = convertFlags(flag)
+        if (clientFlag and 0xFF.inv() != 0) clientFlag = clientFlag or EXTENDED_SHORT
+        if (clientFlag and 0xFFFF.inv() != 0) clientFlag = clientFlag or EXTENDED_MEDIUM
+        buffer.p1(clientFlag)
+        if (clientFlag and EXTENDED_SHORT != 0) {
+            buffer.p1(clientFlag shr 8)
         }
-        if (platformFlag and EXTENDED_MEDIUM != 0) {
-            buffer.p1(platformFlag shr 16)
+        if (clientFlag and EXTENDED_MEDIUM != 0) {
+            buffer.p1(clientFlag shr 16)
         }
 
         // old spotanim
-        if (platformFlag and SPOTANIM != 0) {
+        if (clientFlag and SPOTANIM != 0) {
             pCachedData(buffer, blocks.spotAnims)
         }
-        if (platformFlag and SAY != 0) {
+        if (clientFlag and SAY != 0) {
             pCachedData(buffer, blocks.say)
         }
-        if (platformFlag and OPS != 0) {
+        if (clientFlag and OPS != 0) {
             pCachedData(buffer, blocks.visibleOps)
         }
-        if (platformFlag and EXACT_MOVE != 0) {
+        if (clientFlag and EXACT_MOVE != 0) {
             pCachedData(buffer, blocks.exactMove)
         }
-        if (platformFlag and SEQUENCE != 0) {
+        if (clientFlag and SEQUENCE != 0) {
             pCachedData(buffer, blocks.sequence)
         }
-        if (platformFlag and TINTING != 0) {
+        if (clientFlag and TINTING != 0) {
             pCachedData(buffer, blocks.tinting)
         }
-        if (platformFlag and HEADICON_CUSTOMISATION != 0) {
+        if (clientFlag and HEADICON_CUSTOMISATION != 0) {
             pCachedData(buffer, blocks.headIconCustomisation)
         }
-        if (platformFlag and NAME_CHANGE != 0) {
+        if (clientFlag and NAME_CHANGE != 0) {
             pCachedData(buffer, blocks.nameChange)
         }
-        if (platformFlag and HEAD_CUSTOMISATION != 0) {
+        if (clientFlag and HEAD_CUSTOMISATION != 0) {
             pCachedData(buffer, blocks.headCustomisation)
         }
-        if (platformFlag and BODY_CUSTOMISATION != 0) {
+        if (clientFlag and BODY_CUSTOMISATION != 0) {
             pCachedData(buffer, blocks.bodyCustomisation)
         }
-        if (platformFlag and TRANSFORMATION != 0) {
+        if (clientFlag and TRANSFORMATION != 0) {
             pCachedData(buffer, blocks.transformation)
         }
-        if (platformFlag and LEVEL_CHANGE != 0) {
+        if (clientFlag and LEVEL_CHANGE != 0) {
             pCachedData(buffer, blocks.combatLevelChange)
         }
-        if (platformFlag and HITS != 0) {
+        if (clientFlag and HITS != 0) {
             pOnDemandData(buffer, localIndex, blocks.hit, observerIndex)
         }
-        if (platformFlag and FACE_COORD != 0) {
+        if (clientFlag and FACE_COORD != 0) {
             pCachedData(buffer, blocks.faceCoord)
         }
-        if (platformFlag and FACE_PATHINGENTITY != 0) {
+        if (clientFlag and FACE_PATHINGENTITY != 0) {
             pCachedData(buffer, blocks.facePathingEntity)
         }
-        if (platformFlag and BAS_CHANGE != 0) {
+        if (clientFlag and BAS_CHANGE != 0) {
             pCachedData(buffer, blocks.baseAnimationSet)
         }
     }

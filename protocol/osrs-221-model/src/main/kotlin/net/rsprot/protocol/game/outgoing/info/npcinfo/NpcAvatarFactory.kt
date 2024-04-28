@@ -13,7 +13,7 @@ import net.rsprot.protocol.game.outgoing.info.filter.ExtendedInfoFilter
  * have extended info blocks written to it, or if we have to utilize a fall-back and tell
  * the client that despite extended info having been flagged, we cannot write it (by writing
  * the flag itself as a zero, so the client reads no further information).
- * @param extendedInfoWriter the platform-specific extended info writers for NPC information.
+ * @param extendedInfoWriter the client-specific extended info writers for NPC information.
  * @param huffmanCodec the huffman codec is used to compress chat extended info.
  * While NPCs do not currently have any such extended info blocks, the interface requires
  * it be passed in, so we must still provide it.

@@ -19,7 +19,7 @@ public fun interface ExtendedInfoFilter {
      * @param constantFlag the bitpacked flag of all the extended info blocks flagged
      * for this avatar. This function utilizes the constant flags found in
      * [net.rsprot.protocol.game.outgoing.info.playerinfo.PlayerAvatarExtendedInfo],
-     * rather than the platform-specific variants.
+     * rather than the client-specific variants.
      * @param remainingAvatars the number of avatars for whom we need to still write
      * extended info blocks. This includes the current avatar on whom we are checking
      * the accept function. Per each avatar, at least one byte must be writable.

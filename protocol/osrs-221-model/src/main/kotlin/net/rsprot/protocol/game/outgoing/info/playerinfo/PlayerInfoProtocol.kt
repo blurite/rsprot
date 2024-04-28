@@ -2,7 +2,7 @@ package net.rsprot.protocol.game.outgoing.info.playerinfo
 
 import io.netty.buffer.ByteBuf
 import io.netty.buffer.ByteBufAllocator
-import net.rsprot.protocol.common.platform.PlatformType
+import net.rsprot.protocol.common.client.OldSchoolClientType
 import net.rsprot.protocol.game.outgoing.info.playerinfo.util.LowResolutionPosition
 import net.rsprot.protocol.game.outgoing.info.worker.DefaultProtocolWorker
 import net.rsprot.protocol.game.outgoing.info.worker.ProtocolWorker
@@ -42,12 +42,12 @@ public class PlayerInfoProtocol(
      * all the avatars that exist.
      */
     private val playerInfoRepository: PlayerInfoRepository =
-        PlayerInfoRepository { localIndex, platformType ->
+        PlayerInfoRepository { localIndex, clientType ->
             PlayerInfo(
                 this,
                 localIndex,
                 allocator,
-                platformType,
+                clientType,
                 avatarFactory.alloc(localIndex),
             )
         }
@@ -73,8 +73,8 @@ public class PlayerInfoProtocol(
     /**
      * Allocates a new player info instance at index [idx]
      * @param idx the index of the player to allocate
-     * @param platformType the platform on which this player is.
-     * The platform type is used to determine which extended info encoders to utilize
+     * @param oldSchoolClientType the client on which this player is.
+     * The client type is used to determine which extended info encoders to utilize
      * when building the buffers for this packet.
      * @throws ArrayIndexOutOfBoundsException if the [idx] is below 1, or above 2047.
      * @throws IllegalStateException if the element at index [idx] is already in use.
@@ -85,7 +85,7 @@ public class PlayerInfoProtocol(
     )
     public fun alloc(
         idx: Int,
-        platformType: PlatformType,
+        oldSchoolClientType: OldSchoolClientType,
     ): PlayerInfo {
         // Only handle index 0 as a special case, as the protocol
         // does not allow putting an avatar at index 0.
@@ -93,7 +93,7 @@ public class PlayerInfoProtocol(
         if (idx == 0) {
             throw ArrayIndexOutOfBoundsException("Index 0 is not valid for player info protocol.")
         }
-        return playerInfoRepository.alloc(idx, platformType)
+        return playerInfoRepository.alloc(idx, oldSchoolClientType)
     }
 
     /**

@@ -1,6 +1,6 @@
 package net.rsprot.protocol.game.outgoing.info
 
-import net.rsprot.protocol.common.platform.PlatformType
+import net.rsprot.protocol.common.client.OldSchoolClientType
 import java.lang.ref.ReferenceQueue
 import java.lang.ref.SoftReference
 
@@ -8,7 +8,7 @@ import java.lang.ref.SoftReference
  * The info repository class is responsible for allocating and re-using various info implementations.
  */
 internal abstract class InfoRepository<T>(
-    private val allocator: (index: Int, platformType: PlatformType) -> T,
+    private val allocator: (index: Int, oldSchoolClientType: OldSchoolClientType) -> T,
 ) {
     /**
      * The backing elements array used to store currently-in-use objects.
@@ -74,7 +74,7 @@ internal abstract class InfoRepository<T>(
     )
     fun alloc(
         idx: Int,
-        platformType: PlatformType,
+        oldSchoolClientType: OldSchoolClientType,
     ): T {
         val element = elements[idx]
         check(element == null) {
@@ -82,11 +82,11 @@ internal abstract class InfoRepository<T>(
         }
         val cached = queue.poll()?.get()
         if (cached != null) {
-            onAlloc(cached, idx, platformType)
+            onAlloc(cached, idx, oldSchoolClientType)
             elements[idx] = cached
             return cached
         }
-        val new = allocator(idx, platformType)
+        val new = allocator(idx, oldSchoolClientType)
         elements[idx] = new
         return new
     }
@@ -96,12 +96,12 @@ internal abstract class InfoRepository<T>(
      * object before it may be used.
      * @param element the element being allocated
      * @param idx the index of the element
-     * @param platformType the platform on which the info is being allocated.
+     * @param oldSchoolClientType the client on which the info is being allocated.
      */
     protected abstract fun onAlloc(
         element: T,
         idx: Int,
-        platformType: PlatformType,
+        oldSchoolClientType: OldSchoolClientType,
     )
 
     /**

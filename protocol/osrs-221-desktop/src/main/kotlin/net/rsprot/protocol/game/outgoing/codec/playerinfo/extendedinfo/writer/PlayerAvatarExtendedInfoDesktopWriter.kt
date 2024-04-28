@@ -1,8 +1,8 @@
 package net.rsprot.protocol.game.outgoing.codec.playerinfo.extendedinfo.writer
 
 import net.rsprot.buffer.JagByteBuf
+import net.rsprot.protocol.common.client.OldSchoolClientType
 import net.rsprot.protocol.common.game.outgoing.info.playerinfo.encoder.PlayerExtendedInfoEncoders
-import net.rsprot.protocol.common.platform.PlatformType
 import net.rsprot.protocol.game.outgoing.codec.playerinfo.extendedinfo.PlayerAppearanceEncoder
 import net.rsprot.protocol.game.outgoing.codec.playerinfo.extendedinfo.PlayerChatEncoder
 import net.rsprot.protocol.game.outgoing.codec.playerinfo.extendedinfo.PlayerExactMoveEncoder
@@ -21,9 +21,9 @@ import net.rsprot.protocol.game.outgoing.info.playerinfo.PlayerAvatarExtendedInf
 
 public class PlayerAvatarExtendedInfoDesktopWriter :
     AvatarExtendedInfoWriter<PlayerExtendedInfoEncoders, PlayerAvatarExtendedInfoBlocks>(
-        PlatformType.DESKTOP,
+        OldSchoolClientType.DESKTOP,
         PlayerExtendedInfoEncoders(
-            PlatformType.DESKTOP,
+            OldSchoolClientType.DESKTOP,
             PlayerAppearanceEncoder(),
             PlayerChatEncoder(),
             PlayerExactMoveEncoder(),
@@ -39,44 +39,44 @@ public class PlayerAvatarExtendedInfoDesktopWriter :
         ),
     ) {
     private fun convertFlags(constantFlags: Int): Int {
-        var platformFlags = 0
+        var clientFlags = 0
         if (constantFlags and PlayerAvatarExtendedInfo.APPEARANCE != 0) {
-            platformFlags = platformFlags or APPEARANCE
+            clientFlags = clientFlags or APPEARANCE
         }
         if (constantFlags and PlayerAvatarExtendedInfo.MOVE_SPEED != 0) {
-            platformFlags = platformFlags or MOVE_SPEED
+            clientFlags = clientFlags or MOVE_SPEED
         }
         if (constantFlags and PlayerAvatarExtendedInfo.FACE_PATHINGENTITY != 0) {
-            platformFlags = platformFlags or FACE_PATHINGENTITY
+            clientFlags = clientFlags or FACE_PATHINGENTITY
         }
         if (constantFlags and PlayerAvatarExtendedInfo.TINTING != 0) {
-            platformFlags = platformFlags or TINTING
+            clientFlags = clientFlags or TINTING
         }
         if (constantFlags and PlayerAvatarExtendedInfo.FACE_ANGLE != 0) {
-            platformFlags = platformFlags or FACE_ANGLE
+            clientFlags = clientFlags or FACE_ANGLE
         }
         if (constantFlags and PlayerAvatarExtendedInfo.SAY != 0) {
-            platformFlags = platformFlags or SAY
+            clientFlags = clientFlags or SAY
         }
         if (constantFlags and PlayerAvatarExtendedInfo.HITS != 0) {
-            platformFlags = platformFlags or HITS
+            clientFlags = clientFlags or HITS
         }
         if (constantFlags and PlayerAvatarExtendedInfo.SEQUENCE != 0) {
-            platformFlags = platformFlags or SEQUENCE
+            clientFlags = clientFlags or SEQUENCE
         }
         if (constantFlags and PlayerAvatarExtendedInfo.CHAT != 0) {
-            platformFlags = platformFlags or CHAT
+            clientFlags = clientFlags or CHAT
         }
         if (constantFlags and PlayerAvatarExtendedInfo.TEMP_MOVE_SPEED != 0) {
-            platformFlags = platformFlags or TEMP_MOVE_SPEED
+            clientFlags = clientFlags or TEMP_MOVE_SPEED
         }
         if (constantFlags and PlayerAvatarExtendedInfo.EXACT_MOVE != 0) {
-            platformFlags = platformFlags or EXACT_MOVE
+            clientFlags = clientFlags or EXACT_MOVE
         }
         if (constantFlags and PlayerAvatarExtendedInfo.SPOTANIM != 0) {
-            platformFlags = platformFlags or SPOTANIM
+            clientFlags = clientFlags or SPOTANIM
         }
-        return platformFlags
+        return clientFlags
     }
 
     override fun pExtendedInfo(
@@ -86,53 +86,53 @@ public class PlayerAvatarExtendedInfoDesktopWriter :
         flag: Int,
         blocks: PlayerAvatarExtendedInfoBlocks,
     ) {
-        var platformFlag = convertFlags(flag)
-        if (platformFlag and 0xFF.inv() != 0) platformFlag = platformFlag or EXTENDED_SHORT
-        if (platformFlag and 0xFFFF.inv() != 0) platformFlag = platformFlag or EXTENDED_MEDIUM
-        buffer.p1(platformFlag)
-        if (platformFlag and EXTENDED_SHORT != 0) {
-            buffer.p1(platformFlag shr 8)
+        var clientFlag = convertFlags(flag)
+        if (clientFlag and 0xFF.inv() != 0) clientFlag = clientFlag or EXTENDED_SHORT
+        if (clientFlag and 0xFFFF.inv() != 0) clientFlag = clientFlag or EXTENDED_MEDIUM
+        buffer.p1(clientFlag)
+        if (clientFlag and EXTENDED_SHORT != 0) {
+            buffer.p1(clientFlag shr 8)
         }
-        if (platformFlag and EXTENDED_MEDIUM != 0) {
-            buffer.p1(platformFlag shr 16)
+        if (clientFlag and EXTENDED_MEDIUM != 0) {
+            buffer.p1(clientFlag shr 16)
         }
 
-        if (platformFlag and FACE_ANGLE != 0) {
+        if (clientFlag and FACE_ANGLE != 0) {
             pCachedData(buffer, blocks.faceAngle)
         }
         // Old chat
-        if (platformFlag and SEQUENCE != 0) {
+        if (clientFlag and SEQUENCE != 0) {
             pCachedData(buffer, blocks.sequence)
         }
-        if (platformFlag and HITS != 0) {
+        if (clientFlag and HITS != 0) {
             pOnDemandData(buffer, localIndex, blocks.hit, observerIndex)
         }
-        if (platformFlag and EXACT_MOVE != 0) {
+        if (clientFlag and EXACT_MOVE != 0) {
             pCachedData(buffer, blocks.exactMove)
         }
-        if (platformFlag and CHAT != 0) {
+        if (clientFlag and CHAT != 0) {
             pCachedData(buffer, blocks.chat)
         }
-        if (platformFlag and TEMP_MOVE_SPEED != 0) {
+        if (clientFlag and TEMP_MOVE_SPEED != 0) {
             pCachedData(buffer, blocks.temporaryMoveSpeed)
         }
         // name extras
-        if (platformFlag and SAY != 0) {
+        if (clientFlag and SAY != 0) {
             pCachedData(buffer, blocks.say)
         }
-        if (platformFlag and TINTING != 0) {
+        if (clientFlag and TINTING != 0) {
             pOnDemandData(buffer, localIndex, blocks.tinting, observerIndex)
         }
-        if (platformFlag and MOVE_SPEED != 0) {
+        if (clientFlag and MOVE_SPEED != 0) {
             pCachedData(buffer, blocks.moveSpeed)
         }
-        if (platformFlag and APPEARANCE != 0) {
+        if (clientFlag and APPEARANCE != 0) {
             pCachedData(buffer, blocks.appearance)
         }
-        if (platformFlag and FACE_PATHINGENTITY != 0) {
+        if (clientFlag and FACE_PATHINGENTITY != 0) {
             pCachedData(buffer, blocks.facePathingEntity)
         }
-        if (platformFlag and SPOTANIM != 0) {
+        if (clientFlag and SPOTANIM != 0) {
             pCachedData(buffer, blocks.spotAnims)
         }
     }

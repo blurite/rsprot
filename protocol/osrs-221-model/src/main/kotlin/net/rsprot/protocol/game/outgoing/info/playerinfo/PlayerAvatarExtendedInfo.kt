@@ -6,6 +6,7 @@ import io.netty.buffer.ByteBufAllocator
 import net.rsprot.buffer.JagByteBuf
 import net.rsprot.compression.HuffmanCodec
 import net.rsprot.protocol.common.RSProtFlags
+import net.rsprot.protocol.common.client.OldSchoolClientType
 import net.rsprot.protocol.common.game.outgoing.info.playerinfo.encoder.PlayerExtendedInfoEncoders
 import net.rsprot.protocol.common.game.outgoing.info.playerinfo.extendedinfo.MoveSpeed
 import net.rsprot.protocol.common.game.outgoing.info.playerinfo.extendedinfo.ObjTypeCustomisation
@@ -15,7 +16,6 @@ import net.rsprot.protocol.common.game.outgoing.info.shared.extendedinfo.Tinting
 import net.rsprot.protocol.common.game.outgoing.info.shared.extendedinfo.util.HeadBar
 import net.rsprot.protocol.common.game.outgoing.info.shared.extendedinfo.util.HitMark
 import net.rsprot.protocol.common.game.outgoing.info.shared.extendedinfo.util.SpotAnim
-import net.rsprot.protocol.common.platform.PlatformType
 import net.rsprot.protocol.game.outgoing.info.AvatarExtendedInfoWriter
 import net.rsprot.protocol.game.outgoing.info.filter.ExtendedInfoFilter
 
@@ -28,8 +28,8 @@ public typealias PlayerAvatarExtendedInfoWriter =
  *  @param filter the filter responsible for ensuring the total packet size constraint
  *  is not broken in any way. If this filter does not conform to the contract correctly,
  *  crashes are likely to happen during encoding.
- *  @param extendedInfoWriters the list of platform-specific writers & encoders of all extended
- *  info blocks. During caching procedure, all registered platform buffers will be built
+ *  @param extendedInfoWriters the list of client-specific writers & encoders of all extended
+ *  info blocks. During caching procedure, all registered client buffers will be built
  *  concurrently among players.
  *  @param allocator the byte buffer allocator used to allocate buffers during the caching procedure.
  *  Any extended info block which is built on-demand is written directly into the main buffer.
@@ -47,24 +47,24 @@ public class PlayerAvatarExtendedInfo(
      * When an update is requested, the respective flag of that update is appended
      * onto this flag. At the end of each cycle, the flag is reset.
      * Worth noting, however, that this flag only contains constants within
-     * the [Companion] of this class. For platform-specific encoders, a translation
-     * occurs to turn these constants into a platform-specific flag.
+     * the [Companion] of this class. For client-specific encoders, a translation
+     * occurs to turn these constants into a client-specific flag.
      */
     internal var flags: Int = 0
 
     /**
      * Extended info blocks used to transmit changes to the client,
-     * wrapped in its own class as we must pass this onto the platform-specific
+     * wrapped in its own class as we must pass this onto the client-specific
      * implementations.
      */
     private val blocks: PlayerAvatarExtendedInfoBlocks = PlayerAvatarExtendedInfoBlocks(extendedInfoWriters)
 
     /**
-     * The platform-specific extended info writers, indexed by the respective [PlatformType]'s id.
-     * All platforms in use must be registered, or an exception will occur during player info encoding.
+     * The client-specific extended info writers, indexed by the respective [OldSchoolClientType]'s id.
+     * All clients in use must be registered, or an exception will occur during player info encoding.
      */
     private val writers: Array<PlayerAvatarExtendedInfoWriter?> =
-        buildPlatformWriterArray(extendedInfoWriters)
+        buildClientWriterArray(extendedInfoWriters)
 
     /**
      * An int array to keep track of the number of times we've seen someone modify their appearance.
@@ -1285,7 +1285,7 @@ public class PlayerAvatarExtendedInfo(
 
     /**
      * Writes the extended info block of this avatar for the given observer.
-     * @param platformType the platform that the observer is using.
+     * @param oldSchoolClientType the client that the observer is using.
      * @param buffer the buffer into which the extended info block should be written.
      * @param observerFlag the dynamic out-of-date flags that we must send to the observer
      * on-top of everything that was pre-computed earlier.
@@ -1294,7 +1294,7 @@ public class PlayerAvatarExtendedInfo(
      * the given [observer], necessary to avoid memory overflow.
      */
     internal fun pExtendedInfo(
-        platformType: PlatformType,
+        oldSchoolClientType: OldSchoolClientType,
         buffer: JagByteBuf,
         observerFlag: Int,
         observer: PlayerAvatarExtendedInfo,
@@ -1312,8 +1312,8 @@ public class PlayerAvatarExtendedInfo(
             return
         }
         val writer =
-            requireNotNull(writers[platformType.id]) {
-                "Extended info writer missing for platform $platformType"
+            requireNotNull(writers[oldSchoolClientType.id]) {
+                "Extended info writer missing for client $oldSchoolClientType"
             }
 
         // If appearance is flagged, ensure we synchronize the changes counter
@@ -1406,18 +1406,18 @@ public class PlayerAvatarExtendedInfo(
         }
 
         /**
-         * Builds an extended info writer array indexed by provided platform types.
-         * All platform types which are utilized must be registered to avoid runtime errors.
+         * Builds an extended info writer array indexed by provided client types.
+         * All client types which are utilized must be registered to avoid runtime errors.
          */
-        private fun buildPlatformWriterArray(
+        private fun buildClientWriterArray(
             extendedInfoWriters: List<PlayerAvatarExtendedInfoWriter>,
         ): Array<PlayerAvatarExtendedInfoWriter?> {
             val array =
                 arrayOfNulls<PlayerAvatarExtendedInfoWriter>(
-                    PlatformType.COUNT,
+                    OldSchoolClientType.COUNT,
                 )
             for (writer in extendedInfoWriters) {
-                array[writer.platformType.id] = writer
+                array[writer.oldSchoolClientType.id] = writer
             }
             return array
         }

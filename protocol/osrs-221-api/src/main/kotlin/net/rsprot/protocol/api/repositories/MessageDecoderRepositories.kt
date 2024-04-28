@@ -1,10 +1,10 @@
 package net.rsprot.protocol.api.repositories
 
 import net.rsprot.protocol.ClientProt
+import net.rsprot.protocol.common.client.ClientTypeMap
+import net.rsprot.protocol.common.client.OldSchoolClientType
 import net.rsprot.protocol.common.js5.incoming.prot.Js5MessageDecoderRepository
 import net.rsprot.protocol.common.loginprot.incoming.prot.LoginMessageDecoderRepository
-import net.rsprot.protocol.common.platform.PlatformMap
-import net.rsprot.protocol.common.platform.PlatformType
 import net.rsprot.protocol.game.incoming.prot.DesktopGameMessageDecoderRepository
 import net.rsprot.protocol.message.codec.incoming.MessageDecoderRepository
 import java.math.BigInteger
@@ -13,7 +13,7 @@ import java.math.BigInteger
 public class MessageDecoderRepositories private constructor(
     public val loginMessageDecoderRepository: MessageDecoderRepository<ClientProt>,
     public val js5MessageDecoderRepository: MessageDecoderRepository<ClientProt>,
-    public val gameMessageDecoderRepositories: PlatformMap<MessageDecoderRepository<ClientProt>>,
+    public val gameMessageDecoderRepositories: ClientTypeMap<MessageDecoderRepository<ClientProt>>,
 ) {
     public constructor(
         exp: BigInteger,
@@ -21,9 +21,9 @@ public class MessageDecoderRepositories private constructor(
     ) : this(
         LoginMessageDecoderRepository.build(exp, mod),
         Js5MessageDecoderRepository.build(),
-        PlatformMap.of(
-            PlatformType.COUNT,
-            listOf(PlatformType.DESKTOP to DesktopGameMessageDecoderRepository.build()),
+        ClientTypeMap.of(
+            OldSchoolClientType.COUNT,
+            listOf(OldSchoolClientType.DESKTOP to DesktopGameMessageDecoderRepository.build()),
         ),
     )
 }
