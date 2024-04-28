@@ -1,12 +1,12 @@
 package net.rsprot.protocol.common.game.outgoing.codec.zone.payload
 
-import net.rsprot.protocol.message.OutgoingMessage
+import net.rsprot.protocol.message.OutgoingGameMessage
 
 /**
  * ZoneProt is a special type of outgoing message, used for any zone payload packet,
  * such as area sound or map proj anim.
  */
-public interface ZoneProt : OutgoingMessage {
+public interface ZoneProt : OutgoingGameMessage {
     /**
      * Prot id is a constant value assigned to each unique prot,
      * with the intent of being able to switch on these constants
