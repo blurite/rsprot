@@ -92,8 +92,7 @@ public class NetworkService<R, T : Js5GroupType>(
     }
 
     public companion object {
-        // TODO: Update revision
-        public const val REVISION: Int = 215
+        public const val REVISION: Int = 221
         public const val LOGIN_TIMEOUT_SECONDS: Long = 60
         public const val JS5_TIMEOUT_SECONDS: Long = 30
     }
