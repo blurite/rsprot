@@ -16,7 +16,7 @@ import net.rsprot.protocol.tools.MessageDecodingTools
 
 public class GameMessageDecoder<R>(
     public val networkService: NetworkService<R, *>,
-    private val session: Session,
+    private val session: Session<R>,
     override val streamCipher: StreamCipher,
     oldSchoolClientType: OldSchoolClientType,
 ) : IncomingMessageDecoder() {

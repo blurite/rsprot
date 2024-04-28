@@ -17,14 +17,14 @@ import net.rsprot.protocol.loginprot.incoming.util.LoginClientType
 import net.rsprot.protocol.loginprot.outgoing.LoginResponse
 import java.util.function.Consumer
 
-public class GameLoginResponseHandler(
-    public val networkService: NetworkService<*, *>,
+public class GameLoginResponseHandler<R>(
+    public val networkService: NetworkService<R, *>,
     public val ctx: ChannelHandlerContext,
 ) {
     public fun writeSuccessfulResponse(
         response: LoginResponse.Ok,
         loginBlock: LoginBlock<AuthenticationType<*>>,
-        callback: Consumer<Session?>,
+        callback: Consumer<Session<R>?>,
     ) {
         val oldSchoolClientType =
             when (loginBlock.clientType) {
@@ -61,11 +61,12 @@ public class GameLoginResponseHandler(
                 val encodingCipher = IsaacRandom(decodeSeed)
                 val decodingCipher = IsaacRandom(encodeSeed)
                 val session =
-                    Session(
+                    Session<R>(
                         ctx,
                         networkService.incomingGameMessageQueueProvider.provide(),
                         networkService.outgoingGameMessageQueueProvider.provide(),
                         networkService.gameMessageCounterProvider.provide(),
+                        networkService.gameMessageConsumerRepository.consumers,
                     )
                 pipeline.replace<LoginMessageDecoder>(
                     GameMessageDecoder(
@@ -78,7 +79,7 @@ public class GameLoginResponseHandler(
                 pipeline.replace<LoginMessageEncoder>(
                     GameMessageEncoder(networkService, encodingCipher, oldSchoolClientType),
                 )
-                pipeline.replace<GameMessageHandler>(GameMessageHandler(session))
+                pipeline.replace<LoginConnectionHandler<R>>(GameMessageHandler(session))
                 callback.accept(session)
             },
         )

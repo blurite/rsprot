@@ -4,16 +4,19 @@ import io.netty.channel.ChannelHandlerContext
 import net.rsprot.protocol.api.channel.inetAddress
 import net.rsprot.protocol.api.game.GameMessageDecoder
 import net.rsprot.protocol.message.IncomingGameMessage
+import net.rsprot.protocol.message.IncomingMessage
 import net.rsprot.protocol.message.OutgoingGameMessage
 import java.net.InetAddress
 import java.util.Queue
+import java.util.function.BiConsumer
 
 @Suppress("MemberVisibilityCanBePrivate")
-public class Session(
+public class Session<R>(
     public val ctx: ChannelHandlerContext,
     private val incomingMessageQueue: Queue<IncomingGameMessage>,
     private val outgoingMessageQueue: Queue<OutgoingGameMessage>,
     private val counter: GameMessageCounter,
+    private val consumers: Map<Class<out IncomingMessage>, BiConsumer<R, in IncomingMessage>>,
 ) {
     public val inetAddress: InetAddress = ctx.inetAddress()
 
@@ -21,11 +24,23 @@ public class Session(
         outgoingMessageQueue += message
     }
 
-    public fun pollIncomingMessage(): IncomingGameMessage? {
+    public fun processIncomingPackets(receiver: R) {
+        while (true) {
+            val packet = pollIncomingMessage() ?: break
+            val consumer = consumers[packet::class.java]
+            checkNotNull(consumer) {
+                "Consumer for packet $packet does not exist."
+            }
+            consumer.accept(receiver, packet)
+        }
+        onPollComplete()
+    }
+
+    private fun pollIncomingMessage(): IncomingGameMessage? {
         return incomingMessageQueue.poll()
     }
 
-    public fun onPollComplete() {
+    private fun onPollComplete() {
         resumeReading()
     }
 

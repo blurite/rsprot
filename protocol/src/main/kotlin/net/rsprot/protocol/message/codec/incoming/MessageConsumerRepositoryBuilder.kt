@@ -11,18 +11,19 @@ import java.util.function.BiConsumer
  * @property consumers the hashmap of consumers, using incoming message classes as keys.
  */
 public abstract class MessageConsumerRepositoryBuilder<R> {
-    private val consumers: MutableMap<Class<out IncomingMessage>, BiConsumer<R, out IncomingMessage>> = HashMap()
+    private val consumers: MutableMap<Class<out IncomingMessage>, BiConsumer<R, in IncomingMessage>> = HashMap()
 
     /**
      * Adds a listener for the provided [clazz].
      * @param clazz the class to register a listener for
      * @param consumer the consumer that will be triggered by the server when it is ready to be consumed.
      */
+    @Suppress("UNCHECKED_CAST")
     public fun <T : IncomingMessage> addListener(
         clazz: Class<out T>,
-        consumer: BiConsumer<R, out T>,
+        consumer: BiConsumer<R, in T>,
     ) {
-        val old = consumers.put(clazz, consumer)
+        val old = consumers.put(clazz, consumer as BiConsumer<R, in IncomingMessage>)
         require(old == null) {
             "Overwriting old listener for class $clazz"
         }

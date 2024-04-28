@@ -18,8 +18,8 @@ import net.rsprot.protocol.message.IncomingLoginMessage
 import java.util.concurrent.CompletableFuture
 import java.util.function.Function
 
-public class LoginConnectionHandler(
-    private val networkService: NetworkService<*, *>,
+public class LoginConnectionHandler<R>(
+    private val networkService: NetworkService<R, *>,
 ) : SimpleChannelInboundHandler<IncomingLoginMessage>(IncomingLoginMessage::class.java) {
     private var loginState: LoginState = LoginState.UNINITIALIZED
     private lateinit var loginPacket: IncomingLoginMessage

@@ -6,8 +6,8 @@ import io.netty.handler.timeout.IdleStateEvent
 import net.rsprot.protocol.api.Session
 import net.rsprot.protocol.message.IncomingGameMessage
 
-public class GameMessageHandler(
-    private val session: Session,
+public class GameMessageHandler<R>(
+    private val session: Session<R>,
 ) : SimpleChannelInboundHandler<IncomingGameMessage>() {
     override fun handlerAdded(ctx: ChannelHandlerContext) {
         ctx.read()

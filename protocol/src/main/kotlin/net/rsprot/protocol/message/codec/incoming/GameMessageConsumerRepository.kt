@@ -4,7 +4,7 @@ import net.rsprot.protocol.message.IncomingMessage
 import java.util.function.BiConsumer
 
 public class GameMessageConsumerRepository<R>(
-    public val consumers: Map<Class<out IncomingMessage>, BiConsumer<R, out IncomingMessage>>,
+    public val consumers: Map<Class<out IncomingMessage>, BiConsumer<R, in IncomingMessage>>,
 ) {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
