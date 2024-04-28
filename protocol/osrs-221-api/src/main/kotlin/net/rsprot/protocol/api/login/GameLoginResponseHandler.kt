@@ -12,6 +12,7 @@ import net.rsprot.protocol.api.game.GameMessageHandler
 import net.rsprot.protocol.common.client.OldSchoolClientType
 import net.rsprot.protocol.loginprot.incoming.util.AuthenticationType
 import net.rsprot.protocol.loginprot.incoming.util.LoginBlock
+import net.rsprot.protocol.loginprot.incoming.util.LoginClientType
 import net.rsprot.protocol.loginprot.outgoing.LoginResponse
 import java.util.function.Consumer
 
@@ -41,22 +42,17 @@ public class GameLoginResponseHandler(
 
                 val encodingCipher = IsaacRandom(decodeSeed)
                 val decodingCipher = IsaacRandom(encodeSeed)
-                // Figure out platform type mappings
-                //                 case 0 -> "^platformtype_default";
-                //                case 1 -> "^platformtype_steam";
-                //                case 2 -> "^platformtype_android";
-                //                case 3 -> "^platformtype_apple";
-                //                case 5 -> "^platformtype_jagex";
-
-                val oldSchoolClientType = OldSchoolClientType.DESKTOP
-                //                case 1 -> "^clienttype_desktop";
-                //                case 2 -> "^clienttype_android";
-                //                case 3 -> "^clienttype_ios";
-                //                case 4 -> "^clienttype_enhanced_windows";
-                //                case 5 -> "^clienttype_enhanced_mac";
-                //                case 7 -> "^clienttype_enhanced_android";
-                //                case 8 -> "^clienttype_enhanced_ios";
-                //                case 10 -> "^clienttype_enhanced_linux";
+                val oldSchoolClientType =
+                    when (loginBlock.clientType) {
+                        LoginClientType.DESKTOP -> OldSchoolClientType.DESKTOP
+                        LoginClientType.ENHANCED_WINDOWS -> OldSchoolClientType.DESKTOP
+                        LoginClientType.ENHANCED_LINUX -> OldSchoolClientType.DESKTOP
+                        LoginClientType.ENHANCED_MAC -> OldSchoolClientType.DESKTOP
+                        LoginClientType.ANDROID -> OldSchoolClientType.ANDROID
+                        LoginClientType.ENHANCED_ANDROID -> OldSchoolClientType.ANDROID
+                        LoginClientType.IOS -> OldSchoolClientType.IOS
+                        LoginClientType.ENHANCED_IOS -> OldSchoolClientType.IOS
+                    }
                 val session =
                     Session(
                         ctx,
