@@ -19,6 +19,8 @@ import net.rsprot.protocol.api.util.asCompletableFuture
 import net.rsprot.protocol.common.client.ClientTypeMap
 import net.rsprot.protocol.common.client.OldSchoolClientType
 import net.rsprot.protocol.common.game.outgoing.info.npcinfo.encoder.NpcResolutionChangeEncoder
+import net.rsprot.protocol.game.incoming.prot.DesktopGameMessageDecoderRepository
+import net.rsprot.protocol.game.incoming.prot.GameClientProt
 import net.rsprot.protocol.game.outgoing.codec.npcinfo.DesktopLowResolutionChangeEncoder
 import net.rsprot.protocol.game.outgoing.codec.npcinfo.extendedinfo.writer.NpcAvatarExtendedInfoDesktopWriter
 import net.rsprot.protocol.game.outgoing.codec.playerinfo.extendedinfo.writer.PlayerAvatarExtendedInfoDesktopWriter
@@ -40,6 +42,7 @@ import net.rsprot.protocol.loginprot.incoming.pow.challenges.sha256.DefaultSha25
 import net.rsprot.protocol.message.IncomingGameMessage
 import net.rsprot.protocol.message.OutgoingGameMessage
 import net.rsprot.protocol.message.codec.incoming.GameMessageConsumerRepository
+import net.rsprot.protocol.message.codec.incoming.MessageDecoderRepository
 import net.rsprot.protocol.tools.MessageDecodingTools
 import java.math.BigInteger
 import java.util.concurrent.CompletableFuture
@@ -73,7 +76,7 @@ public class NetworkService<R, T : Js5GroupType>(
         DefaultMessageQueueProvider(),
     public val gameMessageCounterProvider: GameMessageCounterProvider = DefaultGameMessageCounterProvider(),
 ) {
-    public val decoderRepositories: MessageDecoderRepositories = MessageDecoderRepositories(exp, mod)
+    public lateinit var decoderRepositories: MessageDecoderRepositories
     public val encoderRepositories: MessageEncoderRepositories = MessageEncoderRepositories()
     public val messageDecodingTools: MessageDecodingTools = MessageDecodingTools(huffmanCodec)
     public val js5Service: Js5Service<T> = Js5Service(js5GroupProvider)
@@ -85,8 +88,10 @@ public class NetworkService<R, T : Js5GroupType>(
     public lateinit var npcInfoProtocol: NpcInfoProtocol
 
     @ExperimentalUnsignedTypes
+    @ExperimentalStdlibApi
     public fun start() {
         verifyClientTypesAreImplemented()
+        initializeDecoderRepositories()
         initializeInfos()
         val bossGroup = bootstrapFactory.createParentLoopGroup()
         val childGroup = bootstrapFactory.createChildLoopGroup()
@@ -109,6 +114,20 @@ public class NetworkService<R, T : Js5GroupType>(
                 }
             }
         js5ServiceExecutor.start()
+    }
+
+    @ExperimentalStdlibApi
+    private fun initializeDecoderRepositories() {
+        val list = mutableListOf<Pair<OldSchoolClientType, MessageDecoderRepository<GameClientProt>>>()
+        if (OldSchoolClientType.DESKTOP in clientTypes) {
+            list += OldSchoolClientType.DESKTOP to DesktopGameMessageDecoderRepository.build()
+        }
+        val map =
+            ClientTypeMap.of(
+                OldSchoolClientType.COUNT,
+                list,
+            )
+        this.decoderRepositories = MessageDecoderRepositories(exp, mod, map)
     }
 
     private fun initializeInfos() {
