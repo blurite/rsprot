@@ -49,184 +49,186 @@ import java.util.concurrent.CompletableFuture
 
 @OptIn(ExperimentalUnsignedTypes::class)
 @Suppress("MemberVisibilityCanBePrivate")
-public class NetworkService<R, T : Js5GroupType>(
-    private val bootstrapFactory: BootstrapFactory,
-    private val ports: List<Int>,
-    private val clientTypes: List<OldSchoolClientType>,
-    private val exp: BigInteger,
-    private val mod: BigInteger,
-    private val huffmanCodec: HuffmanCodec,
-    private val js5GroupProvider: Js5GroupProvider<T>,
-    public val gameMessageConsumerRepository: GameMessageConsumerRepository<R>,
-    public val gameLoginHandler: GameLoginHandler,
-    private val npcIndexSupplier: NpcIndexSupplier,
-    private val allocator: ByteBufAllocator = PooledByteBufAllocator.DEFAULT,
-    private val playerExtendedInfoFilter: ExtendedInfoFilter = DefaultExtendedInfoFilter(),
-    private val npcExtendedInfoFilter: ExtendedInfoFilter = DefaultExtendedInfoFilter(),
-    private val playerInfoProtocolWorker: ProtocolWorker = DefaultProtocolWorker(),
-    private val npcInfoProtocolWorker: ProtocolWorker = DefaultProtocolWorker(),
-    public val streamCipherProvider: StreamCipherProvider = DefaultStreamCipherProvider(),
-    public val inetAddressValidator: InetAddressValidator = DefaultInetAddressValidator(),
-    public val loginDecoderService: LoginDecoderService = DefaultLoginDecoderService(),
-    public val proofOfWorkProvider: ProofOfWorkProvider<*, *> = DefaultSha256ProofOfWorkProvider(1),
-    public val proofOfWorkChallengeWorker: ChallengeWorker = DefaultChallengeWorker,
-    public val incomingGameMessageQueueProvider: MessageQueueProvider<IncomingGameMessage> =
-        DefaultMessageQueueProvider(),
-    public val outgoingGameMessageQueueProvider: MessageQueueProvider<OutgoingGameMessage> =
-        DefaultMessageQueueProvider(),
-    public val gameMessageCounterProvider: GameMessageCounterProvider = DefaultGameMessageCounterProvider(),
-) {
-    public lateinit var decoderRepositories: MessageDecoderRepositories
-    public val encoderRepositories: MessageEncoderRepositories = MessageEncoderRepositories()
-    public val messageDecodingTools: MessageDecodingTools = MessageDecodingTools(huffmanCodec)
-    public val js5Service: Js5Service<T> = Js5Service(js5GroupProvider)
-    private val js5ServiceExecutor = Thread(js5Service)
+public class NetworkService<R, T : Js5GroupType>
+    @JvmOverloads
+    public constructor(
+        private val bootstrapFactory: BootstrapFactory,
+        private val ports: List<Int>,
+        private val clientTypes: List<OldSchoolClientType>,
+        private val exp: BigInteger,
+        private val mod: BigInteger,
+        private val huffmanCodec: HuffmanCodec,
+        private val js5GroupProvider: Js5GroupProvider<T>,
+        public val gameMessageConsumerRepository: GameMessageConsumerRepository<R>,
+        public val gameLoginHandler: GameLoginHandler,
+        private val npcIndexSupplier: NpcIndexSupplier,
+        private val allocator: ByteBufAllocator = PooledByteBufAllocator.DEFAULT,
+        private val playerExtendedInfoFilter: ExtendedInfoFilter = DefaultExtendedInfoFilter(),
+        private val npcExtendedInfoFilter: ExtendedInfoFilter = DefaultExtendedInfoFilter(),
+        private val playerInfoProtocolWorker: ProtocolWorker = DefaultProtocolWorker(),
+        private val npcInfoProtocolWorker: ProtocolWorker = DefaultProtocolWorker(),
+        public val streamCipherProvider: StreamCipherProvider = DefaultStreamCipherProvider(),
+        public val inetAddressValidator: InetAddressValidator = DefaultInetAddressValidator(),
+        public val loginDecoderService: LoginDecoderService = DefaultLoginDecoderService(),
+        public val proofOfWorkProvider: ProofOfWorkProvider<*, *> = DefaultSha256ProofOfWorkProvider(1),
+        public val proofOfWorkChallengeWorker: ChallengeWorker = DefaultChallengeWorker,
+        public val incomingGameMessageQueueProvider: MessageQueueProvider<IncomingGameMessage> =
+            DefaultMessageQueueProvider(),
+        public val outgoingGameMessageQueueProvider: MessageQueueProvider<OutgoingGameMessage> =
+            DefaultMessageQueueProvider(),
+        public val gameMessageCounterProvider: GameMessageCounterProvider = DefaultGameMessageCounterProvider(),
+    ) {
+        public lateinit var decoderRepositories: MessageDecoderRepositories
+        public val encoderRepositories: MessageEncoderRepositories = MessageEncoderRepositories()
+        public val messageDecodingTools: MessageDecodingTools = MessageDecodingTools(huffmanCodec)
+        public val js5Service: Js5Service<T> = Js5Service(js5GroupProvider)
+        private val js5ServiceExecutor = Thread(js5Service)
 
-    public lateinit var playerAvatarFactory: PlayerAvatarFactory
-    public lateinit var playerInfoProtocol: PlayerInfoProtocol
-    public lateinit var npcAvatarFactory: NpcAvatarFactory
-    public lateinit var npcInfoProtocol: NpcInfoProtocol
+        public lateinit var playerAvatarFactory: PlayerAvatarFactory
+        public lateinit var playerInfoProtocol: PlayerInfoProtocol
+        public lateinit var npcAvatarFactory: NpcAvatarFactory
+        public lateinit var npcInfoProtocol: NpcInfoProtocol
 
-    @ExperimentalUnsignedTypes
-    @ExperimentalStdlibApi
-    public fun start() {
-        verifyClientTypesAreImplemented()
-        initializeDecoderRepositories()
-        initializeInfos()
-        val bossGroup = bootstrapFactory.createParentLoopGroup()
-        val childGroup = bootstrapFactory.createChildLoopGroup()
-        val initializer =
-            bootstrapFactory
-                .createServerBootstrap(bossGroup, childGroup)
-                .childHandler(
-                    LoginChannelInitializer(this),
-                )
-        val futures =
-            ports
-                .map(initializer::bind)
-                .map<ChannelFuture, CompletableFuture<Void>>(ChannelFuture::asCompletableFuture)
-        CompletableFuture.allOf(*futures.toTypedArray())
-            .handle { _, exception ->
-                if (exception != null) {
-                    bossGroup.shutdownGracefully()
-                    childGroup.shutdownGracefully()
-                    throw exception
+        @ExperimentalUnsignedTypes
+        @ExperimentalStdlibApi
+        public fun start() {
+            verifyClientTypesAreImplemented()
+            initializeDecoderRepositories()
+            initializeInfos()
+            val bossGroup = bootstrapFactory.createParentLoopGroup()
+            val childGroup = bootstrapFactory.createChildLoopGroup()
+            val initializer =
+                bootstrapFactory
+                    .createServerBootstrap(bossGroup, childGroup)
+                    .childHandler(
+                        LoginChannelInitializer(this),
+                    )
+            val futures =
+                ports
+                    .map(initializer::bind)
+                    .map<ChannelFuture, CompletableFuture<Void>>(ChannelFuture::asCompletableFuture)
+            CompletableFuture.allOf(*futures.toTypedArray())
+                .handle { _, exception ->
+                    if (exception != null) {
+                        bossGroup.shutdownGracefully()
+                        childGroup.shutdownGracefully()
+                        throw exception
+                    }
                 }
+            js5ServiceExecutor.start()
+        }
+
+        @ExperimentalStdlibApi
+        private fun initializeDecoderRepositories() {
+            val list = mutableListOf<Pair<OldSchoolClientType, MessageDecoderRepository<GameClientProt>>>()
+            if (OldSchoolClientType.DESKTOP in clientTypes) {
+                list += OldSchoolClientType.DESKTOP to DesktopGameMessageDecoderRepository.build()
             }
-        js5ServiceExecutor.start()
-    }
-
-    @ExperimentalStdlibApi
-    private fun initializeDecoderRepositories() {
-        val list = mutableListOf<Pair<OldSchoolClientType, MessageDecoderRepository<GameClientProt>>>()
-        if (OldSchoolClientType.DESKTOP in clientTypes) {
-            list += OldSchoolClientType.DESKTOP to DesktopGameMessageDecoderRepository.build()
-        }
-        val map =
-            ClientTypeMap.of(
-                OldSchoolClientType.COUNT,
-                list,
-            )
-        this.decoderRepositories = MessageDecoderRepositories(exp, mod, map)
-    }
-
-    private fun initializeInfos() {
-        val playerWriters = mutableListOf<PlayerAvatarExtendedInfoWriter>()
-        val npcWriters = mutableListOf<NpcAvatarExtendedInfoWriter>()
-        val npcResolutionChangeEncoders = mutableListOf<NpcResolutionChangeEncoder>()
-        if (OldSchoolClientType.DESKTOP in clientTypes) {
-            playerWriters += PlayerAvatarExtendedInfoDesktopWriter()
-            npcWriters += NpcAvatarExtendedInfoDesktopWriter()
-            npcResolutionChangeEncoders += DesktopLowResolutionChangeEncoder()
-        }
-        this.playerAvatarFactory =
-            PlayerAvatarFactory(
-                allocator,
-                playerExtendedInfoFilter,
-                playerWriters,
-                huffmanCodec,
-            )
-        this.playerInfoProtocol =
-            PlayerInfoProtocol(
-                allocator,
-                playerInfoProtocolWorker,
-                this.playerAvatarFactory,
-            )
-        this.npcAvatarFactory =
-            NpcAvatarFactory(
-                allocator,
-                npcExtendedInfoFilter,
-                npcWriters,
-                huffmanCodec,
-            )
-        this.npcInfoProtocol =
-            NpcInfoProtocol(
-                allocator,
-                npcIndexSupplier,
+            val map =
                 ClientTypeMap.of(
-                    npcResolutionChangeEncoders,
                     OldSchoolClientType.COUNT,
-                ) {
-                    it.clientType
-                },
-                npcAvatarFactory,
-                npcInfoProtocolWorker,
-            )
-    }
-
-    private fun verifyClientTypesAreImplemented() {
-        check(OldSchoolClientType.IOS !in clientTypes) {
-            "iOS is not currently supported."
+                    list,
+                )
+            this.decoderRepositories = MessageDecoderRepositories(exp, mod, map)
         }
-        check(OldSchoolClientType.ANDROID !in clientTypes) {
-            "Android is not currently supported."
+
+        private fun initializeInfos() {
+            val playerWriters = mutableListOf<PlayerAvatarExtendedInfoWriter>()
+            val npcWriters = mutableListOf<NpcAvatarExtendedInfoWriter>()
+            val npcResolutionChangeEncoders = mutableListOf<NpcResolutionChangeEncoder>()
+            if (OldSchoolClientType.DESKTOP in clientTypes) {
+                playerWriters += PlayerAvatarExtendedInfoDesktopWriter()
+                npcWriters += NpcAvatarExtendedInfoDesktopWriter()
+                npcResolutionChangeEncoders += DesktopLowResolutionChangeEncoder()
+            }
+            this.playerAvatarFactory =
+                PlayerAvatarFactory(
+                    allocator,
+                    playerExtendedInfoFilter,
+                    playerWriters,
+                    huffmanCodec,
+                )
+            this.playerInfoProtocol =
+                PlayerInfoProtocol(
+                    allocator,
+                    playerInfoProtocolWorker,
+                    this.playerAvatarFactory,
+                )
+            this.npcAvatarFactory =
+                NpcAvatarFactory(
+                    allocator,
+                    npcExtendedInfoFilter,
+                    npcWriters,
+                    huffmanCodec,
+                )
+            this.npcInfoProtocol =
+                NpcInfoProtocol(
+                    allocator,
+                    npcIndexSupplier,
+                    ClientTypeMap.of(
+                        npcResolutionChangeEncoders,
+                        OldSchoolClientType.COUNT,
+                    ) {
+                        it.clientType
+                    },
+                    npcAvatarFactory,
+                    npcInfoProtocolWorker,
+                )
+        }
+
+        private fun verifyClientTypesAreImplemented() {
+            check(OldSchoolClientType.IOS !in clientTypes) {
+                "iOS is not currently supported."
+            }
+            check(OldSchoolClientType.ANDROID !in clientTypes) {
+                "Android is not currently supported."
+            }
+        }
+
+        public fun isSupported(clientType: OldSchoolClientType): Boolean {
+            return clientType in clientTypes
+        }
+
+        override fun toString(): String {
+            return "NetworkService(" +
+                "bootstrapFactory=$bootstrapFactory, " +
+                "ports=$ports, " +
+                "clientTypes=$clientTypes, " +
+                "exp=$exp, " +
+                "mod=$mod, " +
+                "huffmanCodec=$huffmanCodec, " +
+                "js5GroupProvider=$js5GroupProvider, " +
+                "gameMessageConsumerRepository=$gameMessageConsumerRepository, " +
+                "gameLoginHandler=$gameLoginHandler, " +
+                "npcIndexSupplier=$npcIndexSupplier, " +
+                "allocator=$allocator, " +
+                "playerExtendedInfoFilter=$playerExtendedInfoFilter, " +
+                "npcExtendedInfoFilter=$npcExtendedInfoFilter, " +
+                "playerInfoProtocolWorker=$playerInfoProtocolWorker, " +
+                "npcInfoProtocolWorker=$npcInfoProtocolWorker, " +
+                "streamCipherProvider=$streamCipherProvider, " +
+                "inetAddressValidator=$inetAddressValidator, " +
+                "loginDecoderService=$loginDecoderService, " +
+                "proofOfWorkProvider=$proofOfWorkProvider, " +
+                "proofOfWorkChallengeWorker=$proofOfWorkChallengeWorker, " +
+                "incomingGameMessageQueueProvider=$incomingGameMessageQueueProvider, " +
+                "outgoingGameMessageQueueProvider=$outgoingGameMessageQueueProvider, " +
+                "gameMessageCounterProvider=$gameMessageCounterProvider, " +
+                "decoderRepositories=$decoderRepositories, " +
+                "encoderRepositories=$encoderRepositories, " +
+                "messageDecodingTools=$messageDecodingTools, " +
+                "js5Service=$js5Service, " +
+                "js5ServiceExecutor=$js5ServiceExecutor, " +
+                "playerAvatarFactory=$playerAvatarFactory, " +
+                "playerInfoProtocol=$playerInfoProtocol, " +
+                "npcAvatarFactory=$npcAvatarFactory, " +
+                "npcInfoProtocol=$npcInfoProtocol" +
+                ")"
+        }
+
+        public companion object {
+            public const val REVISION: Int = 221
+            public const val LOGIN_TIMEOUT_SECONDS: Long = 60
+            public const val JS5_TIMEOUT_SECONDS: Long = 30
         }
     }
-
-    public fun isSupported(clientType: OldSchoolClientType): Boolean {
-        return clientType in clientTypes
-    }
-
-    override fun toString(): String {
-        return "NetworkService(" +
-            "bootstrapFactory=$bootstrapFactory, " +
-            "ports=$ports, " +
-            "clientTypes=$clientTypes, " +
-            "exp=$exp, " +
-            "mod=$mod, " +
-            "huffmanCodec=$huffmanCodec, " +
-            "js5GroupProvider=$js5GroupProvider, " +
-            "gameMessageConsumerRepository=$gameMessageConsumerRepository, " +
-            "gameLoginHandler=$gameLoginHandler, " +
-            "npcIndexSupplier=$npcIndexSupplier, " +
-            "allocator=$allocator, " +
-            "playerExtendedInfoFilter=$playerExtendedInfoFilter, " +
-            "npcExtendedInfoFilter=$npcExtendedInfoFilter, " +
-            "playerInfoProtocolWorker=$playerInfoProtocolWorker, " +
-            "npcInfoProtocolWorker=$npcInfoProtocolWorker, " +
-            "streamCipherProvider=$streamCipherProvider, " +
-            "inetAddressValidator=$inetAddressValidator, " +
-            "loginDecoderService=$loginDecoderService, " +
-            "proofOfWorkProvider=$proofOfWorkProvider, " +
-            "proofOfWorkChallengeWorker=$proofOfWorkChallengeWorker, " +
-            "incomingGameMessageQueueProvider=$incomingGameMessageQueueProvider, " +
-            "outgoingGameMessageQueueProvider=$outgoingGameMessageQueueProvider, " +
-            "gameMessageCounterProvider=$gameMessageCounterProvider, " +
-            "decoderRepositories=$decoderRepositories, " +
-            "encoderRepositories=$encoderRepositories, " +
-            "messageDecodingTools=$messageDecodingTools, " +
-            "js5Service=$js5Service, " +
-            "js5ServiceExecutor=$js5ServiceExecutor, " +
-            "playerAvatarFactory=$playerAvatarFactory, " +
-            "playerInfoProtocol=$playerInfoProtocol, " +
-            "npcAvatarFactory=$npcAvatarFactory, " +
-            "npcInfoProtocol=$npcInfoProtocol" +
-            ")"
-    }
-
-    public companion object {
-        public const val REVISION: Int = 221
-        public const val LOGIN_TIMEOUT_SECONDS: Long = 60
-        public const val JS5_TIMEOUT_SECONDS: Long = 30
-    }
-}
