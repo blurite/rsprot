@@ -44,8 +44,8 @@ import net.rsprot.protocol.tools.MessageDecodingTools
 import java.math.BigInteger
 import java.util.concurrent.CompletableFuture
 
+@OptIn(ExperimentalUnsignedTypes::class)
 @Suppress("MemberVisibilityCanBePrivate")
-@ExperimentalUnsignedTypes
 public class NetworkService<R, T : Js5GroupType>(
     private val bootstrapFactory: BootstrapFactory,
     private val ports: List<Int>,
@@ -84,6 +84,7 @@ public class NetworkService<R, T : Js5GroupType>(
     public lateinit var npcAvatarFactory: NpcAvatarFactory
     public lateinit var npcInfoProtocol: NpcInfoProtocol
 
+    @ExperimentalUnsignedTypes
     public fun start() {
         verifyClientTypesAreImplemented()
         initializeInfos()
