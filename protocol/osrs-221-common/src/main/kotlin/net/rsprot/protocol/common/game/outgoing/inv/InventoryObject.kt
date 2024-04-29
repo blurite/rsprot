@@ -28,9 +28,23 @@ public value class InventoryObject(public val packed: Long) {
     )
 
     public val slot: Int
-        get() = (packed and 0xFFFF).toInt()
+        get() {
+            val value = (packed and 0xFFFF).toInt()
+            return if (value == 0xFFFF) {
+                -1
+            } else {
+                value
+            }
+        }
     public val id: Int
-        get() = (packed ushr 16 and 0xFFFF).toInt()
+        get() {
+            val value = (packed ushr 16 and 0xFFFF).toInt()
+            return if (value == 0xFFFF) {
+                -1
+            } else {
+                value
+            }
+        }
     public val count: Int
         get() = (packed ushr 32).toInt()
 

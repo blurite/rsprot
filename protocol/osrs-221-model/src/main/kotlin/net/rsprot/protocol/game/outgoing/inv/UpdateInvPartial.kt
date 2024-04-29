@@ -175,7 +175,10 @@ public class UpdateInvPartial private constructor(
             for (index in provider.indices) {
                 val obj = provider.provide(index)
                 if (RSProtFlags.inventoryObjCheck) {
-                    check(obj == InventoryObject.NULL || obj.count >= 0) {
+                    check(obj.slot >= 0) {
+                        "Obj slot cannot be below zero: $obj $ $index"
+                    }
+                    check(obj.id == -1 || obj.count >= 0) {
                         "Obj count cannot be below zero: $obj @ $index"
                     }
                 }
