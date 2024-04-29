@@ -204,8 +204,8 @@ public class NpcAvatarExtendedInfo(
             require(slot in UNSIGNED_BYTE_RANGE) {
                 "Unexpected slot: $slot, expected range: $UNSIGNED_BYTE_RANGE"
             }
-            require(id in UNSIGNED_SHORT_RANGE) {
-                "Unexpected id: $id, expected range: $UNSIGNED_SHORT_RANGE"
+            require(id == -1 || id in UNSIGNED_SHORT_RANGE) {
+                "Unexpected id: $id, expected value -1 or in range: $UNSIGNED_SHORT_RANGE"
             }
             require(delay in UNSIGNED_SHORT_RANGE) {
                 "Unexpected delay: $delay, expected range: $UNSIGNED_SHORT_RANGE"
