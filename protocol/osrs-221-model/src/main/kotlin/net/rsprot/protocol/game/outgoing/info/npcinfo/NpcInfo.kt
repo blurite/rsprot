@@ -333,6 +333,7 @@ public class NpcInfo internal constructor(
                 buffer.pBits(1, 1)
                 buffer.pBits(2, 3)
                 avatar?.removeObserver()
+                highResolutionNpcIndices[i] = NPC_INDEX_TERMINATOR
                 highResolutionNpcIndexCount--
                 continue
             }
