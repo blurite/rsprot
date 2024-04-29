@@ -914,7 +914,7 @@ public class PlayerAvatarExtendedInfo(
             return
         }
         blocks.appearance.wornObjs[wearpos] = valueAsShort
-        val hiddenSlotsBitpacked = (wearpos2 and 0xF shl 4) or wearpos3 and 0xF
+        val hiddenSlotsBitpacked = (wearpos2 and 0xF shl 4) or (wearpos3 and 0xF)
         blocks.appearance.hiddenWearPos[wearpos] = hiddenSlotsBitpacked.toByte()
         flagAppearance()
     }
