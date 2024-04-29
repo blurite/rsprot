@@ -38,7 +38,8 @@ public class GameMessageDecoder<R>(
             )
         }
         val messageClass = decoders.getMessageClass(this.decoder.javaClass)
-        val consumer = networkService.gameMessageConsumerRepository.consumers[messageClass]
+        val consumerRepository = networkService.gameMessageConsumerRepositoryProvider.provide()
+        val consumer = consumerRepository.consumers[messageClass]
         if (consumer == null) {
             input.skipBytes(length)
             return

@@ -41,8 +41,8 @@ import net.rsprot.protocol.loginprot.incoming.pow.challenges.DefaultChallengeWor
 import net.rsprot.protocol.loginprot.incoming.pow.challenges.sha256.DefaultSha256ProofOfWorkProvider
 import net.rsprot.protocol.message.IncomingGameMessage
 import net.rsprot.protocol.message.OutgoingGameMessage
-import net.rsprot.protocol.message.codec.incoming.GameMessageConsumerRepository
 import net.rsprot.protocol.message.codec.incoming.MessageDecoderRepository
+import net.rsprot.protocol.message.codec.incoming.provider.GameMessageConsumerRepositoryProvider
 import net.rsprot.protocol.tools.MessageDecodingTools
 import java.math.BigInteger
 import java.util.concurrent.CompletableFuture
@@ -59,7 +59,7 @@ public class NetworkService<R, T : Js5GroupType>
         private val mod: BigInteger,
         private val huffmanCodecProvider: HuffmanCodecProvider,
         private val js5GroupProvider: Js5GroupProvider<T>,
-        public val gameMessageConsumerRepository: GameMessageConsumerRepository<R>,
+        public val gameMessageConsumerRepositoryProvider: GameMessageConsumerRepositoryProvider<R>,
         public val gameLoginHandler: GameLoginHandler<R>,
         private val npcIndexSupplier: NpcIndexSupplier,
         private val allocator: ByteBufAllocator = PooledByteBufAllocator.DEFAULT,
@@ -198,7 +198,7 @@ public class NetworkService<R, T : Js5GroupType>
                 "mod=$mod, " +
                 "huffmanCodec=$huffmanCodecProvider, " +
                 "js5GroupProvider=$js5GroupProvider, " +
-                "gameMessageConsumerRepository=$gameMessageConsumerRepository, " +
+                "gameMessageConsumerRepositoryProvider=$gameMessageConsumerRepositoryProvider, " +
                 "gameLoginHandler=$gameLoginHandler, " +
                 "npcIndexSupplier=$npcIndexSupplier, " +
                 "allocator=$allocator, " +

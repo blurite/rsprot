@@ -61,12 +61,12 @@ public class GameLoginResponseHandler<R>(
                 val encodingCipher = IsaacRandom(decodeSeed)
                 val decodingCipher = IsaacRandom(encodeSeed)
                 val session =
-                    Session<R>(
+                    Session(
                         ctx,
                         networkService.incomingGameMessageQueueProvider.provide(),
                         networkService.outgoingGameMessageQueueProvider.provide(),
                         networkService.gameMessageCounterProvider.provide(),
-                        networkService.gameMessageConsumerRepository.consumers,
+                        networkService.gameMessageConsumerRepositoryProvider.provide().consumers,
                     )
                 pipeline.replace<LoginMessageDecoder>(
                     GameMessageDecoder(
