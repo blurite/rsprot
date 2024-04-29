@@ -415,8 +415,10 @@ public class PlayerInfo internal constructor(
         // (Special thanks to Greg for figuring out the magic below!)
         // Positive signum the bits proceeding the 1st, 5th and 8th bit to give a value 1 - 3 to
         // represent > 0, > 31 and > 255 respectively.
-        val bitCountOpcode = (-count ushr 31) + (-(count shr 5) ushr 31) + (-(count shr 8) ushr 31)
-        val valueBitCount = 2 + bitCountOpcode * 3
+        val lowerBits = (-count ushr 31)
+        val higherBits = (-(count shr 5) ushr 31) + (-(count shr 8) ushr 31)
+        val bitCountOpcode = lowerBits + higherBits
+        val valueBitCount = (lowerBits * 5) + (higherBits * 3)
         buffer.pBits(3 + valueBitCount, count or (bitCountOpcode shl valueBitCount))
     }
 
