@@ -82,8 +82,10 @@ public class Session<R>(
 
     private fun setReadStatus(stopReading: Boolean) {
         val channel = ctx.channel()
-        val decoder = channel.pipeline()[GameMessageDecoder::class.java]
-        checkNotNull(decoder)
+        // The decoder will be null if the channel has closed
+        val decoder =
+            channel.pipeline()[GameMessageDecoder::class.java]
+                ?: return
         decoder.isSingleDecode = stopReading
         channel.config().isAutoRead = !stopReading
     }
