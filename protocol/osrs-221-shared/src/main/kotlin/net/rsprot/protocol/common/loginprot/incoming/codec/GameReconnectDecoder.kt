@@ -1,6 +1,7 @@
 package net.rsprot.protocol.common.loginprot.incoming.codec
 
 import net.rsprot.buffer.JagByteBuf
+import net.rsprot.buffer.extensions.toJagByteBuf
 import net.rsprot.crypto.util.XteaKey
 import net.rsprot.protocol.ClientProt
 import net.rsprot.protocol.common.loginprot.incoming.codec.shared.LoginBlockDecoder
@@ -20,7 +21,10 @@ public class GameReconnectDecoder(
         buffer: JagByteBuf,
         tools: MessageDecodingTools,
     ): GameReconnect {
-        return GameReconnect(buffer) {
+        val copy = buffer.buffer.copy()
+        // Mark the buffer as "read" as copy function doesn't do it automatically.
+        buffer.buffer.readerIndex(buffer.buffer.writerIndex())
+        return GameReconnect(copy.toJagByteBuf()) {
             decodeLoginBlock(it)
         }
     }
