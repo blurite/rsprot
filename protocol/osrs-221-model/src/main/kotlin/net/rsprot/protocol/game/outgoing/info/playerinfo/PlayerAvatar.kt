@@ -121,6 +121,11 @@ public class PlayerAvatar internal constructor(
         this.lastCoord = currentCoord
     }
 
+    public fun setPreferredResizeRange(range: Int) {
+        this.preferredResizeRange = range
+        this.resizeRange = range
+    }
+
     /**
      * Resizes the view range according to the number of high resolution players currently observed.
      * This function will aim to keep the number of high resolution avatars at 250 or less.
