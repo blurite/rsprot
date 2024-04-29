@@ -79,6 +79,12 @@ public class PlayerAvatar internal constructor(
             huffmanCodec,
         )
 
+    internal var hidden: Boolean = false
+
+    public fun setHidden(hidden: Boolean) {
+        this.hidden = hidden
+    }
+
     /**
      * Resets all the properties of the given avatar to their default values.
      */

@@ -481,6 +481,9 @@ public class PlayerInfo internal constructor(
         if (other.localIndex == localIndex) {
             return true
         }
+        if (other.avatar.hidden) {
+            return false
+        }
         val curCoord = this.avatar.currentCoord
         val otherCoord = other.avatar.currentCoord
         return curCoord.inDistance(otherCoord, this.avatar.resizeRange)
