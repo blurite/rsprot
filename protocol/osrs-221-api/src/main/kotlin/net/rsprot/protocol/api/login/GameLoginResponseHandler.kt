@@ -11,7 +11,6 @@ import net.rsprot.protocol.api.game.GameMessageDecoder
 import net.rsprot.protocol.api.game.GameMessageEncoder
 import net.rsprot.protocol.api.game.GameMessageHandler
 import net.rsprot.protocol.common.client.OldSchoolClientType
-import net.rsprot.protocol.loginprot.incoming.util.AuthenticationType
 import net.rsprot.protocol.loginprot.incoming.util.LoginBlock
 import net.rsprot.protocol.loginprot.incoming.util.LoginClientType
 import net.rsprot.protocol.loginprot.outgoing.LoginResponse
@@ -23,7 +22,7 @@ public class GameLoginResponseHandler<R>(
 ) {
     public fun writeSuccessfulResponse(
         response: LoginResponse.Ok,
-        loginBlock: LoginBlock<AuthenticationType<*>>,
+        loginBlock: LoginBlock<*>,
         callback: Consumer<Session<R>?>,
     ) {
         val oldSchoolClientType =
