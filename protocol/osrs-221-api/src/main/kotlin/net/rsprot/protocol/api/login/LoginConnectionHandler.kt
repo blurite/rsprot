@@ -99,14 +99,8 @@ public class LoginConnectionHandler<R>(
             is GameLogin -> {
                 decodeLogin(packet.buffer, packet.decoder).handle { block, exception ->
                     if (block == null || exception != null) {
-                        logger.debug {
-                            "Failed to decode login block: $block, $exception"
-                        }
                         ctx.writeAndFlush(LoginResponse.LoginFail2).addListener(ChannelFutureListener.CLOSE)
                         return@handle
-                    }
-                    logger.debug {
-                        "Successfully decoded login block: $block"
                     }
                     networkService.gameLoginHandler.onLogin(responseHandler, block)
                 }
