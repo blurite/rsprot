@@ -70,6 +70,15 @@ public class NpcInfoProtocol(
     }
 
     /**
+     * Deallocates the provided npc info object, allowing it to be used up
+     * by another player in the future.
+     * @param info the npc info object to deallocate
+     */
+    public fun dealloc(info: NpcInfo) {
+        npcInfoRepository.dealloc(info.localPlayerIndex)
+    }
+
+    /**
      * Gets the npc info at the provided index.
      * @param idx the index of the npc info
      * @return npc info object at that index
