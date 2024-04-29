@@ -61,7 +61,7 @@ public abstract class ExtendedInfo<in T : ExtendedInfo<T, E>, E : ExtendedInfoEn
      * Releases all the client-specific buffers of this extended info block,
      * which will either be garbage-collected or returned into the bytebuf pool.
      */
-    protected fun releaseBuffers() {
+    internal fun releaseBuffers() {
         for (i in 0..<OldSchoolClientType.COUNT) {
             val buffer = buffers[i] ?: continue
             buffer.release()
@@ -84,6 +84,8 @@ public fun <T : ExtendedInfo<T, E>, E : PrecomputedExtendedInfoEncoder<T>> T.pre
     allocator: ByteBufAllocator,
     huffmanCodecProvider: HuffmanCodecProvider,
 ) {
+    // Release any old buffers before overwriting with new ones
+    releaseBuffers()
     for (id in 0..<OldSchoolClientType.COUNT) {
         val encoder = encoders.getOrNull(id) ?: continue
         val encoded =
