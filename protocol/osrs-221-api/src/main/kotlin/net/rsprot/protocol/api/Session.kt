@@ -45,6 +45,7 @@ public class Session<R>(
     }
 
     private fun onPollComplete() {
+        counter.reset()
         resumeReading()
     }
 
