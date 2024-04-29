@@ -42,7 +42,7 @@ public class NpcInfo internal constructor(
     internal var localPlayerIndex: Int,
     private val indexSupplier: NpcIndexSupplier,
     private val lowResolutionToHighResolutionEncoders: ClientTypeMap<NpcResolutionChangeEncoder>,
-) : ReferencePooledObject, OutgoingGameMessage {
+) : ReferencePooledObject {
     /**
      * The last cycle's coordinate of the local player, used to perform faster npc removal.
      * If the player moves a greater distance than the [viewDistance], we can make the assumption
@@ -130,6 +130,18 @@ public class NpcInfo internal constructor(
     @Throws(IllegalStateException::class)
     public fun backingBuffer(): ByteBuf {
         return checkNotNull(buffer)
+    }
+
+    /**
+     * Turns this npc info structure into a respective npc info packet, depending
+     * on the current known view distance.
+     */
+    public fun toNpcInfoPacket(): OutgoingGameMessage {
+        return if (this.viewDistance > MAX_SMALL_PACKET_DISTANCE) {
+            NpcInfoLarge(backingBuffer())
+        } else {
+            NpcInfoSmall(backingBuffer())
+        }
     }
 
     /**
