@@ -97,6 +97,14 @@ public class PlayerInfoProtocol(
     }
 
     /**
+     * Deallocates the player info object, releasing it back into the pool to be used by another player.
+     * @param info the player info object
+     */
+    public fun dealloc(info: PlayerInfo) {
+        playerInfoRepository.dealloc(info.localIndex)
+    }
+
+    /**
      * Gets the current cycle's low resolution position of the player at index [idx].
      * @param idx the index of the player
      * @return the low resolution position of that player in the current cycle.

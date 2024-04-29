@@ -43,7 +43,7 @@ import kotlin.math.abs
 @Suppress("DuplicatedCode", "ReplaceUntilWithRangeUntil")
 public class PlayerInfo internal constructor(
     private val protocol: PlayerInfoProtocol,
-    private var localIndex: Int,
+    internal var localIndex: Int,
     private val allocator: ByteBufAllocator,
     private var oldSchoolClientType: OldSchoolClientType,
     public val avatar: PlayerAvatar,
