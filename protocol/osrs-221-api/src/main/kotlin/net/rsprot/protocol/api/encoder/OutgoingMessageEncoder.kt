@@ -8,6 +8,7 @@ import net.rsprot.buffer.extensions.p2
 import net.rsprot.buffer.extensions.toJagByteBuf
 import net.rsprot.crypto.cipher.StreamCipher
 import net.rsprot.protocol.Prot
+import net.rsprot.protocol.loginprot.outgoing.LoginResponse
 import net.rsprot.protocol.message.OutgoingMessage
 import net.rsprot.protocol.message.codec.outgoing.MessageEncoderRepository
 
@@ -53,7 +54,13 @@ public abstract class OutgoingMessageEncoder : MessageToByteEncoder<OutgoingMess
         // Update the size based on the number of bytes written, if it's a var-* packet
         if (sizeMarker != -1) {
             val writerIndex = out.writerIndex()
-            val length = writerIndex - payloadMarker
+            var length = writerIndex - payloadMarker
+            if (msg is LoginResponse.Ok) {
+                // TODO: Figure out a nicer way to deal with this?
+                // Ok login response needs to include 3 bytes extra as it immediately reads
+                // and discards the header of the first packet that comes in (rebuild login)
+                length += 3
+            }
             out.writerIndex(sizeMarker)
             when (prot.size) {
                 Prot.VAR_BYTE -> out.p1(length)
