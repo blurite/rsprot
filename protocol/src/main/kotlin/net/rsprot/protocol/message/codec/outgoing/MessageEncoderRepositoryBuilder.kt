@@ -15,13 +15,26 @@ public class MessageEncoderRepositoryBuilder<P : ServerProt>(
         bind(T::class.java, encoder)
     }
 
+    public inline fun <reified T : OutgoingMessage> bindWithAlts(
+        encoder: MessageEncoder<T>,
+        vararg alternativeClasses: Class<out OutgoingMessage>,
+    ) {
+        bind(T::class.java, encoder)
+        for (clazz in alternativeClasses) {
+            bind(clazz, encoder, false)
+        }
+    }
+
     public fun <T : OutgoingMessage> bind(
         messageClass: Class<T>,
         encoder: MessageEncoder<*>,
+        check: Boolean = true,
     ) {
         val prot = encoder.prot
-        require(encoders[prot.opcode] == null) {
-            "Encoder for prot $prot is already bound."
+        if (check) {
+            require(encoders[prot.opcode] == null) {
+                "Encoder for prot $prot is already bound."
+            }
         }
         encoders[prot.opcode] = encoder
         messageClassToServerProtMap[messageClass] = prot

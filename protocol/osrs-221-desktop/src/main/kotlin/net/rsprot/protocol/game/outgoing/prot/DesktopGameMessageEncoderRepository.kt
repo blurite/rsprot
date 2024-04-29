@@ -121,6 +121,8 @@ import net.rsprot.protocol.game.outgoing.codec.zone.payload.ObjCountEncoder
 import net.rsprot.protocol.game.outgoing.codec.zone.payload.ObjDelEncoder
 import net.rsprot.protocol.game.outgoing.codec.zone.payload.ObjOpFilterEncoder
 import net.rsprot.protocol.game.outgoing.codec.zone.payload.SoundAreaEncoder
+import net.rsprot.protocol.game.outgoing.map.RebuildLogin
+import net.rsprot.protocol.game.outgoing.map.RebuildNormal
 import net.rsprot.protocol.message.codec.outgoing.MessageEncoderRepository
 import net.rsprot.protocol.message.codec.outgoing.MessageEncoderRepositoryBuilder
 
@@ -194,7 +196,7 @@ public object DesktopGameMessageEncoderRepository {
                 // TODO: Npc info small
                 // TODO: Npc info large
 
-                bind(RebuildNormalEncoder())
+                bindWithAlts(RebuildNormalEncoder(), RebuildLogin::class.java, RebuildNormal::class.java)
                 bind(RebuildRegionEncoder())
 
                 bind(VarpSmallEncoder())
