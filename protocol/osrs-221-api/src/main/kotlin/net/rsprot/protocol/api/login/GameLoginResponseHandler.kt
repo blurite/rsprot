@@ -10,7 +10,9 @@ import net.rsprot.protocol.api.channel.replace
 import net.rsprot.protocol.api.game.GameMessageDecoder
 import net.rsprot.protocol.api.game.GameMessageEncoder
 import net.rsprot.protocol.api.game.GameMessageHandler
+import net.rsprot.protocol.channel.ChannelAttributes
 import net.rsprot.protocol.common.client.OldSchoolClientType
+import net.rsprot.protocol.cryptography.StreamCipherPair
 import net.rsprot.protocol.loginprot.incoming.util.LoginBlock
 import net.rsprot.protocol.loginprot.incoming.util.LoginClientType
 import net.rsprot.protocol.loginprot.outgoing.LoginResponse
@@ -59,6 +61,13 @@ public class GameLoginResponseHandler<R>(
 
                 val encodingCipher = IsaacRandom(decodeSeed)
                 val decodingCipher = IsaacRandom(encodeSeed)
+                val channel = future.channel()
+                channel
+                    .attr(ChannelAttributes.STREAM_CIPHER_PAIR)
+                    .set(StreamCipherPair(encodingCipher, decodingCipher))
+                channel.attr(ChannelAttributes.HUFFMAN_CODEC)
+                    .set(networkService.huffmanCodecProvider)
+
                 val session =
                     Session(
                         ctx,

@@ -57,7 +57,7 @@ public class NetworkService<R, T : Js5GroupType>
         private val clientTypes: List<OldSchoolClientType>,
         private val exp: BigInteger,
         private val mod: BigInteger,
-        private val huffmanCodecProvider: HuffmanCodecProvider,
+        public val huffmanCodecProvider: HuffmanCodecProvider,
         private val js5GroupProvider: Js5GroupProvider<T>,
         public val gameMessageConsumerRepositoryProvider: GameMessageConsumerRepositoryProvider<R>,
         public val gameLoginHandler: GameLoginHandler<R>,
