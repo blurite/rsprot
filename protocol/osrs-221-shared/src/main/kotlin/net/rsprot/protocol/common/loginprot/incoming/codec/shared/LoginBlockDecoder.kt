@@ -36,6 +36,7 @@ public abstract class LoginBlockDecoder<T>(
             }
         val sessionId = rsaBuffer.g8()
         val authentication = decodeAuthentication(rsaBuffer)
+        rsaBuffer.buffer.release()
         val xteaBuffer = buffer.xteaDecrypt(seed)
         val username = xteaBuffer.gjstr()
         val packedClientSettings = xteaBuffer.g1()
