@@ -16,7 +16,7 @@ public class NpcSpotAnimEncoder : PrecomputedExtendedInfoEncoder<SpotAnimList> {
     ): JagByteBuf {
         val changelist = extendedInfo.changelist
         val count = changelist.cardinality()
-        val capacity = count * 7
+        val capacity = 1 + count * 7
         val buffer =
             alloc
                 .buffer(capacity, capacity)
