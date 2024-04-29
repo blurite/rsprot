@@ -42,7 +42,7 @@ public class LoginConnectionHandler<R>(
                 loginPacket = msg
                 val pow = networkService.proofOfWorkProvider.provide(ctx.inetAddress())
                 this.proofOfWork = pow
-                ctx.write(LoginResponse.ProofOfWork(pow)).addListener(
+                ctx.writeAndFlush(LoginResponse.ProofOfWork(pow)).addListener(
                     ChannelFutureListener { future ->
                         if (!future.isSuccess) {
                             future.channel().pipeline().fireExceptionCaught(future.cause())
@@ -65,7 +65,7 @@ public class LoginConnectionHandler<R>(
                         logger.debug {
                             "Proof of work result was incorrect: $success, $exception"
                         }
-                        ctx.write(LoginResponse.LoginFail1).addListener(ChannelFutureListener.CLOSE)
+                        ctx.writeAndFlush(LoginResponse.LoginFail1).addListener(ChannelFutureListener.CLOSE)
                         return@handle
                     }
                     logger.debug {

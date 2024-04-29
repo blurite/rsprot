@@ -47,7 +47,7 @@ public class LoginChannelHandler(
     }
 
     private fun handleInitGameConnection(ctx: ChannelHandlerContext) {
-        ctx.write(LoginResponse.Successful(ThreadLocalRandom.current().nextLong()))
+        ctx.writeAndFlush(LoginResponse.Successful(ThreadLocalRandom.current().nextLong()))
             .addListener(
                 ChannelFutureListener { future ->
                     if (!future.isSuccess) {
@@ -69,11 +69,11 @@ public class LoginChannelHandler(
     ) {
         if (revision != NetworkService.REVISION) {
             ctx
-                .write(LoginResponse.ClientOutOfDate)
+                .writeAndFlush(LoginResponse.ClientOutOfDate)
                 .addListener(ChannelFutureListener.CLOSE)
             return
         }
-        ctx.write(LoginResponse.Successful(null))
+        ctx.writeAndFlush(LoginResponse.Successful(null))
             .addListener(
                 ChannelFutureListener { future ->
                     if (!future.isSuccess) {
