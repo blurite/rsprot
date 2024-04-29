@@ -209,6 +209,7 @@ public class NpcInfo internal constructor(
     public fun afterUpdate() {
         this.localPlayerLastCoord = localPlayerCurrentCoord
         extendedInfoCount = 0
+        observerExtendedInfoFlags.reset()
     }
 
     /**
@@ -421,6 +422,9 @@ public class NpcInfo internal constructor(
                 break
             }
             val avatar = repository.getOrNull(index) ?: continue
+            if (avatar.details.inaccessible) {
+                continue
+            }
             avatar.addObserver()
             val i = highResolutionNpcIndexCount++
             highResolutionNpcIndices[i] = index.toUShort()
