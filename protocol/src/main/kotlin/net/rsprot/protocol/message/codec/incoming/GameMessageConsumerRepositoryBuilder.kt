@@ -1,5 +1,6 @@
 package net.rsprot.protocol.message.codec.incoming
 
+import net.rsprot.protocol.message.IncomingGameMessage
 import net.rsprot.protocol.message.IncomingMessage
 import java.util.function.BiConsumer
 
@@ -10,8 +11,8 @@ import java.util.function.BiConsumer
  *
  * @property consumers the hashmap of consumers, using incoming message classes as keys.
  */
-public abstract class MessageConsumerRepositoryBuilder<R> {
-    private val consumers: MutableMap<Class<out IncomingMessage>, BiConsumer<R, in IncomingMessage>> = HashMap()
+public class GameMessageConsumerRepositoryBuilder<R> {
+    private val consumers: MutableMap<Class<out IncomingGameMessage>, BiConsumer<R, in IncomingGameMessage>> = HashMap()
 
     /**
      * Adds a listener for the provided [clazz].
@@ -19,7 +20,7 @@ public abstract class MessageConsumerRepositoryBuilder<R> {
      * @param consumer the consumer that will be triggered by the server when it is ready to be consumed.
      */
     @Suppress("UNCHECKED_CAST")
-    public fun <T : IncomingMessage> addListener(
+    public fun <T : IncomingGameMessage> addListener(
         clazz: Class<out T>,
         consumer: BiConsumer<R, in T>,
     ) {
@@ -35,7 +36,7 @@ public abstract class MessageConsumerRepositoryBuilder<R> {
      * @param listener the listener of the message.
      */
     @JvmSynthetic
-    public inline fun <reified T : IncomingMessage> addListener(crossinline listener: R.(message: T) -> Unit) {
+    public inline fun <reified T : IncomingGameMessage> addListener(crossinline listener: R.(message: T) -> Unit) {
         addListener(T::class.java) { r, t -> listener(r, t) }
     }
 

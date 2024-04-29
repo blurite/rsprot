@@ -5,7 +5,6 @@ import net.rsprot.protocol.api.channel.inetAddress
 import net.rsprot.protocol.api.game.GameMessageDecoder
 import net.rsprot.protocol.loginprot.incoming.util.LoginBlock
 import net.rsprot.protocol.message.IncomingGameMessage
-import net.rsprot.protocol.message.IncomingMessage
 import net.rsprot.protocol.message.OutgoingGameMessage
 import java.net.InetAddress
 import java.util.Queue
@@ -17,7 +16,7 @@ public class Session<R>(
     private val incomingMessageQueue: Queue<IncomingGameMessage>,
     private val outgoingMessageQueue: Queue<OutgoingGameMessage>,
     private val counter: GameMessageCounter,
-    private val consumers: Map<Class<out IncomingMessage>, BiConsumer<R, in IncomingMessage>>,
+    private val consumers: Map<Class<out IncomingGameMessage>, BiConsumer<R, in IncomingGameMessage>>,
     public val loginBlock: LoginBlock<*>,
 ) {
     public val inetAddress: InetAddress = ctx.inetAddress()
