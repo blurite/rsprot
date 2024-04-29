@@ -25,7 +25,8 @@ public class Session<R>(
         outgoingMessageQueue += message
     }
 
-    public fun processIncomingPackets(receiver: R) {
+    public fun processIncomingPackets(receiver: R): Int {
+        var count = 0
         while (true) {
             val packet = pollIncomingMessage() ?: break
             val consumer = consumers[packet::class.java]
@@ -33,8 +34,10 @@ public class Session<R>(
                 "Consumer for packet $packet does not exist."
             }
             consumer.accept(receiver, packet)
+            count++
         }
         onPollComplete()
+        return count
     }
 
     private fun pollIncomingMessage(): IncomingGameMessage? {
