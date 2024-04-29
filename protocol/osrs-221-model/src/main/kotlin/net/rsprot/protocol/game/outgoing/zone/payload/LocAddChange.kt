@@ -4,6 +4,7 @@ import net.rsprot.protocol.common.game.outgoing.codec.zone.payload.ZoneProt
 import net.rsprot.protocol.game.outgoing.util.OpFlags
 import net.rsprot.protocol.game.outgoing.zone.payload.util.CoordInZone
 import net.rsprot.protocol.game.outgoing.zone.payload.util.LocProperties
+import net.rsprot.protocol.message.OutgoingGameMessage
 
 /**
  * Loc add-change packed is used to either add or change a loc in the world.
@@ -24,7 +25,7 @@ public class LocAddChange private constructor(
     private val coordInZone: CoordInZone,
     private val locProperties: LocProperties,
     public val opFlags: OpFlags,
-) : ZoneProt {
+) : ZoneProt, OutgoingGameMessage {
     public constructor(
         id: Int,
         xInZone: Int,

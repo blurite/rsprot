@@ -3,6 +3,7 @@ package net.rsprot.protocol.game.outgoing.zone.payload
 import net.rsprot.protocol.common.game.outgoing.codec.zone.payload.ZoneProt
 import net.rsprot.protocol.game.outgoing.util.OpFlags
 import net.rsprot.protocol.game.outgoing.zone.payload.util.CoordInZone
+import net.rsprot.protocol.message.OutgoingGameMessage
 
 /**
  * Obj opfilter is used to change the right-click options on an obj
@@ -20,7 +21,7 @@ public class ObjOpFilter private constructor(
     private val _id: UShort,
     public val opFlags: OpFlags,
     private val coordInZone: CoordInZone,
-) : ZoneProt {
+) : ZoneProt, OutgoingGameMessage {
     public constructor(
         id: Int,
         opFlags: OpFlags,

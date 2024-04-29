@@ -2,6 +2,7 @@ package net.rsprot.protocol.game.outgoing.zone.payload
 
 import net.rsprot.protocol.common.game.outgoing.codec.zone.payload.ZoneProt
 import net.rsprot.protocol.game.outgoing.zone.payload.util.CoordInZone
+import net.rsprot.protocol.message.OutgoingGameMessage
 
 /**
  * Map projectile anim packets are sent to render projectiles
@@ -53,7 +54,7 @@ public class MapProjAnim private constructor(
     private val coordInZone: CoordInZone,
     private val _deltaX: Byte,
     private val _deltaZ: Byte,
-) : ZoneProt {
+) : ZoneProt, OutgoingGameMessage {
     public constructor(
         id: Int,
         startHeight: Int,

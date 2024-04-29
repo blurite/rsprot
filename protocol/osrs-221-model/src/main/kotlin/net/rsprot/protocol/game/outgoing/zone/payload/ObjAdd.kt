@@ -3,6 +3,7 @@ package net.rsprot.protocol.game.outgoing.zone.payload
 import net.rsprot.protocol.common.game.outgoing.codec.zone.payload.ZoneProt
 import net.rsprot.protocol.game.outgoing.util.OpFlags
 import net.rsprot.protocol.game.outgoing.zone.payload.util.CoordInZone
+import net.rsprot.protocol.message.OutgoingGameMessage
 
 /**
  * Obj add packets are used to spawn an obj on the ground.
@@ -43,7 +44,7 @@ public class ObjAdd private constructor(
     private val _timeUntilDespawn: UShort,
     private val _ownershipType: UByte,
     public val neverBecomesPublic: Boolean,
-) : ZoneProt {
+) : ZoneProt, OutgoingGameMessage {
     public constructor(
         id: Int,
         quantity: Int,

@@ -2,6 +2,7 @@ package net.rsprot.protocol.game.outgoing.zone.payload
 
 import net.rsprot.protocol.common.game.outgoing.codec.zone.payload.ZoneProt
 import net.rsprot.protocol.game.outgoing.zone.payload.util.CoordInZone
+import net.rsprot.protocol.message.OutgoingGameMessage
 
 /**
  * Obj del packets are used to delete an existing obj from the build area,
@@ -20,7 +21,7 @@ public class ObjDel private constructor(
     private val _id: UShort,
     public val quantity: Int,
     private val coordInZone: CoordInZone,
-) : ZoneProt {
+) : ZoneProt, OutgoingGameMessage {
     public constructor(
         id: Int,
         quantity: Int,

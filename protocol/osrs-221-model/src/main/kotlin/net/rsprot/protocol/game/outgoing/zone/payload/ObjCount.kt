@@ -2,6 +2,7 @@ package net.rsprot.protocol.game.outgoing.zone.payload
 
 import net.rsprot.protocol.common.game.outgoing.codec.zone.payload.ZoneProt
 import net.rsprot.protocol.game.outgoing.zone.payload.util.CoordInZone
+import net.rsprot.protocol.message.OutgoingGameMessage
 
 /**
  * Obj count is a packet used to update the quantity of an obj that's already
@@ -22,7 +23,7 @@ public class ObjCount private constructor(
     public val oldQuantity: Int,
     public val newQuantity: Int,
     private val coordInZone: CoordInZone,
-) : ZoneProt {
+) : ZoneProt, OutgoingGameMessage {
     public constructor(
         id: Int,
         oldQuantity: Int,

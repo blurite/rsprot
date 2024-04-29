@@ -3,6 +3,7 @@ package net.rsprot.protocol.game.outgoing.zone.payload
 import net.rsprot.protocol.common.game.outgoing.codec.zone.payload.ZoneProt
 import net.rsprot.protocol.game.outgoing.zone.payload.util.CoordInZone
 import net.rsprot.protocol.game.outgoing.zone.payload.util.LocProperties
+import net.rsprot.protocol.message.OutgoingGameMessage
 
 /**
  * Loc del packets are used to delete locs from the world.
@@ -16,7 +17,7 @@ import net.rsprot.protocol.game.outgoing.zone.payload.util.LocProperties
 public class LocDel private constructor(
     private val coordInZone: CoordInZone,
     private val locProperties: LocProperties,
-) : ZoneProt {
+) : ZoneProt, OutgoingGameMessage {
     public constructor(
         xInZone: Int,
         zInZone: Int,

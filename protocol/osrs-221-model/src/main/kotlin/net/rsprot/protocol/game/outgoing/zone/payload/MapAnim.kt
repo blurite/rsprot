@@ -2,6 +2,7 @@ package net.rsprot.protocol.game.outgoing.zone.payload
 
 import net.rsprot.protocol.common.game.outgoing.codec.zone.payload.ZoneProt
 import net.rsprot.protocol.game.outgoing.zone.payload.util.CoordInZone
+import net.rsprot.protocol.message.OutgoingGameMessage
 
 /**
  * Map anim is sent to play a graphical effect/spotanim on a tile.
@@ -18,7 +19,7 @@ public class MapAnim private constructor(
     private val _delay: UShort,
     private val _height: UByte,
     private val coordInZone: CoordInZone,
-) : ZoneProt {
+) : ZoneProt, OutgoingGameMessage {
     public constructor(
         id: Int,
         delay: Int,

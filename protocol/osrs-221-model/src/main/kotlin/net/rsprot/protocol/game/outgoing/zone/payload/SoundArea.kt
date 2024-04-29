@@ -2,6 +2,7 @@ package net.rsprot.protocol.game.outgoing.zone.payload
 
 import net.rsprot.protocol.common.game.outgoing.codec.zone.payload.ZoneProt
 import net.rsprot.protocol.game.outgoing.zone.payload.util.CoordInZone
+import net.rsprot.protocol.message.OutgoingGameMessage
 
 /**
  * Sound area packed is sent to play a sound effect at a specific coord.
@@ -43,7 +44,7 @@ public class SoundArea private constructor(
     private val _radius: UByte,
     private val _size: UByte,
     private val coordInZone: CoordInZone,
-) : ZoneProt {
+) : ZoneProt, OutgoingGameMessage {
     public constructor(
         id: Int,
         delay: Int,
