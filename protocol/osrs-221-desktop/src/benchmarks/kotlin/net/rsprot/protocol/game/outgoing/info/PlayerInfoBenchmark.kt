@@ -58,10 +58,10 @@ class PlayerInfoBenchmark {
             val player = protocol.alloc(i, OldSchoolClientType.DESKTOP)
             players[i] = player
             player.updateCoord(0, random.nextInt(3200, 3213), random.nextInt(3200, 3213))
+            player.avatar.postUpdate()
             initializeAppearance(player, i)
         }
         protocol.prepareExtendedInfo()
-        postUpdate()
     }
 
     private fun initializeAppearance(
@@ -98,10 +98,6 @@ class PlayerInfoBenchmark {
         )
     }
 
-    private fun postUpdate() {
-        protocol.postUpdate()
-    }
-
     private fun tick() {
         for (i in 1..<MAX_IDX) {
             val player = checkNotNull(players[i])
@@ -120,7 +116,6 @@ class PlayerInfoBenchmark {
             val player = checkNotNull(players[i])
             player.backingBuffer().release()
         }
-        postUpdate()
     }
 
     @Benchmark

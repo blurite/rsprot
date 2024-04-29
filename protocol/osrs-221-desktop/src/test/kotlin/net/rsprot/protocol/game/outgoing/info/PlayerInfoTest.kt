@@ -41,13 +41,9 @@ class PlayerInfoTest {
             )
         localPlayerInfo = protocol.alloc(LOCAL_PLAYER_INDEX, OldSchoolClientType.DESKTOP)
         localPlayerInfo.updateCoord(0, 3200, 3220)
+        localPlayerInfo.avatar.postUpdate()
         client = PlayerInfoClient()
         gpiInit()
-        postUpdate()
-    }
-
-    private fun postUpdate() {
-        protocol.postUpdate()
     }
 
     private fun gpiInit() {
@@ -67,7 +63,6 @@ class PlayerInfoTest {
         val buffer = localPlayerInfo.backingBuffer()
         client.decode(buffer)
         assertFalse(buffer.isReadable)
-        postUpdate()
     }
 
     @Test

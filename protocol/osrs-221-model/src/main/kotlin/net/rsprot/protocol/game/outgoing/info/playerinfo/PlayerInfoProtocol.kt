@@ -118,6 +118,7 @@ public class PlayerInfoProtocol(
         putBitcodes()
         prepareExtendedInfo()
         putExtendedInfo()
+        postUpdate()
     }
 
     /**
@@ -184,7 +185,7 @@ public class PlayerInfoProtocol(
      * Cleans up the player info protocol for all the avatars in the world,
      * according to the implementation defined by the [worker].
      */
-    public fun postUpdate() {
+    private fun postUpdate() {
         execute {
             postUpdate()
         }
