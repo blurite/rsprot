@@ -114,10 +114,7 @@ class PlayerInfoBenchmark {
                 null,
             )
         }
-        protocol.prepare()
-        protocol.putBitcodes()
-        protocol.prepareExtendedInfo()
-        protocol.putExtendedInfo()
+        protocol.update()
         for (i in 1..<MAX_IDX) {
             val player = checkNotNull(players[i])
             player.backingBuffer().release()

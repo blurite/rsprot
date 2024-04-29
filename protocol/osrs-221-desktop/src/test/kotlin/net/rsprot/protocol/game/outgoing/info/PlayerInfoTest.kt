@@ -62,10 +62,7 @@ class PlayerInfoTest {
     }
 
     private fun tick() {
-        protocol.prepare()
-        protocol.putBitcodes()
-        protocol.prepareExtendedInfo()
-        protocol.putExtendedInfo()
+        protocol.update()
         val buffer = localPlayerInfo.backingBuffer()
         client.decode(buffer)
         assertFalse(buffer.isReadable)

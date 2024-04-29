@@ -113,6 +113,13 @@ public class PlayerInfoProtocol(
         return lowResolutionPositionRepository.getCurrentLowResolutionPosition(idx)
     }
 
+    public fun update() {
+        prepare()
+        putBitcodes()
+        prepareExtendedInfo()
+        putExtendedInfo()
+    }
+
     /**
      * Prepares the player info protocol for every player in the world.
      * First it will synchronize the low resolution positions of all the avatars in the world.
