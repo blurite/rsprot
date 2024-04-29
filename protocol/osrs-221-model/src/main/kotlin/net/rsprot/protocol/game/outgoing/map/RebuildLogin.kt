@@ -71,7 +71,8 @@ public class RebuildLogin private constructor(
     }
 
     private companion object {
-        private const val PLAYER_INFO_BLOCK_SIZE = ((30 + (2046 * 18)) + Int.SIZE_BITS - 1) ushr 5
+        private const val REBUILD_NORMAL_MAXIMUM_SIZE: Int = 44
+        private const val PLAYER_INFO_BLOCK_SIZE = ((30 + (2046 * 18)) + Byte.SIZE_BITS - 1) ushr 3
 
         /**
          * Initializes the player info block into a buffer provided by the [allocator].
@@ -83,7 +84,7 @@ public class RebuildLogin private constructor(
             allocator: ByteBufAllocator,
             playerInfo: PlayerInfo,
         ): ByteBuf {
-            val buffer = allocator.buffer(PLAYER_INFO_BLOCK_SIZE)
+            val buffer = allocator.buffer(PLAYER_INFO_BLOCK_SIZE + REBUILD_NORMAL_MAXIMUM_SIZE)
             playerInfo.handleAbsolutePlayerPositions(buffer)
             return buffer
         }
