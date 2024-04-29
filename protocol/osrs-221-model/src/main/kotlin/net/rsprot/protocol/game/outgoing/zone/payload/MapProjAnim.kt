@@ -1,8 +1,9 @@
 package net.rsprot.protocol.game.outgoing.zone.payload
 
-import net.rsprot.protocol.common.game.outgoing.codec.zone.payload.ZoneProt
+import net.rsprot.protocol.common.game.outgoing.codec.zone.payload.OldSchoolZoneProt
 import net.rsprot.protocol.game.outgoing.zone.payload.util.CoordInZone
 import net.rsprot.protocol.message.OutgoingGameMessage
+import net.rsprot.protocol.message.ZoneProt
 
 /**
  * Map projectile anim packets are sent to render projectiles
@@ -116,7 +117,7 @@ public class MapProjAnim private constructor(
     public val coordInZonePacked: Int
         get() = coordInZone.packed.toInt()
 
-    override val protId: Int = ZoneProt.MAP_PROJANIM
+    override val protId: Int = OldSchoolZoneProt.MAP_PROJANIM
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

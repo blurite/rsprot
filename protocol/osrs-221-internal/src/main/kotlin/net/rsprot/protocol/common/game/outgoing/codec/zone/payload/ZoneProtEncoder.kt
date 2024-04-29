@@ -3,6 +3,7 @@ package net.rsprot.protocol.common.game.outgoing.codec.zone.payload
 import io.netty.channel.ChannelHandlerContext
 import net.rsprot.buffer.JagByteBuf
 import net.rsprot.protocol.message.OutgoingGameMessage
+import net.rsprot.protocol.message.ZoneProt
 import net.rsprot.protocol.message.codec.MessageEncoder
 
 /**
