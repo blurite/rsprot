@@ -162,7 +162,7 @@ public class UpdateInvFull private constructor(
             for (i in 0..<capacity) {
                 val obj = provider.provide(i)
                 if (RSProtFlags.inventoryObjCheck) {
-                    check(obj.count >= 0) {
+                    check(obj == InventoryObject.NULL || obj.count >= 0) {
                         "Obj count cannot be below zero: $obj @ $i"
                     }
                 }
