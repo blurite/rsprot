@@ -155,6 +155,10 @@ public class NpcInfoProtocol(
             val info = npcInfoRepository.getOrNull(i) ?: continue
             info.afterUpdate()
         }
+        for (i in 0..<65536) {
+            val avatar = avatarRepository.getOrNull(i) ?: continue
+            avatar.postUpdate()
+        }
     }
 
     /**
