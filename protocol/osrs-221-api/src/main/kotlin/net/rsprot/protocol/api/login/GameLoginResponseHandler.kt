@@ -67,6 +67,7 @@ public class GameLoginResponseHandler<R>(
                         networkService.outgoingGameMessageQueueProvider.provide(),
                         networkService.gameMessageCounterProvider.provide(),
                         networkService.gameMessageConsumerRepositoryProvider.provide().consumers,
+                        loginBlock,
                     )
                 pipeline.replace<LoginMessageDecoder>(
                     GameMessageDecoder(

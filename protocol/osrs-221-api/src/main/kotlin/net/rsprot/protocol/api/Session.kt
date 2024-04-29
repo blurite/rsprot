@@ -3,6 +3,7 @@ package net.rsprot.protocol.api
 import io.netty.channel.ChannelHandlerContext
 import net.rsprot.protocol.api.channel.inetAddress
 import net.rsprot.protocol.api.game.GameMessageDecoder
+import net.rsprot.protocol.loginprot.incoming.util.LoginBlock
 import net.rsprot.protocol.message.IncomingGameMessage
 import net.rsprot.protocol.message.IncomingMessage
 import net.rsprot.protocol.message.OutgoingGameMessage
@@ -17,6 +18,7 @@ public class Session<R>(
     private val outgoingMessageQueue: Queue<OutgoingGameMessage>,
     private val counter: GameMessageCounter,
     private val consumers: Map<Class<out IncomingMessage>, BiConsumer<R, in IncomingMessage>>,
+    public val loginBlock: LoginBlock<*>,
 ) {
     public val inetAddress: InetAddress = ctx.inetAddress()
 
