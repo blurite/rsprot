@@ -3,6 +3,7 @@ package net.rsprot.protocol.game.outgoing.info
 import io.netty.buffer.PooledByteBufAllocator
 import io.netty.buffer.Unpooled
 import net.rsprot.compression.HuffmanCodec
+import net.rsprot.compression.provider.DefaultHuffmanCodecProvider
 import net.rsprot.protocol.common.client.OldSchoolClientType
 import net.rsprot.protocol.game.outgoing.codec.playerinfo.extendedinfo.writer.PlayerAvatarExtendedInfoDesktopWriter
 import net.rsprot.protocol.game.outgoing.info.filter.DefaultExtendedInfoFilter
@@ -30,7 +31,7 @@ class PlayerInfoTest {
                 allocator,
                 DefaultExtendedInfoFilter(),
                 listOf(PlayerAvatarExtendedInfoDesktopWriter()),
-                createHuffmanCodec(),
+                DefaultHuffmanCodecProvider(createHuffmanCodec()),
             )
         protocol =
             PlayerInfoProtocol(

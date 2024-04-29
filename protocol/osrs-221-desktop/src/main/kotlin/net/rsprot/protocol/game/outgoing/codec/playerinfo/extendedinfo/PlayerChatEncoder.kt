@@ -3,16 +3,17 @@ package net.rsprot.protocol.game.outgoing.codec.playerinfo.extendedinfo
 import io.netty.buffer.ByteBufAllocator
 import net.rsprot.buffer.JagByteBuf
 import net.rsprot.buffer.extensions.toJagByteBuf
-import net.rsprot.compression.HuffmanCodec
+import net.rsprot.compression.provider.HuffmanCodecProvider
 import net.rsprot.protocol.common.game.outgoing.info.encoder.PrecomputedExtendedInfoEncoder
 import net.rsprot.protocol.common.game.outgoing.info.playerinfo.extendedinfo.Chat
 
 public class PlayerChatEncoder : PrecomputedExtendedInfoEncoder<Chat> {
     override fun precompute(
         alloc: ByteBufAllocator,
-        huffmanCodec: HuffmanCodec,
+        huffmanCodecProvider: HuffmanCodecProvider,
         extendedInfo: Chat,
     ): JagByteBuf {
+        val codec = huffmanCodecProvider.provide()
         val text = extendedInfo.text ?: ""
         val colour = extendedInfo.colour.toInt()
         val patternLength = if (colour in 13..20) colour - 12 else 0
@@ -27,7 +28,7 @@ public class PlayerChatEncoder : PrecomputedExtendedInfoEncoder<Chat> {
         // Skip huffman payload size
         buffer.skipWrite(1)
         val marker = buffer.writerIndex()
-        huffmanCodec.encode(buffer, text)
+        codec.encode(buffer, text)
 
         // Update huffman payload size
         val writerIndex = buffer.writerIndex()

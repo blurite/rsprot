@@ -1,14 +1,14 @@
 package net.rsprot.protocol.game.outgoing.info.playerinfo
 
 import io.netty.buffer.ByteBufAllocator
-import net.rsprot.compression.HuffmanCodec
+import net.rsprot.compression.provider.HuffmanCodecProvider
 import net.rsprot.protocol.game.outgoing.info.filter.ExtendedInfoFilter
 
 public class PlayerAvatarFactory(
     private val allocator: ByteBufAllocator,
     private val extendedInfoFilter: ExtendedInfoFilter,
     private val extendedInfoWriter: List<PlayerAvatarExtendedInfoWriter>,
-    private val huffmanCodec: HuffmanCodec,
+    private val huffmanCodec: HuffmanCodecProvider,
 ) {
     public fun alloc(index: Int): PlayerAvatar {
         // It is possible to just pass in the extended info from here, but based on benchmarks,

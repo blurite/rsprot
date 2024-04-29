@@ -2,7 +2,7 @@ package net.rsprot.protocol.common.game.outgoing.info
 
 import io.netty.buffer.ByteBuf
 import io.netty.buffer.ByteBufAllocator
-import net.rsprot.compression.HuffmanCodec
+import net.rsprot.compression.provider.HuffmanCodecProvider
 import net.rsprot.protocol.common.client.ClientTypeMap
 import net.rsprot.protocol.common.client.OldSchoolClientType
 import net.rsprot.protocol.common.game.outgoing.info.encoder.ExtendedInfoEncoder
@@ -82,14 +82,14 @@ public abstract class ExtendedInfo<in T : ExtendedInfo<T, E>, E : ExtendedInfoEn
  */
 public fun <T : ExtendedInfo<T, E>, E : PrecomputedExtendedInfoEncoder<T>> T.precompute(
     allocator: ByteBufAllocator,
-    huffmanCodec: HuffmanCodec,
+    huffmanCodecProvider: HuffmanCodecProvider,
 ) {
     for (id in 0..<OldSchoolClientType.COUNT) {
         val encoder = encoders.getOrNull(id) ?: continue
         val encoded =
             encoder.precompute(
                 allocator,
-                huffmanCodec,
+                huffmanCodecProvider,
                 this,
             )
         setBuffer(id, encoded.buffer)

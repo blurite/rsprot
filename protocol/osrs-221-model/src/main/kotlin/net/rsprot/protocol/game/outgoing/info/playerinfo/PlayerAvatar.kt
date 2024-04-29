@@ -1,7 +1,7 @@
 package net.rsprot.protocol.game.outgoing.info.playerinfo
 
 import io.netty.buffer.ByteBufAllocator
-import net.rsprot.compression.HuffmanCodec
+import net.rsprot.compression.provider.HuffmanCodecProvider
 import net.rsprot.protocol.common.game.outgoing.info.CoordGrid
 import net.rsprot.protocol.common.game.outgoing.info.playerinfo.encoder.PlayerExtendedInfoEncoders
 import net.rsprot.protocol.game.outgoing.info.AvatarExtendedInfoWriter
@@ -18,7 +18,7 @@ public class PlayerAvatar internal constructor(
     localIndex: Int,
     extendedInfoFilter: ExtendedInfoFilter,
     extendedInfoWriters: List<AvatarExtendedInfoWriter<PlayerExtendedInfoEncoders, PlayerAvatarExtendedInfoBlocks>>,
-    huffmanCodec: HuffmanCodec,
+    huffmanCodec: HuffmanCodecProvider,
 ) : Avatar {
     /**
      * The preferred resize range. The player information protocol will attempt to

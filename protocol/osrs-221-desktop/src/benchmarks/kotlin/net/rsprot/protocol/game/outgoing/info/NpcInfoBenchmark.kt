@@ -5,6 +5,7 @@ package net.rsprot.protocol.game.outgoing.info
 import io.netty.buffer.PooledByteBufAllocator
 import io.netty.buffer.Unpooled
 import net.rsprot.compression.HuffmanCodec
+import net.rsprot.compression.provider.DefaultHuffmanCodecProvider
 import net.rsprot.protocol.common.client.ClientTypeMap
 import net.rsprot.protocol.common.client.OldSchoolClientType
 import net.rsprot.protocol.common.game.outgoing.info.CoordGrid
@@ -54,7 +55,7 @@ class NpcInfoBenchmark {
                 allocator,
                 DefaultExtendedInfoFilter(),
                 listOf(NpcAvatarExtendedInfoDesktopWriter()),
-                createHuffmanCodec(),
+                DefaultHuffmanCodecProvider(createHuffmanCodec()),
             )
         this.serverNpcs = createPhantomNpcs(factory)
         this.supplier = createNpcIndexSupplier()

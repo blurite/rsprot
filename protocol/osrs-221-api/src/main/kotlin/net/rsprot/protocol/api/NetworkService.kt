@@ -3,7 +3,7 @@ package net.rsprot.protocol.api
 import io.netty.buffer.ByteBufAllocator
 import io.netty.buffer.PooledByteBufAllocator
 import io.netty.channel.ChannelFuture
-import net.rsprot.compression.HuffmanCodec
+import net.rsprot.compression.provider.HuffmanCodecProvider
 import net.rsprot.protocol.api.bootstrap.BootstrapFactory
 import net.rsprot.protocol.api.implementation.DefaultGameMessageCounterProvider
 import net.rsprot.protocol.api.implementation.DefaultInetAddressValidator
@@ -57,7 +57,7 @@ public class NetworkService<R, T : Js5GroupType>
         private val clientTypes: List<OldSchoolClientType>,
         private val exp: BigInteger,
         private val mod: BigInteger,
-        private val huffmanCodec: HuffmanCodec,
+        private val huffmanCodecProvider: HuffmanCodecProvider,
         private val js5GroupProvider: Js5GroupProvider<T>,
         public val gameMessageConsumerRepository: GameMessageConsumerRepository<R>,
         public val gameLoginHandler: GameLoginHandler<R>,
@@ -80,7 +80,7 @@ public class NetworkService<R, T : Js5GroupType>
     ) {
         public lateinit var decoderRepositories: MessageDecoderRepositories
         public val encoderRepositories: MessageEncoderRepositories = MessageEncoderRepositories()
-        public val messageDecodingTools: MessageDecodingTools = MessageDecodingTools(huffmanCodec)
+        public val messageDecodingTools: MessageDecodingTools = MessageDecodingTools(huffmanCodecProvider)
         public val js5Service: Js5Service<T> = Js5Service(js5GroupProvider)
         private val js5ServiceExecutor = Thread(js5Service)
 
@@ -146,7 +146,7 @@ public class NetworkService<R, T : Js5GroupType>
                     allocator,
                     playerExtendedInfoFilter,
                     playerWriters,
-                    huffmanCodec,
+                    huffmanCodecProvider,
                 )
             this.playerInfoProtocol =
                 PlayerInfoProtocol(
@@ -159,7 +159,7 @@ public class NetworkService<R, T : Js5GroupType>
                     allocator,
                     npcExtendedInfoFilter,
                     npcWriters,
-                    huffmanCodec,
+                    huffmanCodecProvider,
                 )
             this.npcInfoProtocol =
                 NpcInfoProtocol(
@@ -196,7 +196,7 @@ public class NetworkService<R, T : Js5GroupType>
                 "clientTypes=$clientTypes, " +
                 "exp=$exp, " +
                 "mod=$mod, " +
-                "huffmanCodec=$huffmanCodec, " +
+                "huffmanCodec=$huffmanCodecProvider, " +
                 "js5GroupProvider=$js5GroupProvider, " +
                 "gameMessageConsumerRepository=$gameMessageConsumerRepository, " +
                 "gameLoginHandler=$gameLoginHandler, " +

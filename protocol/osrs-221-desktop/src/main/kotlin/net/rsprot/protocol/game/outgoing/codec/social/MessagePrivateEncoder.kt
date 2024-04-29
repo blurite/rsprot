@@ -18,13 +18,14 @@ public class MessagePrivateEncoder : MessageEncoder<MessagePrivate> {
         buffer: JagByteBuf,
         message: MessagePrivate,
     ) {
-        val huffmanCodec =
+        val huffmanCodecProvider =
             ctx.channel().attr(ChannelAttributes.HUFFMAN_CODEC).get()
                 ?: throw IllegalStateException("Huffman codec not initialized.")
         buffer.pjstr(message.sender)
         buffer.p2(message.worldId)
         buffer.p3(message.worldMessageCounter)
         buffer.p1(message.chatCrownType)
+        val huffmanCodec = huffmanCodecProvider.provide()
         huffmanCodec.encode(buffer, message.message)
     }
 }

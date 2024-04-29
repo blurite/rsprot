@@ -1,7 +1,7 @@
 package net.rsprot.protocol.game.outgoing.info.npcinfo
 
 import io.netty.buffer.ByteBufAllocator
-import net.rsprot.compression.HuffmanCodec
+import net.rsprot.compression.provider.HuffmanCodecProvider
 import net.rsprot.protocol.common.game.outgoing.info.CoordGrid
 import net.rsprot.protocol.common.game.outgoing.info.npcinfo.NpcAvatarDetails
 import net.rsprot.protocol.game.outgoing.info.filter.ExtendedInfoFilter
@@ -26,7 +26,7 @@ internal class NpcAvatarRepository(
     private val allocator: ByteBufAllocator,
     private val extendedInfoFilter: ExtendedInfoFilter,
     private val extendedInfoWriter: List<NpcAvatarExtendedInfoWriter>,
-    private val huffmanCodec: HuffmanCodec,
+    private val huffmanCodec: HuffmanCodecProvider,
 ) {
     /**
      * The array of npc avatars that currently exist in the game.

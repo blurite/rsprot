@@ -4,7 +4,7 @@ package net.rsprot.protocol.game.outgoing.info.playerinfo
 
 import io.netty.buffer.ByteBufAllocator
 import net.rsprot.buffer.JagByteBuf
-import net.rsprot.compression.HuffmanCodec
+import net.rsprot.compression.provider.HuffmanCodecProvider
 import net.rsprot.protocol.common.RSProtFlags
 import net.rsprot.protocol.common.client.OldSchoolClientType
 import net.rsprot.protocol.common.game.outgoing.info.playerinfo.encoder.PlayerExtendedInfoEncoders
@@ -40,7 +40,7 @@ public class PlayerAvatarExtendedInfo(
     private val filter: ExtendedInfoFilter,
     extendedInfoWriters: List<PlayerAvatarExtendedInfoWriter>,
     private val allocator: ByteBufAllocator,
-    private val huffmanCodec: HuffmanCodec,
+    private val huffmanCodec: HuffmanCodecProvider,
 ) {
     /**
      * The flags currently enabled for this avatar.

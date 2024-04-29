@@ -2,7 +2,7 @@ package net.rsprot.protocol.game.outgoing.info.npcinfo
 
 import io.netty.buffer.ByteBufAllocator
 import net.rsprot.buffer.JagByteBuf
-import net.rsprot.compression.HuffmanCodec
+import net.rsprot.compression.provider.HuffmanCodecProvider
 import net.rsprot.protocol.common.RSProtFlags
 import net.rsprot.protocol.common.client.OldSchoolClientType
 import net.rsprot.protocol.common.game.outgoing.info.npcinfo.encoder.NpcExtendedInfoEncoders
@@ -38,7 +38,7 @@ public class NpcAvatarExtendedInfo(
     private val filter: ExtendedInfoFilter,
     extendedInfoWriters: List<NpcAvatarExtendedInfoWriter>,
     private val allocator: ByteBufAllocator,
-    private val huffmanCodec: HuffmanCodec,
+    private val huffmanCodec: HuffmanCodecProvider,
 ) {
     /**
      * The extended info blocks enabled on this NPC in a given cycle.

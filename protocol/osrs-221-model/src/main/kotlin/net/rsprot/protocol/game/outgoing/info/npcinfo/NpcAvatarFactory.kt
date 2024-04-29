@@ -1,7 +1,7 @@
 package net.rsprot.protocol.game.outgoing.info.npcinfo
 
 import io.netty.buffer.ByteBufAllocator
-import net.rsprot.compression.HuffmanCodec
+import net.rsprot.compression.provider.HuffmanCodecProvider
 import net.rsprot.protocol.game.outgoing.info.filter.ExtendedInfoFilter
 
 /**
@@ -23,7 +23,7 @@ public class NpcAvatarFactory(
     allocator: ByteBufAllocator,
     extendedInfoFilter: ExtendedInfoFilter,
     extendedInfoWriter: List<NpcAvatarExtendedInfoWriter>,
-    huffmanCodec: HuffmanCodec,
+    huffmanCodec: HuffmanCodecProvider,
 ) {
     /**
      * The avatar repository is responsible for keeping track of all avatars, including ones

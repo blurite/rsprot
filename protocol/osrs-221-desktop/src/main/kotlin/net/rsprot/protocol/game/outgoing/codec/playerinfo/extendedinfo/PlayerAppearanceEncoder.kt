@@ -5,7 +5,7 @@ import net.rsprot.buffer.JagByteBuf
 import net.rsprot.buffer.extensions.p1Alt2
 import net.rsprot.buffer.extensions.pdataAlt2
 import net.rsprot.buffer.extensions.toJagByteBuf
-import net.rsprot.compression.HuffmanCodec
+import net.rsprot.compression.provider.HuffmanCodecProvider
 import net.rsprot.protocol.common.game.outgoing.info.encoder.PrecomputedExtendedInfoEncoder
 import net.rsprot.protocol.common.game.outgoing.info.playerinfo.extendedinfo.Appearance
 import net.rsprot.protocol.common.game.outgoing.info.playerinfo.extendedinfo.ObjTypeCustomisation
@@ -13,7 +13,7 @@ import net.rsprot.protocol.common.game.outgoing.info.playerinfo.extendedinfo.Obj
 public class PlayerAppearanceEncoder : PrecomputedExtendedInfoEncoder<Appearance> {
     override fun precompute(
         alloc: ByteBufAllocator,
-        huffmanCodec: HuffmanCodec,
+        huffmanCodecProvider: HuffmanCodecProvider,
         extendedInfo: Appearance,
     ): JagByteBuf {
         val intermediate = alloc.buffer(100).toJagByteBuf()
