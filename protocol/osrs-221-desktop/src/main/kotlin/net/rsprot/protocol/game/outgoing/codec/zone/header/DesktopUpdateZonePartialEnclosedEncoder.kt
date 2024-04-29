@@ -21,6 +21,7 @@ import net.rsprot.protocol.game.outgoing.codec.zone.payload.ObjOpFilterEncoder
 import net.rsprot.protocol.game.outgoing.codec.zone.payload.SoundAreaEncoder
 import net.rsprot.protocol.game.outgoing.prot.GameServerProt
 import net.rsprot.protocol.game.outgoing.zone.header.UpdateZonePartialEnclosed
+import net.rsprot.protocol.message.OutgoingGameMessage
 import net.rsprot.protocol.message.codec.MessageEncoder
 import kotlin.math.min
 
@@ -58,10 +59,10 @@ public class DesktopUpdateZonePartialEnclosedEncoder : MessageEncoder<UpdateZone
          * in any way.
          * @param messages the list of zone prot messages to be encoded.
          */
-        public fun buildCache(
+        public fun <T> buildCache(
             allocator: ByteBufAllocator,
-            messages: List<ZoneProt>,
-        ): ByteBuf {
+            messages: List<T>,
+        ): ByteBuf where T : ZoneProt, T : OutgoingGameMessage {
             val buffer =
                 allocator.buffer(
                     min(IndexedZoneProtEncoder.maxZoneProtSize * messages.size, MAX_PARTIAL_ENCLOSED_SIZE),
@@ -87,11 +88,11 @@ public class DesktopUpdateZonePartialEnclosedEncoder : MessageEncoder<UpdateZone
          * Note that the type of the encoder is not compile-time known as we acquire it dynamically
          * based on the message itself.
          */
-        private fun <T : ZoneProt> encodeMessage(
+        private fun <T> encodeMessage(
             buffer: JagByteBuf,
             message: T,
             encoder: ZoneProtEncoder<*>,
-        ) {
+        ) where T : ZoneProt, T : OutgoingGameMessage {
             @Suppress("UNCHECKED_CAST")
             encoder as ZoneProtEncoder<T>
             encoder.encode(buffer, message)
