@@ -15,7 +15,7 @@ internal fun buildXteaKeyList(
     val maxMapsquareX = (zoneX + 6) ushr 3
     val minMapsquareZ = (zoneZ - 6) ushr 3
     val maxMapsquareZ = (zoneZ + 6) ushr 3
-    val count = (maxMapsquareX - minMapsquareZ + 1) * (maxMapsquareZ - minMapsquareZ + 1)
+    val count = (maxMapsquareX - minMapsquareX + 1) * (maxMapsquareZ - minMapsquareZ + 1)
     val keys = ArrayList<XteaKey>(count)
     for (mapsquareX in minMapsquareX..maxMapsquareX) {
         for (mapsquareZ in minMapsquareZ..maxMapsquareZ) {
