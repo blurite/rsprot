@@ -39,7 +39,7 @@ public class NpcInfo internal constructor(
     private val allocator: ByteBufAllocator,
     private val repository: NpcAvatarRepository,
     private var oldSchoolClientType: OldSchoolClientType,
-    private var localPlayerIndex: Int,
+    internal var localPlayerIndex: Int,
     private val indexSupplier: NpcIndexSupplier,
     private val lowResolutionToHighResolutionEncoders: ClientTypeMap<NpcResolutionChangeEncoder>,
 ) : ReferencePooledObject, OutgoingGameMessage {

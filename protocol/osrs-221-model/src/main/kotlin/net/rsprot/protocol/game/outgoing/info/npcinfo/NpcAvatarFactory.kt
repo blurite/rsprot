@@ -83,4 +83,12 @@ public class NpcAvatarFactory(
             direction,
         )
     }
+
+    /**
+     * Releases the avatar back into the repository to be used by other NPCs.
+     * @param avatar the avatar to release.
+     */
+    public fun release(avatar: NpcAvatar) {
+        avatarRepository.release(avatar)
+    }
 }

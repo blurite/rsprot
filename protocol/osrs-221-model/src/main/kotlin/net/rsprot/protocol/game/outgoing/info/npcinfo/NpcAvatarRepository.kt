@@ -6,6 +6,7 @@ import net.rsprot.protocol.common.game.outgoing.info.CoordGrid
 import net.rsprot.protocol.common.game.outgoing.info.npcinfo.NpcAvatarDetails
 import net.rsprot.protocol.game.outgoing.info.filter.ExtendedInfoFilter
 import java.lang.ref.ReferenceQueue
+import java.lang.ref.SoftReference
 
 /**
  * The NPC avatar repository is a class responsible for keeping track of all the avatars
@@ -123,6 +124,17 @@ internal class NpcAvatarRepository(
             )
         elements[index] = avatar
         return avatar
+    }
+
+    /**
+     * Releases avatar back into the pool for it to be used later in the future, if possible.
+     * @param avatar the avatar to release.
+     */
+    fun release(avatar: NpcAvatar) {
+        this.elements[avatar.details.index] = null
+        avatar.extendedInfo.reset()
+        val reference = SoftReference(avatar, queue)
+        reference.enqueue()
     }
 
     /**
