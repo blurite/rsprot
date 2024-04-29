@@ -19,7 +19,9 @@ public class BlockingGameMessageConsumerRepositoryProvider<R> : GameMessageConsu
     override fun provide(): GameMessageConsumerRepository<R> {
         val repository = this.repository
         if (repository == null) {
-            lock.wait()
+            synchronized(lock) {
+                lock.wait()
+            }
             return checkNotNull(this.repository)
         }
         return repository
@@ -27,6 +29,8 @@ public class BlockingGameMessageConsumerRepositoryProvider<R> : GameMessageConsu
 
     public fun supply(repository: GameMessageConsumerRepository<R>) {
         this.repository = repository
-        lock.notifyAll()
+        synchronized(lock) {
+            lock.notifyAll()
+        }
     }
 }

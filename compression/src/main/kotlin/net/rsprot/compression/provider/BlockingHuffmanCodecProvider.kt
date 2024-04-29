@@ -19,7 +19,9 @@ public class BlockingHuffmanCodecProvider : HuffmanCodecProvider {
     override fun provide(): HuffmanCodec {
         val codec = huffmanCodec
         if (codec == null) {
-            lock.wait()
+            synchronized(lock) {
+                lock.wait()
+            }
             return checkNotNull(huffmanCodec)
         }
         return codec
@@ -35,6 +37,8 @@ public class BlockingHuffmanCodecProvider : HuffmanCodecProvider {
             "Huffman codec already initialized!"
         }
         this.huffmanCodec = codec
-        lock.notifyAll()
+        synchronized(lock) {
+            lock.notifyAll()
+        }
     }
 }
