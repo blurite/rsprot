@@ -20,7 +20,7 @@ public class PlayerChatEncoder : PrecomputedExtendedInfoEncoder<Chat> {
         val capacity = 5 + text.length + patternLength
         val buffer =
             alloc
-                .buffer(capacity, capacity)
+                .buffer(capacity)
                 .toJagByteBuf()
         buffer.p2Alt1(colour shl 8 or extendedInfo.effects.toInt())
         buffer.p1Alt2(extendedInfo.modicon.toInt())
