@@ -108,4 +108,21 @@ public class Js5GroupResponse(
                 ")"
         }
     }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as Js5GroupResponse
+
+        return response == other.response
+    }
+
+    override fun hashCode(): Int {
+        return response.hashCode()
+    }
+
+    override fun toString(): String {
+        return "Js5GroupResponse(response=$response)"
+    }
 }
