@@ -1,3 +1,5 @@
+@file:Suppress("DuplicatedCode")
+
 package net.rsprot.protocol.api.login
 
 import com.github.michaelbull.logging.InlineLogger
@@ -6,6 +8,7 @@ import io.netty.channel.ChannelHandlerContext
 import net.rsprot.crypto.cipher.IsaacRandom
 import net.rsprot.protocol.api.NetworkService
 import net.rsprot.protocol.api.Session
+import net.rsprot.protocol.api.channel.inetAddress
 import net.rsprot.protocol.api.channel.replace
 import net.rsprot.protocol.api.game.GameMessageDecoder
 import net.rsprot.protocol.api.game.GameMessageEncoder
@@ -42,6 +45,16 @@ public class GameLoginResponseHandler<R>(
             ctx.writeAndFlush(LoginResponse.InvalidLoginPacket)
             callback.accept(null)
             logger.debug { "Client $oldSchoolClientType is not supported; rejecting login." }
+            return
+        }
+        val address = ctx.inetAddress()
+        val count = networkService.gameInetAddressTracker.getCount(address)
+        val accepted = networkService.inetAddressValidator.acceptGameConnection(address, count)
+        // Secondary validation just before we allow the server to log the user in
+        if (!accepted) {
+            ctx
+                .writeAndFlush(LoginResponse.TooManyAttempts)
+                .addListener(ChannelFutureListener.CLOSE)
             return
         }
         ctx.writeAndFlush(response).addListener(
