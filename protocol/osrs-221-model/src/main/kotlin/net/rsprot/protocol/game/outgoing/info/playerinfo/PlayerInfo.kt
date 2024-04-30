@@ -8,6 +8,7 @@ import net.rsprot.buffer.bitbuffer.toBitBuf
 import net.rsprot.buffer.extensions.toJagByteBuf
 import net.rsprot.protocol.common.client.OldSchoolClientType
 import net.rsprot.protocol.game.outgoing.info.ObserverExtendedInfoFlags
+import net.rsprot.protocol.game.outgoing.info.exceptions.InfoProcessException
 import net.rsprot.protocol.game.outgoing.info.playerinfo.PlayerInfoProtocol.Companion.PROTOCOL_CAPACITY
 import net.rsprot.protocol.game.outgoing.info.playerinfo.util.CellOpcodes
 import net.rsprot.protocol.game.outgoing.info.util.Avatar
@@ -143,6 +144,13 @@ public class PlayerInfo internal constructor(
     private var buffer: ByteBuf? = null
 
     /**
+     * The exception that was caught during the processing of this player's playerinfo packet.
+     * This exception will be propagated further during the [toPacket] function call,
+     * allowing the server to handle it properly at a per-player basis.
+     */
+    internal var exception: Exception? = null
+
+    /**
      * Returns the backing buffer for this cycle.
      * @throws IllegalStateException if the buffer has not been allocated yet.
      */
@@ -156,8 +164,17 @@ public class PlayerInfo internal constructor(
      * This is necessary because the encoder itself is only triggered in Netty, and it is possible
      * that the buffer has already been replaced with a new variant before it gets to that stage.
      * @return thread-safe player info packet class, wrapping the pre-built buffer.
+     * @throws InfoProcessException if there was an exception during the computation of player info
+     * for this specific playerinfo object,
      */
     public fun toPacket(): PlayerInfoPacket {
+        val exception = this.exception
+        if (exception != null) {
+            throw InfoProcessException(
+                "Exception occurred during player info processing for index $localIndex",
+                exception,
+            )
+        }
         return PlayerInfoPacket(backingBuffer())
     }
 

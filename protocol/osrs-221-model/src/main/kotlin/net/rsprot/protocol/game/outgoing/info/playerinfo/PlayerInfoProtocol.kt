@@ -8,6 +8,7 @@ import net.rsprot.protocol.game.outgoing.info.worker.DefaultProtocolWorker
 import net.rsprot.protocol.game.outgoing.info.worker.ProtocolWorker
 import java.util.concurrent.Callable
 import java.util.concurrent.ForkJoinPool
+import kotlin.Exception
 
 /**
  * The player info protocol is responsible for tracking everything player info related
@@ -139,7 +140,11 @@ public class PlayerInfoProtocol(
             }
         }
         for (i in 1..<PROTOCOL_CAPACITY) {
-            playerInfoRepository.getOrNull(i)?.prepareBitcodes(lowResolutionPositionRepository)
+            try {
+                playerInfoRepository.getOrNull(i)?.prepareBitcodes(lowResolutionPositionRepository)
+            } catch (e: Exception) {
+                catchException(i, e)
+            }
         }
     }
 
@@ -203,10 +208,33 @@ public class PlayerInfoProtocol(
     private inline fun execute(crossinline block: PlayerInfo.() -> Unit) {
         for (i in 1..<PROTOCOL_CAPACITY) {
             val info = playerInfoRepository.getOrNull(i) ?: continue
-            callables += Callable { block(info) }
+            callables +=
+                Callable {
+                    try {
+                        block(info)
+                    } catch (e: Exception) {
+                        catchException(i, e)
+                    }
+                }
         }
         worker.execute(callables)
         callables.clear()
+    }
+
+    /**
+     * Submits an exception to a specific player's playerinfo packet, which will be propagated further
+     * whenever the server tries to call the [PlayerInfo.toPacket] function, allowing the server to properly
+     * handle exceptions for a given player despite it being calculated for the entire server in one go.
+     * @param index the index of the player who caught an exception during their processing
+     * @param exception the exception caught during processing
+     */
+    private fun catchException(
+        index: Int,
+        exception: Exception,
+    ) {
+        val info = playerInfoRepository.getOrNull(index) ?: return
+        playerInfoRepository.destroy(index)
+        info.exception = exception
     }
 
     public companion object {

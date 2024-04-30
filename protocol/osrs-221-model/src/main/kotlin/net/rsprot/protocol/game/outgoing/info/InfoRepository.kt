@@ -7,6 +7,7 @@ import java.lang.ref.SoftReference
 /**
  * The info repository class is responsible for allocating and re-using various info implementations.
  */
+@Suppress("DuplicatedCode")
 internal abstract class InfoRepository<T>(
     private val allocator: (index: Int, oldSchoolClientType: OldSchoolClientType) -> T,
 ) {
@@ -131,6 +132,37 @@ internal abstract class InfoRepository<T>(
         informDeallocation(idx)
         val reference = SoftReference(element, queue)
         reference.enqueue()
+        return true
+    }
+
+    /**
+     * Destroys the element at [idx], if there is one.
+     * If an object was found, [net.rsprot.protocol.game.outgoing.info.util.ReferencePooledObject.onDealloc]
+     * function is called on it.
+     * This is to clean up any potential memory leaks for objects which may incur such.
+     * It should not reset indices and other properties, that should be left to be done
+     * during [alloc].
+     * Unlike the [dealloc] function, this function will not put the object back into the pool.
+     * This is important in case we catch an exception mid-processing, as that will immediately
+     * destroy the object, which technically means it could be picked up by another player right
+     * away in an unsafe manner. As such, these objects which threw exceptions must be garbage-collected.
+     * @param idx the index of the element to deallocate.
+     * @throws ArrayIndexOutOfBoundsException if the [idx] is below zero, or above [capacity].
+     * @return true if the object was deallocated, false if there was nothing to deallocate.
+     */
+    fun destroy(idx: Int): Boolean {
+        require(idx in elements.indices) {
+            "Index out of boundaries: $idx, ${elements.indices}"
+        }
+        val element =
+            elements[idx]
+                ?: return false
+        try {
+            onDealloc(element)
+        } finally {
+            elements[idx] = null
+        }
+        informDeallocation(idx)
         return true
     }
 
