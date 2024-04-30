@@ -1,5 +1,6 @@
 package net.rsprot.protocol.api
 
+import io.netty.buffer.ByteBuf
 import io.netty.buffer.ByteBufAllocator
 import io.netty.buffer.PooledByteBufAllocator
 import io.netty.channel.ChannelFuture
@@ -16,6 +17,7 @@ import net.rsprot.protocol.api.js5.Js5Service
 import net.rsprot.protocol.api.repositories.MessageDecoderRepositories
 import net.rsprot.protocol.api.repositories.MessageEncoderRepositories
 import net.rsprot.protocol.api.util.asCompletableFuture
+import net.rsprot.protocol.client.ClientType
 import net.rsprot.protocol.common.client.ClientTypeMap
 import net.rsprot.protocol.common.client.OldSchoolClientType
 import net.rsprot.protocol.common.game.outgoing.info.npcinfo.encoder.NpcResolutionChangeEncoder
@@ -24,6 +26,7 @@ import net.rsprot.protocol.game.incoming.prot.GameClientProt
 import net.rsprot.protocol.game.outgoing.codec.npcinfo.DesktopLowResolutionChangeEncoder
 import net.rsprot.protocol.game.outgoing.codec.npcinfo.extendedinfo.writer.NpcAvatarExtendedInfoDesktopWriter
 import net.rsprot.protocol.game.outgoing.codec.playerinfo.extendedinfo.writer.PlayerAvatarExtendedInfoDesktopWriter
+import net.rsprot.protocol.game.outgoing.codec.zone.header.DesktopUpdateZonePartialEnclosedEncoder
 import net.rsprot.protocol.game.outgoing.info.filter.DefaultExtendedInfoFilter
 import net.rsprot.protocol.game.outgoing.info.filter.ExtendedInfoFilter
 import net.rsprot.protocol.game.outgoing.info.npcinfo.NpcAvatarExtendedInfoWriter
@@ -41,10 +44,13 @@ import net.rsprot.protocol.loginprot.incoming.pow.challenges.DefaultChallengeWor
 import net.rsprot.protocol.loginprot.incoming.pow.challenges.sha256.DefaultSha256ProofOfWorkProvider
 import net.rsprot.protocol.message.IncomingGameMessage
 import net.rsprot.protocol.message.OutgoingGameMessage
+import net.rsprot.protocol.message.ZoneProt
+import net.rsprot.protocol.message.codec.UpdateZonePartialEnclosedCache
 import net.rsprot.protocol.message.codec.incoming.MessageDecoderRepository
 import net.rsprot.protocol.message.codec.incoming.provider.GameMessageConsumerRepositoryProvider
 import net.rsprot.protocol.tools.MessageDecodingTools
 import java.math.BigInteger
+import java.util.EnumMap
 import java.util.concurrent.CompletableFuture
 
 @OptIn(ExperimentalUnsignedTypes::class)
@@ -54,7 +60,7 @@ public class NetworkService<R, T : Js5GroupType>
     public constructor(
         private val bootstrapFactory: BootstrapFactory,
         private val ports: List<Int>,
-        private val clientTypes: List<OldSchoolClientType>,
+        public val clientTypes: List<OldSchoolClientType>,
         private val exp: BigInteger,
         private val mod: BigInteger,
         public val huffmanCodecProvider: HuffmanCodecProvider,
@@ -83,6 +89,7 @@ public class NetworkService<R, T : Js5GroupType>
         public val messageDecodingTools: MessageDecodingTools = MessageDecodingTools(huffmanCodecProvider)
         public val js5Service: Js5Service<T> = Js5Service(js5GroupProvider)
         private val js5ServiceExecutor = Thread(js5Service)
+        private lateinit var updateZonePartialEnclosedCacheClientTypeMap: ClientTypeMap<UpdateZonePartialEnclosedCache>
 
         public lateinit var playerAvatarFactory: PlayerAvatarFactory
         public lateinit var playerInfoProtocol: PlayerInfoProtocol
@@ -95,6 +102,7 @@ public class NetworkService<R, T : Js5GroupType>
             verifyClientTypesAreImplemented()
             initializeDecoderRepositories()
             initializeInfos()
+            initializeUpdateZonePartialEnclosedCacheClientMap()
             val bossGroup = bootstrapFactory.createParentLoopGroup()
             val childGroup = bootstrapFactory.createChildLoopGroup()
             val initializer =
@@ -116,6 +124,24 @@ public class NetworkService<R, T : Js5GroupType>
                     }
                 }
             js5ServiceExecutor.start()
+        }
+
+        private fun initializeUpdateZonePartialEnclosedCacheClientMap() {
+            val list = mutableListOf<Pair<ClientType, UpdateZonePartialEnclosedCache>>()
+            if (OldSchoolClientType.DESKTOP in clientTypes) {
+                list += OldSchoolClientType.DESKTOP to DesktopUpdateZonePartialEnclosedEncoder
+            }
+            this.updateZonePartialEnclosedCacheClientTypeMap = ClientTypeMap.of(OldSchoolClientType.COUNT, list)
+        }
+
+        public fun <T : ZoneProt> computeUpdateZonePartialEnclosedCache(
+            events: List<T>,
+        ): EnumMap<OldSchoolClientType, ByteBuf> {
+            val map = EnumMap<OldSchoolClientType, ByteBuf>(OldSchoolClientType::class.java)
+            for (type in clientTypes) {
+                map[type] = this.updateZonePartialEnclosedCacheClientTypeMap[type].buildCache(allocator, events)
+            }
+            return map
         }
 
         @ExperimentalStdlibApi

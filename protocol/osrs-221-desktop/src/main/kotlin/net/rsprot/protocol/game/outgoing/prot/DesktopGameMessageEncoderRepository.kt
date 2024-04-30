@@ -110,6 +110,7 @@ import net.rsprot.protocol.game.outgoing.codec.varp.VarpLargeEncoder
 import net.rsprot.protocol.game.outgoing.codec.varp.VarpResetEncoder
 import net.rsprot.protocol.game.outgoing.codec.varp.VarpSmallEncoder
 import net.rsprot.protocol.game.outgoing.codec.varp.VarpSyncEncoder
+import net.rsprot.protocol.game.outgoing.codec.zone.header.DesktopUpdateZonePartialEnclosedEncoder
 import net.rsprot.protocol.game.outgoing.codec.zone.header.UpdateZoneFullFollowsEncoder
 import net.rsprot.protocol.game.outgoing.codec.zone.header.UpdateZonePartialFollowsEncoder
 import net.rsprot.protocol.game.outgoing.codec.zone.payload.LocAddChangeEncoder
@@ -171,7 +172,7 @@ public object DesktopGameMessageEncoderRepository {
 
                 bind(UpdateZoneFullFollowsEncoder())
                 bind(UpdateZonePartialFollowsEncoder())
-                // bind(UpdateZonePartialEnclosedEncoder()) TODO: Implement
+                bind(DesktopUpdateZonePartialEnclosedEncoder())
 
                 bind(LocAddChangeEncoder())
                 bind(LocDelEncoder())

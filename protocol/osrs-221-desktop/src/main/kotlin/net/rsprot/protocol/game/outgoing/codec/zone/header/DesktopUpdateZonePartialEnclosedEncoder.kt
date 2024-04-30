@@ -21,9 +21,9 @@ import net.rsprot.protocol.game.outgoing.codec.zone.payload.ObjOpFilterEncoder
 import net.rsprot.protocol.game.outgoing.codec.zone.payload.SoundAreaEncoder
 import net.rsprot.protocol.game.outgoing.prot.GameServerProt
 import net.rsprot.protocol.game.outgoing.zone.header.UpdateZonePartialEnclosed
-import net.rsprot.protocol.message.OutgoingGameMessage
 import net.rsprot.protocol.message.ZoneProt
 import net.rsprot.protocol.message.codec.MessageEncoder
+import net.rsprot.protocol.message.codec.UpdateZonePartialEnclosedCache
 import kotlin.math.min
 
 public class DesktopUpdateZonePartialEnclosedEncoder : MessageEncoder<UpdateZonePartialEnclosed> {
@@ -44,7 +44,7 @@ public class DesktopUpdateZonePartialEnclosedEncoder : MessageEncoder<UpdateZone
         )
     }
 
-    public companion object {
+    public companion object : UpdateZonePartialEnclosedCache {
         private const val MAX_PARTIAL_ENCLOSED_SIZE = 40_000 - 3
 
         /**
@@ -60,10 +60,10 @@ public class DesktopUpdateZonePartialEnclosedEncoder : MessageEncoder<UpdateZone
          * in any way.
          * @param messages the list of zone prot messages to be encoded.
          */
-        public fun <T> buildCache(
+        override fun <T : ZoneProt> buildCache(
             allocator: ByteBufAllocator,
             messages: List<T>,
-        ): ByteBuf where T : ZoneProt, T : OutgoingGameMessage {
+        ): ByteBuf {
             val buffer =
                 allocator.buffer(
                     min(IndexedZoneProtEncoder.maxZoneProtSize * messages.size, MAX_PARTIAL_ENCLOSED_SIZE),
@@ -89,11 +89,11 @@ public class DesktopUpdateZonePartialEnclosedEncoder : MessageEncoder<UpdateZone
          * Note that the type of the encoder is not compile-time known as we acquire it dynamically
          * based on the message itself.
          */
-        private fun <T> encodeMessage(
+        private fun <T : ZoneProt> encodeMessage(
             buffer: JagByteBuf,
             message: T,
             encoder: ZoneProtEncoder<*>,
-        ) where T : ZoneProt, T : OutgoingGameMessage {
+        ) {
             @Suppress("UNCHECKED_CAST")
             encoder as ZoneProtEncoder<T>
             encoder.encode(buffer, message)

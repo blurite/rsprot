@@ -3,7 +3,6 @@ package net.rsprot.protocol.game.outgoing.zone.payload
 import net.rsprot.protocol.common.game.outgoing.codec.zone.payload.OldSchoolZoneProt
 import net.rsprot.protocol.game.outgoing.util.OpFlags
 import net.rsprot.protocol.game.outgoing.zone.payload.util.CoordInZone
-import net.rsprot.protocol.message.OutgoingGameMessage
 import net.rsprot.protocol.message.ZoneProt
 
 /**
@@ -45,7 +44,7 @@ public class ObjAdd private constructor(
     private val _timeUntilDespawn: UShort,
     private val _ownershipType: UByte,
     public val neverBecomesPublic: Boolean,
-) : ZoneProt, OutgoingGameMessage {
+) : ZoneProt {
     public constructor(
         id: Int,
         quantity: Int,

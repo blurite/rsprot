@@ -3,7 +3,6 @@ package net.rsprot.protocol.game.outgoing.zone.payload
 import net.rsprot.protocol.common.game.outgoing.codec.zone.payload.OldSchoolZoneProt
 import net.rsprot.protocol.game.outgoing.zone.payload.util.CoordInZone
 import net.rsprot.protocol.game.outgoing.zone.payload.util.LocProperties
-import net.rsprot.protocol.message.OutgoingGameMessage
 import net.rsprot.protocol.message.ZoneProt
 
 /**
@@ -20,7 +19,7 @@ public class LocAnim private constructor(
     private val _id: UShort,
     private val coordInZone: CoordInZone,
     private val locProperties: LocProperties,
-) : ZoneProt, OutgoingGameMessage {
+) : ZoneProt {
     public constructor(
         id: Int,
         xInZone: Int,

@@ -2,7 +2,6 @@ package net.rsprot.protocol.game.outgoing.zone.payload
 
 import net.rsprot.protocol.common.game.outgoing.codec.zone.payload.OldSchoolZoneProt
 import net.rsprot.protocol.game.outgoing.zone.payload.util.CoordInZone
-import net.rsprot.protocol.message.OutgoingGameMessage
 import net.rsprot.protocol.message.ZoneProt
 
 /**
@@ -20,7 +19,7 @@ public class MapAnim private constructor(
     private val _delay: UShort,
     private val _height: UByte,
     private val coordInZone: CoordInZone,
-) : ZoneProt, OutgoingGameMessage {
+) : ZoneProt {
     public constructor(
         id: Int,
         delay: Int,
