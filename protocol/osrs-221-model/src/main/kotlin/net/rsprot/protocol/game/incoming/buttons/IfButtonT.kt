@@ -1,6 +1,6 @@
 package net.rsprot.protocol.game.incoming.buttons
 
-import net.rsprot.protocol.ProtCategory
+import net.rsprot.protocol.ClientProtCategory
 import net.rsprot.protocol.game.incoming.GameClientProtCategory
 import net.rsprot.protocol.message.IncomingGameMessage
 import net.rsprot.protocol.message.toIntOrMinusOne
@@ -61,7 +61,7 @@ public class IfButtonT private constructor(
         get() = _targetSub.toIntOrMinusOne()
     public val targetObj: Int
         get() = _targetObj.toIntOrMinusOne()
-    override val category: ProtCategory
+    override val category: ClientProtCategory
         get() = GameClientProtCategory.USER_EVENT
 
     override fun equals(other: Any?): Boolean {

@@ -1,6 +1,6 @@
 package net.rsprot.protocol.game.incoming.events
 
-import net.rsprot.protocol.ProtCategory
+import net.rsprot.protocol.ClientProtCategory
 import net.rsprot.protocol.game.incoming.GameClientProtCategory
 import net.rsprot.protocol.message.IncomingGameMessage
 
@@ -27,7 +27,7 @@ public class EventCameraPosition private constructor(
         get() = _angleX.toInt()
     public val angleY: Int
         get() = _angleY.toInt()
-    override val category: ProtCategory
+    override val category: ClientProtCategory
         get() = GameClientProtCategory.CLIENT_EVENT
 
     override fun equals(other: Any?): Boolean {

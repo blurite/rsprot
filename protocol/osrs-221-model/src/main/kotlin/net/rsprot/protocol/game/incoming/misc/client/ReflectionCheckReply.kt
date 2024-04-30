@@ -3,7 +3,7 @@ package net.rsprot.protocol.game.incoming.misc.client
 import io.netty.buffer.ByteBuf
 import net.rsprot.buffer.extensions.checkCRC32
 import net.rsprot.buffer.extensions.toJagByteBuf
-import net.rsprot.protocol.ProtCategory
+import net.rsprot.protocol.ClientProtCategory
 import net.rsprot.protocol.game.incoming.GameClientProtCategory
 import net.rsprot.protocol.game.outgoing.misc.client.ReflectionChecker
 import net.rsprot.protocol.message.IncomingGameMessage
@@ -27,7 +27,7 @@ public class ReflectionCheckReply(
     public val id: Int,
     public val result: ByteBuf,
 ) : IncomingGameMessage {
-    override val category: ProtCategory
+    override val category: ClientProtCategory
         get() = GameClientProtCategory.CLIENT_EVENT
 
     /**

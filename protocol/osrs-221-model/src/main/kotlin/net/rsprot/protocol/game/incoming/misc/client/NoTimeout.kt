@@ -1,6 +1,6 @@
 package net.rsprot.protocol.game.incoming.misc.client
 
-import net.rsprot.protocol.ProtCategory
+import net.rsprot.protocol.ClientProtCategory
 import net.rsprot.protocol.game.incoming.GameClientProtCategory
 import net.rsprot.protocol.message.IncomingGameMessage
 
@@ -9,6 +9,6 @@ import net.rsprot.protocol.message.IncomingGameMessage
  * to ensure the server doesn't disconnect the client due to inactivity.
  */
 public data object NoTimeout : IncomingGameMessage {
-    override val category: ProtCategory
+    override val category: ClientProtCategory
         get() = GameClientProtCategory.CLIENT_EVENT
 }

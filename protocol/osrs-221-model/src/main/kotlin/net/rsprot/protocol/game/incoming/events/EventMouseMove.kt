@@ -1,6 +1,6 @@
 package net.rsprot.protocol.game.incoming.events
 
-import net.rsprot.protocol.ProtCategory
+import net.rsprot.protocol.ClientProtCategory
 import net.rsprot.protocol.game.incoming.GameClientProtCategory
 import net.rsprot.protocol.message.IncomingGameMessage
 
@@ -44,7 +44,7 @@ public class EventMouseMove private constructor(
 
     public val remainingTime: Int
         get() = _remainingTime.toInt()
-    override val category: ProtCategory
+    override val category: ClientProtCategory
         get() = GameClientProtCategory.CLIENT_EVENT
 
     /**

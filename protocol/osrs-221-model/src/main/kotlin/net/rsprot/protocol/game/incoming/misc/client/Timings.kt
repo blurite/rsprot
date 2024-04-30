@@ -1,6 +1,6 @@
 package net.rsprot.protocol.game.incoming.misc.client
 
-import net.rsprot.protocol.ProtCategory
+import net.rsprot.protocol.ClientProtCategory
 import net.rsprot.protocol.game.incoming.GameClientProtCategory
 import net.rsprot.protocol.message.IncomingGameMessage
 
@@ -44,7 +44,7 @@ public class Timings private constructor(
         get() = _clientState.toInt()
     public val loginCount: Int
         get() = _loginCount.toInt()
-    override val category: ProtCategory
+    override val category: ClientProtCategory
         get() = GameClientProtCategory.USER_EVENT
 
     override fun equals(other: Any?): Boolean {

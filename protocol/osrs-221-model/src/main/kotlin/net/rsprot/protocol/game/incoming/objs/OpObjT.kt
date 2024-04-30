@@ -1,6 +1,6 @@
 package net.rsprot.protocol.game.incoming.objs
 
-import net.rsprot.protocol.ProtCategory
+import net.rsprot.protocol.ClientProtCategory
 import net.rsprot.protocol.game.incoming.GameClientProtCategory
 import net.rsprot.protocol.message.IncomingGameMessage
 import net.rsprot.protocol.message.toIntOrMinusOne
@@ -61,7 +61,7 @@ public class OpObjT private constructor(
         get() = _selectedSub.toIntOrMinusOne()
     public val selectedObj: Int
         get() = _selectedObj.toIntOrMinusOne()
-    override val category: ProtCategory
+    override val category: ClientProtCategory
         get() = GameClientProtCategory.USER_EVENT
 
     override fun equals(other: Any?): Boolean {

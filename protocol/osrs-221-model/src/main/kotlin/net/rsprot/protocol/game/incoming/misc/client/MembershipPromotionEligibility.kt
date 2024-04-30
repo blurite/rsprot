@@ -1,6 +1,6 @@
 package net.rsprot.protocol.game.incoming.misc.client
 
-import net.rsprot.protocol.ProtCategory
+import net.rsprot.protocol.ClientProtCategory
 import net.rsprot.protocol.game.incoming.GameClientProtCategory
 import net.rsprot.protocol.message.IncomingGameMessage
 
@@ -31,7 +31,7 @@ public class MembershipPromotionEligibility private constructor(
         get() = _eligibleForIntroductoryPrice.toInt()
     public val eligibleForTrialPurchase: Int
         get() = _eligibleForTrialPurchase.toInt()
-    override val category: ProtCategory
+    override val category: ClientProtCategory
         get() = GameClientProtCategory.USER_EVENT
 
     override fun equals(other: Any?): Boolean {

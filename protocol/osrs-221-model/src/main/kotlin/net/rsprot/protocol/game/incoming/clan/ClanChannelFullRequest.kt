@@ -1,6 +1,6 @@
 package net.rsprot.protocol.game.incoming.clan
 
-import net.rsprot.protocol.ProtCategory
+import net.rsprot.protocol.ClientProtCategory
 import net.rsprot.protocol.game.incoming.GameClientProtCategory
 import net.rsprot.protocol.message.IncomingGameMessage
 
@@ -15,7 +15,7 @@ import net.rsprot.protocol.message.IncomingGameMessage
 public class ClanChannelFullRequest(
     public val clanId: Int,
 ) : IncomingGameMessage {
-    override val category: ProtCategory
+    override val category: ClientProtCategory
         get() = GameClientProtCategory.USER_EVENT
 
     override fun equals(other: Any?): Boolean {

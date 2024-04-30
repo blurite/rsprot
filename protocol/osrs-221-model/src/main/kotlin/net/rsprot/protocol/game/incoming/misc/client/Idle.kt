@@ -1,6 +1,6 @@
 package net.rsprot.protocol.game.incoming.misc.client
 
-import net.rsprot.protocol.ProtCategory
+import net.rsprot.protocol.ClientProtCategory
 import net.rsprot.protocol.game.incoming.GameClientProtCategory
 import net.rsprot.protocol.message.IncomingGameMessage
 
@@ -10,6 +10,6 @@ import net.rsprot.protocol.message.IncomingGameMessage
  * meaning continuous inactivity for five minutes in a row.
  */
 public data object Idle : IncomingGameMessage {
-    override val category: ProtCategory
+    override val category: ClientProtCategory
         get() = GameClientProtCategory.CLIENT_EVENT
 }
