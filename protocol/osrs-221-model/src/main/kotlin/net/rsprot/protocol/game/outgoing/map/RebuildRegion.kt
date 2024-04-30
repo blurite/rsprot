@@ -134,6 +134,31 @@ public class RebuildRegion private constructor(
             ),
             key,
         )
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) return true
+            if (javaClass != other?.javaClass) return false
+
+            other as RebuildRegionZone
+
+            if (referenceZone != other.referenceZone) return false
+            if (key != other.key) return false
+
+            return true
+        }
+
+        override fun hashCode(): Int {
+            var result = referenceZone.hashCode()
+            result = 31 * result + key.hashCode()
+            return result
+        }
+
+        override fun toString(): String {
+            return "RebuildRegionZone(" +
+                "referenceZone=$referenceZone, " +
+                "key=$key" +
+                ")"
+        }
     }
 
     /**
