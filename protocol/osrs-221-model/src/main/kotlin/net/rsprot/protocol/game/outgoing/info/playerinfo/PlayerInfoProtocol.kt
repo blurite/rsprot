@@ -128,7 +128,7 @@ public class PlayerInfoProtocol(
      * this will cache the low and high resolution movement bit buffers
      * for every avatar in the world.
      */
-    public fun prepare() {
+    private fun prepare() {
         // Synchronize the known low res positions of everyone for this cycle
         for (i in 1..<PROTOCOL_CAPACITY) {
             val info = playerInfoRepository.getOrNull(i)
@@ -147,7 +147,7 @@ public class PlayerInfoProtocol(
      * Writes the bitcodes for each avatar in the world according to the implementation
      * defined by the [worker].
      */
-    public fun putBitcodes() {
+    private fun putBitcodes() {
         execute {
             pBitcodes()
         }
@@ -162,7 +162,7 @@ public class PlayerInfoProtocol(
      * will be generated. Anything else, however, will be computed on demand
      * without an intermediate byte buffer.
      */
-    public fun prepareExtendedInfo() {
+    private fun prepareExtendedInfo() {
         execute {
             precomputeExtendedInfo()
         }
@@ -175,7 +175,7 @@ public class PlayerInfoProtocol(
      * as most of the extended info blocks will be cached.
      * If direct buffers are used, fast native memory copy invocations will be used.
      */
-    public fun putExtendedInfo() {
+    private fun putExtendedInfo() {
         execute {
             putExtendedInfo()
         }

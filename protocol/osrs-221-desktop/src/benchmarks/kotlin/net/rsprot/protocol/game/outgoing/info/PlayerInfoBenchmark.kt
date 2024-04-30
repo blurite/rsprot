@@ -61,7 +61,6 @@ class PlayerInfoBenchmark {
             player.avatar.postUpdate()
             initializeAppearance(player, i)
         }
-        protocol.prepareExtendedInfo()
     }
 
     private fun initializeAppearance(
