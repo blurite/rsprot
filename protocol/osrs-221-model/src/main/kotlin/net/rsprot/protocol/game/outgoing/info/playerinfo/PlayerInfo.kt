@@ -44,7 +44,7 @@ import kotlin.math.abs
 public class PlayerInfo internal constructor(
     private val protocol: PlayerInfoProtocol,
     internal var localIndex: Int,
-    private val allocator: ByteBufAllocator,
+    internal val allocator: ByteBufAllocator,
     private var oldSchoolClientType: OldSchoolClientType,
     public val avatar: PlayerAvatar,
 ) : ReferencePooledObject, OutgoingGameMessage {
