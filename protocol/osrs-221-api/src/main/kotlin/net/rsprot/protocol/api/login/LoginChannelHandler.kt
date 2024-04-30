@@ -12,10 +12,12 @@ import net.rsprot.protocol.api.channel.replace
 import net.rsprot.protocol.api.js5.Js5ChannelHandler
 import net.rsprot.protocol.api.js5.Js5MessageDecoder
 import net.rsprot.protocol.api.js5.Js5MessageEncoder
+import net.rsprot.protocol.api.logging.networkLog
 import net.rsprot.protocol.loginprot.incoming.InitGameConnection
 import net.rsprot.protocol.loginprot.incoming.InitJs5RemoteConnection
 import net.rsprot.protocol.loginprot.outgoing.LoginResponse
 import net.rsprot.protocol.message.IncomingLoginMessage
+import java.text.NumberFormat
 import java.util.concurrent.TimeUnit
 
 @Suppress("DuplicatedCode")
@@ -24,14 +26,17 @@ public class LoginChannelHandler(
 ) : SimpleChannelInboundHandler<IncomingLoginMessage>(IncomingLoginMessage::class.java) {
     override fun channelActive(ctx: ChannelHandlerContext) {
         ctx.read()
+        networkLog(logger) {
+            "Channel is now active: ${ctx.channel()}"
+        }
     }
 
     override fun channelRead0(
         ctx: ChannelHandlerContext,
         msg: IncomingLoginMessage,
     ) {
-        logger.debug {
-            "Received login channel handler: $msg"
+        networkLog(logger) {
+            "Login channel message in channel '${ctx.channel()}': $msg"
         }
         when (msg) {
             InitGameConnection -> {
@@ -52,22 +57,34 @@ public class LoginChannelHandler(
         val count = networkService.gameInetAddressTracker.getCount(address)
         val accepted = networkService.inetAddressValidator.acceptGameConnection(address, count)
         if (!accepted) {
+            networkLog(logger) {
+                "INetAddressValidator rejected game connection for channel ${ctx.channel()}"
+            }
             ctx
-                .writeAndFlush(LoginResponse.TooManyAttempts)
+                .write(LoginResponse.TooManyAttempts)
                 .addListener(ChannelFutureListener.CLOSE)
             return
         }
         val sessionId = networkService.sessionIdGenerator.generate(address)
-        ctx.writeAndFlush(LoginResponse.Successful(sessionId))
+        networkLog(logger) {
+            "Game connection accepted with session id: ${NumberFormat.getNumberInstance().format(sessionId)}"
+        }
+        ctx.write(LoginResponse.Successful(sessionId))
             .addListener(
                 ChannelFutureListener { future ->
                     if (!future.isSuccess) {
+                        networkLog(logger) {
+                            "Failed to write a successful game connection response to channel ${ctx.channel()}"
+                        }
                         future.channel().pipeline().fireExceptionCaught(future.cause())
                         future.channel().close()
                         return@ChannelFutureListener
                     }
                     // Extra validation to ensure we don't get any weird scenarios where it's stuck in memory
                     if (ctx.channel().isActive) {
+                        networkLog(logger) {
+                            "Tracking game INetAddress for channel '${future.channel()}': $address"
+                        }
                         networkService.gameInetAddressTracker.register(address)
                     }
                     future
@@ -83,8 +100,11 @@ public class LoginChannelHandler(
         revision: Int,
     ) {
         if (revision != NetworkService.REVISION) {
+            networkLog(logger) {
+                "Invalid JS5 revision received from channel '${ctx.channel()}': $revision"
+            }
             ctx
-                .writeAndFlush(LoginResponse.ClientOutOfDate)
+                .write(LoginResponse.ClientOutOfDate)
                 .addListener(ChannelFutureListener.CLOSE)
             return
         }
@@ -92,21 +112,30 @@ public class LoginChannelHandler(
         val count = networkService.js5InetAddressTracker.getCount(address)
         val accepted = networkService.inetAddressValidator.acceptGameConnection(address, count)
         if (!accepted) {
+            networkLog(logger) {
+                "INetAddressValidator rejected JS5 connection for channel ${ctx.channel()}"
+            }
             ctx
-                .writeAndFlush(LoginResponse.TooManyAttempts)
+                .write(LoginResponse.TooManyAttempts)
                 .addListener(ChannelFutureListener.CLOSE)
             return
         }
-        ctx.writeAndFlush(LoginResponse.Successful(null))
+        ctx.write(LoginResponse.Successful(null))
             .addListener(
                 ChannelFutureListener { future ->
                     if (!future.isSuccess) {
+                        networkLog(logger) {
+                            "Failed to write a successful JS5 connection response to channel ${ctx.channel()}"
+                        }
                         future.channel().pipeline().fireExceptionCaught(future.cause())
                         future.channel().close()
                         return@ChannelFutureListener
                     }
                     // Extra validation to ensure we don't get any weird scenarios where it's stuck in memory
                     if (ctx.channel().isActive) {
+                        networkLog(logger) {
+                            "Tracking JS5 INetAddress for channel '${future.channel()}': $address"
+                        }
                         networkService.js5InetAddressTracker.register(address)
                     }
                     val pipeline = ctx.channel().pipeline()
@@ -135,6 +164,9 @@ public class LoginChannelHandler(
         evt: Any,
     ) {
         if (evt is IdleStateEvent) {
+            networkLog(logger) {
+                "Login channel has gone idle, closing channel ${ctx.channel()}"
+            }
             ctx.close()
         }
     }

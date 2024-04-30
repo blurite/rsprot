@@ -13,6 +13,7 @@ import net.rsprot.protocol.api.channel.replace
 import net.rsprot.protocol.api.game.GameMessageDecoder
 import net.rsprot.protocol.api.game.GameMessageEncoder
 import net.rsprot.protocol.api.game.GameMessageHandler
+import net.rsprot.protocol.api.logging.networkLog
 import net.rsprot.protocol.channel.ChannelAttributes
 import net.rsprot.protocol.common.client.OldSchoolClientType
 import net.rsprot.protocol.cryptography.StreamCipherPair
@@ -42,9 +43,12 @@ public class GameLoginResponseHandler<R>(
                 LoginClientType.ENHANCED_IOS -> OldSchoolClientType.IOS
             }
         if (!networkService.isSupported(oldSchoolClientType)) {
+            networkLog(logger) {
+                "Unsupported client type received from channel " +
+                    "'${ctx.channel()}': $oldSchoolClientType, login block: $loginBlock"
+            }
             ctx.writeAndFlush(LoginResponse.InvalidLoginPacket)
             callback.accept(null)
-            logger.debug { "Client $oldSchoolClientType is not supported; rejecting login." }
             return
         }
         val address = ctx.inetAddress()
@@ -52,6 +56,9 @@ public class GameLoginResponseHandler<R>(
         val accepted = networkService.inetAddressValidator.acceptGameConnection(address, count)
         // Secondary validation just before we allow the server to log the user in
         if (!accepted) {
+            networkLog(logger) {
+                "INetAddressValidator rejected game login for channel ${ctx.channel()}"
+            }
             ctx
                 .writeAndFlush(LoginResponse.TooManyAttempts)
                 .addListener(ChannelFutureListener.CLOSE)
@@ -60,6 +67,10 @@ public class GameLoginResponseHandler<R>(
         ctx.writeAndFlush(response).addListener(
             ChannelFutureListener { future ->
                 if (!future.isSuccess) {
+                    networkLog(logger) {
+                        "Failed to write a successful game login response to channel " +
+                            "'${ctx.channel()}': $loginBlock"
+                    }
                     future.channel().pipeline().fireExceptionCaught(future.cause())
                     future.channel().close()
                     callback.accept(null)
@@ -102,6 +113,9 @@ public class GameLoginResponseHandler<R>(
                     GameMessageEncoder(networkService, encodingCipher, oldSchoolClientType),
                 )
                 pipeline.replace<LoginConnectionHandler<R>>(GameMessageHandler(networkService, session))
+                networkLog(logger) {
+                    "Successful game login from channel '${ctx.channel()}': $loginBlock"
+                }
                 callback.accept(session)
             },
         )
@@ -113,6 +127,9 @@ public class GameLoginResponseHandler<R>(
         }
         if (response is LoginResponse.Successful) {
             throw IllegalStateException("Successful login response is handled at the engine level.")
+        }
+        networkLog(logger) {
+            "Writing failed login response to channel '${ctx.channel()}': $response"
         }
         ctx.writeAndFlush(response).addListener(ChannelFutureListener.CLOSE)
     }

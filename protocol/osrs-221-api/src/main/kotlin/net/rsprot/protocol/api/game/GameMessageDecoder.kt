@@ -1,5 +1,6 @@
 package net.rsprot.protocol.api.game
 
+import com.github.michaelbull.logging.InlineLogger
 import io.netty.buffer.ByteBuf
 import io.netty.channel.ChannelHandlerContext
 import io.netty.handler.codec.DecoderException
@@ -9,6 +10,7 @@ import net.rsprot.protocol.ClientProt
 import net.rsprot.protocol.api.NetworkService
 import net.rsprot.protocol.api.Session
 import net.rsprot.protocol.api.decoder.IncomingMessageDecoder
+import net.rsprot.protocol.api.logging.networkLog
 import net.rsprot.protocol.common.client.OldSchoolClientType
 import net.rsprot.protocol.message.IncomingGameMessage
 import net.rsprot.protocol.message.codec.incoming.MessageDecoderRepository
@@ -41,6 +43,9 @@ public class GameMessageDecoder<R>(
         val consumerRepository = networkService.gameMessageConsumerRepositoryProvider.provide()
         val consumer = consumerRepository.consumers[messageClass]
         if (consumer == null) {
+            networkLog(logger) {
+                "Discarding incoming game packet from channel '${ctx.channel()}': ${messageClass.simpleName}"
+            }
             input.skipBytes(length)
             return
         }
@@ -54,6 +59,9 @@ public class GameMessageDecoder<R>(
         out += message
         session.incrementCounter(message as IncomingGameMessage)
         if (session.isFull()) {
+            networkLog(logger) {
+                "Incoming packet limit reached, no longer reading incoming game packets from channel ${ctx.channel()}"
+            }
             session.stopReading()
         }
     }
@@ -69,5 +77,6 @@ public class GameMessageDecoder<R>(
          * The maximum size a single packet can have that the server still accepts in OldSchool.
          */
         private const val SINGLE_PACKET_MAX_ACCEPTED_LENGTH: Int = 1_600
+        private val logger: InlineLogger = InlineLogger()
     }
 }

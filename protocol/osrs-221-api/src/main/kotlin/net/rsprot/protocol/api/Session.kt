@@ -1,8 +1,10 @@
 package net.rsprot.protocol.api
 
+import com.github.michaelbull.logging.InlineLogger
 import io.netty.channel.ChannelHandlerContext
 import net.rsprot.protocol.api.channel.inetAddress
 import net.rsprot.protocol.api.game.GameMessageDecoder
+import net.rsprot.protocol.api.logging.networkLog
 import net.rsprot.protocol.loginprot.incoming.util.LoginBlock
 import net.rsprot.protocol.message.IncomingGameMessage
 import net.rsprot.protocol.message.OutgoingGameMessage
@@ -34,6 +36,9 @@ public class Session<R>(
             val consumer = consumers[packet::class.java]
             checkNotNull(consumer) {
                 "Consumer for packet $packet does not exist."
+            }
+            networkLog(logger) {
+                "Processing incoming game packet from channel '${ctx.channel()}': $packet"
             }
             consumer.accept(receiver, packet)
             count++
@@ -77,9 +82,21 @@ public class Session<R>(
         val channel = ctx.channel()
         while (channel.isWritable) {
             val next = outgoingMessageQueue.poll() ?: break
+            networkLog(logger) {
+                "Writing outgoing game packet to channel '${ctx.channel()}': $next"
+            }
             channel.write(next, channel.voidPromise())
         }
         channel.flush()
+        networkLog(logger) {
+            val leftoverPackets = outgoingMessageQueue.size
+            if (leftoverPackets > 0) {
+                "Flushing outgoing game packets to channel " +
+                    "'${ctx.channel()}': $leftoverPackets leftover packets remaining"
+            } else {
+                "Flushing outgoing game packets to channel ${ctx.channel()}"
+            }
+        }
     }
 
     internal fun resumeReading() {
@@ -110,5 +127,9 @@ public class Session<R>(
 
     internal fun isFull(): Boolean {
         return counter.isFull()
+    }
+
+    private companion object {
+        private val logger: InlineLogger = InlineLogger()
     }
 }

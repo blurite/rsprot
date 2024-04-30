@@ -4,6 +4,7 @@ import com.github.michaelbull.logging.InlineLogger
 import io.netty.channel.Channel
 import io.netty.channel.ChannelInitializer
 import io.netty.handler.timeout.IdleStateHandler
+import net.rsprot.protocol.api.logging.networkLog
 import net.rsprot.protocol.api.login.LoginChannelHandler
 import net.rsprot.protocol.api.login.LoginMessageDecoder
 import net.rsprot.protocol.api.login.LoginMessageEncoder
@@ -13,7 +14,7 @@ public class LoginChannelInitializer<R>(
     private val networkService: NetworkService<R, *>,
 ) : ChannelInitializer<Channel>() {
     override fun initChannel(ch: Channel) {
-        logger.debug {
+        networkLog(logger) {
             "Channel initialized: $ch"
         }
         ch.pipeline().addLast(

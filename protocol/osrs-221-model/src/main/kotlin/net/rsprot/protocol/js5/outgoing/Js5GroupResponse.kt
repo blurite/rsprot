@@ -34,7 +34,34 @@ public class Js5GroupResponse(
         buffer: ByteBuf,
         override val offset: Int,
         override val limit: Int,
-    ) : DefaultByteBufHolder(buffer), Js5GroupResponseType
+    ) : DefaultByteBufHolder(buffer), Js5GroupResponseType {
+        override fun equals(other: Any?): Boolean {
+            if (this === other) return true
+            if (javaClass != other?.javaClass) return false
+            if (!super.equals(other)) return false
+
+            other as Js5ByteBufGroupResponse
+
+            if (offset != other.offset) return false
+            if (limit != other.limit) return false
+
+            return true
+        }
+
+        override fun hashCode(): Int {
+            var result = super.hashCode()
+            result = 31 * result + offset
+            result = 31 * result + limit
+            return result
+        }
+
+        override fun toString(): String {
+            return "Js5ByteBufGroupResponse(" +
+                "offset=$offset, " +
+                "limit=$limit" +
+                ")"
+        }
+    }
 
     /**
      * A prepared JS5 file-based group response. This response will make use of Netty's
@@ -53,5 +80,32 @@ public class Js5GroupResponse(
         public val file: RandomAccessFile,
         override val offset: Int,
         override val limit: Int,
-    ) : Js5GroupResponseType
+    ) : Js5GroupResponseType {
+        override fun equals(other: Any?): Boolean {
+            if (this === other) return true
+            if (javaClass != other?.javaClass) return false
+
+            other as Js5FileGroupResponse
+
+            if (file != other.file) return false
+            if (offset != other.offset) return false
+            if (limit != other.limit) return false
+
+            return true
+        }
+
+        override fun hashCode(): Int {
+            var result = file.hashCode()
+            result = 31 * result + offset
+            result = 31 * result + limit
+            return result
+        }
+
+        override fun toString(): String {
+            return "Js5FileGroupResponse(" +
+                "offset=$offset, " +
+                "limit=$limit" +
+                ")"
+        }
+    }
 }

@@ -1,5 +1,6 @@
 package net.rsprot.protocol.api
 
+import com.github.michaelbull.logging.InlineLogger
 import io.netty.buffer.ByteBuf
 import io.netty.buffer.ByteBufAllocator
 import io.netty.buffer.PooledByteBufAllocator
@@ -54,6 +55,7 @@ import net.rsprot.protocol.tools.MessageDecodingTools
 import java.math.BigInteger
 import java.util.EnumMap
 import java.util.concurrent.CompletableFuture
+import kotlin.time.measureTime
 
 @OptIn(ExperimentalUnsignedTypes::class)
 @Suppress("MemberVisibilityCanBePrivate")
@@ -105,30 +107,41 @@ public class NetworkService<R, T : Js5GroupType>
         @ExperimentalStdlibApi
         public fun start() {
             verifyClientTypesAreImplemented()
-            initializeDecoderRepositories()
-            initializeInfos()
-            initializeUpdateZonePartialEnclosedCacheClientMap()
-            val bossGroup = bootstrapFactory.createParentLoopGroup()
-            val childGroup = bootstrapFactory.createChildLoopGroup()
-            val initializer =
-                bootstrapFactory
-                    .createServerBootstrap(bossGroup, childGroup)
-                    .childHandler(
-                        LoginChannelInitializer(this),
-                    )
-            val futures =
-                ports
-                    .map(initializer::bind)
-                    .map<ChannelFuture, CompletableFuture<Void>>(ChannelFuture::asCompletableFuture)
-            CompletableFuture.allOf(*futures.toTypedArray())
-                .handle { _, exception ->
-                    if (exception != null) {
-                        bossGroup.shutdownGracefully()
-                        childGroup.shutdownGracefully()
-                        throw exception
-                    }
+            val time =
+                measureTime {
+                    initializeDecoderRepositories()
+                    initializeInfos()
+                    initializeUpdateZonePartialEnclosedCacheClientMap()
+                    val bossGroup = bootstrapFactory.createParentLoopGroup()
+                    val childGroup = bootstrapFactory.createChildLoopGroup()
+                    val initializer =
+                        bootstrapFactory
+                            .createServerBootstrap(bossGroup, childGroup)
+                            .childHandler(
+                                LoginChannelInitializer(this),
+                            )
+                    val futures =
+                        ports
+                            .map(initializer::bind)
+                            .map<ChannelFuture, CompletableFuture<Void>>(ChannelFuture::asCompletableFuture)
+                    CompletableFuture.allOf(*futures.toTypedArray())
+                        .handle { _, exception ->
+                            if (exception != null) {
+                                bossGroup.shutdownGracefully()
+                                childGroup.shutdownGracefully()
+                                throw exception
+                            }
+                        }
+                    js5ServiceExecutor.start()
                 }
-            js5ServiceExecutor.start()
+            logger.info { "Started in: $time" }
+            logger.info { "Bound to ports: ${ports.joinToString(", ")}" }
+            logger.info { "Revision: $REVISION" }
+            val clientTypeNames =
+                clientTypes.joinToString(", ") {
+                    it.name.lowercase().replaceFirstChar(Char::uppercase)
+                }
+            logger.info { "Supported client types: $clientTypeNames" }
         }
 
         private fun initializeUpdateZonePartialEnclosedCacheClientMap() {
@@ -261,5 +274,6 @@ public class NetworkService<R, T : Js5GroupType>
             public const val REVISION: Int = 221
             public const val LOGIN_TIMEOUT_SECONDS: Long = 60
             public const val JS5_TIMEOUT_SECONDS: Long = 30
+            private val logger = InlineLogger()
         }
     }

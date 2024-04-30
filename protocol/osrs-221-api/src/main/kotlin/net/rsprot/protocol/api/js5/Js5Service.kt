@@ -1,8 +1,10 @@
 package net.rsprot.protocol.api.js5
 
+import com.github.michaelbull.logging.InlineLogger
 import io.netty.buffer.ByteBuf
 import net.rsprot.protocol.api.js5.Js5GroupProvider.Js5GroupType
 import net.rsprot.protocol.api.js5.util.UniqueQueue
+import net.rsprot.protocol.api.logging.js5Log
 import net.rsprot.protocol.js5.incoming.Js5GroupRequest
 import net.rsprot.protocol.js5.outgoing.Js5GroupResponse
 import kotlin.math.min
@@ -58,16 +60,33 @@ public class Js5Service<T : Js5GroupType>(
     ) {
         val ctx = client.ctx
         ctx.write(response)
+        js5Log(logger) {
+            "Serving channel '${ctx.channel()}' with response: $response"
+        }
         if (flush) {
+            js5Log(logger) {
+                "Flushing channel ${ctx.channel()}"
+            }
             ctx.flush()
         }
         synchronized(lock) {
             if (client.isReady()) {
+                js5Log(logger) {
+                    "Continuing to serve channel ${ctx.channel()}"
+                }
                 clients.add(client)
+            } else {
+                js5Log(logger) {
+                    "No longer serving channel ${ctx.channel()}"
+                }
             }
 
-            if (client.isNotFull()) {
+            val notFull = client.isNotFull()
+            if (notFull) {
                 ctx.read()
+            }
+            js5Log(logger) {
+                "Reading further JS5 requests from channel ${ctx.channel()}"
             }
         }
     }
@@ -93,6 +112,9 @@ public class Js5Service<T : Js5GroupType>(
     public fun readIfNotFull(client: Js5Client<T>) {
         synchronized(lock) {
             if (client.isNotFull()) {
+                js5Log(logger) {
+                    "Reading further JS5 requests from channel ${client.ctx.channel()}"
+                }
                 client.ctx.read()
             }
         }
@@ -101,6 +123,9 @@ public class Js5Service<T : Js5GroupType>(
     public fun notifyIfNotEmpty(client: Js5Client<T>) {
         synchronized(lock) {
             if (client.isNotEmpty()) {
+                js5Log(logger) {
+                    "Channel '${client.ctx.channel()}' is now writable, continuing to serve JS5 requests."
+                }
                 clients.add(client)
                 lock.notifyAll()
             }
@@ -123,6 +148,7 @@ public class Js5Service<T : Js5GroupType>(
 
     public companion object {
         public const val BLOCK_LENGTH: Int = 512
+        private val logger: InlineLogger = InlineLogger()
 
         /**
          * Prepares a JS5 buffer to be in a format read to be served to the clients,

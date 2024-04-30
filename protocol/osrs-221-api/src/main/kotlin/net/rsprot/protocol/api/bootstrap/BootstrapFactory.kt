@@ -1,5 +1,6 @@
 package net.rsprot.protocol.api.bootstrap
 
+import com.github.michaelbull.logging.InlineLogger
 import io.netty.bootstrap.ServerBootstrap
 import io.netty.buffer.ByteBufAllocator
 import io.netty.channel.ChannelOption
@@ -18,6 +19,7 @@ import io.netty.channel.socket.nio.NioServerSocketChannel
 import io.netty.incubator.channel.uring.IOUring
 import io.netty.incubator.channel.uring.IOUringEventLoopGroup
 import io.netty.incubator.channel.uring.IOUringServerSocketChannel
+import net.rsprot.protocol.api.logging.networkLog
 
 public class BootstrapFactory(
     private val alloc: ByteBufAllocator,
@@ -52,7 +54,9 @@ public class BootstrapFactory(
                 is NioEventLoopGroup -> NioServerSocketChannel::class.java
                 else -> throw IllegalArgumentException("Unknown EventLoopGroup type")
             }
-
+        networkLog(logger) {
+            "Bootstrap event loop group: ${parentGroup.javaClass.simpleName}"
+        }
         return ServerBootstrap()
             .group(parentGroup, childGroup)
             .channel(channel)
@@ -69,5 +73,9 @@ public class BootstrapFactory(
                     it.childOption(EpollChannelOption.EPOLL_MODE, EpollMode.LEVEL_TRIGGERED)
                 }
             }
+    }
+
+    private companion object {
+        private val logger = InlineLogger()
     }
 }

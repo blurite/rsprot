@@ -15,4 +15,29 @@ import net.rsprot.protocol.loginprot.incoming.pow.challenges.ChallengeVerifier
 public class ProofOfWork<T : ChallengeType<MetaData>, in MetaData : ChallengeMetaData>(
     public val challengeType: T,
     public val challengeVerifier: ChallengeVerifier<T>,
-)
+) {
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as ProofOfWork<*, *>
+
+        if (challengeType != other.challengeType) return false
+        if (challengeVerifier != other.challengeVerifier) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        var result = challengeType.hashCode()
+        result = 31 * result + challengeVerifier.hashCode()
+        return result
+    }
+
+    override fun toString(): String {
+        return "ProofOfWork(" +
+            "challengeType=$challengeType, " +
+            "challengeVerifier=$challengeVerifier" +
+            ")"
+    }
+}
