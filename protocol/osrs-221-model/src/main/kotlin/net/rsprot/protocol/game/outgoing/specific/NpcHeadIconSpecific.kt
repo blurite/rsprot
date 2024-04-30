@@ -1,5 +1,7 @@
 package net.rsprot.protocol.game.outgoing.specific
 
+import net.rsprot.protocol.ServerProtCategory
+import net.rsprot.protocol.game.incoming.GameServerProtCategory
 import net.rsprot.protocol.message.OutgoingGameMessage
 
 /**
@@ -53,6 +55,8 @@ public class NpcHeadIconSpecific private constructor(
         get() = _spriteGroup.toInt()
     public val spriteIndex: Int
         get() = _spriteIndex.toInt()
+    override val category: ServerProtCategory
+        get() = GameServerProtCategory.LOW_PRIORITY_PROT
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

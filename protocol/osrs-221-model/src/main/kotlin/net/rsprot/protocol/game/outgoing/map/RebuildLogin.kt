@@ -2,6 +2,8 @@ package net.rsprot.protocol.game.outgoing.map
 
 import io.netty.buffer.ByteBuf
 import net.rsprot.crypto.util.XteaKey
+import net.rsprot.protocol.ServerProtCategory
+import net.rsprot.protocol.game.incoming.GameServerProtCategory
 import net.rsprot.protocol.game.outgoing.info.playerinfo.PlayerInfo
 import net.rsprot.protocol.game.outgoing.map.util.XteaProvider
 import net.rsprot.protocol.game.outgoing.map.util.buildXteaKeyList
@@ -38,6 +40,8 @@ public class RebuildLogin private constructor(
         get() = _zoneX.toInt()
     override val zoneZ: Int
         get() = _zoneZ.toInt()
+    override val category: ServerProtCategory
+        get() = GameServerProtCategory.HIGH_PRIORITY_PROT
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

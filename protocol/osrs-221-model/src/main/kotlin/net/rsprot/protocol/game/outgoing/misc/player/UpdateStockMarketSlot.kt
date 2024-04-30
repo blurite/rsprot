@@ -1,5 +1,7 @@
 package net.rsprot.protocol.game.outgoing.misc.player
 
+import net.rsprot.protocol.ServerProtCategory
+import net.rsprot.protocol.game.incoming.GameServerProtCategory
 import net.rsprot.protocol.message.OutgoingGameMessage
 
 /**
@@ -23,6 +25,8 @@ public class UpdateStockMarketSlot private constructor(
 
     public val slot: Int
         get() = _slot.toInt()
+    override val category: ServerProtCategory
+        get() = GameServerProtCategory.LOW_PRIORITY_PROT
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

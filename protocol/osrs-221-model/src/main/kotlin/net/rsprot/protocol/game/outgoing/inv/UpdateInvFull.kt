@@ -1,9 +1,11 @@
 package net.rsprot.protocol.game.outgoing.inv
 
+import net.rsprot.protocol.ServerProtCategory
 import net.rsprot.protocol.common.RSProtFlags
 import net.rsprot.protocol.common.game.outgoing.inv.InventoryObject
 import net.rsprot.protocol.common.game.outgoing.inv.internal.Inventory
 import net.rsprot.protocol.common.game.outgoing.inv.internal.InventoryPool
+import net.rsprot.protocol.game.incoming.GameServerProtCategory
 import net.rsprot.protocol.message.OutgoingGameMessage
 import net.rsprot.protocol.util.CombinedId
 
@@ -81,6 +83,8 @@ public class UpdateInvFull private constructor(
         get() = _inventoryId.toInt()
     public val capacity: Int
         get() = inventory.count
+    override val category: ServerProtCategory
+        get() = GameServerProtCategory.HIGH_PRIORITY_PROT
 
     /**
      * Gets the obj in the [slot] provided.

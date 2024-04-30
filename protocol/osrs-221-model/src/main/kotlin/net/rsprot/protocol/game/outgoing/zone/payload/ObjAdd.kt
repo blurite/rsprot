@@ -1,6 +1,8 @@
 package net.rsprot.protocol.game.outgoing.zone.payload
 
+import net.rsprot.protocol.ServerProtCategory
 import net.rsprot.protocol.common.game.outgoing.codec.zone.payload.OldSchoolZoneProt
+import net.rsprot.protocol.game.incoming.GameServerProtCategory
 import net.rsprot.protocol.game.outgoing.util.OpFlags
 import net.rsprot.protocol.game.outgoing.zone.payload.util.CoordInZone
 import net.rsprot.protocol.message.ZoneProt
@@ -104,7 +106,8 @@ public class ObjAdd private constructor(
 
     public val coordInZonePacked: Int
         get() = coordInZone.packed.toInt()
-
+    override val category: ServerProtCategory
+        get() = GameServerProtCategory.HIGH_PRIORITY_PROT
     override val protId: Int = OldSchoolZoneProt.OBJ_ADD
 
     override fun equals(other: Any?): Boolean {

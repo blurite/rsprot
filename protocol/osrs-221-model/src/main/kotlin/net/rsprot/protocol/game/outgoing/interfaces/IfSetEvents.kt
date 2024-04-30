@@ -1,5 +1,7 @@
 package net.rsprot.protocol.game.outgoing.interfaces
 
+import net.rsprot.protocol.ServerProtCategory
+import net.rsprot.protocol.game.incoming.GameServerProtCategory
 import net.rsprot.protocol.message.OutgoingGameMessage
 import net.rsprot.protocol.util.CombinedId
 
@@ -39,4 +41,6 @@ public class IfSetEvents private constructor(
         get() = _start.toInt()
     public val end: Int
         get() = _end.toInt()
+    override val category: ServerProtCategory
+        get() = GameServerProtCategory.LOW_PRIORITY_PROT
 }

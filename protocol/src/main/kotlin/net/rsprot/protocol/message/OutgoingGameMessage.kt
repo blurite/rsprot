@@ -1,3 +1,7 @@
 package net.rsprot.protocol.message
 
-public interface OutgoingGameMessage : OutgoingMessage
+import net.rsprot.protocol.ServerProtCategory
+
+public interface OutgoingGameMessage : OutgoingMessage {
+    public val category: ServerProtCategory
+}

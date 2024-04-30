@@ -1,5 +1,7 @@
 package net.rsprot.protocol.game.outgoing.varp
 
+import net.rsprot.protocol.ServerProtCategory
+import net.rsprot.protocol.game.incoming.GameServerProtCategory
 import net.rsprot.protocol.message.OutgoingGameMessage
 
 /**
@@ -10,4 +12,7 @@ import net.rsprot.protocol.message.OutgoingGameMessage
  * So if the varps array is extended, but respective configs
  * are not made, the extended ones will not be zero'd out.
  */
-public data object VarpReset : OutgoingGameMessage
+public data object VarpReset : OutgoingGameMessage {
+    override val category: ServerProtCategory
+        get() = GameServerProtCategory.HIGH_PRIORITY_PROT
+}

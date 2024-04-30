@@ -1,5 +1,7 @@
 package net.rsprot.protocol.game.outgoing.sound
 
+import net.rsprot.protocol.ServerProtCategory
+import net.rsprot.protocol.game.incoming.GameServerProtCategory
 import net.rsprot.protocol.message.OutgoingGameMessage
 
 /**
@@ -23,6 +25,8 @@ public class MidiSongStop private constructor(
         get() = _fadeOutDelay.toInt()
     public val fadeOutSpeed: Int
         get() = _fadeOutSpeed.toInt()
+    override val category: ServerProtCategory
+        get() = GameServerProtCategory.LOW_PRIORITY_PROT
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

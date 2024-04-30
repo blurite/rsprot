@@ -1,5 +1,7 @@
 package net.rsprot.protocol.game.outgoing.interfaces
 
+import net.rsprot.protocol.ServerProtCategory
+import net.rsprot.protocol.game.incoming.GameServerProtCategory
 import net.rsprot.protocol.message.OutgoingGameMessage
 import net.rsprot.protocol.util.CombinedId
 
@@ -34,6 +36,8 @@ public class IfSetPosition private constructor(
         get() = _x.toInt()
     public val y: Int
         get() = _y.toInt()
+    override val category: ServerProtCategory
+        get() = GameServerProtCategory.LOW_PRIORITY_PROT
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

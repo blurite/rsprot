@@ -1,6 +1,8 @@
 package net.rsprot.protocol.game.outgoing.friendchat
 
 import net.rsprot.compression.Base37
+import net.rsprot.protocol.ServerProtCategory
+import net.rsprot.protocol.game.incoming.GameServerProtCategory
 import net.rsprot.protocol.message.OutgoingGameMessage
 
 /**
@@ -38,6 +40,8 @@ public class UpdateFriendChatChannelFullV2 private constructor(
         get() = Base37.decode(channelNameBase37)
     override val kickRank: Int
         get() = _kickRank.toInt()
+    override val category: ServerProtCategory
+        get() = GameServerProtCategory.LOW_PRIORITY_PROT
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

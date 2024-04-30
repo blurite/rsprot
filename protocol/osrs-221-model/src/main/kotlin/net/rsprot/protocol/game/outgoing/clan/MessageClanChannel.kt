@@ -1,5 +1,7 @@
 package net.rsprot.protocol.game.outgoing.clan
 
+import net.rsprot.protocol.ServerProtCategory
+import net.rsprot.protocol.game.incoming.GameServerProtCategory
 import net.rsprot.protocol.message.OutgoingGameMessage
 
 /**
@@ -61,6 +63,8 @@ public class MessageClanChannel private constructor(
         get() = _worldId.toInt()
     public val chatCrownType: Int
         get() = _chatCrownType.toInt()
+    override val category: ServerProtCategory
+        get() = GameServerProtCategory.HIGH_PRIORITY_PROT
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

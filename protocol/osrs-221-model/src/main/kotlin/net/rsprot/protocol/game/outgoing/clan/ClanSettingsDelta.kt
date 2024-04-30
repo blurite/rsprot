@@ -1,5 +1,7 @@
 package net.rsprot.protocol.game.outgoing.clan
 
+import net.rsprot.protocol.ServerProtCategory
+import net.rsprot.protocol.game.incoming.GameServerProtCategory
 import net.rsprot.protocol.message.OutgoingGameMessage
 
 /**
@@ -31,6 +33,8 @@ public class ClanSettingsDelta private constructor(
 
     public val clanType: Int
         get() = _clanType.toInt()
+    override val category: ServerProtCategory
+        get() = GameServerProtCategory.HIGH_PRIORITY_PROT
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

@@ -1,5 +1,7 @@
 package net.rsprot.protocol.game.outgoing.varp
 
+import net.rsprot.protocol.ServerProtCategory
+import net.rsprot.protocol.game.incoming.GameServerProtCategory
 import net.rsprot.protocol.message.OutgoingGameMessage
 
 /**
@@ -26,6 +28,8 @@ public class VarpSmall private constructor(
         get() = _id.toInt()
     public val value: Int
         get() = _value.toInt()
+    override val category: ServerProtCategory
+        get() = GameServerProtCategory.HIGH_PRIORITY_PROT
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

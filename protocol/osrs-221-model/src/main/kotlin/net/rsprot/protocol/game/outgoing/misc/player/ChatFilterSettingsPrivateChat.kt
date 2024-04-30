@@ -1,5 +1,7 @@
 package net.rsprot.protocol.game.outgoing.misc.player
 
+import net.rsprot.protocol.ServerProtCategory
+import net.rsprot.protocol.game.incoming.GameServerProtCategory
 import net.rsprot.protocol.message.OutgoingGameMessage
 
 /**
@@ -20,6 +22,9 @@ import net.rsprot.protocol.message.OutgoingGameMessage
 public class ChatFilterSettingsPrivateChat(
     public val privateChatFilter: Int,
 ) : OutgoingGameMessage {
+    override val category: ServerProtCategory
+        get() = GameServerProtCategory.HIGH_PRIORITY_PROT
+
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (javaClass != other?.javaClass) return false

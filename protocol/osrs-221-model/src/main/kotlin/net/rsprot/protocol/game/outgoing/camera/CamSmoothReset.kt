@@ -1,5 +1,7 @@
 package net.rsprot.protocol.game.outgoing.camera
 
+import net.rsprot.protocol.ServerProtCategory
+import net.rsprot.protocol.game.incoming.GameServerProtCategory
 import net.rsprot.protocol.message.OutgoingGameMessage
 
 /**
@@ -41,6 +43,8 @@ public class CamSmoothReset private constructor(
         get() = _cameraLookConstantSpeed.toInt()
     public val cameraLookProportionalSpeed: Int
         get() = _cameraLookProportionalSpeed.toInt()
+    override val category: ServerProtCategory
+        get() = GameServerProtCategory.LOW_PRIORITY_PROT
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
