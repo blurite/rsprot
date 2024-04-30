@@ -7,4 +7,9 @@ public enum class GameServerProtCategory(
 ) : ServerProtCategory {
     HIGH_PRIORITY_PROT(0),
     LOW_PRIORITY_PROT(1),
+    ;
+
+    public companion object {
+        public const val COUNT: Int = 2
+    }
 }

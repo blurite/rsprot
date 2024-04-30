@@ -96,7 +96,7 @@ public class GameLoginResponseHandler<R>(
                     Session(
                         ctx,
                         networkService.incomingGameMessageQueueProvider.provide(),
-                        networkService.outgoingGameMessageQueueProvider.provide(),
+                        networkService.outgoingGameMessageQueueProvider,
                         networkService.gameMessageCounterProvider.provide(),
                         networkService.gameMessageConsumerRepositoryProvider.provide().consumers,
                         loginBlock,
