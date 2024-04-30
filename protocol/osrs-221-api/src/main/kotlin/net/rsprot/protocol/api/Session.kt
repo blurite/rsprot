@@ -20,6 +20,8 @@ public class Session<R>(
     public val loginBlock: LoginBlock<*>,
 ) {
     public val inetAddress: InetAddress = ctx.inetAddress()
+    internal var disconnectionHook: Runnable? = null
+        private set
 
     public fun queue(message: OutgoingGameMessage) {
         outgoingMessageQueue += message
@@ -38,6 +40,14 @@ public class Session<R>(
         }
         onPollComplete()
         return count
+    }
+
+    public fun setDisconnectionHook(hook: Runnable) {
+        val currentHook = this.disconnectionHook
+        if (currentHook != null) {
+            throw IllegalStateException("A disconnection hook has already been registered!")
+        }
+        this.disconnectionHook = hook
     }
 
     private fun pollIncomingMessage(): IncomingGameMessage? {

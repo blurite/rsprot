@@ -21,7 +21,12 @@ public class GameMessageHandler<R>(
     }
 
     override fun channelInactive(ctx: ChannelHandlerContext) {
-        networkService.gameInetAddressTracker.deregister(ctx.inetAddress())
+        try {
+            session.disconnectionHook?.run()
+        } finally {
+            // Must ensure both blocks of code get invoked, even if one throws an exception
+            networkService.gameInetAddressTracker.deregister(ctx.inetAddress())
+        }
     }
 
     override fun channelRead0(

@@ -110,7 +110,7 @@ public class LoginConnectionHandler<R>(
                         ctx.writeAndFlush(LoginResponse.LoginFail2).addListener(ChannelFutureListener.CLOSE)
                         return@handle
                     }
-                    networkService.gameLoginHandler.onLogin(responseHandler, block)
+                    networkService.gameConnectionHandler.onLogin(responseHandler, block)
                 }
             }
 
@@ -120,7 +120,7 @@ public class LoginConnectionHandler<R>(
                         ctx.writeAndFlush(LoginResponse.LoginFail2).addListener(ChannelFutureListener.CLOSE)
                         return@handle
                     }
-                    networkService.gameLoginHandler.onReconnect(responseHandler, block)
+                    networkService.gameConnectionHandler.onReconnect(responseHandler, block)
                 }
             }
 

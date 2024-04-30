@@ -67,7 +67,7 @@ public class NetworkService<R, T : Js5GroupType>
         public val huffmanCodecProvider: HuffmanCodecProvider,
         private val js5GroupProvider: Js5GroupProvider<T>,
         public val gameMessageConsumerRepositoryProvider: GameMessageConsumerRepositoryProvider<R>,
-        public val gameLoginHandler: GameLoginHandler<R>,
+        public val gameConnectionHandler: GameConnectionHandler<R>,
         private val npcIndexSupplier: NpcIndexSupplier,
         private val allocator: ByteBufAllocator = PooledByteBufAllocator.DEFAULT,
         private val playerExtendedInfoFilter: ExtendedInfoFilter = DefaultExtendedInfoFilter(),
@@ -228,7 +228,7 @@ public class NetworkService<R, T : Js5GroupType>
                 "huffmanCodec=$huffmanCodecProvider, " +
                 "js5GroupProvider=$js5GroupProvider, " +
                 "gameMessageConsumerRepositoryProvider=$gameMessageConsumerRepositoryProvider, " +
-                "gameLoginHandler=$gameLoginHandler, " +
+                "gameLoginHandler=$gameConnectionHandler, " +
                 "npcIndexSupplier=$npcIndexSupplier, " +
                 "allocator=$allocator, " +
                 "playerExtendedInfoFilter=$playerExtendedInfoFilter, " +
