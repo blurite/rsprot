@@ -1,13 +1,17 @@
-package net.rsprot.protocol.game.outgoing.info.npcinfo
+package net.rsprot.protocol.game.outgoing.info.playerinfo
 
 import io.netty.buffer.ByteBuf
 import io.netty.buffer.DefaultByteBufHolder
 import net.rsprot.protocol.message.OutgoingGameMessage
 
 /**
- * A small npc info wrapper packet, used to wrap the pre-built buffer from the npc info class.
+ * A npc info packet class, wrapped in its own byte buf holder as the packet encoder is only
+ * invoked through Netty threads, therefore it is not safe to strictly pass the reference
+ * from player info itself.
  */
-public class NpcInfoSmall(buffer: ByteBuf) : DefaultByteBufHolder(buffer), OutgoingGameMessage {
+public class PlayerInfoPacket(
+    buffer: ByteBuf,
+) : DefaultByteBufHolder(buffer), OutgoingGameMessage {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (javaClass != other?.javaClass) return false
@@ -20,6 +24,6 @@ public class NpcInfoSmall(buffer: ByteBuf) : DefaultByteBufHolder(buffer), Outgo
     }
 
     override fun toString(): String {
-        return "NpcInfoSmall() ${super.toString()}"
+        return "PlayerInfoPacket() ${super.toString()}"
     }
 }

@@ -15,11 +15,7 @@ public class NpcInfoLargeEncoder : MessageEncoder<NpcInfoLarge> {
         buffer: JagByteBuf,
         message: NpcInfoLarge,
     ) {
-        val backingBuffer = message.buffer
-        try {
-            buffer.buffer.writeBytes(backingBuffer)
-        } finally {
-            backingBuffer.release()
-        }
+        // Due to message extending byte buf holder, it is automatically released by the pipeline
+        buffer.buffer.writeBytes(message.content())
     }
 }

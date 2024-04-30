@@ -1,23 +1,25 @@
 package net.rsprot.protocol.game.outgoing.info.npcinfo
 
 import io.netty.buffer.ByteBuf
+import io.netty.buffer.DefaultByteBufHolder
 import net.rsprot.protocol.message.OutgoingGameMessage
 
-public class NpcInfoLarge(public val buffer: ByteBuf) : OutgoingGameMessage {
+/**
+ * A large npc info wrapper packet, used to wrap the pre-built buffer from the npc info class.
+ */
+public class NpcInfoLarge(buffer: ByteBuf) : DefaultByteBufHolder(buffer), OutgoingGameMessage {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (javaClass != other?.javaClass) return false
-
-        other as NpcInfoLarge
-
-        return buffer == other.buffer
+        if (!super.equals(other)) return false
+        return true
     }
 
     override fun hashCode(): Int {
-        return buffer.hashCode()
+        return super.hashCode()
     }
 
     override fun toString(): String {
-        return "NpcInfoLarge(buffer=$buffer)"
+        return "NpcInfoLarge() ${super.toString()}"
     }
 }

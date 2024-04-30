@@ -12,7 +12,6 @@ import net.rsprot.protocol.game.outgoing.info.playerinfo.PlayerInfoProtocol.Comp
 import net.rsprot.protocol.game.outgoing.info.playerinfo.util.CellOpcodes
 import net.rsprot.protocol.game.outgoing.info.util.Avatar
 import net.rsprot.protocol.game.outgoing.info.util.ReferencePooledObject
-import net.rsprot.protocol.message.OutgoingGameMessage
 import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.contract
 import kotlin.math.abs
@@ -47,7 +46,7 @@ public class PlayerInfo internal constructor(
     internal val allocator: ByteBufAllocator,
     private var oldSchoolClientType: OldSchoolClientType,
     public val avatar: PlayerAvatar,
-) : ReferencePooledObject, OutgoingGameMessage {
+) : ReferencePooledObject {
     /**
      * Low resolution indices are tracked together with [lowResolutionCount].
      * Whenever a player enters the low resolution view, their index
@@ -150,6 +149,16 @@ public class PlayerInfo internal constructor(
     @Throws(IllegalStateException::class)
     public fun backingBuffer(): ByteBuf {
         return checkNotNull(buffer)
+    }
+
+    /**
+     * Turns the player info object into a wrapped packet.
+     * This is necessary because the encoder itself is only triggered in Netty, and it is possible
+     * that the buffer has already been replaced with a new variant before it gets to that stage.
+     * @return thread-safe player info packet class, wrapping the pre-built buffer.
+     */
+    public fun toPacket(): PlayerInfoPacket {
+        return PlayerInfoPacket(backingBuffer())
     }
 
     /**
