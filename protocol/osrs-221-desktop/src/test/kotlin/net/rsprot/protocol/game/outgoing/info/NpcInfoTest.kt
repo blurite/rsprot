@@ -11,6 +11,7 @@ import net.rsprot.protocol.game.outgoing.codec.npcinfo.DesktopLowResolutionChang
 import net.rsprot.protocol.game.outgoing.codec.npcinfo.extendedinfo.writer.NpcAvatarExtendedInfoDesktopWriter
 import net.rsprot.protocol.game.outgoing.info.filter.DefaultExtendedInfoFilter
 import net.rsprot.protocol.game.outgoing.info.npcinfo.NpcAvatar
+import net.rsprot.protocol.game.outgoing.info.npcinfo.NpcAvatarExceptionHandler
 import net.rsprot.protocol.game.outgoing.info.npcinfo.NpcAvatarFactory
 import net.rsprot.protocol.game.outgoing.info.npcinfo.NpcIndexSupplier
 import net.rsprot.protocol.game.outgoing.info.npcinfo.NpcInfo
@@ -51,9 +52,15 @@ class NpcInfoTest {
             ) {
                 it.clientType
             }
-        protocol = NpcInfoProtocol(allocator, supplier, encoders, factory)
+        protocol = NpcInfoProtocol(allocator, supplier, encoders, factory, npcExceptionHandler())
         this.client = NpcInfoClient()
         this.localNpcInfo = protocol.alloc(500, OldSchoolClientType.DESKTOP)
+    }
+
+    private fun npcExceptionHandler(): NpcAvatarExceptionHandler {
+        return NpcAvatarExceptionHandler { _, _ ->
+            // No-op
+        }
     }
 
     private fun tick() {

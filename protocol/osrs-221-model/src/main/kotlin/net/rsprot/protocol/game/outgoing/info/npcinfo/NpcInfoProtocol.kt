@@ -21,12 +21,14 @@ import java.util.concurrent.Callable
  * @property worker the protocol worker used to execute the jobs involved with
  * npc info computations.
  */
+@Suppress("DuplicatedCode")
 @ExperimentalUnsignedTypes
 public class NpcInfoProtocol(
     private val allocator: ByteBufAllocator,
     private val npcIndexSupplier: NpcIndexSupplier,
     private val resolutionChangeEncoders: ClientTypeMap<NpcResolutionChangeEncoder>,
     avatarFactory: NpcAvatarFactory,
+    private val exceptionHandler: NpcAvatarExceptionHandler,
     private val worker: ProtocolWorker = DefaultProtocolWorker(),
 ) {
     /**
@@ -110,7 +112,11 @@ public class NpcInfoProtocol(
         for (i in 0..<NpcAvatarRepository.AVATAR_CAPACITY) {
             val avatar = avatarRepository.getOrNull(i) ?: continue
             if (!avatar.hasObservers()) continue
-            avatar.prepareBitcodes()
+            try {
+                avatar.prepareBitcodes()
+            } catch (e: Exception) {
+                exceptionHandler.exceptionCaught(i, e)
+            }
         }
     }
 
@@ -123,7 +129,11 @@ public class NpcInfoProtocol(
         for (i in 0..<NpcAvatarRepository.AVATAR_CAPACITY) {
             val avatar = avatarRepository.getOrNull(i) ?: continue
             if (!avatar.hasObservers()) continue
-            avatar.extendedInfo.precompute()
+            try {
+                avatar.extendedInfo.precompute()
+            } catch (e: Exception) {
+                exceptionHandler.exceptionCaught(i, e)
+            }
         }
     }
 
@@ -172,10 +182,33 @@ public class NpcInfoProtocol(
     private inline fun execute(crossinline block: NpcInfo.() -> Unit) {
         for (i in 1..<PROTOCOL_CAPACITY) {
             val info = npcInfoRepository.getOrNull(i) ?: continue
-            callables += Callable { block(info) }
+            callables +=
+                Callable {
+                    try {
+                        block(info)
+                    } catch (e: Exception) {
+                        catchException(i, e)
+                    }
+                }
         }
         worker.execute(callables)
         callables.clear()
+    }
+
+    /**
+     * Submits an exception to a specific player's npc info packet, which will be propagated further
+     * whenever the server tries to call the [NpcInfo.toNpcInfoPacket] function, allowing the server to properly
+     * handle exceptions for a given player despite it being calculated for the entire server in one go.
+     * @param index the index of the player who caught an exception during their npc info processing
+     * @param exception the exception caught during processing
+     */
+    private fun catchException(
+        index: Int,
+        exception: Exception,
+    ) {
+        val info = npcInfoRepository.getOrNull(index) ?: return
+        npcInfoRepository.destroy(index)
+        info.exception = exception
     }
 
     public companion object {

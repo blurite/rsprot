@@ -10,6 +10,7 @@ import net.rsprot.protocol.common.client.OldSchoolClientType
 import net.rsprot.protocol.common.game.outgoing.info.CoordGrid
 import net.rsprot.protocol.common.game.outgoing.info.npcinfo.encoder.NpcResolutionChangeEncoder
 import net.rsprot.protocol.game.outgoing.info.ObserverExtendedInfoFlags
+import net.rsprot.protocol.game.outgoing.info.exceptions.InfoProcessException
 import net.rsprot.protocol.game.outgoing.info.util.ReferencePooledObject
 import net.rsprot.protocol.message.OutgoingGameMessage
 import kotlin.contracts.ExperimentalContracts
@@ -123,6 +124,13 @@ public class NpcInfo internal constructor(
     private var buffer: ByteBuf? = null
 
     /**
+     * The exception that was caught during the processing of this player's npc info packet.
+     * This exception will be propagated further during the [toNpcInfoPacket] function call,
+     * allowing the server to handle it properly at a per-player basis.
+     */
+    internal var exception: Exception? = null
+
+    /**
      * Returns the backing byte buffer holding all the computed information.
      * @throws IllegalStateException if the buffer is null, meaning it has no yet been
      * initialized for this cycle.
@@ -137,6 +145,13 @@ public class NpcInfo internal constructor(
      * on the current known view distance.
      */
     public fun toNpcInfoPacket(): OutgoingGameMessage {
+        val exception = this.exception
+        if (exception != null) {
+            throw InfoProcessException(
+                "Exception occurred during npc info processing for index $localPlayerIndex",
+                exception,
+            )
+        }
         return if (this.viewDistance > MAX_SMALL_PACKET_DISTANCE) {
             NpcInfoLarge(backingBuffer())
         } else {

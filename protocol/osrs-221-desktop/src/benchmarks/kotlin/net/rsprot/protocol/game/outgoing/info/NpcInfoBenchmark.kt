@@ -13,6 +13,7 @@ import net.rsprot.protocol.game.outgoing.codec.npcinfo.DesktopLowResolutionChang
 import net.rsprot.protocol.game.outgoing.codec.npcinfo.extendedinfo.writer.NpcAvatarExtendedInfoDesktopWriter
 import net.rsprot.protocol.game.outgoing.info.filter.DefaultExtendedInfoFilter
 import net.rsprot.protocol.game.outgoing.info.npcinfo.NpcAvatar
+import net.rsprot.protocol.game.outgoing.info.npcinfo.NpcAvatarExceptionHandler
 import net.rsprot.protocol.game.outgoing.info.npcinfo.NpcAvatarFactory
 import net.rsprot.protocol.game.outgoing.info.npcinfo.NpcIndexSupplier
 import net.rsprot.protocol.game.outgoing.info.npcinfo.NpcInfo
@@ -73,6 +74,7 @@ class NpcInfoBenchmark {
                 supplier,
                 encoders,
                 factory,
+                npcExceptionHandler(),
                 DefaultProtocolWorker(1, ForkJoinPool.commonPool()),
             )
         this.localNpcInfo = protocol.alloc(1, OldSchoolClientType.DESKTOP)
@@ -80,6 +82,12 @@ class NpcInfoBenchmark {
         val infos = otherNpcInfos + localNpcInfo
         for (info in infos) {
             info.updateCoord(localPlayerCoord.level, localPlayerCoord.x, localPlayerCoord.z)
+        }
+    }
+
+    private fun npcExceptionHandler(): NpcAvatarExceptionHandler {
+        return NpcAvatarExceptionHandler { _, _ ->
+            // No-op
         }
     }
 

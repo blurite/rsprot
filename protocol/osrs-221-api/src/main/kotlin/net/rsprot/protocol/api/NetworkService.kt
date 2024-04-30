@@ -32,6 +32,7 @@ import net.rsprot.protocol.game.outgoing.codec.playerinfo.extendedinfo.writer.Pl
 import net.rsprot.protocol.game.outgoing.codec.zone.header.DesktopUpdateZonePartialEnclosedEncoder
 import net.rsprot.protocol.game.outgoing.info.filter.DefaultExtendedInfoFilter
 import net.rsprot.protocol.game.outgoing.info.filter.ExtendedInfoFilter
+import net.rsprot.protocol.game.outgoing.info.npcinfo.NpcAvatarExceptionHandler
 import net.rsprot.protocol.game.outgoing.info.npcinfo.NpcAvatarExtendedInfoWriter
 import net.rsprot.protocol.game.outgoing.info.npcinfo.NpcAvatarFactory
 import net.rsprot.protocol.game.outgoing.info.npcinfo.NpcIndexSupplier
@@ -72,6 +73,7 @@ public class NetworkService<R, T : Js5GroupType>
         public val gameMessageConsumerRepositoryProvider: GameMessageConsumerRepositoryProvider<R>,
         public val gameConnectionHandler: GameConnectionHandler<R>,
         private val npcIndexSupplier: NpcIndexSupplier,
+        private val npcAvatarExceptionHandler: NpcAvatarExceptionHandler,
         private val allocator: ByteBufAllocator = PooledByteBufAllocator.DEFAULT,
         private val playerExtendedInfoFilter: ExtendedInfoFilter = DefaultExtendedInfoFilter(),
         private val npcExtendedInfoFilter: ExtendedInfoFilter = DefaultExtendedInfoFilter(),
@@ -216,6 +218,7 @@ public class NetworkService<R, T : Js5GroupType>
                         it.clientType
                     },
                     npcAvatarFactory,
+                    npcAvatarExceptionHandler,
                     npcInfoProtocolWorker,
                 )
         }
