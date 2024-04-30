@@ -16,7 +16,6 @@ import net.rsprot.protocol.loginprot.incoming.InitGameConnection
 import net.rsprot.protocol.loginprot.incoming.InitJs5RemoteConnection
 import net.rsprot.protocol.loginprot.outgoing.LoginResponse
 import net.rsprot.protocol.message.IncomingLoginMessage
-import java.util.concurrent.ThreadLocalRandom
 import java.util.concurrent.TimeUnit
 
 @Suppress("DuplicatedCode")
@@ -58,7 +57,8 @@ public class LoginChannelHandler(
                 .addListener(ChannelFutureListener.CLOSE)
             return
         }
-        ctx.writeAndFlush(LoginResponse.Successful(ThreadLocalRandom.current().nextLong()))
+        val sessionId = networkService.sessionIdGenerator.generate(address)
+        ctx.writeAndFlush(LoginResponse.Successful(sessionId))
             .addListener(
                 ChannelFutureListener { future ->
                     if (!future.isSuccess) {
@@ -73,7 +73,7 @@ public class LoginChannelHandler(
                     future
                         .channel()
                         .pipeline()
-                        .replace<LoginChannelHandler>(LoginConnectionHandler(networkService))
+                        .replace<LoginChannelHandler>(LoginConnectionHandler(networkService, sessionId))
                 },
             )
     }

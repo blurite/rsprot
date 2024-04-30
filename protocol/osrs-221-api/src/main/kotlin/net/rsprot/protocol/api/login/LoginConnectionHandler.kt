@@ -18,8 +18,10 @@ import net.rsprot.protocol.message.IncomingLoginMessage
 import java.util.concurrent.CompletableFuture
 import java.util.function.Function
 
+@Suppress("DuplicatedCode")
 public class LoginConnectionHandler<R>(
     private val networkService: NetworkService<R, *>,
+    private val sessionId: Long,
 ) : SimpleChannelInboundHandler<IncomingLoginMessage>(IncomingLoginMessage::class.java) {
     private var loginState: LoginState = LoginState.UNINITIALIZED
     private lateinit var loginPacket: IncomingLoginMessage
@@ -107,7 +109,15 @@ public class LoginConnectionHandler<R>(
             is GameLogin -> {
                 decodeLogin(packet.buffer, packet.decoder).handle { block, exception ->
                     if (block == null || exception != null) {
-                        ctx.writeAndFlush(LoginResponse.LoginFail2).addListener(ChannelFutureListener.CLOSE)
+                        ctx
+                            .writeAndFlush(LoginResponse.LoginFail2)
+                            .addListener(ChannelFutureListener.CLOSE)
+                        return@handle
+                    }
+                    if (sessionId != block.sessionId) {
+                        ctx
+                            .writeAndFlush(LoginResponse.InvalidLoginPacket)
+                            .addListener(ChannelFutureListener.CLOSE)
                         return@handle
                     }
                     networkService.gameConnectionHandler.onLogin(responseHandler, block)
@@ -117,7 +127,15 @@ public class LoginConnectionHandler<R>(
             is GameReconnect -> {
                 decodeLogin(packet.buffer, packet.decoder).handle { block, exception ->
                     if (block == null || exception != null) {
-                        ctx.writeAndFlush(LoginResponse.LoginFail2).addListener(ChannelFutureListener.CLOSE)
+                        ctx
+                            .writeAndFlush(LoginResponse.LoginFail2)
+                            .addListener(ChannelFutureListener.CLOSE)
+                        return@handle
+                    }
+                    if (sessionId != block.sessionId) {
+                        ctx
+                            .writeAndFlush(LoginResponse.InvalidLoginPacket)
+                            .addListener(ChannelFutureListener.CLOSE)
                         return@handle
                     }
                     networkService.gameConnectionHandler.onReconnect(responseHandler, block)

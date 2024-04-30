@@ -11,6 +11,7 @@ import net.rsprot.protocol.api.implementation.DefaultInetAddressTracker
 import net.rsprot.protocol.api.implementation.DefaultInetAddressValidator
 import net.rsprot.protocol.api.implementation.DefaultLoginDecoderService
 import net.rsprot.protocol.api.implementation.DefaultMessageQueueProvider
+import net.rsprot.protocol.api.implementation.DefaultSessionIdGenerator
 import net.rsprot.protocol.api.implementation.DefaultStreamCipherProvider
 import net.rsprot.protocol.api.js5.Js5GroupProvider
 import net.rsprot.protocol.api.js5.Js5GroupProvider.Js5GroupType
@@ -75,6 +76,7 @@ public class NetworkService<R, T : Js5GroupType>
         private val playerInfoProtocolWorker: ProtocolWorker = DefaultProtocolWorker(),
         private val npcInfoProtocolWorker: ProtocolWorker = DefaultProtocolWorker(),
         public val streamCipherProvider: StreamCipherProvider = DefaultStreamCipherProvider(),
+        public val sessionIdGenerator: SessionIdGenerator = DefaultSessionIdGenerator(),
         public val inetAddressValidator: InetAddressValidator = DefaultInetAddressValidator(),
         public val js5InetAddressTracker: InetAddressTracker = DefaultInetAddressTracker(),
         public val gameInetAddressTracker: InetAddressTracker = DefaultInetAddressTracker(),
