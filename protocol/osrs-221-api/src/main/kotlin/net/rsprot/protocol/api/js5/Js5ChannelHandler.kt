@@ -5,6 +5,7 @@ import io.netty.channel.ChannelHandlerContext
 import io.netty.channel.SimpleChannelInboundHandler
 import io.netty.handler.timeout.IdleStateEvent
 import net.rsprot.protocol.api.NetworkService
+import net.rsprot.protocol.api.channel.inetAddress
 import net.rsprot.protocol.api.js5.Js5GroupProvider.Js5GroupType
 import net.rsprot.protocol.js5.incoming.Js5GroupRequest
 import net.rsprot.protocol.js5.incoming.PriorityChangeHigh
@@ -18,6 +19,14 @@ public class Js5ChannelHandler<T : Js5GroupType>(
     private lateinit var client: Js5Client<T>
     private val service: Js5Service<T>
         get() = networkService.js5Service
+
+    override fun channelActive(ctx: ChannelHandlerContext) {
+        networkService.js5InetAddressTracker.register(ctx.inetAddress())
+    }
+
+    override fun channelInactive(ctx: ChannelHandlerContext) {
+        networkService.js5InetAddressTracker.deregister(ctx.inetAddress())
+    }
 
     override fun handlerAdded(ctx: ChannelHandlerContext) {
         client = Js5Client(ctx.read())

@@ -7,6 +7,7 @@ import io.netty.channel.ChannelFuture
 import net.rsprot.compression.provider.HuffmanCodecProvider
 import net.rsprot.protocol.api.bootstrap.BootstrapFactory
 import net.rsprot.protocol.api.implementation.DefaultGameMessageCounterProvider
+import net.rsprot.protocol.api.implementation.DefaultInetAddressTracker
 import net.rsprot.protocol.api.implementation.DefaultInetAddressValidator
 import net.rsprot.protocol.api.implementation.DefaultLoginDecoderService
 import net.rsprot.protocol.api.implementation.DefaultMessageQueueProvider
@@ -75,6 +76,8 @@ public class NetworkService<R, T : Js5GroupType>
         private val npcInfoProtocolWorker: ProtocolWorker = DefaultProtocolWorker(),
         public val streamCipherProvider: StreamCipherProvider = DefaultStreamCipherProvider(),
         public val inetAddressValidator: InetAddressValidator = DefaultInetAddressValidator(),
+        public val js5InetAddressTracker: InetAddressTracker = DefaultInetAddressTracker(),
+        public val gameInetAddressTracker: InetAddressTracker = DefaultInetAddressTracker(),
         public val loginDecoderService: LoginDecoderService = DefaultLoginDecoderService(),
         public val proofOfWorkProvider: ProofOfWorkProvider<*, *> = DefaultSha256ProofOfWorkProvider(1),
         public val proofOfWorkChallengeWorker: ChallengeWorker = DefaultChallengeWorker,

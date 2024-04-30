@@ -29,6 +29,14 @@ public class LoginConnectionHandler<R>(
         ctx.read()
     }
 
+    override fun channelActive(ctx: ChannelHandlerContext) {
+        networkService.gameInetAddressTracker.register(ctx.inetAddress())
+    }
+
+    override fun channelInactive(ctx: ChannelHandlerContext) {
+        networkService.gameInetAddressTracker.deregister(ctx.inetAddress())
+    }
+
     override fun channelRead0(
         ctx: ChannelHandlerContext,
         msg: IncomingLoginMessage,

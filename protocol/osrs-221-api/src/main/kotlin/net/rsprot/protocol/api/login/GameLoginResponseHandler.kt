@@ -88,7 +88,7 @@ public class GameLoginResponseHandler<R>(
                 pipeline.replace<LoginMessageEncoder>(
                     GameMessageEncoder(networkService, encodingCipher, oldSchoolClientType),
                 )
-                pipeline.replace<LoginConnectionHandler<R>>(GameMessageHandler(session))
+                pipeline.replace<LoginConnectionHandler<R>>(GameMessageHandler(networkService, session))
                 callback.accept(session)
             },
         )

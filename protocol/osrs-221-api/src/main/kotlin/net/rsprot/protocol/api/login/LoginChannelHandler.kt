@@ -7,6 +7,7 @@ import io.netty.channel.SimpleChannelInboundHandler
 import io.netty.handler.timeout.IdleStateEvent
 import io.netty.handler.timeout.IdleStateHandler
 import net.rsprot.protocol.api.NetworkService
+import net.rsprot.protocol.api.channel.inetAddress
 import net.rsprot.protocol.api.channel.replace
 import net.rsprot.protocol.api.js5.Js5ChannelHandler
 import net.rsprot.protocol.api.js5.Js5MessageDecoder
@@ -18,6 +19,7 @@ import net.rsprot.protocol.message.IncomingLoginMessage
 import java.util.concurrent.ThreadLocalRandom
 import java.util.concurrent.TimeUnit
 
+@Suppress("DuplicatedCode")
 public class LoginChannelHandler(
     public val networkService: NetworkService<*, *>,
 ) : SimpleChannelInboundHandler<IncomingLoginMessage>(IncomingLoginMessage::class.java) {
@@ -47,6 +49,15 @@ public class LoginChannelHandler(
     }
 
     private fun handleInitGameConnection(ctx: ChannelHandlerContext) {
+        val address = ctx.inetAddress()
+        val count = networkService.gameInetAddressTracker.getCount(address)
+        val accepted = networkService.inetAddressValidator.acceptGameConnection(address, count)
+        if (!accepted) {
+            ctx
+                .writeAndFlush(LoginResponse.TooManyAttempts)
+                .addListener(ChannelFutureListener.CLOSE)
+            return
+        }
         ctx.writeAndFlush(LoginResponse.Successful(ThreadLocalRandom.current().nextLong()))
             .addListener(
                 ChannelFutureListener { future ->
@@ -54,6 +65,10 @@ public class LoginChannelHandler(
                         future.channel().pipeline().fireExceptionCaught(future.cause())
                         future.channel().close()
                         return@ChannelFutureListener
+                    }
+                    // Extra validation to ensure we don't get any weird scenarios where it's stuck in memory
+                    if (ctx.channel().isActive) {
+                        networkService.gameInetAddressTracker.register(address)
                     }
                     future
                         .channel()
@@ -73,6 +88,15 @@ public class LoginChannelHandler(
                 .addListener(ChannelFutureListener.CLOSE)
             return
         }
+        val address = ctx.inetAddress()
+        val count = networkService.js5InetAddressTracker.getCount(address)
+        val accepted = networkService.inetAddressValidator.acceptGameConnection(address, count)
+        if (!accepted) {
+            ctx
+                .writeAndFlush(LoginResponse.TooManyAttempts)
+                .addListener(ChannelFutureListener.CLOSE)
+            return
+        }
         ctx.writeAndFlush(LoginResponse.Successful(null))
             .addListener(
                 ChannelFutureListener { future ->
@@ -80,6 +104,10 @@ public class LoginChannelHandler(
                         future.channel().pipeline().fireExceptionCaught(future.cause())
                         future.channel().close()
                         return@ChannelFutureListener
+                    }
+                    // Extra validation to ensure we don't get any weird scenarios where it's stuck in memory
+                    if (ctx.channel().isActive) {
+                        networkService.js5InetAddressTracker.register(address)
                     }
                     val pipeline = ctx.channel().pipeline()
                     pipeline.replace<LoginMessageDecoder>(Js5MessageDecoder(networkService))
