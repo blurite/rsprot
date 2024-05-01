@@ -313,8 +313,13 @@ public class PlayerInfo internal constructor(
                 continue
             }
             val other = protocol.getPlayerInfo(index)
-            val readable = other?.lowResMovementBuffer != null
-            if (other == null || !readable && !isVisible(other)) {
+            if (other == null) {
+                skips++
+                stationary[index] = (stationary[index].toInt() or IS_STATIONARY).toByte()
+                continue
+            }
+            val visible = shouldMoveToHighResolution(other)
+            if (!visible && other.lowResMovementBuffer == null) {
                 skips++
                 stationary[index] = (stationary[index].toInt() or IS_STATIONARY).toByte()
                 continue
@@ -323,7 +328,7 @@ public class PlayerInfo internal constructor(
                 pStationary(buffer, skips)
                 skips = -1
             }
-            if (readable) {
+            if (!visible) {
                 buffer.pBits(1, 1)
                 buffer.pBits(other.lowResMovementBuffer!!)
                 continue
@@ -395,7 +400,7 @@ public class PlayerInfo internal constructor(
                 continue
             }
             val other = protocol.getPlayerInfo(index)
-            if (!isVisible(other)) {
+            if (!shouldMoveToLowResolution(other)) {
                 if (skips > -1) {
                     pStationary(buffer, skips)
                     skips = -1
@@ -524,10 +529,10 @@ public class PlayerInfo internal constructor(
      * This function utilizes experimental contracts to avoid an unnecessary null-check,
      * as if the function returns true, the parameter cannot ever be null.
      * @param other the player whom to check.
-     * @return true if the other player is visible to us.
+     * @return true if the other should be moved to low resolution.
      */
     @OptIn(ExperimentalContracts::class)
-    private fun isVisible(other: PlayerInfo?): Boolean {
+    private fun shouldMoveToLowResolution(other: PlayerInfo?): Boolean {
         contract {
             returns(true) implies (other != null)
         }
@@ -538,6 +543,30 @@ public class PlayerInfo internal constructor(
         // Do not add or remove local player
         if (other.localIndex == localIndex) {
             return true
+        }
+        if (other.avatar.hidden) {
+            return false
+        }
+        val curCoord = this.avatar.currentCoord
+        val otherCoord = other.avatar.currentCoord
+        return curCoord.inDistance(otherCoord, this.avatar.resizeRange)
+    }
+
+    /**
+     * Checks if [other] is visible to us considering our [PlayerAvatar.resizeRange].
+     * This function utilizes experimental contracts to avoid an unnecessary null-check,
+     * as if the function returns true, the parameter cannot ever be null.
+     * @param other the player whom to check.
+     * @return true if the other player should be moved to high resolution.
+     */
+    @OptIn(ExperimentalContracts::class)
+    private fun shouldMoveToHighResolution(other: PlayerInfo?): Boolean {
+        contract {
+            returns(true) implies (other != null)
+        }
+        // If the avatar is no longer logged in, remove it
+        if (other == null || other.localIndex == localIndex) {
+            return false
         }
         if (other.avatar.hidden) {
             return false
