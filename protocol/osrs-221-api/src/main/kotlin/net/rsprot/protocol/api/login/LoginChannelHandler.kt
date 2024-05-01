@@ -159,6 +159,16 @@ public class LoginChannelHandler(
         ctx.flush()
     }
 
+    @Suppress("OVERRIDE_DEPRECATION")
+    override fun exceptionCaught(
+        ctx: ChannelHandlerContext,
+        cause: Throwable,
+    ) {
+        networkService
+            .channelExceptionHandler
+            .exceptionCaught(ctx, cause)
+    }
+
     override fun userEventTriggered(
         ctx: ChannelHandlerContext,
         evt: Any,

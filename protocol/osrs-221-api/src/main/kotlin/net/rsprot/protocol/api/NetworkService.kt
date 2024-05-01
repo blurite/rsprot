@@ -74,6 +74,7 @@ public class NetworkService<R, T : Js5GroupType>
         public val gameConnectionHandler: GameConnectionHandler<R>,
         private val npcIndexSupplier: NpcIndexSupplier,
         private val npcAvatarExceptionHandler: NpcAvatarExceptionHandler,
+        public val channelExceptionHandler: ChannelExceptionHandler,
         private val allocator: ByteBufAllocator = PooledByteBufAllocator.DEFAULT,
         private val playerExtendedInfoFilter: ExtendedInfoFilter = DefaultExtendedInfoFilter(),
         private val npcExtendedInfoFilter: ExtendedInfoFilter = DefaultExtendedInfoFilter(),

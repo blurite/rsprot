@@ -2,6 +2,7 @@ package net.rsprot.protocol.api
 
 import com.github.michaelbull.logging.InlineLogger
 import io.netty.channel.Channel
+import io.netty.channel.ChannelHandlerContext
 import io.netty.channel.ChannelInitializer
 import io.netty.handler.timeout.IdleStateHandler
 import net.rsprot.protocol.api.logging.networkLog
@@ -29,6 +30,16 @@ public class LoginChannelInitializer<R>(
             LoginMessageEncoder(networkService),
             LoginChannelHandler(networkService),
         )
+    }
+
+    @Suppress("OVERRIDE_DEPRECATION")
+    override fun exceptionCaught(
+        ctx: ChannelHandlerContext,
+        cause: Throwable,
+    ) {
+        networkService
+            .channelExceptionHandler
+            .exceptionCaught(ctx, cause)
     }
 
     private companion object {
