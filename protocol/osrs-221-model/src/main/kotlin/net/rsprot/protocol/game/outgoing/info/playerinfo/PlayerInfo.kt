@@ -400,7 +400,7 @@ public class PlayerInfo internal constructor(
                     pStationary(buffer, skips)
                     skips = -1
                 }
-                pHighToLowResChange(buffer, index)
+                pHighToLowResChange(buffer, index, other)
                 continue
             }
 
@@ -502,6 +502,7 @@ public class PlayerInfo internal constructor(
     private fun pHighToLowResChange(
         buffer: BitBuf,
         index: Int,
+        other: PlayerInfo?,
     ) {
         unsetHighResolution(index)
         // The one-liner pBits is equal to the below comment:
@@ -509,6 +510,13 @@ public class PlayerInfo internal constructor(
         // buffer.pBits(1, 0)
         // buffer.pBits(2, 0)
         buffer.pBits(4, 1 shl 3)
+        val buf = other?.lowResMovementBuffer
+        if (buf != null) {
+            buffer.pBits(1, 1)
+            buffer.pBits(buf)
+        } else {
+            buffer.pBits(1, 0)
+        }
     }
 
     /**
