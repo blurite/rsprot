@@ -1,5 +1,6 @@
 package net.rsprot.protocol.game.outgoing.info.playerinfo
 
+import com.github.michaelbull.logging.InlineLogger
 import io.netty.buffer.ByteBuf
 import io.netty.buffer.ByteBufAllocator
 import net.rsprot.protocol.common.client.OldSchoolClientType
@@ -144,6 +145,11 @@ public class PlayerInfoProtocol(
                 playerInfoRepository.getOrNull(i)?.prepareBitcodes(lowResolutionPositionRepository)
             } catch (e: Exception) {
                 catchException(i, e)
+            } catch (t: Throwable) {
+                logger.error(t) {
+                    "Error during player updating preparation"
+                }
+                throw t
             }
         }
     }
@@ -214,6 +220,11 @@ public class PlayerInfoProtocol(
                         block(info)
                     } catch (e: Exception) {
                         catchException(i, e)
+                    } catch (t: Throwable) {
+                        logger.error(t) {
+                            "Error during player updating"
+                        }
+                        throw t
                     }
                 }
         }
@@ -245,5 +256,6 @@ public class PlayerInfoProtocol(
          * as that would break the client's logic.
          */
         public const val PROTOCOL_CAPACITY: Int = 2048
+        private val logger: InlineLogger = InlineLogger()
     }
 }

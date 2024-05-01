@@ -1,5 +1,6 @@
 package net.rsprot.protocol.game.outgoing.info.npcinfo
 
+import com.github.michaelbull.logging.InlineLogger
 import io.netty.buffer.ByteBufAllocator
 import net.rsprot.protocol.common.client.ClientTypeMap
 import net.rsprot.protocol.common.client.OldSchoolClientType
@@ -116,6 +117,11 @@ public class NpcInfoProtocol(
                 avatar.prepareBitcodes()
             } catch (e: Exception) {
                 exceptionHandler.exceptionCaught(i, e)
+            } catch (t: Throwable) {
+                logger.error(t) {
+                    "Error during npc bitcode preparation"
+                }
+                throw t
             }
         }
     }
@@ -133,6 +139,11 @@ public class NpcInfoProtocol(
                 avatar.extendedInfo.precompute()
             } catch (e: Exception) {
                 exceptionHandler.exceptionCaught(i, e)
+            } catch (t: Throwable) {
+                logger.error(t) {
+                    "Error during npc extended info preparation"
+                }
+                throw t
             }
         }
     }
@@ -188,6 +199,11 @@ public class NpcInfoProtocol(
                         block(info)
                     } catch (e: Exception) {
                         catchException(i, e)
+                    } catch (t: Throwable) {
+                        logger.error(t) {
+                            "Error during npc updating"
+                        }
+                        throw t
                     }
                 }
         }
@@ -216,5 +232,6 @@ public class NpcInfoProtocol(
          * The maximum number of players in a world.
          */
         public const val PROTOCOL_CAPACITY: Int = 2048
+        private val logger: InlineLogger = InlineLogger()
     }
 }
