@@ -345,6 +345,9 @@ public class PlayerInfo internal constructor(
         other: PlayerInfo,
     ) {
         val index = other.localIndex
+        // The above one-liner pBits is equal to this comment:
+        // buffer.pBits(1, 1)
+        // buffer.pBits(2, 0)
         buffer.pBits(3, 1 shl 2)
         val lowResBuf = other.lowResMovementBuffer
         if (lowResBuf != null) {
@@ -501,6 +504,10 @@ public class PlayerInfo internal constructor(
         index: Int,
     ) {
         unsetHighResolution(index)
+        // The one-liner pBits is equal to the below comment:
+        // buffer.pBits(1, 1)
+        // buffer.pBits(1, 0)
+        // buffer.pBits(2, 0)
         buffer.pBits(4, 1 shl 3)
     }
 
