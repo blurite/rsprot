@@ -64,6 +64,20 @@ public class GameLoginResponseHandler<R>(
                 .addListener(ChannelFutureListener.CLOSE)
             return
         }
+        val encodeSeed = loginBlock.seed
+        val decodeSeed =
+            IntArray(encodeSeed.size) { index ->
+                encodeSeed[index] + DECODE_SEED_OFFSET
+            }
+
+        val encodingCipher = IsaacRandom(decodeSeed)
+        val decodingCipher = IsaacRandom(encodeSeed)
+        val channel = ctx.channel()
+        channel
+            .attr(ChannelAttributes.STREAM_CIPHER_PAIR)
+            .set(StreamCipherPair(encodingCipher, decodingCipher))
+        channel.attr(ChannelAttributes.HUFFMAN_CODEC)
+            .set(networkService.huffmanCodecProvider)
         ctx.writeAndFlush(response).addListener(
             ChannelFutureListener { future ->
                 if (!future.isSuccess) {
@@ -77,20 +91,6 @@ public class GameLoginResponseHandler<R>(
                     return@ChannelFutureListener
                 }
                 val pipeline = ctx.channel().pipeline()
-                val encodeSeed = loginBlock.seed
-                val decodeSeed =
-                    IntArray(encodeSeed.size) { index ->
-                        encodeSeed[index] + DECODE_SEED_OFFSET
-                    }
-
-                val encodingCipher = IsaacRandom(decodeSeed)
-                val decodingCipher = IsaacRandom(encodeSeed)
-                val channel = future.channel()
-                channel
-                    .attr(ChannelAttributes.STREAM_CIPHER_PAIR)
-                    .set(StreamCipherPair(encodingCipher, decodingCipher))
-                channel.attr(ChannelAttributes.HUFFMAN_CODEC)
-                    .set(networkService.huffmanCodecProvider)
 
                 val session =
                     Session(
