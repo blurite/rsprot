@@ -23,11 +23,12 @@ public class GameMessageConsumerRepositoryBuilder<R> {
     public fun <T : IncomingGameMessage> addListener(
         clazz: Class<out T>,
         consumer: BiConsumer<R, in T>,
-    ) {
+    ): GameMessageConsumerRepositoryBuilder<R> {
         val old = consumers.put(clazz, consumer as BiConsumer<R, in IncomingMessage>)
         require(old == null) {
             "Overwriting old listener for class $clazz"
         }
+        return this
     }
 
     /**
@@ -36,8 +37,10 @@ public class GameMessageConsumerRepositoryBuilder<R> {
      * @param listener the listener of the message.
      */
     @JvmSynthetic
-    public inline fun <reified T : IncomingGameMessage> addListener(crossinline listener: R.(message: T) -> Unit) {
-        addListener(T::class.java) { r, t -> listener(r, t) }
+    public inline fun <reified T : IncomingGameMessage> addListener(
+        crossinline listener: R.(message: T) -> Unit,
+    ): GameMessageConsumerRepositoryBuilder<R> {
+        return addListener(T::class.java) { r, t -> listener(r, t) }
     }
 
     public fun build(): GameMessageConsumerRepository<R> {
