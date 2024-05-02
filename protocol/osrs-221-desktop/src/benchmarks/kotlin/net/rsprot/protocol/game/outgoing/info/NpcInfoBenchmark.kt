@@ -106,7 +106,7 @@ class NpcInfoBenchmark {
                 true,
             )
         }
-        protocol.compute()
+        protocol.update()
         for (i in 1..2046) {
             val info = protocol[i]
             info.backingBuffer().release()

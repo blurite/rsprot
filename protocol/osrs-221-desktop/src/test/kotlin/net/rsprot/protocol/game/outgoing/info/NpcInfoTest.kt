@@ -65,7 +65,7 @@ class NpcInfoTest {
 
     private fun tick() {
         localNpcInfo.updateCoord(localPlayerCoord.level, localPlayerCoord.x, localPlayerCoord.z)
-        protocol.compute()
+        protocol.update()
     }
 
     @Test

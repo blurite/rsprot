@@ -93,11 +93,11 @@ public class NpcInfoProtocol(
     }
 
     /**
-     * Computes the npc info protocol for this cycle.
+     * Updates the npc info protocol for this cycle.
      * The jobs here will be executed according to the [worker] specified,
      * allowing multithreaded execution if selected.
      */
-    public fun compute() {
+    public fun update() {
         prepareBitcodes()
         putBitcodes()
         prepareExtendedInfo()
