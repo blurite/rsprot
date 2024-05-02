@@ -152,7 +152,7 @@ public class LoginConnectionHandler<R>(
             is GameLogin -> {
                 decodeLogin(packet.buffer, packet.decoder).handle { block, exception ->
                     if (block == null || exception != null) {
-                        networkLog(logger) {
+                        logger.error(exception) {
                             "Failed to decode game login block for channel ${ctx.channel()}"
                         }
                         ctx
@@ -181,7 +181,7 @@ public class LoginConnectionHandler<R>(
             is GameReconnect -> {
                 decodeLogin(packet.buffer, packet.decoder).handle { block, exception ->
                     if (block == null || exception != null) {
-                        networkLog(logger) {
+                        logger.error(exception) {
                             "Failed to decode game reconnect block for channel ${ctx.channel()}"
                         }
                         ctx
