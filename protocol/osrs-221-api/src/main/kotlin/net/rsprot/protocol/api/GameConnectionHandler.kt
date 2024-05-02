@@ -1,6 +1,6 @@
 package net.rsprot.protocol.api
 
-import net.rsprot.crypto.util.XteaKey
+import net.rsprot.crypto.xtea.XteaKey
 import net.rsprot.protocol.api.login.GameLoginResponseHandler
 import net.rsprot.protocol.loginprot.incoming.util.AuthenticationType
 import net.rsprot.protocol.loginprot.incoming.util.LoginBlock

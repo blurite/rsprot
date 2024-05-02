@@ -2,7 +2,7 @@ package net.rsprot.protocol.common.loginprot.incoming.codec
 
 import net.rsprot.buffer.JagByteBuf
 import net.rsprot.buffer.extensions.toJagByteBuf
-import net.rsprot.crypto.util.XteaKey
+import net.rsprot.crypto.xtea.XteaKey
 import net.rsprot.protocol.ClientProt
 import net.rsprot.protocol.common.loginprot.incoming.codec.shared.LoginBlockDecoder
 import net.rsprot.protocol.common.loginprot.incoming.prot.LoginClientProt

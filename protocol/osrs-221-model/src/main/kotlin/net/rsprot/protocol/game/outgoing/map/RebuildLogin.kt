@@ -1,7 +1,7 @@
 package net.rsprot.protocol.game.outgoing.map
 
 import io.netty.buffer.ByteBuf
-import net.rsprot.crypto.util.XteaKey
+import net.rsprot.crypto.xtea.XteaKey
 import net.rsprot.protocol.ServerProtCategory
 import net.rsprot.protocol.game.incoming.GameServerProtCategory
 import net.rsprot.protocol.game.outgoing.info.playerinfo.PlayerInfo

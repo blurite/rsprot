@@ -6,6 +6,7 @@ import com.github.michaelbull.logging.InlineLogger
 import io.netty.channel.ChannelFutureListener
 import io.netty.channel.ChannelHandlerContext
 import net.rsprot.crypto.cipher.IsaacRandom
+import net.rsprot.crypto.cipher.StreamCipherPair
 import net.rsprot.protocol.api.NetworkService
 import net.rsprot.protocol.api.Session
 import net.rsprot.protocol.api.channel.inetAddress
@@ -16,7 +17,6 @@ import net.rsprot.protocol.api.game.GameMessageHandler
 import net.rsprot.protocol.api.logging.networkLog
 import net.rsprot.protocol.channel.ChannelAttributes
 import net.rsprot.protocol.common.client.OldSchoolClientType
-import net.rsprot.protocol.cryptography.StreamCipherPair
 import net.rsprot.protocol.loginprot.incoming.util.LoginBlock
 import net.rsprot.protocol.loginprot.incoming.util.LoginClientType
 import net.rsprot.protocol.loginprot.outgoing.LoginResponse

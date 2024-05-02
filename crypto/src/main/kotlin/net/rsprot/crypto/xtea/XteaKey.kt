@@ -1,4 +1,4 @@
-package net.rsprot.crypto.util
+package net.rsprot.crypto.xtea
 
 public class XteaKey(
     public val key: IntArray,

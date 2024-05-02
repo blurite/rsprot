@@ -3,7 +3,7 @@ package net.rsprot.protocol.game.outgoing.codec.map
 import io.netty.channel.ChannelHandlerContext
 import net.rsprot.buffer.JagByteBuf
 import net.rsprot.buffer.bitbuffer.toBitBuf
-import net.rsprot.crypto.util.XteaKey
+import net.rsprot.crypto.xtea.XteaKey
 import net.rsprot.protocol.ServerProt
 import net.rsprot.protocol.game.outgoing.map.RebuildRegion
 import net.rsprot.protocol.game.outgoing.prot.GameServerProt

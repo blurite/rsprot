@@ -2,7 +2,7 @@ package net.rsprot.protocol.channel
 
 import io.netty.util.AttributeKey
 import net.rsprot.compression.provider.HuffmanCodecProvider
-import net.rsprot.protocol.cryptography.StreamCipherPair
+import net.rsprot.crypto.cipher.StreamCipherPair
 
 public object ChannelAttributes {
     public val STREAM_CIPHER_PAIR: AttributeKey<StreamCipherPair> =

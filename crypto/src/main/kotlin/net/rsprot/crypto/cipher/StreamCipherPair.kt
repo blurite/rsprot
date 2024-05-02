@@ -1,6 +1,4 @@
-package net.rsprot.protocol.cryptography
-
-import net.rsprot.crypto.cipher.StreamCipher
+package net.rsprot.crypto.cipher
 
 public data class StreamCipherPair(
     public val encoderCipher: StreamCipher,

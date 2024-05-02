@@ -1,6 +1,6 @@
 package net.rsprot.protocol.game.outgoing.map.util
 
-import net.rsprot.crypto.util.XteaKey
+import net.rsprot.crypto.xtea.XteaKey
 
 /**
  * A helper function to build the mapsquare key list the same way the client does,
