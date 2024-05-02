@@ -100,6 +100,7 @@ public class GameLoginResponseHandler<R>(
                         networkService.gameMessageCounterProvider.provide(),
                         networkService.gameMessageConsumerRepositoryProvider.provide().consumers,
                         loginBlock,
+                        networkService.incomingGameMessageConsumerExceptionHandler,
                     )
                 pipeline.replace<LoginMessageDecoder>(
                     GameMessageDecoder(

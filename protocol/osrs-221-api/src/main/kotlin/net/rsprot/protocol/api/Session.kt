@@ -22,6 +22,7 @@ public class Session<R>(
     private val counter: GameMessageCounter,
     private val consumers: Map<Class<out IncomingGameMessage>, BiConsumer<R, in IncomingGameMessage>>,
     public val loginBlock: LoginBlock<*>,
+    private val incomingGameMessageConsumerExceptionHandler: IncomingGameMessageConsumerExceptionHandler<R>,
 ) {
     private val outgoingMessageQueues: Array<Queue<OutgoingGameMessage>> =
         Array(GameServerProtCategory.COUNT) {
@@ -55,7 +56,11 @@ public class Session<R>(
             networkLog(logger) {
                 "Processing incoming game packet from channel '${ctx.channel()}': $packet"
             }
-            consumer.accept(receiver, packet)
+            try {
+                consumer.accept(receiver, packet)
+            } catch (cause: Throwable) {
+                incomingGameMessageConsumerExceptionHandler.exceptionCaught(this, packet, cause)
+            }
             count++
         }
         onPollComplete()
