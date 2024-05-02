@@ -54,8 +54,16 @@ public class LoginChannelHandler(
 
     private fun handleInitGameConnection(ctx: ChannelHandlerContext) {
         val address = ctx.inetAddress()
-        val count = networkService.gameInetAddressTracker.getCount(address)
-        val accepted = networkService.inetAddressValidator.acceptGameConnection(address, count)
+        val count =
+            networkService
+                .iNetAddressHandlers
+                .gameInetAddressTracker
+                .getCount(address)
+        val accepted =
+            networkService
+                .iNetAddressHandlers
+                .inetAddressValidator
+                .acceptGameConnection(address, count)
         if (!accepted) {
             networkLog(logger) {
                 "INetAddressValidator rejected game connection for channel ${ctx.channel()}"
@@ -65,7 +73,11 @@ public class LoginChannelHandler(
                 .addListener(ChannelFutureListener.CLOSE)
             return
         }
-        val sessionId = networkService.sessionIdGenerator.generate(address)
+        val sessionId =
+            networkService
+                .loginHandlers
+                .sessionIdGenerator
+                .generate(address)
         networkLog(logger) {
             "Game connection accepted with session id: ${NumberFormat.getNumberInstance().format(sessionId)}"
         }
@@ -85,7 +97,10 @@ public class LoginChannelHandler(
                         networkLog(logger) {
                             "Tracking game INetAddress for channel '${future.channel()}': $address"
                         }
-                        networkService.gameInetAddressTracker.register(address)
+                        networkService
+                            .iNetAddressHandlers
+                            .gameInetAddressTracker
+                            .register(address)
                     }
                     future
                         .channel()
@@ -109,8 +124,16 @@ public class LoginChannelHandler(
             return
         }
         val address = ctx.inetAddress()
-        val count = networkService.js5InetAddressTracker.getCount(address)
-        val accepted = networkService.inetAddressValidator.acceptGameConnection(address, count)
+        val count =
+            networkService
+                .iNetAddressHandlers
+                .js5InetAddressTracker
+                .getCount(address)
+        val accepted =
+            networkService
+                .iNetAddressHandlers
+                .inetAddressValidator
+                .acceptGameConnection(address, count)
         if (!accepted) {
             networkLog(logger) {
                 "INetAddressValidator rejected JS5 connection for channel ${ctx.channel()}"
@@ -136,7 +159,10 @@ public class LoginChannelHandler(
                         networkLog(logger) {
                             "Tracking JS5 INetAddress for channel '${future.channel()}': $address"
                         }
-                        networkService.js5InetAddressTracker.register(address)
+                        networkService
+                            .iNetAddressHandlers
+                            .js5InetAddressTracker
+                            .register(address)
                     }
                     val pipeline = ctx.channel().pipeline()
                     pipeline.replace<LoginMessageDecoder>(Js5MessageDecoder(networkService))
@@ -165,6 +191,7 @@ public class LoginChannelHandler(
         cause: Throwable,
     ) {
         networkService
+            .exceptionHandlers
             .channelExceptionHandler
             .exceptionCaught(ctx, cause)
     }

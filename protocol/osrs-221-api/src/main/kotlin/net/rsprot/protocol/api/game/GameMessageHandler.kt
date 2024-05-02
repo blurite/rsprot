@@ -19,7 +19,10 @@ public class GameMessageHandler<R>(
     }
 
     override fun channelActive(ctx: ChannelHandlerContext) {
-        networkService.gameInetAddressTracker.register(ctx.inetAddress())
+        networkService
+            .iNetAddressHandlers
+            .gameInetAddressTracker
+            .register(ctx.inetAddress())
         networkLog(logger) {
             "Channel is now active: ${ctx.channel()}"
         }
@@ -30,7 +33,10 @@ public class GameMessageHandler<R>(
             session.disconnectionHook?.run()
         } finally {
             // Must ensure both blocks of code get invoked, even if one throws an exception
-            networkService.gameInetAddressTracker.deregister(ctx.inetAddress())
+            networkService
+                .iNetAddressHandlers
+                .gameInetAddressTracker
+                .deregister(ctx.inetAddress())
             networkLog(logger) {
                 "Channel is now inactive: ${ctx.channel()}"
             }
@@ -62,6 +68,7 @@ public class GameMessageHandler<R>(
         cause: Throwable,
     ) {
         networkService
+            .exceptionHandlers
             .channelExceptionHandler
             .exceptionCaught(ctx, cause)
     }

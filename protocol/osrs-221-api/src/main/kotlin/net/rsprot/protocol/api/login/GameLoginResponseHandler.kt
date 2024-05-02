@@ -37,12 +37,9 @@ public class GameLoginResponseHandler<R>(
                 LoginClientType.ENHANCED_WINDOWS -> OldSchoolClientType.DESKTOP
                 LoginClientType.ENHANCED_LINUX -> OldSchoolClientType.DESKTOP
                 LoginClientType.ENHANCED_MAC -> OldSchoolClientType.DESKTOP
-                LoginClientType.ANDROID -> OldSchoolClientType.ANDROID
-                LoginClientType.ENHANCED_ANDROID -> OldSchoolClientType.ANDROID
-                LoginClientType.IOS -> OldSchoolClientType.IOS
-                LoginClientType.ENHANCED_IOS -> OldSchoolClientType.IOS
+                else -> null
             }
-        if (!networkService.isSupported(oldSchoolClientType)) {
+        if (oldSchoolClientType == null || !networkService.isSupported(oldSchoolClientType)) {
             networkLog(logger) {
                 "Unsupported client type received from channel " +
                     "'${ctx.channel()}': $oldSchoolClientType, login block: $loginBlock"
@@ -52,8 +49,16 @@ public class GameLoginResponseHandler<R>(
             return
         }
         val address = ctx.inetAddress()
-        val count = networkService.gameInetAddressTracker.getCount(address)
-        val accepted = networkService.inetAddressValidator.acceptGameConnection(address, count)
+        val count =
+            networkService
+                .iNetAddressHandlers
+                .gameInetAddressTracker
+                .getCount(address)
+        val accepted =
+            networkService
+                .iNetAddressHandlers
+                .inetAddressValidator
+                .acceptGameConnection(address, count)
         // Secondary validation just before we allow the server to log the user in
         if (!accepted) {
             networkLog(logger) {
@@ -95,12 +100,25 @@ public class GameLoginResponseHandler<R>(
                 val session =
                     Session(
                         ctx,
-                        networkService.incomingGameMessageQueueProvider.provide(),
-                        networkService.outgoingGameMessageQueueProvider,
-                        networkService.gameMessageCounterProvider.provide(),
-                        networkService.gameMessageConsumerRepositoryProvider.provide().consumers,
+                        networkService
+                            .gameMessageHandlers
+                            .incomingGameMessageQueueProvider
+                            .provide(),
+                        networkService
+                            .gameMessageHandlers
+                            .outgoingGameMessageQueueProvider,
+                        networkService
+                            .gameMessageHandlers
+                            .gameMessageCounterProvider
+                            .provide(),
+                        networkService
+                            .gameMessageConsumerRepositoryProvider
+                            .provide()
+                            .consumers,
                         loginBlock,
-                        networkService.incomingGameMessageConsumerExceptionHandler,
+                        networkService
+                            .exceptionHandlers
+                            .incomingGameMessageConsumerExceptionHandler,
                     )
                 pipeline.replace<LoginMessageDecoder>(
                     GameMessageDecoder(

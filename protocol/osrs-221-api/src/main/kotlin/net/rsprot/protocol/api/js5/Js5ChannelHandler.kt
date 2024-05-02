@@ -23,14 +23,20 @@ public class Js5ChannelHandler<T : Js5GroupType>(
         get() = networkService.js5Service
 
     override fun channelActive(ctx: ChannelHandlerContext) {
-        networkService.js5InetAddressTracker.register(ctx.inetAddress())
+        networkService
+            .iNetAddressHandlers
+            .js5InetAddressTracker
+            .register(ctx.inetAddress())
         networkLog(logger) {
             "Js5 channel '${ctx.channel()}' is now active"
         }
     }
 
     override fun channelInactive(ctx: ChannelHandlerContext) {
-        networkService.js5InetAddressTracker.deregister(ctx.inetAddress())
+        networkService
+            .iNetAddressHandlers
+            .js5InetAddressTracker
+            .deregister(ctx.inetAddress())
         networkLog(logger) {
             "Js5 channel '${ctx.channel()}' is now inactive"
         }
@@ -94,6 +100,7 @@ public class Js5ChannelHandler<T : Js5GroupType>(
         cause: Throwable,
     ) {
         networkService
+            .exceptionHandlers
             .channelExceptionHandler
             .exceptionCaught(ctx, cause)
     }

@@ -9,16 +9,6 @@ public enum class OldSchoolClientType(override val id: Int) : ClientType {
      * we use the same client type for both here.
      */
     DESKTOP(0),
-
-    /**
-     * The Android client for any devices running Android.
-     */
-    ANDROID(1),
-
-    /**
-     * The iOS client for Apple devices.
-     */
-    IOS(2),
     ;
 
     public companion object {
@@ -28,6 +18,6 @@ public enum class OldSchoolClientType(override val id: Int) : ClientType {
          * as our buffers are often cached per-client type, and we need to use
          * client types as the array index.
          */
-        public const val COUNT: Int = 3
+        public const val COUNT: Int = 1
     }
 }

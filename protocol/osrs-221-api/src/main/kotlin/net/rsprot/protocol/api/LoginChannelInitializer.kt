@@ -38,6 +38,7 @@ public class LoginChannelInitializer<R>(
         cause: Throwable,
     ) {
         networkService
+            .exceptionHandlers
             .channelExceptionHandler
             .exceptionCaught(ctx, cause)
     }

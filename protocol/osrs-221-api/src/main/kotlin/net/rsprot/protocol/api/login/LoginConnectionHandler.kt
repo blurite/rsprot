@@ -34,14 +34,20 @@ public class LoginConnectionHandler<R>(
     }
 
     override fun channelActive(ctx: ChannelHandlerContext) {
-        networkService.gameInetAddressTracker.register(ctx.inetAddress())
+        networkService
+            .iNetAddressHandlers
+            .gameInetAddressTracker
+            .register(ctx.inetAddress())
         networkLog(logger) {
             "Channel is now active: ${ctx.channel()}"
         }
     }
 
     override fun channelInactive(ctx: ChannelHandlerContext) {
-        networkService.gameInetAddressTracker.deregister(ctx.inetAddress())
+        networkService
+            .iNetAddressHandlers
+            .gameInetAddressTracker
+            .deregister(ctx.inetAddress())
         networkLog(logger) {
             "Channel is now inactive: ${ctx.channel()}"
         }
@@ -58,7 +64,11 @@ public class LoginConnectionHandler<R>(
             is GameLogin, is GameReconnect -> {
                 loginState = LoginState.REQUESTED_PROOF_OF_WORK
                 loginPacket = msg
-                val pow = networkService.proofOfWorkProvider.provide(ctx.inetAddress())
+                val pow =
+                    networkService
+                        .loginHandlers
+                        .proofOfWorkProvider
+                        .provide(ctx.inetAddress())
                 this.proofOfWork = pow
                 ctx.writeAndFlush(LoginResponse.ProofOfWork(pow)).addListener(
                     ChannelFutureListener { future ->
@@ -119,6 +129,7 @@ public class LoginConnectionHandler<R>(
         cause: Throwable,
     ) {
         networkService
+            .exceptionHandlers
             .channelExceptionHandler
             .exceptionCaught(ctx, cause)
     }
@@ -206,14 +217,19 @@ public class LoginConnectionHandler<R>(
         buf: Buf,
         function: Function<Buf, Fun>,
     ): CompletableFuture<Fun> {
-        return networkService.loginDecoderService.decode(buf, function)
+        return networkService
+            .loginHandlers
+            .loginDecoderService
+            .decode(buf, function)
     }
 
     private fun <T : ChallengeType<MetaData>, MetaData : ChallengeMetaData> verifyProofOfWork(
         pow: ProofOfWork<T, MetaData>,
         result: Long,
     ): CompletableFuture<Boolean> {
-        return networkService.proofOfWorkChallengeWorker
+        return networkService
+            .loginHandlers
+            .proofOfWorkChallengeWorker
             .verify(
                 result,
                 pow.challengeType,
