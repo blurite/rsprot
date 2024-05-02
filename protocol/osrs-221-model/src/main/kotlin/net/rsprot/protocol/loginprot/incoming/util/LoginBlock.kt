@@ -1,12 +1,10 @@
 package net.rsprot.protocol.loginprot.incoming.util
 
-import net.rsprot.protocol.message.IncomingMessage
-
 @Suppress("MemberVisibilityCanBePrivate", "DuplicatedCode")
 public class LoginBlock<T>(
     public val version: Int,
     public val subVersion: Int,
-    private val _firstClientType: UByte,
+    private val _clientType: UByte,
     private val _platformType: UByte,
     private val _constZero1: UByte,
     public val seed: IntArray,
@@ -21,15 +19,15 @@ public class LoginBlock<T>(
     public val affiliate: Int,
     private val _constZero2: UByte,
     public val hostPlatformStats: HostPlatformStats,
-    private val _secondClientType: UByte,
+    private val _validationClientType: UByte,
     private val _crcBlockHeader: UByte,
     public val crc: CyclicRedundancyCheckBlock,
     public val authentication: T,
-) : IncomingMessage {
-    public val firstClientType: Int
-        get() = _firstClientType.toInt()
-    public val platformType: Int
-        get() = _platformType.toInt()
+) {
+    public val clientType: LoginClientType
+        get() = LoginClientType[_clientType.toInt()]
+    public val platformType: LoginPlatformType
+        get() = LoginPlatformType[_platformType.toInt()]
     public val constZero1: Int
         get() = _constZero1.toInt()
     public val width: Int
@@ -38,8 +36,8 @@ public class LoginBlock<T>(
         get() = _height.toInt()
     public val constZero2: Int
         get() = _constZero2.toInt()
-    public val secondClientType: Int
-        get() = _secondClientType.toInt()
+    public val validationClientType: LoginClientType
+        get() = LoginClientType[_validationClientType.toInt()]
     public val crcBlockHeader: Int
         get() = _crcBlockHeader.toInt()
 
@@ -51,7 +49,7 @@ public class LoginBlock<T>(
 
         if (version != other.version) return false
         if (subVersion != other.subVersion) return false
-        if (_firstClientType != other._firstClientType) return false
+        if (_clientType != other._clientType) return false
         if (_platformType != other._platformType) return false
         if (_constZero1 != other._constZero1) return false
         if (!seed.contentEquals(other.seed)) return false
@@ -66,7 +64,7 @@ public class LoginBlock<T>(
         if (affiliate != other.affiliate) return false
         if (_constZero2 != other._constZero2) return false
         if (hostPlatformStats != other.hostPlatformStats) return false
-        if (_secondClientType != other._secondClientType) return false
+        if (_validationClientType != other._validationClientType) return false
         if (_crcBlockHeader != other._crcBlockHeader) return false
         if (crc != other.crc) return false
         if (authentication != other.authentication) return false
@@ -77,7 +75,7 @@ public class LoginBlock<T>(
     override fun hashCode(): Int {
         var result = version
         result = 31 * result + subVersion
-        result = 31 * result + _firstClientType.hashCode()
+        result = 31 * result + _clientType.hashCode()
         result = 31 * result + _platformType.hashCode()
         result = 31 * result + _constZero1.hashCode()
         result = 31 * result + seed.contentHashCode()
@@ -92,7 +90,7 @@ public class LoginBlock<T>(
         result = 31 * result + affiliate
         result = 31 * result + _constZero2.hashCode()
         result = 31 * result + hostPlatformStats.hashCode()
-        result = 31 * result + _secondClientType.hashCode()
+        result = 31 * result + _validationClientType.hashCode()
         result = 31 * result + _crcBlockHeader.hashCode()
         result = 31 * result + crc.hashCode()
         result = 31 * result + authentication.hashCode()
@@ -113,13 +111,13 @@ public class LoginBlock<T>(
             "affiliate=$affiliate, " +
             "hostPlatformStats=$hostPlatformStats, " +
             "crc=$crc, " +
-            "firstClientType=$firstClientType, " +
+            "clientType=$clientType, " +
             "platformType=$platformType, " +
             "constZero1=$constZero1, " +
             "constZero2=$constZero2, " +
             "width=$width, " +
             "height=$height, " +
-            "secondClientType=$secondClientType, " +
+            "validationClientType=$validationClientType, " +
             "crcBlockHeader=$crcBlockHeader, " +
             "authentication=$authentication" +
             ")"

@@ -1,6 +1,8 @@
 package net.rsprot.protocol.game.incoming.buttons
 
-import net.rsprot.protocol.message.IncomingMessage
+import net.rsprot.protocol.ClientProtCategory
+import net.rsprot.protocol.game.incoming.GameClientProtCategory
+import net.rsprot.protocol.message.IncomingGameMessage
 import net.rsprot.protocol.message.toIntOrMinusOne
 import net.rsprot.protocol.util.CombinedId
 
@@ -19,7 +21,7 @@ public class If3Button private constructor(
     private val _sub: UShort,
     private val _obj: UShort,
     private val _op: UByte,
-) : IncomingMessage {
+) : IncomingGameMessage {
     public constructor(
         combinedId: CombinedId,
         sub: Int,
@@ -42,6 +44,8 @@ public class If3Button private constructor(
         get() = _obj.toIntOrMinusOne()
     public val op: Int
         get() = _op.toInt()
+    override val category: ClientProtCategory
+        get() = GameClientProtCategory.USER_EVENT
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

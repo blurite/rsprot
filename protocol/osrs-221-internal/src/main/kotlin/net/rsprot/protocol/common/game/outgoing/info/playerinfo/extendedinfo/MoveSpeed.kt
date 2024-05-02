@@ -1,8 +1,8 @@
 package net.rsprot.protocol.common.game.outgoing.info.playerinfo.extendedinfo
 
+import net.rsprot.protocol.common.client.ClientTypeMap
 import net.rsprot.protocol.common.game.outgoing.info.TransientExtendedInfo
 import net.rsprot.protocol.common.game.outgoing.info.encoder.PrecomputedExtendedInfoEncoder
-import net.rsprot.protocol.common.platform.PlatformMap
 
 /**
  * The movement speed extended info block.
@@ -13,10 +13,10 @@ import net.rsprot.protocol.common.platform.PlatformMap
  * If an avatar goes from high resolution to low resolution, the client **will not** cache this,
  * and a new status update must be written when the opposite transition occurs.
  * This move speed status should typically be synchronized with the state of the "Run orb".
- * @param encoders the array of platform-specific encoders for move speed.
+ * @param encoders the array of client-specific encoders for move speed.
  */
 public class MoveSpeed(
-    override val encoders: PlatformMap<PrecomputedExtendedInfoEncoder<MoveSpeed>>,
+    override val encoders: ClientTypeMap<PrecomputedExtendedInfoEncoder<MoveSpeed>>,
 ) : TransientExtendedInfo<MoveSpeed, PrecomputedExtendedInfoEncoder<MoveSpeed>>() {
     /**
      * The current movement speed of this avatar.

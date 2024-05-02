@@ -1,9 +1,10 @@
 package net.rsprot.protocol.game.outgoing.info.npcinfo
 
+import com.github.michaelbull.logging.InlineLogger
 import io.netty.buffer.ByteBufAllocator
+import net.rsprot.protocol.common.client.ClientTypeMap
+import net.rsprot.protocol.common.client.OldSchoolClientType
 import net.rsprot.protocol.common.game.outgoing.info.npcinfo.encoder.NpcResolutionChangeEncoder
-import net.rsprot.protocol.common.platform.PlatformMap
-import net.rsprot.protocol.common.platform.PlatformType
 import net.rsprot.protocol.game.outgoing.info.worker.DefaultProtocolWorker
 import net.rsprot.protocol.game.outgoing.info.worker.ProtocolWorker
 import java.util.concurrent.Callable
@@ -14,19 +15,21 @@ import java.util.concurrent.Callable
  * extended info blocks.
  * @property npcIndexSupplier the interface that supplies indices of NPCs near the player
  * that need to be added to the high resolution view.
- * @property resolutionChangeEncoders a platform-specific map of resolution change encoders,
- * as the low to high resolution change is scrambled between platforms and revision,
- * it needs to be supplied by the respective platform module.
+ * @property resolutionChangeEncoders a client-specific map of resolution change encoders,
+ * as the low to high resolution change is scrambled between clients and revision,
+ * it needs to be supplied by the respective client module.
  * @param avatarFactory the factory responsible for allocating new npc avatars.
  * @property worker the protocol worker used to execute the jobs involved with
  * npc info computations.
  */
+@Suppress("DuplicatedCode")
 @ExperimentalUnsignedTypes
 public class NpcInfoProtocol(
     private val allocator: ByteBufAllocator,
     private val npcIndexSupplier: NpcIndexSupplier,
-    private val resolutionChangeEncoders: PlatformMap<NpcResolutionChangeEncoder>,
+    private val resolutionChangeEncoders: ClientTypeMap<NpcResolutionChangeEncoder>,
     avatarFactory: NpcAvatarFactory,
+    private val exceptionHandler: NpcAvatarExceptionHandler,
     private val worker: ProtocolWorker = DefaultProtocolWorker(),
 ) {
     /**
@@ -39,11 +42,11 @@ public class NpcInfoProtocol(
      * by players at a 1:1 ratio.
      */
     private val npcInfoRepository: NpcInfoRepository =
-        NpcInfoRepository { localIndex, platformType ->
+        NpcInfoRepository { localIndex, clientType ->
             NpcInfo(
                 allocator,
                 avatarRepository,
-                platformType,
+                clientType,
                 localIndex,
                 npcIndexSupplier,
                 resolutionChangeEncoders,
@@ -60,13 +63,22 @@ public class NpcInfoProtocol(
     /**
      * Allocates a new npc info object, or re-uses an older one if possible.
      * @param idx the index of the player allocating the npc info object.
-     * @param platformType the platform on which the player has logged into.
+     * @param oldSchoolClientType the client on which the player has logged into.
      */
     public fun alloc(
         idx: Int,
-        platformType: PlatformType,
+        oldSchoolClientType: OldSchoolClientType,
     ): NpcInfo {
-        return npcInfoRepository.alloc(idx, platformType)
+        return npcInfoRepository.alloc(idx, oldSchoolClientType)
+    }
+
+    /**
+     * Deallocates the provided npc info object, allowing it to be used up
+     * by another player in the future.
+     * @param info the npc info object to deallocate
+     */
+    public fun dealloc(info: NpcInfo) {
+        npcInfoRepository.dealloc(info.localPlayerIndex)
     }
 
     /**
@@ -81,11 +93,11 @@ public class NpcInfoProtocol(
     }
 
     /**
-     * Computes the npc info protocol for this cycle.
+     * Updates the npc info protocol for this cycle.
      * The jobs here will be executed according to the [worker] specified,
      * allowing multithreaded execution if selected.
      */
-    public fun compute() {
+    public fun update() {
         prepareBitcodes()
         putBitcodes()
         prepareExtendedInfo()
@@ -101,7 +113,16 @@ public class NpcInfoProtocol(
         for (i in 0..<NpcAvatarRepository.AVATAR_CAPACITY) {
             val avatar = avatarRepository.getOrNull(i) ?: continue
             if (!avatar.hasObservers()) continue
-            avatar.prepareBitcodes()
+            try {
+                avatar.prepareBitcodes()
+            } catch (e: Exception) {
+                exceptionHandler.exceptionCaught(i, e)
+            } catch (t: Throwable) {
+                logger.error(t) {
+                    "Error during npc bitcode preparation"
+                }
+                throw t
+            }
         }
     }
 
@@ -114,7 +135,16 @@ public class NpcInfoProtocol(
         for (i in 0..<NpcAvatarRepository.AVATAR_CAPACITY) {
             val avatar = avatarRepository.getOrNull(i) ?: continue
             if (!avatar.hasObservers()) continue
-            avatar.extendedInfo.precompute()
+            try {
+                avatar.extendedInfo.precompute()
+            } catch (e: Exception) {
+                exceptionHandler.exceptionCaught(i, e)
+            } catch (t: Throwable) {
+                logger.error(t) {
+                    "Error during npc extended info preparation"
+                }
+                throw t
+            }
         }
     }
 
@@ -146,6 +176,10 @@ public class NpcInfoProtocol(
             val info = npcInfoRepository.getOrNull(i) ?: continue
             info.afterUpdate()
         }
+        for (i in 0..<65536) {
+            val avatar = avatarRepository.getOrNull(i) ?: continue
+            avatar.postUpdate()
+        }
     }
 
     /**
@@ -159,10 +193,38 @@ public class NpcInfoProtocol(
     private inline fun execute(crossinline block: NpcInfo.() -> Unit) {
         for (i in 1..<PROTOCOL_CAPACITY) {
             val info = npcInfoRepository.getOrNull(i) ?: continue
-            callables += Callable { block(info) }
+            callables +=
+                Callable {
+                    try {
+                        block(info)
+                    } catch (e: Exception) {
+                        catchException(i, e)
+                    } catch (t: Throwable) {
+                        logger.error(t) {
+                            "Error during npc updating"
+                        }
+                        throw t
+                    }
+                }
         }
         worker.execute(callables)
         callables.clear()
+    }
+
+    /**
+     * Submits an exception to a specific player's npc info packet, which will be propagated further
+     * whenever the server tries to call the [NpcInfo.toNpcInfoPacket] function, allowing the server to properly
+     * handle exceptions for a given player despite it being calculated for the entire server in one go.
+     * @param index the index of the player who caught an exception during their npc info processing
+     * @param exception the exception caught during processing
+     */
+    private fun catchException(
+        index: Int,
+        exception: Exception,
+    ) {
+        val info = npcInfoRepository.getOrNull(index) ?: return
+        npcInfoRepository.destroy(index)
+        info.exception = exception
     }
 
     public companion object {
@@ -170,5 +232,6 @@ public class NpcInfoProtocol(
          * The maximum number of players in a world.
          */
         public const val PROTOCOL_CAPACITY: Int = 2048
+        private val logger: InlineLogger = InlineLogger()
     }
 }

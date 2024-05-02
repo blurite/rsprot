@@ -1,6 +1,8 @@
 package net.rsprot.protocol.game.outgoing.interfaces
 
-import net.rsprot.protocol.message.OutgoingMessage
+import net.rsprot.protocol.ServerProtCategory
+import net.rsprot.protocol.game.incoming.GameServerProtCategory
+import net.rsprot.protocol.message.OutgoingGameMessage
 import net.rsprot.protocol.message.toIntOrMinusOne
 import net.rsprot.protocol.util.CombinedId
 
@@ -18,7 +20,7 @@ public class IfInitialState private constructor(
     private val _topLevelInterface: UShort,
     public val subInterfaces: List<SubInterfaceMessage>,
     public val events: List<InterfaceEventsMessage>,
-) : OutgoingMessage {
+) : OutgoingGameMessage {
     public constructor(
         topLevelInterface: Int,
         subInterfaces: List<SubInterfaceMessage>,
@@ -31,6 +33,8 @@ public class IfInitialState private constructor(
 
     public val topLevelInterface: Int
         get() = _topLevelInterface.toIntOrMinusOne()
+    override val category: ServerProtCategory
+        get() = GameServerProtCategory.LOW_PRIORITY_PROT
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

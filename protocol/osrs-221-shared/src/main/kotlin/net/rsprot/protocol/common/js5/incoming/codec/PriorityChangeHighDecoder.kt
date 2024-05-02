@@ -14,6 +14,7 @@ public class PriorityChangeHighDecoder : MessageDecoder<PriorityChangeHigh> {
         buffer: JagByteBuf,
         tools: MessageDecodingTools,
     ): PriorityChangeHigh {
+        buffer.skipRead(3)
         return PriorityChangeHigh
     }
 }

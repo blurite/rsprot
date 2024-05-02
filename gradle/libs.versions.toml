@@ -1,5 +1,5 @@
 [versions]
-kotlin = "2.0.0-RC1"
+kotlin = "1.9.23"
 netty = "4.1.107.Final"
 netty-iouring = "0.0.25.Final"
 junit = "5.10.2"
@@ -8,6 +8,7 @@ inlinelogger = "1.0.6"
 log4j = "2.23.1"
 commons-pool2 = "2.12.0"
 ktlint = "12.1.0"
+jnagmp = "3.0.0"
 
 [libraries]
 netty-bom = { module = "io.netty:netty-bom", version.ref = "netty" }
@@ -29,6 +30,7 @@ log4j-slf4j-impl = { module = "org.apache.logging.log4j:log4j-slf4j2-impl" }
 jmh-runtime = { module = "org.jetbrains.kotlinx:kotlinx-benchmark-runtime", version.ref = "jmh" }
 inline-logger = { module = "com.michael-bull.kotlin-inline-logger:kotlin-inline-logger", version.ref = "inlinelogger" }
 commons-pool2 = { module = "org.apache.commons:commons-pool2", version.ref = "commons-pool2" }
+jna-gmp = { module = "com.squareup.jnagmp:jnagmp", version.ref = "jnagmp" }
 
 [plugins]
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }

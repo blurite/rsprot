@@ -1,6 +1,8 @@
 package net.rsprot.protocol.game.incoming.clan
 
-import net.rsprot.protocol.message.IncomingMessage
+import net.rsprot.protocol.ClientProtCategory
+import net.rsprot.protocol.game.incoming.GameClientProtCategory
+import net.rsprot.protocol.message.IncomingGameMessage
 
 /**
  * Clan ban messages are sent when a player with sufficient rank
@@ -20,7 +22,7 @@ public class AffinedClanSettingsSetMutedFromChannel private constructor(
     private val _clanId: UByte,
     private val _memberIndex: UShort,
     public val muted: Boolean,
-) : IncomingMessage {
+) : IncomingGameMessage {
     public constructor(
         name: String,
         clanId: Int,
@@ -37,6 +39,8 @@ public class AffinedClanSettingsSetMutedFromChannel private constructor(
         get() = _clanId.toInt()
     public val memberIndex: Int
         get() = _memberIndex.toInt()
+    override val category: ClientProtCategory
+        get() = GameClientProtCategory.USER_EVENT
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

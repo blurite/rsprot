@@ -1,6 +1,8 @@
 package net.rsprot.protocol.game.outgoing.social
 
-import net.rsprot.protocol.message.OutgoingMessage
+import net.rsprot.protocol.ServerProtCategory
+import net.rsprot.protocol.game.incoming.GameServerProtCategory
+import net.rsprot.protocol.message.OutgoingGameMessage
 
 /**
  * Update ignorelist is used to perform changes to the ignore list.
@@ -10,7 +12,10 @@ import net.rsprot.protocol.message.OutgoingMessage
  */
 public class UpdateIgnoreList(
     public val ignores: List<IgnoredPlayer>,
-) : OutgoingMessage {
+) : OutgoingGameMessage {
+    override val category: ServerProtCategory
+        get() = GameServerProtCategory.LOW_PRIORITY_PROT
+
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (javaClass != other?.javaClass) return false

@@ -1,5 +1,5 @@
 package net.rsprot.protocol.loginprot.incoming
 
-import net.rsprot.protocol.message.IncomingMessage
+import net.rsprot.protocol.message.IncomingLoginMessage
 
-public data object InitGameConnection : IncomingMessage
+public data object InitGameConnection : IncomingLoginMessage

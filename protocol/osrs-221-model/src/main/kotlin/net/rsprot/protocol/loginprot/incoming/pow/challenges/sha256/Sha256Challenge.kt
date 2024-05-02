@@ -1,5 +1,6 @@
 package net.rsprot.protocol.loginprot.incoming.pow.challenges.sha256
 
+import net.rsprot.buffer.JagByteBuf
 import net.rsprot.protocol.loginprot.incoming.pow.challenges.ChallengeType
 
 /**
@@ -23,8 +24,6 @@ import net.rsprot.protocol.loginprot.incoming.pow.challenges.ChallengeType
  * or if there are a lot of requests from a single IP.
  * @property salt the salt string that is the bulk of the input to hash.
  * @property id the id of the challenge as identified by the client.
- * @property resultSize the number of bytes the server must have in its socket after sending
- * a SHA-256 challenge request, in order to attempt to verify it.
  */
 public class Sha256Challenge(
     public val unknown: Int,
@@ -33,8 +32,12 @@ public class Sha256Challenge(
 ) : ChallengeType<Sha256MetaData> {
     override val id: Int
         get() = 0
-    override val resultSize: Int
-        get() = Long.SIZE_BYTES
+
+    override fun encode(buffer: JagByteBuf) {
+        buffer.p1(unknown)
+        buffer.p1(difficulty)
+        buffer.pjstr(salt, Charsets.UTF_8)
+    }
 
     /**
      * Gets the base string that is part of the input for the hash.

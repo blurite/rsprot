@@ -1,6 +1,8 @@
 package net.rsprot.protocol.game.outgoing.sound
 
-import net.rsprot.protocol.message.OutgoingMessage
+import net.rsprot.protocol.ServerProtCategory
+import net.rsprot.protocol.game.incoming.GameServerProtCategory
+import net.rsprot.protocol.message.OutgoingGameMessage
 
 /**
  * Midi song old packet is used to play a midi song, in the old format.
@@ -9,7 +11,10 @@ import net.rsprot.protocol.message.OutgoingMessage
  */
 public class MidiSongOld(
     public val id: Int,
-) : OutgoingMessage {
+) : OutgoingGameMessage {
+    override val category: ServerProtCategory
+        get() = GameServerProtCategory.LOW_PRIORITY_PROT
+
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (javaClass != other?.javaClass) return false

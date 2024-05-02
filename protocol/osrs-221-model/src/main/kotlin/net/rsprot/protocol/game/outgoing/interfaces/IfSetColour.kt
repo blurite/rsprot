@@ -1,6 +1,8 @@
 package net.rsprot.protocol.game.outgoing.interfaces
 
-import net.rsprot.protocol.message.OutgoingMessage
+import net.rsprot.protocol.ServerProtCategory
+import net.rsprot.protocol.game.incoming.GameServerProtCategory
+import net.rsprot.protocol.message.OutgoingGameMessage
 import net.rsprot.protocol.util.CombinedId
 import java.awt.Color
 
@@ -16,7 +18,7 @@ import java.awt.Color
 public class IfSetColour private constructor(
     public val combinedId: CombinedId,
     private val colour: Rs15BitColour,
-) : OutgoingMessage {
+) : OutgoingGameMessage {
     public constructor(
         interfaceId: Int,
         componentId: Int,
@@ -65,6 +67,8 @@ public class IfSetColour private constructor(
         get() = colour.blue
     public val colour15BitPacked: Int
         get() = colour.packed.toInt()
+    override val category: ServerProtCategory
+        get() = GameServerProtCategory.LOW_PRIORITY_PROT
 
     /**
      * Turns the 15-bit RS RGB colour into a 24-bit normalized RGB colour.

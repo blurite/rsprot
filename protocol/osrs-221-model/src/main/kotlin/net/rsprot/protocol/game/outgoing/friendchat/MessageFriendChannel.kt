@@ -1,7 +1,9 @@
 package net.rsprot.protocol.game.outgoing.friendchat
 
 import net.rsprot.compression.Base37
-import net.rsprot.protocol.message.OutgoingMessage
+import net.rsprot.protocol.ServerProtCategory
+import net.rsprot.protocol.game.incoming.GameServerProtCategory
+import net.rsprot.protocol.message.OutgoingGameMessage
 
 /**
  * Message friendchannel is used to transmit messages within a friend
@@ -40,7 +42,7 @@ public class MessageFriendChannel private constructor(
     public val worldMessageCounter: Int,
     private val _chatCrownType: UByte,
     public val message: String,
-) : OutgoingMessage {
+) : OutgoingGameMessage {
     public constructor(
         sender: String,
         channelName: String,
@@ -63,6 +65,8 @@ public class MessageFriendChannel private constructor(
         get() = _worldId.toInt()
     public val chatCrownType: Int
         get() = _chatCrownType.toInt()
+    override val category: ServerProtCategory
+        get() = GameServerProtCategory.LOW_PRIORITY_PROT
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

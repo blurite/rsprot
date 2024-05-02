@@ -1,7 +1,9 @@
 package net.rsprot.protocol.game.incoming.misc.user
 
+import net.rsprot.protocol.ClientProtCategory
 import net.rsprot.protocol.common.game.outgoing.info.CoordGrid
-import net.rsprot.protocol.message.IncomingMessage
+import net.rsprot.protocol.game.incoming.GameClientProtCategory
+import net.rsprot.protocol.message.IncomingGameMessage
 
 /**
  * Click world map events are transmitted when the user double-clicks
@@ -23,13 +25,15 @@ import net.rsprot.protocol.message.IncomingMessage
  */
 public class ClickWorldMap(
     private val coordGrid: CoordGrid,
-) : IncomingMessage {
+) : IncomingGameMessage {
     public val x: Int
         get() = coordGrid.x
     public val z: Int
         get() = coordGrid.z
     public val level: Int
         get() = coordGrid.level
+    override val category: ClientProtCategory
+        get() = GameClientProtCategory.USER_EVENT
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

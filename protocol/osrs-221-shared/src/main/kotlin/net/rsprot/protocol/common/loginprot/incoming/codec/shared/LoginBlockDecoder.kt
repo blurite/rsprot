@@ -1,8 +1,9 @@
 package net.rsprot.protocol.common.loginprot.incoming.codec.shared
 
 import net.rsprot.buffer.JagByteBuf
-import net.rsprot.protocol.cryptography.decipherRsa
-import net.rsprot.protocol.cryptography.xteaDecrypt
+import net.rsprot.buffer.extensions.toJagByteBuf
+import net.rsprot.crypto.rsa.decipherRsa
+import net.rsprot.crypto.xtea.xteaDecrypt
 import net.rsprot.protocol.loginprot.incoming.util.CyclicRedundancyCheckBlock
 import net.rsprot.protocol.loginprot.incoming.util.HostPlatformStats
 import net.rsprot.protocol.loginprot.incoming.util.LoginBlock
@@ -21,11 +22,11 @@ public abstract class LoginBlockDecoder<T>(
         val platformType = buffer.g1()
         val constZero1 = buffer.g1()
         val rsaBuffer =
-            buffer.decipherRsa(
+            buffer.buffer.decipherRsa(
                 exp,
                 mod,
                 buffer.g2(),
-            )
+            ).toJagByteBuf()
         val encryptionCheck = rsaBuffer.g1()
         check(encryptionCheck == 1) {
             "Invalid RSA check: $encryptionCheck"
@@ -36,7 +37,8 @@ public abstract class LoginBlockDecoder<T>(
             }
         val sessionId = rsaBuffer.g8()
         val authentication = decodeAuthentication(rsaBuffer)
-        val xteaBuffer = buffer.xteaDecrypt(seed)
+        rsaBuffer.buffer.release()
+        val xteaBuffer = buffer.buffer.xteaDecrypt(seed).toJagByteBuf()
         val username = xteaBuffer.gjstr()
         val packedClientSettings = xteaBuffer.g1()
         val lowDetail = packedClientSettings and 0x1 != 0
@@ -128,7 +130,7 @@ public abstract class LoginBlockDecoder<T>(
         val javaVersionMajor = buffer.g1()
         val javaVersionMinor = buffer.g1()
         val javaVersionPatch = buffer.g1()
-        val unknownConstZero1 = buffer.g1()
+        val applet = buffer.g1() == 0
         val javaMaxMemoryMb = buffer.g2()
         val javaAvailableProcessors = buffer.g1()
         val systemMemory = buffer.g3()
@@ -142,7 +144,7 @@ public abstract class LoginBlockDecoder<T>(
         val cpuManufacturer = buffer.gjstr2()
         val cpuBrand = buffer.gjstr2()
         val cpuCount1 = buffer.g1()
-        val cpuCount2 = buffer.g2()
+        val cpuCount2 = buffer.g1()
         val cpuFeatures =
             IntArray(3) {
                 buffer.g4()
@@ -159,7 +161,7 @@ public abstract class LoginBlockDecoder<T>(
             javaVersionMajor.toUByte(),
             javaVersionMinor.toUByte(),
             javaVersionPatch.toUByte(),
-            unknownConstZero1.toUByte(),
+            applet,
             javaMaxMemoryMb.toUShort(),
             javaAvailableProcessors.toUByte(),
             systemMemory,

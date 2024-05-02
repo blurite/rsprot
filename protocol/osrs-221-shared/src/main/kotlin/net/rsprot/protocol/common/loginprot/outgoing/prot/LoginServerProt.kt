@@ -59,7 +59,7 @@ public enum class LoginServerProt(
     LOGIN_FAIL_1(LoginServerProtId.LOGIN_FAIL_1, 0),
     LOGIN_FAIL_2(LoginServerProtId.LOGIN_FAIL_2, 0),
     OUT_OF_DATE_RELOAD(LoginServerProtId.OUT_OF_DATE_RELOAD, 0),
-    PROOF_OF_WORK(LoginServerProtId.PROOF_OF_WORK, 0),
+    PROOF_OF_WORK(LoginServerProtId.PROOF_OF_WORK, -2),
     DOB_ERROR(LoginServerProtId.DOB_ERROR, 0),
     WEBSITE_DOB(LoginServerProtId.WEBSITE_DOB, 0),
     DOB_REVIEW(LoginServerProtId.DOB_REVIEW, 0),

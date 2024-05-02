@@ -334,6 +334,16 @@ public class NpcAvatar internal constructor(
         return details.currentCoord.z
     }
 
+    /**
+     * Sets this avatar inaccessible, meaning no player can observe this NPC,
+     * but they are still in the world. This is how NPCs in the 'dead' state
+     * will be handled.
+     * @param inaccessible whether the npc is inaccessible to all players (not rendered)
+     */
+    public fun setInaccessible(inaccessible: Boolean) {
+        details.inaccessible = inaccessible
+    }
+
     override fun postUpdate() {
         details.lastCoord = details.currentCoord
         details.stepCount = 0

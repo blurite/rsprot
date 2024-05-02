@@ -1,6 +1,5 @@
 package net.rsprot.protocol.loginprot.incoming.pow.challenges
 
-import net.rsprot.buffer.JagByteBuf
 import java.util.concurrent.CompletableFuture
 
 /**
@@ -9,8 +8,8 @@ import java.util.concurrent.CompletableFuture
  * is similar to the work itself done.
  */
 public data object DefaultChallengeWorker : ChallengeWorker {
-    override fun <T : ChallengeType<*>, V : ChallengeVerifier<T>> verify(
-        result: JagByteBuf,
+    public override fun <T : ChallengeType<*>, V : ChallengeVerifier<T>> verify(
+        result: Long,
         challenge: T,
         verifier: V,
     ): CompletableFuture<Boolean> {

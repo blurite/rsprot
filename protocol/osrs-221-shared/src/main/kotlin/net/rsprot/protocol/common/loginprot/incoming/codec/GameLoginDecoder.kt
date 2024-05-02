@@ -1,6 +1,7 @@
 package net.rsprot.protocol.common.loginprot.incoming.codec
 
 import net.rsprot.buffer.JagByteBuf
+import net.rsprot.buffer.extensions.toJagByteBuf
 import net.rsprot.protocol.ClientProt
 import net.rsprot.protocol.common.loginprot.incoming.codec.shared.LoginBlockDecoder
 import net.rsprot.protocol.common.loginprot.incoming.prot.LoginClientProt
@@ -23,7 +24,12 @@ public class GameLoginDecoder(
         buffer: JagByteBuf,
         tools: MessageDecodingTools,
     ): GameLogin {
-        return GameLogin(decodeLoginBlock(buffer))
+        val copy = buffer.buffer.copy()
+        // Mark the buffer as "read" as copy function doesn't do it automatically.
+        buffer.buffer.readerIndex(buffer.buffer.writerIndex())
+        return GameLogin(copy.toJagByteBuf()) {
+            decodeLoginBlock(it)
+        }
     }
 
     override fun decodeAuthentication(buffer: JagByteBuf): AuthenticationType<*> {
@@ -49,21 +55,20 @@ public class GameLoginDecoder(
         return when (val otpType = buffer.g1()) {
             OTP_TOKEN -> {
                 val identifier = buffer.g4()
-                buffer.skipWrite(1)
                 OtpAuthenticationType.TrustedComputer(identifier)
             }
             OTP_REMEMBER -> {
                 val otpKey = buffer.g3()
-                buffer.skipWrite(1)
+                buffer.skipRead(1)
                 OtpAuthenticationType.TrustedAuthenticator(otpKey)
             }
             OTP_NONE -> {
-                buffer.skipWrite(4)
+                buffer.skipRead(4)
                 OtpAuthenticationType.NoMultiFactorAuthentication
             }
             OTP_FORGET -> {
                 val otpKey = buffer.g3()
-                buffer.skipWrite(1)
+                buffer.skipRead(1)
                 OtpAuthenticationType.UntrustedAuthentication(otpKey)
             }
             else -> {

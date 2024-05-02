@@ -27,7 +27,8 @@ public class MessagePublicDecoder : MessageDecoder<MessagePublic> {
             } else {
                 null
             }
-        val message = tools.huffmanCodec.decode(buffer)
+        val huffman = tools.huffmanCodec.provide()
+        val message = huffman.decode(buffer)
         val clanType =
             if (type == CLAN_MAIN_CHANNEL_TYPE) {
                 buffer.g1()

@@ -1,7 +1,9 @@
 package net.rsprot.protocol.game.outgoing.camera
 
+import net.rsprot.protocol.ServerProtCategory
+import net.rsprot.protocol.game.incoming.GameServerProtCategory
 import net.rsprot.protocol.game.outgoing.camera.util.CameraEaseFunction
-import net.rsprot.protocol.message.OutgoingMessage
+import net.rsprot.protocol.message.OutgoingGameMessage
 
 /**
  * Cam look at eased angle relative is used to make the camera look towards
@@ -26,7 +28,7 @@ public class CamLookAtEasedAngleAbsolute private constructor(
     private val _yAngle: Short,
     private val _duration: UShort,
     private val _function: UByte,
-) : OutgoingMessage {
+) : OutgoingGameMessage {
     public constructor(
         xAngle: Int,
         yAngle: Int,
@@ -47,6 +49,8 @@ public class CamLookAtEasedAngleAbsolute private constructor(
         get() = _duration.toInt()
     public val function: CameraEaseFunction
         get() = CameraEaseFunction[_function.toInt()]
+    override val category: ServerProtCategory
+        get() = GameServerProtCategory.LOW_PRIORITY_PROT
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

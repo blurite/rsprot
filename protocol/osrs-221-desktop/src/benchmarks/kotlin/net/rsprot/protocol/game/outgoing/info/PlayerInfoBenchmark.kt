@@ -3,7 +3,8 @@ package net.rsprot.protocol.game.outgoing.info
 import io.netty.buffer.PooledByteBufAllocator
 import io.netty.buffer.Unpooled
 import net.rsprot.compression.HuffmanCodec
-import net.rsprot.protocol.common.platform.PlatformType
+import net.rsprot.compression.provider.DefaultHuffmanCodecProvider
+import net.rsprot.protocol.common.client.OldSchoolClientType
 import net.rsprot.protocol.game.outgoing.codec.playerinfo.extendedinfo.writer.PlayerAvatarExtendedInfoDesktopWriter
 import net.rsprot.protocol.game.outgoing.info.filter.DefaultExtendedInfoFilter
 import net.rsprot.protocol.game.outgoing.info.playerinfo.PlayerAvatarFactory
@@ -44,7 +45,7 @@ class PlayerInfoBenchmark {
                 allocator,
                 DefaultExtendedInfoFilter(),
                 listOf(PlayerAvatarExtendedInfoDesktopWriter()),
-                createHuffmanCodec(),
+                DefaultHuffmanCodecProvider(createHuffmanCodec()),
             )
         protocol =
             PlayerInfoProtocol(
@@ -54,13 +55,12 @@ class PlayerInfoBenchmark {
             )
         players = arrayOfNulls(PROTOCOL_CAPACITY)
         for (i in 1..<MAX_IDX) {
-            val player = protocol.alloc(i, PlatformType.DESKTOP)
+            val player = protocol.alloc(i, OldSchoolClientType.DESKTOP)
             players[i] = player
             player.updateCoord(0, random.nextInt(3200, 3213), random.nextInt(3200, 3213))
+            player.avatar.postUpdate()
             initializeAppearance(player, i)
         }
-        protocol.prepareExtendedInfo()
-        postUpdate()
     }
 
     private fun initializeAppearance(
@@ -97,10 +97,6 @@ class PlayerInfoBenchmark {
         )
     }
 
-    private fun postUpdate() {
-        protocol.postUpdate()
-    }
-
     private fun tick() {
         for (i in 1..<MAX_IDX) {
             val player = checkNotNull(players[i])
@@ -114,15 +110,11 @@ class PlayerInfoBenchmark {
                 null,
             )
         }
-        protocol.prepare()
-        protocol.putBitcodes()
-        protocol.prepareExtendedInfo()
-        protocol.putExtendedInfo()
+        protocol.update()
         for (i in 1..<MAX_IDX) {
             val player = checkNotNull(players[i])
             player.backingBuffer().release()
         }
-        postUpdate()
     }
 
     @Benchmark

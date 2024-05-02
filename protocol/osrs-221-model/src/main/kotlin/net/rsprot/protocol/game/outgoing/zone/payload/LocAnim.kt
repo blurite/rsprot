@@ -1,8 +1,11 @@
 package net.rsprot.protocol.game.outgoing.zone.payload
 
-import net.rsprot.protocol.common.game.outgoing.codec.zone.payload.ZoneProt
+import net.rsprot.protocol.ServerProtCategory
+import net.rsprot.protocol.common.game.outgoing.codec.zone.payload.OldSchoolZoneProt
+import net.rsprot.protocol.game.incoming.GameServerProtCategory
 import net.rsprot.protocol.game.outgoing.zone.payload.util.CoordInZone
 import net.rsprot.protocol.game.outgoing.zone.payload.util.LocProperties
+import net.rsprot.protocol.message.ZoneProt
 
 /**
  * Loc anim packets are used to make a loc play an animation.
@@ -46,8 +49,10 @@ public class LocAnim private constructor(
         get() = coordInZone.packed.toInt()
     public val locPropertiesPacked: Int
         get() = locProperties.packed.toInt()
+    override val category: ServerProtCategory
+        get() = GameServerProtCategory.HIGH_PRIORITY_PROT
 
-    override val protId: Int = ZoneProt.LOC_ANIM
+    override val protId: Int = OldSchoolZoneProt.LOC_ANIM
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

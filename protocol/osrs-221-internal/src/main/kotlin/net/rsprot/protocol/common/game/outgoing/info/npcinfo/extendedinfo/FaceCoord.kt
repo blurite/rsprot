@@ -1,11 +1,11 @@
 package net.rsprot.protocol.common.game.outgoing.info.npcinfo.extendedinfo
 
+import net.rsprot.protocol.common.client.ClientTypeMap
 import net.rsprot.protocol.common.game.outgoing.info.TransientExtendedInfo
 import net.rsprot.protocol.common.game.outgoing.info.encoder.PrecomputedExtendedInfoEncoder
-import net.rsprot.protocol.common.platform.PlatformMap
 
 public class FaceCoord(
-    override val encoders: PlatformMap<PrecomputedExtendedInfoEncoder<FaceCoord>>,
+    override val encoders: ClientTypeMap<PrecomputedExtendedInfoEncoder<FaceCoord>>,
 ) : TransientExtendedInfo<FaceCoord, PrecomputedExtendedInfoEncoder<FaceCoord>>() {
     public var instant: Boolean = false
     public var x: UShort = 0xFFFFu

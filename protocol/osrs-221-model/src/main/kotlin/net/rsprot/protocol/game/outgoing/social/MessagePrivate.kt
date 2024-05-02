@@ -1,6 +1,8 @@
 package net.rsprot.protocol.game.outgoing.social
 
-import net.rsprot.protocol.message.OutgoingMessage
+import net.rsprot.protocol.ServerProtCategory
+import net.rsprot.protocol.game.incoming.GameServerProtCategory
+import net.rsprot.protocol.message.OutgoingGameMessage
 
 /**
  * Message private packets are used to send private messages between
@@ -39,7 +41,7 @@ public class MessagePrivate private constructor(
     public val worldMessageCounter: Int,
     private val _chatCrownType: UByte,
     public val message: String,
-) : OutgoingMessage {
+) : OutgoingGameMessage {
     public constructor(
         sender: String,
         worldId: Int,
@@ -58,6 +60,8 @@ public class MessagePrivate private constructor(
         get() = _worldId.toInt()
     public val chatCrownType: Int
         get() = _chatCrownType.toInt()
+    override val category: ServerProtCategory
+        get() = GameServerProtCategory.LOW_PRIORITY_PROT
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

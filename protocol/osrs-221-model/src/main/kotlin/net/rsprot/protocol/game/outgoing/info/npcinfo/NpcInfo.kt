@@ -5,13 +5,14 @@ import io.netty.buffer.ByteBufAllocator
 import net.rsprot.buffer.bitbuffer.BitBuf
 import net.rsprot.buffer.bitbuffer.toBitBuf
 import net.rsprot.buffer.extensions.toJagByteBuf
+import net.rsprot.protocol.common.client.ClientTypeMap
+import net.rsprot.protocol.common.client.OldSchoolClientType
 import net.rsprot.protocol.common.game.outgoing.info.CoordGrid
 import net.rsprot.protocol.common.game.outgoing.info.npcinfo.encoder.NpcResolutionChangeEncoder
-import net.rsprot.protocol.common.platform.PlatformMap
-import net.rsprot.protocol.common.platform.PlatformType
 import net.rsprot.protocol.game.outgoing.info.ObserverExtendedInfoFlags
+import net.rsprot.protocol.game.outgoing.info.exceptions.InfoProcessException
 import net.rsprot.protocol.game.outgoing.info.util.ReferencePooledObject
-import net.rsprot.protocol.message.OutgoingMessage
+import net.rsprot.protocol.message.OutgoingGameMessage
 import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.contract
 
@@ -23,26 +24,26 @@ import kotlin.contracts.contract
  * for the npc info packet, as well as the pre-built extended info buffers.
  * @property repository the npc avatar repository, keeping track of every npc avatar that exists
  * in the game.
- * @property platformType the platform the player owning this npc info packet is on
+ * @property oldSchoolClientType the client the player owning this npc info packet is on
  * @property localPlayerIndex the index of the local player that owns this npc info packet.
  * @property indexSupplier a supplier-style interface responsible for yielding npc indices
  * which are within vicinity of the player. This is the primary way the server will be providing
  * information about nearby NPCs to a player, as well as whether to render the NPC in the first place,
  * as some NPCs are meant to only render to a given player if certain conditions are met.
- * @property lowResolutionToHighResolutionEncoders a platform map of low resolution to high resolution
+ * @property lowResolutionToHighResolutionEncoders a client map of low resolution to high resolution
  * change encoders, used to move a npc into high resolution for the given player.
- * As this is scrambled, a separate platform-specific implementation is required.
+ * As this is scrambled, a separate client-specific implementation is required.
  */
 @Suppress("ReplaceUntilWithRangeUntil")
 @ExperimentalUnsignedTypes
 public class NpcInfo internal constructor(
     private val allocator: ByteBufAllocator,
     private val repository: NpcAvatarRepository,
-    private var platformType: PlatformType,
-    private var localPlayerIndex: Int,
+    private var oldSchoolClientType: OldSchoolClientType,
+    internal var localPlayerIndex: Int,
     private val indexSupplier: NpcIndexSupplier,
-    private val lowResolutionToHighResolutionEncoders: PlatformMap<NpcResolutionChangeEncoder>,
-) : ReferencePooledObject, OutgoingMessage {
+    private val lowResolutionToHighResolutionEncoders: ClientTypeMap<NpcResolutionChangeEncoder>,
+) : ReferencePooledObject {
     /**
      * The last cycle's coordinate of the local player, used to perform faster npc removal.
      * If the player moves a greater distance than the [viewDistance], we can make the assumption
@@ -123,6 +124,13 @@ public class NpcInfo internal constructor(
     private var buffer: ByteBuf? = null
 
     /**
+     * The exception that was caught during the processing of this player's npc info packet.
+     * This exception will be propagated further during the [toNpcInfoPacket] function call,
+     * allowing the server to handle it properly at a per-player basis.
+     */
+    internal var exception: Exception? = null
+
+    /**
      * Returns the backing byte buffer holding all the computed information.
      * @throws IllegalStateException if the buffer is null, meaning it has no yet been
      * initialized for this cycle.
@@ -130,6 +138,25 @@ public class NpcInfo internal constructor(
     @Throws(IllegalStateException::class)
     public fun backingBuffer(): ByteBuf {
         return checkNotNull(buffer)
+    }
+
+    /**
+     * Turns this npc info structure into a respective npc info packet, depending
+     * on the current known view distance.
+     */
+    public fun toNpcInfoPacket(): OutgoingGameMessage {
+        val exception = this.exception
+        if (exception != null) {
+            throw InfoProcessException(
+                "Exception occurred during npc info processing for index $localPlayerIndex",
+                exception,
+            )
+        }
+        return if (this.viewDistance > MAX_SMALL_PACKET_DISTANCE) {
+            NpcInfoLarge(backingBuffer())
+        } else {
+            NpcInfoSmall(backingBuffer())
+        }
     }
 
     /**
@@ -197,6 +224,7 @@ public class NpcInfo internal constructor(
     public fun afterUpdate() {
         this.localPlayerLastCoord = localPlayerCurrentCoord
         extendedInfoCount = 0
+        observerExtendedInfoFlags.reset()
     }
 
     /**
@@ -210,7 +238,7 @@ public class NpcInfo internal constructor(
             val other = checkNotNull(repository.getOrNull(index))
             val observerFlag = other.extendedInfo.flags or observerExtendedInfoFlags.getFlag(i)
             other.extendedInfo.pExtendedInfo(
-                platformType,
+                oldSchoolClientType,
                 jagBuffer,
                 observerFlag,
                 extendedInfoCount - i,
@@ -321,6 +349,7 @@ public class NpcInfo internal constructor(
                 buffer.pBits(1, 1)
                 buffer.pBits(2, 3)
                 avatar?.removeObserver()
+                highResolutionNpcIndices[i] = NPC_INDEX_TERMINATOR
                 highResolutionNpcIndexCount--
                 continue
             }
@@ -389,7 +418,7 @@ public class NpcInfo internal constructor(
         if (this.highResolutionNpcIndexCount >= MAX_HIGH_RESOLUTION_NPCS) {
             return
         }
-        val encoder = lowResolutionToHighResolutionEncoders[platformType]
+        val encoder = lowResolutionToHighResolutionEncoders[oldSchoolClientType]
         val largeDistance = viewDistance > MAX_SMALL_PACKET_DISTANCE
         val npcs =
             this.indexSupplier.supply(
@@ -408,12 +437,18 @@ public class NpcInfo internal constructor(
                 break
             }
             val avatar = repository.getOrNull(index) ?: continue
+            if (avatar.details.inaccessible) {
+                continue
+            }
             avatar.addObserver()
             val i = highResolutionNpcIndexCount++
             highResolutionNpcIndices[i] = index.toUShort()
             val observerFlags = avatar.extendedInfo.getLowToHighResChangeExtendedInfoFlags()
             this.observerExtendedInfoFlags.addFlag(i, observerFlags)
             val extendedInfo = (avatar.extendedInfo.flags or observerFlags) != 0
+            if (extendedInfo) {
+                extendedInfoIndices[extendedInfoCount++] = index.toUShort()
+            }
             encoder.encode(
                 buffer,
                 avatar.details,
@@ -458,10 +493,10 @@ public class NpcInfo internal constructor(
 
     override fun onAlloc(
         index: Int,
-        platformType: PlatformType,
+        oldSchoolClientType: OldSchoolClientType,
     ) {
         this.localPlayerIndex = index
-        this.platformType = platformType
+        this.oldSchoolClientType = oldSchoolClientType
         this.localPlayerLastCoord = CoordGrid.INVALID
         this.viewDistance = MAX_SMALL_PACKET_DISTANCE
         this.highResolutionNpcIndexCount = 0

@@ -1,7 +1,9 @@
 package net.rsprot.protocol.game.outgoing.misc.player
 
+import net.rsprot.protocol.ServerProtCategory
+import net.rsprot.protocol.game.incoming.GameServerProtCategory
 import net.rsprot.protocol.game.outgoing.zone.payload.util.CoordInBuildArea
-import net.rsprot.protocol.message.OutgoingMessage
+import net.rsprot.protocol.message.OutgoingGameMessage
 
 /**
  * Set map flag is used to set the red map flag on the minimap.
@@ -13,7 +15,7 @@ import net.rsprot.protocol.message.OutgoingMessage
  */
 public class SetMapFlag private constructor(
     private val coordInBuildArea: CoordInBuildArea,
-) : OutgoingMessage {
+) : OutgoingGameMessage {
     public constructor(
         xInBuildArea: Int,
         zInBuildArea: Int,
@@ -25,6 +27,8 @@ public class SetMapFlag private constructor(
         get() = coordInBuildArea.xInBuildArea
     public val zInBuildArea: Int
         get() = coordInBuildArea.zInBuildArea
+    override val category: ServerProtCategory
+        get() = GameServerProtCategory.LOW_PRIORITY_PROT
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

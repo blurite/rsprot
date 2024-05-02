@@ -50,12 +50,24 @@ public object RSProtFlags {
             "clientscriptVerification",
             development,
         )
+    public val networkLogging: Boolean =
+        getBoolean(
+            "networkLogging",
+            false,
+        )
+    public val js5Logging: Boolean =
+        getBoolean(
+            "js5Logging",
+            false,
+        )
 
     init {
         log("development", development)
         log("inventoryObjCheck", inventoryObjCheck)
         log("extendedInfoInputVerification", extendedInfoInputVerification)
         log("clientscriptVerification", clientscriptVerification)
+        log("networkLogging", networkLogging)
+        log("js5Logging", js5Logging)
     }
 
     private fun getBoolean(

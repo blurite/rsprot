@@ -1,6 +1,8 @@
 package net.rsprot.protocol.game.incoming.buttons
 
-import net.rsprot.protocol.message.IncomingMessage
+import net.rsprot.protocol.ClientProtCategory
+import net.rsprot.protocol.game.incoming.GameClientProtCategory
+import net.rsprot.protocol.message.IncomingGameMessage
 import net.rsprot.protocol.message.toIntOrMinusOne
 import net.rsprot.protocol.util.CombinedId
 
@@ -26,7 +28,7 @@ public class IfButtonT private constructor(
     private val targetCombinedId: CombinedId,
     private val _targetSub: UShort,
     private val _targetObj: UShort,
-) : IncomingMessage {
+) : IncomingGameMessage {
     public constructor(
         selectedCombinedId: CombinedId,
         selectedSub: Int,
@@ -59,6 +61,8 @@ public class IfButtonT private constructor(
         get() = _targetSub.toIntOrMinusOne()
     public val targetObj: Int
         get() = _targetObj.toIntOrMinusOne()
+    override val category: ClientProtCategory
+        get() = GameClientProtCategory.USER_EVENT
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

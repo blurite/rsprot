@@ -4,6 +4,8 @@ import net.rsprot.protocol.ProtRepository
 import net.rsprot.protocol.common.loginprot.outgoing.codec.DisallowedByScriptLoginResponseEncoder
 import net.rsprot.protocol.common.loginprot.outgoing.codec.EmptyLoginResponseEncoder
 import net.rsprot.protocol.common.loginprot.outgoing.codec.OkLoginResponseEncoder
+import net.rsprot.protocol.common.loginprot.outgoing.codec.ProofOfWorkResponseEncoder
+import net.rsprot.protocol.common.loginprot.outgoing.codec.SuccessfulLoginResponseEncoder
 import net.rsprot.protocol.loginprot.outgoing.LoginResponse
 import net.rsprot.protocol.message.codec.outgoing.MessageEncoderRepository
 import net.rsprot.protocol.message.codec.outgoing.MessageEncoderRepositoryBuilder
@@ -20,7 +22,8 @@ public object LoginMessageEncoderRepository {
             ).apply {
                 bind(OkLoginResponseEncoder())
                 bind(DisallowedByScriptLoginResponseEncoder())
-                bind(Encoder<LoginResponse.Successful>(LoginServerProt.SUCCESSFUL))
+                bind(ProofOfWorkResponseEncoder())
+                bind(SuccessfulLoginResponseEncoder())
                 bind(Encoder<LoginResponse.InvalidUsernameOrPassword>(LoginServerProt.INVALID_USERNAME_OR_PASSWORD))
                 bind(Encoder<LoginResponse.Banned>(LoginServerProt.BANNED))
                 bind(Encoder<LoginResponse.Duplicate>(LoginServerProt.DUPLICATE))
@@ -71,7 +74,6 @@ public object LoginMessageEncoderRepository {
                 bind(Encoder<LoginResponse.LoginFail1>(LoginServerProt.LOGIN_FAIL_1))
                 bind(Encoder<LoginResponse.LoginFail2>(LoginServerProt.LOGIN_FAIL_2))
                 bind(Encoder<LoginResponse.OutOfDateReload>(LoginServerProt.OUT_OF_DATE_RELOAD))
-                bind(Encoder<LoginResponse.ProofOfWork>(LoginServerProt.PROOF_OF_WORK))
                 bind(Encoder<LoginResponse.DobError>(LoginServerProt.DOB_ERROR))
                 bind(Encoder<LoginResponse.DobReview>(LoginServerProt.DOB_REVIEW))
                 bind(Encoder<LoginResponse.ClosedBeta>(LoginServerProt.CLOSED_BETA))

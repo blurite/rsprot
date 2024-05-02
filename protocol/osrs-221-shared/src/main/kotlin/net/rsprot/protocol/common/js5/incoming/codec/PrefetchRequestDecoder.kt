@@ -14,7 +14,7 @@ public class PrefetchRequestDecoder : MessageDecoder<PrefetchRequest> {
         buffer: JagByteBuf,
         tools: MessageDecodingTools,
     ): PrefetchRequest {
-        val archiveId = buffer.g2()
+        val archiveId = buffer.g1()
         val groupId = buffer.g2()
         return PrefetchRequest(
             archiveId.toUByte(),

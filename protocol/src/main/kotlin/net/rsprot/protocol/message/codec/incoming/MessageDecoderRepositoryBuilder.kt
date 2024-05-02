@@ -9,7 +9,8 @@ public class MessageDecoderRepositoryBuilder<P : ClientProt>(
     private val protRepository: ProtRepository<P>,
 ) {
     private val decoders: Array<MessageDecoder<*>?> = arrayOfNulls(protRepository.capacity())
-    private val messageClassToClientProtMap: MutableMap<Class<out IncomingMessage>, ClientProt> = hashMapOf()
+    private val decoderClassToMessageClassMap:
+        MutableMap<Class<out MessageDecoder<IncomingMessage>>, Class<out IncomingMessage>> = hashMapOf()
 
     public inline fun <reified T : IncomingMessage> bind(encoder: MessageDecoder<T>) {
         bind(T::class.java, encoder)
@@ -24,14 +25,14 @@ public class MessageDecoderRepositoryBuilder<P : ClientProt>(
             "Decoder for $messageClass is already bound."
         }
         decoders[clientProt.opcode] = decoder
-        messageClassToClientProtMap[messageClass] = clientProt
+        decoderClassToMessageClassMap[decoder::class.java] = messageClass
     }
 
     public fun build(): MessageDecoderRepository<P> {
         return MessageDecoderRepository(
             protRepository,
             decoders.copyOf(),
-            messageClassToClientProtMap.toMap(),
+            decoderClassToMessageClassMap.toMap(),
         )
     }
 }

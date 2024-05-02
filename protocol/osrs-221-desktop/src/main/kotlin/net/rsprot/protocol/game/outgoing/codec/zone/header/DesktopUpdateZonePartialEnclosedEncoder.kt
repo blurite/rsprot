@@ -6,7 +6,7 @@ import io.netty.channel.ChannelHandlerContext
 import net.rsprot.buffer.JagByteBuf
 import net.rsprot.buffer.extensions.toJagByteBuf
 import net.rsprot.protocol.ServerProt
-import net.rsprot.protocol.common.game.outgoing.codec.zone.payload.ZoneProt
+import net.rsprot.protocol.common.game.outgoing.codec.zone.payload.OldSchoolZoneProt
 import net.rsprot.protocol.common.game.outgoing.codec.zone.payload.ZoneProtEncoder
 import net.rsprot.protocol.game.outgoing.codec.zone.payload.LocAddChangeEncoder
 import net.rsprot.protocol.game.outgoing.codec.zone.payload.LocAnimEncoder
@@ -21,7 +21,9 @@ import net.rsprot.protocol.game.outgoing.codec.zone.payload.ObjOpFilterEncoder
 import net.rsprot.protocol.game.outgoing.codec.zone.payload.SoundAreaEncoder
 import net.rsprot.protocol.game.outgoing.prot.GameServerProt
 import net.rsprot.protocol.game.outgoing.zone.header.UpdateZonePartialEnclosed
+import net.rsprot.protocol.message.ZoneProt
 import net.rsprot.protocol.message.codec.MessageEncoder
+import net.rsprot.protocol.message.codec.UpdateZonePartialEnclosedCache
 import kotlin.math.min
 
 public class DesktopUpdateZonePartialEnclosedEncoder : MessageEncoder<UpdateZonePartialEnclosed> {
@@ -42,7 +44,7 @@ public class DesktopUpdateZonePartialEnclosedEncoder : MessageEncoder<UpdateZone
         )
     }
 
-    public companion object {
+    public companion object : UpdateZonePartialEnclosedCache {
         private const val MAX_PARTIAL_ENCLOSED_SIZE = 40_000 - 3
 
         /**
@@ -58,9 +60,9 @@ public class DesktopUpdateZonePartialEnclosedEncoder : MessageEncoder<UpdateZone
          * in any way.
          * @param messages the list of zone prot messages to be encoded.
          */
-        public fun buildCache(
+        override fun <T : ZoneProt> buildCache(
             allocator: ByteBufAllocator,
-            messages: List<ZoneProt>,
+            messages: List<T>,
         ): ByteBuf {
             val buffer =
                 allocator.buffer(
@@ -114,17 +116,17 @@ public class DesktopUpdateZonePartialEnclosedEncoder : MessageEncoder<UpdateZone
             private val protId: Int,
             val encoder: ZoneProtEncoder<*>,
         ) {
-            LOC_DEL(ZoneProt.LOC_DEL, LocDelEncoder()),
-            OBJ_DEL(ZoneProt.OBJ_DEL, ObjDelEncoder()),
-            LOC_ANIM(ZoneProt.LOC_ANIM, LocAnimEncoder()),
-            LOC_MERGE(ZoneProt.LOC_MERGE, LocMergeEncoder()),
-            OBJ_ADD(ZoneProt.OBJ_ADD, ObjAddEncoder()),
-            MAP_ANIM(ZoneProt.MAP_ANIM, MapAnimEncoder()),
-            OBJ_COUNT(ZoneProt.OBJ_COUNT, ObjCountEncoder()),
-            OBJ_OPFILTER(ZoneProt.OBJ_OPFILTER, ObjOpFilterEncoder()),
-            MAP_PROJANIM(ZoneProt.MAP_PROJANIM, MapProjAnimEncoder()),
-            SOUND_AREA(ZoneProt.SOUND_AREA, SoundAreaEncoder()),
-            LOC_ADD_CHANGE(ZoneProt.LOC_ADD_CHANGE, LocAddChangeEncoder()),
+            LOC_DEL(OldSchoolZoneProt.LOC_DEL, LocDelEncoder()),
+            OBJ_DEL(OldSchoolZoneProt.OBJ_DEL, ObjDelEncoder()),
+            LOC_ANIM(OldSchoolZoneProt.LOC_ANIM, LocAnimEncoder()),
+            LOC_MERGE(OldSchoolZoneProt.LOC_MERGE, LocMergeEncoder()),
+            OBJ_ADD(OldSchoolZoneProt.OBJ_ADD, ObjAddEncoder()),
+            MAP_ANIM(OldSchoolZoneProt.MAP_ANIM, MapAnimEncoder()),
+            OBJ_COUNT(OldSchoolZoneProt.OBJ_COUNT, ObjCountEncoder()),
+            OBJ_OPFILTER(OldSchoolZoneProt.OBJ_OPFILTER, ObjOpFilterEncoder()),
+            MAP_PROJANIM(OldSchoolZoneProt.MAP_PROJANIM, MapProjAnimEncoder()),
+            SOUND_AREA(OldSchoolZoneProt.SOUND_AREA, SoundAreaEncoder()),
+            LOC_ADD_CHANGE(OldSchoolZoneProt.LOC_ADD_CHANGE, LocAddChangeEncoder()),
             ;
 
             companion object {

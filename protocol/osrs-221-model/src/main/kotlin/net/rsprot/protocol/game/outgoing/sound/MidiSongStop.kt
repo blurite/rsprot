@@ -1,6 +1,8 @@
 package net.rsprot.protocol.game.outgoing.sound
 
-import net.rsprot.protocol.message.OutgoingMessage
+import net.rsprot.protocol.ServerProtCategory
+import net.rsprot.protocol.game.incoming.GameServerProtCategory
+import net.rsprot.protocol.message.OutgoingGameMessage
 
 /**
  * Midi song stop is used to stop playing an existing midi song.
@@ -10,7 +12,7 @@ import net.rsprot.protocol.message.OutgoingMessage
 public class MidiSongStop private constructor(
     private val _fadeOutDelay: UShort,
     private val _fadeOutSpeed: UShort,
-) : OutgoingMessage {
+) : OutgoingGameMessage {
     public constructor(
         fadeOutDelay: Int,
         fadeOutSpeed: Int,
@@ -23,6 +25,8 @@ public class MidiSongStop private constructor(
         get() = _fadeOutDelay.toInt()
     public val fadeOutSpeed: Int
         get() = _fadeOutSpeed.toInt()
+    override val category: ServerProtCategory
+        get() = GameServerProtCategory.LOW_PRIORITY_PROT
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

@@ -1,8 +1,10 @@
 package net.rsprot.protocol.game.outgoing.specific
 
+import net.rsprot.protocol.ServerProtCategory
+import net.rsprot.protocol.game.incoming.GameServerProtCategory
 import net.rsprot.protocol.game.outgoing.zone.payload.util.CoordInBuildArea
 import net.rsprot.protocol.game.outgoing.zone.payload.util.LocProperties
-import net.rsprot.protocol.message.OutgoingMessage
+import net.rsprot.protocol.message.OutgoingGameMessage
 
 /**
  * Loc anim specific packets are used to make a loc play an animation,
@@ -31,7 +33,7 @@ public class LocAnimSpecific private constructor(
     private val _id: UShort,
     private val coordInBuildArea: CoordInBuildArea,
     private val locProperties: LocProperties,
-) : OutgoingMessage {
+) : OutgoingGameMessage {
     public constructor(
         id: Int,
         zoneX: Int,
@@ -70,6 +72,8 @@ public class LocAnimSpecific private constructor(
         get() = coordInBuildArea.packedMedium
     public val locPropertiesPacked: Int
         get() = locProperties.packed.toInt()
+    override val category: ServerProtCategory
+        get() = GameServerProtCategory.LOW_PRIORITY_PROT
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

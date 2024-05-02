@@ -1,6 +1,8 @@
 package net.rsprot.protocol.game.incoming.players
 
-import net.rsprot.protocol.message.IncomingMessage
+import net.rsprot.protocol.ClientProtCategory
+import net.rsprot.protocol.game.incoming.GameClientProtCategory
+import net.rsprot.protocol.message.IncomingGameMessage
 
 /**
  * Opplayer messages are fired whenever a player clicks an option on another player,
@@ -15,7 +17,7 @@ public class OpPlayer private constructor(
     private val _index: UShort,
     public val controlKey: Boolean,
     private val _op: UByte,
-) : IncomingMessage {
+) : IncomingGameMessage {
     public constructor(
         index: Int,
         controlKey: Boolean,
@@ -30,6 +32,8 @@ public class OpPlayer private constructor(
         get() = _index.toInt()
     public val op: Int
         get() = _op.toInt()
+    override val category: ClientProtCategory
+        get() = GameClientProtCategory.USER_EVENT
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

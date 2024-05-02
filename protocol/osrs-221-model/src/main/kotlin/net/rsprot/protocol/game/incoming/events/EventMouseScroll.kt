@@ -1,6 +1,8 @@
 package net.rsprot.protocol.game.incoming.events
 
-import net.rsprot.protocol.message.IncomingMessage
+import net.rsprot.protocol.ClientProtCategory
+import net.rsprot.protocol.game.incoming.GameClientProtCategory
+import net.rsprot.protocol.message.IncomingGameMessage
 
 /**
  * Mouse scroll message is sent whenever the user scrolls using their mouse.
@@ -10,7 +12,10 @@ import net.rsprot.protocol.message.IncomingMessage
  */
 public class EventMouseScroll(
     public val mouseWheelRotation: Int,
-) : IncomingMessage {
+) : IncomingGameMessage {
+    override val category: ClientProtCategory
+        get() = GameClientProtCategory.CLIENT_EVENT
+
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (javaClass != other?.javaClass) return false

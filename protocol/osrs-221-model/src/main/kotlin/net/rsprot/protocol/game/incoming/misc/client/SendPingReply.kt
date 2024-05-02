@@ -1,6 +1,8 @@
 package net.rsprot.protocol.game.incoming.misc.client
 
-import net.rsprot.protocol.message.IncomingMessage
+import net.rsprot.protocol.ClientProtCategory
+import net.rsprot.protocol.game.incoming.GameClientProtCategory
+import net.rsprot.protocol.message.IncomingGameMessage
 
 /**
  * Sends a ping reply to the server whenever the server requests it.
@@ -16,7 +18,7 @@ public class SendPingReply private constructor(
     private val _gcPercentTime: UByte,
     public val value1: Int,
     public val value2: Int,
-) : IncomingMessage {
+) : IncomingGameMessage {
     public constructor(
         fps: Int,
         gcPercentTime: Int,
@@ -33,6 +35,8 @@ public class SendPingReply private constructor(
         get() = _fps.toInt()
     public val gcPercentTime: Int
         get() = _gcPercentTime.toInt()
+    override val category: ClientProtCategory
+        get() = GameClientProtCategory.USER_EVENT
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

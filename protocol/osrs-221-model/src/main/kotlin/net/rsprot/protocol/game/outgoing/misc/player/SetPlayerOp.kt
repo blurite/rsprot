@@ -1,6 +1,8 @@
 package net.rsprot.protocol.game.outgoing.misc.player
 
-import net.rsprot.protocol.message.OutgoingMessage
+import net.rsprot.protocol.ServerProtCategory
+import net.rsprot.protocol.game.incoming.GameServerProtCategory
+import net.rsprot.protocol.message.OutgoingGameMessage
 
 /**
  * Set player op packet is used to set the right-click
@@ -15,7 +17,7 @@ public class SetPlayerOp private constructor(
     private val _id: UByte,
     public val priority: Boolean,
     public val op: String?,
-) : OutgoingMessage {
+) : OutgoingGameMessage {
     public constructor(
         id: Int,
         priority: Boolean,
@@ -28,6 +30,8 @@ public class SetPlayerOp private constructor(
 
     public val id: Int
         get() = _id.toInt()
+    override val category: ServerProtCategory
+        get() = GameServerProtCategory.LOW_PRIORITY_PROT
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

@@ -1,9 +1,9 @@
 package net.rsprot.protocol.common.game.outgoing.info.playerinfo.extendedinfo
 
+import net.rsprot.protocol.common.client.ClientTypeMap
 import net.rsprot.protocol.common.game.outgoing.info.TransientExtendedInfo
 import net.rsprot.protocol.common.game.outgoing.info.encoder.OnDemandExtendedInfoEncoder
 import net.rsprot.protocol.common.game.outgoing.info.shared.extendedinfo.Tinting
-import net.rsprot.protocol.common.platform.PlatformMap
 
 /**
  * The tinting extended info block.
@@ -11,10 +11,10 @@ import net.rsprot.protocol.common.platform.PlatformMap
  * along with [net.rsprot.protocol.common.game.outgoing.info.shared.extendedinfo.Hit].
  * It is possible for the server to mark tinting for only a single avatar to see.
  * In order to achieve this, we utilize [observerDependent] tinting, indexed by the observer's id.
- * @param encoders the array of platform-specific encoders for tinting.
+ * @param encoders the array of client-specific encoders for tinting.
  */
 public class PlayerTintingList(
-    override val encoders: PlatformMap<OnDemandExtendedInfoEncoder<PlayerTintingList>>,
+    override val encoders: ClientTypeMap<OnDemandExtendedInfoEncoder<PlayerTintingList>>,
 ) : TransientExtendedInfo<PlayerTintingList, OnDemandExtendedInfoEncoder<PlayerTintingList>>() {
     public val global: Tinting = Tinting()
     public val observerDependent: MutableMap<Int, Tinting> = HashMap()

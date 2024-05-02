@@ -1,6 +1,8 @@
 package net.rsprot.protocol.game.outgoing.clan
 
-import net.rsprot.protocol.message.OutgoingMessage
+import net.rsprot.protocol.ServerProtCategory
+import net.rsprot.protocol.game.incoming.GameServerProtCategory
+import net.rsprot.protocol.message.OutgoingGameMessage
 
 /**
  * Message clan channel is used to send messages within a clan channel
@@ -38,7 +40,7 @@ public class MessageClanChannel private constructor(
     public val worldMessageCounter: Int,
     private val _chatCrownType: UByte,
     public val message: String,
-) : OutgoingMessage {
+) : OutgoingGameMessage {
     public constructor(
         clanType: Int,
         name: String,
@@ -61,6 +63,8 @@ public class MessageClanChannel private constructor(
         get() = _worldId.toInt()
     public val chatCrownType: Int
         get() = _chatCrownType.toInt()
+    override val category: ServerProtCategory
+        get() = GameServerProtCategory.HIGH_PRIORITY_PROT
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

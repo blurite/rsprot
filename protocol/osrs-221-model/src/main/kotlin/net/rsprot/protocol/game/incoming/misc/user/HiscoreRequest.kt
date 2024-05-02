@@ -1,6 +1,8 @@
 package net.rsprot.protocol.game.incoming.misc.user
 
-import net.rsprot.protocol.message.IncomingMessage
+import net.rsprot.protocol.ClientProtCategory
+import net.rsprot.protocol.game.incoming.GameClientProtCategory
+import net.rsprot.protocol.message.IncomingGameMessage
 
 /**
  * A hiscore request message is sent when a player does a lookup of another
@@ -15,7 +17,7 @@ public class HiscoreRequest(
     private val _type: UByte,
     private val _requestId: UByte,
     public val name: String,
-) : IncomingMessage {
+) : IncomingGameMessage {
     public constructor(
         type: Int,
         requestId: Int,
@@ -30,6 +32,8 @@ public class HiscoreRequest(
         get() = _type.toInt()
     public val requestId: Int
         get() = _requestId.toInt()
+    override val category: ClientProtCategory
+        get() = GameClientProtCategory.USER_EVENT
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

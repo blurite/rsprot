@@ -1,6 +1,8 @@
 package net.rsprot.protocol.game.outgoing.interfaces
 
-import net.rsprot.protocol.message.OutgoingMessage
+import net.rsprot.protocol.ServerProtCategory
+import net.rsprot.protocol.game.incoming.GameServerProtCategory
+import net.rsprot.protocol.message.OutgoingGameMessage
 import net.rsprot.protocol.message.toIntOrMinusOne
 import net.rsprot.protocol.util.CombinedId
 
@@ -14,7 +16,7 @@ import net.rsprot.protocol.util.CombinedId
 public class IfSetNpcHead private constructor(
     public val combinedId: CombinedId,
     private val _npc: UShort,
-) : OutgoingMessage {
+) : OutgoingGameMessage {
     public constructor(
         interfaceId: Int,
         componentId: Int,
@@ -30,6 +32,8 @@ public class IfSetNpcHead private constructor(
         get() = combinedId.componentId
     public val npc: Int
         get() = _npc.toIntOrMinusOne()
+    override val category: ServerProtCategory
+        get() = GameServerProtCategory.LOW_PRIORITY_PROT
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

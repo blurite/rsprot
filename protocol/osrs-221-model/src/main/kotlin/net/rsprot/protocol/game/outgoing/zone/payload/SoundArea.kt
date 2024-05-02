@@ -1,7 +1,10 @@
 package net.rsprot.protocol.game.outgoing.zone.payload
 
-import net.rsprot.protocol.common.game.outgoing.codec.zone.payload.ZoneProt
+import net.rsprot.protocol.ServerProtCategory
+import net.rsprot.protocol.common.game.outgoing.codec.zone.payload.OldSchoolZoneProt
+import net.rsprot.protocol.game.incoming.GameServerProtCategory
 import net.rsprot.protocol.game.outgoing.zone.payload.util.CoordInZone
+import net.rsprot.protocol.message.ZoneProt
 
 /**
  * Sound area packed is sent to play a sound effect at a specific coord.
@@ -78,8 +81,9 @@ public class SoundArea private constructor(
 
     public val coordInZonePacked: Int
         get() = coordInZone.packed.toInt()
-
-    override val protId: Int = ZoneProt.SOUND_AREA
+    override val category: ServerProtCategory
+        get() = GameServerProtCategory.HIGH_PRIORITY_PROT
+    override val protId: Int = OldSchoolZoneProt.SOUND_AREA
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

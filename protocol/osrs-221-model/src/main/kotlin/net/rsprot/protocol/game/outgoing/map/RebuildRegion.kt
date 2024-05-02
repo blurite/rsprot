@@ -1,7 +1,9 @@
 package net.rsprot.protocol.game.outgoing.map
 
-import net.rsprot.crypto.util.XteaKey
-import net.rsprot.protocol.message.OutgoingMessage
+import net.rsprot.crypto.xtea.XteaKey
+import net.rsprot.protocol.ServerProtCategory
+import net.rsprot.protocol.game.incoming.GameServerProtCategory
+import net.rsprot.protocol.message.OutgoingGameMessage
 
 /**
  * Rebuild region is used to send a dynamic map to the client,
@@ -22,7 +24,7 @@ public class RebuildRegion private constructor(
     private val _zoneZ: UShort,
     public val reload: Boolean,
     public val zones: List<RebuildRegionZone?>,
-) : OutgoingMessage {
+) : OutgoingGameMessage {
     public constructor(
         zoneX: Int,
         zoneZ: Int,
@@ -43,6 +45,8 @@ public class RebuildRegion private constructor(
         get() = _zoneX.toInt()
     public val zoneZ: Int
         get() = _zoneZ.toInt()
+    override val category: ServerProtCategory
+        get() = GameServerProtCategory.HIGH_PRIORITY_PROT
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -134,6 +138,31 @@ public class RebuildRegion private constructor(
             ),
             key,
         )
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) return true
+            if (javaClass != other?.javaClass) return false
+
+            other as RebuildRegionZone
+
+            if (referenceZone != other.referenceZone) return false
+            if (key != other.key) return false
+
+            return true
+        }
+
+        override fun hashCode(): Int {
+            var result = referenceZone.hashCode()
+            result = 31 * result + key.hashCode()
+            return result
+        }
+
+        override fun toString(): String {
+            return "RebuildRegionZone(" +
+                "referenceZone=$referenceZone, " +
+                "key=$key" +
+                ")"
+        }
     }
 
     /**

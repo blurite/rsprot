@@ -1,7 +1,7 @@
 package net.rsprot.protocol.game.outgoing.info.npcinfo
 
 import io.netty.buffer.ByteBufAllocator
-import net.rsprot.compression.HuffmanCodec
+import net.rsprot.compression.provider.HuffmanCodecProvider
 import net.rsprot.protocol.game.outgoing.info.filter.ExtendedInfoFilter
 
 /**
@@ -13,7 +13,7 @@ import net.rsprot.protocol.game.outgoing.info.filter.ExtendedInfoFilter
  * have extended info blocks written to it, or if we have to utilize a fall-back and tell
  * the client that despite extended info having been flagged, we cannot write it (by writing
  * the flag itself as a zero, so the client reads no further information).
- * @param extendedInfoWriter the platform-specific extended info writers for NPC information.
+ * @param extendedInfoWriter the client-specific extended info writers for NPC information.
  * @param huffmanCodec the huffman codec is used to compress chat extended info.
  * While NPCs do not currently have any such extended info blocks, the interface requires
  * it be passed in, so we must still provide it.
@@ -23,7 +23,7 @@ public class NpcAvatarFactory(
     allocator: ByteBufAllocator,
     extendedInfoFilter: ExtendedInfoFilter,
     extendedInfoWriter: List<NpcAvatarExtendedInfoWriter>,
-    huffmanCodec: HuffmanCodec,
+    huffmanCodec: HuffmanCodecProvider,
 ) {
     /**
      * The avatar repository is responsible for keeping track of all avatars, including ones
@@ -82,5 +82,13 @@ public class NpcAvatarFactory(
             spawnCycle,
             direction,
         )
+    }
+
+    /**
+     * Releases the avatar back into the repository to be used by other NPCs.
+     * @param avatar the avatar to release.
+     */
+    public fun release(avatar: NpcAvatar) {
+        avatarRepository.release(avatar)
     }
 }

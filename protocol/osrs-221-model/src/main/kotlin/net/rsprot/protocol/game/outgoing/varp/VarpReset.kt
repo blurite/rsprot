@@ -1,6 +1,8 @@
 package net.rsprot.protocol.game.outgoing.varp
 
-import net.rsprot.protocol.message.OutgoingMessage
+import net.rsprot.protocol.ServerProtCategory
+import net.rsprot.protocol.game.incoming.GameServerProtCategory
+import net.rsprot.protocol.message.OutgoingGameMessage
 
 /**
  * The varp reset packet is used to set the values of every
@@ -10,4 +12,7 @@ import net.rsprot.protocol.message.OutgoingMessage
  * So if the varps array is extended, but respective configs
  * are not made, the extended ones will not be zero'd out.
  */
-public data object VarpReset : OutgoingMessage
+public data object VarpReset : OutgoingGameMessage {
+    override val category: ServerProtCategory
+        get() = GameServerProtCategory.HIGH_PRIORITY_PROT
+}

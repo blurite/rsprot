@@ -1,5 +1,6 @@
 package net.rsprot.protocol.common.game.outgoing.info.playerinfo.encoder
 
+import net.rsprot.protocol.common.client.OldSchoolClientType
 import net.rsprot.protocol.common.game.outgoing.info.encoder.OnDemandExtendedInfoEncoder
 import net.rsprot.protocol.common.game.outgoing.info.encoder.PrecomputedExtendedInfoEncoder
 import net.rsprot.protocol.common.game.outgoing.info.playerinfo.extendedinfo.Appearance
@@ -14,14 +15,13 @@ import net.rsprot.protocol.common.game.outgoing.info.shared.extendedinfo.Hit
 import net.rsprot.protocol.common.game.outgoing.info.shared.extendedinfo.Say
 import net.rsprot.protocol.common.game.outgoing.info.shared.extendedinfo.Sequence
 import net.rsprot.protocol.common.game.outgoing.info.shared.extendedinfo.SpotAnimList
-import net.rsprot.protocol.common.platform.PlatformType
 
 /**
- * A data class to bring all the extended info encoders for a given platform together.
- * @param platformType the platform for which these encoders are created.
+ * A data class to bring all the extended info encoders for a given client together.
+ * @param oldSchoolClientType the client for which these encoders are created.
  */
 public data class PlayerExtendedInfoEncoders(
-    public val platformType: PlatformType,
+    public val oldSchoolClientType: OldSchoolClientType,
     public val appearance: PrecomputedExtendedInfoEncoder<Appearance>,
     public val chat: PrecomputedExtendedInfoEncoder<Chat>,
     public val exactMove: PrecomputedExtendedInfoEncoder<ExactMove>,

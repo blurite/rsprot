@@ -3,7 +3,8 @@ package net.rsprot.protocol.game.outgoing.info
 import io.netty.buffer.PooledByteBufAllocator
 import io.netty.buffer.Unpooled
 import net.rsprot.compression.HuffmanCodec
-import net.rsprot.protocol.common.platform.PlatformType
+import net.rsprot.compression.provider.DefaultHuffmanCodecProvider
+import net.rsprot.protocol.common.client.OldSchoolClientType
 import net.rsprot.protocol.game.outgoing.codec.playerinfo.extendedinfo.writer.PlayerAvatarExtendedInfoDesktopWriter
 import net.rsprot.protocol.game.outgoing.info.filter.DefaultExtendedInfoFilter
 import net.rsprot.protocol.game.outgoing.info.playerinfo.PlayerAvatarFactory
@@ -30,7 +31,7 @@ class PlayerInfoTest {
                 allocator,
                 DefaultExtendedInfoFilter(),
                 listOf(PlayerAvatarExtendedInfoDesktopWriter()),
-                createHuffmanCodec(),
+                DefaultHuffmanCodecProvider(createHuffmanCodec()),
             )
         protocol =
             PlayerInfoProtocol(
@@ -38,15 +39,11 @@ class PlayerInfoTest {
                 DefaultProtocolWorker(),
                 factory,
             )
-        localPlayerInfo = protocol.alloc(LOCAL_PLAYER_INDEX, PlatformType.DESKTOP)
+        localPlayerInfo = protocol.alloc(LOCAL_PLAYER_INDEX, OldSchoolClientType.DESKTOP)
         localPlayerInfo.updateCoord(0, 3200, 3220)
+        localPlayerInfo.avatar.postUpdate()
         client = PlayerInfoClient()
         gpiInit()
-        postUpdate()
-    }
-
-    private fun postUpdate() {
-        protocol.postUpdate()
     }
 
     private fun gpiInit() {
@@ -62,14 +59,10 @@ class PlayerInfoTest {
     }
 
     private fun tick() {
-        protocol.prepare()
-        protocol.putBitcodes()
-        protocol.prepareExtendedInfo()
-        protocol.putExtendedInfo()
+        protocol.update()
         val buffer = localPlayerInfo.backingBuffer()
         client.decode(buffer)
         assertFalse(buffer.isReadable)
-        postUpdate()
     }
 
     @Test
@@ -96,7 +89,7 @@ class PlayerInfoTest {
         val otherPlayerIndices = (1..280)
         val otherPlayers = arrayOfNulls<PlayerInfo>(2048)
         for (index in otherPlayerIndices) {
-            val otherPlayer = protocol.alloc(index, PlatformType.DESKTOP)
+            val otherPlayer = protocol.alloc(index, OldSchoolClientType.DESKTOP)
             otherPlayers[index] = otherPlayer
             otherPlayer.updateCoord(0, 3205, 3220)
         }
@@ -135,7 +128,7 @@ class PlayerInfoTest {
         val otherPlayerIndices = (1..280)
         val otherPlayers = arrayOfNulls<PlayerInfo>(2048)
         for (index in otherPlayerIndices) {
-            val otherPlayer = protocol.alloc(index, PlatformType.DESKTOP)
+            val otherPlayer = protocol.alloc(index, OldSchoolClientType.DESKTOP)
             otherPlayers[index] = otherPlayer
             otherPlayer.updateCoord(0, 3205, 3220)
             otherPlayer.avatar.extendedInfo.setName("Player $index")

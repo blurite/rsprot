@@ -1,6 +1,6 @@
 package net.rsprot.protocol.game.outgoing.info.util
 
-import net.rsprot.protocol.common.platform.PlatformType
+import net.rsprot.protocol.common.client.OldSchoolClientType
 
 /**
  * An interface used for info protocols for the purpose of re-using an object.
@@ -14,11 +14,11 @@ public interface ReferencePooledObject {
      * This function will be responsible for restoring state to be equivalent to newly
      * instantiated object.
      * @param index the index of the new element to allocate.
-     * @param platformType the platform type used by the new owner.
+     * @param oldSchoolClientType the client type used by the new owner.
      */
     public fun onAlloc(
         index: Int,
-        platformType: PlatformType,
+        oldSchoolClientType: OldSchoolClientType,
     )
 
     /**

@@ -1,8 +1,8 @@
 package net.rsprot.protocol.common.game.outgoing.info.playerinfo.extendedinfo
 
+import net.rsprot.protocol.common.client.ClientTypeMap
 import net.rsprot.protocol.common.game.outgoing.info.CachedExtendedInfo
 import net.rsprot.protocol.common.game.outgoing.info.encoder.PrecomputedExtendedInfoEncoder
-import net.rsprot.protocol.common.platform.PlatformMap
 
 /**
  * The appearance extended info block.
@@ -12,10 +12,10 @@ import net.rsprot.protocol.common.platform.PlatformMap
  * done to the appearance. When an avatar goes from low resolution to high resolution,
  * a comparison is done against the cache, if the counters match, no extended info block is written.
  * If an avatar logs out, every observer will have their counter set back to -1.
- * @param encoders the array of platform-specific encoders for appearance.
+ * @param encoders the array of client-specific encoders for appearance.
  */
 public class Appearance(
-    override val encoders: PlatformMap<PrecomputedExtendedInfoEncoder<Appearance>>,
+    override val encoders: ClientTypeMap<PrecomputedExtendedInfoEncoder<Appearance>>,
 ) : CachedExtendedInfo<Appearance, PrecomputedExtendedInfoEncoder<Appearance>>() {
     /**
      * The name of this avatar.

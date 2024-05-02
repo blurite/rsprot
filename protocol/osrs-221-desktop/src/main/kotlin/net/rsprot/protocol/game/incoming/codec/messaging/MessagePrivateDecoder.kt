@@ -17,7 +17,8 @@ public class MessagePrivateDecoder : MessageDecoder<MessagePrivate> {
         tools: MessageDecodingTools,
     ): MessagePrivate {
         val name = buffer.gjstr()
-        val message = tools.huffmanCodec.decode(buffer)
+        val huffman = tools.huffmanCodec.provide()
+        val message = huffman.decode(buffer)
         return MessagePrivate(
             name,
             message,

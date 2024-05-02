@@ -1,6 +1,8 @@
 package net.rsprot.protocol.game.outgoing.logout
 
-import net.rsprot.protocol.message.OutgoingMessage
+import net.rsprot.protocol.ServerProtCategory
+import net.rsprot.protocol.game.incoming.GameServerProtCategory
+import net.rsprot.protocol.message.OutgoingGameMessage
 
 /**
  * Logout transfer packet is used for world-hopping purposes,
@@ -52,7 +54,7 @@ public class LogoutTransfer private constructor(
     public val host: String,
     private val _id: UShort,
     public val properties: Int,
-) : OutgoingMessage {
+) : OutgoingGameMessage {
     public constructor(
         host: String,
         id: Int,
@@ -65,6 +67,8 @@ public class LogoutTransfer private constructor(
 
     public val id: Int
         get() = _id.toInt()
+    override val category: ServerProtCategory
+        get() = GameServerProtCategory.HIGH_PRIORITY_PROT
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

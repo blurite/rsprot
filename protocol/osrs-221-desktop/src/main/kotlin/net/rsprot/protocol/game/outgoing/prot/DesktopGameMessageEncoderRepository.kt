@@ -83,6 +83,8 @@ import net.rsprot.protocol.game.outgoing.codec.misc.player.UpdateStatEncoder
 import net.rsprot.protocol.game.outgoing.codec.misc.player.UpdateStatOldEncoder
 import net.rsprot.protocol.game.outgoing.codec.misc.player.UpdateStockMarketSlotEncoder
 import net.rsprot.protocol.game.outgoing.codec.misc.player.UpdateTradingPostEncoder
+import net.rsprot.protocol.game.outgoing.codec.npcinfo.NpcInfoLargeEncoder
+import net.rsprot.protocol.game.outgoing.codec.npcinfo.NpcInfoSmallEncoder
 import net.rsprot.protocol.game.outgoing.codec.playerinfo.PlayerInfoEncoder
 import net.rsprot.protocol.game.outgoing.codec.social.FriendListLoadedEncoder
 import net.rsprot.protocol.game.outgoing.codec.social.MessagePrivateEchoEncoder
@@ -108,6 +110,7 @@ import net.rsprot.protocol.game.outgoing.codec.varp.VarpLargeEncoder
 import net.rsprot.protocol.game.outgoing.codec.varp.VarpResetEncoder
 import net.rsprot.protocol.game.outgoing.codec.varp.VarpSmallEncoder
 import net.rsprot.protocol.game.outgoing.codec.varp.VarpSyncEncoder
+import net.rsprot.protocol.game.outgoing.codec.zone.header.DesktopUpdateZonePartialEnclosedEncoder
 import net.rsprot.protocol.game.outgoing.codec.zone.header.UpdateZoneFullFollowsEncoder
 import net.rsprot.protocol.game.outgoing.codec.zone.header.UpdateZonePartialFollowsEncoder
 import net.rsprot.protocol.game.outgoing.codec.zone.payload.LocAddChangeEncoder
@@ -121,6 +124,8 @@ import net.rsprot.protocol.game.outgoing.codec.zone.payload.ObjCountEncoder
 import net.rsprot.protocol.game.outgoing.codec.zone.payload.ObjDelEncoder
 import net.rsprot.protocol.game.outgoing.codec.zone.payload.ObjOpFilterEncoder
 import net.rsprot.protocol.game.outgoing.codec.zone.payload.SoundAreaEncoder
+import net.rsprot.protocol.game.outgoing.map.RebuildLogin
+import net.rsprot.protocol.game.outgoing.map.RebuildNormal
 import net.rsprot.protocol.message.codec.outgoing.MessageEncoderRepository
 import net.rsprot.protocol.message.codec.outgoing.MessageEncoderRepositoryBuilder
 
@@ -167,7 +172,7 @@ public object DesktopGameMessageEncoderRepository {
 
                 bind(UpdateZoneFullFollowsEncoder())
                 bind(UpdateZonePartialFollowsEncoder())
-                // bind(UpdateZonePartialEnclosedEncoder()) TODO: Implement
+                bind(DesktopUpdateZonePartialEnclosedEncoder())
 
                 bind(LocAddChangeEncoder())
                 bind(LocDelEncoder())
@@ -191,10 +196,10 @@ public object DesktopGameMessageEncoderRepository {
                 bind(PlayerSpotAnimSpecificEncoder())
 
                 bind(PlayerInfoEncoder())
-                // TODO: Npc info small
-                // TODO: Npc info large
+                bind(NpcInfoSmallEncoder())
+                bind(NpcInfoLargeEncoder())
 
-                bind(RebuildNormalEncoder())
+                bindWithAlts(RebuildNormalEncoder(), RebuildLogin::class.java, RebuildNormal::class.java)
                 bind(RebuildRegionEncoder())
 
                 bind(VarpSmallEncoder())

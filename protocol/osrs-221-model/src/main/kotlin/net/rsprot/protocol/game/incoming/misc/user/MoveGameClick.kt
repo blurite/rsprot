@@ -1,7 +1,9 @@
 package net.rsprot.protocol.game.incoming.misc.user
 
+import net.rsprot.protocol.ClientProtCategory
+import net.rsprot.protocol.game.incoming.GameClientProtCategory
 import net.rsprot.protocol.game.incoming.misc.user.internal.MovementRequest
-import net.rsprot.protocol.message.IncomingMessage
+import net.rsprot.protocol.message.IncomingGameMessage
 
 /**
  * Move gameclick packets are sent when the user clicks to walk within their
@@ -23,7 +25,7 @@ import net.rsprot.protocol.message.IncomingMessage
 @Suppress("MemberVisibilityCanBePrivate")
 public class MoveGameClick private constructor(
     private val movementRequest: MovementRequest,
-) : IncomingMessage {
+) : IncomingGameMessage {
     public constructor(
         x: Int,
         z: Int,
@@ -42,6 +44,8 @@ public class MoveGameClick private constructor(
         get() = movementRequest.z
     public val keyCombination: Int
         get() = movementRequest.keyCombination
+    override val category: ClientProtCategory
+        get() = GameClientProtCategory.USER_EVENT
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

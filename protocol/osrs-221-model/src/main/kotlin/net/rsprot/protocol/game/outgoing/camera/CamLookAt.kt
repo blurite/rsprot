@@ -1,7 +1,9 @@
 package net.rsprot.protocol.game.outgoing.camera
 
+import net.rsprot.protocol.ServerProtCategory
+import net.rsprot.protocol.game.incoming.GameServerProtCategory
 import net.rsprot.protocol.game.outgoing.zone.payload.util.CoordInBuildArea
-import net.rsprot.protocol.message.OutgoingMessage
+import net.rsprot.protocol.message.OutgoingGameMessage
 
 /**
  * Cam lookat packet is used to make the camera look towards
@@ -25,7 +27,7 @@ public class CamLookAt private constructor(
     private val _height: UShort,
     private val _speed: UByte,
     private val _acceleration: UByte,
-) : OutgoingMessage {
+) : OutgoingGameMessage {
     public constructor(
         xInBuildArea: Int,
         zInBuildArea: Int,
@@ -49,6 +51,9 @@ public class CamLookAt private constructor(
         get() = _speed.toInt()
     public val acceleration: Int
         get() = _acceleration.toInt()
+
+    override val category: ServerProtCategory
+        get() = GameServerProtCategory.LOW_PRIORITY_PROT
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

@@ -1,6 +1,6 @@
 package net.rsprot.protocol.game.outgoing.info.playerinfo
 
-import net.rsprot.protocol.common.platform.PlatformType
+import net.rsprot.protocol.common.client.OldSchoolClientType
 import net.rsprot.protocol.game.outgoing.info.InfoRepository
 
 /**
@@ -17,7 +17,7 @@ import net.rsprot.protocol.game.outgoing.info.InfoRepository
  */
 @Suppress("unused")
 internal class PlayerInfoRepository(
-    allocator: (index: Int, platformType: PlatformType) -> PlayerInfo,
+    allocator: (index: Int, oldSchoolClientType: OldSchoolClientType) -> PlayerInfo,
 ) : InfoRepository<PlayerInfo>(allocator) {
     /**
      * The backing elements array used to store currently-in-use objects.
@@ -40,8 +40,8 @@ internal class PlayerInfoRepository(
     override fun onAlloc(
         element: PlayerInfo,
         idx: Int,
-        platformType: PlatformType,
+        oldSchoolClientType: OldSchoolClientType,
     ) {
-        element.onAlloc(idx, platformType)
+        element.onAlloc(idx, oldSchoolClientType)
     }
 }

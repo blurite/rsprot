@@ -3,7 +3,6 @@ package net.rsprot.compression
 import com.github.michaelbull.logging.InlineLogger
 import io.netty.buffer.ByteBuf
 import net.rsprot.buffer.JagByteBuf
-import net.rsprot.buffer.bitbuffer.WrappedBitBuf
 import net.rsprot.buffer.bitbuffer.toBitBuf
 import net.rsprot.buffer.extensions.toJagByteBuf
 import net.rsprot.buffer.util.charset.Cp1252Charset
@@ -19,6 +18,8 @@ public data class HuffmanCodec(
     private val codewords: IntArray,
     private val lookupTree: IntArray,
 ) {
+    private val maxBitsPerCharacter: Int = bits.max()
+
     init {
         require(bits.size == CODEWORDS_LENGTH) {
             "Bits array must be 256 elements long"
@@ -90,7 +91,10 @@ public data class HuffmanCodec(
             "Encoded text length must be strictly less than 32,768 bytes"
         }
         buf.pSmart1or2(bytes.size)
-        WrappedBitBuf(buf.buffer).use { bitBuf ->
+        // Ensure we can write all the characters with the worst kind of encoding, as our bitbuffer
+        // does not automatically resize
+        buf.buffer.ensureWritable((maxBitsPerCharacter * bytes.size + Byte.SIZE_BITS) ushr 3)
+        buf.buffer.toBitBuf().use { bitBuf ->
             for (b in bytes) {
                 val chr = b.toInt() and 0xFF
                 val codeword = codewords[chr]

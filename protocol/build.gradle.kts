@@ -10,3 +10,11 @@ dependencies {
     implementation(projects.crypto)
     implementation(projects.compression)
 }
+
+publishing {
+    publications {
+        create<MavenPublication>("maven") {
+            from(components["java"])
+        }
+    }
+}

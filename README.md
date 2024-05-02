@@ -15,7 +15,7 @@ primarily targeting the OldSchool RuneScape scene. Contributions for
 other revisions are welcome, but will not be provided by default.
 
 ## Prerequisites
-- Kotlin 2.0.0-RC1
+- Kotlin 1.9.23
 - Java 1.8
 
 ## Design Choices

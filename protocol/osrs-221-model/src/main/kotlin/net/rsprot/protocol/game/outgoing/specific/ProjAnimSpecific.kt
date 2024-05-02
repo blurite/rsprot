@@ -1,7 +1,9 @@
 package net.rsprot.protocol.game.outgoing.specific
 
+import net.rsprot.protocol.ServerProtCategory
+import net.rsprot.protocol.game.incoming.GameServerProtCategory
 import net.rsprot.protocol.game.outgoing.zone.payload.util.CoordInBuildArea
-import net.rsprot.protocol.message.OutgoingMessage
+import net.rsprot.protocol.message.OutgoingGameMessage
 
 /**
  * Proj anim specific packets are used to send a projectile for a specific user,
@@ -72,7 +74,7 @@ public class ProjAnimSpecific private constructor(
     private val coordInBuildArea: CoordInBuildArea,
     private val _deltaX: Byte,
     private val _deltaZ: Byte,
-) : OutgoingMessage {
+) : OutgoingGameMessage {
     public constructor(
         id: Int,
         startHeight: Int,
@@ -136,6 +138,8 @@ public class ProjAnimSpecific private constructor(
 
     public val coordInBuildAreaPacked: Int
         get() = coordInBuildArea.packedMedium
+    override val category: ServerProtCategory
+        get() = GameServerProtCategory.LOW_PRIORITY_PROT
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

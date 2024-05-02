@@ -1,6 +1,8 @@
 package net.rsprot.protocol.game.incoming.misc.client
 
-import net.rsprot.protocol.message.IncomingMessage
+import net.rsprot.protocol.ClientProtCategory
+import net.rsprot.protocol.game.incoming.GameClientProtCategory
+import net.rsprot.protocol.message.IncomingGameMessage
 
 /**
  * Window status is sent first on login, and afterwards whenever
@@ -11,7 +13,7 @@ public class WindowStatus private constructor(
     private val _windowMode: UByte,
     private val _frameWidth: UShort,
     private val _frameHeight: UShort,
-) : IncomingMessage {
+) : IncomingGameMessage {
     public constructor(
         windowMode: Int,
         frameWidth: Int,
@@ -28,6 +30,8 @@ public class WindowStatus private constructor(
         get() = _frameWidth.toInt()
     public val frameHeight: Int
         get() = _frameHeight.toInt()
+    override val category: ClientProtCategory
+        get() = GameClientProtCategory.USER_EVENT
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

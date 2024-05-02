@@ -1,6 +1,8 @@
 package net.rsprot.protocol.game.incoming.misc.user
 
-import net.rsprot.protocol.message.IncomingMessage
+import net.rsprot.protocol.ClientProtCategory
+import net.rsprot.protocol.game.incoming.GameClientProtCategory
+import net.rsprot.protocol.message.IncomingGameMessage
 import net.rsprot.protocol.message.toIntOrMinusOne
 import net.rsprot.protocol.util.CombinedId
 
@@ -26,7 +28,7 @@ public class IfCrmViewClick private constructor(
     public val behaviour1: Int,
     public val behaviour2: Int,
     public val behaviour3: Int,
-) : IncomingMessage {
+) : IncomingGameMessage {
     public constructor(
         crmServerTarget: Int,
         combinedId: CombinedId,
@@ -49,6 +51,8 @@ public class IfCrmViewClick private constructor(
         get() = combinedId.componentId
     public val sub: Int
         get() = _sub.toIntOrMinusOne()
+    override val category: ClientProtCategory
+        get() = GameClientProtCategory.USER_EVENT
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

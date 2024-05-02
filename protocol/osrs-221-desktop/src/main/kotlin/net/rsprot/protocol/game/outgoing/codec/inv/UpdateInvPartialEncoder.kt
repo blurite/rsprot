@@ -3,7 +3,6 @@ package net.rsprot.protocol.game.outgoing.codec.inv
 import io.netty.channel.ChannelHandlerContext
 import net.rsprot.buffer.JagByteBuf
 import net.rsprot.protocol.ServerProt
-import net.rsprot.protocol.common.game.outgoing.inv.InventoryObject
 import net.rsprot.protocol.game.outgoing.inv.UpdateInvPartial
 import net.rsprot.protocol.game.outgoing.prot.GameServerProt
 import net.rsprot.protocol.message.codec.MessageEncoder
@@ -20,18 +19,18 @@ public class UpdateInvPartialEncoder : MessageEncoder<UpdateInvPartial> {
     ) {
         buffer.p4(message.combinedId.combinedId)
         buffer.p2(message.inventoryId)
-        val capacity = message.count
-        for (i in 0..<capacity) {
+        for (i in 0..<message.count) {
             val obj = message.getObject(i)
             buffer.pSmart1or2(obj.slot)
-            if (obj == InventoryObject.NULL) {
+            val id = obj.id
+            if (id == -1) {
                 buffer.p2(0)
                 continue
             }
-            buffer.p2(obj.id + 1)
+            buffer.p2(id + 1)
             val count = obj.count
             buffer.p1(count.coerceAtMost(0xFF))
-            if (count >= 255) {
+            if (count >= 0xFF) {
                 buffer.p4(count)
             }
         }

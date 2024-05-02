@@ -1,6 +1,8 @@
 package net.rsprot.protocol.game.incoming.misc.client
 
-import net.rsprot.protocol.message.IncomingMessage
+import net.rsprot.protocol.ClientProtCategory
+import net.rsprot.protocol.game.incoming.GameClientProtCategory
+import net.rsprot.protocol.message.IncomingGameMessage
 
 /**
  * Timings are sent as part of the first packets during login,
@@ -21,7 +23,7 @@ public class Timings private constructor(
     private val _loginDuration: UShort,
     private val _clientState: UShort,
     private val _loginCount: UShort,
-) : IncomingMessage {
+) : IncomingGameMessage {
     public constructor(
         connectionLostDuration: Int,
         loginDuration: Int,
@@ -42,6 +44,8 @@ public class Timings private constructor(
         get() = _clientState.toInt()
     public val loginCount: Int
         get() = _loginCount.toInt()
+    override val category: ClientProtCategory
+        get() = GameClientProtCategory.USER_EVENT
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

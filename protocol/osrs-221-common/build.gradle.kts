@@ -7,3 +7,11 @@ dependencies {
     implementation(libs.netty.buffer)
     implementation(projects.protocol)
 }
+
+publishing {
+    publications {
+        create<MavenPublication>("maven") {
+            from(components["java"])
+        }
+    }
+}

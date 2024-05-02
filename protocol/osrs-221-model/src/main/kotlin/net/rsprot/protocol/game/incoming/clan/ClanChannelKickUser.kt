@@ -1,6 +1,8 @@
 package net.rsprot.protocol.game.incoming.clan
 
-import net.rsprot.protocol.message.IncomingMessage
+import net.rsprot.protocol.ClientProtCategory
+import net.rsprot.protocol.game.incoming.GameClientProtCategory
+import net.rsprot.protocol.message.IncomingGameMessage
 
 /**
  * Clan kick messages are sent when a player with sufficient privileges
@@ -17,7 +19,7 @@ public class ClanChannelKickUser private constructor(
     public val name: String,
     private val _clanId: Byte,
     private val _memberIndex: UShort,
-) : IncomingMessage {
+) : IncomingGameMessage {
     public constructor(
         name: String,
         clanId: Int,
@@ -32,6 +34,8 @@ public class ClanChannelKickUser private constructor(
         get() = _clanId.toInt()
     public val memberIndex: Int
         get() = _memberIndex.toInt()
+    override val category: ClientProtCategory
+        get() = GameClientProtCategory.USER_EVENT
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

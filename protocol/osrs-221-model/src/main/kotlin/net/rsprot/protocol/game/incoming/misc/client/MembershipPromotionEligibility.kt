@@ -1,6 +1,8 @@
 package net.rsprot.protocol.game.incoming.misc.client
 
-import net.rsprot.protocol.message.IncomingMessage
+import net.rsprot.protocol.ClientProtCategory
+import net.rsprot.protocol.game.incoming.GameClientProtCategory
+import net.rsprot.protocol.message.IncomingGameMessage
 
 /**
  * An enhanced-client-only packet to inform the server of the status of
@@ -16,7 +18,7 @@ import net.rsprot.protocol.message.IncomingMessage
 public class MembershipPromotionEligibility private constructor(
     private val _eligibleForIntroductoryPrice: UByte,
     private val _eligibleForTrialPurchase: UByte,
-) : IncomingMessage {
+) : IncomingGameMessage {
     public constructor(
         eligibleForIntroductoryPrice: Int,
         eligibleForTrialPurchase: Int,
@@ -29,6 +31,8 @@ public class MembershipPromotionEligibility private constructor(
         get() = _eligibleForIntroductoryPrice.toInt()
     public val eligibleForTrialPurchase: Int
         get() = _eligibleForTrialPurchase.toInt()
+    override val category: ClientProtCategory
+        get() = GameClientProtCategory.USER_EVENT
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

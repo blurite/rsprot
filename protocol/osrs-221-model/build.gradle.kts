@@ -14,3 +14,11 @@ dependencies {
     implementation(projects.protocol.osrs221Internal)
     implementation(projects.protocol.osrs221Common)
 }
+
+publishing {
+    publications {
+        create<MavenPublication>("maven") {
+            from(components["java"])
+        }
+    }
+}

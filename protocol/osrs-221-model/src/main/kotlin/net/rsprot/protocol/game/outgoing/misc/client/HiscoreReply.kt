@@ -1,6 +1,8 @@
 package net.rsprot.protocol.game.outgoing.misc.client
 
-import net.rsprot.protocol.message.OutgoingMessage
+import net.rsprot.protocol.ServerProtCategory
+import net.rsprot.protocol.game.incoming.GameServerProtCategory
+import net.rsprot.protocol.message.OutgoingGameMessage
 
 /**
  * Hiscore reply is a packet used in the enhanced clients to do
@@ -13,7 +15,7 @@ import net.rsprot.protocol.message.OutgoingMessage
 public class HiscoreReply private constructor(
     private val _requestId: UByte,
     public val response: HiscoreReplyResponse,
-) : OutgoingMessage {
+) : OutgoingGameMessage {
     public constructor(
         requestId: Int,
         response: HiscoreReplyResponse,
@@ -24,6 +26,8 @@ public class HiscoreReply private constructor(
 
     public val requestId: Int
         get() = _requestId.toInt()
+    override val category: ServerProtCategory
+        get() = GameServerProtCategory.LOW_PRIORITY_PROT
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

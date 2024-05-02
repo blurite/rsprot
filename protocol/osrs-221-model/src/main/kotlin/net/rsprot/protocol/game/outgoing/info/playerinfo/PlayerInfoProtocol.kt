@@ -1,13 +1,15 @@
 package net.rsprot.protocol.game.outgoing.info.playerinfo
 
+import com.github.michaelbull.logging.InlineLogger
 import io.netty.buffer.ByteBuf
 import io.netty.buffer.ByteBufAllocator
-import net.rsprot.protocol.common.platform.PlatformType
+import net.rsprot.protocol.common.client.OldSchoolClientType
 import net.rsprot.protocol.game.outgoing.info.playerinfo.util.LowResolutionPosition
 import net.rsprot.protocol.game.outgoing.info.worker.DefaultProtocolWorker
 import net.rsprot.protocol.game.outgoing.info.worker.ProtocolWorker
 import java.util.concurrent.Callable
 import java.util.concurrent.ForkJoinPool
+import kotlin.Exception
 
 /**
  * The player info protocol is responsible for tracking everything player info related
@@ -42,12 +44,12 @@ public class PlayerInfoProtocol(
      * all the avatars that exist.
      */
     private val playerInfoRepository: PlayerInfoRepository =
-        PlayerInfoRepository { localIndex, platformType ->
+        PlayerInfoRepository { localIndex, clientType ->
             PlayerInfo(
                 this,
                 localIndex,
                 allocator,
-                platformType,
+                clientType,
                 avatarFactory.alloc(localIndex),
             )
         }
@@ -73,8 +75,8 @@ public class PlayerInfoProtocol(
     /**
      * Allocates a new player info instance at index [idx]
      * @param idx the index of the player to allocate
-     * @param platformType the platform on which this player is.
-     * The platform type is used to determine which extended info encoders to utilize
+     * @param oldSchoolClientType the client on which this player is.
+     * The client type is used to determine which extended info encoders to utilize
      * when building the buffers for this packet.
      * @throws ArrayIndexOutOfBoundsException if the [idx] is below 1, or above 2047.
      * @throws IllegalStateException if the element at index [idx] is already in use.
@@ -85,7 +87,7 @@ public class PlayerInfoProtocol(
     )
     public fun alloc(
         idx: Int,
-        platformType: PlatformType,
+        oldSchoolClientType: OldSchoolClientType,
     ): PlayerInfo {
         // Only handle index 0 as a special case, as the protocol
         // does not allow putting an avatar at index 0.
@@ -93,7 +95,15 @@ public class PlayerInfoProtocol(
         if (idx == 0) {
             throw ArrayIndexOutOfBoundsException("Index 0 is not valid for player info protocol.")
         }
-        return playerInfoRepository.alloc(idx, platformType)
+        return playerInfoRepository.alloc(idx, oldSchoolClientType)
+    }
+
+    /**
+     * Deallocates the player info object, releasing it back into the pool to be used by another player.
+     * @param info the player info object
+     */
+    public fun dealloc(info: PlayerInfo) {
+        playerInfoRepository.dealloc(info.localIndex)
     }
 
     /**
@@ -105,6 +115,14 @@ public class PlayerInfoProtocol(
         return lowResolutionPositionRepository.getCurrentLowResolutionPosition(idx)
     }
 
+    public fun update() {
+        prepare()
+        putBitcodes()
+        prepareExtendedInfo()
+        putExtendedInfo()
+        postUpdate()
+    }
+
     /**
      * Prepares the player info protocol for every player in the world.
      * First it will synchronize the low resolution positions of all the avatars in the world.
@@ -112,7 +130,7 @@ public class PlayerInfoProtocol(
      * this will cache the low and high resolution movement bit buffers
      * for every avatar in the world.
      */
-    public fun prepare() {
+    private fun prepare() {
         // Synchronize the known low res positions of everyone for this cycle
         for (i in 1..<PROTOCOL_CAPACITY) {
             val info = playerInfoRepository.getOrNull(i)
@@ -123,7 +141,16 @@ public class PlayerInfoProtocol(
             }
         }
         for (i in 1..<PROTOCOL_CAPACITY) {
-            playerInfoRepository.getOrNull(i)?.prepareBitcodes(lowResolutionPositionRepository)
+            try {
+                playerInfoRepository.getOrNull(i)?.prepareBitcodes(lowResolutionPositionRepository)
+            } catch (e: Exception) {
+                catchException(i, e)
+            } catch (t: Throwable) {
+                logger.error(t) {
+                    "Error during player updating preparation"
+                }
+                throw t
+            }
         }
     }
 
@@ -131,7 +158,7 @@ public class PlayerInfoProtocol(
      * Writes the bitcodes for each avatar in the world according to the implementation
      * defined by the [worker].
      */
-    public fun putBitcodes() {
+    private fun putBitcodes() {
         execute {
             pBitcodes()
         }
@@ -146,7 +173,7 @@ public class PlayerInfoProtocol(
      * will be generated. Anything else, however, will be computed on demand
      * without an intermediate byte buffer.
      */
-    public fun prepareExtendedInfo() {
+    private fun prepareExtendedInfo() {
         execute {
             precomputeExtendedInfo()
         }
@@ -159,7 +186,7 @@ public class PlayerInfoProtocol(
      * as most of the extended info blocks will be cached.
      * If direct buffers are used, fast native memory copy invocations will be used.
      */
-    public fun putExtendedInfo() {
+    private fun putExtendedInfo() {
         execute {
             putExtendedInfo()
         }
@@ -169,7 +196,7 @@ public class PlayerInfoProtocol(
      * Cleans up the player info protocol for all the avatars in the world,
      * according to the implementation defined by the [worker].
      */
-    public fun postUpdate() {
+    private fun postUpdate() {
         execute {
             postUpdate()
         }
@@ -187,10 +214,38 @@ public class PlayerInfoProtocol(
     private inline fun execute(crossinline block: PlayerInfo.() -> Unit) {
         for (i in 1..<PROTOCOL_CAPACITY) {
             val info = playerInfoRepository.getOrNull(i) ?: continue
-            callables += Callable { block(info) }
+            callables +=
+                Callable {
+                    try {
+                        block(info)
+                    } catch (e: Exception) {
+                        catchException(i, e)
+                    } catch (t: Throwable) {
+                        logger.error(t) {
+                            "Error during player updating"
+                        }
+                        throw t
+                    }
+                }
         }
         worker.execute(callables)
         callables.clear()
+    }
+
+    /**
+     * Submits an exception to a specific player's playerinfo packet, which will be propagated further
+     * whenever the server tries to call the [PlayerInfo.toPacket] function, allowing the server to properly
+     * handle exceptions for a given player despite it being calculated for the entire server in one go.
+     * @param index the index of the player who caught an exception during their processing
+     * @param exception the exception caught during processing
+     */
+    private fun catchException(
+        index: Int,
+        exception: Exception,
+    ) {
+        val info = playerInfoRepository.getOrNull(index) ?: return
+        playerInfoRepository.destroy(index)
+        info.exception = exception
     }
 
     public companion object {
@@ -201,5 +256,6 @@ public class PlayerInfoProtocol(
          * as that would break the client's logic.
          */
         public const val PROTOCOL_CAPACITY: Int = 2048
+        private val logger: InlineLogger = InlineLogger()
     }
 }

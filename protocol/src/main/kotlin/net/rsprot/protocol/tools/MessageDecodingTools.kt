@@ -1,6 +1,6 @@
 package net.rsprot.protocol.tools
 
-import net.rsprot.compression.HuffmanCodec
+import net.rsprot.compression.provider.HuffmanCodecProvider
 
 /**
  * Message decoding tools are a set of tools passed to message decoders,
@@ -16,7 +16,7 @@ import net.rsprot.compression.HuffmanCodec
  * chat messages.
  */
 public class MessageDecodingTools(
-    public val huffmanCodec: HuffmanCodec,
+    public val huffmanCodec: HuffmanCodecProvider,
 ) {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

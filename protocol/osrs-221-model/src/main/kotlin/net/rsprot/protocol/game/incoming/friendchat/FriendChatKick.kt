@@ -1,6 +1,8 @@
 package net.rsprot.protocol.game.incoming.friendchat
 
-import net.rsprot.protocol.message.IncomingMessage
+import net.rsprot.protocol.ClientProtCategory
+import net.rsprot.protocol.game.incoming.GameClientProtCategory
+import net.rsprot.protocol.message.IncomingGameMessage
 
 /**
  * Friend chat kick is sent when the owner requests to click another
@@ -9,7 +11,10 @@ import net.rsprot.protocol.message.IncomingMessage
  */
 public class FriendChatKick(
     public val name: String,
-) : IncomingMessage {
+) : IncomingGameMessage {
+    override val category: ClientProtCategory
+        get() = GameClientProtCategory.USER_EVENT
+
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (javaClass != other?.javaClass) return false

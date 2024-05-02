@@ -2,8 +2,9 @@ package net.rsprot.protocol.game.outgoing.info.npcinfo
 
 import io.netty.buffer.ByteBufAllocator
 import net.rsprot.buffer.JagByteBuf
-import net.rsprot.compression.HuffmanCodec
+import net.rsprot.compression.provider.HuffmanCodecProvider
 import net.rsprot.protocol.common.RSProtFlags
+import net.rsprot.protocol.common.client.OldSchoolClientType
 import net.rsprot.protocol.common.game.outgoing.info.npcinfo.encoder.NpcExtendedInfoEncoders
 import net.rsprot.protocol.common.game.outgoing.info.npcinfo.extendedinfo.BaseAnimationSet
 import net.rsprot.protocol.common.game.outgoing.info.npcinfo.extendedinfo.CombatLevelChange
@@ -15,7 +16,6 @@ import net.rsprot.protocol.common.game.outgoing.info.shared.extendedinfo.FacePat
 import net.rsprot.protocol.common.game.outgoing.info.shared.extendedinfo.util.HeadBar
 import net.rsprot.protocol.common.game.outgoing.info.shared.extendedinfo.util.HitMark
 import net.rsprot.protocol.common.game.outgoing.info.shared.extendedinfo.util.SpotAnim
-import net.rsprot.protocol.common.platform.PlatformType
 import net.rsprot.protocol.game.outgoing.info.AvatarExtendedInfoWriter
 import net.rsprot.protocol.game.outgoing.info.filter.ExtendedInfoFilter
 
@@ -27,7 +27,7 @@ public typealias NpcAvatarExtendedInfoWriter =
  * properties of the given avatar.
  * @property avatarIndex the index of the avatar npc
  * @property filter the filter used to ensure that the buffer does not exceed the 40kb limit.
- * @param extendedInfoWriters the list of platform-specific extended info writers.
+ * @param extendedInfoWriters the list of client-specific extended info writers.
  * @property allocator the byte buffer allocator used to pre-compute extended info blocks.
  * @property huffmanCodec the huffman codec is used to compress chat messages, though
  * none are used for NPCs, the writer function still expects it.
@@ -38,7 +38,7 @@ public class NpcAvatarExtendedInfo(
     private val filter: ExtendedInfoFilter,
     extendedInfoWriters: List<NpcAvatarExtendedInfoWriter>,
     private val allocator: ByteBufAllocator,
-    private val huffmanCodec: HuffmanCodec,
+    private val huffmanCodec: HuffmanCodecProvider,
 ) {
     /**
      * The extended info blocks enabled on this NPC in a given cycle.
@@ -47,17 +47,17 @@ public class NpcAvatarExtendedInfo(
 
     /**
      * Extended info blocks used to transmit changes to the client,
-     * wrapped in its own class as we must pass this onto the platform-specific
+     * wrapped in its own class as we must pass this onto the client-specific
      * implementations.
      */
     private val blocks: NpcAvatarExtendedInfoBlocks = NpcAvatarExtendedInfoBlocks(extendedInfoWriters)
 
     /**
-     * The platform-specific extended info writers, indexed by the respective [PlatformType]'s id.
-     * All platforms in use must be registered, or an exception will occur during player info encoding.
+     * The client-specific extended info writers, indexed by the respective [OldSchoolClientType]'s id.
+     * All clients in use must be registered, or an exception will occur during player info encoding.
      */
     private val writers: Array<NpcAvatarExtendedInfoWriter?> =
-        buildPlatformWriterArray(extendedInfoWriters)
+        buildClientWriterArray(extendedInfoWriters)
 
     /**
      * Sets the sequence for this avatar to play.
@@ -204,8 +204,8 @@ public class NpcAvatarExtendedInfo(
             require(slot in UNSIGNED_BYTE_RANGE) {
                 "Unexpected slot: $slot, expected range: $UNSIGNED_BYTE_RANGE"
             }
-            require(id in UNSIGNED_SHORT_RANGE) {
-                "Unexpected id: $id, expected range: $UNSIGNED_SHORT_RANGE"
+            require(id == -1 || id in UNSIGNED_SHORT_RANGE) {
+                "Unexpected id: $id, expected value -1 or in range: $UNSIGNED_SHORT_RANGE"
             }
             require(delay in UNSIGNED_SHORT_RANGE) {
                 "Unexpected delay: $delay, expected range: $UNSIGNED_SHORT_RANGE"
@@ -1023,14 +1023,14 @@ public class NpcAvatarExtendedInfo(
 
     /**
      * Writes the extended info block of this avatar for the given observer.
-     * @param platformType the platform that the observer is using.
+     * @param oldSchoolClientType the client that the observer is using.
      * @param buffer the buffer into which the extended info block should be written.
      * @param observerIndex index of the player avatar that is observing us.
      * @param remainingAvatars the number of avatars that must still be updated for
      * the given [observerIndex], necessary to avoid memory overflow.
      */
     internal fun pExtendedInfo(
-        platformType: PlatformType,
+        oldSchoolClientType: OldSchoolClientType,
         buffer: JagByteBuf,
         observerIndex: Int,
         remainingAvatars: Int,
@@ -1047,8 +1047,8 @@ public class NpcAvatarExtendedInfo(
             return
         }
         val writer =
-            requireNotNull(writers[platformType.id]) {
-                "Extended info writer missing for platform $platformType"
+            requireNotNull(writers[oldSchoolClientType.id]) {
+                "Extended info writer missing for client $oldSchoolClientType"
             }
 
         writer.pExtendedInfo(
@@ -1183,18 +1183,18 @@ public class NpcAvatarExtendedInfo(
         }
 
         /**
-         * Builds an extended info writer array indexed by provided platform types.
-         * All platform types which are utilized must be registered to avoid runtime errors.
+         * Builds an extended info writer array indexed by provided client types.
+         * All client types which are utilized must be registered to avoid runtime errors.
          */
-        private fun buildPlatformWriterArray(
+        private fun buildClientWriterArray(
             extendedInfoWriters: List<NpcAvatarExtendedInfoWriter>,
         ): Array<NpcAvatarExtendedInfoWriter?> {
             val array =
                 arrayOfNulls<NpcAvatarExtendedInfoWriter>(
-                    PlatformType.COUNT,
+                    OldSchoolClientType.COUNT,
                 )
             for (writer in extendedInfoWriters) {
-                array[writer.platformType.id] = writer
+                array[writer.oldSchoolClientType.id] = writer
             }
             return array
         }

@@ -1,10 +1,12 @@
 package net.rsprot.protocol.loginprot.outgoing
 
 import net.rsprot.protocol.loginprot.outgoing.util.AuthenticatorResponse
-import net.rsprot.protocol.message.OutgoingMessage
+import net.rsprot.protocol.message.OutgoingLoginMessage
 
-public sealed interface LoginResponse : OutgoingMessage {
-    public data object Successful : LoginResponse
+public sealed interface LoginResponse : OutgoingLoginMessage {
+    public data class Successful(
+        public val sessionId: Long?,
+    ) : LoginResponse
 
     @Suppress("DataClassPrivateConstructor")
     public data class Ok private constructor(
@@ -162,7 +164,9 @@ public sealed interface LoginResponse : OutgoingMessage {
 
     public data object OutOfDateReload : LoginResponse
 
-    public data object ProofOfWork : LoginResponse
+    public class ProofOfWork(
+        public val proofOfWork: net.rsprot.protocol.loginprot.incoming.pow.ProofOfWork<*, *>,
+    ) : LoginResponse
 
     public data object DobError : LoginResponse
 

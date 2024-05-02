@@ -1,7 +1,9 @@
 package net.rsprot.protocol.game.outgoing.specific
 
+import net.rsprot.protocol.ServerProtCategory
+import net.rsprot.protocol.game.incoming.GameServerProtCategory
 import net.rsprot.protocol.game.outgoing.zone.payload.util.CoordInBuildArea
-import net.rsprot.protocol.message.OutgoingMessage
+import net.rsprot.protocol.message.OutgoingGameMessage
 
 /**
  * Map anim specific is sent to play a graphical effect/spotanim on a tile,
@@ -31,7 +33,7 @@ public class MapAnimSpecific private constructor(
     private val _delay: UShort,
     private val _height: UByte,
     private val coordInBuildArea: CoordInBuildArea,
-) : OutgoingMessage {
+) : OutgoingGameMessage {
     public constructor(
         id: Int,
         delay: Int,
@@ -69,6 +71,8 @@ public class MapAnimSpecific private constructor(
 
     public val coordInBuildAreaPacked: Int
         get() = coordInBuildArea.packedMedium
+    override val category: ServerProtCategory
+        get() = GameServerProtCategory.LOW_PRIORITY_PROT
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

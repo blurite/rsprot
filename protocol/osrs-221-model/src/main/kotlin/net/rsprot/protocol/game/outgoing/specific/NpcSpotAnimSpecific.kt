@@ -1,6 +1,8 @@
 package net.rsprot.protocol.game.outgoing.specific
 
-import net.rsprot.protocol.message.OutgoingMessage
+import net.rsprot.protocol.ServerProtCategory
+import net.rsprot.protocol.game.incoming.GameServerProtCategory
+import net.rsprot.protocol.message.OutgoingGameMessage
 
 /**
  * Npc spot-anim specific packets are used to play a spotanim on a NPC
@@ -18,7 +20,7 @@ public class NpcSpotAnimSpecific private constructor(
     private val _slot: UByte,
     private val _height: UShort,
     private val _delay: UShort,
-) : OutgoingMessage {
+) : OutgoingGameMessage {
     public constructor(
         index: Int,
         id: Int,
@@ -43,6 +45,8 @@ public class NpcSpotAnimSpecific private constructor(
         get() = _height.toInt()
     public val delay: Int
         get() = _delay.toInt()
+    override val category: ServerProtCategory
+        get() = GameServerProtCategory.LOW_PRIORITY_PROT
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

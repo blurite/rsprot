@@ -1,6 +1,5 @@
 package net.rsprot.protocol.loginprot.incoming.pow.challenges.sha256
 
-import net.rsprot.buffer.JagByteBuf
 import net.rsprot.protocol.loginprot.incoming.pow.challenges.ChallengeVerifier
 import net.rsprot.protocol.loginprot.incoming.pow.challenges.sha256.hashing.DefaultSha256MessageDigestHashFunction
 import net.rsprot.protocol.loginprot.incoming.pow.challenges.sha256.hashing.Sha256HashFunction
@@ -16,13 +15,12 @@ public class Sha256ChallengeVerifier(
     private val hashFunction: Sha256HashFunction = DefaultSha256MessageDigestHashFunction,
 ) : ChallengeVerifier<Sha256Challenge> {
     override fun verify(
-        result: JagByteBuf,
+        result: Long,
         challenge: Sha256Challenge,
     ): Boolean {
-        val value = result.g8()
         val baseString = challenge.getBaseString()
         val builder = StringBuilder(baseString)
-        builder.append(java.lang.Long.toHexString(value))
+        builder.append(java.lang.Long.toHexString(result))
         val utf8ByteArray =
             builder
                 .toString()

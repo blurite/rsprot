@@ -1,9 +1,9 @@
 package net.rsprot.protocol.common.game.outgoing.info.shared.extendedinfo
 
+import net.rsprot.protocol.common.client.ClientTypeMap
 import net.rsprot.protocol.common.game.outgoing.info.TransientExtendedInfo
 import net.rsprot.protocol.common.game.outgoing.info.encoder.PrecomputedExtendedInfoEncoder
 import net.rsprot.protocol.common.game.outgoing.info.shared.extendedinfo.util.SpotAnim
-import net.rsprot.protocol.common.platform.PlatformMap
 import java.util.BitSet
 
 /**
@@ -13,10 +13,10 @@ import java.util.BitSet
  * Instead of traversing the entire list at the end of a cycle to reset the properties,
  * it will follow the bitset's enabled bits to identify which slots to reset, if any.
  * As in most cases the answer is none - this should outperform array fills by quite a bit.
- * @param encoders the array of platform-specific encoders for spotanims.
+ * @param encoders the array of client-specific encoders for spotanims.
  */
 public class SpotAnimList(
-    override val encoders: PlatformMap<PrecomputedExtendedInfoEncoder<SpotAnimList>>,
+    override val encoders: ClientTypeMap<PrecomputedExtendedInfoEncoder<SpotAnimList>>,
 ) : TransientExtendedInfo<SpotAnimList, PrecomputedExtendedInfoEncoder<SpotAnimList>>() {
     /**
      * The changelist that tracks all the slots which have been flagged for a spotanim update.

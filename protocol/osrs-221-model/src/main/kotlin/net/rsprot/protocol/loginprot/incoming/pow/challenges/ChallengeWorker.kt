@@ -1,6 +1,5 @@
 package net.rsprot.protocol.loginprot.incoming.pow.challenges
 
-import net.rsprot.buffer.JagByteBuf
 import java.util.concurrent.CompletableFuture
 
 /**
@@ -19,7 +18,7 @@ public interface ChallengeWorker {
      * after which the work will be concluded failed.
      */
     public fun <T : ChallengeType<*>, V : ChallengeVerifier<T>> verify(
-        result: JagByteBuf,
+        result: Long,
         challenge: T,
         verifier: V,
     ): CompletableFuture<Boolean>

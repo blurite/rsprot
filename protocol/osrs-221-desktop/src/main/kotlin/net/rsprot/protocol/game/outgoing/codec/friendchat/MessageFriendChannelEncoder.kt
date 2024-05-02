@@ -18,7 +18,7 @@ public class MessageFriendChannelEncoder : MessageEncoder<MessageFriendChannel> 
         buffer: JagByteBuf,
         message: MessageFriendChannel,
     ) {
-        val huffmanCodec =
+        val huffmanCodecProvider =
             ctx.channel().attr(ChannelAttributes.HUFFMAN_CODEC).get()
                 ?: throw IllegalStateException("Huffman codec not initialized.")
         buffer.pjstr(message.sender)
@@ -26,6 +26,7 @@ public class MessageFriendChannelEncoder : MessageEncoder<MessageFriendChannel> 
         buffer.p2(message.worldId)
         buffer.p3(message.worldMessageCounter)
         buffer.p1(message.chatCrownType)
-        huffmanCodec.encode(buffer, message.message)
+        val huffman = huffmanCodecProvider.provide()
+        huffman.encode(buffer, message.message)
     }
 }

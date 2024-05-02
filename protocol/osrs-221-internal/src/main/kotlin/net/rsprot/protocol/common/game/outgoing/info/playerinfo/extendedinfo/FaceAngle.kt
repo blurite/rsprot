@@ -1,16 +1,16 @@
 package net.rsprot.protocol.common.game.outgoing.info.playerinfo.extendedinfo
 
+import net.rsprot.protocol.common.client.ClientTypeMap
 import net.rsprot.protocol.common.game.outgoing.info.TransientExtendedInfo
 import net.rsprot.protocol.common.game.outgoing.info.encoder.PrecomputedExtendedInfoEncoder
-import net.rsprot.protocol.common.platform.PlatformMap
 
 /**
  * The extended info block responsible for making an avatar turn towards a specific
  * angle.
- * @param encoders the array of platform-specific encoders for face angle.
+ * @param encoders the array of client-specific encoders for face angle.
  */
 public class FaceAngle(
-    override val encoders: PlatformMap<PrecomputedExtendedInfoEncoder<FaceAngle>>,
+    override val encoders: ClientTypeMap<PrecomputedExtendedInfoEncoder<FaceAngle>>,
 ) : TransientExtendedInfo<FaceAngle, PrecomputedExtendedInfoEncoder<FaceAngle>>() {
     /**
      * The value of the angle for this avatar to turn towards.

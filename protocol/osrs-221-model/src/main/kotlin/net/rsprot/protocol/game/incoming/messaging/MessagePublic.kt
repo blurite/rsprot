@@ -1,6 +1,8 @@
 package net.rsprot.protocol.game.incoming.messaging
 
-import net.rsprot.protocol.message.IncomingMessage
+import net.rsprot.protocol.ClientProtCategory
+import net.rsprot.protocol.game.incoming.GameClientProtCategory
+import net.rsprot.protocol.message.IncomingGameMessage
 
 /**
  * Message public events are sent when the player talks in public.
@@ -74,7 +76,7 @@ public class MessagePublic private constructor(
     public val message: String,
     public val pattern: MessageColourPattern?,
     private val _clanType: Byte,
-) : IncomingMessage {
+) : IncomingGameMessage {
     public constructor(
         type: Int,
         colour: Int,
@@ -97,9 +99,10 @@ public class MessagePublic private constructor(
         get() = _colour.toInt()
     public val effect: Int
         get() = _effect.toInt()
-
     public val clanType: Int
         get() = _clanType.toInt()
+    override val category: ClientProtCategory
+        get() = GameClientProtCategory.USER_EVENT
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

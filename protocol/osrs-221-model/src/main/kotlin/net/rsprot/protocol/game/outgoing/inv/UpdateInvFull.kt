@@ -1,10 +1,12 @@
 package net.rsprot.protocol.game.outgoing.inv
 
+import net.rsprot.protocol.ServerProtCategory
 import net.rsprot.protocol.common.RSProtFlags
 import net.rsprot.protocol.common.game.outgoing.inv.InventoryObject
 import net.rsprot.protocol.common.game.outgoing.inv.internal.Inventory
 import net.rsprot.protocol.common.game.outgoing.inv.internal.InventoryPool
-import net.rsprot.protocol.message.OutgoingMessage
+import net.rsprot.protocol.game.incoming.GameServerProtCategory
+import net.rsprot.protocol.message.OutgoingGameMessage
 import net.rsprot.protocol.util.CombinedId
 
 /**
@@ -39,7 +41,7 @@ public class UpdateInvFull private constructor(
     public val combinedId: CombinedId,
     private val _inventoryId: UShort,
     private val inventory: Inventory,
-) : OutgoingMessage {
+) : OutgoingGameMessage {
     public constructor(
         interfaceId: Int,
         componentId: Int,
@@ -81,6 +83,8 @@ public class UpdateInvFull private constructor(
         get() = _inventoryId.toInt()
     public val capacity: Int
         get() = inventory.count
+    override val category: ServerProtCategory
+        get() = GameServerProtCategory.HIGH_PRIORITY_PROT
 
     /**
      * Gets the obj in the [slot] provided.
@@ -162,7 +166,7 @@ public class UpdateInvFull private constructor(
             for (i in 0..<capacity) {
                 val obj = provider.provide(i)
                 if (RSProtFlags.inventoryObjCheck) {
-                    check(obj.count >= 0) {
+                    check(obj == InventoryObject.NULL || obj.count >= 0) {
                         "Obj count cannot be below zero: $obj @ $i"
                     }
                 }

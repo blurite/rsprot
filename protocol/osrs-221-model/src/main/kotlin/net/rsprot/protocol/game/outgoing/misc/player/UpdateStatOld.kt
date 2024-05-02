@@ -1,6 +1,8 @@
 package net.rsprot.protocol.game.outgoing.misc.player
 
-import net.rsprot.protocol.message.OutgoingMessage
+import net.rsprot.protocol.ServerProtCategory
+import net.rsprot.protocol.game.incoming.GameServerProtCategory
+import net.rsprot.protocol.message.OutgoingGameMessage
 
 /**
  * Update stat old packet is used to set the current experience
@@ -16,7 +18,7 @@ public class UpdateStatOld private constructor(
     private val _stat: UByte,
     private val _currentLevel: UByte,
     public val experience: Int,
-) : OutgoingMessage {
+) : OutgoingGameMessage {
     public constructor(
         stat: Int,
         currentLevel: Int,
@@ -31,6 +33,8 @@ public class UpdateStatOld private constructor(
         get() = _stat.toInt()
     public val currentLevel: Int
         get() = _currentLevel.toInt()
+    override val category: ServerProtCategory
+        get() = GameServerProtCategory.LOW_PRIORITY_PROT
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

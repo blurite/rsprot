@@ -1,0 +1,20 @@
+package net.rsprot.protocol.api.js5
+
+import net.rsprot.crypto.cipher.NopStreamCipher
+import net.rsprot.crypto.cipher.StreamCipher
+import net.rsprot.protocol.ClientProt
+import net.rsprot.protocol.api.NetworkService
+import net.rsprot.protocol.api.decoder.IncomingMessageDecoder
+import net.rsprot.protocol.message.codec.incoming.MessageDecoderRepository
+import net.rsprot.protocol.tools.MessageDecodingTools
+
+public class Js5MessageDecoder(
+    public val networkService: NetworkService<*, *>,
+) : IncomingMessageDecoder() {
+    override val decoders: MessageDecoderRepository<ClientProt> =
+        networkService
+            .decoderRepositories
+            .js5MessageDecoderRepository
+    override val messageDecodingTools: MessageDecodingTools = networkService.messageDecodingTools
+    override val streamCipher: StreamCipher = NopStreamCipher
+}

@@ -1,6 +1,8 @@
 package net.rsprot.protocol.game.incoming.objs
 
-import net.rsprot.protocol.message.IncomingMessage
+import net.rsprot.protocol.ClientProtCategory
+import net.rsprot.protocol.game.incoming.GameClientProtCategory
+import net.rsprot.protocol.message.IncomingGameMessage
 
 /**
  * OpObj6 messages are fired whenever a player examines an obj on the ground.
@@ -12,7 +14,7 @@ public class OpObj6 private constructor(
     private val _id: UShort,
     private val _x: UShort,
     private val _z: UShort,
-) : IncomingMessage {
+) : IncomingGameMessage {
     public constructor(
         id: Int,
         x: Int,
@@ -29,6 +31,8 @@ public class OpObj6 private constructor(
         get() = _x.toInt()
     public val z: Int
         get() = _z.toInt()
+    override val category: ClientProtCategory
+        get() = GameClientProtCategory.USER_EVENT
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

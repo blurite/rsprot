@@ -1,6 +1,8 @@
 package net.rsprot.protocol.game.incoming.misc.user
 
-import net.rsprot.protocol.message.IncomingMessage
+import net.rsprot.protocol.ClientProtCategory
+import net.rsprot.protocol.game.incoming.GameClientProtCategory
+import net.rsprot.protocol.message.IncomingGameMessage
 
 /**
  * Client cheats are commands sent in chat using the :: prefix,
@@ -8,7 +10,10 @@ import net.rsprot.protocol.message.IncomingMessage
  */
 public class ClientCheat(
     public val command: String,
-) : IncomingMessage {
+) : IncomingGameMessage {
+    override val category: ClientProtCategory
+        get() = GameClientProtCategory.USER_EVENT
+
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (javaClass != other?.javaClass) return false

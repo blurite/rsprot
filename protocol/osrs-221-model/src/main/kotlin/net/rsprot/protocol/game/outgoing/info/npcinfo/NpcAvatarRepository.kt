@@ -1,11 +1,12 @@
 package net.rsprot.protocol.game.outgoing.info.npcinfo
 
 import io.netty.buffer.ByteBufAllocator
-import net.rsprot.compression.HuffmanCodec
+import net.rsprot.compression.provider.HuffmanCodecProvider
 import net.rsprot.protocol.common.game.outgoing.info.CoordGrid
 import net.rsprot.protocol.common.game.outgoing.info.npcinfo.NpcAvatarDetails
 import net.rsprot.protocol.game.outgoing.info.filter.ExtendedInfoFilter
 import java.lang.ref.ReferenceQueue
+import java.lang.ref.SoftReference
 
 /**
  * The NPC avatar repository is a class responsible for keeping track of all the avatars
@@ -15,7 +16,7 @@ import java.lang.ref.ReferenceQueue
  * have extended info blocks written to it, or if we have to utilize a fall-back and tell
  * the client that despite extended info having been flagged, we cannot write it (by writing
  * the flag itself as a zero, so the client reads no further information).
- * @param extendedInfoWriter the platform-specific extended info writers for NPC information.
+ * @param extendedInfoWriter the client-specific extended info writers for NPC information.
  * @param huffmanCodec the huffman codec is used to compress chat extended info.
  * While NPCs do not currently have any such extended info blocks, the interface requires
  * it be passed in, so we must still provide it.
@@ -25,7 +26,7 @@ internal class NpcAvatarRepository(
     private val allocator: ByteBufAllocator,
     private val extendedInfoFilter: ExtendedInfoFilter,
     private val extendedInfoWriter: List<NpcAvatarExtendedInfoWriter>,
-    private val huffmanCodec: HuffmanCodec,
+    private val huffmanCodec: HuffmanCodecProvider,
 ) {
     /**
      * The array of npc avatars that currently exist in the game.
@@ -123,6 +124,17 @@ internal class NpcAvatarRepository(
             )
         elements[index] = avatar
         return avatar
+    }
+
+    /**
+     * Releases avatar back into the pool for it to be used later in the future, if possible.
+     * @param avatar the avatar to release.
+     */
+    fun release(avatar: NpcAvatar) {
+        this.elements[avatar.details.index] = null
+        avatar.extendedInfo.reset()
+        val reference = SoftReference(avatar, queue)
+        reference.enqueue()
     }
 
     /**

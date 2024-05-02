@@ -1,6 +1,8 @@
 package net.rsprot.protocol.game.incoming.resumed
 
-import net.rsprot.protocol.message.IncomingMessage
+import net.rsprot.protocol.ClientProtCategory
+import net.rsprot.protocol.game.incoming.GameClientProtCategory
+import net.rsprot.protocol.message.IncomingGameMessage
 
 /**
  * String dialogs are sent whenever a player enters a string into
@@ -9,7 +11,10 @@ import net.rsprot.protocol.message.IncomingMessage
  */
 public class ResumePStringDialog(
     public val string: String,
-) : IncomingMessage {
+) : IncomingGameMessage {
+    override val category: ClientProtCategory
+        get() = GameClientProtCategory.USER_EVENT
+
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (javaClass != other?.javaClass) return false
