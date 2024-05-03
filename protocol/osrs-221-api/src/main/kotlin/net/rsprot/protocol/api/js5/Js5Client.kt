@@ -2,6 +2,7 @@ package net.rsprot.protocol.api.js5
 
 import io.netty.channel.ChannelHandlerContext
 import net.rsprot.protocol.api.js5.Js5GroupProvider.Js5GroupType
+import net.rsprot.protocol.api.js5.util.IntArrayDeque
 import net.rsprot.protocol.channel.ChannelAttributes
 import net.rsprot.protocol.js5.incoming.Js5GroupRequest
 import net.rsprot.protocol.js5.incoming.UrgentRequest
@@ -11,9 +12,8 @@ import kotlin.math.min
 public class Js5Client<T : Js5GroupType>(
     public val ctx: ChannelHandlerContext,
 ) {
-    // TODO: Replace the queues with a primitive fixed-capacity variant
-    private val urgent = ArrayDeque<Int>()
-    private val prefetch = ArrayDeque<Int>()
+    private val urgent = IntArrayDeque(MAX_QUEUE_SIZE)
+    private val prefetch = IntArrayDeque(MAX_QUEUE_SIZE)
     private val currentRequest: PartialJs5GroupRequest<T> = PartialJs5GroupRequest()
     public var priority: ClientPriority = ClientPriority.LOW
         private set
@@ -44,11 +44,8 @@ public class Js5Client<T : Js5GroupType>(
 
     public fun push(request: Js5GroupRequest) {
         val bitpacked = request.bitpacked
-        if (urgent.contains(bitpacked) || prefetch.contains(bitpacked)) {
-            return
-        }
         if (request is UrgentRequest) {
-            prefetch -= bitpacked
+            prefetch.remove(bitpacked)
             urgent.addLast(bitpacked)
         } else {
             prefetch.addLast(bitpacked)
@@ -56,10 +53,10 @@ public class Js5Client<T : Js5GroupType>(
     }
 
     private fun pop(): Int {
-        if (!urgent.isEmpty()) {
+        if (urgent.isNotEmpty()) {
             return urgent.removeFirst()
         }
-        if (!prefetch.isEmpty()) {
+        if (prefetch.isNotEmpty()) {
             return prefetch.removeFirst()
         }
         return -1
