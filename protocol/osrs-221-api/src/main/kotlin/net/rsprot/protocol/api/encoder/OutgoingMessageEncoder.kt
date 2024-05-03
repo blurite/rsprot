@@ -55,11 +55,23 @@ public abstract class OutgoingMessageEncoder : MessageToByteEncoder<OutgoingMess
         if (sizeMarker != -1) {
             val writerIndex = out.writerIndex()
             var length = writerIndex - payloadMarker
+
+            // Ok login response is a relatively special case that requires encoding the size
+            // as either 3 or 4 bytes bigger than it actually is.
+            // This is because it is intended to include the header of the first packet that
+            // will come after the login response, so the client knows how many bytes to expect
+            // right away with the login response. This _could've_ been done differently by
+            // Jagex, but it isn't, resulting in this slightly awkward code.
+            // If the opcode is > 127, two bytes are needed to encode the opcode,
+            // otherwise a single byte is needed. In either case, 2 more bytes are needed
+            // for the size of the rebuild login packet itself.
             if (msg is LoginResponse.Ok) {
-                // TODO: Figure out a nicer way to deal with this?
-                // Ok login response needs to include 3 bytes extra as it immediately reads
-                // and discards the header of the first packet that comes in (rebuild login)
-                length += 3
+                length +=
+                    if (opcode > MAX_OPCODE_VALUE_FOR_SINGLE_BYTE_OPCODE) {
+                        Short.SIZE_BYTES + Short.SIZE_BYTES
+                    } else {
+                        Byte.SIZE_BYTES + Short.SIZE_BYTES
+                    }
             }
             out.writerIndex(sizeMarker)
             when (prot.size) {
@@ -68,5 +80,9 @@ public abstract class OutgoingMessageEncoder : MessageToByteEncoder<OutgoingMess
             }
             out.writerIndex(writerIndex)
         }
+    }
+
+    private companion object {
+        private const val MAX_OPCODE_VALUE_FOR_SINGLE_BYTE_OPCODE: Int = 127
     }
 }
