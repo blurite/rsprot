@@ -505,6 +505,10 @@ public class NpcInfo internal constructor(
     }
 
     override fun onDealloc() {
+        val buffer = this.buffer
+        if (buffer != null && buffer.refCnt() > 0) {
+            buffer.release(buffer.refCnt())
+        }
         this.buffer = null
     }
 

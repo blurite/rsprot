@@ -642,8 +642,10 @@ public class PlayerInfo internal constructor(
      * to stick around for extended periods of time. Any primitive properties will remain untouched.
      */
     override fun onDealloc() {
-        // We do not release the buffer as the Netty encoders are responsible for it.
-        // However, we do reset any references to buffers and whatnot in this step.
+        val buffer = this.buffer
+        if (buffer != null && buffer.refCnt() > 0) {
+            buffer.release(buffer.refCnt())
+        }
         this.buffer = null
         avatar.extendedInfo.reset()
         highResMovementBuffer = null
