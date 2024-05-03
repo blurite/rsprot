@@ -15,6 +15,9 @@ import net.rsprot.protocol.js5.incoming.PriorityChangeLow
 import net.rsprot.protocol.js5.incoming.XorChange
 import net.rsprot.protocol.message.IncomingJs5Message
 
+/**
+ * A channel handler for the JS5 connections
+ */
 public class Js5ChannelHandler<T : Js5GroupType>(
     private val networkService: NetworkService<*, T>,
 ) : SimpleChannelInboundHandler<IncomingJs5Message>(IncomingJs5Message::class.java) {
@@ -43,6 +46,7 @@ public class Js5ChannelHandler<T : Js5GroupType>(
     }
 
     override fun handlerAdded(ctx: ChannelHandlerContext) {
+        // Instantiate the client when the handler is added, additionally read from the ctx
         client = Js5Client(ctx.read())
     }
 
@@ -50,6 +54,8 @@ public class Js5ChannelHandler<T : Js5GroupType>(
         ctx: ChannelHandlerContext,
         msg: IncomingJs5Message,
     ) {
+        // Directly handle all the possible message types in a descending order of
+        // probability of being sent
         when (msg) {
             is Js5GroupRequest -> {
                 js5Log(logger) {
@@ -57,18 +63,18 @@ public class Js5ChannelHandler<T : Js5GroupType>(
                 }
                 service.push(client, msg)
             }
-            PriorityChangeHigh -> {
-                js5Log(logger) {
-                    "Priority changed to high in channel ${ctx.channel()}"
-                }
-                client.setHighPriority()
-                service.readIfNotFull(client)
-            }
             PriorityChangeLow -> {
                 js5Log(logger) {
                     "Priority changed to low in channel ${ctx.channel()}"
                 }
                 client.setLowPriority()
+                service.readIfNotFull(client)
+            }
+            PriorityChangeHigh -> {
+                js5Log(logger) {
+                    "Priority changed to high in channel ${ctx.channel()}"
+                }
+                client.setHighPriority()
                 service.readIfNotFull(client)
             }
             is XorChange -> {
@@ -85,10 +91,13 @@ public class Js5ChannelHandler<T : Js5GroupType>(
     }
 
     override fun channelReadComplete(ctx: ChannelHandlerContext) {
+        // Read more from the context if we have space to read, when the read has completed
         service.readIfNotFull(client)
     }
 
     override fun channelWritabilityChanged(ctx: ChannelHandlerContext) {
+        // If the channel turns writable again, allow the service to continue
+        // serving to this client
         if (ctx.channel().isWritable) {
             service.notifyIfNotEmpty(client)
         }
@@ -109,6 +118,7 @@ public class Js5ChannelHandler<T : Js5GroupType>(
         ctx: ChannelHandlerContext,
         evt: Any,
     ) {
+        // Close the context if the channel goes idle
         if (evt is IdleStateEvent) {
             networkLog(logger) {
                 "JS5 channel has gone idle, closing channel ${ctx.channel()}"

@@ -6,6 +6,9 @@ import net.rsprot.protocol.api.NetworkService
 import net.rsprot.protocol.api.encoder.OutgoingMessageEncoder
 import net.rsprot.protocol.message.codec.outgoing.MessageEncoderRepository
 
+/**
+ * The encoder for any login messages.
+ */
 public class LoginMessageEncoder(
     public val networkService: NetworkService<*, *>,
 ) : OutgoingMessageEncoder() {

@@ -10,6 +10,9 @@ import net.rsprot.protocol.api.encoder.OutgoingMessageEncoder
 import net.rsprot.protocol.message.OutgoingMessage
 import net.rsprot.protocol.message.codec.outgoing.MessageEncoderRepository
 
+/**
+ * A message encoder for JS5 requests.
+ */
 public class Js5MessageEncoder(
     public val networkService: NetworkService<*, *>,
 ) : OutgoingMessageEncoder() {

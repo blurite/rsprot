@@ -12,6 +12,12 @@ import net.rsprot.protocol.loginprot.outgoing.LoginResponse
 import net.rsprot.protocol.message.OutgoingMessage
 import net.rsprot.protocol.message.codec.outgoing.MessageEncoderRepository
 
+/**
+ * A generic message encoder for all outgoing messages, including login, JS5 and game.
+ * @property cipher the stream cipher used to encrypt the opcodes, and in the case of
+ * some packets, the entire payload
+ * @property repository the message encoder repository containing all the encoders
+ */
 public abstract class OutgoingMessageEncoder : MessageToByteEncoder<OutgoingMessage>(OutgoingMessage::class.java) {
     protected abstract val cipher: StreamCipher
     protected abstract val repository: MessageEncoderRepository<*>
@@ -24,12 +30,7 @@ public abstract class OutgoingMessageEncoder : MessageToByteEncoder<OutgoingMess
         val encoder = repository.getEncoder(msg::class.java)
         val prot = encoder.prot
         val opcode = prot.opcode
-        if (opcode < 0x80) {
-            out.p1(opcode + cipher.nextInt())
-        } else {
-            out.p1((opcode ushr 8 or 0x80) + cipher.nextInt())
-            out.p1((opcode and 0xFF) + cipher.nextInt())
-        }
+        pSmart1Or2Enc(out, opcode)
 
         val sizeMarker =
             when (prot.size) {
@@ -82,7 +83,28 @@ public abstract class OutgoingMessageEncoder : MessageToByteEncoder<OutgoingMess
         }
     }
 
+    /**
+     * Writes a byte or short for the opcode with all the bytes
+     * encrypted using the stream cipher provided.
+     * The name of this function is from a leak.
+     */
+    private fun pSmart1Or2Enc(
+        out: ByteBuf,
+        opcode: Int,
+    ) {
+        if (opcode < 0x80) {
+            out.p1(opcode + cipher.nextInt())
+        } else {
+            out.p1((opcode ushr 8 or 0x80) + cipher.nextInt())
+            out.p1((opcode and 0xFF) + cipher.nextInt())
+        }
+    }
+
     private companion object {
+        /**
+         * The highest possible value for an opcode that can still be written in a single byte
+         * using a 1 or 2 byte smart.
+         */
         private const val MAX_OPCODE_VALUE_FOR_SINGLE_BYTE_OPCODE: Int = 127
     }
 }

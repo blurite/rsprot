@@ -4,6 +4,9 @@ import net.rsprot.protocol.api.LoginDecoderService
 import java.util.concurrent.CompletableFuture
 import java.util.function.BiFunction
 
+/**
+ * The default login decoder utilizing a ForkJoinPool to decode the login block.
+ */
 public class DefaultLoginDecoderService : LoginDecoderService {
     override fun <Buf, Result> decode(
         buffer: Buf,

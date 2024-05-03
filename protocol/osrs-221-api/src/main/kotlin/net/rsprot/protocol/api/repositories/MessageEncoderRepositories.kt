@@ -8,6 +8,9 @@ import net.rsprot.protocol.common.loginprot.outgoing.prot.LoginMessageEncoderRep
 import net.rsprot.protocol.game.outgoing.prot.DesktopGameMessageEncoderRepository
 import net.rsprot.protocol.message.codec.outgoing.MessageEncoderRepository
 
+/**
+ * The message encoder repository for all outgoing messages, for JS5, login and game.
+ */
 @OptIn(ExperimentalStdlibApi::class)
 public class MessageEncoderRepositories private constructor(
     public val loginMessageDecoderRepository: MessageEncoderRepository<ServerProt>,

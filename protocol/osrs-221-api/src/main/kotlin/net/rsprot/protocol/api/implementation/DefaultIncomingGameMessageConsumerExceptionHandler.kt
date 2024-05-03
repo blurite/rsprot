@@ -5,6 +5,11 @@ import net.rsprot.protocol.api.IncomingGameMessageConsumerExceptionHandler
 import net.rsprot.protocol.api.Session
 import net.rsprot.protocol.message.IncomingGameMessage
 
+/**
+ * The default handler for incoming game messages, which will simply log the exceptions
+ * and errors, and in the case of errors, propagate them further. For any exceptions,
+ * nothing besides logging is done.
+ */
 public class DefaultIncomingGameMessageConsumerExceptionHandler<R> : IncomingGameMessageConsumerExceptionHandler<R> {
     override fun exceptionCaught(
         session: Session<R>,

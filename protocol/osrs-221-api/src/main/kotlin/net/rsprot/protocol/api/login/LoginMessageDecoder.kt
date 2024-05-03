@@ -8,6 +8,9 @@ import net.rsprot.protocol.api.decoder.IncomingMessageDecoder
 import net.rsprot.protocol.message.codec.incoming.MessageDecoderRepository
 import net.rsprot.protocol.tools.MessageDecodingTools
 
+/**
+ * The decoder for any login messages.
+ */
 public class LoginMessageDecoder(
     public val networkService: NetworkService<*, *>,
 ) : IncomingMessageDecoder() {

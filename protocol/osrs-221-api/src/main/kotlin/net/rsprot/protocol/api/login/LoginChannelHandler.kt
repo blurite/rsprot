@@ -20,6 +20,10 @@ import net.rsprot.protocol.message.IncomingLoginMessage
 import java.text.NumberFormat
 import java.util.concurrent.TimeUnit
 
+/**
+ * The channel handler for login channels, essentially the very first requests that will
+ * come in from the client, pointing to either JS5 or the game.
+ */
 @Suppress("DuplicatedCode")
 public class LoginChannelHandler(
     public val networkService: NetworkService<*, *>,

@@ -11,6 +11,11 @@ import net.rsprot.protocol.api.login.LoginMessageDecoder
 import net.rsprot.protocol.api.login.LoginMessageEncoder
 import java.util.concurrent.TimeUnit
 
+/**
+ * The channel initializer for login blocks.
+ * This initializer will add the login channel handler as well as an
+ * idle state handler to ensure the connections are cut short if they go idle.
+ */
 public class LoginChannelInitializer<R>(
     private val networkService: NetworkService<R, *>,
 ) : ChannelInitializer<Channel>() {

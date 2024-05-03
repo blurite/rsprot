@@ -7,6 +7,20 @@ import net.rsprot.protocol.game.outgoing.info.npcinfo.NpcIndexSupplier
 import net.rsprot.protocol.game.outgoing.info.worker.DefaultProtocolWorker
 import net.rsprot.protocol.game.outgoing.info.worker.ProtocolWorker
 
+/**
+ * The supplier for NPC info protocol, allowing the construction of the protocol and its
+ * correct use.
+ * @property npcIndexSupplier the supplier for NPC indices, allowing the protocol
+ * to determine what NPCs need to be added to the high resolution view.
+ * The server is expected to return all NPCs, even ones that are already tracked as
+ * the server has no way of determining what is already tracked.
+ * @property npcAvatarExceptionHandler the exception handler for NPC avatars,
+ * catching any exceptions that happen during pre-computations of NPC avatar blocks.
+ * @property npcExtendedInfoFilter the filter for NPC extended info blocks, responsible
+ * for ensuring that the NPC info packet never exceeds the 40 kilobyte limit.
+ * @property npcInfoProtocolWorker the worker behind the NPC info protocol, responsible
+ * for executing the underlying tasks, either on a single thread or a thread pool.
+ */
 public class NpcInfoSupplier
     @JvmOverloads
     public constructor(

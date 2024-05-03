@@ -10,6 +10,9 @@ import net.rsprot.protocol.game.incoming.prot.DesktopGameMessageDecoderRepositor
 import net.rsprot.protocol.message.codec.incoming.MessageDecoderRepository
 import java.math.BigInteger
 
+/**
+ * The message decoder repositories for login, JS5 and game, all held in the same place.
+ */
 @OptIn(ExperimentalStdlibApi::class)
 public class MessageDecoderRepositories private constructor(
     public val loginMessageDecoderRepository: MessageDecoderRepository<ClientProt>,

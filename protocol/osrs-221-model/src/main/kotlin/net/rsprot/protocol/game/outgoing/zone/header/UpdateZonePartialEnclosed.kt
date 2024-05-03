@@ -37,7 +37,7 @@ public class UpdateZonePartialEnclosed private constructor(
         zoneX.toUByte(),
         zoneZ.toUByte(),
         level.toUByte(),
-        payload,
+        payload.retain(),
     )
 
     public val zoneX: Int

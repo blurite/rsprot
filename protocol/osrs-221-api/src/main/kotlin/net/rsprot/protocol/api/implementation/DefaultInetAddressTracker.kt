@@ -4,6 +4,9 @@ import net.rsprot.protocol.api.InetAddressTracker
 import java.net.InetAddress
 import java.util.concurrent.ConcurrentHashMap
 
+/**
+ * The default tracker for INet addresses, utilizing a concurrent hash map.
+ */
 public class DefaultInetAddressTracker : InetAddressTracker {
     private val counts: MutableMap<InetAddress, Int> = ConcurrentHashMap()
 

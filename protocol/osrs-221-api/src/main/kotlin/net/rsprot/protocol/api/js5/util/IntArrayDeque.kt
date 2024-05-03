@@ -1,5 +1,10 @@
 package net.rsprot.protocol.api.js5.util
 
+/**
+ * A specialized array deque for int types, allowing no-autoboxing implementation.
+ * This is effectively just the Kotlin stdlib ArrayDeque class copied over and adjusted
+ * to work off of the primitive int.
+ */
 @Suppress("ReplaceUntilWithRangeUntil", "NOTHING_TO_INLINE", "MemberVisibilityCanBePrivate")
 public class IntArrayDeque {
     private var head: Int = 0

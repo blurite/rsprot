@@ -23,10 +23,29 @@ import net.rsprot.protocol.loginprot.incoming.util.LoginClientType
 import net.rsprot.protocol.loginprot.outgoing.LoginResponse
 import java.util.function.Consumer
 
+/**
+ * A response handler for login requests, allowing the server to write either
+ * a successful or a failed login response, depending on the server's decision.
+ * @property networkService the main network service god object
+ * @property ctx the channel handler context to write the response to
+ */
 public class GameLoginResponseHandler<R>(
     public val networkService: NetworkService<R, *>,
     public val ctx: ChannelHandlerContext,
 ) {
+    /**
+     * Writes a successful login response to the client.
+     * @param response the login response to write
+     * @param loginBlock the login request that the client initially made
+     * @param callback the callback that will be triggered after the response
+     * has been written to the channel. The callback is always triggered,
+     * even if the writing failed. The session in the callback will be null
+     * if anything went wrong, meaning the server should free up the reserved
+     * index for this player sent in the response and treat it as a failed
+     * login. If the session exists, the login was successful and the server
+     * is expected to assign a disconnect hook right away, to ensure the server
+     * is notified if the connection is lost.
+     */
     public fun writeSuccessfulResponse(
         response: LoginResponse.Ok,
         loginBlock: LoginBlock<*>,
@@ -157,6 +176,14 @@ public class GameLoginResponseHandler<R>(
         )
     }
 
+    /**
+     * Writes a failed response to the client. This is _all_ requests that aren't the ok
+     * response, even ones where technically it's correct - this is because the client
+     * always makes a new connection to re-request the login, nothing is kept open
+     * over long periods of time.
+     * @param response the response to write to the client - this cannot be the successful
+     * response or the proof of work response, as those are handled in a special manner.
+     */
     public fun writeFailedResponse(response: LoginResponse) {
         if (response is LoginResponse.ProofOfWork) {
             throw IllegalStateException("Proof of Work is handled at the engine level.")
@@ -171,6 +198,9 @@ public class GameLoginResponseHandler<R>(
     }
 
     private companion object {
+        /**
+         * The offset applied to the decode ISAAC stream cipher seed.
+         */
         private const val DECODE_SEED_OFFSET: Int = 50
         private val logger: InlineLogger = InlineLogger()
     }

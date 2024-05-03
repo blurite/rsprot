@@ -5,6 +5,12 @@ import net.rsprot.protocol.game.outgoing.info.filter.ExtendedInfoFilter
 import net.rsprot.protocol.game.outgoing.info.worker.DefaultProtocolWorker
 import net.rsprot.protocol.game.outgoing.info.worker.ProtocolWorker
 
+/**
+ * A supplier for the player info protocol.
+ * @property playerExtendedInfoFilter the extended info filter responsible for ensuring that
+ * the player info packet never exceeds the 40 kilobyte limitation.
+ * @property playerInfoProtocolWorker the worker behind the player info protocol.
+ */
 public class PlayerInfoSupplier
     @JvmOverloads
     public constructor(

@@ -9,6 +9,12 @@ import net.rsprot.protocol.js5.incoming.Js5GroupRequest
 import net.rsprot.protocol.js5.outgoing.Js5GroupResponse
 import kotlin.math.min
 
+/**
+ * A single-threaded JS5 service implementation used to fairly feed
+ * all connected clients, with a priority on those in the logged in state.
+ * @property configuration the configuration to use for writing the data to clients
+ * @property provider the provider for JS5 groups to write over
+ */
 public class Js5Service<T : Js5GroupType>(
     private val configuration: Js5Configuration,
     private val provider: Js5GroupProvider<T>,
@@ -41,8 +47,16 @@ public class Js5Service<T : Js5GroupType>(
                         continue
                     }
                     val priority = client.priority
-                    val ratio = if (priority == Js5Client.ClientPriority.HIGH) configuration.priorityRatio else 1
-                    response = client.getNextBlock(provider, configuration.blockSizeInBytes * ratio) ?: continue
+                    val ratio =
+                        if (priority == Js5Client.ClientPriority.HIGH) {
+                            configuration.priorityRatio
+                        } else {
+                            1
+                        }
+                    response = client.getNextBlock(
+                        provider,
+                        configuration.blockSizeInBytes * ratio,
+                    ) ?: continue
                     flush =
                         client.needsFlushing(
                             configuration.flushThresholdInBytes,
@@ -59,6 +73,12 @@ public class Js5Service<T : Js5GroupType>(
         }
     }
 
+    /**
+     * Serves a client with a jS5 response which may only be a subsection of a full group.
+     * @param client the client to serve
+     * @param response the response to write to the client
+     * @param flush whether to flush the channel after writing this request
+     */
     private fun serveClient(
         client: Js5Client<T>,
         response: Js5GroupResponse,
@@ -97,6 +117,11 @@ public class Js5Service<T : Js5GroupType>(
         }
     }
 
+    /**
+     * Pushes a new JS5 request to this client
+     * @param client the client to push the request to
+     * @param request the request to push to this client
+     */
     public fun push(
         client: Js5Client<T>,
         request: Js5GroupRequest,
@@ -115,6 +140,10 @@ public class Js5Service<T : Js5GroupType>(
         }
     }
 
+    /**
+     * Requests a read from the given channel if it can receive more requests.
+     * @param client the client to check
+     */
     public fun readIfNotFull(client: Js5Client<T>) {
         synchronized(lock) {
             if (client.isNotFull()) {
@@ -126,6 +155,10 @@ public class Js5Service<T : Js5GroupType>(
         }
     }
 
+    /**
+     * Notifies the lock if the list of clients is not empty, resuming the JS5
+     * service in the process.
+     */
     public fun notifyIfNotEmpty(client: Js5Client<T>) {
         synchronized(lock) {
             if (client.isNotEmpty()) {
@@ -138,6 +171,9 @@ public class Js5Service<T : Js5GroupType>(
         }
     }
 
+    /**
+     * Executes the [block] in a synchronized manner as the rest of the JS5.
+     */
     @PublishedApi
     internal inline fun use(block: () -> Unit) {
         synchronized(lock) {
@@ -145,6 +181,9 @@ public class Js5Service<T : Js5GroupType>(
         }
     }
 
+    /**
+     * Triggers a shutdown.
+     */
     public fun triggerShutdown() {
         isRunning = false
         synchronized(lock) {
@@ -153,6 +192,9 @@ public class Js5Service<T : Js5GroupType>(
     }
 
     public companion object {
+        /**
+         * The interval at which a terminator byte is expected in the client.
+         */
         private const val BLOCK_LENGTH: Int = 512
         private val logger: InlineLogger = InlineLogger()
 

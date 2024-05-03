@@ -21,6 +21,11 @@ import java.text.NumberFormat
 import java.util.concurrent.CompletableFuture
 import java.util.function.BiFunction
 
+/**
+ * The login connection handler, responsible for handling any game connections.
+ * @property sessionId the session id that was originally generated and written,
+ * expected to receive the same session id back from the client in the login block.
+ */
 @Suppress("DuplicatedCode")
 public class LoginConnectionHandler<R>(
     private val networkService: NetworkService<R, *>,

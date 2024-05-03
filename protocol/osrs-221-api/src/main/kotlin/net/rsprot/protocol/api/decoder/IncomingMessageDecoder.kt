@@ -14,6 +14,18 @@ import net.rsprot.protocol.message.codec.MessageDecoder
 import net.rsprot.protocol.message.codec.incoming.MessageDecoderRepository
 import net.rsprot.protocol.tools.MessageDecodingTools
 
+/**
+ * A general-purpose incoming message decoder, responsible for decoding all types
+ * of messages, including login, JS5 and game.
+ * @property decoder the decoder repository containing all the decoders for each opcode
+ * @property messageDecodingTools the decoding tools necessary to decode the messages
+ * @property streamCipher the stream cipher used to properly decode the encrypted opcodes
+ * @property state the current state in this decoder, following a typical
+ * opcode -> (optional) size -> payload structure.
+ * @property decoder the decoder of the current opcode
+ * @property opcode the current opcode
+ * @property length the current packet's real length
+ */
 public abstract class IncomingMessageDecoder : ByteToMessageDecoder() {
     protected abstract val decoders: MessageDecoderRepository<ClientProt>
     protected abstract val messageDecodingTools: MessageDecodingTools
@@ -83,6 +95,11 @@ public abstract class IncomingMessageDecoder : ByteToMessageDecoder() {
         }
     }
 
+    /**
+     * Decodes the payload of this packet.
+     * Open implementation as game messages have further count tracking and
+     * more complex logic to deal with pausing the decoding.
+     */
     protected open fun decodePayload(
         ctx: ChannelHandlerContext,
         input: ByteBuf,

@@ -4,6 +4,11 @@ import net.rsprot.protocol.ClientProtCategory
 import net.rsprot.protocol.api.GameMessageCounter
 import net.rsprot.protocol.game.incoming.GameClientProtCategory
 
+/**
+ * A default game message counter that follows the normal OldSchool limitations,
+ * allowing for up to 10 user events and up to 50 client events, stopping decoding
+ * whenever either of the limitations is reached.
+ */
 public class DefaultGameMessageCounter : GameMessageCounter {
     private val counts: IntArray = IntArray(PROT_TYPES_COUNT)
 

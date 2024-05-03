@@ -175,6 +175,7 @@
       <w>mauris</w>
       <w>metus</w>
       <w>minimapclick</w>
+      <w>mitm</w>
       <w>modautotyper</w>
       <w>modchat</w>
       <w>modicon</w>
@@ -329,6 +330,7 @@
       <w>tellus</w>
       <w>tempor</w>
       <w>temurin</w>
+      <w>throwables</w>
       <w>tincidunt</w>
       <w>torquent</w>
       <w>tortor</w>
@@ -364,6 +366,7 @@
       <w>wearpos</w>
       <w>withreason</w>
       <w>withsecondary</w>
+      <w>writability</w>
       <w>xtea</w>
       <w>zero'd</w>
     </words>

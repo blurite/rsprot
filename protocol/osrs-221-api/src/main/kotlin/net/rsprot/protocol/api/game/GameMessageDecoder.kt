@@ -16,6 +16,13 @@ import net.rsprot.protocol.message.IncomingGameMessage
 import net.rsprot.protocol.message.codec.incoming.MessageDecoderRepository
 import net.rsprot.protocol.tools.MessageDecodingTools
 
+/**
+ * A decoder for game messages, one that respects the limitations set in place
+ * for incoming game messages to stop decoding after a specific threshold.
+ * Furthermore, this will discard any payload of a packet if no consumer
+ * has been registered, avoiding the creation of further garbage in the form
+ * of decoded messages or buffer slices.
+ */
 public class GameMessageDecoder<R>(
     public val networkService: NetworkService<R, *>,
     private val session: Session<R>,

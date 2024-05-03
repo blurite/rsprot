@@ -21,9 +21,16 @@ import io.netty.incubator.channel.uring.IOUringEventLoopGroup
 import io.netty.incubator.channel.uring.IOUringServerSocketChannel
 import net.rsprot.protocol.api.logging.networkLog
 
+/**
+ * A bootstrap factory responsible for generating the Netty bootstrap
+ */
 public class BootstrapFactory(
     private val alloc: ByteBufAllocator,
 ) {
+    /**
+     * Creates a parent loop group with a single thread behind it, based on the best
+     * available event loop group.
+     */
     public fun createParentLoopGroup(): EventLoopGroup {
         return when {
             IOUring.isAvailable() -> IOUringEventLoopGroup(1)
@@ -33,6 +40,10 @@ public class BootstrapFactory(
         }
     }
 
+    /**
+     * Creates a child loop group with a number of threads based on availableProcessors * 2,
+     * which is done at Netty level.
+     */
     public fun createChildLoopGroup(): EventLoopGroup {
         return when {
             IOUring.isAvailable() -> IOUringEventLoopGroup()
@@ -42,6 +53,10 @@ public class BootstrapFactory(
         }
     }
 
+    /**
+     * Creates a server bootstrap using the parent and child event loop groups with
+     * a configuration that closely resembles the values found in the client.
+     */
     public fun createServerBootstrap(
         parentGroup: EventLoopGroup,
         childGroup: EventLoopGroup,

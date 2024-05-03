@@ -7,6 +7,13 @@ import net.rsprot.protocol.api.implementation.DefaultMessageQueueProvider
 import net.rsprot.protocol.message.IncomingGameMessage
 import net.rsprot.protocol.message.OutgoingGameMessage
 
+/**
+ * The handlers for incoming game messages.
+ * @property incomingGameMessageQueueProvider the queue provider for any incoming game messages
+ * @property outgoingGameMessageQueueProvider the queue provider for any outgoing game messages
+ * @property gameMessageCounterProvider the message counter provider, used to track the number
+ * of incoming messages over the span of one game cycle.
+ */
 public class GameMessageHandlers
     @JvmOverloads
     public constructor(

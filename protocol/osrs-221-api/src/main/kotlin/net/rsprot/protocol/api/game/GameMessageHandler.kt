@@ -10,15 +10,21 @@ import net.rsprot.protocol.api.channel.inetAddress
 import net.rsprot.protocol.api.logging.networkLog
 import net.rsprot.protocol.message.IncomingGameMessage
 
+/**
+ * The handler for game messages.
+ */
 public class GameMessageHandler<R>(
     private val networkService: NetworkService<R, *>,
     private val session: Session<R>,
 ) : SimpleChannelInboundHandler<IncomingGameMessage>() {
     override fun handlerAdded(ctx: ChannelHandlerContext) {
+        // As auto-read is false, immediately begin reading once this handler
+        // has been added post-login
         ctx.read()
     }
 
     override fun channelActive(ctx: ChannelHandlerContext) {
+        // Register this channel in the respective address tracker
         networkService
             .iNetAddressHandlers
             .gameInetAddressTracker
@@ -29,6 +35,8 @@ public class GameMessageHandler<R>(
     }
 
     override fun channelInactive(ctx: ChannelHandlerContext) {
+        // Triggers the disconnection hook when the channel goes inactive.
+        // This is the earliest guaranteed known point of no return
         try {
             session.disconnectionHook?.run()
         } finally {
@@ -77,6 +85,8 @@ public class GameMessageHandler<R>(
         ctx: ChannelHandlerContext,
         evt: Any,
     ) {
+        // Handle idle states by disconnecting the user if this is hit. This is normally reached
+        // after 60 seconds of idle status.
         if (evt is IdleStateEvent) {
             networkLog(logger) {
                 "Login connection has gone idle, closing channel ${ctx.channel()}"

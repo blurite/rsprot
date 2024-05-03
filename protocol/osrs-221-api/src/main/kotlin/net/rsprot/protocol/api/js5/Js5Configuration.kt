@@ -1,5 +1,24 @@
 package net.rsprot.protocol.api.js5
 
+/**
+ * The configuration for the JS5 service per client basis.
+ * @property blockSizeInBytes the maximum number of bytes written per client per iteration
+ * @property flushThresholdInBytes the minimum number of bytes that must be written into
+ * the channel before a flush occurs. Note that the flush will only occur if at least one
+ * group has been successfully written over, as there's no point in flushing a partial
+ * large group - the client cannot continue anyhow. Furthermore, flushing occurs if
+ * there's no more data to write, ignoring both the [flushThresholdInBytes] and
+ * [flushThresholdInRequests] thresholds in the process.
+ * @property flushThresholdInRequests the number of full requests that must be written
+ * into this channel since the last flush before another flush can trigger. As explained
+ * before, a flush will take place if no more data can be written out, ignoring this threshold.
+ * @property priorityRatio the ratio for how much more data to write to logged in clients
+ * compared to those logged out. A ratio of 3 means that per iteration, any low priority
+ * client will receive [blockSizeInBytes] number of bytes, however any logged in client
+ * will receive [blockSizeInBytes] * 3 number of bytes. This effectively gives priority to
+ * those logged in, as they are in more of a need for data than anyone sitting on the loading
+ * screen.
+ */
 public class Js5Configuration public constructor(
     public val blockSizeInBytes: Int = 512,
     public val flushThresholdInBytes: Int = 10240,

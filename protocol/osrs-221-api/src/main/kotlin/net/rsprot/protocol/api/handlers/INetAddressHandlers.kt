@@ -5,6 +5,13 @@ import net.rsprot.protocol.api.InetAddressValidator
 import net.rsprot.protocol.api.implementation.DefaultInetAddressTracker
 import net.rsprot.protocol.api.implementation.DefaultInetAddressValidator
 
+/**
+ * The handlers for anything to do with INet addresses.
+ * @property inetAddressValidator the validator for new connections, responsible for rejecting
+ * any connections after a limit has been reached.
+ * @property js5InetAddressTracker the tracker for active JS5 connections
+ * @property gameInetAddressTracker the tracker for active game connections
+ */
 public class INetAddressHandlers
     @JvmOverloads
     public constructor(
