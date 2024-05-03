@@ -131,6 +131,15 @@ public class NpcInfo internal constructor(
     internal var exception: Exception? = null
 
     /**
+     * Whether the buffer allocated by this NPC info object has been built
+     * into a packet message. If this returns false, but NPC info was in fact built,
+     * we have an allocated buffer that needs releasing. If the NPC info itself
+     * is released but isn't built into packet, we make sure to release it, to avoid
+     * any memory leaks.
+     */
+    private var builtIntoPacket: Boolean = false
+
+    /**
      * Returns the backing byte buffer holding all the computed information.
      * @throws IllegalStateException if the buffer is null, meaning it has no yet been
      * initialized for this cycle.
@@ -152,6 +161,7 @@ public class NpcInfo internal constructor(
                 exception,
             )
         }
+        builtIntoPacket = true
         return if (this.viewDistance > MAX_SMALL_PACKET_DISTANCE) {
             NpcInfoLarge(backingBuffer())
         } else {
@@ -167,6 +177,7 @@ public class NpcInfo internal constructor(
         // Acquire a new buffer with each cycle, in case the previous one isn't fully written out yet
         val buffer = allocator.buffer(BUF_CAPACITY, BUF_CAPACITY)
         this.buffer = buffer
+        this.builtIntoPacket = false
         return buffer
     }
 
@@ -505,9 +516,11 @@ public class NpcInfo internal constructor(
     }
 
     override fun onDealloc() {
-        val buffer = this.buffer
-        if (buffer != null && buffer.refCnt() > 0) {
-            buffer.release(buffer.refCnt())
+        if (!builtIntoPacket) {
+            val buffer = this.buffer
+            if (buffer != null && buffer.refCnt() > 0) {
+                buffer.release(buffer.refCnt())
+            }
         }
         this.buffer = null
     }

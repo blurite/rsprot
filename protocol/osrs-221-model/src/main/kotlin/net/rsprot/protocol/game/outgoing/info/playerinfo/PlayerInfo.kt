@@ -151,6 +151,15 @@ public class PlayerInfo internal constructor(
     internal var exception: Exception? = null
 
     /**
+     * Whether the buffer allocated by this player info object has been built
+     * into a packet message. If this returns false, but player info was in fact built,
+     * we have an allocated buffer that needs releasing. If the NPC info itself
+     * is released but isn't built into packet, we make sure to release it, to avoid
+     * any memory leaks.
+     */
+    private var builtIntoPacket: Boolean = false
+
+    /**
      * Returns the backing buffer for this cycle.
      * @throws IllegalStateException if the buffer has not been allocated yet.
      */
@@ -175,6 +184,7 @@ public class PlayerInfo internal constructor(
                 exception,
             )
         }
+        this.builtIntoPacket = true
         return PlayerInfoPacket(backingBuffer())
     }
 
@@ -584,6 +594,7 @@ public class PlayerInfo internal constructor(
         // Acquire a new buffer with each cycle, in case the previous one isn't fully written out yet
         val buffer = allocator.buffer(BUF_CAPACITY, BUF_CAPACITY)
         this.buffer = buffer
+        this.builtIntoPacket = false
         return buffer
     }
 
@@ -642,9 +653,14 @@ public class PlayerInfo internal constructor(
      * to stick around for extended periods of time. Any primitive properties will remain untouched.
      */
     override fun onDealloc() {
-        val buffer = this.buffer
-        if (buffer != null && buffer.refCnt() > 0) {
-            buffer.release(buffer.refCnt())
+        // If player info was constructed, but it was not built into a packet object
+        // it implies the packet is never being written to Netty, which means
+        // a memory leak is occurring - if that is the case, release the buffer here
+        if (!builtIntoPacket) {
+            val buffer = this.buffer
+            if (buffer != null && buffer.refCnt() > 0) {
+                buffer.release(buffer.refCnt())
+            }
         }
         this.buffer = null
         avatar.extendedInfo.reset()
