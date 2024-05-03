@@ -9,6 +9,7 @@ import net.rsprot.protocol.api.handlers.ExceptionHandlers
 import net.rsprot.protocol.api.handlers.GameMessageHandlers
 import net.rsprot.protocol.api.handlers.INetAddressHandlers
 import net.rsprot.protocol.api.handlers.LoginHandlers
+import net.rsprot.protocol.api.js5.Js5Configuration
 import net.rsprot.protocol.api.js5.Js5GroupProvider
 import net.rsprot.protocol.api.suppliers.NpcInfoSupplier
 import net.rsprot.protocol.api.suppliers.PlayerInfoSupplier
@@ -25,6 +26,10 @@ public abstract class AbstractNetworkServiceFactory<R, T : Js5GroupProvider.Js5G
     public abstract fun getRsaKeyPair(): RsaKeyPair
 
     public abstract fun getHuffmanCodecProvider(): HuffmanCodecProvider
+
+    public open fun getJs5Configuration(): Js5Configuration {
+        return Js5Configuration()
+    }
 
     public abstract fun getJs5GroupProvider(): Js5GroupProvider<T>
 
@@ -79,6 +84,7 @@ public abstract class AbstractNetworkServiceFactory<R, T : Js5GroupProvider.Js5G
             huffman,
             getGameMessageConsumerRepositoryProvider(),
             getRsaKeyPair(),
+            getJs5Configuration(),
             getJs5GroupProvider(),
         )
     }

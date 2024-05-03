@@ -10,6 +10,7 @@ import net.rsprot.protocol.js5.outgoing.Js5GroupResponse
 import kotlin.math.min
 
 public class Js5Service<T : Js5GroupType>(
+    private val configuration: Js5Configuration,
     private val provider: Js5GroupProvider<T>,
 ) : Runnable {
     @Suppress("PLATFORM_CLASS_MAPPED_TO_KOTLIN")
@@ -22,7 +23,6 @@ public class Js5Service<T : Js5GroupType>(
 
     override fun run() {
         while (true) {
-            // TODO: Logged in mechanics, give priority over logged out players
             var client: Js5Client<T>
             var response: Js5GroupResponse
             var flush: Boolean
@@ -40,8 +40,10 @@ public class Js5Service<T : Js5GroupType>(
                     if (!client.ctx.channel().isActive) {
                         continue
                     }
-                    response = client.getNextBlock(provider) ?: continue
-                    flush = client.needsFlushing()
+                    val priority = client.priority
+                    val ratio = if (priority == Js5Client.ClientPriority.HIGH) configuration.priorityRatio else 1
+                    response = client.getNextBlock(provider, configuration.blockSize * ratio) ?: continue
+                    flush = client.needsFlushing(configuration.flushThreshold)
                     if (flush) {
                         client.resetByteCountTracker()
                     }
@@ -147,7 +149,7 @@ public class Js5Service<T : Js5GroupType>(
     }
 
     public companion object {
-        public const val BLOCK_LENGTH: Int = 512
+        private const val BLOCK_LENGTH: Int = 512
         private val logger: InlineLogger = InlineLogger()
 
         /**

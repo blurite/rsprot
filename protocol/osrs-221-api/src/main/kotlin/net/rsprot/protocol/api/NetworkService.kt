@@ -11,6 +11,7 @@ import net.rsprot.protocol.api.handlers.ExceptionHandlers
 import net.rsprot.protocol.api.handlers.GameMessageHandlers
 import net.rsprot.protocol.api.handlers.INetAddressHandlers
 import net.rsprot.protocol.api.handlers.LoginHandlers
+import net.rsprot.protocol.api.js5.Js5Configuration
 import net.rsprot.protocol.api.js5.Js5GroupProvider
 import net.rsprot.protocol.api.js5.Js5GroupProvider.Js5GroupType
 import net.rsprot.protocol.api.js5.Js5Service
@@ -50,11 +51,12 @@ public class NetworkService<R, T : Js5GroupType>
         public val huffmanCodecProvider: HuffmanCodecProvider,
         public val gameMessageConsumerRepositoryProvider: GameMessageConsumerRepositoryProvider<R>,
         rsaKeyPair: RsaKeyPair,
+        js5Configuration: Js5Configuration,
         js5GroupProvider: Js5GroupProvider<T>,
     ) {
         internal val encoderRepositories: MessageEncoderRepositories = MessageEncoderRepositories()
         internal val messageDecodingTools: MessageDecodingTools = MessageDecodingTools(huffmanCodecProvider)
-        internal val js5Service: Js5Service<T> = Js5Service(js5GroupProvider)
+        internal val js5Service: Js5Service<T> = Js5Service(js5Configuration, js5GroupProvider)
         private val js5ServiceExecutor = Thread(js5Service)
         private val updateZonePartialEnclosedCacheClientTypeMap:
             ClientTypeMap<UpdateZonePartialEnclosedCache> = initializeUpdateZonePartialEnclosedCacheClientMap()

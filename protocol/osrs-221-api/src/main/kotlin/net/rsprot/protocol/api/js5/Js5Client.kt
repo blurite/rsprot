@@ -15,12 +15,16 @@ public class Js5Client<T : Js5GroupType>(
     private val urgent = ArrayDeque<Int>()
     private val prefetch = ArrayDeque<Int>()
     private val currentRequest: PartialJs5GroupRequest<T> = PartialJs5GroupRequest()
-    private var priority: ClientPriority = ClientPriority.LOW
+    public var priority: ClientPriority = ClientPriority.LOW
+        private set
 
     @Volatile
     private var writtenByteCount: Int = 0
 
-    public fun getNextBlock(provider: Js5GroupProvider<T>): Js5GroupResponse? {
+    public fun getNextBlock(
+        provider: Js5GroupProvider<T>,
+        blockLength: Int,
+    ): Js5GroupResponse? {
         var block: T? = currentRequest.block
         if (block == null || currentRequest.isComplete()) {
             val request = pop()
@@ -33,7 +37,7 @@ public class Js5Client<T : Js5GroupType>(
             currentRequest.set(block)
         }
         val progress = currentRequest.progress
-        val length = currentRequest.getNextBlockLengthAndIncrementProgress()
+        val length = currentRequest.getNextBlockLengthAndIncrementProgress(blockLength)
         writtenByteCount += length
         return provider.toJs5GroupResponse(block, progress, length)
     }
@@ -100,8 +104,8 @@ public class Js5Client<T : Js5GroupType>(
         return ctx.channel().isWritable && isNotEmpty()
     }
 
-    public fun needsFlushing(): Boolean {
-        return writtenByteCount > FLUSH_THRESHOLD || (writtenByteCount > 0 && isEmpty())
+    public fun needsFlushing(flushThreshold: Int): Boolean {
+        return writtenByteCount > flushThreshold || (writtenByteCount > 0 && isEmpty())
     }
 
     public fun resetByteCountTracker() {
@@ -119,9 +123,9 @@ public class Js5Client<T : Js5GroupType>(
             return progress >= length
         }
 
-        public fun getNextBlockLengthAndIncrementProgress(): Int {
+        public fun getNextBlockLengthAndIncrementProgress(blockLength: Int): Int {
             val progress = this.progress
-            this.progress = min(this.length, this.progress + Js5Service.BLOCK_LENGTH)
+            this.progress = min(this.length, this.progress + blockLength)
             return this.progress - progress
         }
 
@@ -139,6 +143,5 @@ public class Js5Client<T : Js5GroupType>(
 
     private companion object {
         private const val MAX_QUEUE_SIZE: Int = 200
-        private const val FLUSH_THRESHOLD: Int = 10_240
     }
 }
