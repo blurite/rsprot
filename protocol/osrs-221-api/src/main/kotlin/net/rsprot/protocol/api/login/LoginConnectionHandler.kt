@@ -101,7 +101,7 @@ public class LoginConnectionHandler<R>(
                         return@handle
                     }
                     if (exception != null) {
-                        networkLog(logger) {
+                        logger.error(exception) {
                             "Exception during proof of work verification " +
                                 "from channel '${ctx.channel()}': $exception"
                         }
