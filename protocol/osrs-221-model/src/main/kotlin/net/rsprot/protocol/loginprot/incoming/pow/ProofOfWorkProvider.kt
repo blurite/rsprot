@@ -11,7 +11,7 @@ public fun interface ProofOfWorkProvider<T : ChallengeType<MetaData>, in MetaDat
     /**
      * Provides a proof of work instance for a given [inetAddress].
      * @param inetAddress the IP from which the client is connecting.
-     * @return a proof of work instance that the client needs to solve.
+     * @return a proof of work instance that the client needs to solve, or null if it should be skipped
      */
-    public fun provide(inetAddress: InetAddress): ProofOfWork<T, MetaData>
+    public fun provide(inetAddress: InetAddress): ProofOfWork<T, MetaData>?
 }

@@ -147,12 +147,13 @@ public class LoginConnectionHandler<R>(
     }
 
     private fun requestProofOfWork(ctx: ChannelHandlerContext) {
-        loginState = LoginState.REQUESTED_PROOF_OF_WORK
         val pow =
             networkService
                 .loginHandlers
                 .proofOfWorkProvider
                 .provide(ctx.inetAddress())
+                ?: return continueLogin(ctx)
+        loginState = LoginState.REQUESTED_PROOF_OF_WORK
         this.proofOfWork = pow
         ctx.writeAndFlush(LoginResponse.ProofOfWork(pow)).addListener(
             ChannelFutureListener { future ->
