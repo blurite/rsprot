@@ -45,7 +45,7 @@ public class LoginChannelHandler(
             is InitJs5RemoteConnection -> {
                 handleInitJs5RemoteConnection(ctx, msg.revision)
             }
-            // TODO: Beta archives, unknown, SSL web
+            // TODO: Unknown, SSL web
             else -> {
                 throw IllegalStateException("Unknown login channel message: $msg")
             }
