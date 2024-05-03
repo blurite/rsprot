@@ -98,32 +98,18 @@ public class LoginConnectionHandler<R>(
                 }
                 decodeLoginPacket(ctx, msg)
             }
-            is GameLogin, is GameReconnect -> {
+            is GameLogin -> {
                 if (this.loginState != LoginState.UNINITIALIZED) {
                     ctx.close()
                     return
                 }
-                loginState = LoginState.REQUESTED_PROOF_OF_WORK
-                loginPacket = msg
-                val pow =
-                    networkService
-                        .loginHandlers
-                        .proofOfWorkProvider
-                        .provide(ctx.inetAddress())
-                this.proofOfWork = pow
-                ctx.writeAndFlush(LoginResponse.ProofOfWork(pow)).addListener(
-                    ChannelFutureListener { future ->
-                        if (!future.isSuccess) {
-                            networkLog(logger) {
-                                "Failed to write a successful proof of work request to channel ${ctx.channel()}"
-                            }
-                            future.channel().pipeline().fireExceptionCaught(future.cause())
-                            future.channel().close()
-                            return@ChannelFutureListener
-                        }
-                        ctx.read()
-                    },
-                )
+                this.loginPacket = msg
+                requestProofOfWork(ctx)
+            }
+
+            is GameReconnect -> {
+                this.loginPacket = msg
+                continueLogin(ctx)
             }
 
             is ProofOfWorkReply -> {
@@ -151,20 +137,59 @@ public class LoginConnectionHandler<R>(
                     networkLog(logger) {
                         "Correct proof of work response received from channel '${ctx.channel()}': ${msg.result}"
                     }
-                    if (networkService.betaWorld) {
-                        loginState = LoginState.AWAITING_BETA_RESPONSE
-                        // Instantly request the remaining beta archives, as that feature
-                        // is implemented incorrectly and serves no functional purpose
-                        ctx.writeAndFlush(ctx.alloc().buffer(1).writeByte(2))
-                        ctx.read()
-                    } else {
-                        decodeLoginPacket(ctx, null)
-                    }
+                    continueLogin(ctx)
                 }
             }
             else -> {
                 throw IllegalStateException("Unknown login connection handler")
             }
+        }
+    }
+
+    private fun requestProofOfWork(ctx: ChannelHandlerContext) {
+        loginState = LoginState.REQUESTED_PROOF_OF_WORK
+        val pow =
+            networkService
+                .loginHandlers
+                .proofOfWorkProvider
+                .provide(ctx.inetAddress())
+        this.proofOfWork = pow
+        ctx.writeAndFlush(LoginResponse.ProofOfWork(pow)).addListener(
+            ChannelFutureListener { future ->
+                if (!future.isSuccess) {
+                    networkLog(logger) {
+                        "Failed to write a successful proof of work request to channel ${ctx.channel()}"
+                    }
+                    future.channel().pipeline().fireExceptionCaught(future.cause())
+                    future.channel().close()
+                    return@ChannelFutureListener
+                }
+                ctx.read()
+            },
+        )
+    }
+
+    private fun continueLogin(ctx: ChannelHandlerContext) {
+        if (networkService.betaWorld) {
+            loginState = LoginState.AWAITING_BETA_RESPONSE
+            // Instantly request the remaining beta archives, as that feature
+            // is implemented incorrectly and serves no functional purpose
+            ctx.writeAndFlush(ctx.alloc().buffer(1).writeByte(2))
+                .addListener(
+                    ChannelFutureListener { future ->
+                        if (!future.isSuccess) {
+                            networkLog(logger) {
+                                "Failed to write beta crc request to channel ${ctx.channel()}"
+                            }
+                            future.channel().pipeline().fireExceptionCaught(future.cause())
+                            future.channel().close()
+                            return@ChannelFutureListener
+                        }
+                        ctx.read()
+                    },
+                )
+        } else {
+            decodeLoginPacket(ctx, null)
         }
     }
 
@@ -202,80 +227,98 @@ public class LoginConnectionHandler<R>(
         val responseHandler = GameLoginResponseHandler(networkService, ctx)
         when (val packet = loginPacket) {
             is GameLogin -> {
-                decodeLogin(
-                    packet.buffer,
-                    networkService.betaWorld,
-                    packet.decoder,
-                ).handle { block, exception ->
-                    if (block == null || exception != null) {
-                        logger.error(exception) {
-                            "Failed to decode game login block for channel ${ctx.channel()}"
-                        }
-                        ctx
-                            .writeAndFlush(LoginResponse.LoginFail2)
-                            .addListener(ChannelFutureListener.CLOSE)
-                        return@handle
-                    }
-                    if (sessionId != block.sessionId) {
-                        networkLog(logger) {
-                            "Mismatching game login session id received from channel " +
-                                "'${ctx.channel()}': ${NumberFormat.getNumberInstance().format(block.sessionId)}, " +
-                                "expected value: ${NumberFormat.getNumberInstance().format(sessionId)}"
-                        }
-                        ctx
-                            .writeAndFlush(LoginResponse.InvalidLoginPacket)
-                            .addListener(ChannelFutureListener.CLOSE)
-                        return@handle
-                    }
-                    if (remainingBetaArchives != null) {
-                        block.mergeBetaCrcs(remainingBetaArchives)
-                    }
-                    networkLog(logger) {
-                        "Successful game login from channel '${ctx.channel()}': $block"
-                    }
-                    networkService.gameConnectionHandler.onLogin(responseHandler, block)
-                }
+                decodeGameLoginBuffer(packet, ctx, remainingBetaArchives, responseHandler)
             }
 
             is GameReconnect -> {
-                decodeLogin(
-                    packet.buffer,
-                    networkService.betaWorld,
-                    packet.decoder,
-                ).handle { block, exception ->
-                    if (block == null || exception != null) {
-                        logger.error(exception) {
-                            "Failed to decode game reconnect block for channel ${ctx.channel()}"
-                        }
-                        ctx
-                            .writeAndFlush(LoginResponse.LoginFail2)
-                            .addListener(ChannelFutureListener.CLOSE)
-                        return@handle
-                    }
-                    if (sessionId != block.sessionId) {
-                        networkLog(logger) {
-                            "Mismatching reconnect session id received from channel " +
-                                "'${ctx.channel()}': ${NumberFormat.getNumberInstance().format(block.sessionId)}, " +
-                                "expected value: ${NumberFormat.getNumberInstance().format(sessionId)}"
-                        }
-                        ctx
-                            .writeAndFlush(LoginResponse.InvalidLoginPacket)
-                            .addListener(ChannelFutureListener.CLOSE)
-                        return@handle
-                    }
-                    if (remainingBetaArchives != null) {
-                        block.mergeBetaCrcs(remainingBetaArchives)
-                    }
-                    networkLog(logger) {
-                        "Successful game reconnection from channel '${ctx.channel()}': $block"
-                    }
-                    networkService.gameConnectionHandler.onReconnect(responseHandler, block)
-                }
+                decodeGameReconnectBuffer(packet, ctx, remainingBetaArchives, responseHandler)
             }
 
             else -> {
                 throw IllegalStateException("Unknown login packet: $packet")
             }
+        }
+    }
+
+    private fun decodeGameLoginBuffer(
+        packet: GameLogin,
+        ctx: ChannelHandlerContext,
+        remainingBetaArchives: RemainingBetaArchives?,
+        responseHandler: GameLoginResponseHandler<R>,
+    ) {
+        decodeLogin(
+            packet.buffer,
+            networkService.betaWorld,
+            packet.decoder,
+        ).handle { block, exception ->
+            if (block == null || exception != null) {
+                logger.error(exception) {
+                    "Failed to decode game login block for channel ${ctx.channel()}"
+                }
+                ctx
+                    .writeAndFlush(LoginResponse.LoginFail2)
+                    .addListener(ChannelFutureListener.CLOSE)
+                return@handle
+            }
+            if (sessionId != block.sessionId) {
+                networkLog(logger) {
+                    "Mismatching game login session id received from channel " +
+                        "'${ctx.channel()}': ${NumberFormat.getNumberInstance().format(block.sessionId)}, " +
+                        "expected value: ${NumberFormat.getNumberInstance().format(sessionId)}"
+                }
+                ctx
+                    .writeAndFlush(LoginResponse.InvalidLoginPacket)
+                    .addListener(ChannelFutureListener.CLOSE)
+                return@handle
+            }
+            if (remainingBetaArchives != null) {
+                block.mergeBetaCrcs(remainingBetaArchives)
+            }
+            networkLog(logger) {
+                "Successful game login from channel '${ctx.channel()}': $block"
+            }
+            networkService.gameConnectionHandler.onLogin(responseHandler, block)
+        }
+    }
+
+    private fun decodeGameReconnectBuffer(
+        packet: GameReconnect,
+        ctx: ChannelHandlerContext,
+        remainingBetaArchives: RemainingBetaArchives?,
+        responseHandler: GameLoginResponseHandler<R>,
+    ) {
+        decodeLogin(
+            packet.buffer,
+            networkService.betaWorld,
+            packet.decoder,
+        ).handle { block, exception ->
+            if (block == null || exception != null) {
+                logger.error(exception) {
+                    "Failed to decode game reconnect block for channel ${ctx.channel()}"
+                }
+                ctx
+                    .writeAndFlush(LoginResponse.LoginFail2)
+                    .addListener(ChannelFutureListener.CLOSE)
+                return@handle
+            }
+            if (sessionId != block.sessionId) {
+                networkLog(logger) {
+                    "Mismatching reconnect session id received from channel " +
+                        "'${ctx.channel()}': ${NumberFormat.getNumberInstance().format(block.sessionId)}, " +
+                        "expected value: ${NumberFormat.getNumberInstance().format(sessionId)}"
+                }
+                ctx
+                    .writeAndFlush(LoginResponse.InvalidLoginPacket)
+                    .addListener(ChannelFutureListener.CLOSE)
+                return@handle
+            }
+            if (remainingBetaArchives != null) {
+                block.mergeBetaCrcs(remainingBetaArchives)
+            }
+            networkLog(logger) {
+                "Successful game reconnection from channel '${ctx.channel()}': $block"
+            }
+            networkService.gameConnectionHandler.onReconnect(responseHandler, block)
         }
     }
 
