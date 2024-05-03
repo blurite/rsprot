@@ -9,9 +9,6 @@ public class Js5Configuration public constructor(
         require(blockSize >= 8) {
             "Js5 block size must be at least 8 bytes"
         }
-        require(flushThreshold >= blockSize) {
-            "Flush threshold must be at least the size of the block itself"
-        }
         require(priorityRatio >= 1) {
             "Priority ratio must be at least 1"
         }

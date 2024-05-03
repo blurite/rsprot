@@ -21,6 +21,13 @@ public abstract class CyclicRedundancyCheckBlock(
         return true
     }
 
+    internal fun set(
+        index: Int,
+        value: Int,
+    ) {
+        this.clientCrc[index] = value
+    }
+
     override fun hashCode(): Int {
         return clientCrc.contentHashCode()
     }

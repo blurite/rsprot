@@ -17,9 +17,12 @@ import net.rsprot.protocol.common.client.OldSchoolClientType
 import net.rsprot.protocol.message.codec.incoming.provider.GameMessageConsumerRepositoryProvider
 
 public abstract class AbstractNetworkServiceFactory<R, T : Js5GroupProvider.Js5GroupType> {
-    public open val allocator: ByteBufAllocator get() = PooledByteBufAllocator.DEFAULT
+    public open val allocator: ByteBufAllocator
+        get() = PooledByteBufAllocator.DEFAULT
     public abstract val ports: List<Int>
     public abstract val supportedClientTypes: List<OldSchoolClientType>
+    public open val betaWorld: Boolean
+        get() = false
 
     public abstract fun getBootstrapFactory(): BootstrapFactory
 
@@ -73,6 +76,7 @@ public abstract class AbstractNetworkServiceFactory<R, T : Js5GroupProvider.Js5G
         return NetworkService(
             allocator,
             ports,
+            betaWorld,
             getBootstrapFactory(),
             entityInfoProtocols,
             supportedClientTypes,

@@ -40,6 +40,7 @@ public class NetworkService<R, T : Js5GroupType>
     internal constructor(
         internal val allocator: ByteBufAllocator,
         internal val ports: List<Int>,
+        internal val betaWorld: Boolean,
         internal val bootstrapFactory: BootstrapFactory,
         internal val entityInfoProtocols: EntityInfoProtocols,
         internal val clientTypes: List<OldSchoolClientType>,

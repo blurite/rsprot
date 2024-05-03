@@ -27,8 +27,8 @@ public class GameLoginDecoder(
         val copy = buffer.buffer.copy()
         // Mark the buffer as "read" as copy function doesn't do it automatically.
         buffer.buffer.readerIndex(buffer.buffer.writerIndex())
-        return GameLogin(copy.toJagByteBuf()) {
-            decodeLoginBlock(it)
+        return GameLogin(copy.toJagByteBuf()) { jagByteBuf, betaWorld ->
+            decodeLoginBlock(jagByteBuf, betaWorld)
         }
     }
 

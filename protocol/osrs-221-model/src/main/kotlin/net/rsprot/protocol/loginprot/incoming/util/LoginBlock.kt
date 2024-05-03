@@ -1,5 +1,7 @@
 package net.rsprot.protocol.loginprot.incoming.util
 
+import net.rsprot.protocol.loginprot.incoming.RemainingBetaArchives
+
 @Suppress("MemberVisibilityCanBePrivate", "DuplicatedCode")
 public class LoginBlock<T>(
     public val version: Int,
@@ -40,6 +42,12 @@ public class LoginBlock<T>(
         get() = LoginClientType[_validationClientType.toInt()]
     public val crcBlockHeader: Int
         get() = _crcBlockHeader.toInt()
+
+    public fun mergeBetaCrcs(remainingBetaArchives: RemainingBetaArchives) {
+        for (i in remainingBetaArchiveIndices) {
+            this.crc.set(i, remainingBetaArchives.crc[i])
+        }
+    }
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -121,5 +129,24 @@ public class LoginBlock<T>(
             "crcBlockHeader=$crcBlockHeader, " +
             "authentication=$authentication" +
             ")"
+    }
+
+    private companion object {
+        private val remainingBetaArchiveIndices =
+            listOf(
+                1,
+                2,
+                3,
+                5,
+                7,
+                9,
+                11,
+                12,
+                16,
+                17,
+                18,
+                19,
+                20,
+            )
     }
 }

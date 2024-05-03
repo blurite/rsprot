@@ -1,11 +1,12 @@
 package net.rsprot.protocol.api
 
 import java.util.concurrent.CompletableFuture
-import java.util.function.Function
+import java.util.function.BiFunction
 
 public interface LoginDecoderService {
     public fun <Buf, Result> decode(
         buffer: Buf,
-        decoder: Function<Buf, Result>,
+        betaWorld: Boolean,
+        decoder: BiFunction<Buf, Boolean, Result>,
     ): CompletableFuture<Result>
 }

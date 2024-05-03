@@ -5,6 +5,7 @@ package net.rsprot.protocol.api.login
 import com.github.michaelbull.logging.InlineLogger
 import io.netty.channel.ChannelFutureListener
 import io.netty.channel.ChannelHandlerContext
+import net.rsprot.buffer.extensions.toJagByteBuf
 import net.rsprot.crypto.cipher.IsaacRandom
 import net.rsprot.crypto.cipher.StreamCipherPair
 import net.rsprot.protocol.api.NetworkService
@@ -83,7 +84,23 @@ public class GameLoginResponseHandler<R>(
             .set(StreamCipherPair(encodingCipher, decodingCipher))
         channel.attr(ChannelAttributes.HUFFMAN_CODEC)
             .set(networkService.huffmanCodecProvider)
-        ctx.writeAndFlush(response).addListener(
+
+        val writeFuture =
+            if (networkService.betaWorld) {
+                val encoder =
+                    networkService
+                        .encoderRepositories
+                        .loginMessageDecoderRepository
+                        .getEncoder(response::class.java)
+                val buffer = ctx.alloc().buffer(37 + 1).toJagByteBuf()
+                buffer.p1(37)
+                encoder.encode(ctx, buffer, response)
+                ctx.writeAndFlush(buffer.buffer)
+            } else {
+                ctx.writeAndFlush(response)
+            }
+
+        writeFuture.addListener(
             ChannelFutureListener { future ->
                 if (!future.isSuccess) {
                     networkLog(logger) {

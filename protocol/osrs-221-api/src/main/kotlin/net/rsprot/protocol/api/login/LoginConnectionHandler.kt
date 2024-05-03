@@ -11,6 +11,7 @@ import net.rsprot.protocol.api.logging.networkLog
 import net.rsprot.protocol.loginprot.incoming.GameLogin
 import net.rsprot.protocol.loginprot.incoming.GameReconnect
 import net.rsprot.protocol.loginprot.incoming.ProofOfWorkReply
+import net.rsprot.protocol.loginprot.incoming.RemainingBetaArchives
 import net.rsprot.protocol.loginprot.incoming.pow.ProofOfWork
 import net.rsprot.protocol.loginprot.incoming.pow.challenges.ChallengeMetaData
 import net.rsprot.protocol.loginprot.incoming.pow.challenges.ChallengeType
@@ -18,7 +19,7 @@ import net.rsprot.protocol.loginprot.outgoing.LoginResponse
 import net.rsprot.protocol.message.IncomingLoginMessage
 import java.text.NumberFormat
 import java.util.concurrent.CompletableFuture
-import java.util.function.Function
+import java.util.function.BiFunction
 
 @Suppress("DuplicatedCode")
 public class LoginConnectionHandler<R>(
@@ -90,6 +91,13 @@ public class LoginConnectionHandler<R>(
             "Login connection message in channel '${ctx.channel()}': $msg"
         }
         when (msg) {
+            is RemainingBetaArchives -> {
+                if (this.loginState != LoginState.AWAITING_BETA_RESPONSE) {
+                    ctx.close()
+                    return
+                }
+                decodeLoginPacket(ctx, msg)
+            }
             is GameLogin, is GameReconnect -> {
                 if (this.loginState != LoginState.UNINITIALIZED) {
                     ctx.close()
@@ -143,7 +151,15 @@ public class LoginConnectionHandler<R>(
                     networkLog(logger) {
                         "Correct proof of work response received from channel '${ctx.channel()}': ${msg.result}"
                     }
-                    decodeLoginPacket(ctx)
+                    if (networkService.betaWorld) {
+                        loginState = LoginState.AWAITING_BETA_RESPONSE
+                        // Instantly request the remaining beta archives, as that feature
+                        // is implemented incorrectly and serves no functional purpose
+                        ctx.writeAndFlush(ctx.alloc().buffer(1).writeByte(2))
+                        ctx.read()
+                    } else {
+                        decodeLoginPacket(ctx, null)
+                    }
                 }
             }
             else -> {
@@ -179,11 +195,18 @@ public class LoginConnectionHandler<R>(
         }
     }
 
-    private fun decodeLoginPacket(ctx: ChannelHandlerContext) {
+    private fun decodeLoginPacket(
+        ctx: ChannelHandlerContext,
+        remainingBetaArchives: RemainingBetaArchives?,
+    ) {
         val responseHandler = GameLoginResponseHandler(networkService, ctx)
         when (val packet = loginPacket) {
             is GameLogin -> {
-                decodeLogin(packet.buffer, packet.decoder).handle { block, exception ->
+                decodeLogin(
+                    packet.buffer,
+                    networkService.betaWorld,
+                    packet.decoder,
+                ).handle { block, exception ->
                     if (block == null || exception != null) {
                         logger.error(exception) {
                             "Failed to decode game login block for channel ${ctx.channel()}"
@@ -204,6 +227,9 @@ public class LoginConnectionHandler<R>(
                             .addListener(ChannelFutureListener.CLOSE)
                         return@handle
                     }
+                    if (remainingBetaArchives != null) {
+                        block.mergeBetaCrcs(remainingBetaArchives)
+                    }
                     networkLog(logger) {
                         "Successful game login from channel '${ctx.channel()}': $block"
                     }
@@ -212,7 +238,11 @@ public class LoginConnectionHandler<R>(
             }
 
             is GameReconnect -> {
-                decodeLogin(packet.buffer, packet.decoder).handle { block, exception ->
+                decodeLogin(
+                    packet.buffer,
+                    networkService.betaWorld,
+                    packet.decoder,
+                ).handle { block, exception ->
                     if (block == null || exception != null) {
                         logger.error(exception) {
                             "Failed to decode game reconnect block for channel ${ctx.channel()}"
@@ -233,6 +263,9 @@ public class LoginConnectionHandler<R>(
                             .addListener(ChannelFutureListener.CLOSE)
                         return@handle
                     }
+                    if (remainingBetaArchives != null) {
+                        block.mergeBetaCrcs(remainingBetaArchives)
+                    }
                     networkLog(logger) {
                         "Successful game reconnection from channel '${ctx.channel()}': $block"
                     }
@@ -248,12 +281,13 @@ public class LoginConnectionHandler<R>(
 
     private fun <Buf, Fun> decodeLogin(
         buf: Buf,
-        function: Function<Buf, Fun>,
+        betaWorld: Boolean,
+        function: BiFunction<Buf, Boolean, Fun>,
     ): CompletableFuture<Fun> {
         return networkService
             .loginHandlers
             .loginDecoderService
-            .decode(buf, function)
+            .decode(buf, betaWorld, function)
     }
 
     private fun <T : ChallengeType<MetaData>, MetaData : ChallengeMetaData> verifyProofOfWork(
@@ -273,6 +307,7 @@ public class LoginConnectionHandler<R>(
     private enum class LoginState {
         UNINITIALIZED,
         REQUESTED_PROOF_OF_WORK,
+        AWAITING_BETA_RESPONSE,
     }
 
     private companion object {
