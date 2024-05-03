@@ -2,7 +2,7 @@ package net.rsprot.protocol.api.js5.util
 
 public class UniqueQueue<T> {
     private val queue = ArrayDeque<T>()
-    private val set = mutableSetOf<T>()
+    private val set = HashSet<T>()
 
     public fun add(v: T): Boolean {
         if (set.add(v)) {
