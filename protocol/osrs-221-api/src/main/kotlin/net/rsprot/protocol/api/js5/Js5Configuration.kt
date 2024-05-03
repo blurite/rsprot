@@ -1,12 +1,13 @@
 package net.rsprot.protocol.api.js5
 
 public class Js5Configuration public constructor(
-    public val blockSize: Int = 512,
-    public val flushThreshold: Int = 10240,
+    public val blockSizeInBytes: Int = 512,
+    public val flushThresholdInBytes: Int = 10240,
+    public val flushThresholdInRequests: Int = 10,
     public val priorityRatio: Int = 3,
 ) {
     init {
-        require(blockSize >= 8) {
+        require(blockSizeInBytes >= 8) {
             "Js5 block size must be at least 8 bytes"
         }
         require(priorityRatio >= 1) {
@@ -20,24 +21,27 @@ public class Js5Configuration public constructor(
 
         other as Js5Configuration
 
-        if (blockSize != other.blockSize) return false
-        if (flushThreshold != other.flushThreshold) return false
+        if (blockSizeInBytes != other.blockSizeInBytes) return false
+        if (flushThresholdInBytes != other.flushThresholdInBytes) return false
+        if (flushThresholdInRequests != other.flushThresholdInRequests) return false
         if (priorityRatio != other.priorityRatio) return false
 
         return true
     }
 
     override fun hashCode(): Int {
-        var result = blockSize
-        result = 31 * result + flushThreshold
+        var result = blockSizeInBytes
+        result = 31 * result + flushThresholdInBytes
+        result = 31 * result + flushThresholdInRequests
         result = 31 * result + priorityRatio
         return result
     }
 
     override fun toString(): String {
         return "Js5Configuration(" +
-            "blockSize=$blockSize, " +
-            "flushThreshold=$flushThreshold, " +
+            "blockSizeInBytes=$blockSizeInBytes, " +
+            "flushThresholdInBytes=$flushThresholdInBytes, " +
+            "flushThresholdInRequests=$flushThresholdInRequests, " +
             "priorityRatio=$priorityRatio" +
             ")"
     }

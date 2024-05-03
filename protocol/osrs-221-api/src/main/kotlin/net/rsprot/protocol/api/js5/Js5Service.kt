@@ -42,10 +42,14 @@ public class Js5Service<T : Js5GroupType>(
                     }
                     val priority = client.priority
                     val ratio = if (priority == Js5Client.ClientPriority.HIGH) configuration.priorityRatio else 1
-                    response = client.getNextBlock(provider, configuration.blockSize * ratio) ?: continue
-                    flush = client.needsFlushing(configuration.flushThreshold)
+                    response = client.getNextBlock(provider, configuration.blockSizeInBytes * ratio) ?: continue
+                    flush =
+                        client.needsFlushing(
+                            configuration.flushThresholdInBytes,
+                            configuration.flushThresholdInRequests,
+                        )
                     if (flush) {
-                        client.resetByteCountTracker()
+                        client.resetTracker()
                     }
                     break
                 }

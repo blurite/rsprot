@@ -18,8 +18,8 @@ public class Js5Client<T : Js5GroupType>(
     public var priority: ClientPriority = ClientPriority.LOW
         private set
 
-    @Volatile
     private var writtenByteCount: Int = 0
+    private var writtenGroupCount: Int = 0
 
     public fun getNextBlock(
         provider: Js5GroupProvider<T>,
@@ -39,6 +39,9 @@ public class Js5Client<T : Js5GroupType>(
         val progress = currentRequest.progress
         val length = currentRequest.getNextBlockLengthAndIncrementProgress(blockLength)
         writtenByteCount += length
+        if (currentRequest.isComplete()) {
+            writtenGroupCount++
+        }
         return provider.toJs5GroupResponse(block, progress, length)
     }
 
@@ -101,12 +104,18 @@ public class Js5Client<T : Js5GroupType>(
         return ctx.channel().isWritable && isNotEmpty()
     }
 
-    public fun needsFlushing(flushThreshold: Int): Boolean {
-        return writtenByteCount > flushThreshold || (writtenByteCount > 0 && isEmpty())
+    public fun needsFlushing(
+        flushThresholdInBytes: Int,
+        flushThresholdInGroups: Int,
+    ): Boolean {
+        return writtenGroupCount >= flushThresholdInGroups ||
+            (writtenGroupCount > 0 && writtenByteCount >= flushThresholdInBytes) ||
+            (writtenByteCount > 0 && isEmpty())
     }
 
-    public fun resetByteCountTracker() {
+    public fun resetTracker() {
         writtenByteCount = 0
+        writtenGroupCount = 0
     }
 
     public class PartialJs5GroupRequest<T : Js5GroupType> {
