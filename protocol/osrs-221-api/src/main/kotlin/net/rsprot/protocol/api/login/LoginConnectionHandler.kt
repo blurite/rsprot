@@ -53,6 +53,35 @@ public class LoginConnectionHandler<R>(
         }
     }
 
+    override fun channelUnregistered(ctx: ChannelHandlerContext) {
+        // If the channel is unregistered, we must release the login block buffer
+        if (this.loginState == LoginState.REQUESTED_PROOF_OF_WORK) {
+            releaseLoginBlock()
+        }
+    }
+
+    /**
+     * Release the login block buffer that was supposed to be decoded after a successful
+     * proof of work response.
+     */
+    private fun releaseLoginBlock() {
+        // If login block isn't initialized yet, do nothing
+        if (!this::loginPacket.isInitialized) {
+            return
+        }
+        val jagBuffer =
+            when (val packet = this.loginPacket) {
+                is GameLogin -> packet.buffer
+                is GameReconnect -> packet.buffer
+                else -> return
+            }
+        val buffer = jagBuffer.buffer
+        val refCnt = buffer.refCnt()
+        if (refCnt > 0) {
+            buffer.release(refCnt)
+        }
+    }
+
     override fun channelRead0(
         ctx: ChannelHandlerContext,
         msg: IncomingLoginMessage,
@@ -62,6 +91,10 @@ public class LoginConnectionHandler<R>(
         }
         when (msg) {
             is GameLogin, is GameReconnect -> {
+                if (this.loginState != LoginState.UNINITIALIZED) {
+                    ctx.close()
+                    return
+                }
                 loginState = LoginState.REQUESTED_PROOF_OF_WORK
                 loginPacket = msg
                 val pow =
