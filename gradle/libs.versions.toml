@@ -9,6 +9,8 @@ log4j = "2.23.1"
 commons-pool2 = "2.12.0"
 ktlint = "12.1.0"
 jnagmp = "3.0.0"
+dokka = "1.9.20"
+mavenpublish = "0.28.0"
 
 [libraries]
 netty-bom = { module = "io.netty:netty-bom", version.ref = "netty" }
@@ -37,6 +39,8 @@ kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 allopen = { id = "org.jetbrains.kotlin.plugin.allopen", version.ref = "kotlin" }
 jmh = { id = "org.jetbrains.kotlinx.benchmark", version.ref = "jmh" }
 ktlint = { id = "org.jlleitschuh.gradle.ktlint", version.ref = "ktlint" }
+dokka = { id = "org.jetbrains.dokka", version.ref = "dokka" }
+vanniktech-publish = { id = "com.vanniktech.maven.publish", version.ref = "mavenpublish" }
 
 [bundles]
 logging = ["log4j-core", "log4j-api", "log4j-slf4j-impl", "inline-logger"]

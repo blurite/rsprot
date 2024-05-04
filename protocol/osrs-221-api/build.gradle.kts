@@ -1,16 +1,12 @@
-plugins {
-    alias(libs.plugins.kotlin.jvm)
-}
-
 dependencies {
-    implementation(platform(libs.netty.bom))
-    api(libs.netty.buffer)
-    implementation(libs.netty.transport)
-    implementation(libs.netty.handler)
-    implementation(libs.netty.native.epoll)
-    implementation(libs.netty.native.kqueue)
-    implementation(libs.netty.incubator.iouring)
-    implementation(libs.inline.logger)
+    implementation(platform(rootProject.libs.netty.bom))
+    api(rootProject.libs.netty.buffer)
+    implementation(rootProject.libs.netty.transport)
+    implementation(rootProject.libs.netty.handler)
+    implementation(rootProject.libs.netty.native.epoll)
+    implementation(rootProject.libs.netty.native.kqueue)
+    implementation(rootProject.libs.netty.incubator.iouring)
+    implementation(rootProject.libs.inline.logger)
     api(projects.protocol)
     api(projects.compression)
     api(projects.crypto)
@@ -22,10 +18,10 @@ dependencies {
     implementation(projects.buffer)
 }
 
-publishing {
-    publications {
-        create<MavenPublication>("maven") {
-            from(components["java"])
-        }
+mavenPublishing {
+    pom {
+        name = "RsProt OSRS 221 API"
+        description = "The API module for revision 221 OldSchool RuneScape networking, " +
+            "offering an all-in-one implementation."
     }
 }

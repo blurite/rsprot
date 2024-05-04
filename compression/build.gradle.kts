@@ -1,18 +1,13 @@
-plugins {
-    alias(libs.plugins.kotlin.jvm)
-}
-
 dependencies {
-    implementation(platform(libs.netty.bom))
-    implementation(libs.netty.buffer)
+    implementation(platform(rootProject.libs.netty.bom))
+    implementation(rootProject.libs.netty.buffer)
     implementation(projects.buffer)
-    implementation(libs.inline.logger)
+    implementation(rootProject.libs.inline.logger)
 }
 
-publishing {
-    publications {
-        create<MavenPublication>("maven") {
-            from(components["java"])
-        }
+mavenPublishing {
+    pom {
+        name = "RsProt Compression"
+        description = "Compression methods utilized by the RuneScape client protocol."
     }
 }

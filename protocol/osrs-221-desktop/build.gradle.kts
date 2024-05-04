@@ -1,13 +1,12 @@
 plugins {
-    alias(libs.plugins.kotlin.jvm)
     alias(libs.plugins.jmh)
     alias(libs.plugins.allopen)
 }
 
 dependencies {
-    implementation(platform(libs.netty.bom))
-    implementation(libs.netty.buffer)
-    implementation(libs.netty.transport)
+    implementation(platform(rootProject.libs.netty.bom))
+    implementation(rootProject.libs.netty.buffer)
+    implementation(rootProject.libs.netty.transport)
     implementation(projects.buffer)
     implementation(projects.compression)
     implementation(projects.crypto)
@@ -25,7 +24,7 @@ sourceSets.create("benchmarks")
 
 kotlin.sourceSets.getByName("benchmarks") {
     dependencies {
-        implementation(libs.jmh.runtime)
+        implementation(rootProject.libs.jmh.runtime)
         val mainSourceSet by sourceSets.main
         val testSourceSet by sourceSets.test
         val sourceSets = listOf(mainSourceSet, testSourceSet)
@@ -51,10 +50,10 @@ benchmark {
     }
 }
 
-publishing {
-    publications {
-        create<MavenPublication>("maven") {
-            from(components["java"])
-        }
+mavenPublishing {
+    pom {
+        name = "RsProt OSRS 221 Desktop"
+        description = "The desktop module for revision 221 OldSchool RuneScape networking, " +
+            "offering encoders and decoders for all packets."
     }
 }

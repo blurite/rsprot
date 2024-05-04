@@ -1,16 +1,29 @@
+import com.vanniktech.maven.publish.JavadocJar
+import com.vanniktech.maven.publish.KotlinJvm
+import com.vanniktech.maven.publish.SonatypeHost
 import org.jetbrains.kotlin.gradle.plugin.KotlinPluginWrapper
+
+val ossrhUsername: String? by ext
+val ossrhPassword: String? by ext
 
 plugins {
     application
+    signing
     alias(libs.plugins.kotlin.jvm)
     alias(libs.plugins.jmh)
     alias(libs.plugins.ktlint)
-    `maven-publish`
+    alias(libs.plugins.vanniktech.publish)
+    alias(libs.plugins.dokka)
+}
+
+java {
+    withJavadocJar()
+    withSourcesJar()
 }
 
 allprojects {
     group = "net.rsprot"
-    version = "1.0-SNAPSHOT"
+    version = "0.1"
 
     repositories {
         mavenCentral()
@@ -25,10 +38,10 @@ allprojects {
     plugins.withType<KotlinPluginWrapper> {
         dependencies {
             testImplementation(kotlin("test-junit5"))
-            testImplementation(libs.junit.api)
-            testImplementation(libs.junit.params)
-            testRuntimeOnly(libs.junit.engine)
-            testRuntimeOnly(libs.junit.launcher)
+            testImplementation(rootProject.libs.junit.api)
+            testImplementation(rootProject.libs.junit.params)
+            testRuntimeOnly(rootProject.libs.junit.engine)
+            testRuntimeOnly(rootProject.libs.junit.launcher)
         }
 
         tasks.test {
@@ -44,15 +57,59 @@ allprojects {
 
 subprojects {
     apply(plugin = "org.jlleitschuh.gradle.ktlint")
-    apply(plugin = "maven-publish")
+    apply(plugin = "signing")
+    apply(plugin = "com.vanniktech.maven.publish")
+    apply(plugin = "org.jetbrains.dokka")
+    apply(plugin = "org.jetbrains.kotlin.jvm")
 
-    plugins.withType<MavenPublishPlugin> {
-        configure<PublishingExtension> {
-            publications.withType<MavenPublication> {
-                groupId = "net.rsprot"
-                artifactId = project.name
-                version = "1.0-SNAPSHOT"
+    mavenPublishing {
+        coordinates(
+            groupId = project.group.toString(),
+            artifactId = project.name,
+            version = project.version.toString(),
+        )
+
+        configure(
+            KotlinJvm(
+                javadocJar = JavadocJar.Dokka("dokkaHtml"),
+                sourcesJar = true,
+            ),
+        )
+
+        pom {
+            url = "https://github.com/blurite/rsprot"
+            inceptionYear = "2024"
+
+            licenses {
+                license {
+                    name = "MIT"
+                    url = "https://github.com/blurite/rsprot/blob/master/LICENSE"
+                }
             }
+
+            organization {
+                name = "Blurite"
+                url = "https://github.com/blurite"
+            }
+
+            scm {
+                connection = "scm:git:git://github.com/blurite/rsprot.git"
+                developerConnection = "scm:git:ssh://git@github.com/blurite/rsprot.git"
+                url = "https://github.com/blurite/rsprot"
+            }
+
+            developers {
+                developer {
+                    name = "Kris"
+                    url = "https://github.com/Z-Kris"
+                }
+            }
+
+            // Configure publishing to Maven Central
+            publishToMavenCentral(SonatypeHost.CENTRAL_PORTAL)
+
+            // Enable GPG signing for all publications
+            signAllPublications()
         }
     }
 }

@@ -1,20 +1,15 @@
-plugins {
-    alias(libs.plugins.kotlin.jvm)
-}
-
 dependencies {
-    implementation(platform(libs.netty.bom))
-    implementation(libs.netty.buffer)
-    implementation(libs.netty.transport)
+    implementation(platform(rootProject.libs.netty.bom))
+    implementation(rootProject.libs.netty.buffer)
+    implementation(rootProject.libs.netty.transport)
     implementation(projects.buffer)
     implementation(projects.crypto)
     implementation(projects.compression)
 }
 
-publishing {
-    publications {
-        create<MavenPublication>("maven") {
-            from(components["java"])
-        }
+mavenPublishing {
+    pom {
+        name = "RsProt Protocol"
+        description = "Base protocol module for any RuneScape version networking."
     }
 }

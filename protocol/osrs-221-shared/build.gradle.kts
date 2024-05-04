@@ -1,11 +1,7 @@
-plugins {
-    alias(libs.plugins.kotlin.jvm)
-}
-
 dependencies {
-    implementation(platform(libs.netty.bom))
-    implementation(libs.netty.buffer)
-    implementation(libs.netty.transport)
+    implementation(platform(rootProject.libs.netty.bom))
+    implementation(rootProject.libs.netty.buffer)
+    implementation(rootProject.libs.netty.transport)
     implementation(projects.buffer)
     implementation(projects.compression)
     implementation(projects.crypto)
@@ -15,10 +11,10 @@ dependencies {
     implementation(projects.protocol.osrs221Common)
 }
 
-publishing {
-    publications {
-        create<MavenPublication>("maven") {
-            from(components["java"])
-        }
+mavenPublishing {
+    pom {
+        name = "RsProt OSRS 221 Shared"
+        description = "The shared module for revision 221 OldSchool RuneScape networking, " +
+            "offering a set of shared classes that do not depend on a specific client."
     }
 }

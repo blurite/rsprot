@@ -1,18 +1,13 @@
-plugins {
-    alias(libs.plugins.kotlin.jvm)
-}
-
 dependencies {
-    implementation(platform(libs.netty.bom))
-    implementation(libs.netty.buffer)
-    implementation(libs.jna.gmp)
-    implementation(libs.inline.logger)
+    implementation(platform(rootProject.libs.netty.bom))
+    implementation(rootProject.libs.netty.buffer)
+    implementation(rootProject.libs.jna.gmp)
+    implementation(rootProject.libs.inline.logger)
 }
 
-publishing {
-    publications {
-        create<MavenPublication>("maven") {
-            from(components["java"])
-        }
+mavenPublishing {
+    pom {
+        name = "RsProt Crypto"
+        description = "Cryptography methods used by the RuneScape client protocol."
     }
 }

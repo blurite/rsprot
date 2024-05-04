@@ -1,15 +1,15 @@
 plugins {
-    alias(libs.plugins.kotlin.jvm)
+    // alias(libs.plugins.kotlin.jvm)
     alias(libs.plugins.jmh)
     alias(libs.plugins.allopen)
 }
 
 dependencies {
-    implementation(platform(libs.netty.bom))
-    implementation(libs.netty.buffer)
-    implementation(libs.inline.logger)
-    testImplementation(platform(libs.log4j.bom))
-    testImplementation(libs.bundles.logging)
+    implementation(platform(rootProject.libs.netty.bom))
+    implementation(rootProject.libs.netty.buffer)
+    implementation(rootProject.libs.inline.logger)
+    testImplementation(platform(rootProject.libs.log4j.bom))
+    testImplementation(rootProject.libs.bundles.logging)
     implementation(projects.crypto)
 }
 
@@ -21,7 +21,7 @@ sourceSets.create("benchmarks")
 
 kotlin.sourceSets.getByName("benchmarks") {
     dependencies {
-        implementation(libs.jmh.runtime)
+        implementation(rootProject.libs.jmh.runtime)
         val mainSourceSet by sourceSets.main
         implementation(mainSourceSet.output)
         implementation(mainSourceSet.runtimeClasspath)
@@ -48,10 +48,9 @@ benchmark {
     }
 }
 
-publishing {
-    publications {
-        create<MavenPublication>("maven") {
-            from(components["java"])
-        }
+mavenPublishing {
+    pom {
+        name = "RsProt Buffer"
+        description = "Jagex ByteBuf wrappers for Netty's byte buffers."
     }
 }
