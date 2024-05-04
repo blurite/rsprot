@@ -125,18 +125,10 @@ public class Js5Client<T : Js5GroupType>(
      * Sets the pending encryption key for this client.
      * Client sends this when it receives corrupt data for a group, in which case
      * it will close the old socket first, allowing for a new one to be opened.
-     * In that new one, any existing requests will first be written without the key,
-     * after which a key is sent to encrypt all the remaining requests.
-     * This demonstrates a problem too - the client doesn't clear out any requests,
-     * but it does set the xor key immediately when the old socket closes.
-     * This means that the client will be sending out requests without the server
-     * knowing the key, while it expects the data to have been encrypted, meaning
-     * it is extremely likely for multiple back-to-back failures to occur.
-     * After the fourth failure, the client stops trying. There is no solution to this
-     * problem, but fortunately this is essentially never used, as the data
-     * would never corrupt outside of something like a MITM attack, or server just
-     * providing corrupt data, in which case it's going to fail regardless as it
-     * wouldn't be a one-off error.
+     * In that new one, the encryption key is first sent out, followed by any requests
+     * it was previously waiting on, as those get transferred from the "awaiting response"
+     * over to the "awaiting to be requested" map.
+     *
      * A potential theory for why this exist is network filters for HTTP traffic.
      * The client can listen to port 443 which is commonly used for HTTP traffic,
      * and some groups in the cache are not compressed at all. If said groups
