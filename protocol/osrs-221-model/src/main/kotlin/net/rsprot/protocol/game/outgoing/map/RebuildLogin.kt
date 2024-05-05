@@ -64,7 +64,7 @@ public class RebuildLogin private constructor(
     }
 
     override fun toString(): String {
-        return "RebuildNormal(" +
+        return "RebuildLogin(" +
             "zoneX=$zoneX, " +
             "zoneZ=$zoneZ, " +
             "keys=$keys, " +

@@ -29,6 +29,6 @@ public class PlayerInfoPacket(
     }
 
     override fun toString(): String {
-        return "PlayerInfoPacket() ${super.toString()}"
+        return super.toString()
     }
 }

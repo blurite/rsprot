@@ -43,4 +43,36 @@ public class IfSetEvents private constructor(
         get() = _end.toInt()
     override val category: ServerProtCategory
         get() = GameServerProtCategory.LOW_PRIORITY_PROT
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as IfSetEvents
+
+        if (combinedId != other.combinedId) return false
+        if (_start != other._start) return false
+        if (_end != other._end) return false
+        if (events != other.events) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        var result = combinedId.hashCode()
+        result = 31 * result + _start.hashCode()
+        result = 31 * result + _end.hashCode()
+        result = 31 * result + events
+        return result
+    }
+
+    override fun toString(): String {
+        return "IfSetEvents(" +
+            "events=$events, " +
+            "interfaceId=$interfaceId, " +
+            "componentId=$componentId, " +
+            "start=$start, " +
+            "end=$end" +
+            ")"
+    }
 }

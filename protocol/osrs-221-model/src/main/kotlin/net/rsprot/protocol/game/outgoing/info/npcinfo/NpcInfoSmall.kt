@@ -25,6 +25,6 @@ public class NpcInfoSmall(buffer: ByteBuf) : DefaultByteBufHolder(buffer), Outgo
     }
 
     override fun toString(): String {
-        return "NpcInfoSmall() ${super.toString()}"
+        return super.toString()
     }
 }
