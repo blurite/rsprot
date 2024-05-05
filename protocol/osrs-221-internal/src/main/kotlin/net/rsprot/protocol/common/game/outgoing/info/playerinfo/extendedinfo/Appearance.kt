@@ -71,7 +71,7 @@ public class Appearance(
      * all 256 are possible values, leaving us no room for a default.
      * This is why a short array is used here instead.
      */
-    public val identKit: ShortArray = ShortArray(SLOT_COUNT) { -1 }
+    public val identKit: ShortArray = ShortArray(7) { -1 }
 
     /**
      * The worn obj ids, indexed by the respective wearpos.
@@ -174,7 +174,7 @@ public class Appearance(
         runAnim = MAX_UNSIGNED_SHORT
     }
 
-    private companion object {
+    public companion object {
         /**
          * The number of wearpos that the client will track.
          */
@@ -194,5 +194,34 @@ public class Appearance(
          * A constant for max unsigned short, frequently used as the "default, not initialized" value.
          */
         private const val MAX_UNSIGNED_SHORT: UShort = 0xFFFFu
+
+        private const val HAIR_IDENTKIT: Int = 0
+        private const val BEARD_IDENTKIT: Int = 1
+        private const val BODY_IDENTKIT: Int = 2
+        private const val ARMS_IDENTKIT: Int = 3
+        private const val GLOVES_IDENTKIT: Int = 4
+        private const val LEGS_IDENTKIT: Int = 5
+        private const val BOOTS_IDENTKIT: Int = 6
+
+        /**
+         * An array of wearpos -> ident kit slot, indexed by wearpos.
+         */
+        public val identKitSlotList: List<Int> =
+            listOf(
+                -1,
+                -1,
+                -1,
+                -1,
+                BODY_IDENTKIT,
+                -1,
+                ARMS_IDENTKIT,
+                LEGS_IDENTKIT,
+                HAIR_IDENTKIT,
+                GLOVES_IDENTKIT,
+                BOOTS_IDENTKIT,
+                BEARD_IDENTKIT,
+                -1,
+                -1,
+            )
     }
 }

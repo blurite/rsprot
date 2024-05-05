@@ -10,6 +10,7 @@ import net.rsprot.protocol.common.game.outgoing.info.encoder.PrecomputedExtended
 import net.rsprot.protocol.common.game.outgoing.info.playerinfo.extendedinfo.Appearance
 import net.rsprot.protocol.common.game.outgoing.info.playerinfo.extendedinfo.ObjTypeCustomisation
 
+@Suppress("DuplicatedCode")
 public class PlayerAppearanceEncoder : PrecomputedExtendedInfoEncoder<Appearance> {
     override fun precompute(
         alloc: ByteBufAllocator,
@@ -89,7 +90,12 @@ public class PlayerAppearanceEncoder : PrecomputedExtendedInfoEncoder<Appearance
                 intermediate.p2(obj + 0x200)
                 continue
             }
-            val identKitValue = identKit[wearpos].toInt() and 0xFFFF
+            val identKitSlot = Appearance.identKitSlotList[wearpos]
+            if (identKitSlot == -1) {
+                intermediate.p1(0)
+                continue
+            }
+            val identKitValue = identKit[identKitSlot].toInt() and 0xFFFF
             if (identKitValue == 0xFFFF) {
                 intermediate.p1(0)
             } else {
@@ -104,7 +110,12 @@ public class PlayerAppearanceEncoder : PrecomputedExtendedInfoEncoder<Appearance
     ) {
         val identKit = extendedInfo.identKit
         for (wearpos in 0..<12) {
-            val identKitValue = identKit[wearpos].toInt() and 0xFFFF
+            val identKitSlot = Appearance.identKitSlotList[wearpos]
+            if (identKitSlot == -1) {
+                intermediate.p1(0)
+                continue
+            }
+            val identKitValue = identKit[identKitSlot].toInt() and 0xFFFF
             if (identKitValue == 0xFFFF) {
                 intermediate.p1(0)
             } else {

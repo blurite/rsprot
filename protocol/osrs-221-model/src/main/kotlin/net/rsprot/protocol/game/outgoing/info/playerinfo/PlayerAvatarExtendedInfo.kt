@@ -863,8 +863,8 @@ public class PlayerAvatarExtendedInfo(
         value: Int,
     ) {
         verify {
-            require(wearpos in 0..11) {
-                "Unexpected wearPos $wearpos, expected range 0..11"
+            require(wearpos in 0..6) {
+                "Unexpected wearPos $wearpos, expected range 0..6"
             }
             require(value == -1 || value in UNSIGNED_BYTE_RANGE) {
                 "Unexpected value $value, expected value -1 or in range $UNSIGNED_BYTE_RANGE"
