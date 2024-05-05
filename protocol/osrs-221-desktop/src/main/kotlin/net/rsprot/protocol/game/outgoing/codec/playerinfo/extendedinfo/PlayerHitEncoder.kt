@@ -8,10 +8,10 @@ public class PlayerHitEncoder : OnDemandExtendedInfoEncoder<Hit> {
     override fun encode(
         buffer: JagByteBuf,
         localPlayerIndex: Int,
-        updatedPlayerIndex: Int,
+        updatedAvatarIndex: Int,
         extendedInfo: Hit,
     ) {
-        pHits(buffer, localPlayerIndex, updatedPlayerIndex, extendedInfo)
+        pHits(buffer, localPlayerIndex, updatedAvatarIndex, extendedInfo)
         pHeadBars(buffer, extendedInfo)
     }
 

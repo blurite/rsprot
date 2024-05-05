@@ -1034,8 +1034,9 @@ public class NpcAvatarExtendedInfo(
         buffer: JagByteBuf,
         observerIndex: Int,
         remainingAvatars: Int,
+        extraFlag: Int,
     ) {
-        val flag = this.flags
+        val flag = this.flags or extraFlag
         if (!filter.accept(
                 buffer.writableBytes(),
                 flag,

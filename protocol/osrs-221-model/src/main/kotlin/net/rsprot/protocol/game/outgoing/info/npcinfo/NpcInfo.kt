@@ -251,8 +251,9 @@ public class NpcInfo internal constructor(
             other.extendedInfo.pExtendedInfo(
                 oldSchoolClientType,
                 jagBuffer,
-                observerFlag,
+                localPlayerIndex,
                 extendedInfoCount - i,
+                observerFlag,
             )
         }
     }

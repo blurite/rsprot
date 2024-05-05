@@ -9,17 +9,16 @@ public class NpcHitEncoder : OnDemandExtendedInfoEncoder<Hit> {
     override fun encode(
         buffer: JagByteBuf,
         localPlayerIndex: Int,
-        updatedPlayerIndex: Int,
+        updatedAvatarIndex: Int,
         extendedInfo: Hit,
     ) {
-        pHits(buffer, localPlayerIndex, updatedPlayerIndex, extendedInfo)
+        pHits(buffer, localPlayerIndex, extendedInfo)
         pHeadBars(buffer, extendedInfo)
     }
 
     private fun pHits(
         buffer: JagByteBuf,
         localPlayerIndex: Int,
-        updatedPlayerIndex: Int,
         info: Hit,
     ) {
         val countMarker = buffer.writerIndex()

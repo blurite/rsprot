@@ -12,7 +12,7 @@ public interface OnDemandExtendedInfoEncoder<in T : ExtendedInfo<T, *>> : Extend
     public fun encode(
         buffer: JagByteBuf,
         localPlayerIndex: Int,
-        updatedPlayerIndex: Int,
+        updatedAvatarIndex: Int,
         extendedInfo: T,
     )
 }

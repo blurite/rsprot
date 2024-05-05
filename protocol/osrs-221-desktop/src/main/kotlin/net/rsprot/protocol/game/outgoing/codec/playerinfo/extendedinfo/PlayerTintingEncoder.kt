@@ -8,7 +8,7 @@ public class PlayerTintingEncoder : OnDemandExtendedInfoEncoder<PlayerTintingLis
     override fun encode(
         buffer: JagByteBuf,
         localPlayerIndex: Int,
-        updatedPlayerIndex: Int,
+        updatedAvatarIndex: Int,
         extendedInfo: PlayerTintingList,
     ) {
         val tinting = extendedInfo[localPlayerIndex]
