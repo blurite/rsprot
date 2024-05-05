@@ -16,14 +16,9 @@ plugins {
     alias(libs.plugins.dokka)
 }
 
-java {
-    withJavadocJar()
-    withSourcesJar()
-}
-
 allprojects {
     group = "net.rsprot"
-    version = "1.0.0-ALPHA-20240505"
+    version = "1.0.1-ALPHA-20240505"
 
     repositories {
         mavenCentral()
@@ -111,6 +106,13 @@ subprojects {
             // Enable GPG signing for all publications
             signAllPublications()
         }
+    }
+}
+
+afterEvaluate {
+    tasks.getByName("generateMetadataFileForMavenPublication") {
+        dependsOn(tasks.getByName("dokkaJavadocJar"))
+        dependsOn(tasks.kotlinSourcesJar)
     }
 }
 
