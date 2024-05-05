@@ -23,7 +23,7 @@ java {
 
 allprojects {
     group = "net.rsprot"
-    version = "0.1"
+    version = "1.0.0-ALPHA-20240505"
 
     repositories {
         mavenCentral()
