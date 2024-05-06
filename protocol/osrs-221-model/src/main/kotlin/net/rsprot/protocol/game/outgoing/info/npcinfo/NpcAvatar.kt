@@ -121,6 +121,13 @@ public class NpcAvatar internal constructor(
     }
 
     /**
+     * Updates the spawn direction of the NPC.
+     */
+    public fun updateDirection(direction: Int) {
+        this.details.updateDirection(direction)
+    }
+
+    /**
      * A helper function to teleport the NPC to a new coordinate.
      * This will furthermore mark the movement type as teleport, meaning no matter what other
      * coordinate changes are applied, as teleport has the highest priority, teleportation

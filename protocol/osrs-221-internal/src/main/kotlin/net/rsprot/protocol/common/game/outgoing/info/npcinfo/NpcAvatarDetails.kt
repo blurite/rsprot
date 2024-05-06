@@ -43,6 +43,10 @@ public class NpcAvatarDetails internal constructor(
         return movementType and (TELE or TELEJUMP) != 0
     }
 
+    public fun updateDirection(direction: Int) {
+        this.direction = direction
+    }
+
     public companion object {
         public const val CRAWL: Int = 0x1
         public const val WALK: Int = 0x2
