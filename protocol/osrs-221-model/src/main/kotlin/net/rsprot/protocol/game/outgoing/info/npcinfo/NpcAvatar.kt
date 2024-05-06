@@ -114,6 +114,13 @@ public class NpcAvatar internal constructor(
     }
 
     /**
+     * Resets the observer count.
+     */
+    internal fun resetObservers() {
+        observerCount.set(0)
+    }
+
+    /**
      * A helper function to teleport the NPC to a new coordinate.
      * This will furthermore mark the movement type as teleport, meaning no matter what other
      * coordinate changes are applied, as teleport has the highest priority, teleportation

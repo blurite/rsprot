@@ -92,6 +92,7 @@ internal class NpcAvatarRepository(
     ): NpcAvatar {
         val existing = queue.poll()?.get()
         if (existing != null) {
+            existing.resetObservers()
             val details = existing.details
             resetTransientDetails(details)
             details.index = index
