@@ -150,6 +150,21 @@ public class NpcInfo internal constructor(
     }
 
     /**
+     * Sets the view distance, meaning how far the player can see NPCs.
+     * @param num the distance from which NPCs become visible
+     */
+    public fun setViewDistance(num: Int) {
+        this.viewDistance = num
+    }
+
+    /**
+     * Resets the view distance back to a default value of 15 tile radius.
+     */
+    public fun resetViewDistance() {
+        this.viewDistance = MAX_SMALL_PACKET_DISTANCE
+    }
+
+    /**
      * Turns this npc info structure into a respective npc info packet, depending
      * on the current known view distance.
      */
