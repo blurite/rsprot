@@ -18,7 +18,7 @@ public class CamLookAtEncoder : MessageEncoder<CamLookAt> {
         message: CamLookAt,
     ) {
         buffer.p1(message.destinationXInBuildArea)
-        buffer.p2(message.destinationZInBuildArea)
+        buffer.p1(message.destinationZInBuildArea)
         buffer.p2(message.height)
         buffer.p1(message.speed)
         buffer.p1(message.acceleration)
