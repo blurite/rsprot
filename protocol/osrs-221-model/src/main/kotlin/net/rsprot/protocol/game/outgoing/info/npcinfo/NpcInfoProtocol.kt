@@ -180,6 +180,7 @@ public class NpcInfoProtocol(
             val avatar = avatarRepository.getOrNull(i) ?: continue
             avatar.postUpdate()
         }
+        avatarRepository.transferAvatars()
     }
 
     /**
