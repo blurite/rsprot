@@ -5,6 +5,13 @@ import net.rsprot.protocol.game.incoming.GameServerProtCategory
 import net.rsprot.protocol.message.OutgoingGameMessage
 import net.rsprot.protocol.util.CombinedId
 
+/**
+ * If set model packet is used to set a model to render on an interface.
+ * The component must be of model type for this to succeed.
+ * @property interfaceId the interface id on which to set the events
+ * @property componentId the component on that interface to set the events on
+ * @property model the id of the model to render.
+ */
 public class IfSetModel private constructor(
     public val combinedId: CombinedId,
     private val _model: UShort,
