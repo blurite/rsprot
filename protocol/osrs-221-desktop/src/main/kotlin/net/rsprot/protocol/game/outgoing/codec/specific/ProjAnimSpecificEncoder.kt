@@ -19,7 +19,7 @@ public class ProjAnimSpecificEncoder : MessageEncoder<ProjAnimSpecific> {
         buffer.p1(message.deltaZ)
         buffer.p1(message.endHeight)
         buffer.p2(message.startTime)
-        buffer.p1(message.startHeight)
+        buffer.p1Alt3(message.startHeight)
         buffer.p3Alt3(message.coordInBuildAreaPacked)
         buffer.p1Alt3(message.deltaX)
         buffer.p2Alt3(message.progress)
