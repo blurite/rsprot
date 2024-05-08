@@ -125,6 +125,18 @@ public class HintArrow(
             tilePosition.id.toUByte(),
         )
 
+        public constructor(
+            x: Int,
+            z: Int,
+            height: Int,
+            tilePosition: Int,
+        ) : this(
+            x.toUShort(),
+            z.toUShort(),
+            height.toUByte(),
+            tilePosition.toUByte(),
+        )
+
         public val x: Int
             get() = _x.toInt()
         public val z: Int
