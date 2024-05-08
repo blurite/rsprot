@@ -38,6 +38,8 @@ public class ReflectionCheckReply(
     public fun decode(request: ReflectionChecker): List<ReflectionCheckResult<*>> {
         try {
             val buffer = result.toJagByteBuf()
+            // Skip the id, it is necessary for CRC verification though.
+            buffer.skipRead(4)
             val results = ArrayList<ReflectionCheckResult<*>>(request.checks.size)
             for (check in request.checks) {
                 val opcode = buffer.g1s()
@@ -105,6 +107,13 @@ public class ReflectionCheckReply(
             -21 -> Throwable::class.java
             else -> throw IllegalArgumentException("Unknown exception opcode: $opcode")
         }
+    }
+
+    override fun toString(): String {
+        return "ReflectionCheckReply(" +
+            "id=$id, " +
+            "result=$result" +
+            ")"
     }
 
     public sealed interface ReflectionCheckResult<T : ReflectionChecker.ReflectionCheck> {

@@ -16,11 +16,13 @@ public class ReflectionCheckReplyDecoder : MessageDecoder<ReflectionCheckReply> 
         buffer: JagByteBuf,
         tools: MessageDecodingTools,
     ): ReflectionCheckReply {
+        val copy = buffer.buffer.copy()
         val id = buffer.g4()
-        val slice = buffer.buffer.retainedSlice()
+        // Mark the buffer as "read" as copy function doesn't do it automatically.
+        buffer.buffer.readerIndex(buffer.buffer.writerIndex())
         return ReflectionCheckReply(
             id,
-            slice,
+            copy,
         )
     }
 }
