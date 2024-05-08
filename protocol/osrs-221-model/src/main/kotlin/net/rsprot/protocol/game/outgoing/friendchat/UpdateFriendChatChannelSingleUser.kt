@@ -12,7 +12,7 @@ import net.rsprot.protocol.message.OutgoingGameMessage
  * Use [AddedFriendChatUser] and [RemovedFriendChatUser]
  * respectively to perform different updates.
  */
-public class UpdateFriendChatChannelSingleUser private constructor(
+public class UpdateFriendChatChannelSingleUser(
     public val user: FriendChatUser,
 ) : OutgoingGameMessage {
     override val category: ServerProtCategory
