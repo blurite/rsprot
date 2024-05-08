@@ -27,12 +27,12 @@ public class IfSetRotateSpeed private constructor(
     public constructor(
         interfaceId: Int,
         componentId: Int,
-        x: Int,
-        y: Int,
+        xSpeed: Int,
+        ySpeed: Int,
     ) : this(
         CombinedId(interfaceId, componentId),
-        x.toUShort(),
-        y.toUShort(),
+        xSpeed.toUShort(),
+        ySpeed.toUShort(),
     )
 
     public val interfaceId: Int

@@ -22,10 +22,10 @@ public class IfSetNpcHeadActive private constructor(
     public constructor(
         interfaceId: Int,
         componentId: Int,
-        npc: Int,
+        index: Int,
     ) : this(
         CombinedId(interfaceId, componentId),
-        npc.toUShort(),
+        index.toUShort(),
     )
 
     public val interfaceId: Int
