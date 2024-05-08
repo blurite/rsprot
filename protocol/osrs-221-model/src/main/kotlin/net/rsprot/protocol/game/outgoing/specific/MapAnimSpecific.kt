@@ -54,6 +54,22 @@ public class MapAnimSpecific private constructor(
         ),
     )
 
+    public constructor(
+        id: Int,
+        delay: Int,
+        height: Int,
+        xInBuildArea: Int,
+        zInBuildArea: Int,
+    ) : this(
+        id.toUShort(),
+        delay.toUShort(),
+        height.toUByte(),
+        CoordInBuildArea(
+            xInBuildArea,
+            zInBuildArea,
+        ),
+    )
+
     public val id: Int
         get() = _id.toInt()
     public val delay: Int

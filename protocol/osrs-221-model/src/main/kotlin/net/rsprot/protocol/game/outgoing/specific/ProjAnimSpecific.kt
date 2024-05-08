@@ -109,6 +109,36 @@ public class ProjAnimSpecific private constructor(
         deltaZ.toByte(),
     )
 
+    public constructor(
+        id: Int,
+        startHeight: Int,
+        endHeight: Int,
+        startTime: Int,
+        endTime: Int,
+        angle: Int,
+        progress: Int,
+        targetIndex: Int,
+        xInBuildArea: Int,
+        zInBuildArea: Int,
+        deltaX: Int,
+        deltaZ: Int,
+    ) : this(
+        id.toUShort(),
+        startHeight.toUByte(),
+        endHeight.toUByte(),
+        startTime.toUShort(),
+        endTime.toUShort(),
+        angle.toUByte(),
+        progress.toUShort(),
+        targetIndex,
+        CoordInBuildArea(
+            xInBuildArea,
+            zInBuildArea,
+        ),
+        deltaX.toByte(),
+        deltaZ.toByte(),
+    )
+
     public val id: Int
         get() = _id.toInt()
     public val startHeight: Int
