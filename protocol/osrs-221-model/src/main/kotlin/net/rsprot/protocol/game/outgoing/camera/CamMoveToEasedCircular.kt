@@ -50,14 +50,14 @@ public class CamMoveToEasedCircular private constructor(
         height: Int,
         duration: Int,
         maintainFixedAltitude: Boolean,
-        function: CameraEaseFunction,
+        function: Int,
     ) : this(
         CoordInBuildArea(centerXInBuildArea, centerZInBuildArea),
         CoordInBuildArea(destinationXInBuildArea, destinationZInBuildArea),
         height.toUShort(),
         duration.toUShort(),
         maintainFixedAltitude,
-        function.id.toUByte(),
+        function.toUByte(),
     )
 
     public val centerXInBuildArea: Int
