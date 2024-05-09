@@ -18,9 +18,9 @@ public class IfCrmViewClickDecoder : MessageDecoder<IfCrmViewClick> {
         val serverTarget = buffer.g4Alt1()
         val sub = buffer.g2()
         val behaviour2 = buffer.g4()
-        val behaviour3 = buffer.g4()
+        val behaviour3 = buffer.g4Alt2()
         val combinedId = buffer.gCombinedIdAlt1()
-        val behaviour1 = buffer.g4()
+        val behaviour1 = buffer.g4Alt2()
         return IfCrmViewClick(
             serverTarget,
             combinedId,
