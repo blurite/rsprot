@@ -190,7 +190,8 @@ public class Js5Client<T : Js5GroupType>(
     ): Boolean {
         return writtenGroupCount >= flushThresholdInGroups ||
             (writtenGroupCount > 0 && writtenByteCount >= flushThresholdInBytes) ||
-            (writtenByteCount > 0 && isEmpty())
+            (writtenByteCount > 0 && isEmpty()) ||
+            !ctx.channel().isWritable
     }
 
     /**
