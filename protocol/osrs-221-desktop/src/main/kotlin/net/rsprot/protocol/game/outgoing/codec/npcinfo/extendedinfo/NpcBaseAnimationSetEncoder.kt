@@ -40,7 +40,7 @@ public class NpcBaseAnimationSetEncoder : PrecomputedExtendedInfoEncoder<BaseAni
             buffer.p2Alt3(extendedInfo.walkAnimRight.toInt())
         }
         if (flag and 0x40 != 0) {
-            buffer.p2(extendedInfo.runAnim.toInt())
+            buffer.p2Alt2(extendedInfo.runAnim.toInt())
         }
         if (flag and 0x80 != 0) {
             buffer.p2Alt2(extendedInfo.runAnimBack.toInt())
