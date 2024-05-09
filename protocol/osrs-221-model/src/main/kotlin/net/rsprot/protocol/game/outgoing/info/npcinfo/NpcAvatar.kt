@@ -122,9 +122,41 @@ public class NpcAvatar internal constructor(
 
     /**
      * Updates the spawn direction of the NPC.
+     *
+     * Table of possible direction values:
+     * ```
+     * | Id |  Direction | Angle |
+     * |:--:|:----------:|:-----:|
+     * |  0 | North-West |  768  |
+     * |  1 |    North   |  1024 |
+     * |  2 | North-East |  1280 |
+     * |  3 |    West    |  512  |
+     * |  4 |    East    |  1536 |
+     * |  5 | South-West |  256  |
+     * |  6 |    South   |   0   |
+     * |  7 | South-East |  1792 |
+     * ```
+     *
+     * @param direction the direction for the NPC to face.
      */
     public fun updateDirection(direction: Int) {
+        require(direction in 0..7) {
+            "Direction must be a value in range of 0..7. " +
+                "See the table in documentation. Value: $direction"
+        }
         this.details.updateDirection(direction)
+    }
+
+    /**
+     * Sets the id of the avatar - any new observers of this NPC will receive the new id.
+     * This should be used in tandem with the transformation extended info block.
+     * @param id the id of the npc to set to - any new observers will see that id instead.
+     */
+    public fun setId(id: Int) {
+        require(id in 0..16383) {
+            "Id must be a value in range of 0..16383. Value: $id"
+        }
+        this.details.id = id
     }
 
     /**
@@ -359,7 +391,6 @@ public class NpcAvatar internal constructor(
     }
 
     override fun postUpdate() {
-        details.lastCoord = details.currentCoord
         details.stepCount = 0
         details.firstStep = -1
         details.secondStep = -1

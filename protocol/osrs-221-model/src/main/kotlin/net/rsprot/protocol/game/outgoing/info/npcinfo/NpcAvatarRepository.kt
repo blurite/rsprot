@@ -106,7 +106,6 @@ internal class NpcAvatarRepository(
             details.index = index
             details.id = id
             details.currentCoord = CoordGrid(level, x, z)
-            details.lastCoord = details.currentCoord
             details.spawnCycle = spawnCycle
             details.direction = direction
             elements[index] = existing
