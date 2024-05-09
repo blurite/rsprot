@@ -17,6 +17,6 @@ public class PlayerTintingEncoder : OnDemandExtendedInfoEncoder<PlayerTintingLis
         buffer.p1Alt2(tinting.hue.toInt())
         buffer.p1(tinting.saturation.toInt())
         buffer.p1(tinting.lightness.toInt())
-        buffer.p1(tinting.weight.toInt())
+        buffer.p1Alt2(tinting.weight.toInt())
     }
 }
