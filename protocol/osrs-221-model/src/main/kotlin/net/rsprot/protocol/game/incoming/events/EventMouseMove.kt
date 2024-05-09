@@ -47,6 +47,15 @@ public class EventMouseMove private constructor(
     override val category: ClientProtCategory
         get() = GameClientProtCategory.CLIENT_EVENT
 
+    override fun toString(): String {
+        return "EventMouseMove(" +
+            "movements=$movements, " +
+            "totalTime=$totalTime, " +
+            "averageTime=$averageTime, " +
+            "remainingTime=$remainingTime" +
+            ")"
+    }
+
     /**
      * A value class that wraps around an array of mouse movements,
      * with the encoding specified by [MousePosChange].
