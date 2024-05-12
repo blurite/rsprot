@@ -21,6 +21,7 @@ public object RSProtFlags {
      * putting the server into production, as these checks
      * end up taking a considerable amount of time.
      */
+    @JvmStatic
     private val development: Boolean =
         getBoolean(
             "development",
@@ -30,6 +31,7 @@ public object RSProtFlags {
     /**
      * Whether to check that obj ids in inventory packets are all positive.
      */
+    @JvmStatic
     public val inventoryObjCheck: Boolean =
         getBoolean(
             "inventoryObjCheck",
@@ -39,22 +41,28 @@ public object RSProtFlags {
     /**
      * Whether to validate extended info block inputs.
      */
+    @JvmStatic
     public val extendedInfoInputVerification: Boolean =
         getBoolean(
             "extendedInfoInputVerification",
             development,
         )
 
+    @JvmStatic
     public val clientscriptVerification: Boolean =
         getBoolean(
             "clientscriptVerification",
             development,
         )
+
+    @JvmStatic
     public val networkLogging: Boolean =
         getBoolean(
             "networkLogging",
             false,
         )
+
+    @JvmStatic
     public val js5Logging: Boolean =
         getBoolean(
             "js5Logging",
