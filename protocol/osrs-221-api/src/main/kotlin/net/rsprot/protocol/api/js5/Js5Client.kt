@@ -1,12 +1,14 @@
 package net.rsprot.protocol.api.js5
 
 import io.netty.channel.ChannelHandlerContext
+import net.rsprot.protocol.api.Js5GroupSizeProvider
 import net.rsprot.protocol.api.js5.Js5GroupProvider.Js5GroupType
 import net.rsprot.protocol.api.js5.util.IntArrayDeque
 import net.rsprot.protocol.channel.ChannelAttributes
 import net.rsprot.protocol.js5.incoming.Js5GroupRequest
 import net.rsprot.protocol.js5.incoming.UrgentRequest
 import net.rsprot.protocol.js5.outgoing.Js5GroupResponse
+import java.util.PriorityQueue
 import kotlin.math.min
 
 /**
@@ -28,7 +30,11 @@ import kotlin.math.min
 public class Js5Client<T : Js5GroupType>(
     public val ctx: ChannelHandlerContext,
 ) {
-    private val urgent = IntArrayDeque(MAX_QUEUE_SIZE)
+    private val urgent =
+        PriorityQueue(
+            MAX_QUEUE_SIZE,
+            Comparator.comparingInt(PriorityRequest::size),
+        )
     private val prefetch = IntArrayDeque(MAX_QUEUE_SIZE)
     private val currentRequest: PartialJs5GroupRequest<T> = PartialJs5GroupRequest()
     public var priority: ClientPriority = ClientPriority.LOW
@@ -79,11 +85,15 @@ public class Js5Client<T : Js5GroupType>(
      * to everyone connected.
      * @param request the request to add to this client
      */
-    public fun push(request: Js5GroupRequest) {
+    public fun push(
+        request: Js5GroupRequest,
+        sizeProvider: Js5GroupSizeProvider,
+    ) {
         val bitpacked = request.bitpacked
         if (request is UrgentRequest) {
             prefetch.remove(bitpacked)
-            urgent.addLast(bitpacked)
+            val size = sizeProvider.getSize(request.archiveId, request.groupId)
+            urgent.offer(PriorityRequest(request.archiveId, request.groupId, size))
         } else {
             prefetch.addLast(bitpacked)
         }
@@ -94,8 +104,9 @@ public class Js5Client<T : Js5GroupType>(
      * @return the bitpacked id of the request, or -1 if the queues are empty.
      */
     private fun pop(): Int {
-        if (urgent.isNotEmpty()) {
-            return urgent.removeFirst()
+        val urgent = urgent.poll()
+        if (urgent != null) {
+            return urgent.bitpacked
         }
         if (prefetch.isNotEmpty()) {
             return prefetch.removeFirst()
@@ -262,5 +273,28 @@ public class Js5Client<T : Js5GroupType>(
          * The maximum number of requests the client can send out per each group at a time.
          */
         private const val MAX_QUEUE_SIZE: Int = 200
+
+        private class PriorityRequest(
+            private val _archive: UByte,
+            private val _group: UShort,
+            val size: Int,
+        ) {
+            constructor(
+                archive: Int,
+                group: Int,
+                size: Int,
+            ) : this(
+                archive.toUByte(),
+                group.toUShort(),
+                size,
+            )
+
+            val archive: Int
+                get() = _archive.toInt()
+            val group: Int
+                get() = _group.toInt()
+            val bitpacked: Int
+                get() = group or (archive shl 16)
+        }
     }
 }

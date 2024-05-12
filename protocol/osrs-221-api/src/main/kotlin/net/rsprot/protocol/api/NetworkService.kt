@@ -97,13 +97,14 @@ public class NetworkService<R, T : Js5GroupType>
         internal val loginHandlers: LoginHandlers,
         public val huffmanCodecProvider: HuffmanCodecProvider,
         public val gameMessageConsumerRepositoryProvider: GameMessageConsumerRepositoryProvider<R>,
+        js5GroupSizeProvider: Js5GroupSizeProvider,
         rsaKeyPair: RsaKeyPair,
         js5Configuration: Js5Configuration,
         js5GroupProvider: Js5GroupProvider<T>,
     ) {
         internal val encoderRepositories: MessageEncoderRepositories = MessageEncoderRepositories()
         internal val messageDecodingTools: MessageDecodingTools = MessageDecodingTools(huffmanCodecProvider)
-        internal val js5Service: Js5Service<T> = Js5Service(js5Configuration, js5GroupProvider)
+        internal val js5Service: Js5Service<T> = Js5Service(js5Configuration, js5GroupProvider, js5GroupSizeProvider)
         private val js5ServiceExecutor = Thread(js5Service)
         private val updateZonePartialEnclosedCacheClientTypeMap:
             ClientTypeMap<UpdateZonePartialEnclosedCache> = initializeUpdateZonePartialEnclosedCacheClientMap()

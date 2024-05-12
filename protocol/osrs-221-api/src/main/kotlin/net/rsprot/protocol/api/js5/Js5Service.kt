@@ -2,6 +2,7 @@ package net.rsprot.protocol.api.js5
 
 import com.github.michaelbull.logging.InlineLogger
 import io.netty.buffer.ByteBuf
+import net.rsprot.protocol.api.Js5GroupSizeProvider
 import net.rsprot.protocol.api.js5.Js5GroupProvider.Js5GroupType
 import net.rsprot.protocol.api.js5.util.UniqueQueue
 import net.rsprot.protocol.api.logging.js5Log
@@ -18,6 +19,7 @@ import kotlin.math.min
 public class Js5Service<T : Js5GroupType>(
     private val configuration: Js5Configuration,
     private val provider: Js5GroupProvider<T>,
+    private val js5GroupSizeProvider: Js5GroupSizeProvider,
 ) : Runnable {
     @Suppress("PLATFORM_CLASS_MAPPED_TO_KOTLIN")
     @PublishedApi
@@ -127,7 +129,7 @@ public class Js5Service<T : Js5GroupType>(
         request: Js5GroupRequest,
     ) {
         synchronized(lock) {
-            client.push(request)
+            client.push(request, js5GroupSizeProvider)
 
             if (client.isReady()) {
                 clients.add(client)

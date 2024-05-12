@@ -194,6 +194,18 @@ public abstract class AbstractNetworkServiceFactory<R, T : Js5GroupProvider.Js5G
     public abstract fun getExceptionHandlers(): ExceptionHandlers<R>
 
     /**
+     * Provides the size of a JS5 group, in order to sort it for JS5 serving.
+     * This fixes a problem found in OldSchool where the client requests a huge
+     * list of urgent requests for animations, all of which are 0.5mb+ in size.
+     * This creates a significant delay in other, smaller, more important groups
+     * being served and makes the entire thing feel very sluggish.
+     * By prioritizing light-weight groups over the heavy hitters, we can
+     * significantly reduce the perceived lag and slowness, while not sabotaging
+     * anything else - they're all urgent requests, with the same exact priorities.
+     */
+    public abstract fun getJs5GroupSizeProvider(): Js5GroupSizeProvider
+
+    /**
      * Gets the handlers for anything related to INetAddresses.
      * The default implementation will keep track of the number of concurrent
      * game connections and JS5 connections separately.
@@ -277,6 +289,7 @@ public abstract class AbstractNetworkServiceFactory<R, T : Js5GroupProvider.Js5G
             getLoginHandlers(),
             huffman,
             getGameMessageConsumerRepositoryProvider(),
+            getJs5GroupSizeProvider(),
             getRsaKeyPair(),
             getJs5Configuration(),
             getJs5GroupProvider(),
