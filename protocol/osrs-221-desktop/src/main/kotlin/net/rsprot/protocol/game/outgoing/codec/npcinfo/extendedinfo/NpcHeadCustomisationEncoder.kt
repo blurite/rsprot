@@ -15,16 +15,23 @@ public class NpcHeadCustomisationEncoder : PrecomputedExtendedInfoEncoder<HeadCu
         huffmanCodecProvider: HuffmanCodecProvider,
         extendedInfo: HeadCustomisation,
     ): JagByteBuf {
-        val capacity = 2 + (3 * (1 + 256 * 2))
+        val customisation = extendedInfo.customisation
+        if (customisation == null) {
+            val buffer =
+                alloc
+                    .buffer(1, 1)
+                    .toJagByteBuf()
+            buffer.pFlag(FLAG_RESET)
+            return buffer
+        }
+        val capacity =
+            3 + (customisation.models.size * 2) +
+                (customisation.recolours.size * 2) +
+                (customisation.retexture.size * 2)
         val buffer =
             alloc
                 .buffer(capacity, capacity)
                 .toJagByteBuf()
-        val customisation = extendedInfo.customisation
-        if (customisation == null) {
-            buffer.pFlag(FLAG_RESET)
-            return buffer
-        }
         var flag = 0
         if (customisation.models.isNotEmpty()) {
             flag = flag or FLAG_REMODEL
