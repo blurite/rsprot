@@ -1,14 +1,15 @@
 package net.rsprot.protocol.api.js5
 
+import com.github.michaelbull.logging.InlineLogger
 import io.netty.channel.ChannelHandlerContext
 import net.rsprot.protocol.api.Js5GroupSizeProvider
 import net.rsprot.protocol.api.js5.Js5GroupProvider.Js5GroupType
 import net.rsprot.protocol.api.js5.util.IntArrayDeque
+import net.rsprot.protocol.api.logging.js5Log
 import net.rsprot.protocol.channel.ChannelAttributes
 import net.rsprot.protocol.js5.incoming.Js5GroupRequest
 import net.rsprot.protocol.js5.incoming.UrgentRequest
 import net.rsprot.protocol.js5.outgoing.Js5GroupResponse
-import java.util.PriorityQueue
 import kotlin.math.min
 
 /**
@@ -30,13 +31,11 @@ import kotlin.math.min
 public class Js5Client<T : Js5GroupType>(
     public val ctx: ChannelHandlerContext,
 ) {
-    private val urgent =
-        PriorityQueue(
-            MAX_QUEUE_SIZE,
-            Comparator.comparingInt(PriorityRequest::size),
-        )
-    private val prefetch = IntArrayDeque(MAX_QUEUE_SIZE)
+    private val urgent: IntArrayDeque = IntArrayDeque(MAX_QUEUE_SIZE)
+    private val prefetch: IntArrayDeque = IntArrayDeque(MAX_QUEUE_SIZE)
+    private val awaitingPrefetch: IntArrayDeque = IntArrayDeque(MAX_QUEUE_SIZE)
     private val currentRequest: PartialJs5GroupRequest<T> = PartialJs5GroupRequest()
+    private var lowPriorityChangeCount: Int = 0
     public var priority: ClientPriority = ClientPriority.LOW
         private set
 
@@ -63,6 +62,9 @@ public class Js5Client<T : Js5GroupType>(
             }
             val archiveId = request ushr 16
             val groupId = request and 0xFFFF
+            js5Log(logger) {
+                "Assigned next request block: $archiveId:$groupId"
+            }
             block = provider.provide(archiveId, groupId)
             currentRequest.set(block)
         }
@@ -85,17 +87,19 @@ public class Js5Client<T : Js5GroupType>(
      * to everyone connected.
      * @param request the request to add to this client
      */
-    public fun push(
-        request: Js5GroupRequest,
-        sizeProvider: Js5GroupSizeProvider,
-    ) {
+    public fun push(request: Js5GroupRequest) {
         val bitpacked = request.bitpacked
         if (request is UrgentRequest) {
             prefetch.remove(bitpacked)
-            val size = sizeProvider.getSize(request.archiveId, request.groupId)
-            urgent.offer(PriorityRequest(request.archiveId, request.groupId, size))
+            awaitingPrefetch.remove(bitpacked)
+            urgent.addLast(bitpacked)
         } else {
-            prefetch.addLast(bitpacked)
+            // If on login screen (NOT pre-login screen), do not throttle prefetch
+            if (lowPriorityChangeCount >= 2 && priority == ClientPriority.LOW) {
+                this.prefetch.addLast(bitpacked)
+            } else {
+                awaitingPrefetch.addLast(bitpacked)
+            }
         }
     }
 
@@ -104,14 +108,67 @@ public class Js5Client<T : Js5GroupType>(
      * @return the bitpacked id of the request, or -1 if the queues are empty.
      */
     private fun pop(): Int {
-        val urgent = urgent.poll()
-        if (urgent != null) {
-            return urgent.bitpacked
+        val urgent = urgent.removeFirstOrDefault(-1)
+        if (urgent != -1) {
+            return urgent
         }
-        if (prefetch.isNotEmpty()) {
-            return prefetch.removeFirst()
+        return prefetch.removeFirstOrDefault(-1)
+    }
+
+    /**
+     * Transfers [threshold] worth of bytes of prefetch requests to be served
+     * to the client.
+     * @param sizeProvider the provider for JS5 group sizes, allowing for proper throttling
+     * @param threshold the threshold at which the loop breaks, stopping any more bytes
+     * being transmitted via prefetch than described here
+     * @return whether any bytes were transferred to be served to the client.
+     */
+    internal fun transferPrefetch(
+        sizeProvider: Js5GroupSizeProvider,
+        threshold: Int,
+    ): Boolean {
+        // Only transfer prefetch over if the connection is effectively idle
+        if (awaitingPrefetch.isEmpty() ||
+            urgent.isNotEmpty() ||
+            prefetch.isNotEmpty() ||
+            !currentRequest.isComplete() ||
+            !ctx.channel().isActive ||
+            !ctx.channel().isWritable
+        ) {
+            return false
         }
-        return -1
+        var transferredBytes = 0
+        while (true) {
+            val next = awaitingPrefetch.removeFirstOrDefault(-1)
+            if (next == -1) {
+                break
+            }
+            val archiveId = next ushr 16
+            val groupId = next and 0xFFFF
+            val size = sizeProvider.getSize(archiveId, groupId)
+            prefetch.addLast(next)
+            transferredBytes += size
+            // Do not clog the pipeline with more than threshold of prefetch data at a time, as this results
+            // in urgent requests being delayed
+            if (size >= threshold) {
+                break
+            }
+        }
+        return transferredBytes > 0
+    }
+
+    /**
+     * Transfers all prefetch requests from the throttled collection over to the
+     * non-throttled one. This is one whenever the client goes on login-screen.
+     */
+    private fun transferAllPrefetch() {
+        while (true) {
+            val next = awaitingPrefetch.removeFirstOrDefault(-1)
+            if (next == -1) {
+                break
+            }
+            prefetch.addLast(next)
+        }
     }
 
     /**
@@ -121,6 +178,14 @@ public class Js5Client<T : Js5GroupType>(
      */
     public fun setLowPriority() {
         this.priority = ClientPriority.LOW
+        // A bit of a state machine, as client sets priority to low when it first connects,
+        // and once more when it reaches the login screen.
+        // Since our goal is to give urgent requests max priority before login screen to speed
+        // up load times, we use a boolean flag to indicate when to stop throttling prefetch requests.
+        // Once the second (or any furthermore) low priority response is received, the throttle is removed.
+        if (++lowPriorityChangeCount >= 2) {
+            transferAllPrefetch()
+        }
     }
 
     /**
@@ -161,7 +226,7 @@ public class Js5Client<T : Js5GroupType>(
      * Checks that the JS5 client isn't full and can accept more requests in both queues.
      */
     public fun isNotFull(): Boolean {
-        return urgent.size < MAX_QUEUE_SIZE && prefetch.size < MAX_QUEUE_SIZE
+        return urgent.size < MAX_QUEUE_SIZE && (prefetch.size + awaitingPrefetch.size) < (MAX_QUEUE_SIZE + 1)
     }
 
     /**
@@ -269,32 +334,11 @@ public class Js5Client<T : Js5GroupType>(
     }
 
     private companion object {
+        private val logger: InlineLogger = InlineLogger()
+
         /**
          * The maximum number of requests the client can send out per each group at a time.
          */
         private const val MAX_QUEUE_SIZE: Int = 200
-
-        private class PriorityRequest(
-            private val _archive: UByte,
-            private val _group: UShort,
-            val size: Int,
-        ) {
-            constructor(
-                archive: Int,
-                group: Int,
-                size: Int,
-            ) : this(
-                archive.toUByte(),
-                group.toUShort(),
-                size,
-            )
-
-            val archive: Int
-                get() = _archive.toInt()
-            val group: Int
-                get() = _group.toInt()
-            val bitpacked: Int
-                get() = group or (archive shl 16)
-        }
     }
 }

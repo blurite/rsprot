@@ -150,6 +150,7 @@ public class NetworkService<R, T : Js5GroupType>
                             }
                         }
                     js5ServiceExecutor.start()
+                    Js5Service.startPrefetching(js5Service)
                 }
             logger.info { "Started in: $time" }
             logger.info { "Bound to ports: ${ports.joinToString(", ")}" }

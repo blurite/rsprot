@@ -8,6 +8,9 @@ import net.rsprot.protocol.api.js5.util.UniqueQueue
 import net.rsprot.protocol.api.logging.js5Log
 import net.rsprot.protocol.js5.incoming.Js5GroupRequest
 import net.rsprot.protocol.js5.outgoing.Js5GroupResponse
+import java.util.concurrent.Executors
+import java.util.concurrent.ScheduledFuture
+import java.util.concurrent.TimeUnit
 import kotlin.math.min
 
 /**
@@ -21,10 +24,15 @@ public class Js5Service<T : Js5GroupType>(
     private val provider: Js5GroupProvider<T>,
     private val js5GroupSizeProvider: Js5GroupSizeProvider,
 ) : Runnable {
+    private val clients = UniqueQueue<Js5Client<T>>()
+    private val connectedClients = ArrayDeque<Js5Client<T>>()
+
     @Suppress("PLATFORM_CLASS_MAPPED_TO_KOTLIN")
     @PublishedApi
     internal val lock: Object = Object()
-    private val clients = UniqueQueue<Js5Client<T>>()
+
+    @Suppress("PLATFORM_CLASS_MAPPED_TO_KOTLIN")
+    private val clientLock: Object = Object()
 
     @Volatile
     private var isRunning: Boolean = true
@@ -72,6 +80,44 @@ public class Js5Service<T : Js5GroupType>(
             }
 
             serveClient(client, response, flush)
+        }
+    }
+
+    private fun prefetch(): Runnable {
+        return Runnable {
+            // Ensure the connectedClients collection doesn't modify during it, as modifications
+            // during iteration may not occur
+            synchronized(clientLock) {
+                for (client in connectedClients) {
+                    // Obtain a short-lived lock to avoid blocking the service for long periods
+                    // This is to ensure we don't run into concurrency issues.
+                    synchronized(lock) {
+                        if (client.transferPrefetch(
+                                js5GroupSizeProvider,
+                                configuration.prefetchTransferThresholdInBytes,
+                            )
+                        ) {
+                            clients.add(client)
+                            lock.notifyAll()
+                            if (client.isNotFull()) {
+                                client.ctx.read()
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    internal fun onClientConnected(client: Js5Client<T>) {
+        synchronized(clientLock) {
+            this.connectedClients += client
+        }
+    }
+
+    internal fun onClientDisconnected(client: Js5Client<T>) {
+        synchronized(clientLock) {
+            this.connectedClients -= client
         }
     }
 
@@ -129,7 +175,7 @@ public class Js5Service<T : Js5GroupType>(
         request: Js5GroupRequest,
     ) {
         synchronized(lock) {
-            client.push(request, js5GroupSizeProvider)
+            client.push(request)
 
             if (client.isReady()) {
                 clients.add(client)
@@ -231,6 +277,15 @@ public class Js5Service<T : Js5GroupType>(
                 output.writeBytes(input, offset, nextBlockLength)
                 offset += nextBlockLength
             }
+        }
+
+        public fun startPrefetching(service: Js5Service<*>): ScheduledFuture<*> {
+            return Executors.newSingleThreadScheduledExecutor().scheduleWithFixedDelay(
+                service.prefetch(),
+                200,
+                200,
+                TimeUnit.MILLISECONDS,
+            )
         }
     }
 }

@@ -7,7 +7,7 @@ package net.rsprot.protocol.api.js5.util
  * @property queue the backing array deque
  * @property set the hash set used to check if something exists in this queue
  */
-public class UniqueQueue<T> {
+public class UniqueQueue<T> : Iterable<T> {
     private val queue = ArrayDeque<T>()
     private val set = HashSet<T>()
 
@@ -45,5 +45,9 @@ public class UniqueQueue<T> {
     public fun clear() {
         queue.clear()
         set.clear()
+    }
+
+    override fun iterator(): Iterator<T> {
+        return queue.iterator()
     }
 }

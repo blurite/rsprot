@@ -18,12 +18,31 @@ package net.rsprot.protocol.api.js5
  * will receive [blockSizeInBytes] * 3 number of bytes. This effectively gives priority to
  * those logged in, as they are in more of a need for data than anyone sitting on the loading
  * screen.
+ * @property prefetchTransferThresholdInBytes the number of bytes to transfer from the 'pending'
+ * prefetch collection over to the 'being served' prefetch collection. This is a soft cap,
+ * meaning it will keep transferring groups until the moment that the sum of all transferred
+ * is equal to or above this value. It is worth noting that this will be uncapped when
+ * the user reaches the login screen, allowing for fast downloads of the cache if one
+ * chooses to sit on the login screen. Before reaching the login screen, however, the
+ * thresholds are still applied.
+ * Below are some numbers of how long it takes to transfer
+ * the entire OldSchool cache over via localhost using various thresholds:
+ * Uncapped - 1 minute, 20 seconds
+ * 16,384 bytes: 3 minutes, 30 seconds
+ * 8,192 bytes: 5 minutes, 52 seconds
+ * 4,096 bytes: 15 minutes, 26 seconds
+ *
+ * It is worth noting that prefetch groups are NOT necessary, one could disable them altogether,
+ * however this would mean the users will experience small loading screens even days into the gameplay.
+ * Sweet spot is having as small delays as possible when the client requires urgent responses, but
+ * still downloading the entire thing as soon as possible. 8,192 bytes appears to be that sweet spot.
  */
 public class Js5Configuration public constructor(
     public val blockSizeInBytes: Int = 512,
     public val flushThresholdInBytes: Int = 10240,
     public val flushThresholdInRequests: Int = 10,
     public val priorityRatio: Int = 3,
+    public val prefetchTransferThresholdInBytes: Int = 8192,
 ) {
     init {
         require(blockSizeInBytes >= 8) {
@@ -44,6 +63,7 @@ public class Js5Configuration public constructor(
         if (flushThresholdInBytes != other.flushThresholdInBytes) return false
         if (flushThresholdInRequests != other.flushThresholdInRequests) return false
         if (priorityRatio != other.priorityRatio) return false
+        if (prefetchTransferThresholdInBytes != other.prefetchTransferThresholdInBytes) return false
 
         return true
     }
@@ -53,6 +73,7 @@ public class Js5Configuration public constructor(
         result = 31 * result + flushThresholdInBytes
         result = 31 * result + flushThresholdInRequests
         result = 31 * result + priorityRatio
+        result = 31 * result + prefetchTransferThresholdInBytes
         return result
     }
 
@@ -61,7 +82,8 @@ public class Js5Configuration public constructor(
             "blockSizeInBytes=$blockSizeInBytes, " +
             "flushThresholdInBytes=$flushThresholdInBytes, " +
             "flushThresholdInRequests=$flushThresholdInRequests, " +
-            "priorityRatio=$priorityRatio" +
+            "priorityRatio=$priorityRatio, " +
+            "prefetchTransferThresholdInBytes=$prefetchTransferThresholdInBytes" +
             ")"
     }
 }

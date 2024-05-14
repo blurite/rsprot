@@ -48,6 +48,11 @@ public class Js5ChannelHandler<T : Js5GroupType>(
     override fun handlerAdded(ctx: ChannelHandlerContext) {
         // Instantiate the client when the handler is added, additionally read from the ctx
         client = Js5Client(ctx.read())
+        service.onClientConnected(client)
+    }
+
+    override fun handlerRemoved(ctx: ChannelHandlerContext) {
+        service.onClientDisconnected(client)
     }
 
     override fun channelRead0(
@@ -69,6 +74,8 @@ public class Js5ChannelHandler<T : Js5GroupType>(
                 }
                 client.setLowPriority()
                 service.readIfNotFull(client)
+                // Furthermore, notify the client as we might've transferred prefetch over
+                service.notifyIfNotEmpty(client)
             }
             PriorityChangeHigh -> {
                 js5Log(logger) {
