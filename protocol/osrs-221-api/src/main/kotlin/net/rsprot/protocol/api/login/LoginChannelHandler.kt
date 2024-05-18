@@ -143,7 +143,7 @@ public class LoginChannelHandler(
                 "INetAddressValidator rejected JS5 connection for channel ${ctx.channel()}"
             }
             ctx
-                .write(LoginResponse.TooManyAttempts)
+                .write(LoginResponse.IPLimit)
                 .addListener(ChannelFutureListener.CLOSE)
             return
         }
