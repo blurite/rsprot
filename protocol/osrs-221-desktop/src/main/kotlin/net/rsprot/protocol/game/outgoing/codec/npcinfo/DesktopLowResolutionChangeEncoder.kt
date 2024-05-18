@@ -16,23 +16,17 @@ public class DesktopLowResolutionChangeEncoder : NpcResolutionChangeEncoder {
         localPlayerCoordGrid: CoordGrid,
         largeDistance: Boolean,
     ) {
+        val numOfBitsUsed = if (largeDistance) 8 else 5
+        val maximumDistanceTransmittableByBits = if (largeDistance) 0xFF else 0x1F
         val deltaX = details.currentCoord.x - localPlayerCoordGrid.x
         val deltaZ = details.currentCoord.z - localPlayerCoordGrid.z
         bitBuffer.pBits(16, details.index)
-        if (largeDistance) {
-            bitBuffer.pBits(8, deltaZ)
-        } else {
-            bitBuffer.pBits(5, deltaZ)
-        }
+        bitBuffer.pBits(numOfBitsUsed, deltaZ and maximumDistanceTransmittableByBits)
         bitBuffer.pBits(1, if (extendedInfo) 1 else 0)
         bitBuffer.pBits(1, if (details.isJumping()) 1 else 0)
         bitBuffer.pBits(3, details.direction)
         bitBuffer.pBits(14, details.id)
-        if (largeDistance) {
-            bitBuffer.pBits(8, deltaX)
-        } else {
-            bitBuffer.pBits(5, deltaX)
-        }
+        bitBuffer.pBits(numOfBitsUsed, deltaX and maximumDistanceTransmittableByBits)
         if (details.spawnCycle != 0) {
             bitBuffer.pBits(1, 1)
             bitBuffer.pBits(32, details.spawnCycle)
