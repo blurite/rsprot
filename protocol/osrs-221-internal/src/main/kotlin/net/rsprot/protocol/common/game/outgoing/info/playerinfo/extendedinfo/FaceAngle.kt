@@ -16,9 +16,29 @@ public class FaceAngle(
      * The value of the angle for this avatar to turn towards.
      */
     public var angle: UShort = UShort.MAX_VALUE
+    public var outOfDate: Boolean = false
+        private set
+
+    public fun markUpToDate() {
+        if (!outOfDate) {
+            return
+        }
+        outOfDate = false
+        releaseBuffers()
+    }
+
+    public fun syncAngle(angle: Int) {
+        this.outOfDate = true
+        this.angle = angle.toUShort()
+    }
 
     override fun clear() {
         releaseBuffers()
         angle = UShort.MAX_VALUE
+        outOfDate = false
+    }
+
+    public companion object {
+        public val DEFAULT_VALUE: UShort = UShort.MAX_VALUE
     }
 }

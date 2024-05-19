@@ -8,6 +8,7 @@ import net.rsprot.compression.provider.HuffmanCodecProvider
 import net.rsprot.protocol.common.RSProtFlags
 import net.rsprot.protocol.common.client.OldSchoolClientType
 import net.rsprot.protocol.common.game.outgoing.info.playerinfo.encoder.PlayerExtendedInfoEncoders
+import net.rsprot.protocol.common.game.outgoing.info.playerinfo.extendedinfo.FaceAngle
 import net.rsprot.protocol.common.game.outgoing.info.playerinfo.extendedinfo.MoveSpeed
 import net.rsprot.protocol.common.game.outgoing.info.playerinfo.extendedinfo.ObjTypeCustomisation
 import net.rsprot.protocol.common.game.outgoing.info.precompute
@@ -1230,6 +1231,11 @@ public class PlayerAvatarExtendedInfo(
         ) {
             flag = flag or FACE_PATHINGENTITY
         }
+        if (this.flags and FACE_ANGLE == 0 &&
+            blocks.faceAngle.angle != FaceAngle.DEFAULT_VALUE
+        ) {
+            flag = flag or FACE_ANGLE
+        }
         return flag
     }
 
@@ -1241,6 +1247,15 @@ public class PlayerAvatarExtendedInfo(
      */
     private fun checkOutOfDate(observer: PlayerAvatarExtendedInfo): Boolean {
         return observer.otherAppearanceChangesCounter[localIndex] != appearanceChangesCounter
+    }
+
+    /**
+     * Silently synchronizes the angle of the avatar, meaning any new observers will see them
+     * at this specific angle.
+     * @param angle the angle to render them under.
+     */
+    public fun syncAngle(angle: Int) {
+        this.blocks.faceAngle.syncAngle(angle)
     }
 
     /**
@@ -1260,7 +1275,8 @@ public class PlayerAvatarExtendedInfo(
         if (flags and SEQUENCE != 0) {
             blocks.sequence.precompute(allocator, huffmanCodec)
         }
-        if (flags and FACE_ANGLE != 0) {
+        if (flags and FACE_ANGLE != 0 || blocks.faceAngle.outOfDate) {
+            blocks.faceAngle.markUpToDate()
             blocks.faceAngle.precompute(allocator, huffmanCodec)
         }
         if (flags and SAY != 0) {
@@ -1339,9 +1355,6 @@ public class PlayerAvatarExtendedInfo(
         if (flags and SEQUENCE != 0) {
             blocks.sequence.clear()
         }
-        if (flags and FACE_ANGLE != 0) {
-            blocks.faceAngle.clear()
-        }
         if (flags and SAY != 0) {
             blocks.say.clear()
         }
@@ -1376,9 +1389,9 @@ public class PlayerAvatarExtendedInfo(
         public const val MOVE_SPEED: Int = 0x2
         public const val FACE_PATHINGENTITY: Int = 0x4
         public const val TINTING: Int = 0x8
+        public const val FACE_ANGLE: Int = 0x10
 
         // "Static" flags, the bit values here are irrelevant
-        public const val FACE_ANGLE: Int = 0x10
         public const val SAY: Int = 0x20
         public const val HITS: Int = 0x40
         public const val SEQUENCE: Int = 0x80
