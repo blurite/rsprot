@@ -471,7 +471,7 @@ public class NpcInfo internal constructor(
             val i = highResolutionNpcIndexCount++
             highResolutionNpcIndices[i] = index.toUShort()
             val observerFlags = avatar.extendedInfo.getLowToHighResChangeExtendedInfoFlags()
-            this.observerExtendedInfoFlags.addFlag(i, observerFlags)
+            this.observerExtendedInfoFlags.addFlag(extendedInfoCount, observerFlags)
             val extendedInfo = (avatar.extendedInfo.flags or observerFlags) != 0
             if (extendedInfo) {
                 extendedInfoIndices[extendedInfoCount++] = index.toUShort()
