@@ -974,6 +974,8 @@ public class NpcAvatarExtendedInfo(
      */
     internal fun precompute() {
         // Hits and tinting do not get precomputed
+
+        precomputeCached()
         if (flags and SEQUENCE != 0) {
             blocks.sequence.precompute(allocator, huffmanCodec)
         }
@@ -995,26 +997,36 @@ public class NpcAvatarExtendedInfo(
         if (flags and TRANSFORMATION != 0) {
             blocks.transformation.precompute(allocator, huffmanCodec)
         }
-        if (flags and FACE_PATHINGENTITY != 0) {
-            blocks.facePathingEntity.precompute(allocator, huffmanCodec)
-        }
-        if (flags and BODY_CUSTOMISATION != 0) {
-            blocks.bodyCustomisation.precompute(allocator, huffmanCodec)
-        }
-        if (flags and HEAD_CUSTOMISATION != 0) {
-            blocks.headCustomisation.precompute(allocator, huffmanCodec)
-        }
-        if (flags and LEVEL_CHANGE != 0) {
-            blocks.combatLevelChange.precompute(allocator, huffmanCodec)
-        }
+    }
+
+    /**
+     * Precomputes the extended info blocks which are cached and potentially transmitted
+     * to any players who newly observe this npc. The full list of extended info blocks
+     * which must be placed in here is seen in [getLowToHighResChangeExtendedInfoFlags].
+     * Every condition there must be among this function, else it is possible to run into
+     * scenarios where a block isn't computed but is required in the future.
+     */
+    internal fun precomputeCached() {
         if (flags and OPS != 0) {
             blocks.visibleOps.precompute(allocator, huffmanCodec)
+        }
+        if (flags and HEADICON_CUSTOMISATION != 0) {
+            blocks.headIconCustomisation.precompute(allocator, huffmanCodec)
         }
         if (flags and NAME_CHANGE != 0) {
             blocks.nameChange.precompute(allocator, huffmanCodec)
         }
-        if (flags and HEADICON_CUSTOMISATION != 0) {
-            blocks.headIconCustomisation.precompute(allocator, huffmanCodec)
+        if (flags and HEAD_CUSTOMISATION != 0) {
+            blocks.headCustomisation.precompute(allocator, huffmanCodec)
+        }
+        if (flags and BODY_CUSTOMISATION != 0) {
+            blocks.bodyCustomisation.precompute(allocator, huffmanCodec)
+        }
+        if (flags and LEVEL_CHANGE != 0) {
+            blocks.combatLevelChange.precompute(allocator, huffmanCodec)
+        }
+        if (flags and FACE_PATHINGENTITY != 0) {
+            blocks.facePathingEntity.precompute(allocator, huffmanCodec)
         }
         if (flags and BAS_CHANGE != 0) {
             blocks.baseAnimationSet.precompute(allocator, huffmanCodec)

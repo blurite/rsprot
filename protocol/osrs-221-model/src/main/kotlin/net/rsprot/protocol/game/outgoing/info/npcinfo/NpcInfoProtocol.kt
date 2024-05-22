@@ -134,9 +134,15 @@ public class NpcInfoProtocol(
     private fun prepareExtendedInfo() {
         for (i in 0..<NpcAvatarRepository.AVATAR_CAPACITY) {
             val avatar = avatarRepository.getOrNull(i) ?: continue
-            if (!avatar.hasObservers()) continue
             try {
-                avatar.extendedInfo.precompute()
+                // If there are no observers, only pre-compute the extended info blocks
+                // which get cached and could be transmitted in the future via
+                // low -> high resolution changes
+                if (!avatar.hasObservers()) {
+                    avatar.extendedInfo.precomputeCached()
+                } else {
+                    avatar.extendedInfo.precompute()
+                }
             } catch (e: Exception) {
                 exceptionHandler.exceptionCaught(i, e)
             } catch (t: Throwable) {
