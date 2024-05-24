@@ -244,6 +244,10 @@ public class PlayerInfo internal constructor(
                 lowResolutionIndices[lowResolutionCount++] = i.toShort()
             }
         }
+        // Sync the coordinate delta here!
+        // Meaning if a player info is sent afterwards, it will not re-send the delta
+        // which often results in the coordinate being 2x'd at the client
+        avatar.postUpdate()
     }
 
     /**
