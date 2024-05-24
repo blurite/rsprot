@@ -20,7 +20,7 @@ public class NpcBaseAnimationSetEncoder : PrecomputedExtendedInfoEncoder<BaseAni
             alloc
                 .buffer(capacity, capacity)
                 .toJagByteBuf()
-        buffer.p4Alt3(flag)
+        buffer.p4Alt1(flag)
         if (flag and 0x1 != 0) {
             buffer.p2(extendedInfo.turnLeftAnim.toInt())
         }
