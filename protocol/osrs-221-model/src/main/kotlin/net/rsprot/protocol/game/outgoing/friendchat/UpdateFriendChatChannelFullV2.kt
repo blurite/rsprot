@@ -2,7 +2,7 @@ package net.rsprot.protocol.game.outgoing.friendchat
 
 import net.rsprot.compression.Base37
 import net.rsprot.protocol.ServerProtCategory
-import net.rsprot.protocol.game.incoming.GameServerProtCategory
+import net.rsprot.protocol.game.outgoing.GameServerProtCategory
 import net.rsprot.protocol.message.OutgoingGameMessage
 
 /**

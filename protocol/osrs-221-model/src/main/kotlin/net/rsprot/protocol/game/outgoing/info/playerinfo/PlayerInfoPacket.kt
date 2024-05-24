@@ -3,7 +3,7 @@ package net.rsprot.protocol.game.outgoing.info.playerinfo
 import io.netty.buffer.ByteBuf
 import io.netty.buffer.DefaultByteBufHolder
 import net.rsprot.protocol.ServerProtCategory
-import net.rsprot.protocol.game.incoming.GameServerProtCategory
+import net.rsprot.protocol.game.outgoing.GameServerProtCategory
 import net.rsprot.protocol.message.OutgoingGameMessage
 
 /**

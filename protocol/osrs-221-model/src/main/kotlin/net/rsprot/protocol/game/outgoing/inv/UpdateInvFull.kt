@@ -5,7 +5,7 @@ import net.rsprot.protocol.common.RSProtFlags
 import net.rsprot.protocol.common.game.outgoing.inv.InventoryObject
 import net.rsprot.protocol.common.game.outgoing.inv.internal.Inventory
 import net.rsprot.protocol.common.game.outgoing.inv.internal.InventoryPool
-import net.rsprot.protocol.game.incoming.GameServerProtCategory
+import net.rsprot.protocol.game.outgoing.GameServerProtCategory
 import net.rsprot.protocol.message.OutgoingGameMessage
 import net.rsprot.protocol.util.CombinedId
 

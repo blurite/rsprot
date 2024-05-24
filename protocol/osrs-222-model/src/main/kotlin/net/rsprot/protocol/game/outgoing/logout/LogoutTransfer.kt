@@ -1,7 +1,7 @@
 package net.rsprot.protocol.game.outgoing.logout
 
 import net.rsprot.protocol.ServerProtCategory
-import net.rsprot.protocol.game.incoming.GameServerProtCategory
+import net.rsprot.protocol.game.outgoing.GameServerProtCategory
 import net.rsprot.protocol.message.OutgoingGameMessage
 
 /**

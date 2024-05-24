@@ -2,7 +2,7 @@ package net.rsprot.protocol.game.outgoing.zone.header
 
 import io.netty.buffer.ByteBuf
 import net.rsprot.protocol.ServerProtCategory
-import net.rsprot.protocol.game.incoming.GameServerProtCategory
+import net.rsprot.protocol.game.outgoing.GameServerProtCategory
 import net.rsprot.protocol.message.OutgoingGameMessage
 
 /**
