@@ -2,7 +2,6 @@ package net.rsprot.protocol.game.outgoing.codec.npcinfo.extendedinfo
 
 import io.netty.buffer.ByteBufAllocator
 import net.rsprot.buffer.JagByteBuf
-import net.rsprot.buffer.extensions.p1Alt2
 import net.rsprot.buffer.extensions.toJagByteBuf
 import net.rsprot.compression.provider.HuffmanCodecProvider
 import net.rsprot.protocol.common.game.outgoing.info.encoder.PrecomputedExtendedInfoEncoder
@@ -46,7 +45,7 @@ public class NpcHeadCustomisationEncoder : PrecomputedExtendedInfoEncoder<HeadCu
             flag = flag or FLAG_MIRROR_LOCAL_PLAYER
         }
         buffer.pFlag(flag)
-        buffer.p1Alt2(customisation.models.size)
+        buffer.p1Alt1(customisation.models.size)
         if (flag and FLAG_REMODEL != 0) {
             for (model in customisation.models) {
                 buffer.p2Alt2(model)
@@ -54,7 +53,7 @@ public class NpcHeadCustomisationEncoder : PrecomputedExtendedInfoEncoder<HeadCu
         }
         if (flag and FLAG_RECOLOUR != 0) {
             for (recol in customisation.recolours) {
-                buffer.p2Alt2(recol)
+                buffer.p2Alt3(recol)
             }
         }
         if (flag and FLAG_RETEXTURE != 0) {
@@ -63,13 +62,13 @@ public class NpcHeadCustomisationEncoder : PrecomputedExtendedInfoEncoder<HeadCu
             }
         }
         if (flag and FLAG_MIRROR_LOCAL_PLAYER != 0) {
-            buffer.p1Alt1(if (customisation.mirror == true) 1 else 0)
+            buffer.p1(if (customisation.mirror == true) 1 else 0)
         }
         return buffer
     }
 
     private fun JagByteBuf.pFlag(value: Int) {
-        buffer.p1Alt2(value)
+        p1Alt2(value)
     }
 
     private companion object {

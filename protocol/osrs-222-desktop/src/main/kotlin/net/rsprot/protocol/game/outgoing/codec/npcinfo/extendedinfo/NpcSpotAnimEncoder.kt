@@ -21,13 +21,13 @@ public class NpcSpotAnimEncoder : PrecomputedExtendedInfoEncoder<SpotAnimList> {
             alloc
                 .buffer(capacity, capacity)
                 .toJagByteBuf()
-        buffer.p1Alt1(count)
+        buffer.p1Alt3(count)
         val spotanims = extendedInfo.spotanims
         var slot = changelist.nextSetBit(0)
         while (slot != -1) {
             val spotanim = SpotAnim(spotanims[slot])
-            buffer.p1Alt2(slot)
-            buffer.p2Alt3(spotanim.id)
+            buffer.p1Alt3(slot)
+            buffer.p2Alt1(spotanim.id)
             buffer.p4(spotanim.delay or (spotanim.height shl 16))
             slot = changelist.nextSetBit(slot + 1)
         }

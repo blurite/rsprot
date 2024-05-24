@@ -31,31 +31,31 @@ public class NpcBaseAnimationSetEncoder : PrecomputedExtendedInfoEncoder<BaseAni
             buffer.p2(extendedInfo.walkAnim.toInt())
         }
         if (flag and 0x8 != 0) {
-            buffer.p2(extendedInfo.walkAnimBack.toInt())
+            buffer.p2Alt2(extendedInfo.walkAnimBack.toInt())
         }
         if (flag and 0x10 != 0) {
-            buffer.p2Alt1(extendedInfo.walkAnimLeft.toInt())
+            buffer.p2Alt3(extendedInfo.walkAnimLeft.toInt())
         }
         if (flag and 0x20 != 0) {
-            buffer.p2Alt3(extendedInfo.walkAnimRight.toInt())
+            buffer.p2Alt1(extendedInfo.walkAnimRight.toInt())
         }
         if (flag and 0x40 != 0) {
-            buffer.p2Alt2(extendedInfo.runAnim.toInt())
+            buffer.p2Alt1(extendedInfo.runAnim.toInt())
         }
         if (flag and 0x80 != 0) {
-            buffer.p2Alt2(extendedInfo.runAnimBack.toInt())
+            buffer.p2Alt1(extendedInfo.runAnimBack.toInt())
         }
         if (flag and 0x100 != 0) {
-            buffer.p2Alt2(extendedInfo.runAnimLeft.toInt())
+            buffer.p2Alt1(extendedInfo.runAnimLeft.toInt())
         }
         if (flag and 0x200 != 0) {
-            buffer.p2Alt3(extendedInfo.runAnimRight.toInt())
+            buffer.p2Alt2(extendedInfo.runAnimRight.toInt())
         }
         if (flag and 0x400 != 0) {
-            buffer.p2Alt2(extendedInfo.crawlAnim.toInt())
+            buffer.p2Alt3(extendedInfo.crawlAnim.toInt())
         }
         if (flag and 0x800 != 0) {
-            buffer.p2Alt3(extendedInfo.crawlAnimBack.toInt())
+            buffer.p2Alt1(extendedInfo.crawlAnimBack.toInt())
         }
         if (flag and 0x1000 != 0) {
             buffer.p2Alt1(extendedInfo.crawlAnimLeft.toInt())
@@ -64,7 +64,7 @@ public class NpcBaseAnimationSetEncoder : PrecomputedExtendedInfoEncoder<BaseAni
             buffer.p2Alt3(extendedInfo.crawlAnimRight.toInt())
         }
         if (flag and 0x4000 != 0) {
-            buffer.p2(extendedInfo.readyAnim.toInt())
+            buffer.p2Alt2(extendedInfo.readyAnim.toInt())
         }
         return buffer
     }
