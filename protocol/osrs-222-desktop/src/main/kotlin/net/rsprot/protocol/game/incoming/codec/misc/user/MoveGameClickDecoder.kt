@@ -14,9 +14,9 @@ public class MoveGameClickDecoder : MessageDecoder<MoveGameClick> {
         buffer: JagByteBuf,
         tools: MessageDecodingTools,
     ): MoveGameClick {
-        val x = buffer.g2()
+        val z = buffer.g2Alt2()
+        val x = buffer.g2Alt3()
         val keyCombination = buffer.g1()
-        val z = buffer.g2Alt1()
         return MoveGameClick(
             x,
             z,

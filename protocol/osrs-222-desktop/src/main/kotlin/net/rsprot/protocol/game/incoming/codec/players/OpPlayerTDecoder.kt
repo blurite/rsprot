@@ -6,7 +6,7 @@ import net.rsprot.protocol.game.incoming.players.OpPlayerT
 import net.rsprot.protocol.game.incoming.prot.GameClientProt
 import net.rsprot.protocol.message.codec.MessageDecoder
 import net.rsprot.protocol.tools.MessageDecodingTools
-import net.rsprot.protocol.util.gCombinedId
+import net.rsprot.protocol.util.gCombinedIdAlt3
 
 public class OpPlayerTDecoder : MessageDecoder<OpPlayerT> {
     override val prot: ClientProt = GameClientProt.OPPLAYERT
@@ -15,11 +15,11 @@ public class OpPlayerTDecoder : MessageDecoder<OpPlayerT> {
         buffer: JagByteBuf,
         tools: MessageDecodingTools,
     ): OpPlayerT {
-        val combinedId = buffer.gCombinedId()
-        val controlKey = buffer.g1() == 1
-        val selectedObj = buffer.g2()
-        val selectedSub = buffer.g2()
-        val index = buffer.g2Alt1()
+        val controlKey = buffer.g1Alt1() == 1
+        val index = buffer.g2()
+        val combinedId = buffer.gCombinedIdAlt3()
+        val selectedSub = buffer.g2Alt3()
+        val selectedObj = buffer.g2Alt1()
         return OpPlayerT(
             index,
             controlKey,

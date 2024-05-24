@@ -14,8 +14,8 @@ public class EventCameraPositionDecoder : MessageDecoder<EventCameraPosition> {
         buffer: JagByteBuf,
         tools: MessageDecodingTools,
     ): EventCameraPosition {
-        val angleX = buffer.g2Alt1()
-        val angleY = buffer.g2Alt1()
+        val angleX = buffer.g2Alt3()
+        val angleY = buffer.g2Alt2()
         return EventCameraPosition(
             angleX,
             angleY,

@@ -14,10 +14,10 @@ public class TeleportDecoder : MessageDecoder<Teleport> {
         buffer: JagByteBuf,
         tools: MessageDecodingTools,
     ): Teleport {
-        val oculusSyncValue = buffer.g4Alt2()
-        val x = buffer.g2Alt1()
-        val level = buffer.g1Alt1()
-        val z = buffer.g2Alt1()
+        val level = buffer.g1Alt2()
+        val z = buffer.g2Alt2()
+        val oculusSyncValue = buffer.g4Alt3()
+        val x = buffer.g2()
         return Teleport(
             oculusSyncValue,
             x,

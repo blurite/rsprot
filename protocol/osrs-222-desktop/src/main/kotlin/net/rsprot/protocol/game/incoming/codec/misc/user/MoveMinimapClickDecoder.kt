@@ -15,9 +15,9 @@ public class MoveMinimapClickDecoder : MessageDecoder<MoveMinimapClick> {
         tools: MessageDecodingTools,
     ): MoveMinimapClick {
         // The x, z and keyCombination get scrambled between revisions
-        val x = buffer.g2()
+        val z = buffer.g2Alt2()
+        val x = buffer.g2Alt3()
         val keyCombination = buffer.g1()
-        val z = buffer.g2Alt1()
 
         // The arguments below are consistent across revisions
         val minimapWidth = buffer.g1()

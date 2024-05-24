@@ -6,7 +6,7 @@ import net.rsprot.protocol.game.incoming.prot.GameClientProt
 import net.rsprot.protocol.game.incoming.resumed.ResumePauseButton
 import net.rsprot.protocol.message.codec.MessageDecoder
 import net.rsprot.protocol.tools.MessageDecodingTools
-import net.rsprot.protocol.util.gCombinedId
+import net.rsprot.protocol.util.gCombinedIdAlt3
 
 public class ResumePauseButtonDecoder : MessageDecoder<ResumePauseButton> {
     override val prot: ClientProt = GameClientProt.RESUME_PAUSEBUTTON
@@ -15,7 +15,7 @@ public class ResumePauseButtonDecoder : MessageDecoder<ResumePauseButton> {
         buffer: JagByteBuf,
         tools: MessageDecodingTools,
     ): ResumePauseButton {
-        val combinedId = buffer.gCombinedId()
+        val combinedId = buffer.gCombinedIdAlt3()
         val sub = buffer.g2Alt3()
         return ResumePauseButton(
             combinedId,

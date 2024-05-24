@@ -14,8 +14,8 @@ public class OpPlayer2Decoder : MessageDecoder<OpPlayer> {
         buffer: JagByteBuf,
         tools: MessageDecodingTools,
     ): OpPlayer {
-        val controlKey = buffer.g1Alt3() == 1
-        val index = buffer.g2Alt2()
+        val controlKey = buffer.g2Alt1() == 1
+        val index = buffer.g1Alt2()
         return OpPlayer(
             index,
             controlKey,

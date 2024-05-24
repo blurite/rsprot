@@ -16,8 +16,8 @@ public class BugReportDecoder : MessageDecoder<BugReport> {
         buffer: JagByteBuf,
         tools: MessageDecodingTools,
     ): BugReport {
-        val type = buffer.g1()
         val description = buffer.gjstr()
+        val type = buffer.g1Alt3()
         val instructions = buffer.gjstr()
         check(description.length <= 500) {
             "Bug report description length cannot exceed 500 characters."

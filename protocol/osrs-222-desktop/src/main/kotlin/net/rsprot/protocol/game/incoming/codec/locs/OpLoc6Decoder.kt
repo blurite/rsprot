@@ -14,7 +14,7 @@ public class OpLoc6Decoder : MessageDecoder<OpLoc6> {
         buffer: JagByteBuf,
         tools: MessageDecodingTools,
     ): OpLoc6 {
-        val id = buffer.g2Alt2()
+        val id = buffer.g2Alt1()
         return OpLoc6(id)
     }
 }
