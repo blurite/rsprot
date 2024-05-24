@@ -3,7 +3,7 @@ package net.rsprot.protocol.game.outgoing.codec.playerinfo.extendedinfo
 import io.netty.buffer.ByteBufAllocator
 import net.rsprot.buffer.JagByteBuf
 import net.rsprot.buffer.extensions.p1Alt2
-import net.rsprot.buffer.extensions.pdataAlt2
+import net.rsprot.buffer.extensions.pdataAlt3
 import net.rsprot.buffer.extensions.toJagByteBuf
 import net.rsprot.compression.provider.HuffmanCodecProvider
 import net.rsprot.protocol.common.game.outgoing.info.encoder.PrecomputedExtendedInfoEncoder
@@ -42,7 +42,7 @@ public class PlayerAppearanceEncoder : PrecomputedExtendedInfoEncoder<Appearance
         val buffer = alloc.buffer(capacity, capacity)
         buffer.p1Alt2(capacity - 1)
         try {
-            buffer.pdataAlt2(intermediate.buffer)
+            buffer.pdataAlt3(intermediate.buffer)
         } finally {
             intermediate.buffer.release()
         }

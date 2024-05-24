@@ -55,14 +55,14 @@ class ByteBufArrayTest {
                 .toByteArray()
         val buffer = wrappedBuffer(data)
         val output = ByteArray(testData.size)
-        buffer.gdataAlt2(output)
+        buffer.gdataAlt3(output)
         assertContentEquals(testData, output)
     }
 
     @Test
     fun `test pdata alt2`() {
         val buffer = buffer()
-        buffer.pdataAlt2(testData)
+        buffer.pdataAlt3(testData)
         val expected =
             testData
                 .reversedArray()

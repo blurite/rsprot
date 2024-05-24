@@ -696,7 +696,7 @@ public fun ByteBuf.pdataAlt1(
     return this
 }
 
-public fun ByteBuf.gdataAlt2(
+public fun ByteBuf.gdataAlt3(
     dest: ByteArray,
     offset: Int = 0,
     length: Int = dest.size,
@@ -706,7 +706,7 @@ public fun ByteBuf.gdataAlt2(
     }
 }
 
-public fun ByteBuf.gdataAlt2(
+public fun ByteBuf.gdataAlt3(
     dest: ByteBuf,
     offset: Int = readerIndex(),
     length: Int = readableBytes(),
@@ -716,7 +716,7 @@ public fun ByteBuf.gdataAlt2(
     }
 }
 
-public fun ByteBuf.pdataAlt2(
+public fun ByteBuf.pdataAlt3(
     data: ByteArray,
     start: Int = 0,
     end: Int = data.size,
@@ -727,7 +727,7 @@ public fun ByteBuf.pdataAlt2(
     return this
 }
 
-public fun ByteBuf.pdataAlt2(
+public fun ByteBuf.pdataAlt3(
     data: ByteBuf,
     start: Int = data.readerIndex(),
     length: Int = data.readableBytes(),
