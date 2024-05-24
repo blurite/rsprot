@@ -15,7 +15,7 @@ public class IfSetAnimEncoder : MessageEncoder<IfSetAnim> {
         buffer: JagByteBuf,
         message: IfSetAnim,
     ) {
-        buffer.p2Alt1(message.anim)
-        buffer.p4Alt1(message.combinedId.combinedId)
+        buffer.p4Alt2(message.combinedId.combinedId)
+        buffer.p2Alt3(message.anim)
     }
 }

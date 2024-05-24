@@ -15,8 +15,8 @@ public class IfSetPlayerModelBaseColourEncoder : MessageEncoder<IfSetPlayerModel
         buffer: JagByteBuf,
         message: IfSetPlayerModelBaseColour,
     ) {
-        buffer.p4(message.combinedId.combinedId)
+        buffer.p1Alt3(message.index)
+        buffer.p4Alt2(message.combinedId.combinedId)
         buffer.p1Alt2(message.colour)
-        buffer.p1Alt2(message.index)
     }
 }

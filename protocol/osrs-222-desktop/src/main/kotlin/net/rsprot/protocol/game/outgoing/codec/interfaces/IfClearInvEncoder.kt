@@ -15,6 +15,6 @@ public class IfClearInvEncoder : MessageEncoder<IfClearInv> {
         buffer: JagByteBuf,
         message: IfClearInv,
     ) {
-        buffer.p4Alt1(message.combinedId.combinedId)
+        buffer.p4Alt3(message.combinedId.combinedId)
     }
 }

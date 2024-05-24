@@ -15,8 +15,8 @@ public class IfOpenSubEncoder : MessageEncoder<IfOpenSub> {
         buffer: JagByteBuf,
         message: IfOpenSub,
     ) {
-        buffer.p1Alt3(message.type)
-        buffer.p2(message.interfaceId)
-        buffer.p4Alt1(message.destinationCombinedId.combinedId)
+        buffer.p1Alt2(message.type)
+        buffer.p2Alt2(message.interfaceId)
+        buffer.p4Alt2(message.destinationCombinedId.combinedId)
     }
 }

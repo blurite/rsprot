@@ -16,7 +16,7 @@ public class NpcAnimSpecificEncoder : MessageEncoder<NpcAnimSpecific> {
         message: NpcAnimSpecific,
     ) {
         buffer.p2(message.index)
+        buffer.p1(message.delay)
         buffer.p2Alt2(message.id)
-        buffer.p1Alt1(message.delay)
     }
 }

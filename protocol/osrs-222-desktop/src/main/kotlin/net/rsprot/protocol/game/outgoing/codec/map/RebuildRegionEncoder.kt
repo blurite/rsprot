@@ -17,9 +17,9 @@ public class RebuildRegionEncoder : MessageEncoder<RebuildRegion> {
         buffer: JagByteBuf,
         message: RebuildRegion,
     ) {
-        buffer.p2(message.zoneX)
-        buffer.p2Alt2(message.zoneZ)
-        buffer.p1Alt2(if (message.reload) 1 else 0)
+        buffer.p2Alt2(message.zoneX)
+        buffer.p1Alt3(if (message.reload) 1 else 0)
+        buffer.p2Alt1(message.zoneZ)
 
         // Xtea count, temporary value
         val marker = buffer.writerIndex()

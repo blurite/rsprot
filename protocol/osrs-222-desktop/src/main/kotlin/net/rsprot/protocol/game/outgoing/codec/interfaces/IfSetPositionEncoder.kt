@@ -15,8 +15,8 @@ public class IfSetPositionEncoder : MessageEncoder<IfSetPosition> {
         buffer: JagByteBuf,
         message: IfSetPosition,
     ) {
-        buffer.p2(message.y)
-        buffer.p4(message.combinedId.combinedId)
-        buffer.p2Alt1(message.x)
+        buffer.p4Alt2(message.combinedId.combinedId)
+        buffer.p2(message.x)
+        buffer.p2Alt2(message.y)
     }
 }

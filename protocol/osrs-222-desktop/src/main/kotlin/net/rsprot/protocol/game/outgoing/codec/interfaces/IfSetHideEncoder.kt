@@ -15,7 +15,7 @@ public class IfSetHideEncoder : MessageEncoder<IfSetHide> {
         buffer: JagByteBuf,
         message: IfSetHide,
     ) {
-        buffer.p4Alt1(message.combinedId.combinedId)
-        buffer.p1(if (message.hidden) 1 else 0)
+        buffer.p1Alt2(if (message.hidden) 1 else 0)
+        buffer.p4(message.combinedId.combinedId)
     }
 }
