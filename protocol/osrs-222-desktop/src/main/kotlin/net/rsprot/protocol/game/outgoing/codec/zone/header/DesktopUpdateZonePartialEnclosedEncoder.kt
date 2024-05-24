@@ -117,17 +117,17 @@ public class DesktopUpdateZonePartialEnclosedEncoder : MessageEncoder<UpdateZone
             private val protId: Int,
             val encoder: ZoneProtEncoder<*>,
         ) {
-            LOC_DEL(OldSchoolZoneProt.LOC_DEL, LocDelEncoder()),
             OBJ_DEL(OldSchoolZoneProt.OBJ_DEL, ObjDelEncoder()),
-            LOC_ANIM(OldSchoolZoneProt.LOC_ANIM, LocAnimEncoder()),
-            LOC_MERGE(OldSchoolZoneProt.LOC_MERGE, LocMergeEncoder()),
-            OBJ_ADD(OldSchoolZoneProt.OBJ_ADD, ObjAddEncoder()),
-            MAP_ANIM(OldSchoolZoneProt.MAP_ANIM, MapAnimEncoder()),
-            OBJ_COUNT(OldSchoolZoneProt.OBJ_COUNT, ObjCountEncoder()),
-            OBJ_OPFILTER(OldSchoolZoneProt.OBJ_OPFILTER, ObjOpFilterEncoder()),
-            MAP_PROJANIM(OldSchoolZoneProt.MAP_PROJANIM, MapProjAnimEncoder()),
-            SOUND_AREA(OldSchoolZoneProt.SOUND_AREA, SoundAreaEncoder()),
             LOC_ADD_CHANGE(OldSchoolZoneProt.LOC_ADD_CHANGE, LocAddChangeEncoder()),
+            OBJ_ADD(OldSchoolZoneProt.OBJ_ADD, ObjAddEncoder()),
+            LOC_ANIM(OldSchoolZoneProt.LOC_ANIM, LocAnimEncoder()),
+            MAP_PROJANIM(OldSchoolZoneProt.MAP_PROJANIM, MapProjAnimEncoder()),
+            LOC_DEL(OldSchoolZoneProt.LOC_DEL, LocDelEncoder()),
+            OBJ_OPFILTER(OldSchoolZoneProt.OBJ_OPFILTER, ObjOpFilterEncoder()),
+            SOUND_AREA(OldSchoolZoneProt.SOUND_AREA, SoundAreaEncoder()),
+            OBJ_COUNT(OldSchoolZoneProt.OBJ_COUNT, ObjCountEncoder()),
+            MAP_ANIM(OldSchoolZoneProt.MAP_ANIM, MapAnimEncoder()),
+            LOC_MERGE(OldSchoolZoneProt.LOC_MERGE, LocMergeEncoder()),
             ;
 
             companion object {
