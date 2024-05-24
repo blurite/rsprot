@@ -85,6 +85,7 @@ import net.rsprot.protocol.game.outgoing.codec.misc.player.UpdateStockMarketSlot
 import net.rsprot.protocol.game.outgoing.codec.misc.player.UpdateTradingPostEncoder
 import net.rsprot.protocol.game.outgoing.codec.npcinfo.NpcInfoLargeEncoder
 import net.rsprot.protocol.game.outgoing.codec.npcinfo.NpcInfoSmallEncoder
+import net.rsprot.protocol.game.outgoing.codec.npcinfo.SetNpcUpdateOriginEncoder
 import net.rsprot.protocol.game.outgoing.codec.playerinfo.PlayerInfoEncoder
 import net.rsprot.protocol.game.outgoing.codec.social.FriendListLoadedEncoder
 import net.rsprot.protocol.game.outgoing.codec.social.MessagePrivateEchoEncoder
@@ -198,6 +199,7 @@ public object DesktopGameMessageEncoderRepository {
                 bind(PlayerInfoEncoder())
                 bind(NpcInfoSmallEncoder())
                 bind(NpcInfoLargeEncoder())
+                bind(SetNpcUpdateOriginEncoder())
 
                 bindWithAlts(RebuildNormalEncoder(), RebuildLogin::class.java, RebuildNormal::class.java)
                 bind(RebuildRegionEncoder())
