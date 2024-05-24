@@ -182,7 +182,7 @@ class PlayerInfoClient {
 
     private fun decodeExtendedInfoBlocks(
         buffer: JagByteBuf,
-        index: Int,
+        @Suppress("UNUSED_PARAMETER") index: Int,
         player: Player,
         flag: Int,
     ) {
