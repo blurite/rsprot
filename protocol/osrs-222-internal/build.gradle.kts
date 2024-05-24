@@ -7,13 +7,13 @@ dependencies {
     implementation(projects.buffer)
     implementation(projects.compression)
     implementation(projects.protocol)
-    implementation(projects.protocol.osrs221Common)
+    implementation(projects.protocol.osrs222Common)
 }
 
 mavenPublishing {
     pom {
-        name = "RsProt OSRS 221 Internal"
-        description = "The internal module for revision 221 OldSchool RuneScape networking, " +
+        name = "RsProt OSRS 222 Internal"
+        description = "The internal module for revision 222 OldSchool RuneScape networking, " +
             "offering internal hidden implementations behind the library."
     }
 }

@@ -11,9 +11,9 @@ dependencies {
     implementation(projects.compression)
     implementation(projects.crypto)
     implementation(projects.protocol)
-    implementation(projects.protocol.osrs221Model)
-    implementation(projects.protocol.osrs221Internal)
-    implementation(projects.protocol.osrs221Common)
+    implementation(projects.protocol.osrs222Model)
+    implementation(projects.protocol.osrs222Internal)
+    implementation(projects.protocol.osrs222Common)
 }
 
 allOpen {
@@ -52,8 +52,8 @@ benchmark {
 
 mavenPublishing {
     pom {
-        name = "RsProt OSRS 221 Desktop"
-        description = "The desktop module for revision 221 OldSchool RuneScape networking, " +
+        name = "RsProt OSRS 222 Desktop"
+        description = "The desktop module for revision 222 OldSchool RuneScape networking, " +
             "offering encoders and decoders for all packets."
     }
 }
