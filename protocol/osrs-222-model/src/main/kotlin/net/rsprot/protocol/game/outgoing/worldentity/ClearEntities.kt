@@ -1,4 +1,4 @@
-package net.rsprot.protocol.game.outgoing.info.entityinfo
+package net.rsprot.protocol.game.outgoing.worldentity
 
 import net.rsprot.protocol.ServerProtCategory
 import net.rsprot.protocol.game.outgoing.GameServerProtCategory
