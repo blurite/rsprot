@@ -83,6 +83,9 @@ public enum class GameServerProt(
     NPC_INFO_LARGE(GameServerProtId.NPC_INFO_LARGE, Prot.VAR_SHORT),
     SET_NPC_UPDATE_ORIGIN(GameServerProtId.SET_NPC_UPDATE_ORIGIN, 2),
 
+    // World entity packets
+    CLEAR_ENTITIES(GameServerProtId.CLEAR_ENTITIES, 0),
+
     // Map packets
     REBUILD_NORMAL(GameServerProtId.REBUILD_NORMAL, Prot.VAR_SHORT),
     REBUILD_REGION(GameServerProtId.REBUILD_REGION, Prot.VAR_SHORT),
