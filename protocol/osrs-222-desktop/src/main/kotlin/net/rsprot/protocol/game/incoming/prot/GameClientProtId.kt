@@ -10,7 +10,7 @@ internal object GameClientProtId {
     const val IF_BUTTON2 = 6
     const val FRIENDLIST_ADD = 7
     const val MOVE_MINIMAPCLICK = 8
-    const val HISCORE_REQUEST = 9
+    const val EVENT_NATIVE_MOUSE_MOVE = 9
     const val OPOBJ1 = 10
     const val SEND_PING_REPLY = 11
     const val REFLECTION_CHECK_REPLY = 12
@@ -65,7 +65,7 @@ internal object GameClientProtId {
     const val RESUME_P_OBJDIALOG = 61
     const val TELEPORT = 62
     const val IF_BUTTON1 = 63
-    const val EVENT_NATIVE_MOUSE_MOVE = 64
+    const val HISCORE_REQUEST = 64
     const val OPNPC4 = 65
     const val MEMBERSHIP_PROMOTION_ELIGIBILITY = 66
     const val OPNPC6 = 67
