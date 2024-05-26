@@ -35,6 +35,7 @@ public class WorldEntityProtocol(
     public fun update() {
         prepareHighResolutionBuffers()
         updateInfos()
+        postUpdate()
     }
 
     private fun prepareHighResolutionBuffers() {
@@ -99,10 +100,6 @@ public class WorldEntityProtocol(
         val info = worldEntityRepository.getOrNull(index) ?: return
         worldEntityRepository.destroy(index)
         info.exception = exception
-    }
-
-    internal fun getWorldEntityInfo(idx: Int): WorldEntityInfo? {
-        return worldEntityRepository.getOrNull(idx)
     }
 
     public companion object {
