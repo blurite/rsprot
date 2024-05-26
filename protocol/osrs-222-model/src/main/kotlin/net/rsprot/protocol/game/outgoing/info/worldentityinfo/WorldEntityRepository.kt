@@ -9,11 +9,11 @@ internal class WorldEntityRepository(
     override val elements: Array<WorldEntityInfo?> = arrayOfNulls(WorldEntityProtocol.CAPACITY)
 
     override fun informDeallocation(idx: Int) {
-        TODO("Not yet implemented")
+        // No-op
     }
 
     override fun onDealloc(element: WorldEntityInfo) {
-        TODO("Not yet implemented")
+        element.onDealloc()
     }
 
     override fun onAlloc(
@@ -21,6 +21,6 @@ internal class WorldEntityRepository(
         idx: Int,
         oldSchoolClientType: OldSchoolClientType,
     ) {
-        TODO("Not yet implemented")
+        element.onAlloc(idx, oldSchoolClientType)
     }
 }
