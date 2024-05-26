@@ -42,6 +42,10 @@ public class WorldEntityAvatar(
         this.moveSpeed = moveSpeed
     }
 
+    public fun updateAngle(angle: Int) {
+        this.angle = angle
+    }
+
     override fun postUpdate() {
         this.lastCoord = this.currentCoord
         this.highResolutionBuffer?.release()
