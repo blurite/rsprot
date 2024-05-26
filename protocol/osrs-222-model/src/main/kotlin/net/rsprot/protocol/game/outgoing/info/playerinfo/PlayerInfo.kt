@@ -89,9 +89,20 @@ public class PlayerInfo internal constructor(
      */
     internal val details: Array<PlayerInfoWorldDetails?> = arrayOfNulls(PROTOCOL_CAPACITY + 1)
 
+    private var activeWorldId: Int = ROOT_WORLD
+
+    private val destroyedWorlds: IntArray = IntArray(PROTOCOL_CAPACITY ushr 5)
+
     init {
         // There is always a root world!
         details[PROTOCOL_CAPACITY] = PlayerInfoWorldDetails(ROOT_WORLD)
+    }
+
+    public fun setActiveWorld(worldId: Int) {
+        require(worldId == ROOT_WORLD || worldId in 0..<2048) {
+            "World id must be -1 or in range of 0..<2048"
+        }
+        this.activeWorldId = worldId
     }
 
     public fun allocateWorld(worldId: Int) {
@@ -103,6 +114,24 @@ public class PlayerInfo internal constructor(
             "World $worldId already allocated."
         }
         details[worldId] = PlayerInfoWorldDetails(worldId)
+    }
+
+    public fun destroyWorld(worldId: Int) {
+        require(worldId in 0..<PROTOCOL_CAPACITY) {
+            "World id out of bounds: $worldId"
+        }
+        val existing = details[worldId]
+        require(existing != null) {
+            "World $worldId does not exist."
+        }
+        destroyedWorlds[worldId ushr 5] = destroyedWorlds[worldId ushr 5] or (1 shl (worldId and 0x3F))
+    }
+
+    private fun isDestroyed(worldId: Int): Boolean {
+        if (worldId == ROOT_WORLD) {
+            return false
+        }
+        return destroyedWorlds[worldId ushr 5] and (1 shl (worldId and 0x3F)) != 0
     }
 
     private fun getDetails(worldId: Int): PlayerInfoWorldDetails {
@@ -300,6 +329,7 @@ public class PlayerInfo internal constructor(
         buffer: BitBuf,
         skipStationary: Boolean,
     ) {
+        val destroyed = isDestroyed(details.worldId)
         var skips = -1
         for (i in 0 until details.lowResolutionCount) {
             val index = details.lowResolutionIndices[i].toInt()
@@ -308,7 +338,7 @@ public class PlayerInfo internal constructor(
                 continue
             }
             val other = protocol.getPlayerInfo(index)
-            if (other == null) {
+            if (other == null || destroyed) {
                 skips++
                 details.stationary[index] = (details.stationary[index].toInt() or IS_STATIONARY).toByte()
                 continue
@@ -389,6 +419,7 @@ public class PlayerInfo internal constructor(
         buffer: BitBuf,
         skipStationary: Boolean,
     ) {
+        val destroyed = isDestroyed(details.worldId)
         var skips = -1
         for (i in 0 until details.highResolutionCount) {
             val index = details.highResolutionIndices[i].toInt()
@@ -397,7 +428,7 @@ public class PlayerInfo internal constructor(
                 continue
             }
             val other = protocol.getPlayerInfo(index)
-            if (!shouldMoveToLowResolution(other)) {
+            if (!shouldMoveToLowResolution(other) || (destroyed && index != localIndex)) {
                 if (skips > -1) {
                     pStationary(buffer, skips)
                     skips = -1
@@ -407,7 +438,10 @@ public class PlayerInfo internal constructor(
             }
 
             val flag = other.avatar.extendedInfo.flags or observerExtendedInfoFlags.getFlag(index)
-            val hasExtendedInfoBlock = flag != 0
+            val hasExtendedInfoBlock =
+                !destroyed &&
+                    flag != 0 &&
+                    (details.worldId == activeWorldId || index != localIndex)
             val highResBuf = other.highResMovementBuffer
             val skipped = !hasExtendedInfoBlock && (!details.initialized || highResBuf == null)
             if (!skipped) {
@@ -610,6 +644,13 @@ public class PlayerInfo internal constructor(
         this.avatar.postUpdate()
         avatar.extendedInfo.postUpdate()
         observerExtendedInfoFlags.reset()
+        for (i in 0..<PROTOCOL_CAPACITY) {
+            if (isDestroyed(i)) {
+                // TODO: Pooling?
+                this.details[i] = null
+            }
+        }
+        this.destroyedWorlds.fill(0)
     }
 
     /**
@@ -629,6 +670,8 @@ public class PlayerInfo internal constructor(
         avatar.extendedInfo.localIndex = index
         this.oldSchoolClientType = oldSchoolClientType
         avatar.reset()
+        this.activeWorldId = ROOT_WORLD
+        this.destroyedWorlds.fill(0)
         val rootDetails = getDetails(-1)
         rootDetails.lowResolutionIndices.fill(0)
         rootDetails.lowResolutionCount = 0
