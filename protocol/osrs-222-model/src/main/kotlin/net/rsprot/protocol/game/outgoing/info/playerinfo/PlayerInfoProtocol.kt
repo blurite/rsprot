@@ -160,7 +160,12 @@ public class PlayerInfoProtocol(
      */
     private fun putBitcodes() {
         execute {
-            pBitcodes()
+            for (details in this.details) {
+                if (details == null) {
+                    continue
+                }
+                pBitcodes(details)
+            }
         }
     }
 
@@ -188,7 +193,12 @@ public class PlayerInfoProtocol(
      */
     private fun putExtendedInfo() {
         execute {
-            putExtendedInfo()
+            for (details in this.details) {
+                if (details == null) {
+                    continue
+                }
+                putExtendedInfo(details)
+            }
         }
     }
 
@@ -198,7 +208,13 @@ public class PlayerInfoProtocol(
      */
     private fun postUpdate() {
         execute {
-            postUpdate()
+            for (details in this.details) {
+                if (details == null) {
+                    continue
+                }
+                postUpdate(details)
+            }
+            cycleComplete()
         }
         lowResolutionPositionRepository.postUpdate()
     }
