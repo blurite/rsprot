@@ -621,7 +621,6 @@ public class PlayerInfo internal constructor(
             }
         }
         observerExtendedInfoFlags.reset()
-        avatar.extendedInfo.postUpdate()
     }
 
     /**
