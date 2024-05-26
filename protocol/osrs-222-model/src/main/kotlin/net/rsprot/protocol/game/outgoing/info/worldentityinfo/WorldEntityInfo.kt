@@ -113,14 +113,14 @@ public class WorldEntityInfo internal constructor(
     }
 
     private fun processHighResolution(buffer: JagByteBuf): Boolean {
-        var fragmented = false
-        buffer.p1(this.highResolutionIndicesCount)
-        for (i in 0..<this.highResolutionIndicesCount) {
+        val count = this.highResolutionIndicesCount
+        buffer.p1(count)
+        for (i in 0..<count) {
             val index = this.highResolutionIndices[i].toInt()
             val avatar = avatarRepository.getOrNull(index)
             if (avatar == null || !inRange(avatar)) {
+                this.highResolutionIndicesCount--
                 allWorldEntities -= index
-                fragmented = true
                 buffer.p1(0)
                 continue
             }
@@ -132,14 +132,22 @@ public class WorldEntityInfo internal constructor(
                 precomputedBuffer.readableBytes(),
             )
         }
-        return fragmented
+        return count != this.highResolutionIndicesCount
     }
 
     private fun processLowResolution(buffer: JagByteBuf) {
         if (this.highResolutionIndicesCount >= MAX_HIGH_RES_COUNT) {
             return
         }
-        val (level, x, z) = this.currentCoord
+        val currentWorld = this.currentWorldEntityId
+        val (level, x, z) =
+            if (currentWorld == ROOT_WORLD) {
+                this.currentCoord
+            } else {
+                val worldEntity = checkNotNull(avatarRepository.getOrNull(currentWorld))
+                // Perhaps center coord instead?
+                worldEntity.currentCoord
+            }
         val entities =
             indexSupplier.supply(
                 this.localIndex,
