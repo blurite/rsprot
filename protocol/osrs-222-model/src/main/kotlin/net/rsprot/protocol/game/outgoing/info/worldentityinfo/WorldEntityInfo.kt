@@ -29,8 +29,9 @@ public class WorldEntityInfo internal constructor(
         ShortArray(WorldEntityProtocol.CAPACITY) {
             INDEX_TERMINATOR
         }
-    private val addedWorldEntities = ArrayList<Int>()
     private val allWorldEntities = ArrayList<Int>()
+    private val addedWorldEntities = ArrayList<Int>()
+    private val removedWorldEntities = ArrayList<Int>()
     private var buffer: ByteBuf? = null
     internal var exception: Exception? = null
     private var builtIntoPacket: Boolean = false
@@ -43,12 +44,16 @@ public class WorldEntityInfo internal constructor(
         this.buildArea = buildArea
     }
 
+    public fun getAllWorldEntityIndices(): List<Int> {
+        return this.allWorldEntities
+    }
+
     public fun getAddedWorldEntityIndices(): List<Int> {
         return this.addedWorldEntities
     }
 
-    public fun getAllWorldEntityIndices(): List<Int> {
-        return this.allWorldEntities
+    public fun getRemovedWorldEntityIndices(): List<Int> {
+        return this.removedWorldEntities
     }
 
     public fun updateCoord(
@@ -84,6 +89,7 @@ public class WorldEntityInfo internal constructor(
         this.buffer = buffer
         this.builtIntoPacket = false
         this.addedWorldEntities.clear()
+        this.removedWorldEntities.clear()
         return buffer
     }
 
@@ -120,6 +126,7 @@ public class WorldEntityInfo internal constructor(
             val avatar = avatarRepository.getOrNull(index)
             if (avatar == null || !inRange(avatar)) {
                 this.highResolutionIndicesCount--
+                this.removedWorldEntities += index
                 allWorldEntities -= index
                 buffer.p1(0)
                 continue
@@ -223,8 +230,9 @@ public class WorldEntityInfo internal constructor(
         this.highResolutionIndicesCount = 0
         this.highResolutionIndices.fill(0)
         this.temporaryHighResolutionIndices.fill(0)
-        this.addedWorldEntities.clear()
         this.allWorldEntities.clear()
+        this.addedWorldEntities.clear()
+        this.removedWorldEntities.clear()
         this.builtIntoPacket = false
         this.buffer = null
         this.exception = null
