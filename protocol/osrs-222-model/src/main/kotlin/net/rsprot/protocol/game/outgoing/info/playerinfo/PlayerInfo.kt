@@ -7,12 +7,14 @@ import net.rsprot.buffer.bitbuffer.UnsafeLongBackedBitBuf
 import net.rsprot.buffer.bitbuffer.toBitBuf
 import net.rsprot.buffer.extensions.toJagByteBuf
 import net.rsprot.protocol.common.client.OldSchoolClientType
+import net.rsprot.protocol.common.game.outgoing.info.CoordGrid
 import net.rsprot.protocol.game.outgoing.info.ObserverExtendedInfoFlags
 import net.rsprot.protocol.game.outgoing.info.exceptions.InfoProcessException
 import net.rsprot.protocol.game.outgoing.info.playerinfo.PlayerInfoProtocol.Companion.PROTOCOL_CAPACITY
 import net.rsprot.protocol.game.outgoing.info.playerinfo.util.CellOpcodes
 import net.rsprot.protocol.game.outgoing.info.util.Avatar
 import net.rsprot.protocol.game.outgoing.info.util.ReferencePooledObject
+import net.rsprot.protocol.game.outgoing.info.worldentityinfo.WorldEntityAvatarRepository
 import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.contract
 import kotlin.math.abs
@@ -47,6 +49,7 @@ public class PlayerInfo internal constructor(
     internal val allocator: ByteBufAllocator,
     private var oldSchoolClientType: OldSchoolClientType,
     public val avatar: PlayerAvatar,
+    private val worldEntityAvatarRepository: WorldEntityAvatarRepository?,
 ) : ReferencePooledObject {
     /**
      * The observer info flags are used for us to track extended info blocks which weren't necessarily
@@ -93,6 +96,8 @@ public class PlayerInfo internal constructor(
 
     private val destroyedWorlds: IntArray = IntArray(PROTOCOL_CAPACITY ushr 5)
 
+    private var renderCoord: CoordGrid = CoordGrid.INVALID
+
     init {
         // There is always a root world!
         details[PROTOCOL_CAPACITY] = PlayerInfoWorldDetails(ROOT_WORLD)
@@ -103,6 +108,18 @@ public class PlayerInfo internal constructor(
             "World id must be -1 or in range of 0..<2048"
         }
         this.activeWorldId = worldId
+    }
+
+    public fun setRenderCoord(
+        level: Int,
+        x: Int,
+        z: Int,
+    ) {
+        this.renderCoord = CoordGrid(level, x, z)
+    }
+
+    public fun resetRenderCoord() {
+        this.renderCoord = CoordGrid.INVALID
     }
 
     public fun allocateWorld(worldId: Int) {
@@ -343,7 +360,7 @@ public class PlayerInfo internal constructor(
                 details.stationary[index] = (details.stationary[index].toInt() or IS_STATIONARY).toByte()
                 continue
             }
-            val visible = shouldMoveToHighResolution(other)
+            val visible = shouldMoveToHighResolution(details.worldId, other)
             if (!visible && (!details.initialized || other.lowResMovementBuffer == null)) {
                 skips++
                 details.stationary[index] = (details.stationary[index].toInt() or IS_STATIONARY).toByte()
@@ -428,7 +445,7 @@ public class PlayerInfo internal constructor(
                 continue
             }
             val other = protocol.getPlayerInfo(index)
-            if (!shouldMoveToLowResolution(other) || (destroyed && index != localIndex)) {
+            if (!shouldMoveToLowResolution(details.worldId, other) || (destroyed && index != localIndex)) {
                 if (skips > -1) {
                     pStationary(buffer, skips)
                     skips = -1
@@ -565,7 +582,10 @@ public class PlayerInfo internal constructor(
      * @return true if the other should be moved to low resolution.
      */
     @OptIn(ExperimentalContracts::class)
-    private fun shouldMoveToLowResolution(other: PlayerInfo?): Boolean {
+    private fun shouldMoveToLowResolution(
+        worldId: Int,
+        other: PlayerInfo?,
+    ): Boolean {
         contract {
             returns(true) implies (other != null)
         }
@@ -580,9 +600,20 @@ public class PlayerInfo internal constructor(
         if (other.avatar.hidden) {
             return false
         }
+        if (worldId != ROOT_WORLD) {
+            return isWorldVisible(worldId)
+        }
         val curCoord = this.avatar.currentCoord
         val otherCoord = other.avatar.currentCoord
-        return curCoord.inDistance(otherCoord, this.avatar.resizeRange)
+        return curCoord.inDistance(otherCoord, this.avatar.resizeRange) ||
+            (this.renderCoord != CoordGrid.INVALID && this.renderCoord.inDistance(otherCoord, this.avatar.resizeRange))
+    }
+
+    private fun isWorldVisible(id: Int): Boolean {
+        val avatar =
+            this.worldEntityAvatarRepository?.getOrNull(id)
+                ?: return false
+        return this.avatar.currentCoord.inDistance(avatar.currentCoord, this.avatar.resizeRange)
     }
 
     /**
@@ -593,7 +624,10 @@ public class PlayerInfo internal constructor(
      * @return true if the other player should be moved to high resolution.
      */
     @OptIn(ExperimentalContracts::class)
-    private fun shouldMoveToHighResolution(other: PlayerInfo?): Boolean {
+    private fun shouldMoveToHighResolution(
+        worldId: Int,
+        other: PlayerInfo?,
+    ): Boolean {
         contract {
             returns(true) implies (other != null)
         }
@@ -604,9 +638,13 @@ public class PlayerInfo internal constructor(
         if (other.avatar.hidden) {
             return false
         }
+        if (worldId != ROOT_WORLD) {
+            return isWorldVisible(worldId)
+        }
         val curCoord = this.avatar.currentCoord
         val otherCoord = other.avatar.currentCoord
-        return curCoord.inDistance(otherCoord, this.avatar.resizeRange)
+        return curCoord.inDistance(otherCoord, this.avatar.resizeRange) ||
+            (this.renderCoord != CoordGrid.INVALID && this.renderCoord.inDistance(otherCoord, this.avatar.resizeRange))
     }
 
     /**

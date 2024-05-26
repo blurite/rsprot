@@ -5,18 +5,18 @@ import net.rsprot.protocol.common.game.outgoing.info.CoordGrid
 import java.lang.ref.ReferenceQueue
 import java.lang.ref.SoftReference
 
-internal class WorldEntityAvatarRepository(
+public class WorldEntityAvatarRepository internal constructor(
     private val allocator: ByteBufAllocator,
 ) {
     private val elements: Array<WorldEntityAvatar?> = arrayOfNulls(AVATAR_CAPACITY)
     private val queue: ReferenceQueue<WorldEntityAvatar> = ReferenceQueue<WorldEntityAvatar>()
     private val releasedAvatarQueue: ArrayDeque<WorldEntityAvatar> = ArrayDeque()
 
-    fun getOrNull(idx: Int): WorldEntityAvatar? {
+    public fun getOrNull(idx: Int): WorldEntityAvatar? {
         return elements[idx]
     }
 
-    fun getOrAlloc(
+    public fun getOrAlloc(
         index: Int,
         sizeX: Int,
         sizeZ: Int,
@@ -53,7 +53,7 @@ internal class WorldEntityAvatarRepository(
      * Releases avatar back into the pool for it to be used later in the future, if possible.
      * @param avatar the avatar to release.
      */
-    fun release(avatar: WorldEntityAvatar) {
+    public fun release(avatar: WorldEntityAvatar) {
         this.elements[avatar.index] = null
         releasedAvatarQueue += avatar
     }

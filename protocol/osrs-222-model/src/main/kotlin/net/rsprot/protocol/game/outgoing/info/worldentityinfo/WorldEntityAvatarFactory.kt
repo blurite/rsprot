@@ -5,7 +5,7 @@ import io.netty.buffer.ByteBufAllocator
 public class WorldEntityAvatarFactory(
     allocator: ByteBufAllocator,
 ) {
-    internal val avatarRepository: WorldEntityAvatarRepository =
+    public val avatarRepository: WorldEntityAvatarRepository =
         WorldEntityAvatarRepository(
             allocator,
         )

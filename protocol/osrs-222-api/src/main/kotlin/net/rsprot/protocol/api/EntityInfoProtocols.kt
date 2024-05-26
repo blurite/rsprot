@@ -18,6 +18,7 @@ import net.rsprot.protocol.game.outgoing.info.playerinfo.PlayerAvatarExtendedInf
 import net.rsprot.protocol.game.outgoing.info.playerinfo.PlayerAvatarFactory
 import net.rsprot.protocol.game.outgoing.info.playerinfo.PlayerInfoProtocol
 import net.rsprot.protocol.game.outgoing.info.worldentityinfo.WorldEntityAvatarFactory
+import net.rsprot.protocol.game.outgoing.info.worldentityinfo.WorldEntityAvatarRepository
 import net.rsprot.protocol.game.outgoing.info.worldentityinfo.WorldEntityProtocol
 
 /**
@@ -88,10 +89,22 @@ public class EntityInfoProtocols
                     npcWriters += NpcAvatarExtendedInfoDesktopWriter()
                     npcResolutionChangeEncoders += DesktopLowResolutionChangeEncoder()
                 }
+                val worldEntityAvatarFactory = buildWorldEntityAvatarFactory(allocator)
+                val worldEntityProtocol =
+                    buildWorldEntityInfoProtocol(
+                        allocator,
+                        worldEntityInfoSupplier,
+                        worldEntityAvatarFactory,
+                    )
                 val playerAvatarFactory =
                     buildPlayerAvatarFactory(allocator, playerInfoSupplier, playerWriters, huffmanCodecProvider)
                 val playerInfoProtocol =
-                    buildPlayerInfoProtocol(allocator, playerInfoSupplier, playerAvatarFactory)
+                    buildPlayerInfoProtocol(
+                        allocator,
+                        playerInfoSupplier,
+                        playerAvatarFactory,
+                        worldEntityAvatarFactory.avatarRepository,
+                    )
                 val npcAvatarFactory =
                     buildNpcAvatarFactory(allocator, npcInfoSupplier, npcWriters, huffmanCodecProvider)
                 val npcInfoProtocol =
@@ -102,13 +115,6 @@ public class EntityInfoProtocols
                         npcAvatarFactory,
                     )
 
-                val worldEntityAvatarFactory = buildWorldEntityAvatarFactory(allocator)
-                val worldEntityProtocol =
-                    buildWorldEntityInfoProtocol(
-                        allocator,
-                        worldEntityInfoSupplier,
-                        worldEntityAvatarFactory,
-                    )
                 return EntityInfoProtocols(
                     playerAvatarFactory,
                     playerInfoProtocol,
@@ -173,11 +179,13 @@ public class EntityInfoProtocols
                 allocator: ByteBufAllocator,
                 playerInfoSupplier: PlayerInfoSupplier,
                 playerAvatarFactory: PlayerAvatarFactory,
+                worldEntityAvatarRepository: WorldEntityAvatarRepository,
             ): PlayerInfoProtocol {
                 return PlayerInfoProtocol(
                     allocator,
                     playerInfoSupplier.playerInfoProtocolWorker,
                     playerAvatarFactory,
+                    worldEntityAvatarRepository,
                 )
             }
 
