@@ -79,13 +79,13 @@ class PlayerInfoBenchmark {
         for (colIdx in 0..<5) {
             player.avatar.extendedInfo.setColour(colIdx, colIdx * 10)
         }
-        player.avatar.extendedInfo.setIdentKit(8, 0)
-        player.avatar.extendedInfo.setIdentKit(11, 10)
-        player.avatar.extendedInfo.setIdentKit(4, 18)
-        player.avatar.extendedInfo.setIdentKit(6, 26)
-        player.avatar.extendedInfo.setIdentKit(9, 33)
-        player.avatar.extendedInfo.setIdentKit(7, 36)
-        player.avatar.extendedInfo.setIdentKit(10, 42)
+        player.avatar.extendedInfo.setIdentKit(0, 0)
+        player.avatar.extendedInfo.setIdentKit(1, 10)
+        player.avatar.extendedInfo.setIdentKit(2, 18)
+        player.avatar.extendedInfo.setIdentKit(3, 26)
+        player.avatar.extendedInfo.setIdentKit(4, 33)
+        player.avatar.extendedInfo.setIdentKit(5, 36)
+        player.avatar.extendedInfo.setIdentKit(6, 42)
         player.avatar.extendedInfo.setBaseAnimationSet(
             808,
             823,
