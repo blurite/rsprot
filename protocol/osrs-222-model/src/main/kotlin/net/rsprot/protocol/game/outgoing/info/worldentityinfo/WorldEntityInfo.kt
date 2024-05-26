@@ -6,6 +6,7 @@ import net.rsprot.buffer.JagByteBuf
 import net.rsprot.buffer.extensions.toJagByteBuf
 import net.rsprot.protocol.common.client.OldSchoolClientType
 import net.rsprot.protocol.common.game.outgoing.info.CoordGrid
+import net.rsprot.protocol.game.outgoing.info.exceptions.InfoProcessException
 import net.rsprot.protocol.game.outgoing.info.util.ReferencePooledObject
 
 public class WorldEntityInfo internal constructor(
@@ -15,8 +16,9 @@ public class WorldEntityInfo internal constructor(
     private val avatarRepository: WorldEntityAvatarRepository,
     private val indexSupplier: WorldEntityIndexSupplier,
 ) : ReferencePooledObject {
-    private var renderDistance: Int = 15
-    private var currentLocalPlayerCoord: CoordGrid = CoordGrid.INVALID
+    private var renderDistance: Int = DEFAULT_RENDER_DISTANCE
+    private var currentWorldEntityId: Int = ROOT_WORLD
+    private var currentCoord: CoordGrid = CoordGrid.INVALID
     private var buildArea: BuildArea = BuildArea.INVALID
     private var highResolutionIndicesCount: Int = 0
     private var highResolutionIndices: ShortArray =
@@ -27,6 +29,8 @@ public class WorldEntityInfo internal constructor(
         ShortArray(WorldEntityProtocol.CAPACITY) {
             INDEX_TERMINATOR
         }
+    private val addedWorldEntities = ArrayList<Int>()
+    private val allWorldEntities = ArrayList<Int>()
     private var buffer: ByteBuf? = null
     internal var exception: Exception? = null
     private var builtIntoPacket: Boolean = false
@@ -39,12 +43,22 @@ public class WorldEntityInfo internal constructor(
         this.buildArea = buildArea
     }
 
+    public fun getAddedWorldEntityIndices(): List<Int> {
+        return this.addedWorldEntities
+    }
+
+    public fun getAllWorldEntityIndices(): List<Int> {
+        return this.allWorldEntities
+    }
+
     public fun updateCoord(
+        worldId: Int,
         level: Int,
         x: Int,
         z: Int,
     ) {
-        this.currentLocalPlayerCoord = CoordGrid(level, x, z)
+        this.currentWorldEntityId = worldId
+        this.currentCoord = CoordGrid(level, x, z)
     }
 
     @Throws(IllegalStateException::class)
@@ -52,11 +66,24 @@ public class WorldEntityInfo internal constructor(
         return checkNotNull(buffer)
     }
 
+    public fun toPacket(): WorldEntityInfoPacket {
+        val exception = this.exception
+        if (exception != null) {
+            throw InfoProcessException(
+                "Exception occurred during player info processing for index $localIndex",
+                exception,
+            )
+        }
+        builtIntoPacket = true
+        return WorldEntityInfoPacket(backingBuffer())
+    }
+
     private fun allocBuffer(): ByteBuf {
         // Acquire a new buffer with each cycle, in case the previous one isn't fully written out yet
         val buffer = allocator.buffer(BUF_CAPACITY, BUF_CAPACITY)
         this.buffer = buffer
         this.builtIntoPacket = false
+        this.addedWorldEntities.clear()
         return buffer
     }
 
@@ -92,6 +119,7 @@ public class WorldEntityInfo internal constructor(
             val index = this.highResolutionIndices[i].toInt()
             val avatar = avatarRepository.getOrNull(index)
             if (avatar == null || !inRange(avatar)) {
+                allWorldEntities -= index
                 fragmented = true
                 buffer.p1(0)
                 continue
@@ -111,7 +139,7 @@ public class WorldEntityInfo internal constructor(
         if (this.highResolutionIndicesCount >= MAX_HIGH_RES_COUNT) {
             return
         }
-        val (level, x, z) = this.currentLocalPlayerCoord
+        val (level, x, z) = this.currentCoord
         val entities =
             indexSupplier.supply(
                 this.localIndex,
@@ -133,6 +161,8 @@ public class WorldEntityInfo internal constructor(
             if (!inRange(avatar)) {
                 continue
             }
+            addedWorldEntities += index
+            allWorldEntities += index
             val i = highResolutionIndicesCount++
             highResolutionIndices[i] = index.toShort()
             buffer.p2(avatar.index)
@@ -157,16 +187,19 @@ public class WorldEntityInfo internal constructor(
     }
 
     private fun inRange(avatar: WorldEntityAvatar): Boolean {
+        // Always render the world entity the player is on
+        if (avatar.index == currentWorldEntityId) {
+            return true
+        }
         if (avatar !in buildArea) {
             return false
         }
         // Potentially make it be based on center coord?
         // Not sure how nice it looks with just the south-west tile checks
-        return avatar.currentCoord.inDistance(this.currentLocalPlayerCoord, renderDistance)
-    }
-
-    internal fun afterUpdate() {
-        // TODO
+        return avatar.currentCoord.inDistance(
+            this.currentCoord,
+            renderDistance,
+        )
     }
 
     override fun onAlloc(
@@ -175,15 +208,34 @@ public class WorldEntityInfo internal constructor(
     ) {
         this.localIndex = index
         this.oldSchoolClientType = oldSchoolClientType
+        this.renderDistance = DEFAULT_RENDER_DISTANCE
+        this.currentWorldEntityId = ROOT_WORLD
+        this.currentCoord = CoordGrid.INVALID
+        this.buildArea = BuildArea.INVALID
+        this.highResolutionIndicesCount = 0
+        this.highResolutionIndices.fill(0)
+        this.temporaryHighResolutionIndices.fill(0)
+        this.addedWorldEntities.clear()
+        this.allWorldEntities.clear()
+        this.builtIntoPacket = false
+        this.buffer = null
+        this.exception = null
     }
 
     override fun onDealloc() {
-        // TODO
+        if (!builtIntoPacket) {
+            val buffer = this.buffer
+            if (buffer != null && buffer.refCnt() > 0) {
+                buffer.release(buffer.refCnt())
+            }
+        }
     }
 
     private companion object {
         private const val INDEX_TERMINATOR: Short = -1
         private const val MAX_HIGH_RES_COUNT: Int = 255
+        private const val ROOT_WORLD: Int = -1
+        private const val DEFAULT_RENDER_DISTANCE: Int = 15
 
         /**
          * The default capacity of the backing byte buffer into which all world info is written.
