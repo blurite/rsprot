@@ -2,13 +2,13 @@ package net.rsprot.protocol.game.outgoing.info.worldentityinfo
 
 import com.github.michaelbull.logging.InlineLogger
 import io.netty.buffer.ByteBufAllocator
+import net.rsprot.protocol.common.client.OldSchoolClientType
 import net.rsprot.protocol.game.outgoing.info.worker.DefaultProtocolWorker
 import net.rsprot.protocol.game.outgoing.info.worker.ProtocolWorker
 import java.util.concurrent.Callable
 
 public class WorldEntityProtocol(
     private val allocator: ByteBufAllocator,
-    private val worker: ProtocolWorker = DefaultProtocolWorker(),
     private val indexSupplier: WorldEntityIndexSupplier,
     private val exceptionHandler: WorldEntityExceptionHandler,
     factory: WorldEntityAvatarFactory,
@@ -32,6 +32,13 @@ public class WorldEntityProtocol(
      * but the [Callable] instances themselves are generated for every job.
      */
     private val callables: MutableList<Callable<Unit>> = ArrayList(CAPACITY)
+
+    public fun alloc(
+        idx: Int,
+        oldSchoolClientType: OldSchoolClientType,
+    ): WorldEntityInfo {
+        return worldEntityRepository.alloc(idx, oldSchoolClientType)
+    }
 
     public fun update() {
         prepareHighResolutionBuffers()
@@ -62,10 +69,6 @@ public class WorldEntityProtocol(
     }
 
     private fun postUpdate() {
-        for (i in 1..<CAPACITY) {
-            val info = worldEntityRepository.getOrNull(i) ?: continue
-            info.afterUpdate()
-        }
         for (i in 0..<CAPACITY) {
             val avatar = avatarRepository.getOrNull(i) ?: continue
             avatar.postUpdate()
