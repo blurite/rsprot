@@ -4,6 +4,7 @@ import io.netty.buffer.ByteBufAllocator
 import net.rsprot.compression.provider.HuffmanCodecProvider
 import net.rsprot.protocol.api.suppliers.NpcInfoSupplier
 import net.rsprot.protocol.api.suppliers.PlayerInfoSupplier
+import net.rsprot.protocol.api.suppliers.WorldEntityInfoSupplier
 import net.rsprot.protocol.common.client.ClientTypeMap
 import net.rsprot.protocol.common.client.OldSchoolClientType
 import net.rsprot.protocol.common.game.outgoing.info.npcinfo.encoder.NpcResolutionChangeEncoder
@@ -16,6 +17,8 @@ import net.rsprot.protocol.game.outgoing.info.npcinfo.NpcInfoProtocol
 import net.rsprot.protocol.game.outgoing.info.playerinfo.PlayerAvatarExtendedInfoWriter
 import net.rsprot.protocol.game.outgoing.info.playerinfo.PlayerAvatarFactory
 import net.rsprot.protocol.game.outgoing.info.playerinfo.PlayerInfoProtocol
+import net.rsprot.protocol.game.outgoing.info.worldentityinfo.WorldEntityAvatarFactory
+import net.rsprot.protocol.game.outgoing.info.worldentityinfo.WorldEntityProtocol
 
 /**
  * The entity info protocols class brings together the relatively complex player and NPC info
@@ -38,6 +41,8 @@ public class EntityInfoProtocols
         public val playerInfoProtocol: PlayerInfoProtocol,
         public val npcAvatarFactory: NpcAvatarFactory,
         public val npcInfoProtocol: NpcInfoProtocol,
+        public val worldEntityAvatarFactory: WorldEntityAvatarFactory,
+        public val worldEntityInfoProtocol: WorldEntityProtocol,
     ) {
         internal companion object {
             /**
@@ -73,6 +78,7 @@ public class EntityInfoProtocols
                 huffmanCodecProvider: HuffmanCodecProvider,
                 playerInfoSupplier: PlayerInfoSupplier,
                 npcInfoSupplier: NpcInfoSupplier,
+                worldEntityInfoSupplier: WorldEntityInfoSupplier,
             ): EntityInfoProtocols {
                 val playerWriters = mutableListOf<PlayerAvatarExtendedInfoWriter>()
                 val npcWriters = mutableListOf<NpcAvatarExtendedInfoWriter>()
@@ -95,11 +101,21 @@ public class EntityInfoProtocols
                         npcResolutionChangeEncoders,
                         npcAvatarFactory,
                     )
+
+                val worldEntityAvatarFactory = buildWorldEntityAvatarFactory(allocator)
+                val worldEntityProtocol =
+                    buildWorldEntityInfoProtocol(
+                        allocator,
+                        worldEntityInfoSupplier,
+                        worldEntityAvatarFactory,
+                    )
                 return EntityInfoProtocols(
                     playerAvatarFactory,
                     playerInfoProtocol,
                     npcAvatarFactory,
                     npcInfoProtocol,
+                    worldEntityAvatarFactory,
+                    worldEntityProtocol,
                 )
             }
 
@@ -135,6 +151,23 @@ public class EntityInfoProtocols
                     huffmanCodecProvider,
                 )
             }
+
+            private fun buildWorldEntityAvatarFactory(allocator: ByteBufAllocator): WorldEntityAvatarFactory {
+                return WorldEntityAvatarFactory(
+                    allocator,
+                )
+            }
+
+            private fun buildWorldEntityInfoProtocol(
+                allocator: ByteBufAllocator,
+                worldEntityInfoSupplier: WorldEntityInfoSupplier,
+                worldEntityAvatarFactory: WorldEntityAvatarFactory,
+            ) = WorldEntityProtocol(
+                allocator,
+                worldEntityInfoSupplier.worldEntityIndexSupplier,
+                worldEntityInfoSupplier.worldEntityExceptionHandler,
+                worldEntityAvatarFactory,
+            )
 
             private fun buildPlayerInfoProtocol(
                 allocator: ByteBufAllocator,

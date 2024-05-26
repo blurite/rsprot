@@ -12,6 +12,7 @@ public class WorldEntityProtocol(
     private val indexSupplier: WorldEntityIndexSupplier,
     private val exceptionHandler: WorldEntityExceptionHandler,
     factory: WorldEntityAvatarFactory,
+    private val worker: ProtocolWorker = DefaultProtocolWorker(),
 ) {
     private val avatarRepository = factory.avatarRepository
     private val worldEntityRepository: WorldEntityRepository =
