@@ -5,6 +5,7 @@ import net.rsprot.crypto.xtea.XteaKey
 import net.rsprot.protocol.ServerProtCategory
 import net.rsprot.protocol.game.outgoing.GameServerProtCategory
 import net.rsprot.protocol.game.outgoing.info.playerinfo.PlayerInfo
+import net.rsprot.protocol.game.outgoing.info.playerinfo.PlayerInfo.Companion.ROOT_WORLD
 import net.rsprot.protocol.game.outgoing.map.util.XteaProvider
 import net.rsprot.protocol.game.outgoing.map.util.buildXteaKeyList
 
@@ -84,7 +85,7 @@ public class RebuildLogin private constructor(
         private fun initializePlayerInfo(playerInfo: PlayerInfo): ByteBuf {
             val allocator = playerInfo.allocator
             val buffer = allocator.buffer(PLAYER_INFO_BLOCK_SIZE + REBUILD_NORMAL_MAXIMUM_SIZE)
-            playerInfo.handleAbsolutePlayerPositions(buffer)
+            playerInfo.handleAbsolutePlayerPositions(ROOT_WORLD, buffer)
             return buffer
         }
     }

@@ -32,6 +32,8 @@ public class NpcInfoProtocol(
     private val exceptionHandler: NpcAvatarExceptionHandler,
     private val worker: ProtocolWorker = DefaultProtocolWorker(),
 ) {
+    private val detailsStorage: NpcInfoWorldDetailsStorage = NpcInfoWorldDetailsStorage()
+
     /**
      * The avatar repository keeps track of all the avatars currently in the game.
      */
@@ -50,6 +52,7 @@ public class NpcInfoProtocol(
                 localIndex,
                 npcIndexSupplier,
                 resolutionChangeEncoders,
+                detailsStorage,
             )
         }
 
@@ -160,7 +163,12 @@ public class NpcInfoProtocol(
      */
     private fun putBitcodes() {
         execute {
-            compute()
+            for (details in this.details) {
+                if (details == null) {
+                    continue
+                }
+                compute(details)
+            }
         }
     }
 
@@ -170,7 +178,12 @@ public class NpcInfoProtocol(
      */
     private fun putExtendedInfo() {
         execute {
-            putExtendedInfo()
+            for (details in this.details) {
+                if (details == null) {
+                    continue
+                }
+                putExtendedInfo(details)
+            }
         }
     }
 

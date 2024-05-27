@@ -25,6 +25,8 @@ import net.rsprot.protocol.game.outgoing.codec.zone.header.DesktopUpdateZonePart
 import net.rsprot.protocol.game.outgoing.info.npcinfo.NpcAvatarFactory
 import net.rsprot.protocol.game.outgoing.info.npcinfo.NpcInfoProtocol
 import net.rsprot.protocol.game.outgoing.info.playerinfo.PlayerInfoProtocol
+import net.rsprot.protocol.game.outgoing.info.worldentityinfo.WorldEntityAvatarFactory
+import net.rsprot.protocol.game.outgoing.info.worldentityinfo.WorldEntityProtocol
 import net.rsprot.protocol.message.ZoneProt
 import net.rsprot.protocol.message.codec.UpdateZonePartialEnclosedCache
 import net.rsprot.protocol.message.codec.incoming.provider.GameMessageConsumerRepositoryProvider
@@ -119,6 +121,10 @@ public class NetworkService<R, T : Js5GroupType>
             get() = entityInfoProtocols.npcAvatarFactory
         public val npcInfoProtocol: NpcInfoProtocol
             get() = entityInfoProtocols.npcInfoProtocol
+        public val worldEntityAvatarFactory: WorldEntityAvatarFactory
+            get() = entityInfoProtocols.worldEntityAvatarFactory
+        public val worldEntityInfoProtocol: WorldEntityProtocol
+            get() = entityInfoProtocols.worldEntityInfoProtocol
 
         /**
          * Starts the network service by binding the provided ports.

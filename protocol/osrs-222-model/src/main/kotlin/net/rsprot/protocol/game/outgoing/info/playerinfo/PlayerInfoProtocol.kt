@@ -7,6 +7,7 @@ import net.rsprot.protocol.common.client.OldSchoolClientType
 import net.rsprot.protocol.game.outgoing.info.playerinfo.util.LowResolutionPosition
 import net.rsprot.protocol.game.outgoing.info.worker.DefaultProtocolWorker
 import net.rsprot.protocol.game.outgoing.info.worker.ProtocolWorker
+import net.rsprot.protocol.game.outgoing.info.worldentityinfo.WorldEntityAvatarRepository
 import java.util.concurrent.Callable
 import java.util.concurrent.ForkJoinPool
 import kotlin.Exception
@@ -31,7 +32,14 @@ public class PlayerInfoProtocol(
     private val allocator: ByteBufAllocator,
     private val worker: ProtocolWorker = DefaultProtocolWorker(),
     private val avatarFactory: PlayerAvatarFactory,
+    private val worldEntityAvatarRepository: WorldEntityAvatarRepository?,
 ) {
+    /**
+     * A storage object for player info world details, allowing the re-use of these
+     * relatively expensive objects.
+     */
+    internal val detailsStorage: PlayerInfoWorldDetailsStorage = PlayerInfoWorldDetailsStorage()
+
     /**
      * The repository responsible for keeping track of all the players' low resolution
      * position within the world.
@@ -51,6 +59,7 @@ public class PlayerInfoProtocol(
                 allocator,
                 clientType,
                 avatarFactory.alloc(localIndex),
+                worldEntityAvatarRepository,
             )
         }
 
@@ -160,7 +169,12 @@ public class PlayerInfoProtocol(
      */
     private fun putBitcodes() {
         execute {
-            pBitcodes()
+            for (details in this.details) {
+                if (details == null) {
+                    continue
+                }
+                pBitcodes(details)
+            }
         }
     }
 
@@ -188,7 +202,12 @@ public class PlayerInfoProtocol(
      */
     private fun putExtendedInfo() {
         execute {
-            putExtendedInfo()
+            for (details in this.details) {
+                if (details == null) {
+                    continue
+                }
+                putExtendedInfo(details)
+            }
         }
     }
 
@@ -198,7 +217,13 @@ public class PlayerInfoProtocol(
      */
     private fun postUpdate() {
         execute {
-            postUpdate()
+            for (details in this.details) {
+                if (details == null) {
+                    continue
+                }
+                postUpdate(details)
+            }
+            cycleComplete()
         }
         lowResolutionPositionRepository.postUpdate()
     }

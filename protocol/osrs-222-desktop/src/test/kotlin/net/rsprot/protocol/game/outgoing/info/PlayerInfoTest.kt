@@ -38,6 +38,7 @@ class PlayerInfoTest {
                 allocator,
                 DefaultProtocolWorker(),
                 factory,
+                null,
             )
         localPlayerInfo = protocol.alloc(LOCAL_PLAYER_INDEX, OldSchoolClientType.DESKTOP)
         localPlayerInfo.updateCoord(0, 3200, 3220)
@@ -48,7 +49,7 @@ class PlayerInfoTest {
 
     private fun gpiInit() {
         val gpiBuffer = Unpooled.buffer(5000)
-        localPlayerInfo.handleAbsolutePlayerPositions(gpiBuffer)
+        localPlayerInfo.handleAbsolutePlayerPositions(PlayerInfo.ROOT_WORLD, gpiBuffer)
         client.gpiInit(LOCAL_PLAYER_INDEX, gpiBuffer)
         clientLocalPlayer = checkNotNull(client.cachedPlayers[client.localIndex])
     }
@@ -60,13 +61,17 @@ class PlayerInfoTest {
 
     private fun tick() {
         protocol.update()
-        val buffer = localPlayerInfo.backingBuffer()
+        val buffer = localPlayerInfo.backingBuffer(PlayerInfo.ROOT_WORLD)
         client.decode(buffer)
         assertFalse(buffer.isReadable)
     }
 
     @Test
     fun `test single player consecutive movements`() {
+        // For local player, the coord we send in init should always be the real, high resolution
+        // As such, we must call tick() to for any future changes to take effect
+        tick()
+
         localPlayerInfo.updateCoord(1, 3210, 3225)
         tick()
         assertCoordEquals()

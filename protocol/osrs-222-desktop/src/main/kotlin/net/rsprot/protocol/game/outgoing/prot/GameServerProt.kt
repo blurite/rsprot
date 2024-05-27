@@ -86,10 +86,12 @@ public enum class GameServerProt(
     // World entity packets
     CLEAR_ENTITIES(GameServerProtId.CLEAR_ENTITIES, 0),
     SET_ACTIVE_WORLD(GameServerProtId.SET_ACTIVE_WORLD, 4),
+    WORLDENTITY_INFO(GameServerProtId.WORLDENTITY_INFO, -2),
 
     // Map packets
     REBUILD_NORMAL(GameServerProtId.REBUILD_NORMAL, Prot.VAR_SHORT),
     REBUILD_REGION(GameServerProtId.REBUILD_REGION, Prot.VAR_SHORT),
+    REBUILD_WORLDENTITY(GameServerProtId.REBUILD_WORLDENTITY, Prot.VAR_SHORT),
 
     // Varp packets
     VARP_SMALL(GameServerProtId.VARP_SMALL, 3),

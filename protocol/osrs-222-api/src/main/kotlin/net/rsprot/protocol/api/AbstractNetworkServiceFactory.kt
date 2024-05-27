@@ -13,6 +13,7 @@ import net.rsprot.protocol.api.js5.Js5Configuration
 import net.rsprot.protocol.api.js5.Js5GroupProvider
 import net.rsprot.protocol.api.suppliers.NpcInfoSupplier
 import net.rsprot.protocol.api.suppliers.PlayerInfoSupplier
+import net.rsprot.protocol.api.suppliers.WorldEntityInfoSupplier
 import net.rsprot.protocol.common.client.OldSchoolClientType
 import net.rsprot.protocol.message.codec.incoming.provider.GameMessageConsumerRepositoryProvider
 
@@ -186,6 +187,8 @@ public abstract class AbstractNetworkServiceFactory<R, T : Js5GroupProvider.Js5G
         return PlayerInfoSupplier()
     }
 
+    public abstract fun getWorldEntityInfoSupplier(): WorldEntityInfoSupplier
+
     /**
      * Gets the exception handlers for channel exceptions as well as any incoming
      * game message consumers that get processed in the library.
@@ -274,6 +277,7 @@ public abstract class AbstractNetworkServiceFactory<R, T : Js5GroupProvider.Js5G
                 huffman,
                 getPlayerInfoSupplier(),
                 getNpcInfoSupplier(),
+                getWorldEntityInfoSupplier(),
             )
         return NetworkService(
             allocator,

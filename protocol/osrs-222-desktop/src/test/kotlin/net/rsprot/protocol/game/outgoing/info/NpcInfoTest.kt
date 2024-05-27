@@ -52,7 +52,14 @@ class NpcInfoTest {
             ) {
                 it.clientType
             }
-        protocol = NpcInfoProtocol(allocator, supplier, encoders, factory, npcExceptionHandler())
+        protocol =
+            NpcInfoProtocol(
+                allocator,
+                supplier,
+                encoders,
+                factory,
+                npcExceptionHandler(),
+            )
         this.client = NpcInfoClient()
         this.localNpcInfo = protocol.alloc(500, OldSchoolClientType.DESKTOP)
     }
@@ -64,14 +71,14 @@ class NpcInfoTest {
     }
 
     private fun tick() {
-        localNpcInfo.updateCoord(localPlayerCoord.level, localPlayerCoord.x, localPlayerCoord.z)
+        localNpcInfo.updateCoord(NpcInfo.ROOT_WORLD, localPlayerCoord.level, localPlayerCoord.x, localPlayerCoord.z)
         protocol.update()
     }
 
     @Test
     fun `adding npcs to high resolution`() {
         tick()
-        val buffer = this.localNpcInfo.backingBuffer()
+        val buffer = this.localNpcInfo.backingBuffer(NpcInfo.ROOT_WORLD)
         client.decode(buffer, false, localPlayerCoord)
         for (index in client.cachedNpcs.indices) {
             val clientNpc = client.cachedNpcs[index] ?: continue
@@ -85,12 +92,17 @@ class NpcInfoTest {
     @Test
     fun `removing npcs from high resolution`() {
         tick()
-        client.decode(this.localNpcInfo.backingBuffer(), false, localPlayerCoord)
+        client.decode(this.localNpcInfo.backingBuffer(NpcInfo.ROOT_WORLD), false, localPlayerCoord)
 
         this.localPlayerCoord = CoordGrid(0, 2000, 2000)
-        this.localNpcInfo.updateCoord(localPlayerCoord.level, localPlayerCoord.x, localPlayerCoord.z)
+        this.localNpcInfo.updateCoord(
+            NpcInfo.ROOT_WORLD,
+            localPlayerCoord.level,
+            localPlayerCoord.x,
+            localPlayerCoord.z,
+        )
         tick()
-        client.decode(this.localNpcInfo.backingBuffer(), false, localPlayerCoord)
+        client.decode(this.localNpcInfo.backingBuffer(NpcInfo.ROOT_WORLD), false, localPlayerCoord)
         assertEquals(0, client.npcSlotCount)
     }
 
@@ -100,7 +112,7 @@ class NpcInfoTest {
         // Skip everyone but the first entry
         serverNpcs = listOf(npc)
         tick()
-        client.decode(this.localNpcInfo.backingBuffer(), false, localPlayerCoord)
+        client.decode(this.localNpcInfo.backingBuffer(NpcInfo.ROOT_WORLD), false, localPlayerCoord)
         assertEquals(1, client.npcSlotCount)
         val clientNpc = checkNotNull(client.cachedNpcs[client.npcSlot[0]])
         assertEquals(npc.id, clientNpc.id)
@@ -109,7 +121,7 @@ class NpcInfoTest {
 
         npc.avatar.walk(0, 1)
         tick()
-        client.decode(this.localNpcInfo.backingBuffer(), false, localPlayerCoord)
+        client.decode(this.localNpcInfo.backingBuffer(NpcInfo.ROOT_WORLD), false, localPlayerCoord)
         assertEquals(npc.id, clientNpc.id)
         assertEquals(npc.index, clientNpc.index)
         assertEquals(npc.coordGrid, clientNpc.coord)
@@ -121,7 +133,7 @@ class NpcInfoTest {
         // Skip everyone but the first entry
         serverNpcs = listOf(npc)
         tick()
-        client.decode(this.localNpcInfo.backingBuffer(), false, localPlayerCoord)
+        client.decode(this.localNpcInfo.backingBuffer(NpcInfo.ROOT_WORLD), false, localPlayerCoord)
         assertEquals(1, client.npcSlotCount)
         val clientNpc = checkNotNull(client.cachedNpcs[client.npcSlot[0]])
         assertEquals(npc.id, clientNpc.id)
@@ -130,7 +142,7 @@ class NpcInfoTest {
 
         npc.avatar.crawl(0, 1)
         tick()
-        client.decode(this.localNpcInfo.backingBuffer(), false, localPlayerCoord)
+        client.decode(this.localNpcInfo.backingBuffer(NpcInfo.ROOT_WORLD), false, localPlayerCoord)
         assertEquals(npc.id, clientNpc.id)
         assertEquals(npc.index, clientNpc.index)
         assertEquals(npc.coordGrid, clientNpc.coord)
@@ -142,7 +154,7 @@ class NpcInfoTest {
         // Skip everyone but the first entry
         serverNpcs = listOf(npc)
         tick()
-        client.decode(this.localNpcInfo.backingBuffer(), false, localPlayerCoord)
+        client.decode(this.localNpcInfo.backingBuffer(NpcInfo.ROOT_WORLD), false, localPlayerCoord)
         assertEquals(1, client.npcSlotCount)
         val clientNpc = checkNotNull(client.cachedNpcs[client.npcSlot[0]])
         assertEquals(npc.id, clientNpc.id)
@@ -152,7 +164,7 @@ class NpcInfoTest {
         npc.avatar.walk(0, 1)
         npc.avatar.walk(0, 1)
         tick()
-        client.decode(this.localNpcInfo.backingBuffer(), false, localPlayerCoord)
+        client.decode(this.localNpcInfo.backingBuffer(NpcInfo.ROOT_WORLD), false, localPlayerCoord)
         assertEquals(npc.id, clientNpc.id)
         assertEquals(npc.index, clientNpc.index)
         assertEquals(npc.coordGrid, clientNpc.coord)
@@ -164,7 +176,7 @@ class NpcInfoTest {
         // Skip everyone but the first entry
         serverNpcs = listOf(npc)
         tick()
-        client.decode(this.localNpcInfo.backingBuffer(), false, localPlayerCoord)
+        client.decode(this.localNpcInfo.backingBuffer(NpcInfo.ROOT_WORLD), false, localPlayerCoord)
         assertEquals(1, client.npcSlotCount)
         var clientNpc = checkNotNull(client.cachedNpcs[client.npcSlot[0]])
         assertEquals(npc.id, clientNpc.id)
@@ -178,7 +190,7 @@ class NpcInfoTest {
             true,
         )
         tick()
-        client.decode(this.localNpcInfo.backingBuffer(), false, localPlayerCoord)
+        client.decode(this.localNpcInfo.backingBuffer(NpcInfo.ROOT_WORLD), false, localPlayerCoord)
         // Re-obtain the instance as teleporting is equal to removal + adding
         clientNpc = checkNotNull(client.cachedNpcs[client.npcSlot[0]])
         assertEquals(npc.id, clientNpc.id)
@@ -192,7 +204,7 @@ class NpcInfoTest {
         // Skip everyone but the first entry
         serverNpcs = listOf(npc)
         tick()
-        client.decode(this.localNpcInfo.backingBuffer(), false, localPlayerCoord)
+        client.decode(this.localNpcInfo.backingBuffer(NpcInfo.ROOT_WORLD), false, localPlayerCoord)
         assertEquals(1, client.npcSlotCount)
         var clientNpc = checkNotNull(client.cachedNpcs[client.npcSlot[0]])
         assertEquals(npc.id, clientNpc.id)
@@ -206,7 +218,7 @@ class NpcInfoTest {
             false,
         )
         tick()
-        client.decode(this.localNpcInfo.backingBuffer(), false, localPlayerCoord)
+        client.decode(this.localNpcInfo.backingBuffer(NpcInfo.ROOT_WORLD), false, localPlayerCoord)
         // Re-obtain the instance as teleporting is equal to removal + adding
         clientNpc = checkNotNull(client.cachedNpcs[client.npcSlot[0]])
         assertEquals(npc.id, clientNpc.id)
@@ -220,7 +232,7 @@ class NpcInfoTest {
         // Skip everyone but the first entry
         serverNpcs = listOf(npc)
         tick()
-        client.decode(this.localNpcInfo.backingBuffer(), false, localPlayerCoord)
+        client.decode(this.localNpcInfo.backingBuffer(NpcInfo.ROOT_WORLD), false, localPlayerCoord)
         assertEquals(1, client.npcSlotCount)
         val clientNpc = checkNotNull(client.cachedNpcs[client.npcSlot[0]])
         assertEquals(npc.id, clientNpc.id)
@@ -229,7 +241,7 @@ class NpcInfoTest {
 
         npc.avatar.extendedInfo.setSay("Hello world")
         tick()
-        client.decode(this.localNpcInfo.backingBuffer(), false, localPlayerCoord)
+        client.decode(this.localNpcInfo.backingBuffer(NpcInfo.ROOT_WORLD), false, localPlayerCoord)
         assertEquals(npc.id, clientNpc.id)
         assertEquals(npc.index, clientNpc.index)
         assertEquals(npc.coordGrid, clientNpc.coord)

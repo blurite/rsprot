@@ -53,18 +53,18 @@ class NpcInfoClient {
             val index = updatedNpcSlot[i]
             val npc = checkNotNull(cachedNpcs[index])
             var flag = buffer.g1()
-            if ((flag and 0x2) != 0) {
+            if ((flag and 0x1) != 0) {
                 val extra: Int = buffer.g1()
                 flag += extra shl 8
             }
-            if ((flag and 0x100) != 0) {
+            if ((flag and 0x1000) != 0) {
                 val extra: Int = buffer.g1()
                 flag += extra shl 16
             }
-            check(flag and (0x2 or 0x100 or 0x1).inv() == 0) {
+            check(flag and (0x1 or 0x1000 or 0x2).inv() == 0) {
                 "Extended info other than 'say' included!"
             }
-            if (flag and 0x1 != 0) {
+            if (flag and 0x2 != 0) {
                 val text = buffer.gjstr()
                 npc.overheadChat = text
             }
@@ -146,23 +146,24 @@ class NpcInfoClient {
                     val npc = checkNotNull(cachedNpcs[index])
                     npcSlot[npcSlotCount++] = index
                     npc.lastUpdateCycle = cycle
-                    val deltaZ = decodeDelta(large, buffer)
+
+                    npc.id = buffer.gBits(14)
+                    val jump = buffer.gBits(1)
                     val extendedInfo = buffer.gBits(1)
                     if (extendedInfo == 1) {
                         updatedNpcSlot[updatedNpcSlotCount++] = index
                     }
-                    val jump = buffer.gBits(1)
+                    val deltaX = decodeDelta(large, buffer)
                     val angle = NPC_TURN_ANGLES[buffer.gBits(3)]
                     if (isNew) {
                         npc.turnAngle = angle
                         npc.angle = angle
                     }
-                    npc.id = buffer.gBits(14)
-                    val deltaX = decodeDelta(large, buffer)
                     val hasSpawnCycle = buffer.gBits(1) == 1
                     if (hasSpawnCycle) {
                         npc.spawnCycle = buffer.gBits(32)
                     }
+                    val deltaZ = decodeDelta(large, buffer)
                     // reset bas
                     if (npc.turnSpeed == 0) {
                         npc.angle = 0
