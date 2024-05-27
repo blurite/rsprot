@@ -44,6 +44,7 @@ import net.rsprot.buffer.extensions.gboolean
 import net.rsprot.buffer.extensions.gdata
 import net.rsprot.buffer.extensions.gdataAlt1
 import net.rsprot.buffer.extensions.gdataAlt2
+import net.rsprot.buffer.extensions.gdataAlt3
 import net.rsprot.buffer.extensions.gjstr
 import net.rsprot.buffer.extensions.gjstr2
 import net.rsprot.buffer.extensions.gjstrnull
@@ -77,6 +78,7 @@ import net.rsprot.buffer.extensions.pboolean
 import net.rsprot.buffer.extensions.pdata
 import net.rsprot.buffer.extensions.pdataAlt1
 import net.rsprot.buffer.extensions.pdataAlt2
+import net.rsprot.buffer.extensions.pdataAlt3
 import net.rsprot.buffer.extensions.pjstr
 import net.rsprot.buffer.extensions.pjstr2
 import net.rsprot.buffer.extensions.pjstrnull
@@ -486,19 +488,19 @@ public value class JagByteBuf(public val buffer: ByteBuf) {
 
     public inline fun pdata(
         src: ByteArray,
-        start: Int = 0,
-        end: Int = src.size,
+        offset: Int = 0,
+        length: Int = src.size,
     ): JagByteBuf {
-        buffer.pdata(src, start, end)
+        buffer.pdata(src, offset, length)
         return this
     }
 
     public inline fun pdata(
         src: ByteBuf,
-        start: Int = src.readerIndex(),
-        end: Int = (start + src.readableBytes()),
+        offset: Int = src.readerIndex(),
+        length: Int = src.readableBytes(),
     ): JagByteBuf {
-        buffer.pdata(src, start, end)
+        buffer.pdata(src, offset, length)
         return this
     }
 
@@ -520,19 +522,19 @@ public value class JagByteBuf(public val buffer: ByteBuf) {
 
     public inline fun pdataAlt1(
         src: ByteArray,
-        start: Int = 0,
-        end: Int = src.size,
+        offset: Int = 0,
+        length: Int = src.size,
     ): JagByteBuf {
-        buffer.pdataAlt1(src, start, end)
+        buffer.pdataAlt1(src, offset, length)
         return this
     }
 
     public inline fun pdataAlt1(
         src: ByteBuf,
-        start: Int = src.readerIndex(),
-        end: Int = (start + src.readableBytes()),
+        offset: Int = src.readerIndex(),
+        length: Int = src.readableBytes(),
     ): JagByteBuf {
-        buffer.pdataAlt1(src, start, end)
+        buffer.pdataAlt1(src, offset, length)
         return this
     }
 
@@ -554,19 +556,53 @@ public value class JagByteBuf(public val buffer: ByteBuf) {
 
     public inline fun pdataAlt2(
         src: ByteArray,
-        start: Int = 0,
-        end: Int = src.size,
+        offset: Int = 0,
+        length: Int = src.size,
     ): JagByteBuf {
-        buffer.pdataAlt2(src, start, end)
+        buffer.pdataAlt2(src, offset, length)
         return this
     }
 
     public inline fun pdataAlt2(
         src: ByteBuf,
-        start: Int = src.readerIndex(),
-        end: Int = (start + src.readableBytes()),
+        offset: Int = src.readerIndex(),
+        length: Int = src.readableBytes(),
     ): JagByteBuf {
-        buffer.pdataAlt2(src, start, end)
+        buffer.pdataAlt2(src, offset, length)
+        return this
+    }
+
+    public inline fun gdataAlt3(
+        dest: ByteArray,
+        offset: Int = 0,
+        length: Int = dest.size,
+    ) {
+        buffer.gdataAlt3(dest, offset, length)
+    }
+
+    public inline fun gdataAlt3(
+        dest: ByteBuf,
+        offset: Int = buffer.readerIndex(),
+        length: Int = buffer.readableBytes(),
+    ) {
+        buffer.gdataAlt3(dest, offset, length)
+    }
+
+    public inline fun pdataAlt3(
+        src: ByteArray,
+        offset: Int = 0,
+        length: Int = src.size,
+    ): JagByteBuf {
+        buffer.pdataAlt3(src, offset, length)
+        return this
+    }
+
+    public inline fun pdataAlt3(
+        src: ByteBuf,
+        offset: Int = src.readerIndex(),
+        length: Int = src.readableBytes(),
+    ): JagByteBuf {
+        buffer.pdataAlt3(src, offset, length)
         return this
     }
 

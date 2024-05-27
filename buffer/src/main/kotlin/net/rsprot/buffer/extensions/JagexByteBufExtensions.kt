@@ -634,10 +634,10 @@ public fun ByteBuf.gdata(
 
 public fun ByteBuf.pdata(
     src: ByteArray,
-    start: Int = 0,
-    end: Int = src.size,
+    offset: Int = 0,
+    length: Int = src.size,
 ): ByteBuf {
-    for (i in start..<(end + start)) {
+    for (i in offset..<(length + offset)) {
         writeByte(src[i].toInt())
     }
     return this
@@ -645,10 +645,10 @@ public fun ByteBuf.pdata(
 
 public fun ByteBuf.pdata(
     src: ByteBuf,
-    start: Int = src.readerIndex(),
-    end: Int = (start + src.readableBytes()),
+    offset: Int = src.readerIndex(),
+    length: Int = src.readableBytes(),
 ): ByteBuf {
-    for (i in start..<(end + start)) {
+    for (i in offset..<(length + offset)) {
         writeByte(src.getByte(i).toInt())
     }
     return this
@@ -676,10 +676,10 @@ public fun ByteBuf.gdataAlt1(
 
 public fun ByteBuf.pdataAlt1(
     data: ByteArray,
-    start: Int = 0,
-    end: Int = data.size,
+    offset: Int = 0,
+    length: Int = data.size,
 ): ByteBuf {
-    for (i in (start + end - 1) downTo start) {
+    for (i in (offset + length - 1) downTo offset) {
         writeByte(data[i].toInt())
     }
     return this
@@ -687,10 +687,10 @@ public fun ByteBuf.pdataAlt1(
 
 public fun ByteBuf.pdataAlt1(
     data: ByteBuf,
-    start: Int = data.readerIndex(),
-    end: Int = (start + data.readableBytes()),
+    offset: Int = data.readerIndex(),
+    length: Int = data.readableBytes(),
 ): ByteBuf {
-    for (i in (start + end - 1) downTo start) {
+    for (i in (offset + length - 1) downTo offset) {
         writeByte(data.getByte(i).toInt())
     }
     return this
@@ -701,7 +701,7 @@ public fun ByteBuf.gdataAlt2(
     offset: Int = 0,
     length: Int = dest.size,
 ) {
-    for (i in (offset + length - 1) downTo offset) {
+    for (i in offset..<(offset + length)) {
         dest[i] = (readUnsignedByte() - HALF_UBYTE).toByte()
     }
 }
@@ -711,17 +711,17 @@ public fun ByteBuf.gdataAlt2(
     offset: Int = readerIndex(),
     length: Int = readableBytes(),
 ) {
-    for (i in (offset + length - 1) downTo offset) {
+    for (i in offset..<(offset + length)) {
         dest.writeByte(readUnsignedByte() - HALF_UBYTE)
     }
 }
 
 public fun ByteBuf.pdataAlt2(
     data: ByteArray,
-    start: Int = 0,
-    end: Int = data.size,
+    offset: Int = 0,
+    length: Int = data.size,
 ): ByteBuf {
-    for (i in (start + end - 1) downTo start) {
+    for (i in offset..<(offset + length)) {
         writeByte(data[i].toInt() - HALF_UBYTE)
     }
     return this
@@ -729,10 +729,52 @@ public fun ByteBuf.pdataAlt2(
 
 public fun ByteBuf.pdataAlt2(
     data: ByteBuf,
-    start: Int = data.readerIndex(),
+    offset: Int = data.readerIndex(),
     length: Int = data.readableBytes(),
 ): ByteBuf {
-    for (i in (start + length - 1) downTo start) {
+    for (i in offset..<(offset + length)) {
+        writeByte(data.getByte(i) - HALF_UBYTE)
+    }
+    return this
+}
+
+public fun ByteBuf.gdataAlt3(
+    dest: ByteArray,
+    offset: Int = 0,
+    length: Int = dest.size,
+) {
+    for (i in (offset + length - 1) downTo offset) {
+        dest[i] = (readUnsignedByte() - HALF_UBYTE).toByte()
+    }
+}
+
+public fun ByteBuf.gdataAlt3(
+    dest: ByteBuf,
+    offset: Int = readerIndex(),
+    length: Int = readableBytes(),
+) {
+    for (i in (offset + length - 1) downTo offset) {
+        dest.writeByte(readUnsignedByte() - HALF_UBYTE)
+    }
+}
+
+public fun ByteBuf.pdataAlt3(
+    data: ByteArray,
+    offset: Int = 0,
+    length: Int = data.size,
+): ByteBuf {
+    for (i in (offset + length - 1) downTo offset) {
+        writeByte(data[i].toInt() - HALF_UBYTE)
+    }
+    return this
+}
+
+public fun ByteBuf.pdataAlt3(
+    data: ByteBuf,
+    offset: Int = data.readerIndex(),
+    length: Int = data.readableBytes(),
+): ByteBuf {
+    for (i in (offset + length - 1) downTo offset) {
         writeByte(data.getByte(i) - HALF_UBYTE)
     }
     return this

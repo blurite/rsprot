@@ -1,6 +1,6 @@
 # RSProt
 
-[![GitHub Actions][actions-badge]][actions] [![MIT license][mit-badge]][mit] [![OldSchool - 221 (Alpha)](https://img.shields.io/badge/OldSchool-221_(Alpha)-9a1abd)](https://github.com/blurite/rsprot/tree/master/protocol/osrs-221-api/src/main/kotlin/net/rsprot/protocol/api)
+[![GitHub Actions][actions-badge]][actions] [![MIT license][mit-badge]][mit] [![OldSchool - 221 (Alpha)](https://img.shields.io/badge/OldSchool-222_(Alpha)-9a1abd)](https://github.com/blurite/rsprot/tree/master/protocol/osrs-222-api/src/main/kotlin/net/rsprot/protocol/api) [![OldSchool - 221 (Alpha)](https://img.shields.io/badge/OldSchool-221_(Alpha)-9a1abd)](https://github.com/blurite/rsprot/tree/master/protocol/osrs-221-api/src/main/kotlin/net/rsprot/protocol/api)
 
 ## Status
 > [!NOTE]
@@ -31,7 +31,222 @@ other revisions are welcome, but will not be provided by default.
 - Java 11
 
 ## Supported Versions
-This library currently only supports revision 221 OldSchool desktop clients.
+This library currently supports revision 221 and 222 OldSchool desktop clients.
+
+## Quick Guide
+This section covers a quick guide for how to use the protocol after implementing
+the base API. It is not a guide for the base API itself, that will come in the
+future. This specific quick guide refers to revision 222, which brought changes
+to the complicated info packets.
+
+#### Player Initialization
+When a player logs in, a new protocol instance must be allocated for
+player info, npc info and world entity info. This will be used to keep track
+of state throughout the session.
+These can be allocated via
+```kotlin
+val playerInfo = service.playerInfoProtocol.alloc(index, OldSchoolClientType.DESKTOP)
+val npcInfo = service.npcInfoProtocol.alloc(index, OldSchoolClientType.DESKTOP)
+val worldEntityInfo = service.worldEntityInfoProtocol.alloc(index, OldSchoolClientType.DESKTOP)
+```
+Furthermore, the local coordinate of the player must be updated in all
+these info classes - this can be done via:
+```kotlin
+playerInfo.updateCoord(level, x, z)
+npcInfo.updateCoord(currentWorldEntityId, level, x, z)
+worldEntityInfo.updateCoord(currentWorldEntityId, level, x, z)
+```
+
+After the player logs out, all these info instances **must** be returned back
+into the protocol. This can be achieved via:
+```kotlin
+service.playerInfoProtocol.dealloc(playerInfo)
+service.npcInfoProtocol.dealloc(npcInfo)
+service.worldEntityInfoProtocol.dealloc(worldEntityInfo)
+```
+
+#### Updating Infos
+Before we can update any info protocols, we must update the state in them.
+This can be done as:
+```kotlin
+val (x, z, level) = player.coord
+worldEntityInfo.updateCoord(currentWorldEntityId, level, x, z)
+
+// Update the camera POV
+if (currentWorldEntityId != -1) {
+    val entity = World.getWorldEntity(currentWorldEntityId)
+    playerInfo.setRenderCoord(entity.level, entity.x, entity.z)
+    worldEntityInfo.setRenderCoord(entity.level, entity.x, entity.z)
+}
+playerInfo.updateCoord(level, x, z)
+// Lastly, if build area has changed, we must inform worldEntityInfo
+// about the changes at this step!
+```
+
+After the state has been updated, the world entity info protocol can be computed.
+This can be achieved via a single call as:
+```kotlin
+service.worldEntityInfoProtocol.update()
+```
+
+After the world entity info has processed, we will know about the worlds that
+we must handle. In this step, we must deallocate player and npc infos for
+any removed worlds, allocate new player and npc infos for any added worlds,
+and update the state for every player and npc info. This can be done via:
+```kotlin
+// First off, write the world entity info to the client - it must
+// be aware of the updates before receiving the rebuild world entity packets
+packets.worldEntityInfo(worldEntityInfo)
+
+// As we are performing rebuilds further below, we must set the active world
+// as the root world - nesting world entities is not possible.
+packets.setActiveWorld(-1, player.level)
+for (index in worldEntityInfo.getRemovedWorldEntityIndices()) {
+    playerInfo.destroyWorld(index)
+    npcInfo.destroyWorld(index)
+}
+for (index in worldEntityInfo.getAddedWorldEntityIndices()) {
+    playerInfo.allocateWorld(index)
+    npcInfo.allocateWorld(index)
+
+    // Perform the actual world entity update, building the entity
+    // in the root world.
+    rebuildWorldEntity(index)
+}
+for (index in worldEntityInfo.getAllWorldEntityIndices()) {
+    val entity = World.getWorldEntity(index)
+    val (instanceX, instanceZ, instanceLevel) = entity.instanceCoord
+    // For dynamic worlds, we want to update the coord to point to the
+    // south-western corner of the instance at which the world entity lies.
+    npcInfo.updateCoord(index, instanceLevel, instanceX, instanceZ)
+}
+if (currentWorldEntityId != -1) {
+    // If the player is currently on a world entity, we must mark the
+    // origin point as the south-western corner of that instance for the root world
+    val entity = World.getWorldEntity(currentWorldEntityId)
+    val (instanceX, instanceZ, instanceLevel) = entity.instanceCoord
+    npcInfo.updateCoord(-1, instanceLevel, instanceX, instanceZ)
+} else {
+    // If the player is not on a dynamic world entity, we can set the
+    // origin point as the local player coordinate
+    val (x, z, level) = player.coord
+    npcInfo.updateCoord(-1, level, x, z)
+}
+```
+
+Once all the state has been updated for all the infos, we can compute player
+and npc infos for all the players. This can be done via:
+```kotlin
+service.playerInfoProtocol.update()
+service.npcInfoProtocol.update()
+```
+
+Now that everything is ready, we can perform the last part of the update.
+In this section, we send player and npc info packets for every world that's
+currently being tracked. This can be done as:
+```kotlin
+// For dynamic worlds, the npc info origin coord should point to the
+// south-western corner of the instance, which corresponds to 0,0 in build area.
+packets.setNpcUpdateOrigin(0, 0)
+for (index in worldEntityInfo.getAllWorldEntityIndices()) {
+    packets.setActiveWorld(index, player.level)
+    packets.playerInfo(index, playerInfo)
+    packets.npcInfo(index, npcInfo)
+    // Send zone updates for this world entity
+}
+
+// Lastly, update the root world itself
+packets.setActiveWorld(-1, player.level)
+packets.playerInfo(PlayerInfo.ROOT_WORLD, playerInfo)
+if (currentWorldEntityId != -1) {
+    // If the player is on a dynamic world entity, the origin will be 0,0
+    packets.setNpcUpdateOrigin(0, 0)
+} else {
+    // If the player is in the root world, this should correspond
+    // to the player's current coordinate in the build area.
+    val localCoords = this.buildAreaManager.local(coord)
+    packets.setNpcUpdateOrigin(localCoords.x, localCoords.z)
+}
+packets.npcInfo(NpcInfo.ROOT_WORLD, npcInfo)
+```
+
+#### End of Cycle
+After the above steps have been performed for all players, state must be reset:
+1. For every player, call `avatar.postUpdate()`
+2. For every NPC, call `avatar.postUpdate()`
+3. Now lastly, call `service.postUpdate()` - this should be called once for the
+entire game, not per-player or per-npc basis.
+
+### NPCs
+For each NPC that spawns into the world, an avatar must be allocated.
+This can be done via:
+```kotlin
+val avatar = service.npcAvatarFactory.alloc(
+    index,
+    id,
+    coord.level,
+    coord.x,
+    coord.z,
+    spawnClock,
+    direction,
+)
+```
+Changes to the NPC, such as animations will be performed via this avatar,
+using the extended info block. For movement, the respective movement functions
+must be called on the avatar.
+When a NPC fully despawns from the world, the avatars must be released via
+`service.npcAvatarFactory.release(avatar)`.
+If a NPC dies but is set to respawn, instead just mark the avatar inaccessible.
+
+### World Entities
+For each world entity that spawns into the world, an avatar must be allocated.
+This can be done via:
+```kotlin
+val avatar = service.worldEntityAvatarFactory.alloc(
+    index,
+    sizeX,
+    sizeZ,
+    coord.x,
+    coord.z,
+    coord.level,
+    angle,
+)
+```
+Movement and turning will be controlled via this avatar.
+When the world entity despawns, the avatar must be returned back into the
+protocol. This can be done via:
+`service.worldEntityAvatarFactory.release(avatar)`
+
+## Changes
+
+### Revision 222
+In revision 222, Jagex released the first prototype of the tech used for sailing.
+As such, quite significant changes were done to player and NPC info packets.
+
+#### Packets
+A total of 6 new packets were introduced with revision 222, in the server to
+client direction. No other changes were performed to other packets in either
+direction.
+- CAM_TARGET: This packet can be used to focus the camera on any player,
+NPC or world entity in the root world. It will only work on entities which
+are visible to the local player, and will fall back to the local player
+in the root world if the respective entity cannot be found.
+- CLEAR_ENTITIES: A packet which can be used to destroy a new world entity
+in the client's perspective, removing any NPCs and nested world entities
+as a result of it.
+- SET_ACTIVE_WORLD: Marks a specific world active, meaning the updates which
+rely on the active world that follow will be applied to this world.
+- SET_NPC_UPDATE_ORIGIN: Sets the origin point for the next NPC info that
+will follow. As of this revision, NPC info is no longer attached to the relative
+position of the local player - instead it must be transmitted via the origin
+point. This coordinate should point to the local player coordinate in the build
+area for root world updates - it needs to be different for world entities, though.
+- WORLDENTITY_INFO: A new info protocol used to keep track of any world entities
+for a given player. This packet is quite similar to player and NPC info,
+except it does not have any extended info support.
+- REBUILD_WORLDENTITY: A packet to draw an instance into the build area of
+the player, effectively rendering a specific world entity to the player.
+
 
 ## API Analysis
 

@@ -1,4 +1,4 @@
-package net.rsprot.protocol.game.incoming
+package net.rsprot.protocol.game.outgoing
 
 import net.rsprot.protocol.ServerProtCategory
 

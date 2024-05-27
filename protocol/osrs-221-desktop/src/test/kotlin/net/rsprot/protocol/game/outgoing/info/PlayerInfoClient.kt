@@ -182,14 +182,14 @@ class PlayerInfoClient {
 
     private fun decodeExtendedInfoBlocks(
         buffer: JagByteBuf,
-        index: Int,
+        @Suppress("UNUSED_PARAMETER") index: Int,
         player: Player,
         flag: Int,
     ) {
         if (flag and 0x4 != 0) {
             val len = buffer.g1Alt2()
             val data = ByteArray(len)
-            buffer.gdataAlt2(data, 0, len)
+            buffer.gdataAlt3(data)
             decodeAppearance(Unpooled.wrappedBuffer(data).toJagByteBuf(), player)
         }
         require(flag and 0x4.inv() == 0)
