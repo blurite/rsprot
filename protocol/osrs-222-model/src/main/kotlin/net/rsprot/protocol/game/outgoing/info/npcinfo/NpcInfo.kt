@@ -42,6 +42,7 @@ public class NpcInfo internal constructor(
     internal var localPlayerIndex: Int,
     private val indexSupplier: NpcIndexSupplier,
     private val lowResolutionToHighResolutionEncoders: ClientTypeMap<NpcResolutionChangeEncoder>,
+    private val detailsStorage: NpcInfoWorldDetailsStorage,
 ) : ReferencePooledObject {
     /**
      * The maximum view distance how far a player will see other NPCs.
@@ -70,7 +71,7 @@ public class NpcInfo internal constructor(
 
     init {
         // There is always a root world!
-        details[WORLD_ENTITY_CAPACITY] = NpcInfoWorldDetails(ROOT_WORLD)
+        details[WORLD_ENTITY_CAPACITY] = detailsStorage.poll(ROOT_WORLD)
     }
 
     public fun setActiveWorld(worldId: Int) {
@@ -100,7 +101,7 @@ public class NpcInfo internal constructor(
         require(existing == null) {
             "World $worldId already allocated."
         }
-        details[worldId] = NpcInfoWorldDetails(worldId)
+        details[worldId] = detailsStorage.poll(worldId)
     }
 
     public fun destroyWorld(worldId: Int) {
@@ -111,6 +112,7 @@ public class NpcInfo internal constructor(
         require(existing != null) {
             "World $worldId does not exist."
         }
+        detailsStorage.push(existing)
         details[worldId] = null
     }
 
@@ -504,29 +506,13 @@ public class NpcInfo internal constructor(
         this.localPlayerIndex = index
         this.oldSchoolClientType = oldSchoolClientType
         this.viewDistance = MAX_SMALL_PACKET_DISTANCE
-        for (details in this.details) {
-            if (details == null) {
-                continue
-            }
-            details.localPlayerLastCoord = CoordGrid.INVALID
-            details.highResolutionNpcIndexCount = 0
-            details.extendedInfoCount = 0
-            details.observerExtendedInfoFlags.reset()
-        }
     }
 
     override fun onDealloc() {
-        for (details in this.details) {
-            if (details == null) {
-                continue
-            }
-            if (!details.builtIntoPacket) {
-                val buffer = details.buffer
-                if (buffer != null && buffer.refCnt() > 0) {
-                    buffer.release(buffer.refCnt())
-                }
-            }
-            details.buffer = null
+        for (index in this.details.indices) {
+            val details = this.details[index] ?: continue
+            detailsStorage.push(details)
+            this.details[index] = null
         }
     }
 

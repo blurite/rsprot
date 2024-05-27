@@ -6,7 +6,7 @@ import net.rsprot.protocol.game.outgoing.info.ObserverExtendedInfoFlags
 
 @ExperimentalUnsignedTypes
 internal class NpcInfoWorldDetails(
-    internal val worldId: Int,
+    internal var worldId: Int,
 ) {
     internal var initialized: Boolean = false
 
@@ -130,6 +130,27 @@ internal class NpcInfoWorldDetails(
         val uncompressed = this.highResolutionNpcIndices
         this.highResolutionNpcIndices = this.temporaryHighResolutionNpcIndices
         this.temporaryHighResolutionNpcIndices = uncompressed
+    }
+
+    internal fun onAlloc(worldId: Int) {
+        this.worldId = worldId
+        this.initialized = false
+        this.localPlayerCurrentCoord = CoordGrid.INVALID
+        this.localPlayerLastCoord = localPlayerCurrentCoord
+        this.highResolutionNpcIndexCount = 0
+        this.highResolutionNpcIndices.fill(0u)
+        this.temporaryHighResolutionNpcIndices.fill(0u)
+        this.extendedInfoCount = 0
+        this.extendedInfoIndices.fill(0u)
+        this.observerExtendedInfoFlags.reset()
+        val buffer = this.buffer
+        if (buffer != null) {
+            if (!builtIntoPacket) {
+                buffer.release(buffer.refCnt())
+            }
+            this.buffer = null
+        }
+        this.builtIntoPacket = false
     }
 
     private companion object {
