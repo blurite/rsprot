@@ -20,7 +20,7 @@ measurement.
 
 ## Results
 
-### [Player Info](https://github.com/blurite/rsprot/blob/master/protocol/osrs-221-desktop/src/benchmarks/kotlin/net/rsprot/protocol/game/outgoing/info/PlayerInfoBenchmark.kt)
+### [Player Info](https://github.com/blurite/rsprot/blob/master/protocol/osrs-221/osrs-221-desktop/src/benchmarks/kotlin/net/rsprot/protocol/game/outgoing/info/PlayerInfoBenchmark.kt)
 
 #### Measurements
 
@@ -69,7 +69,7 @@ compression during the encoding.
 released back into the pool. The pre-computed chat extended info block's
 buffer is additionally released back into the pool for every player.
 
-### [NPC Info](https://github.com/blurite/rsprot/blob/master/protocol/osrs-221-desktop/src/benchmarks/kotlin/net/rsprot/protocol/game/outgoing/info/NpcInfoBenchmark.kt)
+### [NPC Info](https://github.com/blurite/rsprot/blob/master/protocol/osrs-221/osrs-221-desktop/src/benchmarks/kotlin/net/rsprot/protocol/game/outgoing/info/NpcInfoBenchmark.kt)
 
 #### Measurements
 
