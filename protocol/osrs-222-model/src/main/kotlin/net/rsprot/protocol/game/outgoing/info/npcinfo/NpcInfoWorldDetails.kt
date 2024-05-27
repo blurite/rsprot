@@ -4,15 +4,17 @@ import io.netty.buffer.ByteBuf
 import net.rsprot.protocol.common.game.outgoing.info.CoordGrid
 import net.rsprot.protocol.game.outgoing.info.ObserverExtendedInfoFlags
 
+/**
+ * A world detail implementation for NPC info, tracking local NPCs in a specific world.
+ * @property worldId the id of the world in which the NPCs exist.
+ */
 @ExperimentalUnsignedTypes
 internal class NpcInfoWorldDetails(
     internal var worldId: Int,
 ) {
-    internal var initialized: Boolean = false
-
     /**
      * The last cycle's coordinate of the local player, used to perform faster npc removal.
-     * If the player moves a greater distance than the [viewDistance], we can make the assumption
+     * If the player moves a greater distance than the [NpcInfo.viewDistance], we can make the assumption
      * that all the existing high-resolution NPCs need to be removed, and thus remove them
      * in a simplified manner, rather than applying a coordinate check on each one. This commonly
      * occurs whenever a player teleports far away.
@@ -132,9 +134,13 @@ internal class NpcInfoWorldDetails(
         this.temporaryHighResolutionNpcIndices = uncompressed
     }
 
+    /**
+     * Resets all the properties of this world details implementation, allowing
+     * it to be re-used for another player.
+     * @param worldId the new world id to be used for these details.
+     */
     internal fun onAlloc(worldId: Int) {
         this.worldId = worldId
-        this.initialized = false
         this.localPlayerCurrentCoord = CoordGrid.INVALID
         this.localPlayerLastCoord = localPlayerCurrentCoord
         this.highResolutionNpcIndexCount = 0
