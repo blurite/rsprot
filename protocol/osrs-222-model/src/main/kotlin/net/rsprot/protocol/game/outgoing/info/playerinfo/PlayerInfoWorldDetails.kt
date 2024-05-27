@@ -2,9 +2,17 @@ package net.rsprot.protocol.game.outgoing.info.playerinfo
 
 import io.netty.buffer.ByteBuf
 
+/**
+ * A class which wraps the details of a player info implementation in a specific world.
+ * @property worldId the id of the world this info object is tracking.
+ */
 internal class PlayerInfoWorldDetails(
-    internal val worldId: Int,
+    internal var worldId: Int,
 ) {
+    /**
+     * Whether this info object has been initialized.
+     * We must track this separately as gpi init block already transmits low resolution coord information.
+     */
     internal var initialized: Boolean = false
 
     /**
@@ -68,9 +76,9 @@ internal class PlayerInfoWorldDetails(
     /**
      * The buffer into which all the information is written in this cycle.
      * It should be noted that this buffer is constantly changing, as we reallocate
-     * a new buffer instance through the [allocator] each cycle. This is to ensure that
+     * a new buffer instance through the allocator each cycle. This is to ensure that
      * we do not start overwriting a buffer before it has been fully written into the pipeline.
-     * Thus, a pooled [allocator] implementation should be preferred to avoid expensive re-allocations.
+     * Thus, a pooled allocator implementation should be preferred to avoid expensive re-allocations.
      */
     internal var buffer: ByteBuf? = null
 
@@ -82,4 +90,25 @@ internal class PlayerInfoWorldDetails(
      * any memory leaks.
      */
     internal var builtIntoPacket: Boolean = false
+
+    internal fun onAlloc(worldId: Int) {
+        this.worldId = worldId
+        this.initialized = false
+        stationary.fill(0)
+        lowResolutionCount = 0
+        lowResolutionIndices.fill(0)
+        highResolutionCount = 0
+        highResolutionIndices.fill(0)
+        highResolutionPlayers.fill(0)
+        extendedInfoCount = 0
+        extendedInfoIndices.fill(0)
+        val buffer = this.buffer
+        if (buffer != null) {
+            if (!builtIntoPacket) {
+                buffer.release(buffer.refCnt())
+            }
+            this.buffer = null
+        }
+        this.builtIntoPacket = false
+    }
 }

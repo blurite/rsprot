@@ -98,7 +98,7 @@ public class PlayerInfo internal constructor(
 
     init {
         // There is always a root world!
-        details[PROTOCOL_CAPACITY] = PlayerInfoWorldDetails(ROOT_WORLD)
+        details[PROTOCOL_CAPACITY] = protocol.detailsStorage.poll(ROOT_WORLD)
     }
 
     public fun setActiveWorld(worldId: Int) {
@@ -128,7 +128,7 @@ public class PlayerInfo internal constructor(
         require(existing == null) {
             "World $worldId already allocated."
         }
-        details[worldId] = PlayerInfoWorldDetails(worldId)
+        details[worldId] = protocol.detailsStorage.poll(worldId)
     }
 
     public fun destroyWorld(worldId: Int) {
@@ -140,6 +140,7 @@ public class PlayerInfo internal constructor(
             "World $worldId does not exist."
         }
         details[worldId] = null
+        protocol.detailsStorage.push(existing)
     }
 
     private fun getDetails(worldId: Int): PlayerInfoWorldDetails {
@@ -723,8 +724,9 @@ public class PlayerInfo internal constructor(
             }
             details.buffer = null
         }
-        // TODO: Perhaps releases these details back into a pool instead?
         for (i in 0..<PROTOCOL_CAPACITY) {
+            val details = this.details[i] ?: continue
+            protocol.detailsStorage.push(details)
             this.details[i] = null
         }
         avatar.extendedInfo.reset()

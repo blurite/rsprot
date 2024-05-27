@@ -35,6 +35,12 @@ public class PlayerInfoProtocol(
     private val worldEntityAvatarRepository: WorldEntityAvatarRepository?,
 ) {
     /**
+     * A storage object for player info world details, allowing the re-use of these
+     * relatively expensive objects.
+     */
+    internal val detailsStorage: PlayerInfoWorldDetailsStorage = PlayerInfoWorldDetailsStorage()
+
+    /**
      * The repository responsible for keeping track of all the players' low resolution
      * position within the world.
      */
