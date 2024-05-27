@@ -6,6 +6,7 @@ import net.rsprot.protocol.ServerProt
 import net.rsprot.protocol.game.outgoing.interfaces.IfSetPlayerModelSelf
 import net.rsprot.protocol.game.outgoing.prot.GameServerProt
 import net.rsprot.protocol.message.codec.MessageEncoder
+import net.rsprot.protocol.util.pCombinedIdAlt2
 
 public class IfSetPlayerModelSelfEncoder : MessageEncoder<IfSetPlayerModelSelf> {
     override val prot: ServerProt = GameServerProt.IF_SETPLAYERMODEL_SELF
@@ -17,6 +18,6 @@ public class IfSetPlayerModelSelfEncoder : MessageEncoder<IfSetPlayerModelSelf> 
     ) {
         // The boolean is inverted client-sided, it's more of a "skip copying"
         buffer.p1Alt3(if (message.copyObjs) 0 else 1)
-        buffer.p4Alt2(message.combinedId.combinedId)
+        buffer.pCombinedIdAlt2(message.combinedId)
     }
 }

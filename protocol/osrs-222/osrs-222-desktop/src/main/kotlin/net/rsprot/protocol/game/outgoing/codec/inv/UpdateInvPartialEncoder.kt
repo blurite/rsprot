@@ -7,6 +7,7 @@ import net.rsprot.protocol.game.outgoing.inv.UpdateInvPartial
 import net.rsprot.protocol.game.outgoing.prot.GameServerProt
 import net.rsprot.protocol.message.codec.MessageEncoder
 import net.rsprot.protocol.metadata.Consistent
+import net.rsprot.protocol.util.pCombinedId
 
 @Consistent
 public class UpdateInvPartialEncoder : MessageEncoder<UpdateInvPartial> {
@@ -17,7 +18,7 @@ public class UpdateInvPartialEncoder : MessageEncoder<UpdateInvPartial> {
         buffer: JagByteBuf,
         message: UpdateInvPartial,
     ) {
-        buffer.p4(message.combinedId.combinedId)
+        buffer.pCombinedId(message.combinedId)
         buffer.p2(message.inventoryId)
         for (i in 0..<message.count) {
             val obj = message.getObject(i)

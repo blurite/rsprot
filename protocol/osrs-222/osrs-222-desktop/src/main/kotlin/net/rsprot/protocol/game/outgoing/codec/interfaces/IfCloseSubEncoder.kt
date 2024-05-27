@@ -7,6 +7,7 @@ import net.rsprot.protocol.game.outgoing.interfaces.IfCloseSub
 import net.rsprot.protocol.game.outgoing.prot.GameServerProt
 import net.rsprot.protocol.message.codec.MessageEncoder
 import net.rsprot.protocol.metadata.Consistent
+import net.rsprot.protocol.util.pCombinedId
 
 @Consistent
 public class IfCloseSubEncoder : MessageEncoder<IfCloseSub> {
@@ -17,6 +18,6 @@ public class IfCloseSubEncoder : MessageEncoder<IfCloseSub> {
         buffer: JagByteBuf,
         message: IfCloseSub,
     ) {
-        buffer.p4(message.combinedId.combinedId)
+        buffer.pCombinedId(message.combinedId)
     }
 }

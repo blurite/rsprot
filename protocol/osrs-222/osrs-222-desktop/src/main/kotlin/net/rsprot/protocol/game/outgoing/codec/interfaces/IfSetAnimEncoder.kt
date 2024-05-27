@@ -6,6 +6,7 @@ import net.rsprot.protocol.ServerProt
 import net.rsprot.protocol.game.outgoing.interfaces.IfSetAnim
 import net.rsprot.protocol.game.outgoing.prot.GameServerProt
 import net.rsprot.protocol.message.codec.MessageEncoder
+import net.rsprot.protocol.util.pCombinedIdAlt2
 
 public class IfSetAnimEncoder : MessageEncoder<IfSetAnim> {
     override val prot: ServerProt = GameServerProt.IF_SETANIM
@@ -15,7 +16,7 @@ public class IfSetAnimEncoder : MessageEncoder<IfSetAnim> {
         buffer: JagByteBuf,
         message: IfSetAnim,
     ) {
-        buffer.p4Alt2(message.combinedId.combinedId)
+        buffer.pCombinedIdAlt2(message.combinedId)
         buffer.p2Alt3(message.anim)
     }
 }

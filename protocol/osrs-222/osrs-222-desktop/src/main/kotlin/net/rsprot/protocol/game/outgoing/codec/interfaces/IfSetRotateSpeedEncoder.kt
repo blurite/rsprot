@@ -6,6 +6,7 @@ import net.rsprot.protocol.ServerProt
 import net.rsprot.protocol.game.outgoing.interfaces.IfSetRotateSpeed
 import net.rsprot.protocol.game.outgoing.prot.GameServerProt
 import net.rsprot.protocol.message.codec.MessageEncoder
+import net.rsprot.protocol.util.pCombinedIdAlt1
 
 public class IfSetRotateSpeedEncoder : MessageEncoder<IfSetRotateSpeed> {
     override val prot: ServerProt = GameServerProt.IF_SETROTATESPEED
@@ -16,7 +17,7 @@ public class IfSetRotateSpeedEncoder : MessageEncoder<IfSetRotateSpeed> {
         message: IfSetRotateSpeed,
     ) {
         buffer.p2Alt2(message.xSpeed)
-        buffer.p4Alt1(message.combinedId.combinedId)
+        buffer.pCombinedIdAlt1(message.combinedId)
         buffer.p2(message.ySpeed)
     }
 }

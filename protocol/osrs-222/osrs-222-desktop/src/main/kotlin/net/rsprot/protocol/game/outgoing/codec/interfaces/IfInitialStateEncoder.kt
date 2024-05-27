@@ -7,6 +7,7 @@ import net.rsprot.protocol.game.outgoing.interfaces.IfInitialState
 import net.rsprot.protocol.game.outgoing.prot.GameServerProt
 import net.rsprot.protocol.message.codec.MessageEncoder
 import net.rsprot.protocol.metadata.Consistent
+import net.rsprot.protocol.util.pCombinedId
 
 @Consistent
 public class IfInitialStateEncoder : MessageEncoder<IfInitialState> {
@@ -20,12 +21,12 @@ public class IfInitialStateEncoder : MessageEncoder<IfInitialState> {
         buffer.p2(message.topLevelInterface)
         buffer.p2(message.subInterfaces.size)
         for (subInterface in message.subInterfaces) {
-            buffer.p4(subInterface.destinationCombinedId.combinedId)
+            buffer.pCombinedId(subInterface.destinationCombinedId)
             buffer.p2(subInterface.interfaceId)
             buffer.p1(subInterface.type)
         }
         for (events in message.events) {
-            buffer.p4(events.combinedId.combinedId)
+            buffer.pCombinedId(events.combinedId)
             buffer.p2(events.start)
             buffer.p2(events.end)
             buffer.p4(events.events)

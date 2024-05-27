@@ -6,6 +6,8 @@ import net.rsprot.protocol.ServerProt
 import net.rsprot.protocol.game.outgoing.interfaces.IfMoveSub
 import net.rsprot.protocol.game.outgoing.prot.GameServerProt
 import net.rsprot.protocol.message.codec.MessageEncoder
+import net.rsprot.protocol.util.pCombinedId
+import net.rsprot.protocol.util.pCombinedIdAlt1
 
 public class IfMoveSubEncoder : MessageEncoder<IfMoveSub> {
     override val prot: ServerProt = GameServerProt.IF_MOVESUB
@@ -15,7 +17,7 @@ public class IfMoveSubEncoder : MessageEncoder<IfMoveSub> {
         buffer: JagByteBuf,
         message: IfMoveSub,
     ) {
-        buffer.p4(message.sourceCombinedId.combinedId)
-        buffer.p4Alt1(message.destinationCombinedId.combinedId)
+        buffer.pCombinedId(message.sourceCombinedId)
+        buffer.pCombinedIdAlt1(message.destinationCombinedId)
     }
 }

@@ -6,6 +6,7 @@ import net.rsprot.protocol.ServerProt
 import net.rsprot.protocol.game.outgoing.interfaces.IfSetHide
 import net.rsprot.protocol.game.outgoing.prot.GameServerProt
 import net.rsprot.protocol.message.codec.MessageEncoder
+import net.rsprot.protocol.util.pCombinedId
 
 public class IfSetHideEncoder : MessageEncoder<IfSetHide> {
     override val prot: ServerProt = GameServerProt.IF_SETHIDE
@@ -16,6 +17,6 @@ public class IfSetHideEncoder : MessageEncoder<IfSetHide> {
         message: IfSetHide,
     ) {
         buffer.p1Alt2(if (message.hidden) 1 else 0)
-        buffer.p4(message.combinedId.combinedId)
+        buffer.pCombinedId(message.combinedId)
     }
 }

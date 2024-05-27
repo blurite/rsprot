@@ -7,6 +7,7 @@ import net.rsprot.protocol.common.game.outgoing.inv.InventoryObject
 import net.rsprot.protocol.game.outgoing.inv.UpdateInvFull
 import net.rsprot.protocol.game.outgoing.prot.GameServerProt
 import net.rsprot.protocol.message.codec.MessageEncoder
+import net.rsprot.protocol.util.pCombinedId
 
 public class UpdateInvFullEncoder : MessageEncoder<UpdateInvFull> {
     override val prot: ServerProt = GameServerProt.UPDATE_INV_FULL
@@ -16,7 +17,7 @@ public class UpdateInvFullEncoder : MessageEncoder<UpdateInvFull> {
         buffer: JagByteBuf,
         message: UpdateInvFull,
     ) {
-        buffer.p4(message.combinedId.combinedId)
+        buffer.pCombinedId(message.combinedId)
         buffer.p2(message.inventoryId)
         val capacity = message.capacity
         buffer.p2(capacity)

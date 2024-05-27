@@ -6,6 +6,7 @@ import net.rsprot.protocol.ServerProt
 import net.rsprot.protocol.game.outgoing.interfaces.IfSetPlayerModelBodyType
 import net.rsprot.protocol.game.outgoing.prot.GameServerProt
 import net.rsprot.protocol.message.codec.MessageEncoder
+import net.rsprot.protocol.util.pCombinedIdAlt2
 
 public class IfSetPlayerModelBodyTypeEncoder : MessageEncoder<IfSetPlayerModelBodyType> {
     override val prot: ServerProt = GameServerProt.IF_SETPLAYERMODEL_BODYTYPE
@@ -15,7 +16,7 @@ public class IfSetPlayerModelBodyTypeEncoder : MessageEncoder<IfSetPlayerModelBo
         buffer: JagByteBuf,
         message: IfSetPlayerModelBodyType,
     ) {
-        buffer.p4Alt2(message.combinedId.combinedId)
+        buffer.pCombinedIdAlt2(message.combinedId)
         buffer.p1Alt1(message.bodyType)
     }
 }

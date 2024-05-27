@@ -6,6 +6,7 @@ import net.rsprot.protocol.ServerProt
 import net.rsprot.protocol.game.outgoing.interfaces.IfSetScrollPos
 import net.rsprot.protocol.game.outgoing.prot.GameServerProt
 import net.rsprot.protocol.message.codec.MessageEncoder
+import net.rsprot.protocol.util.pCombinedId
 
 public class IfSetScrollPosEncoder : MessageEncoder<IfSetScrollPos> {
     override val prot: ServerProt = GameServerProt.IF_SETSCROLLPOS
@@ -16,6 +17,6 @@ public class IfSetScrollPosEncoder : MessageEncoder<IfSetScrollPos> {
         message: IfSetScrollPos,
     ) {
         buffer.p2Alt1(message.scrollPos)
-        buffer.p4(message.combinedId.combinedId)
+        buffer.pCombinedId(message.combinedId)
     }
 }
