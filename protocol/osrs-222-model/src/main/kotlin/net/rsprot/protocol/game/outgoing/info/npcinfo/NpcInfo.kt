@@ -9,9 +9,9 @@ import net.rsprot.protocol.common.client.ClientTypeMap
 import net.rsprot.protocol.common.client.OldSchoolClientType
 import net.rsprot.protocol.common.game.outgoing.info.CoordGrid
 import net.rsprot.protocol.common.game.outgoing.info.npcinfo.encoder.NpcResolutionChangeEncoder
-import net.rsprot.protocol.game.outgoing.info.ObserverExtendedInfoFlags
 import net.rsprot.protocol.game.outgoing.info.exceptions.InfoProcessException
 import net.rsprot.protocol.game.outgoing.info.util.ReferencePooledObject
+import net.rsprot.protocol.game.outgoing.info.worldentityinfo.WorldEntityAvatarRepository
 import net.rsprot.protocol.message.OutgoingGameMessage
 import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.contract
@@ -43,22 +43,8 @@ public class NpcInfo internal constructor(
     internal var localPlayerIndex: Int,
     private val indexSupplier: NpcIndexSupplier,
     private val lowResolutionToHighResolutionEncoders: ClientTypeMap<NpcResolutionChangeEncoder>,
+    private val worldEntityAvatarRepository: WorldEntityAvatarRepository?,
 ) : ReferencePooledObject {
-    /**
-     * The last cycle's coordinate of the local player, used to perform faster npc removal.
-     * If the player moves a greater distance than the [viewDistance], we can make the assumption
-     * that all the existing high-resolution NPCs need to be removed, and thus remove them
-     * in a simplified manner, rather than applying a coordinate check on each one. This commonly
-     * occurs whenever a player teleports far away.
-     */
-    private var localPlayerLastCoord: CoordGrid = CoordGrid.INVALID
-
-    /**
-     * The current coordinate of the local player used for the calculations of this npc info
-     * packet. This will be cross-referenced against NPCs to ensure they are within distance.
-     */
-    private var localPlayerCurrentCoord: CoordGrid = CoordGrid.INVALID
-
     /**
      * The maximum view distance how far a player will see other NPCs.
      * Unlike with player info, this does not automatically resize to accommodate for nearby NPCs,
@@ -68,62 +54,6 @@ public class NpcInfo internal constructor(
     private var viewDistance: Int = MAX_SMALL_PACKET_DISTANCE
 
     /**
-     * The indices of the high resolution NPCs, in the order as they came in.
-     * This is a replica of how the client keeps track of NPCs.
-     */
-    private var highResolutionNpcIndices: UShortArray =
-        UShortArray(MAX_HIGH_RESOLUTION_NPCS) {
-            NPC_INDEX_TERMINATOR
-        }
-
-    /**
-     * A secondary array for high resolution NPCs.
-     * After each cycle, the [highResolutionNpcIndices] gets swapped with this property,
-     * and the indices will be appended one by one. As a result of it, we can get away
-     * with significantly fewer operations to defragment the array, as we don't have to
-     * shift every entry over, we only need to fill in the ones that still exist.
-     */
-    private var temporaryHighResolutionNpcIndices: UShortArray =
-        UShortArray(MAX_HIGH_RESOLUTION_NPCS) {
-            NPC_INDEX_TERMINATOR
-        }
-
-    /**
-     * A counter for how many high resolution NPCs are currently being tracked.
-     * This count cannot exceed [MAX_HIGH_RESOLUTION_NPCS], as the client
-     * only supports that many extended info updates.
-     */
-    private var highResolutionNpcIndexCount: Int = 0
-
-    /**
-     * The extended info indices contain pointers to all the npcs for whom we need to
-     * write an extended info block. We do this rather than directly writing them as this
-     * improves CPU cache locality and allows us to batch extended info blocks together.
-     */
-    private val extendedInfoIndices: UShortArray = UShortArray(MAX_HIGH_RESOLUTION_NPCS)
-
-    /**
-     * The number of npcs for whom we need to write extended info blocks this cycle.
-     */
-    private var extendedInfoCount: Int = 0
-
-    /**
-     * The observer extended info flags are a means to track which extended info blocks
-     * we need to transmit when moving a NPC from low resolution to high resolution,
-     * as there are numerous extended info blocks which hold state over a long period
-     * of time, such as head icon changes - if we didn't do this, anyone that observes
-     * a NPC after the cycle during which the head icons were set, would not see these
-     * head icons.
-     */
-    private val observerExtendedInfoFlags: ObserverExtendedInfoFlags =
-        ObserverExtendedInfoFlags(MAX_HIGH_RESOLUTION_NPCS)
-
-    /**
-     * The primary npc info buffer, holding all the bitcodes and extended info blocks.
-     */
-    private var buffer: ByteBuf? = null
-
-    /**
      * The exception that was caught during the processing of this player's npc info packet.
      * This exception will be propagated further during the [toNpcInfoPacket] function call,
      * allowing the server to handle it properly at a per-player basis.
@@ -131,13 +61,75 @@ public class NpcInfo internal constructor(
     internal var exception: Exception? = null
 
     /**
-     * Whether the buffer allocated by this NPC info object has been built
-     * into a packet message. If this returns false, but NPC info was in fact built,
-     * we have an allocated buffer that needs releasing. If the NPC info itself
-     * is released but isn't built into packet, we make sure to release it, to avoid
-     * any memory leaks.
+     * An array of world details, containing all the player info properties specific to a single world.
+     * The root world is placed at the end of this array, however id -1 will be treated as the root.
      */
-    private var builtIntoPacket: Boolean = false
+    internal val details: Array<NpcInfoWorldDetails?> = arrayOfNulls(WORLD_ENTITY_CAPACITY + 1)
+
+    private var activeWorldId: Int = ROOT_WORLD
+
+    private var renderCoord: CoordGrid = CoordGrid.INVALID
+
+    init {
+        // There is always a root world!
+        details[WORLD_ENTITY_CAPACITY] = NpcInfoWorldDetails(ROOT_WORLD)
+    }
+
+    public fun setActiveWorld(worldId: Int) {
+        require(worldId == ROOT_WORLD || worldId in 0..<WORLD_ENTITY_CAPACITY) {
+            "World id must be -1 or in range of 0..<2048"
+        }
+        this.activeWorldId = worldId
+    }
+
+    public fun setRenderCoord(
+        level: Int,
+        x: Int,
+        z: Int,
+    ) {
+        this.renderCoord = CoordGrid(level, x, z)
+    }
+
+    public fun resetRenderCoord() {
+        this.renderCoord = CoordGrid.INVALID
+    }
+
+    public fun allocateWorld(worldId: Int) {
+        require(worldId in 0..<WORLD_ENTITY_CAPACITY) {
+            "World id out of bounds: $worldId"
+        }
+        val existing = details[worldId]
+        require(existing == null) {
+            "World $worldId already allocated."
+        }
+        details[worldId] = NpcInfoWorldDetails(worldId)
+    }
+
+    public fun destroyWorld(worldId: Int) {
+        require(worldId in 0..<WORLD_ENTITY_CAPACITY) {
+            "World id out of bounds: $worldId"
+        }
+        val existing = details[worldId]
+        require(existing != null) {
+            "World $worldId does not exist."
+        }
+        details[worldId] = null
+    }
+
+    private fun getDetails(worldId: Int): NpcInfoWorldDetails {
+        val details =
+            if (worldId == ROOT_WORLD) {
+                details[WORLD_ENTITY_CAPACITY]
+            } else {
+                require(worldId in 0..<WORLD_ENTITY_CAPACITY) {
+                    "World id out of bounds: $worldId"
+                }
+                details[worldId]
+            }
+        return checkNotNull(details) {
+            "World info details not allocated for world $worldId"
+        }
+    }
 
     /**
      * Returns the backing byte buffer holding all the computed information.
@@ -145,8 +137,18 @@ public class NpcInfo internal constructor(
      * initialized for this cycle.
      */
     @Throws(IllegalStateException::class)
-    public fun backingBuffer(): ByteBuf {
-        return checkNotNull(buffer)
+    public fun backingBuffer(worldId: Int): ByteBuf {
+        return checkNotNull(getDetails(worldId).buffer)
+    }
+
+    /**
+     * Returns the backing byte buffer holding all the computed information.
+     * @throws IllegalStateException if the buffer is null, meaning it has no yet been
+     * initialized for this cycle.
+     */
+    @Throws(IllegalStateException::class)
+    private fun backingBuffer(details: NpcInfoWorldDetails): ByteBuf {
+        return checkNotNull(details.buffer)
     }
 
     /**
@@ -168,7 +170,7 @@ public class NpcInfo internal constructor(
      * Turns this npc info structure into a respective npc info packet, depending
      * on the current known view distance.
      */
-    public fun toNpcInfoPacket(): OutgoingGameMessage {
+    public fun toNpcInfoPacket(worldId: Int): OutgoingGameMessage {
         val exception = this.exception
         if (exception != null) {
             throw InfoProcessException(
@@ -176,23 +178,25 @@ public class NpcInfo internal constructor(
                 exception,
             )
         }
-        builtIntoPacket = true
+        val details = getDetails(worldId)
+        details.builtIntoPacket = true
         return if (this.viewDistance > MAX_SMALL_PACKET_DISTANCE) {
-            NpcInfoLarge(backingBuffer())
+            NpcInfoLarge(backingBuffer(worldId))
         } else {
-            NpcInfoSmall(backingBuffer())
+            NpcInfoSmall(backingBuffer(worldId))
         }
     }
 
     /**
      * Allocates a new buffer from the [allocator] with a capacity of [BUF_CAPACITY].
-     * The old [buffer] will not be released, as that is the duty of the encoder class.
+     * The old [NpcInfoWorldDetails.buffer] will not be released, as that is the duty of the encoder class.
      */
-    private fun allocBuffer(): ByteBuf {
+    private fun allocBuffer(worldId: Int): ByteBuf {
         // Acquire a new buffer with each cycle, in case the previous one isn't fully written out yet
         val buffer = allocator.buffer(BUF_CAPACITY, BUF_CAPACITY)
-        this.buffer = buffer
-        this.builtIntoPacket = false
+        val details = getDetails(worldId)
+        details.buffer = buffer
+        details.builtIntoPacket = false
         return buffer
     }
 
@@ -205,11 +209,13 @@ public class NpcInfo internal constructor(
      * @param z the z coordinate of the local player
      */
     public fun updateCoord(
+        worldId: Int,
         level: Int,
         x: Int,
         z: Int,
     ) {
-        this.localPlayerCurrentCoord =
+        val details = getDetails(worldId)
+        details.localPlayerCurrentCoord =
             CoordGrid(
                 level,
                 x,
@@ -222,20 +228,20 @@ public class NpcInfo internal constructor(
      * additionally marks down which NPCs need to furthermore send their extended info
      * updates.
      */
-    public fun compute() {
+    internal fun compute(details: NpcInfoWorldDetails) {
         val viewDistance = this.viewDistance
-        val buffer = allocBuffer()
+        val buffer = allocBuffer(details.worldId)
         buffer.toBitBuf().use { bitBuffer ->
-            val fragmented = processHighResolution(bitBuffer, viewDistance)
+            val fragmented = processHighResolution(details, bitBuffer, viewDistance)
             if (fragmented) {
-                defragmentIndices()
+                details.defragmentIndices()
             }
-            processLowResolution(bitBuffer, viewDistance)
+            processLowResolution(details, bitBuffer, viewDistance)
             // Terminate the low-resolution processing block if there are extended info
             // blocks after that; if not, the loop ends naturally due to not enough
             // readable bits remaining (at most would have 7 bits remaining due to
             // the bit writer closing, which "finishes" the current byte).
-            if (this.extendedInfoCount > 0) {
+            if (details.extendedInfoCount > 0) {
                 bitBuffer.pBits(16, 0xFFFF)
             }
         }
@@ -248,71 +254,34 @@ public class NpcInfo internal constructor(
      * NPC, and only do so against the player's last coordinate.
      */
     public fun afterUpdate() {
-        this.localPlayerLastCoord = localPlayerCurrentCoord
-        extendedInfoCount = 0
-        observerExtendedInfoFlags.reset()
+        for (details in this.details) {
+            if (details == null) {
+                continue
+            }
+            details.localPlayerLastCoord = details.localPlayerCurrentCoord
+            details.extendedInfoCount = 0
+            details.observerExtendedInfoFlags.reset()
+        }
     }
 
     /**
      * Writes the extended info blocks over to the backing buffer, based on the indices
      * of the NPCs from whom we requested extended info updates prior in this cycle.
      */
-    internal fun putExtendedInfo() {
-        val jagBuffer = backingBuffer().toJagByteBuf()
-        for (i in 0 until extendedInfoCount) {
-            val index = extendedInfoIndices[i].toInt()
+    internal fun putExtendedInfo(details: NpcInfoWorldDetails) {
+        val jagBuffer = backingBuffer(details).toJagByteBuf()
+        for (i in 0 until details.extendedInfoCount) {
+            val index = details.extendedInfoIndices[i].toInt()
             val other = checkNotNull(repository.getOrNull(index))
-            val observerFlag = other.extendedInfo.flags or observerExtendedInfoFlags.getFlag(i)
+            val observerFlag = other.extendedInfo.flags or details.observerExtendedInfoFlags.getFlag(i)
             other.extendedInfo.pExtendedInfo(
                 oldSchoolClientType,
                 jagBuffer,
                 localPlayerIndex,
-                extendedInfoCount - i,
+                details.extendedInfoCount - i,
                 observerFlag,
             )
         }
-    }
-
-    /**
-     * Performs an index defragmentation on the [highResolutionNpcIndices] array.
-     * This function will effectively take all indices that are NOT [NPC_INDEX_TERMINATOR]
-     * and put them into the [temporaryHighResolutionNpcIndices] in a consecutive order,
-     * without gaps. Afterwards, the [temporaryHighResolutionNpcIndices] and [highResolutionNpcIndices]
-     * arrays get swapped out, so our [highResolutionNpcIndices] becomes a defragmented array.
-     * This process occurs every cycle, after high resolution indices are processed, in order to
-     * get rid of any gaps that were produced as a result of it.
-     *
-     * A breakdown of this process:
-     * At the start of a cycle, we might have indices as `[1, 7, 5, 3, 8, 65535, ...]`
-     * If we make the assumption that NPCs at indices 7 and 8 are being removed from our high resolution,
-     * during the high resolution processing, npc at index 8 is dropped naturally - this is because
-     * the client will automatically trim off any NPCs at the end which don't fit into the transmitted
-     * count. So, npc at index 8 does not count towards fragmentation, as we just decrement the index count.
-     * However, index 7, because it is in the middle of this array of indices, causes the array
-     * to fragment. So in order to resolve this, we will iterate the fragmented indices
-     * until we have collected [highResolutionNpcIndexCount] worth of valid indices into the
-     * [temporaryHighResolutionNpcIndices] array.
-     * After defragmenting, our array will look as `[1, 5, 3, 65535, ...]`.
-     * While it is possible to do this with a single array, it requires one to shift every element
-     * in the array after the first fragmentation occurs. As the arrays are relatively small, it's
-     * better simply to use two arrays that get swapped every cycle, so we simply swap
-     * the [temporaryHighResolutionNpcIndices] and [highResolutionNpcIndices] arrays between one another,
-     * rather than needing to shift everything over.
-     */
-    private fun defragmentIndices() {
-        var count = 0
-        for (i in highResolutionNpcIndices.indices) {
-            if (count >= highResolutionNpcIndexCount) {
-                break
-            }
-            val index = highResolutionNpcIndices[i]
-            if (index != NPC_INDEX_TERMINATOR) {
-                temporaryHighResolutionNpcIndices[count++] = index
-            }
-        }
-        val uncompressed = this.highResolutionNpcIndices
-        this.highResolutionNpcIndices = this.temporaryHighResolutionNpcIndices
-        this.temporaryHighResolutionNpcIndices = uncompressed
     }
 
     /**
@@ -328,18 +297,19 @@ public class NpcInfo internal constructor(
      * gaps that were produced by removing npcs in the middle of the array).
      */
     private fun processHighResolution(
+        details: NpcInfoWorldDetails,
         buffer: BitBuf,
         viewDistance: Int,
     ): Boolean {
         // If no one to process, skip
-        if (this.highResolutionNpcIndexCount == 0) {
+        if (details.highResolutionNpcIndexCount == 0) {
             buffer.pBits(8, 0)
             return false
         }
         // If our coordinate compared to last cycle changed more than 'viewDistance'
         // tiles, every NPC in our local view would be removed anyhow,
         // so by sending the count as 0, client automatically removes everyone
-        if (isTooFar(viewDistance)) {
+        if (isTooFar(details, viewDistance)) {
             buffer.pBits(8, 0)
             // While it would be more efficient to just... not do this block below,
             // the reality is there are ~25k static npcs in the game alone,
@@ -347,46 +317,46 @@ public class NpcInfo internal constructor(
             // extended info as well as high resolution movement blocks
             // for any npc that doesn't have a player near them,
             // which, even at full world, will be the majority of npcs.
-            for (i in 0..<highResolutionNpcIndexCount) {
-                val npcIndex = highResolutionNpcIndices[i].toInt()
+            for (i in 0..<details.highResolutionNpcIndexCount) {
+                val npcIndex = details.highResolutionNpcIndices[i].toInt()
                 val avatar = repository.getOrNull(npcIndex) ?: continue
                 avatar.removeObserver()
             }
-            highResolutionNpcIndexCount = 0
+            details.highResolutionNpcIndexCount = 0
             return false
         }
         // Iterate NPCs in a backwards order until the first npc who should not be removed
         // everyone else will be automatically dropped off by the client if the count
         // transmitted is less than what the client currently knows about
-        for (i in highResolutionNpcIndexCount - 1 downTo 0) {
-            val npcIndex = highResolutionNpcIndices[i].toInt()
+        for (i in details.highResolutionNpcIndexCount - 1 downTo 0) {
+            val npcIndex = details.highResolutionNpcIndices[i].toInt()
             val avatar = repository.getOrNull(npcIndex)
-            if (!removeHighResolutionNpc(avatar, viewDistance)) {
+            if (!removeHighResolutionNpc(details, avatar, viewDistance)) {
                 break
             }
             avatar?.removeObserver()
-            highResolutionNpcIndexCount--
+            details.highResolutionNpcIndexCount--
         }
-        val processedCount = this.highResolutionNpcIndexCount
+        val processedCount = details.highResolutionNpcIndexCount
         buffer.pBits(8, processedCount)
         for (i in 0..<processedCount) {
-            val npcIndex = highResolutionNpcIndices[i].toInt()
+            val npcIndex = details.highResolutionNpcIndices[i].toInt()
             val avatar = repository.getOrNull(npcIndex)
-            if (removeHighResolutionNpc(avatar, viewDistance)) {
+            if (removeHighResolutionNpc(details, avatar, viewDistance)) {
                 buffer.pBits(1, 1)
                 buffer.pBits(2, 3)
                 avatar?.removeObserver()
-                highResolutionNpcIndices[i] = NPC_INDEX_TERMINATOR
-                highResolutionNpcIndexCount--
+                details.highResolutionNpcIndices[i] = NPC_INDEX_TERMINATOR
+                details.highResolutionNpcIndexCount--
                 continue
             }
             if (avatar.extendedInfo.flags != 0) {
-                extendedInfoIndices[extendedInfoCount++] = npcIndex.toUShort()
+                details.extendedInfoIndices[details.extendedInfoCount++] = npcIndex.toUShort()
             }
             val movementBuffer = checkNotNull(avatar.highResMovementBuffer)
             buffer.pBits(movementBuffer)
         }
-        return processedCount != highResolutionNpcIndexCount
+        return processedCount != details.highResolutionNpcIndexCount
     }
 
     /**
@@ -398,16 +368,20 @@ public class NpcInfo internal constructor(
      */
     @OptIn(ExperimentalContracts::class)
     private fun removeHighResolutionNpc(
+        details: NpcInfoWorldDetails,
         avatar: NpcAvatar?,
         viewDistance: Int,
     ): Boolean {
         contract {
             returns(false) implies (avatar != null)
         }
-        return avatar == null ||
+        if (avatar == null ||
             avatar.details.inaccessible ||
-            avatar.details.isTeleporting() ||
-            !withinDistance(localPlayerCurrentCoord, avatar.details.currentCoord, viewDistance)
+            avatar.details.isTeleporting()
+        ) {
+            return true
+        }
+        return !withinDistance(details.localPlayerCurrentCoord, avatar.details.currentCoord, viewDistance)
     }
 
     /**
@@ -418,12 +392,26 @@ public class NpcInfo internal constructor(
      * @return whether the player has moved a greater distance than [viewDistance] since
      * the last cycle.
      */
-    private fun isTooFar(viewDistance: Int): Boolean {
+    private fun isTooFar(
+        details: NpcInfoWorldDetails,
+        viewDistance: Int,
+    ): Boolean {
         return !withinDistance(
-            this.localPlayerLastCoord,
-            this.localPlayerCurrentCoord,
+            details.localPlayerLastCoord,
+            details.localPlayerCurrentCoord,
             viewDistance,
         )
+    }
+
+    private fun isWorldVisible(details: NpcInfoWorldDetails): Boolean {
+        if (details.worldId == ROOT_WORLD) {
+            return false
+        }
+        val avatar =
+            this.worldEntityAvatarRepository?.getOrNull(details.worldId)
+                ?: return false
+        return details.localPlayerCurrentCoord.inDistance(avatar.currentCoord, this.viewDistance) ||
+            (renderCoord != CoordGrid.INVALID && renderCoord.inDistance(avatar.currentCoord, this.viewDistance))
     }
 
     /**
@@ -438,11 +426,12 @@ public class NpcInfo internal constructor(
      * player to still be considered in high resolution.
      */
     private fun processLowResolution(
+        details: NpcInfoWorldDetails,
         buffer: BitBuf,
         viewDistance: Int,
     ) {
         // If our local view is already maxed out, don't even request for indices
-        if (this.highResolutionNpcIndexCount >= MAX_HIGH_RESOLUTION_NPCS) {
+        if (details.highResolutionNpcIndexCount >= MAX_HIGH_RESOLUTION_NPCS) {
             return
         }
         val encoder = lowResolutionToHighResolutionEncoders[oldSchoolClientType]
@@ -450,17 +439,17 @@ public class NpcInfo internal constructor(
         val npcs =
             this.indexSupplier.supply(
                 localPlayerIndex,
-                localPlayerCurrentCoord.level,
-                localPlayerCurrentCoord.x,
-                localPlayerCurrentCoord.z,
+                details.localPlayerCurrentCoord.level,
+                details.localPlayerCurrentCoord.x,
+                details.localPlayerCurrentCoord.z,
                 viewDistance,
             )
         while (npcs.hasNext()) {
             val index = npcs.next() and NPC_INFO_CAPACITY
-            if (index == NPC_INFO_CAPACITY || isHighResolution(index)) {
+            if (index == NPC_INFO_CAPACITY || isHighResolution(details, index)) {
                 continue
             }
-            if (this.highResolutionNpcIndexCount >= MAX_HIGH_RESOLUTION_NPCS) {
+            if (details.highResolutionNpcIndexCount >= MAX_HIGH_RESOLUTION_NPCS) {
                 break
             }
             val avatar = repository.getOrNull(index) ?: continue
@@ -468,19 +457,19 @@ public class NpcInfo internal constructor(
                 continue
             }
             avatar.addObserver()
-            val i = highResolutionNpcIndexCount++
-            highResolutionNpcIndices[i] = index.toUShort()
+            val i = details.highResolutionNpcIndexCount++
+            details.highResolutionNpcIndices[i] = index.toUShort()
             val observerFlags = avatar.extendedInfo.getLowToHighResChangeExtendedInfoFlags()
-            this.observerExtendedInfoFlags.addFlag(extendedInfoCount, observerFlags)
+            details.observerExtendedInfoFlags.addFlag(details.extendedInfoCount, observerFlags)
             val extendedInfo = (avatar.extendedInfo.flags or observerFlags) != 0
             if (extendedInfo) {
-                extendedInfoIndices[extendedInfoCount++] = index.toUShort()
+                details.extendedInfoIndices[details.extendedInfoCount++] = index.toUShort()
             }
             encoder.encode(
                 buffer,
                 avatar.details,
                 extendedInfo,
-                localPlayerCurrentCoord,
+                details.localPlayerCurrentCoord,
                 largeDistance,
             )
         }
@@ -492,11 +481,14 @@ public class NpcInfo internal constructor(
      * @param index the index of the npc to check
      * @return whether the npc at the given index is already in high resolution.
      */
-    private fun isHighResolution(index: Int): Boolean {
+    private fun isHighResolution(
+        details: NpcInfoWorldDetails,
+        index: Int,
+    ): Boolean {
         // NOTE: Perhaps it's more efficient to just allocate 65535 bits and do a bit check?
         // Would cost ~16.76mb at max world capacity
-        for (i in 0..<highResolutionNpcIndexCount) {
-            if (highResolutionNpcIndices[i].toInt() == index) {
+        for (i in 0..<details.highResolutionNpcIndexCount) {
+            if (details.highResolutionNpcIndices[i].toInt() == index) {
                 return true
             }
         }
@@ -524,24 +516,37 @@ public class NpcInfo internal constructor(
     ) {
         this.localPlayerIndex = index
         this.oldSchoolClientType = oldSchoolClientType
-        this.localPlayerLastCoord = CoordGrid.INVALID
         this.viewDistance = MAX_SMALL_PACKET_DISTANCE
-        this.highResolutionNpcIndexCount = 0
-        this.extendedInfoCount = 0
-        this.observerExtendedInfoFlags.reset()
+        for (details in this.details) {
+            if (details == null) {
+                continue
+            }
+            details.localPlayerLastCoord = CoordGrid.INVALID
+            details.highResolutionNpcIndexCount = 0
+            details.extendedInfoCount = 0
+            details.observerExtendedInfoFlags.reset()
+        }
     }
 
     override fun onDealloc() {
-        if (!builtIntoPacket) {
-            val buffer = this.buffer
-            if (buffer != null && buffer.refCnt() > 0) {
-                buffer.release(buffer.refCnt())
+        for (details in this.details) {
+            if (details == null) {
+                continue
             }
+            if (!details.builtIntoPacket) {
+                val buffer = details.buffer
+                if (buffer != null && buffer.refCnt() > 0) {
+                    buffer.release(buffer.refCnt())
+                }
+            }
+            details.buffer = null
         }
-        this.buffer = null
     }
 
-    private companion object {
+    public companion object {
+        public const val ROOT_WORLD: Int = -1
+        private const val WORLD_ENTITY_CAPACITY: Int = 2048
+
         /**
          * The default capacity of the backing byte buffer into which all player info is written.
          */

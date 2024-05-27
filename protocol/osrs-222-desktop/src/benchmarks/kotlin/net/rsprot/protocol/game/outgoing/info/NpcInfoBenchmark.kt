@@ -81,7 +81,7 @@ class NpcInfoBenchmark {
         otherNpcInfos = (2..2046).map { protocol.alloc(it, OldSchoolClientType.DESKTOP) }
         val infos = otherNpcInfos + localNpcInfo
         for (info in infos) {
-            info.updateCoord(localPlayerCoord.level, localPlayerCoord.x, localPlayerCoord.z)
+            info.updateCoord(NpcInfo.ROOT_WORLD, localPlayerCoord.level, localPlayerCoord.x, localPlayerCoord.z)
         }
     }
 
@@ -109,7 +109,7 @@ class NpcInfoBenchmark {
         protocol.update()
         for (i in 1..2046) {
             val info = protocol[i]
-            info.backingBuffer().release()
+            info.backingBuffer(NpcInfo.ROOT_WORLD).release()
         }
         for (npc in serverNpcs) {
             npc.avatar.postUpdate()
