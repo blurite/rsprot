@@ -119,6 +119,7 @@ for (index in worldEntityInfo.getAllWorldEntityIndices()) {
     // For dynamic worlds, we want to update the coord to point to the
     // south-western corner of the instance at which the world entity lies.
     npcInfo.updateCoord(index, instanceLevel, instanceX, instanceZ)
+    playerInfo.updateRenderCoord(index, instanceLevel, instanceX, instanceZ)
 }
 if (currentWorldEntityId != -1) {
     // If the player is currently on a world entity, we must mark the
@@ -126,11 +127,13 @@ if (currentWorldEntityId != -1) {
     val entity = World.getWorldEntity(currentWorldEntityId)
     val (instanceX, instanceZ, instanceLevel) = entity.instanceCoord
     npcInfo.updateCoord(-1, instanceLevel, instanceX, instanceZ)
+    playerInfo.updateRenderCoord(-1, instanceLevel, instanceX, instanceZ)
 } else {
     // If the player is not on a dynamic world entity, we can set the
     // origin point as the local player coordinate
     val (x, z, level) = player.coord
     npcInfo.updateCoord(-1, level, x, z)
+    playerInfo.updateRenderCoord(-1, level, x, z)
 }
 ```
 
@@ -159,8 +162,9 @@ for (index in worldEntityInfo.getAllWorldEntityIndices()) {
 packets.setActiveWorld(-1, player.level)
 packets.playerInfo(PlayerInfo.ROOT_WORLD, playerInfo)
 if (currentWorldEntityId != -1) {
-    // If the player is on a dynamic world entity, the origin will be 0,0
-    packets.setNpcUpdateOrigin(0, 0)
+    val entity = World.getWorldEntity(currentWorldEntityId)
+    val localCoords = this.buildAreaManager.local(entity.coord)
+    packets.setNpcUpdateOrigin(localCoords.x, localCoords.z)
 } else {
     // If the player is in the root world, this should correspond
     // to the player's current coordinate in the build area.
