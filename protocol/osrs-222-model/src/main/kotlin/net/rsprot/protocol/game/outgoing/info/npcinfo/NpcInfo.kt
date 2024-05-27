@@ -65,34 +65,16 @@ public class NpcInfo internal constructor(
      */
     internal val details: Array<NpcInfoWorldDetails?> = arrayOfNulls(WORLD_ENTITY_CAPACITY + 1)
 
-    private var activeWorldId: Int = ROOT_WORLD
-
-    private var renderCoord: CoordGrid = CoordGrid.INVALID
-
     init {
         // There is always a root world!
         details[WORLD_ENTITY_CAPACITY] = detailsStorage.poll(ROOT_WORLD)
     }
 
-    public fun setActiveWorld(worldId: Int) {
-        require(worldId == ROOT_WORLD || worldId in 0..<WORLD_ENTITY_CAPACITY) {
-            "World id must be -1 or in range of 0..<2048"
-        }
-        this.activeWorldId = worldId
-    }
-
-    public fun setRenderCoord(
-        level: Int,
-        x: Int,
-        z: Int,
-    ) {
-        this.renderCoord = CoordGrid(level, x, z)
-    }
-
-    public fun resetRenderCoord() {
-        this.renderCoord = CoordGrid.INVALID
-    }
-
+    /**
+     * Allocates a new NPC info tracking object for the respective [worldId],
+     * keeping track of everyone that's within this new world entity.
+     * @param worldId the new world entity id
+     */
     public fun allocateWorld(worldId: Int) {
         require(worldId in 0..<WORLD_ENTITY_CAPACITY) {
             "World id out of bounds: $worldId"
@@ -104,6 +86,10 @@ public class NpcInfo internal constructor(
         details[worldId] = detailsStorage.poll(worldId)
     }
 
+    /**
+     * Destroys NPC info tracking for the specified [worldId].
+     * This is intended to be used when one of the world entities leaves the render distance.
+     */
     public fun destroyWorld(worldId: Int) {
         require(worldId in 0..<WORLD_ENTITY_CAPACITY) {
             "World id out of bounds: $worldId"
@@ -116,6 +102,9 @@ public class NpcInfo internal constructor(
         details[worldId] = null
     }
 
+    /**
+     * Gets the world details implementation of the specified [worldId].
+     */
     private fun getDetails(worldId: Int): NpcInfoWorldDetails {
         val details =
             if (worldId == ROOT_WORLD) {
@@ -517,7 +506,14 @@ public class NpcInfo internal constructor(
     }
 
     public companion object {
+        /**
+         * The root world id, tracking the primary game map.
+         */
         public const val ROOT_WORLD: Int = -1
+
+        /**
+         * The maximum number of dynamic world entities that can exist.
+         */
         private const val WORLD_ENTITY_CAPACITY: Int = 2048
 
         /**
