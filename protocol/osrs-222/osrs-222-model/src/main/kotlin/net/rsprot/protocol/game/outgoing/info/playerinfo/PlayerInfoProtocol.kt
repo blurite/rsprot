@@ -143,6 +143,7 @@ public class PlayerInfoProtocol(
             if (info == null) {
                 lowResolutionPositionRepository.markUnused(i)
             } else {
+                info.checkAppearanceInvalidation()
                 lowResolutionPositionRepository.update(i, info.avatar.currentCoord)
             }
         }

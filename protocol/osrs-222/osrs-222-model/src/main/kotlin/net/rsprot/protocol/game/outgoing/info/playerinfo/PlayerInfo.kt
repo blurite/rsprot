@@ -99,9 +99,27 @@ public class PlayerInfo internal constructor(
      */
     private var activeWorldId: Int = ROOT_WORLD
 
+    /**
+     * Whether to invalidate appearance cache.
+     * This will be true only if a new world is being created, as the client keeps track of it per
+     * world basis.
+     */
+    private var invalidateAppearanceCache: Boolean = false
+
     init {
         // There is always a root world!
         details[PROTOCOL_CAPACITY] = protocol.detailsStorage.poll(ROOT_WORLD)
+    }
+
+    /**
+     * Checks if appearance needs invalidation, and invalidates if so.
+     */
+    internal fun checkAppearanceInvalidation() {
+        if (!invalidateAppearanceCache) {
+            return
+        }
+        invalidateAppearanceCache = false
+        avatar.extendedInfo.invalidateAppearanceCache()
     }
 
     /**
@@ -153,6 +171,7 @@ public class PlayerInfo internal constructor(
             "World $worldId already allocated."
         }
         details[worldId] = protocol.detailsStorage.poll(worldId)
+        this.invalidateAppearanceCache = true
     }
 
     /**

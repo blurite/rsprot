@@ -82,6 +82,13 @@ public class PlayerAvatarExtendedInfo(
     private var appearanceChangesCounter: Int = 0
 
     /**
+     * Invalidates the appearance cache.
+     */
+    internal fun invalidateAppearanceCache() {
+        otherAppearanceChangesCounter.fill(0)
+    }
+
+    /**
      * Sets the movement speed for this avatar. This move speed will be used whenever
      * the player moves, unless a temporary move speed is utilized, which will take priority.
      * The known values are:
