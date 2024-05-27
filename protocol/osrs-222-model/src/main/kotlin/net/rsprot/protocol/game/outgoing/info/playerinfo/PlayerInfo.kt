@@ -92,8 +92,24 @@ public class PlayerInfo internal constructor(
      */
     internal val details: Array<PlayerInfoWorldDetails?> = arrayOfNulls(PROTOCOL_CAPACITY + 1)
 
+    /**
+     * The currently active world id in which the local player resides.
+     * We must know this as the local player is placed in every world that is rendered to them,
+     * so implicitly, extended info blocks would be sent for every variant.
+     * This results in unwanted duplication. With this active world value, we can filter local player's
+     * extended info to only send for the world in which the player currently resides.
+     */
     private var activeWorldId: Int = ROOT_WORLD
 
+    /**
+     * The current coordinate at which the player is being roughly rendered.
+     * If the player is in a root world, this should be kept as [CoordGrid.INVALID],
+     * however if they are on one of the dynamic world entities, a render coordinate
+     * must be defined - this would correspond to where in the root world the world
+     * entity itself is being rendered. This allows the player info to additionally
+     * render players near the world entity itself, in the root world - not just on
+     * the world entity.
+     */
     private var renderCoord: CoordGrid = CoordGrid.INVALID
 
     init {
@@ -101,6 +117,12 @@ public class PlayerInfo internal constructor(
         details[PROTOCOL_CAPACITY] = protocol.detailsStorage.poll(ROOT_WORLD)
     }
 
+    /**
+     * Sets an active world in which the player currently resides.
+     * @param worldId the world id in which the player resides. A value of -1 implies
+     * the root world, which is also the default. If the player moves onto one of the
+     * dynamic worlds, this value must be updated to reflect on it.
+     */
     public fun setActiveWorld(worldId: Int) {
         require(worldId == ROOT_WORLD || worldId in 0..<2048) {
             "World id must be -1 or in range of 0..<2048"
@@ -108,6 +130,17 @@ public class PlayerInfo internal constructor(
         this.activeWorldId = worldId
     }
 
+    /**
+     * Sets the render coordinate for the player which will be considered when tracking
+     * other players - specifically whom to add or remove from the player info protocol.
+     * This function is intended to be used when the player enters one of the world entities.
+     * Specifically, this coordinate will correspond to where in the root world the world entity
+     * itself is being rendered, allowing the protocol to additionally track players in the root
+     * world, and other world entities near the same spot in the root world.
+     * @param level the height level
+     * @param x the absolute x coordinate
+     * @param z the absolute z coordinate
+     */
     public fun setRenderCoord(
         level: Int,
         x: Int,
@@ -116,10 +149,19 @@ public class PlayerInfo internal constructor(
         this.renderCoord = CoordGrid(level, x, z)
     }
 
+    /**
+     * Resets the render coordinate. This is intended to be used when the player leaves
+     * one of the dynamic world entities and moves back onto the root world entity.
+     */
     public fun resetRenderCoord() {
         this.renderCoord = CoordGrid.INVALID
     }
 
+    /**
+     * Allocates a new player info tracking object for the respective [worldId],
+     * keeping track of everyone that's within this new world entity.
+     * @param worldId the new world entity id
+     */
     public fun allocateWorld(worldId: Int) {
         require(worldId in 0..<PROTOCOL_CAPACITY) {
             "World id out of bounds: $worldId"
@@ -131,6 +173,10 @@ public class PlayerInfo internal constructor(
         details[worldId] = protocol.detailsStorage.poll(worldId)
     }
 
+    /**
+     * Destroys player info tracking for the specified [worldId].
+     * This is intended to be used when one of the world entities leaves the render distance.
+     */
     public fun destroyWorld(worldId: Int) {
         require(worldId in 0..<PROTOCOL_CAPACITY) {
             "World id out of bounds: $worldId"
@@ -143,6 +189,9 @@ public class PlayerInfo internal constructor(
         protocol.detailsStorage.push(existing)
     }
 
+    /**
+     * Gets the world details implementation of the specified [worldId].
+     */
     private fun getDetails(worldId: Int): PlayerInfoWorldDetails {
         val details =
             if (worldId == ROOT_WORLD) {
@@ -159,7 +208,7 @@ public class PlayerInfo internal constructor(
     }
 
     /**
-     * Returns the backing buffer for this cycle.
+     * Returns the backing buffer for this cycle, for the specified [worldId].
      * @throws IllegalStateException if the buffer has not been allocated yet.
      */
     @Throws(IllegalStateException::class)
@@ -167,6 +216,10 @@ public class PlayerInfo internal constructor(
         return checkNotNull(getDetails(worldId).buffer)
     }
 
+    /**
+     * Returns the backing buffer for this cycle, for the specified world details.
+     * @throws IllegalStateException if the buffer has not been allocated yet.
+     */
     @Throws(IllegalStateException::class)
     internal fun backingBuffer(details: PlayerInfoWorldDetails): ByteBuf {
         return checkNotNull(details.buffer)
@@ -211,6 +264,11 @@ public class PlayerInfo internal constructor(
         this.avatar.updateCoord(level, x, z)
     }
 
+    /**
+     * Checks whether the player at [index] is currently among high resolution players.
+     * @param highResolutionPlayers a bitpacked long array containing boolean-type information.
+     * @param index the index of the player to check.
+     */
     private fun isHighResolution(
         highResolutionPlayers: LongArray,
         index: Int,
@@ -220,6 +278,11 @@ public class PlayerInfo internal constructor(
         return highResolutionPlayers[longIndex] and bit != 0L
     }
 
+    /**
+     * Marks the player at index [index] as being in high resolution.
+     * @param highResolutionPlayers a bitpacked long array containing boolean-type information.
+     * @param index the index of the player to mark as high resolution.
+     */
     private fun setHighResolution(
         highResolutionPlayers: LongArray,
         index: Int,
@@ -230,6 +293,11 @@ public class PlayerInfo internal constructor(
         highResolutionPlayers[longIndex] = cur or bit
     }
 
+    /**
+     * Marks the player at index [index] as being in low resolution.
+     * @param highResolutionPlayers a bitpacked long array containing boolean-type information.
+     * @param index the index of the player to mark as low resolution.
+     */
     private fun unsetHighResolution(
         highResolutionPlayers: LongArray,
         index: Int,
@@ -262,10 +330,6 @@ public class PlayerInfo internal constructor(
                 details.lowResolutionIndices[details.lowResolutionCount++] = i.toShort()
             }
         }
-        // Sync the coordinate delta here!
-        // Meaning if a player info is sent afterwards, it will not re-send the delta
-        // which often results in the coordinate being 2x'd at the client
-        // avatar.postUpdate()
     }
 
     /**
@@ -668,6 +732,9 @@ public class PlayerInfo internal constructor(
         }
     }
 
+    /**
+     * A function to reset non-world specific properties when a cycle finishes.
+     */
     internal fun cycleComplete() {
         this.avatar.postUpdate()
         avatar.extendedInfo.postUpdate()
