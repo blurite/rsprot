@@ -37,7 +37,8 @@ public abstract class LoginBlockDecoder<T>(
             ).toJagByteBuf()
         val encryptionCheck = rsaBuffer.g1()
         check(encryptionCheck == 1) {
-            "Invalid RSA check: $encryptionCheck"
+            "Invalid RSA check '$encryptionCheck'. " +
+                "This typically means the RSA in the client does not match up with the server."
         }
         val seed =
             IntArray(4) {
