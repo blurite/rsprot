@@ -36,6 +36,8 @@ public class WorldEntityInfo internal constructor(
     internal var exception: Exception? = null
     private var builtIntoPacket: Boolean = false
 
+    private var renderCoord: CoordGrid = CoordGrid.INVALID
+
     public fun updateRenderDistance(distance: Int) {
         this.renderDistance = distance
     }
@@ -64,6 +66,18 @@ public class WorldEntityInfo internal constructor(
     ) {
         this.currentWorldEntityId = worldId
         this.currentCoord = CoordGrid(level, x, z)
+    }
+
+    public fun setRenderCoord(
+        level: Int,
+        x: Int,
+        z: Int,
+    ) {
+        this.renderCoord = CoordGrid(level, x, z)
+    }
+
+    public fun resetRenderCoord() {
+        this.renderCoord = CoordGrid.INVALID
     }
 
     @Throws(IllegalStateException::class)
@@ -215,6 +229,12 @@ public class WorldEntityInfo internal constructor(
         return avatar.currentCoord.inDistance(
             this.currentCoord,
             renderDistance,
+        ) || (
+            renderCoord != CoordGrid.INVALID &&
+                avatar.currentCoord.inDistance(
+                    this.renderCoord,
+                    renderDistance,
+                )
         )
     }
 
@@ -228,6 +248,7 @@ public class WorldEntityInfo internal constructor(
         this.currentWorldEntityId = ROOT_WORLD
         this.currentCoord = CoordGrid.INVALID
         this.buildArea = BuildArea.INVALID
+        this.renderCoord = CoordGrid.INVALID
         this.highResolutionIndicesCount = 0
         this.highResolutionIndices.fill(0)
         this.temporaryHighResolutionIndices.fill(0)
