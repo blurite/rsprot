@@ -57,10 +57,20 @@ class PlayerInfoBenchmark {
         for (i in 1..<MAX_IDX) {
             val player = protocol.alloc(i, OldSchoolClientType.DESKTOP)
             players[i] = player
-            player.updateCoord(0, random.nextInt(3200, 3213), random.nextInt(3200, 3213))
+            updateCoord(player, 0, random.nextInt(3200, 3213), random.nextInt(3200, 3213))
             player.avatar.postUpdate()
             initializeAppearance(player, i)
         }
+    }
+
+    private fun updateCoord(
+        player: PlayerInfo,
+        @Suppress("SameParameterValue") level: Int,
+        x: Int,
+        z: Int,
+    ) {
+        player.updateCoord(level, x, z)
+        player.updateRenderCoord(PlayerInfo.ROOT_WORLD, level, x, z)
     }
 
     private fun initializeAppearance(
@@ -100,7 +110,7 @@ class PlayerInfoBenchmark {
     private fun tick() {
         for (i in 1..<MAX_IDX) {
             val player = checkNotNull(players[i])
-            player.updateCoord(0, random.nextInt(3200, 3213), random.nextInt(3200, 3213))
+            updateCoord(player, 0, random.nextInt(3200, 3213), random.nextInt(3200, 3213))
             player.avatar.extendedInfo.setChat(
                 0,
                 0,

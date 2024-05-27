@@ -40,7 +40,7 @@ class PlayerInfoTest {
                 factory,
             )
         localPlayerInfo = protocol.alloc(LOCAL_PLAYER_INDEX, OldSchoolClientType.DESKTOP)
-        localPlayerInfo.updateCoord(0, 3200, 3220)
+        updateCoord(0, 3200, 3220)
         localPlayerInfo.avatar.postUpdate()
         client = PlayerInfoClient()
         gpiInit()
@@ -71,21 +71,30 @@ class PlayerInfoTest {
         // As such, we must call tick() to for any future changes to take effect
         tick()
 
-        localPlayerInfo.updateCoord(1, 3210, 3225)
+        updateCoord(1, 3210, 3225)
         tick()
         assertCoordEquals()
 
-        localPlayerInfo.updateCoord(0, 0, 0)
+        updateCoord(0, 0, 0)
         tick()
         assertCoordEquals()
 
-        localPlayerInfo.updateCoord(0, 1, 0)
+        updateCoord(0, 1, 0)
         tick()
         assertCoordEquals()
 
-        localPlayerInfo.updateCoord(0, 3205, 3220)
+        updateCoord(0, 3205, 3220)
         tick()
         assertCoordEquals()
+    }
+
+    private fun updateCoord(
+        level: Int,
+        x: Int,
+        z: Int,
+    ) {
+        localPlayerInfo.updateCoord(level, x, z)
+        localPlayerInfo.updateRenderCoord(PlayerInfo.ROOT_WORLD, level, x, z)
     }
 
     @Test
