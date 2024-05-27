@@ -172,9 +172,7 @@ packets.npcInfo(NpcInfo.ROOT_WORLD, npcInfo)
 
 #### End of Cycle
 After the above steps have been performed for all players, state must be reset:
-1. For every player, call `avatar.postUpdate()`
-2. For every NPC, call `avatar.postUpdate()`
-3. Now lastly, call `service.postUpdate()` - this should be called once for the
+Call `service.postUpdate()` - this should be called once for the
 entire game, not per-player or per-npc basis.
 
 ### NPCs
