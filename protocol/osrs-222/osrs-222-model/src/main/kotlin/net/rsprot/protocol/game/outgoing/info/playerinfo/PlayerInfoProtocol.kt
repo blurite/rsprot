@@ -7,7 +7,6 @@ import net.rsprot.protocol.common.client.OldSchoolClientType
 import net.rsprot.protocol.game.outgoing.info.playerinfo.util.LowResolutionPosition
 import net.rsprot.protocol.game.outgoing.info.worker.DefaultProtocolWorker
 import net.rsprot.protocol.game.outgoing.info.worker.ProtocolWorker
-import net.rsprot.protocol.game.outgoing.info.worldentityinfo.WorldEntityAvatarRepository
 import java.util.concurrent.Callable
 import java.util.concurrent.ForkJoinPool
 import kotlin.Exception
@@ -32,7 +31,6 @@ public class PlayerInfoProtocol(
     private val allocator: ByteBufAllocator,
     private val worker: ProtocolWorker = DefaultProtocolWorker(),
     private val avatarFactory: PlayerAvatarFactory,
-    private val worldEntityAvatarRepository: WorldEntityAvatarRepository?,
 ) {
     /**
      * A storage object for player info world details, allowing the re-use of these
@@ -59,7 +57,6 @@ public class PlayerInfoProtocol(
                 allocator,
                 clientType,
                 avatarFactory.alloc(localIndex),
-                worldEntityAvatarRepository,
             )
         }
 

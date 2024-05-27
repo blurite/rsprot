@@ -18,7 +18,6 @@ import net.rsprot.protocol.game.outgoing.info.playerinfo.PlayerAvatarExtendedInf
 import net.rsprot.protocol.game.outgoing.info.playerinfo.PlayerAvatarFactory
 import net.rsprot.protocol.game.outgoing.info.playerinfo.PlayerInfoProtocol
 import net.rsprot.protocol.game.outgoing.info.worldentityinfo.WorldEntityAvatarFactory
-import net.rsprot.protocol.game.outgoing.info.worldentityinfo.WorldEntityAvatarRepository
 import net.rsprot.protocol.game.outgoing.info.worldentityinfo.WorldEntityProtocol
 
 /**
@@ -103,7 +102,6 @@ public class EntityInfoProtocols
                         allocator,
                         playerInfoSupplier,
                         playerAvatarFactory,
-                        worldEntityAvatarFactory.avatarRepository,
                     )
                 val npcAvatarFactory =
                     buildNpcAvatarFactory(allocator, npcInfoSupplier, npcWriters, huffmanCodecProvider)
@@ -179,13 +177,11 @@ public class EntityInfoProtocols
                 allocator: ByteBufAllocator,
                 playerInfoSupplier: PlayerInfoSupplier,
                 playerAvatarFactory: PlayerAvatarFactory,
-                worldEntityAvatarRepository: WorldEntityAvatarRepository,
             ): PlayerInfoProtocol {
                 return PlayerInfoProtocol(
                     allocator,
                     playerInfoSupplier.playerInfoProtocolWorker,
                     playerAvatarFactory,
-                    worldEntityAvatarRepository,
                 )
             }
 

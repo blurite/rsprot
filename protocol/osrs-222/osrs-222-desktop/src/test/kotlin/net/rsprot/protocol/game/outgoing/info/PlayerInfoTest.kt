@@ -38,7 +38,6 @@ class PlayerInfoTest {
                 allocator,
                 DefaultProtocolWorker(),
                 factory,
-                null,
             )
         localPlayerInfo = protocol.alloc(LOCAL_PLAYER_INDEX, OldSchoolClientType.DESKTOP)
         localPlayerInfo.updateCoord(0, 3200, 3220)

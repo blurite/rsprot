@@ -1,6 +1,7 @@
 package net.rsprot.protocol.game.outgoing.info.playerinfo
 
 import io.netty.buffer.ByteBuf
+import net.rsprot.protocol.common.game.outgoing.info.CoordGrid
 
 /**
  * A class which wraps the details of a player info implementation in a specific world.
@@ -91,9 +92,15 @@ internal class PlayerInfoWorldDetails(
      */
     internal var builtIntoPacket: Boolean = false
 
+    /**
+     * The coordinate from which distance checks are done against other players.
+     */
+    internal var renderCoord: CoordGrid = CoordGrid.INVALID
+
     internal fun onAlloc(worldId: Int) {
         this.worldId = worldId
         this.initialized = false
+        this.renderCoord = CoordGrid.INVALID
         stationary.fill(0)
         lowResolutionCount = 0
         lowResolutionIndices.fill(0)
