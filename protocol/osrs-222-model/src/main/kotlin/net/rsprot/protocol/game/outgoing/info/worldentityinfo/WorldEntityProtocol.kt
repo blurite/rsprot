@@ -61,6 +61,14 @@ public class WorldEntityProtocol(
     }
 
     /**
+     * Deallocates the world entity info, allowing for it to be re-used in the future.
+     * @param info the world entity info to be deallocated.
+     */
+    public fun dealloc(info: WorldEntityInfo) {
+        worldEntityInfoRepository.dealloc(info.localIndex)
+    }
+
+    /**
      * Updates all the world entities that exist in one go.
      */
     public fun update() {
