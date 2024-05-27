@@ -855,28 +855,46 @@ public class PlayerAvatarExtendedInfo(
     }
 
     /**
-     * Sets an ident kit.
-     * @param wearpos the position in which to set this ident kit.
+     * Sets an ident kit. Note that this function does not rely on wearpos values,
+     * as those range from 0 to 11. Ident kit values only range from 0 to 6, which would
+     * result in some wasted memory.
+     * A list of wearpos to ident kit can also be found in
+     * [net.rsprot.protocol.common.game.outgoing.info.playerinfo.extendedinfo.Appearance.identKitSlotList]
+     *
+     * Ident kit table:
+     * ```kt
+     * | Id |  Slot  |
+     * |:--:|:------:|
+     * |  0 |  Hair  |
+     * |  1 |  Beard |
+     * |  2 |  Body  |
+     * |  3 |  Arms  |
+     * |  4 | Gloves |
+     * |  5 |  Legs  |
+     * |  6 |  Boots |
+     * ```
+     *
+     * @param identKitSlot the position in which to set this ident kit.
      * @param value the value of the ident kit config, or -1 if hidden.
      */
     public fun setIdentKit(
-        wearpos: Int,
+        identKitSlot: Int,
         value: Int,
     ) {
         verify {
-            require(wearpos in 0..6) {
-                "Unexpected wearPos $wearpos, expected range 0..6"
+            require(identKitSlot in 0..6) {
+                "Unexpected wearPos $identKitSlot, expected range 0..6"
             }
             require(value == -1 || value in UNSIGNED_BYTE_RANGE) {
                 "Unexpected value $value, expected value -1 or in range $UNSIGNED_BYTE_RANGE"
             }
         }
         val valueAsShort = value.toShort()
-        val cur = blocks.appearance.identKit[wearpos]
+        val cur = blocks.appearance.identKit[identKitSlot]
         if (cur == valueAsShort) {
             return
         }
-        blocks.appearance.identKit[wearpos] = valueAsShort
+        blocks.appearance.identKit[identKitSlot] = valueAsShort
         flagAppearance()
     }
 
