@@ -31,8 +31,7 @@ public class RebuildNormalEncoder : MessageEncoder<StaticRebuildMessage> {
             }
         }
         buffer.p2Alt3(message.zoneZ)
-        // Currently unused property, unknown what it is for, presumably sailing-related
-        buffer.p2Alt3(0)
+        buffer.p2Alt3(message.worldId)
         buffer.p2Alt3(message.zoneX)
         buffer.p2(message.keys.size)
         for (xteaKey in message.keys) {

@@ -15,15 +15,18 @@ import net.rsprot.protocol.game.outgoing.map.util.buildXteaKeyList
 public class RebuildNormal private constructor(
     private val _zoneX: UShort,
     private val _zoneZ: UShort,
+    private val _worldId: UShort,
     override val keys: List<XteaKey>,
 ) : StaticRebuildMessage {
     public constructor(
         zoneX: Int,
         zoneZ: Int,
+        worldId: Int,
         keyProvider: XteaProvider,
     ) : this(
         zoneX.toUShort(),
         zoneZ.toUShort(),
+        worldId.toUShort(),
         buildXteaKeyList(zoneX, zoneZ, keyProvider),
     )
 
@@ -31,6 +34,8 @@ public class RebuildNormal private constructor(
         get() = _zoneX.toInt()
     override val zoneZ: Int
         get() = _zoneZ.toInt()
+    override val worldId: Int
+        get() = _worldId.toInt()
     override val category: ServerProtCategory
         get() = GameServerProtCategory.HIGH_PRIORITY_PROT
 
