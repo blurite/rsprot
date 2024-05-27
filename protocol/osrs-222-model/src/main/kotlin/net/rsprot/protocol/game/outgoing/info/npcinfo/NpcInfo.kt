@@ -11,7 +11,6 @@ import net.rsprot.protocol.common.game.outgoing.info.CoordGrid
 import net.rsprot.protocol.common.game.outgoing.info.npcinfo.encoder.NpcResolutionChangeEncoder
 import net.rsprot.protocol.game.outgoing.info.exceptions.InfoProcessException
 import net.rsprot.protocol.game.outgoing.info.util.ReferencePooledObject
-import net.rsprot.protocol.game.outgoing.info.worldentityinfo.WorldEntityAvatarRepository
 import net.rsprot.protocol.message.OutgoingGameMessage
 import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.contract
@@ -43,7 +42,6 @@ public class NpcInfo internal constructor(
     internal var localPlayerIndex: Int,
     private val indexSupplier: NpcIndexSupplier,
     private val lowResolutionToHighResolutionEncoders: ClientTypeMap<NpcResolutionChangeEncoder>,
-    private val worldEntityAvatarRepository: WorldEntityAvatarRepository?,
 ) : ReferencePooledObject {
     /**
      * The maximum view distance how far a player will see other NPCs.
@@ -401,17 +399,6 @@ public class NpcInfo internal constructor(
             details.localPlayerCurrentCoord,
             viewDistance,
         )
-    }
-
-    private fun isWorldVisible(details: NpcInfoWorldDetails): Boolean {
-        if (details.worldId == ROOT_WORLD) {
-            return false
-        }
-        val avatar =
-            this.worldEntityAvatarRepository?.getOrNull(details.worldId)
-                ?: return false
-        return details.localPlayerCurrentCoord.inDistance(avatar.currentCoord, this.viewDistance) ||
-            (renderCoord != CoordGrid.INVALID && renderCoord.inDistance(avatar.currentCoord, this.viewDistance))
     }
 
     /**

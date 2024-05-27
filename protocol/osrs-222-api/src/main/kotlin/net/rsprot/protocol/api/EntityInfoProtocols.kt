@@ -113,7 +113,6 @@ public class EntityInfoProtocols
                         npcInfoSupplier,
                         npcResolutionChangeEncoders,
                         npcAvatarFactory,
-                        worldEntityAvatarFactory.avatarRepository,
                     )
 
                 return EntityInfoProtocols(
@@ -131,7 +130,6 @@ public class EntityInfoProtocols
                 npcInfoSupplier: NpcInfoSupplier,
                 npcResolutionChangeEncoders: MutableList<NpcResolutionChangeEncoder>,
                 npcAvatarFactory: NpcAvatarFactory,
-                worldEntityAvatarRepository: WorldEntityAvatarRepository,
             ) = NpcInfoProtocol(
                 allocator,
                 npcInfoSupplier.npcIndexSupplier,
@@ -144,7 +142,6 @@ public class EntityInfoProtocols
                 npcAvatarFactory,
                 npcInfoSupplier.npcAvatarExceptionHandler,
                 npcInfoSupplier.npcInfoProtocolWorker,
-                worldEntityAvatarRepository,
             )
 
             private fun buildNpcAvatarFactory(

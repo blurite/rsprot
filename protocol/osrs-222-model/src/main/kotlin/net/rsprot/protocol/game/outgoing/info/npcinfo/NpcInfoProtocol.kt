@@ -7,7 +7,6 @@ import net.rsprot.protocol.common.client.OldSchoolClientType
 import net.rsprot.protocol.common.game.outgoing.info.npcinfo.encoder.NpcResolutionChangeEncoder
 import net.rsprot.protocol.game.outgoing.info.worker.DefaultProtocolWorker
 import net.rsprot.protocol.game.outgoing.info.worker.ProtocolWorker
-import net.rsprot.protocol.game.outgoing.info.worldentityinfo.WorldEntityAvatarRepository
 import java.util.concurrent.Callable
 
 /**
@@ -32,7 +31,6 @@ public class NpcInfoProtocol(
     avatarFactory: NpcAvatarFactory,
     private val exceptionHandler: NpcAvatarExceptionHandler,
     private val worker: ProtocolWorker = DefaultProtocolWorker(),
-    private val worldEntityAvatarRepository: WorldEntityAvatarRepository?,
 ) {
     /**
      * The avatar repository keeps track of all the avatars currently in the game.
@@ -52,7 +50,6 @@ public class NpcInfoProtocol(
                 localIndex,
                 npcIndexSupplier,
                 resolutionChangeEncoders,
-                worldEntityAvatarRepository,
             )
         }
 

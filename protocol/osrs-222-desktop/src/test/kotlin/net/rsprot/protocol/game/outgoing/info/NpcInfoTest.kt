@@ -52,7 +52,14 @@ class NpcInfoTest {
             ) {
                 it.clientType
             }
-        protocol = NpcInfoProtocol(allocator, supplier, encoders, factory, npcExceptionHandler())
+        protocol =
+            NpcInfoProtocol(
+                allocator,
+                supplier,
+                encoders,
+                factory,
+                npcExceptionHandler(),
+            )
         this.client = NpcInfoClient()
         this.localNpcInfo = protocol.alloc(500, OldSchoolClientType.DESKTOP)
     }
