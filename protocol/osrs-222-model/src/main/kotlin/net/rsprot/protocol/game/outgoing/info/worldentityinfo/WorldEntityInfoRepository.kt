@@ -3,7 +3,13 @@ package net.rsprot.protocol.game.outgoing.info.worldentityinfo
 import net.rsprot.protocol.common.client.OldSchoolClientType
 import net.rsprot.protocol.game.outgoing.info.InfoRepository
 
-internal class WorldEntityRepository(
+/**
+ * A repository for world entity info instances.
+ * @param allocator the allocator used to return a new or re-used world entity info
+ * instance, based on the provided player's index and client type.
+ * @property elements the array of currently in used world entity info objects.
+ */
+internal class WorldEntityInfoRepository(
     allocator: (index: Int, oldSchoolClientType: OldSchoolClientType) -> WorldEntityInfo,
 ) : InfoRepository<WorldEntityInfo>(allocator) {
     override val elements: Array<WorldEntityInfo?> = arrayOfNulls(WorldEntityProtocol.CAPACITY)

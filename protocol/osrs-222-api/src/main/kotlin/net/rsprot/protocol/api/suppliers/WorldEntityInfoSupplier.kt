@@ -2,7 +2,7 @@ package net.rsprot.protocol.api.suppliers
 
 import net.rsprot.protocol.game.outgoing.info.worker.DefaultProtocolWorker
 import net.rsprot.protocol.game.outgoing.info.worker.ProtocolWorker
-import net.rsprot.protocol.game.outgoing.info.worldentityinfo.WorldEntityExceptionHandler
+import net.rsprot.protocol.game.outgoing.info.worldentityinfo.WorldEntityAvatarExceptionHandler
 import net.rsprot.protocol.game.outgoing.info.worldentityinfo.WorldEntityIndexSupplier
 
 /**
@@ -19,6 +19,6 @@ public class WorldEntityInfoSupplier
     @JvmOverloads
     public constructor(
         public val worldEntityIndexSupplier: WorldEntityIndexSupplier,
-        public val worldEntityExceptionHandler: WorldEntityExceptionHandler,
+        public val worldEntityAvatarExceptionHandler: WorldEntityAvatarExceptionHandler,
         public val worldEntityInfoProtocolWorker: ProtocolWorker = DefaultProtocolWorker(),
     )

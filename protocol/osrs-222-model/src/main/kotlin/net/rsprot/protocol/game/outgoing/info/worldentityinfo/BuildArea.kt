@@ -3,6 +3,15 @@ package net.rsprot.protocol.game.outgoing.info.worldentityinfo
 import net.rsprot.protocol.common.game.outgoing.info.CoordGrid
 import net.rsprot.protocol.game.outgoing.zone.payload.util.CoordInBuildArea
 
+/**
+ * The build area class is responsible for tracking the currently-rendered
+ * map of a given player. Everything sent via world entity info is tracked
+ * as relative to the build area.
+ * @property zoneX the south-western zone x coordinate of the build area
+ * @property zoneZ the south-western zone z coordinate of the build area
+ * @property widthInZones the build area width in zones (typically 13, meaning 104 tiles)
+ * @property heightInZones the build area height in zones (typically 13, meaning 104 tiles)
+ */
 @Suppress("MemberVisibilityCanBePrivate")
 @JvmInline
 public value class BuildArea private constructor(
@@ -42,6 +51,10 @@ public value class BuildArea private constructor(
     public val heightInZones: Int
         get() = (packed ushr 48 and 0xFFFF).toInt()
 
+    /**
+     * Checks if the [avatar] is inside the specified build area.
+     * @return whether this build area fully contains the [avatar].
+     */
     internal operator fun contains(avatar: WorldEntityAvatar): Boolean {
         val minBuildAreaZoneX = this.zoneX
         val minBuildAreaZoneZ = this.zoneZ
@@ -58,6 +71,12 @@ public value class BuildArea private constructor(
         return !(maxAvatarZoneX > maxBuildAreaZoneX || maxAvatarZoneZ > maxBuildAreaZoneZ)
     }
 
+    /**
+     * Localizes a specific absolute coordinate to be relative to the south-western
+     * corner of this build area.
+     * @param coordGrid the coordinate to localize.
+     * @return a coordinate local to the build area.
+     */
     internal fun localize(coordGrid: CoordGrid): CoordInBuildArea {
         val (_, x, z) = coordGrid
         val buildAreaX = zoneX shl 3
@@ -76,7 +95,14 @@ public value class BuildArea private constructor(
     }
 
     public companion object {
+        /**
+         * The default build area size in zones.
+         */
         public const val DEFAULT_BUILD_AREA_SIZE: Int = 104 ushr 3
+
+        /**
+         * An uninitialized build area.
+         */
         public val INVALID: BuildArea = BuildArea(-1)
     }
 }

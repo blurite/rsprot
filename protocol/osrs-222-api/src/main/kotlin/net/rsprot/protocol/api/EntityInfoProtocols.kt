@@ -171,7 +171,7 @@ public class EntityInfoProtocols
             ) = WorldEntityProtocol(
                 allocator,
                 worldEntityInfoSupplier.worldEntityIndexSupplier,
-                worldEntityInfoSupplier.worldEntityExceptionHandler,
+                worldEntityInfoSupplier.worldEntityAvatarExceptionHandler,
                 worldEntityAvatarFactory,
             )
 
