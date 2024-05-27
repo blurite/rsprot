@@ -125,6 +125,7 @@ public class WorldEntityInfo internal constructor(
             val index = this.highResolutionIndices[i].toInt()
             val avatar = avatarRepository.getOrNull(index)
             if (avatar == null || !inRange(avatar)) {
+                highResolutionIndices[i] = INDEX_TERMINATOR
                 this.highResolutionIndicesCount--
                 this.removedWorldEntities += index
                 allWorldEntities -= index
