@@ -31,7 +31,7 @@ public class RebuildNormalEncoder : MessageEncoder<StaticRebuildMessage> {
             }
         }
         buffer.p2Alt3(message.zoneZ)
-        buffer.p2Alt3(message.worldId)
+        buffer.p2Alt3(message.worldArea)
         buffer.p2Alt3(message.zoneX)
         buffer.p2(message.keys.size)
         for (xteaKey in message.keys) {

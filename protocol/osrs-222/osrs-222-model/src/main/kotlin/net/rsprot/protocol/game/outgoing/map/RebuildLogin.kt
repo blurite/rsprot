@@ -15,6 +15,7 @@ import net.rsprot.protocol.game.outgoing.map.util.buildXteaKeyList
  * the player information packet to be initialized properly.
  * @property zoneX the x coordinate of the local player's current zone.
  * @property zoneZ the z coordinate of the local player's current zone.
+ * @property worldArea the current world area in which the player resides.
  * @property keys the list of xtea keys needed to decrypt the map.
  * @property gpiInitBlock the initialization block of the player info protocol,
  * used to inform the client of all the low resolution coordinates of everyone in the game.
@@ -22,7 +23,7 @@ import net.rsprot.protocol.game.outgoing.map.util.buildXteaKeyList
 public class RebuildLogin private constructor(
     private val _zoneX: UShort,
     private val _zoneZ: UShort,
-    private val _worldId: UShort,
+    private val _worldArea: UShort,
     override val keys: List<XteaKey>,
     public val gpiInitBlock: ByteBuf,
 ) : StaticRebuildMessage {
@@ -44,8 +45,8 @@ public class RebuildLogin private constructor(
         get() = _zoneX.toInt()
     override val zoneZ: Int
         get() = _zoneZ.toInt()
-    override val worldId: Int
-        get() = _worldId.toInt()
+    override val worldArea: Int
+        get() = _worldArea.toInt()
     override val category: ServerProtCategory
         get() = GameServerProtCategory.HIGH_PRIORITY_PROT
 
@@ -57,7 +58,9 @@ public class RebuildLogin private constructor(
 
         if (_zoneX != other._zoneX) return false
         if (_zoneZ != other._zoneZ) return false
+        if (_worldArea != other._worldArea) return false
         if (keys != other.keys) return false
+        if (gpiInitBlock != other.gpiInitBlock) return false
 
         return true
     }
@@ -65,16 +68,19 @@ public class RebuildLogin private constructor(
     override fun hashCode(): Int {
         var result = _zoneX.hashCode()
         result = 31 * result + _zoneZ.hashCode()
+        result = 31 * result + _worldArea.hashCode()
         result = 31 * result + keys.hashCode()
+        result = 31 * result + gpiInitBlock.hashCode()
         return result
     }
 
     override fun toString(): String {
         return "RebuildLogin(" +
+            "keys=$keys, " +
+            "gpiInitBlock=$gpiInitBlock, " +
             "zoneX=$zoneX, " +
             "zoneZ=$zoneZ, " +
-            "keys=$keys, " +
-            "gpiInitBlock=$gpiInitBlock" +
+            "worldArea=$worldArea" +
             ")"
     }
 
