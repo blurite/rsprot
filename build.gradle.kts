@@ -18,7 +18,7 @@ plugins {
 
 allprojects {
     group = "net.rsprot"
-    version = "1.0.0-ALPHA-20240509"
+    version = "1.0.0-ALPHA-20240528"
 
     repositories {
         mavenCentral()
@@ -50,13 +50,18 @@ allprojects {
     }
 }
 
+private val exclusionRegex = Regex("""osrs-\d+""")
 subprojects {
     apply(plugin = "org.jlleitschuh.gradle.ktlint")
     apply(plugin = "signing")
-    apply(plugin = "com.vanniktech.maven.publish")
     apply(plugin = "org.jetbrains.dokka")
     apply(plugin = "org.jetbrains.kotlin.jvm")
 
+    // Do not publish the 'group' modules, as they got nothing in them.
+    if (exclusionRegex.matches(name)) {
+        return@subprojects
+    }
+    apply(plugin = "com.vanniktech.maven.publish")
     mavenPublishing {
         coordinates(
             groupId = project.group.toString(),
