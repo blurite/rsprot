@@ -16,6 +16,8 @@ import net.rsprot.protocol.game.incoming.codec.events.EventKeyboardDecoder
 import net.rsprot.protocol.game.incoming.codec.events.EventMouseClickDecoder
 import net.rsprot.protocol.game.incoming.codec.events.EventMouseMoveDecoder
 import net.rsprot.protocol.game.incoming.codec.events.EventMouseScrollDecoder
+import net.rsprot.protocol.game.incoming.codec.events.EventNativeMouseClickDecoder
+import net.rsprot.protocol.game.incoming.codec.events.EventNativeMouseMoveDecoder
 import net.rsprot.protocol.game.incoming.codec.friendchat.FriendChatJoinLeaveDecoder
 import net.rsprot.protocol.game.incoming.codec.friendchat.FriendChatKickDecoder
 import net.rsprot.protocol.game.incoming.codec.friendchat.FriendChatSetRankDecoder
@@ -147,9 +149,9 @@ public object DesktopGameMessageDecoderRepository {
                 bind(EventKeyboardDecoder())
                 bind(EventMouseScrollDecoder())
                 bind(EventMouseMoveDecoder())
-                // TODO: Native mouse move
+                bind(EventNativeMouseMoveDecoder())
                 bind(EventMouseClickDecoder())
-                // TODO: Native mouse click
+                bind(EventNativeMouseClickDecoder())
 
                 bind(ResumePauseButtonDecoder())
                 bind(ResumePNameDialogDecoder())

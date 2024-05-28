@@ -7,7 +7,7 @@ import net.rsprot.protocol.message.IncomingGameMessage
 
 /**
  * Mouse move messages are sent when the user moves their mouse across
- * the client.
+ * the client, in this case, on the enhanced C++ clients.
  * @property totalTime the total time in milliseconds that all the movements
  * inside this event span across
  * @property averageTime the average time in milliseconds between each movement.
@@ -21,8 +21,7 @@ import net.rsprot.protocol.message.IncomingGameMessage
  * only the position changes of the mouse at each 50 millisecond interval
  * are sent.
  */
-@Suppress("MemberVisibilityCanBePrivate")
-public class EventMouseMove private constructor(
+public class EventNativeMouseMove private constructor(
     private val _averageTime: UByte,
     private val _remainingTime: UByte,
     public val movements: MouseMovements,
@@ -49,7 +48,7 @@ public class EventMouseMove private constructor(
         get() = GameClientProtCategory.CLIENT_EVENT
 
     override fun toString(): String {
-        return "EventMouseMove(" +
+        return "EventNativeMouseMove(" +
             "movements=$movements, " +
             "totalTime=$totalTime, " +
             "averageTime=$averageTime, " +

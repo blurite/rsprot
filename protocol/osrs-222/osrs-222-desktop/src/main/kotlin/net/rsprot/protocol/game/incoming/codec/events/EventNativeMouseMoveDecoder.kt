@@ -2,7 +2,7 @@ package net.rsprot.protocol.game.incoming.codec.events
 
 import net.rsprot.buffer.JagByteBuf
 import net.rsprot.protocol.ClientProt
-import net.rsprot.protocol.game.incoming.events.EventMouseMove
+import net.rsprot.protocol.game.incoming.events.EventNativeMouseMove
 import net.rsprot.protocol.game.incoming.events.util.MouseMovements
 import net.rsprot.protocol.game.incoming.prot.GameClientProt
 import net.rsprot.protocol.message.codec.MessageDecoder
@@ -11,13 +11,13 @@ import net.rsprot.protocol.tools.MessageDecodingTools
 
 @Suppress("DuplicatedCode")
 @Consistent
-public class EventMouseMoveDecoder : MessageDecoder<EventMouseMove> {
-    override val prot: ClientProt = GameClientProt.EVENT_MOUSE_MOVE
+public class EventNativeMouseMoveDecoder : MessageDecoder<EventNativeMouseMove> {
+    override val prot: ClientProt = GameClientProt.EVENT_NATIVE_MOUSE_MOVE
 
     override fun decode(
         buffer: JagByteBuf,
         tools: MessageDecodingTools,
-    ): EventMouseMove {
+    ): EventNativeMouseMove {
         val averageTime = buffer.g1()
         val remainingTime = buffer.g1()
         val array = threadLocalArray.get()
@@ -62,7 +62,7 @@ public class EventMouseMoveDecoder : MessageDecoder<EventMouseMove> {
             array[count++] = change.packed
         }
         val slice = array.copyOf(count)
-        return EventMouseMove(
+        return EventNativeMouseMove(
             averageTime,
             remainingTime,
             MouseMovements(slice),
