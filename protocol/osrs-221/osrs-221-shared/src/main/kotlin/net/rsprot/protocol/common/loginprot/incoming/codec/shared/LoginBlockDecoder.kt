@@ -35,64 +35,71 @@ public abstract class LoginBlockDecoder<T>(
                 mod,
                 rsaSize,
             ).toJagByteBuf()
-        val encryptionCheck = rsaBuffer.g1()
-        check(encryptionCheck == 1) {
-            "Invalid RSA check '$encryptionCheck'. " +
-                "This typically means the RSA in the client does not match up with the server."
+        try {
+            val encryptionCheck = rsaBuffer.g1()
+            check(encryptionCheck == 1) {
+                "Invalid RSA check '$encryptionCheck'. " +
+                    "This typically means the RSA in the client does not match up with the server."
+            }
+            val seed =
+                IntArray(4) {
+                    rsaBuffer.g4()
+                }
+            val sessionId = rsaBuffer.g8()
+            val authentication = decodeAuthentication(rsaBuffer)
+            val xteaBuffer = buffer.buffer.xteaDecrypt(seed).toJagByteBuf()
+            try {
+                val username = xteaBuffer.gjstr()
+                val packedClientSettings = xteaBuffer.g1()
+                val lowDetail = packedClientSettings and 0x1 != 0
+                val resizable = packedClientSettings and 0x2 != 0
+                val width = xteaBuffer.g2()
+                val height = xteaBuffer.g2()
+                val uuid =
+                    ByteArray(24) {
+                        xteaBuffer.g1().toByte()
+                    }
+                val siteSettings = xteaBuffer.gjstr()
+                val affiliate = xteaBuffer.g4()
+                val constZero2 = xteaBuffer.g1()
+                val hostPlatformStats = decodeHostPlatformStats(xteaBuffer)
+                val secondClientType = xteaBuffer.g1()
+                val crcBlockHeader = xteaBuffer.g4()
+                val crc =
+                    if (betaWorld) {
+                        decodeBetaCrc(xteaBuffer)
+                    } else {
+                        decodeCrc(xteaBuffer)
+                    }
+                return LoginBlock(
+                    version,
+                    subVersion,
+                    firstClientType.toUByte(),
+                    platformType.toUByte(),
+                    constZero1.toUByte(),
+                    seed,
+                    sessionId,
+                    username,
+                    lowDetail,
+                    resizable,
+                    width.toUShort(),
+                    height.toUShort(),
+                    uuid,
+                    siteSettings,
+                    affiliate,
+                    constZero2.toUByte(),
+                    hostPlatformStats,
+                    secondClientType.toUByte(),
+                    crcBlockHeader.toUByte(),
+                    crc,
+                    authentication,
+                )
+            } finally {
+                xteaBuffer.buffer.release()
+            }
+        } finally {
+            rsaBuffer.buffer.release()
         }
-        val seed =
-            IntArray(4) {
-                rsaBuffer.g4()
-            }
-        val sessionId = rsaBuffer.g8()
-        val authentication = decodeAuthentication(rsaBuffer)
-        rsaBuffer.buffer.release()
-        val xteaBuffer = buffer.buffer.xteaDecrypt(seed).toJagByteBuf()
-        val username = xteaBuffer.gjstr()
-        val packedClientSettings = xteaBuffer.g1()
-        val lowDetail = packedClientSettings and 0x1 != 0
-        val resizable = packedClientSettings and 0x2 != 0
-        val width = xteaBuffer.g2()
-        val height = xteaBuffer.g2()
-        val uuid =
-            ByteArray(24) {
-                xteaBuffer.g1().toByte()
-            }
-        val siteSettings = xteaBuffer.gjstr()
-        val affiliate = xteaBuffer.g4()
-        val constZero2 = xteaBuffer.g1()
-        val hostPlatformStats = decodeHostPlatformStats(xteaBuffer)
-        val secondClientType = xteaBuffer.g1()
-        val crcBlockHeader = xteaBuffer.g4()
-        val crc =
-            if (betaWorld) {
-                decodeBetaCrc(xteaBuffer)
-            } else {
-                decodeCrc(xteaBuffer)
-            }
-        return LoginBlock(
-            version,
-            subVersion,
-            firstClientType.toUByte(),
-            platformType.toUByte(),
-            constZero1.toUByte(),
-            seed,
-            sessionId,
-            username,
-            lowDetail,
-            resizable,
-            width.toUShort(),
-            height.toUShort(),
-            uuid,
-            siteSettings,
-            affiliate,
-            constZero2.toUByte(),
-            hostPlatformStats,
-            secondClientType.toUByte(),
-            crcBlockHeader.toUByte(),
-            crc,
-            authentication,
-        )
     }
 
     private fun decodeCrc(buffer: JagByteBuf): CyclicRedundancyCheckBlock {
