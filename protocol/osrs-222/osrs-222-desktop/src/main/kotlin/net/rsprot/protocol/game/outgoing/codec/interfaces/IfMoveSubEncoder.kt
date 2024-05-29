@@ -17,7 +17,7 @@ public class IfMoveSubEncoder : MessageEncoder<IfMoveSub> {
         buffer: JagByteBuf,
         message: IfMoveSub,
     ) {
-        buffer.pCombinedId(message.sourceCombinedId)
-        buffer.pCombinedIdAlt1(message.destinationCombinedId)
+        buffer.pCombinedId(message.destinationCombinedId)
+        buffer.pCombinedIdAlt1(message.sourceCombinedId)
     }
 }
