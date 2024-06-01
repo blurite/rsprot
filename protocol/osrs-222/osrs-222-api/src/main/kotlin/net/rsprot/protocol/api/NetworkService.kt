@@ -147,16 +147,24 @@ public class NetworkService<R, T : Js5GroupType>
                         ports
                             .map(initializer::bind)
                             .map<ChannelFuture, CompletableFuture<Void>>(ChannelFuture::asCompletableFuture)
-                    CompletableFuture.allOf(*futures.toTypedArray())
-                        .handle { _, exception ->
-                            if (exception != null) {
-                                bossGroup.shutdownGracefully()
-                                childGroup.shutdownGracefully()
-                                throw exception
+                    val future =
+                        CompletableFuture.allOf(*futures.toTypedArray())
+                            .handle { _, exception ->
+                                if (exception != null) {
+                                    bossGroup.shutdownGracefully()
+                                    childGroup.shutdownGracefully()
+                                    throw exception
+                                }
                             }
-                        }
                     js5ServiceExecutor.start()
                     Js5Service.startPrefetching(js5Service)
+                    try {
+                        // join it, which will propagate any exceptions
+                        future.join()
+                    } catch (t: Throwable) {
+                        js5Service.triggerShutdown()
+                        throw t
+                    }
                 }
             logger.info { "Started in: $time" }
             logger.info { "Bound to ports: ${ports.joinToString(", ")}" }
