@@ -20,85 +20,89 @@ public abstract class LoginBlockDecoder<T>(
         buffer: JagByteBuf,
         betaWorld: Boolean,
     ): LoginBlock<T> {
-        val version = buffer.g4()
-        val subVersion = buffer.g4()
-        val firstClientType = buffer.g1()
-        val platformType = buffer.g1()
-        val constZero1 = buffer.g1()
-        val rsaSize = buffer.g2()
-        if (!buffer.isReadable(rsaSize)) {
-            throw IllegalStateException("RSA buffer not readable: $rsaSize, ${buffer.readableBytes()}")
-        }
-        val rsaBuffer =
-            buffer.buffer.decipherRsa(
-                exp,
-                mod,
-                rsaSize,
-            ).toJagByteBuf()
         try {
-            val encryptionCheck = rsaBuffer.g1()
-            check(encryptionCheck == 1) {
-                "Invalid RSA check '$encryptionCheck'. " +
-                    "This typically means the RSA in the client does not match up with the server."
+            val version = buffer.g4()
+            val subVersion = buffer.g4()
+            val firstClientType = buffer.g1()
+            val platformType = buffer.g1()
+            val constZero1 = buffer.g1()
+            val rsaSize = buffer.g2()
+            if (!buffer.isReadable(rsaSize)) {
+                throw IllegalStateException("RSA buffer not readable: $rsaSize, ${buffer.readableBytes()}")
             }
-            val seed =
-                IntArray(4) {
-                    rsaBuffer.g4()
-                }
-            val sessionId = rsaBuffer.g8()
-            val authentication = decodeAuthentication(rsaBuffer)
-            val xteaBuffer = buffer.buffer.xteaDecrypt(seed).toJagByteBuf()
+            val rsaBuffer =
+                buffer.buffer.decipherRsa(
+                    exp,
+                    mod,
+                    rsaSize,
+                ).toJagByteBuf()
             try {
-                val username = xteaBuffer.gjstr()
-                val packedClientSettings = xteaBuffer.g1()
-                val lowDetail = packedClientSettings and 0x1 != 0
-                val resizable = packedClientSettings and 0x2 != 0
-                val width = xteaBuffer.g2()
-                val height = xteaBuffer.g2()
-                val uuid =
-                    ByteArray(24) {
-                        xteaBuffer.g1().toByte()
+                val encryptionCheck = rsaBuffer.g1()
+                check(encryptionCheck == 1) {
+                    "Invalid RSA check '$encryptionCheck'. " +
+                        "This typically means the RSA in the client does not match up with the server."
+                }
+                val seed =
+                    IntArray(4) {
+                        rsaBuffer.g4()
                     }
-                val siteSettings = xteaBuffer.gjstr()
-                val affiliate = xteaBuffer.g4()
-                val constZero2 = xteaBuffer.g1()
-                val hostPlatformStats = decodeHostPlatformStats(xteaBuffer)
-                val secondClientType = xteaBuffer.g1()
-                val crcBlockHeader = xteaBuffer.g4()
-                val crc =
-                    if (betaWorld) {
-                        decodeBetaCrc(xteaBuffer)
-                    } else {
-                        decodeCrc(xteaBuffer)
-                    }
-                return LoginBlock(
-                    version,
-                    subVersion,
-                    firstClientType.toUByte(),
-                    platformType.toUByte(),
-                    constZero1.toUByte(),
-                    seed,
-                    sessionId,
-                    username,
-                    lowDetail,
-                    resizable,
-                    width.toUShort(),
-                    height.toUShort(),
-                    uuid,
-                    siteSettings,
-                    affiliate,
-                    constZero2.toUByte(),
-                    hostPlatformStats,
-                    secondClientType.toUByte(),
-                    crcBlockHeader.toUByte(),
-                    crc,
-                    authentication,
-                )
+                val sessionId = rsaBuffer.g8()
+                val authentication = decodeAuthentication(rsaBuffer)
+                val xteaBuffer = buffer.buffer.xteaDecrypt(seed).toJagByteBuf()
+                try {
+                    val username = xteaBuffer.gjstr()
+                    val packedClientSettings = xteaBuffer.g1()
+                    val lowDetail = packedClientSettings and 0x1 != 0
+                    val resizable = packedClientSettings and 0x2 != 0
+                    val width = xteaBuffer.g2()
+                    val height = xteaBuffer.g2()
+                    val uuid =
+                        ByteArray(24) {
+                            xteaBuffer.g1().toByte()
+                        }
+                    val siteSettings = xteaBuffer.gjstr()
+                    val affiliate = xteaBuffer.g4()
+                    val constZero2 = xteaBuffer.g1()
+                    val hostPlatformStats = decodeHostPlatformStats(xteaBuffer)
+                    val secondClientType = xteaBuffer.g1()
+                    val crcBlockHeader = xteaBuffer.g4()
+                    val crc =
+                        if (betaWorld) {
+                            decodeBetaCrc(xteaBuffer)
+                        } else {
+                            decodeCrc(xteaBuffer)
+                        }
+                    return LoginBlock(
+                        version,
+                        subVersion,
+                        firstClientType.toUByte(),
+                        platformType.toUByte(),
+                        constZero1.toUByte(),
+                        seed,
+                        sessionId,
+                        username,
+                        lowDetail,
+                        resizable,
+                        width.toUShort(),
+                        height.toUShort(),
+                        uuid,
+                        siteSettings,
+                        affiliate,
+                        constZero2.toUByte(),
+                        hostPlatformStats,
+                        secondClientType.toUByte(),
+                        crcBlockHeader.toUByte(),
+                        crc,
+                        authentication,
+                    )
+                } finally {
+                    xteaBuffer.buffer.release()
+                }
             } finally {
-                xteaBuffer.buffer.release()
+                rsaBuffer.buffer.release()
             }
         } finally {
-            rsaBuffer.buffer.release()
+            buffer.buffer.release()
         }
     }
 
