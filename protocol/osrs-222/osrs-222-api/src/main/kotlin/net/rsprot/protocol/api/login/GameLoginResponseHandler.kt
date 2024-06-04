@@ -5,6 +5,7 @@ package net.rsprot.protocol.api.login
 import com.github.michaelbull.logging.InlineLogger
 import io.netty.channel.ChannelFutureListener
 import io.netty.channel.ChannelHandlerContext
+import io.netty.channel.ChannelPipeline
 import net.rsprot.buffer.extensions.toJagByteBuf
 import net.rsprot.crypto.cipher.IsaacRandom
 import net.rsprot.crypto.cipher.StreamCipherPair
@@ -21,7 +22,6 @@ import net.rsprot.protocol.common.client.OldSchoolClientType
 import net.rsprot.protocol.loginprot.incoming.util.LoginBlock
 import net.rsprot.protocol.loginprot.incoming.util.LoginClientType
 import net.rsprot.protocol.loginprot.outgoing.LoginResponse
-import java.util.function.Consumer
 
 /**
  * A response handler for login requests, allowing the server to write either
@@ -37,36 +37,21 @@ public class GameLoginResponseHandler<R>(
      * Writes a successful login response to the client.
      * @param response the login response to write
      * @param loginBlock the login request that the client initially made
-     * @param callback the callback that will be triggered after the response
-     * has been written to the channel. The callback is always triggered,
-     * even if the writing failed. The session in the callback will be null
-     * if anything went wrong, meaning the server should free up the reserved
-     * index for this player sent in the response and treat it as a failed
-     * login. If the session exists, the login was successful and the server
-     * is expected to assign a disconnect hook right away, to ensure the server
-     * is notified if the connection is lost.
+     * @return a session object if the login was successful, otherwise a null.
      */
     public fun writeSuccessfulResponse(
         response: LoginResponse.Ok,
         loginBlock: LoginBlock<*>,
-        callback: Consumer<Session<R>?>,
-    ) {
+    ): Session<R>? {
         val oldSchoolClientType =
-            when (loginBlock.clientType) {
-                LoginClientType.DESKTOP -> OldSchoolClientType.DESKTOP
-                LoginClientType.ENHANCED_WINDOWS -> OldSchoolClientType.DESKTOP
-                LoginClientType.ENHANCED_LINUX -> OldSchoolClientType.DESKTOP
-                LoginClientType.ENHANCED_MAC -> OldSchoolClientType.DESKTOP
-                else -> null
-            }
+            getOldSchoolClientType(loginBlock)
         if (oldSchoolClientType == null || !networkService.isSupported(oldSchoolClientType)) {
             networkLog(logger) {
                 "Unsupported client type received from channel " +
                     "'${ctx.channel()}': $oldSchoolClientType, login block: $loginBlock"
             }
             ctx.writeAndFlush(LoginResponse.InvalidLoginPacket)
-            callback.accept(null)
-            return
+            return null
         }
         val address = ctx.inetAddress()
         val count =
@@ -87,8 +72,64 @@ public class GameLoginResponseHandler<R>(
             ctx
                 .writeAndFlush(LoginResponse.TooManyAttempts)
                 .addListener(ChannelFutureListener.CLOSE)
-            return
+            return null
         }
+        val (encodingCipher, decodingCipher) = setEncodingPair(loginBlock)
+
+        if (networkService.betaWorld) {
+            val encoder =
+                networkService
+                    .encoderRepositories
+                    .loginMessageDecoderRepository
+                    .getEncoder(response::class.java)
+            val buffer = ctx.alloc().buffer(37 + 1).toJagByteBuf()
+            buffer.p1(37)
+            encoder.encode(ctx, buffer, response)
+            ctx.writeAndFlush(buffer.buffer)
+        } else {
+            ctx.writeAndFlush(response)
+        }
+
+        val pipeline = ctx.channel().pipeline()
+
+        val session =
+            createSession(loginBlock, pipeline, decodingCipher, oldSchoolClientType, encodingCipher)
+        networkLog(logger) {
+            "Successful game login from channel '${ctx.channel()}': $loginBlock"
+        }
+        return session
+    }
+
+    public fun writeSuccessfulResponse(
+        response: LoginResponse.ReconnectOk,
+        loginBlock: LoginBlock<*>,
+    ): Session<R>? {
+        val oldSchoolClientType =
+            getOldSchoolClientType(loginBlock)
+        if (oldSchoolClientType == null || !networkService.isSupported(oldSchoolClientType)) {
+            networkLog(logger) {
+                "Unsupported client type received from channel " +
+                    "'${ctx.channel()}': $oldSchoolClientType, login block: $loginBlock"
+            }
+            ctx.writeAndFlush(LoginResponse.InvalidLoginPacket)
+            return null
+        }
+        val (encodingCipher, decodingCipher) = setEncodingPair(loginBlock)
+
+        // Unlike in the above case, we kind of have to assume it was successful
+        // as the player is already in the game and needs to continue on as normal
+        ctx.write(response, ctx.voidPromise())
+        val pipeline = ctx.channel().pipeline()
+
+        val session =
+            createSession(loginBlock, pipeline, decodingCipher, oldSchoolClientType, encodingCipher)
+        networkLog(logger) {
+            "Successful game login from channel '${ctx.channel()}': $loginBlock"
+        }
+        return session
+    }
+
+    private fun setEncodingPair(loginBlock: LoginBlock<*>): Pair<IsaacRandom, IsaacRandom> {
         val encodeSeed = loginBlock.seed
         val decodeSeed =
             IntArray(encodeSeed.size) { index ->
@@ -103,77 +144,64 @@ public class GameLoginResponseHandler<R>(
             .set(StreamCipherPair(encodingCipher, decodingCipher))
         channel.attr(ChannelAttributes.HUFFMAN_CODEC)
             .set(networkService.huffmanCodecProvider)
+        return Pair(encodingCipher, decodingCipher)
+    }
 
-        val writeFuture =
-            if (networkService.betaWorld) {
-                val encoder =
-                    networkService
-                        .encoderRepositories
-                        .loginMessageDecoderRepository
-                        .getEncoder(response::class.java)
-                val buffer = ctx.alloc().buffer(37 + 1).toJagByteBuf()
-                buffer.p1(37)
-                encoder.encode(ctx, buffer, response)
-                ctx.writeAndFlush(buffer.buffer)
-            } else {
-                ctx.writeAndFlush(response)
+    private fun getOldSchoolClientType(loginBlock: LoginBlock<*>): OldSchoolClientType? {
+        val oldSchoolClientType =
+            when (loginBlock.clientType) {
+                LoginClientType.DESKTOP -> OldSchoolClientType.DESKTOP
+                LoginClientType.ENHANCED_WINDOWS -> OldSchoolClientType.DESKTOP
+                LoginClientType.ENHANCED_LINUX -> OldSchoolClientType.DESKTOP
+                LoginClientType.ENHANCED_MAC -> OldSchoolClientType.DESKTOP
+                else -> null
             }
+        return oldSchoolClientType
+    }
 
-        writeFuture.addListener(
-            ChannelFutureListener { future ->
-                if (!future.isSuccess) {
-                    networkLog(logger) {
-                        "Failed to write a successful game login response to channel " +
-                            "'${ctx.channel()}': $loginBlock"
-                    }
-                    future.channel().pipeline().fireExceptionCaught(future.cause())
-                    future.channel().close()
-                    callback.accept(null)
-                    return@ChannelFutureListener
-                }
-                val pipeline = ctx.channel().pipeline()
-
-                val session =
-                    Session(
-                        ctx,
-                        networkService
-                            .gameMessageHandlers
-                            .incomingGameMessageQueueProvider
-                            .provide(),
-                        networkService
-                            .gameMessageHandlers
-                            .outgoingGameMessageQueueProvider,
-                        networkService
-                            .gameMessageHandlers
-                            .gameMessageCounterProvider
-                            .provide(),
-                        networkService
-                            .gameMessageConsumerRepositoryProvider
-                            .provide()
-                            .consumers,
-                        loginBlock,
-                        networkService
-                            .exceptionHandlers
-                            .incomingGameMessageConsumerExceptionHandler,
-                    )
-                pipeline.replace<LoginMessageDecoder>(
-                    GameMessageDecoder(
-                        networkService,
-                        session,
-                        decodingCipher,
-                        oldSchoolClientType,
-                    ),
-                )
-                pipeline.replace<LoginMessageEncoder>(
-                    GameMessageEncoder(networkService, encodingCipher, oldSchoolClientType),
-                )
-                pipeline.replace<LoginConnectionHandler<R>>(GameMessageHandler(networkService, session))
-                networkLog(logger) {
-                    "Successful game login from channel '${ctx.channel()}': $loginBlock"
-                }
-                callback.accept(session)
-            },
+    private fun createSession(
+        loginBlock: LoginBlock<*>,
+        pipeline: ChannelPipeline,
+        decodingCipher: IsaacRandom,
+        oldSchoolClientType: OldSchoolClientType,
+        encodingCipher: IsaacRandom,
+    ): Session<R> {
+        val session =
+            Session(
+                ctx,
+                networkService
+                    .gameMessageHandlers
+                    .incomingGameMessageQueueProvider
+                    .provide(),
+                networkService
+                    .gameMessageHandlers
+                    .outgoingGameMessageQueueProvider,
+                networkService
+                    .gameMessageHandlers
+                    .gameMessageCounterProvider
+                    .provide(),
+                networkService
+                    .gameMessageConsumerRepositoryProvider
+                    .provide()
+                    .consumers,
+                loginBlock,
+                networkService
+                    .exceptionHandlers
+                    .incomingGameMessageConsumerExceptionHandler,
+            )
+        pipeline.replace<LoginMessageDecoder>(
+            GameMessageDecoder(
+                networkService,
+                session,
+                decodingCipher,
+                oldSchoolClientType,
+            ),
         )
+        pipeline.replace<LoginMessageEncoder>(
+            GameMessageEncoder(networkService, encodingCipher, oldSchoolClientType),
+        )
+        pipeline.replace<LoginConnectionHandler<R>>(GameMessageHandler(networkService, session))
+        return session
     }
 
     /**

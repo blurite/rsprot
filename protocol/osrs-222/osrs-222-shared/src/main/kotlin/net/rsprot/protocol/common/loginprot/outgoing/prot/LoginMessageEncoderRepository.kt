@@ -5,6 +5,7 @@ import net.rsprot.protocol.common.loginprot.outgoing.codec.DisallowedByScriptLog
 import net.rsprot.protocol.common.loginprot.outgoing.codec.EmptyLoginResponseEncoder
 import net.rsprot.protocol.common.loginprot.outgoing.codec.OkLoginResponseEncoder
 import net.rsprot.protocol.common.loginprot.outgoing.codec.ProofOfWorkResponseEncoder
+import net.rsprot.protocol.common.loginprot.outgoing.codec.ReconnectOkResponseEncoder
 import net.rsprot.protocol.common.loginprot.outgoing.codec.SuccessfulLoginResponseEncoder
 import net.rsprot.protocol.loginprot.outgoing.LoginResponse
 import net.rsprot.protocol.message.codec.outgoing.MessageEncoderRepository
@@ -24,6 +25,7 @@ public object LoginMessageEncoderRepository {
                 bind(DisallowedByScriptLoginResponseEncoder())
                 bind(ProofOfWorkResponseEncoder())
                 bind(SuccessfulLoginResponseEncoder())
+                bind(ReconnectOkResponseEncoder())
                 bind(Encoder<LoginResponse.InvalidUsernameOrPassword>(LoginServerProt.INVALID_USERNAME_OR_PASSWORD))
                 bind(Encoder<LoginResponse.Banned>(LoginServerProt.BANNED))
                 bind(Encoder<LoginResponse.Duplicate>(LoginServerProt.DUPLICATE))
@@ -36,7 +38,6 @@ public object LoginMessageEncoderRepository {
                 bind(Encoder<LoginResponse.NeedMembersAccount>(LoginServerProt.NEED_MEMBERS_ACCOUNT))
                 bind(Encoder<LoginResponse.InvalidSave>(LoginServerProt.INVALID_SAVE))
                 bind(Encoder<LoginResponse.UpdateInProgress>(LoginServerProt.UPDATE_IN_PROGRESS))
-                bind(Encoder<LoginResponse.ReconnectOk>(LoginServerProt.RECONNECT_OK))
                 bind(Encoder<LoginResponse.TooManyAttempts>(LoginServerProt.TOO_MANY_ATTEMPTS))
                 bind(Encoder<LoginResponse.InMembersArea>(LoginServerProt.IN_MEMBERS_AREA))
                 bind(Encoder<LoginResponse.Locked>(LoginServerProt.LOCKED))

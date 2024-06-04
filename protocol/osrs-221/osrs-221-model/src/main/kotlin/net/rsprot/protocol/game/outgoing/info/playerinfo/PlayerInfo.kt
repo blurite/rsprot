@@ -251,6 +251,36 @@ public class PlayerInfo internal constructor(
     }
 
     /**
+     * Resets any existing state.
+     * Cached state should be re-assigned from the server as a result of this.
+     */
+    public fun onReconnect() {
+        // If player info was constructed, but it was not built into a packet object
+        // it implies the packet is never being written to Netty, which means
+        // a memory leak is occurring - if that is the case, release the buffer here
+        if (!builtIntoPacket) {
+            val buffer = this.buffer
+            if (buffer != null && buffer.refCnt() > 0) {
+                buffer.release(buffer.refCnt())
+            }
+        }
+        this.buffer = null
+        highResMovementBuffer = null
+        lowResMovementBuffer = null
+
+        lowResolutionIndices.fill(0)
+        lowResolutionCount = 0
+        highResolutionIndices.fill(0)
+        highResolutionCount = 0
+        highResolutionPlayers.fill(0L)
+        extendedInfoCount = 0
+        extendedInfoIndices.fill(0)
+        stationary.fill(0)
+        observerExtendedInfoFlags.reset()
+        avatar.postUpdate()
+    }
+
+    /**
      * Precalculates all the bitcodes for this player, for both low-resolution and high-resolution updates.
      * This function will be thread-safe relative to other players and can be calculated concurrently for all players.
      */

@@ -412,6 +412,27 @@ public class WorldEntityInfo internal constructor(
         this.exception = null
     }
 
+    /**
+     * Resets any existing world entity state, as a clean state is required.
+     */
+    public fun onReconnect() {
+        if (!builtIntoPacket) {
+            val buffer = this.buffer
+            if (buffer != null && buffer.refCnt() > 0) {
+                buffer.release(buffer.refCnt())
+            }
+            this.builtIntoPacket = false
+            this.buffer = null
+            this.exception = null
+        }
+        this.highResolutionIndicesCount = 0
+        this.highResolutionIndices.fill(0)
+        this.temporaryHighResolutionIndices.fill(0)
+        this.allWorldEntities.clear()
+        this.addedWorldEntities.clear()
+        this.removedWorldEntities.clear()
+    }
+
     override fun onDealloc() {
         if (!builtIntoPacket) {
             val buffer = this.buffer

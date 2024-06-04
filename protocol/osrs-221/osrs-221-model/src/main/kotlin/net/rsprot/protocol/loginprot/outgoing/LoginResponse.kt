@@ -1,5 +1,8 @@
 package net.rsprot.protocol.loginprot.outgoing
 
+import io.netty.buffer.ByteBuf
+import io.netty.buffer.DefaultByteBufHolder
+import net.rsprot.protocol.game.outgoing.info.playerinfo.PlayerInfo
 import net.rsprot.protocol.loginprot.outgoing.util.AuthenticatorResponse
 import net.rsprot.protocol.message.OutgoingLoginMessage
 
@@ -82,7 +85,42 @@ public sealed interface LoginResponse : OutgoingLoginMessage {
 
     public data object UpdateInProgress : LoginResponse
 
-    public data object ReconnectOk : LoginResponse
+    public class ReconnectOk(buffer: ByteBuf) : LoginResponse, DefaultByteBufHolder(buffer) {
+        public constructor(playerInfo: PlayerInfo) : this(
+            initializePlayerInfo(playerInfo),
+        )
+
+        private companion object {
+            private const val PLAYER_INFO_BLOCK_SIZE = ((30 + (2046 * 18)) + Byte.SIZE_BITS - 1) ushr 3
+
+            /**
+             * Initializes the player info block into a buffer provided by allocator in the playerinfo object
+             * @param playerInfo the player info protocol of this player to be initialized
+             * @return a buffer containing the initialization block of the player info protocol
+             */
+            private fun initializePlayerInfo(playerInfo: PlayerInfo): ByteBuf {
+                val allocator = playerInfo.allocator
+                val buffer = allocator.buffer(PLAYER_INFO_BLOCK_SIZE)
+                playerInfo.handleAbsolutePlayerPositions(buffer)
+                return buffer
+            }
+        }
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) return true
+            if (javaClass != other?.javaClass) return false
+            if (!super.equals(other)) return false
+            return true
+        }
+
+        override fun hashCode(): Int {
+            return super.hashCode()
+        }
+
+        override fun toString(): String {
+            return "ReconnectOk()"
+        }
+    }
 
     public data object TooManyAttempts : LoginResponse
 

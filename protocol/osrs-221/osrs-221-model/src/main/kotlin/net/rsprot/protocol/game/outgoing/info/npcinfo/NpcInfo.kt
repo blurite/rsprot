@@ -518,6 +518,19 @@ public class NpcInfo internal constructor(
         )
     }
 
+    /**
+     * This function allocates a new clean world details object,
+     * as on reconnect, all existing npc info state is lost.
+     * This function should be called on the old npc info object
+     * whenever a reconnect occurs.
+     */
+    public fun onReconnect() {
+        onDealloc()
+        this.highResolutionNpcIndexCount = 0
+        this.extendedInfoCount = 0
+        this.observerExtendedInfoFlags.reset()
+    }
+
     override fun onAlloc(
         index: Int,
         oldSchoolClientType: OldSchoolClientType,

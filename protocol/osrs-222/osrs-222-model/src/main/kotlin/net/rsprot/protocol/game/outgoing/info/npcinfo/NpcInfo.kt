@@ -488,6 +488,19 @@ public class NpcInfo internal constructor(
         )
     }
 
+    /**
+     * This function allocates a new clean world details object,
+     * as on reconnect, all existing npc info state is lost.
+     * This function should be called on the old npc info object
+     * whenever a reconnect occurs.
+     */
+    public fun onReconnect() {
+        onDealloc()
+        // Restore the root world by polling a new one
+        val details = detailsStorage.poll(ROOT_WORLD)
+        this.details[WORLD_ENTITY_CAPACITY] = details
+    }
+
     override fun onAlloc(
         index: Int,
         oldSchoolClientType: OldSchoolClientType,

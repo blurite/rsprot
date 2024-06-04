@@ -1,6 +1,7 @@
 package net.rsprot.protocol.api
 
 import com.github.michaelbull.logging.InlineLogger
+import io.netty.buffer.ByteBufHolder
 import io.netty.channel.ChannelHandlerContext
 import net.rsprot.protocol.ServerProtCategory
 import net.rsprot.protocol.api.channel.inetAddress
@@ -166,6 +167,24 @@ public class Session<R>(
             eventLoop.execute {
                 writeAndFlush()
             }
+        }
+    }
+
+    /**
+     * Clears all the remaining outgoing messages, releasing any buffers that were wrapped
+     * in a byte buffer holder.
+     * This function should be called on logout and whenever a reconnection happens, in order
+     * to get rid of any messages that got written to the session, but couldn't be flushed
+     * out in time before the session became inactive.
+     */
+    public fun clear() {
+        for (queue in outgoingMessageQueues) {
+            for (message in queue) {
+                if (message is ByteBufHolder) {
+                    message.release()
+                }
+            }
+            queue.clear()
         }
     }
 

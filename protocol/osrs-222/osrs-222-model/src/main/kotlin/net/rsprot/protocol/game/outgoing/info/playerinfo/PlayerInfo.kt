@@ -334,6 +334,20 @@ public class PlayerInfo internal constructor(
     }
 
     /**
+     * Resets any existing state and allocates a new clean root world.
+     * All other worlds are lost.
+     * Cached state should be re-assigned from the server as a result of this.
+     */
+    public fun onReconnect() {
+        reset()
+        // Restore the root world by polling a new one
+        val details = protocol.detailsStorage.poll(ROOT_WORLD)
+        this.details[PROTOCOL_CAPACITY] = details
+        details.initialized = true
+        avatar.postUpdate()
+    }
+
+    /**
      * Precalculates all the bitcodes for this player, for both low-resolution and high-resolution updates.
      * This function will be thread-safe relative to other players and can be calculated concurrently for all players.
      */
@@ -757,6 +771,11 @@ public class PlayerInfo internal constructor(
      * to stick around for extended periods of time. Any primitive properties will remain untouched.
      */
     override fun onDealloc() {
+        reset()
+        avatar.extendedInfo.reset()
+    }
+
+    private fun reset() {
         // If player info was constructed, but it was not built into a packet object
         // it implies the packet is never being written to Netty, which means
         // a memory leak is occurring - if that is the case, release the buffer here
@@ -772,12 +791,11 @@ public class PlayerInfo internal constructor(
             }
             details.buffer = null
         }
-        for (i in 0..<PROTOCOL_CAPACITY) {
+        for (i in 0..PROTOCOL_CAPACITY) {
             val details = this.details[i] ?: continue
             protocol.detailsStorage.push(details)
             this.details[i] = null
         }
-        avatar.extendedInfo.reset()
         highResMovementBuffer = null
         lowResMovementBuffer = null
     }

@@ -20,7 +20,7 @@ public enum class LoginServerProt(
     NEED_MEMBERS_ACCOUNT(LoginServerProtId.NEED_MEMBERS_ACCOUNT, 0),
     INVALID_SAVE(LoginServerProtId.INVALID_SAVE, 0),
     UPDATE_IN_PROGRESS(LoginServerProtId.UPDATE_IN_PROGRESS, 0),
-    RECONNECT_OK(LoginServerProtId.RECONNECT_OK, 0),
+    RECONNECT_OK(LoginServerProtId.RECONNECT_OK, -2),
     TOO_MANY_ATTEMPTS(LoginServerProtId.TOO_MANY_ATTEMPTS, 0),
     IN_MEMBERS_AREA(LoginServerProtId.IN_MEMBERS_AREA, 0),
     LOCKED(LoginServerProtId.LOCKED, 0),
