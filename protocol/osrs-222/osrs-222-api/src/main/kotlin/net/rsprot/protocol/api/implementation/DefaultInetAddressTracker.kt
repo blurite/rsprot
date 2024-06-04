@@ -21,7 +21,7 @@ public class DefaultInetAddressTracker : InetAddressTracker {
             if (value == null || value <= 1) {
                 null
             } else {
-                value
+                value - 1
             }
         }
     }
