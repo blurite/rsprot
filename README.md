@@ -15,7 +15,7 @@ In order to add it to your server, add the below line under dependencies
 in your build.gradle.kts.
 
 ```kts
-implementation("net.rsprot:osrs-222-api:1.0.0-ALPHA-20240529")
+implementation("net.rsprot:osrs-222-api:1.0.0-ALPHA-20240605")
 ```
 
 An in-depth tutorial on how to implement it will be added into this read-me
@@ -173,6 +173,20 @@ if (currentWorldEntityId != -1) {
 }
 packets.npcInfo(NpcInfo.ROOT_WORLD, npcInfo)
 ```
+
+#### Map Reload
+Whenever a map reload occurs, we must inform the protocol of the build area.
+Both the player info and npc info protocols will require doing so:
+```kotlin
+playerInfo.updateBuildArea(worldId, BuildArea(southWestZoneX, southWestZoneZ))
+npcInfo.updateBuildArea(worldId, BuildArea(southWestZoneX, southWestZoneZ))
+```
+
+Any player or NPC that does not fit into the build area will not be added
+to high resolution view. Furthermore, as the client trims off a one tile border,
+so do we. On the northern and eastern border, two tiles get cut off -
+this is because the client doesn't properly render entities there, even though
+map renders fine.
 
 #### End of Cycle
 After the above steps have been performed for all players, state must be reset:
