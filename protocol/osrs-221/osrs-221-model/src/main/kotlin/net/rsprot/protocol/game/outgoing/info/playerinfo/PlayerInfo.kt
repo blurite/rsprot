@@ -448,7 +448,7 @@ public class PlayerInfo internal constructor(
                 continue
             }
             val other = protocol.getPlayerInfo(index)
-            if (!shouldMoveToLowResolution(other)) {
+            if (!shouldStayInHighResolution(other)) {
                 if (skips > -1) {
                     pStationary(buffer, skips)
                     skips = -1
@@ -580,7 +580,7 @@ public class PlayerInfo internal constructor(
      * @return true if the other should be moved to low resolution.
      */
     @OptIn(ExperimentalContracts::class)
-    private fun shouldMoveToLowResolution(other: PlayerInfo?): Boolean {
+    private fun shouldStayInHighResolution(other: PlayerInfo?): Boolean {
         contract {
             returns(true) implies (other != null)
         }
