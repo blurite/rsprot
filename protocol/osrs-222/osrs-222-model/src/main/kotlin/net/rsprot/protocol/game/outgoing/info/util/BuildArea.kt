@@ -1,4 +1,4 @@
-package net.rsprot.protocol.game.outgoing.info.worldentityinfo
+package net.rsprot.protocol.game.outgoing.info.util
 
 import net.rsprot.protocol.common.game.outgoing.info.CoordGrid
 import net.rsprot.protocol.game.outgoing.zone.payload.util.CoordInBuildArea
@@ -50,26 +50,6 @@ public value class BuildArea private constructor(
         get() = (packed ushr 32 and 0xFFFF).toInt()
     public val heightInZones: Int
         get() = (packed ushr 48 and 0xFFFF).toInt()
-
-    /**
-     * Checks if the [avatar] is inside the specified build area.
-     * @return whether this build area fully contains the [avatar].
-     */
-    internal operator fun contains(avatar: WorldEntityAvatar): Boolean {
-        val minBuildAreaZoneX = this.zoneX
-        val minBuildAreaZoneZ = this.zoneZ
-        val coord = avatar.currentCoord
-        val minAvatarZoneX = coord.x ushr 3
-        val minAvatarZoneZ = coord.z ushr 3
-        if (minAvatarZoneX < minBuildAreaZoneX || minAvatarZoneZ < minBuildAreaZoneZ) {
-            return false
-        }
-        val maxBuildAreaZoneX = minBuildAreaZoneX + this.widthInZones
-        val maxBuildAreaZoneZ = minBuildAreaZoneZ + this.heightInZones
-        val maxAvatarZoneX = minAvatarZoneX + avatar.sizeX
-        val maxAvatarZoneZ = minAvatarZoneZ + avatar.sizeZ
-        return !(maxAvatarZoneX > maxBuildAreaZoneX || maxAvatarZoneZ > maxBuildAreaZoneZ)
-    }
 
     /**
      * Localizes a specific absolute coordinate to be relative to the south-western
