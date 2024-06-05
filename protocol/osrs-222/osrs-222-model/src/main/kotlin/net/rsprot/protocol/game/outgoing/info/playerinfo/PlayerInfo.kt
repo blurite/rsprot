@@ -765,6 +765,15 @@ public class PlayerInfo internal constructor(
     }
 
     /**
+     * Marks the player info object as initialized, allowing for any further coordinate changes to take effect.
+     */
+    public fun postRebuildLogin() {
+        val rootDetails = getDetails(ROOT_WORLD)
+        rootDetails.initialized = true
+        avatar.postUpdate()
+    }
+
+    /**
      * A function to reset non-world specific properties when a cycle finishes.
      */
     internal fun cycleComplete() {
