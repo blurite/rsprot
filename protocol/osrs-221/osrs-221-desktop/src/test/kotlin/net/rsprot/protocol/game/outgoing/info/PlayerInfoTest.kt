@@ -10,6 +10,7 @@ import net.rsprot.protocol.game.outgoing.info.filter.DefaultExtendedInfoFilter
 import net.rsprot.protocol.game.outgoing.info.playerinfo.PlayerAvatarFactory
 import net.rsprot.protocol.game.outgoing.info.playerinfo.PlayerInfo
 import net.rsprot.protocol.game.outgoing.info.playerinfo.PlayerInfoProtocol
+import net.rsprot.protocol.game.outgoing.info.util.BuildArea
 import net.rsprot.protocol.game.outgoing.info.worker.DefaultProtocolWorker
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -40,10 +41,19 @@ class PlayerInfoTest {
                 factory,
             )
         localPlayerInfo = protocol.alloc(LOCAL_PLAYER_INDEX, OldSchoolClientType.DESKTOP)
-        localPlayerInfo.updateCoord(0, 3200, 3220)
+        updateCoord(0, 3200, 3220)
         localPlayerInfo.avatar.postUpdate()
         client = PlayerInfoClient()
         gpiInit()
+    }
+
+    private fun updateCoord(
+        level: Int,
+        x: Int,
+        z: Int,
+    ) {
+        localPlayerInfo.updateCoord(level, x, z)
+        localPlayerInfo.updateBuildArea(BuildArea((x ushr 3) - 6, (z ushr 3) - 6))
     }
 
     private fun gpiInit() {
@@ -67,19 +77,19 @@ class PlayerInfoTest {
 
     @Test
     fun `test single player consecutive movements`() {
-        localPlayerInfo.updateCoord(1, 3210, 3225)
+        updateCoord(1, 3210, 3225)
         tick()
         assertCoordEquals()
 
-        localPlayerInfo.updateCoord(0, 0, 0)
+        updateCoord(0, 512, 512)
         tick()
         assertCoordEquals()
 
-        localPlayerInfo.updateCoord(0, 1, 0)
+        updateCoord(0, 513, 512)
         tick()
         assertCoordEquals()
 
-        localPlayerInfo.updateCoord(0, 3205, 3220)
+        updateCoord(0, 3205, 3220)
         tick()
         assertCoordEquals()
     }

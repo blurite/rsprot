@@ -13,6 +13,7 @@ import net.rsprot.protocol.game.outgoing.info.exceptions.InfoProcessException
 import net.rsprot.protocol.game.outgoing.info.playerinfo.PlayerInfoProtocol.Companion.PROTOCOL_CAPACITY
 import net.rsprot.protocol.game.outgoing.info.playerinfo.util.CellOpcodes
 import net.rsprot.protocol.game.outgoing.info.util.Avatar
+import net.rsprot.protocol.game.outgoing.info.util.BuildArea
 import net.rsprot.protocol.game.outgoing.info.util.ReferencePooledObject
 import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.contract
@@ -161,12 +162,28 @@ public class PlayerInfo internal constructor(
     private var builtIntoPacket: Boolean = false
 
     /**
+     * The entire build area of this world - this effectively caps what we can see
+     * to be within this block of land. Anything outside will be excluded.
+     */
+    private var buildArea: BuildArea = BuildArea.INVALID
+
+    /**
      * Returns the backing buffer for this cycle.
      * @throws IllegalStateException if the buffer has not been allocated yet.
      */
     @Throws(IllegalStateException::class)
     public fun backingBuffer(): ByteBuf {
         return checkNotNull(buffer)
+    }
+
+    /**
+     * Updates the build area of this player info object.
+     * This will ensure that no players outside of this box will be
+     * added to high resolution view.
+     * @param buildArea the build area to assign.
+     */
+    public fun updateBuildArea(buildArea: BuildArea) {
+        this.buildArea = buildArea
     }
 
     /**
@@ -595,9 +612,14 @@ public class PlayerInfo internal constructor(
         if (other.avatar.hidden) {
             return false
         }
-        val curCoord = this.avatar.currentCoord
-        val otherCoord = other.avatar.currentCoord
-        return curCoord.inDistance(otherCoord, this.avatar.resizeRange)
+        val coord = other.avatar.currentCoord
+        if (!coord.inDistance(this.avatar.currentCoord, this.avatar.resizeRange)) {
+            return false
+        }
+        if (coord !in buildArea) {
+            return false
+        }
+        return true
     }
 
     /**
@@ -619,9 +641,14 @@ public class PlayerInfo internal constructor(
         if (other.avatar.hidden) {
             return false
         }
-        val curCoord = this.avatar.currentCoord
-        val otherCoord = other.avatar.currentCoord
-        return curCoord.inDistance(otherCoord, this.avatar.resizeRange)
+        val coord = other.avatar.currentCoord
+        if (!coord.inDistance(this.avatar.currentCoord, this.avatar.resizeRange)) {
+            return false
+        }
+        if (coord !in buildArea) {
+            return false
+        }
+        return true
     }
 
     /**
@@ -674,6 +701,7 @@ public class PlayerInfo internal constructor(
         this.localIndex = index
         avatar.extendedInfo.localIndex = index
         this.oldSchoolClientType = oldSchoolClientType
+        this.buildArea = BuildArea.INVALID
         avatar.reset()
         lowResolutionIndices.fill(0)
         lowResolutionCount = 0

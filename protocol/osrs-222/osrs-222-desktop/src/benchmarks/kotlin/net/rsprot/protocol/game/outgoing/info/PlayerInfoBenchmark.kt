@@ -11,6 +11,7 @@ import net.rsprot.protocol.game.outgoing.info.playerinfo.PlayerAvatarFactory
 import net.rsprot.protocol.game.outgoing.info.playerinfo.PlayerInfo
 import net.rsprot.protocol.game.outgoing.info.playerinfo.PlayerInfoProtocol
 import net.rsprot.protocol.game.outgoing.info.playerinfo.PlayerInfoProtocol.Companion.PROTOCOL_CAPACITY
+import net.rsprot.protocol.game.outgoing.info.util.BuildArea
 import net.rsprot.protocol.game.outgoing.info.worker.DefaultProtocolWorker
 import org.openjdk.jmh.annotations.Benchmark
 import org.openjdk.jmh.annotations.BenchmarkMode
@@ -71,6 +72,7 @@ class PlayerInfoBenchmark {
     ) {
         player.updateCoord(level, x, z)
         player.updateRenderCoord(PlayerInfo.ROOT_WORLD, level, x, z)
+        player.updateBuildArea(PlayerInfo.ROOT_WORLD, BuildArea((x ushr 3) - 6, (z ushr 3) - 6))
     }
 
     private fun initializeAppearance(

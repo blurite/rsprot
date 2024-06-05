@@ -13,6 +13,7 @@ import net.rsprot.protocol.game.outgoing.info.exceptions.InfoProcessException
 import net.rsprot.protocol.game.outgoing.info.playerinfo.PlayerInfoProtocol.Companion.PROTOCOL_CAPACITY
 import net.rsprot.protocol.game.outgoing.info.playerinfo.util.CellOpcodes
 import net.rsprot.protocol.game.outgoing.info.util.Avatar
+import net.rsprot.protocol.game.outgoing.info.util.BuildArea
 import net.rsprot.protocol.game.outgoing.info.util.ReferencePooledObject
 import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.contract
@@ -155,6 +156,25 @@ public class PlayerInfo internal constructor(
         }
         val details = getDetails(worldId)
         details.renderCoord = CoordGrid(level, x, z)
+    }
+
+    /**
+     * Updates the build area of a given world to the specified one.
+     * This will ensure that no players outside of this box will be
+     * added to high resolution view.
+     * @param worldId the id of the world to set the build area of,
+     * with -1 being the root world.
+     * @param buildArea the build area to assign.
+     */
+    public fun updateBuildArea(
+        worldId: Int,
+        buildArea: BuildArea,
+    ) {
+        require(worldId == ROOT_WORLD || worldId in 0..<2048) {
+            "World id must be -1 or in range of 0..<2048"
+        }
+        val details = getDetails(worldId)
+        details.buildArea = buildArea
     }
 
     /**
@@ -671,7 +691,14 @@ public class PlayerInfo internal constructor(
         if (other.avatar.hidden) {
             return false
         }
-        return details.renderCoord.inDistance(other.avatar.currentCoord, this.avatar.resizeRange)
+        val coord = other.avatar.currentCoord
+        if (!details.renderCoord.inDistance(coord, this.avatar.resizeRange)) {
+            return false
+        }
+        if (coord !in details.buildArea) {
+            return false
+        }
+        return true
     }
 
     /**
@@ -696,7 +723,14 @@ public class PlayerInfo internal constructor(
         if (other.avatar.hidden) {
             return false
         }
-        return details.renderCoord.inDistance(other.avatar.currentCoord, this.avatar.resizeRange)
+        val coord = other.avatar.currentCoord
+        if (!details.renderCoord.inDistance(coord, this.avatar.resizeRange)) {
+            return false
+        }
+        if (coord !in details.buildArea) {
+            return false
+        }
+        return true
     }
 
     /**

@@ -11,6 +11,7 @@ import net.rsprot.protocol.game.outgoing.info.playerinfo.PlayerAvatarFactory
 import net.rsprot.protocol.game.outgoing.info.playerinfo.PlayerInfo
 import net.rsprot.protocol.game.outgoing.info.playerinfo.PlayerInfoProtocol
 import net.rsprot.protocol.game.outgoing.info.playerinfo.PlayerInfoProtocol.Companion.PROTOCOL_CAPACITY
+import net.rsprot.protocol.game.outgoing.info.util.BuildArea
 import net.rsprot.protocol.game.outgoing.info.worker.DefaultProtocolWorker
 import org.openjdk.jmh.annotations.Benchmark
 import org.openjdk.jmh.annotations.BenchmarkMode
@@ -57,7 +58,10 @@ class PlayerInfoBenchmark {
         for (i in 1..<MAX_IDX) {
             val player = protocol.alloc(i, OldSchoolClientType.DESKTOP)
             players[i] = player
-            player.updateCoord(0, random.nextInt(3200, 3213), random.nextInt(3200, 3213))
+            val x = random.nextInt(3200, 3213)
+            val z = random.nextInt(3200, 3213)
+            player.updateCoord(0, x, z)
+            player.updateBuildArea(BuildArea((x ushr 3) - 6, (z ushr 3) - 6))
             player.avatar.postUpdate()
             initializeAppearance(player, i)
         }

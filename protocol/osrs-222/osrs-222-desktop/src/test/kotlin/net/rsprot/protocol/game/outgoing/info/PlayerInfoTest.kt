@@ -10,6 +10,7 @@ import net.rsprot.protocol.game.outgoing.info.filter.DefaultExtendedInfoFilter
 import net.rsprot.protocol.game.outgoing.info.playerinfo.PlayerAvatarFactory
 import net.rsprot.protocol.game.outgoing.info.playerinfo.PlayerInfo
 import net.rsprot.protocol.game.outgoing.info.playerinfo.PlayerInfoProtocol
+import net.rsprot.protocol.game.outgoing.info.util.BuildArea
 import net.rsprot.protocol.game.outgoing.info.worker.DefaultProtocolWorker
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -75,11 +76,11 @@ class PlayerInfoTest {
         tick()
         assertCoordEquals()
 
-        updateCoord(0, 0, 0)
+        updateCoord(0, 512, 512)
         tick()
         assertCoordEquals()
 
-        updateCoord(0, 1, 0)
+        updateCoord(0, 513, 512)
         tick()
         assertCoordEquals()
 
@@ -95,6 +96,7 @@ class PlayerInfoTest {
     ) {
         localPlayerInfo.updateCoord(level, x, z)
         localPlayerInfo.updateRenderCoord(PlayerInfo.ROOT_WORLD, level, x, z)
+        localPlayerInfo.updateBuildArea(PlayerInfo.ROOT_WORLD, BuildArea((x ushr 3) - 6, (z ushr 3) - 6))
     }
 
     @Test

@@ -1,7 +1,6 @@
 package net.rsprot.protocol.game.outgoing.info.util
 
 import net.rsprot.protocol.common.game.outgoing.info.CoordGrid
-import net.rsprot.protocol.game.outgoing.zone.payload.util.CoordInBuildArea
 
 /**
  * The build area class is responsible for tracking the currently-rendered
@@ -50,29 +49,6 @@ public value class BuildArea private constructor(
         get() = (packed ushr 32 and 0xFFFF).toInt()
     public val heightInZones: Int
         get() = (packed ushr 48 and 0xFFFF).toInt()
-
-    /**
-     * Localizes a specific absolute coordinate to be relative to the south-western
-     * corner of this build area.
-     * @param coordGrid the coordinate to localize.
-     * @return a coordinate local to the build area.
-     */
-    internal fun localize(coordGrid: CoordGrid): CoordInBuildArea {
-        val (_, x, z) = coordGrid
-        val buildAreaX = zoneX shl 3
-        val buildAreaZ = zoneZ shl 3
-        val dx = x - buildAreaX
-        val dz = z - buildAreaZ
-        val maxDeltaX = this.widthInZones shl 3
-        val maxDeltaZ = this.heightInZones shl 3
-        check(dx in 0..<maxDeltaX) {
-            "Delta x coord out of build area: $this, $coordGrid"
-        }
-        check(dz in 0..<maxDeltaZ) {
-            "Delta z coord out of build area: $this, $coordGrid"
-        }
-        return CoordInBuildArea(dx, dz)
-    }
 
     /**
      * Checks whether this build area contains the specified coord.
