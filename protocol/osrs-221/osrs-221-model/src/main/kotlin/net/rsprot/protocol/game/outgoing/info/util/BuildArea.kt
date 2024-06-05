@@ -54,12 +54,14 @@ public value class BuildArea private constructor(
      * Checks whether this build area contains the specified coord.
      * Note that this will exclude the 1 tile border of the build area itself.
      * This is due to the client not actually rendering the build area.
-     * So given a traditional build area of 104x104 tiles, only the inner 1..102
-     * section is rendered - meaning the outer 1 tile border gets excluded.
+     * So given a traditional build area of 104x104 tiles, only the inner 1..101
+     * section is rendered - meaning the outer 1 tile border gets excluded all around,
+     * plus a further one tile on the northern and eastern borders.
+     * The clients will not render some functionality of entities on the second tile
+     * in the northern/eastern sections of the map.
      * This effect can be best seen here: https://media.z-kris.com/2024/06/javaw_Vw4OYWhkdN.png
      * On the Java client, it seems to cut off one tile border. On the C++ clients, it seems
-     * to cut off two. This function will only account for a single tile, as the C++ will still render
-     * movement on that other tile fine, even if no map data shows on it.
+     * to cut off two.
      * @param coordGrid the coord grid to test.
      * @return whether the coord grid is inside the build area.
      */
@@ -76,11 +78,11 @@ public value class BuildArea private constructor(
             return false
         }
         val maxDeltaX = this.widthInZones shl 3
-        if (dx >= (maxDeltaX - 1)) {
+        if (dx >= (maxDeltaX - 2)) {
             return false
         }
         val maxDeltaZ = this.heightInZones shl 3
-        return dz < (maxDeltaZ - 1)
+        return dz < (maxDeltaZ - 2)
     }
 
     public companion object {
