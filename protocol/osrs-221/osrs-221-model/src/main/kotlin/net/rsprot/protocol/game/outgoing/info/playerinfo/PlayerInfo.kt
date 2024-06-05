@@ -7,6 +7,7 @@ import net.rsprot.buffer.bitbuffer.UnsafeLongBackedBitBuf
 import net.rsprot.buffer.bitbuffer.toBitBuf
 import net.rsprot.buffer.extensions.toJagByteBuf
 import net.rsprot.protocol.common.client.OldSchoolClientType
+import net.rsprot.protocol.common.game.outgoing.info.CoordGrid
 import net.rsprot.protocol.game.outgoing.info.ObserverExtendedInfoFlags
 import net.rsprot.protocol.game.outgoing.info.exceptions.InfoProcessException
 import net.rsprot.protocol.game.outgoing.info.playerinfo.PlayerInfoProtocol.Companion.PROTOCOL_CAPACITY
@@ -231,6 +232,9 @@ public class PlayerInfo internal constructor(
      * @param byteBuf the buffer into which the information will be written.
      */
     public fun handleAbsolutePlayerPositions(byteBuf: ByteBuf) {
+        check(avatar.currentCoord != CoordGrid.INVALID) {
+            "Avatar position must be updated via playerinfo#updateCoord before sending RebuildLogin/ReconnectOk."
+        }
         byteBuf.toBitBuf().use { buffer ->
             buffer.pBits(30, avatar.currentCoord.packed)
             setHighResolution(localIndex)

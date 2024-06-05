@@ -317,6 +317,9 @@ public class PlayerInfo internal constructor(
         worldId: Int,
         byteBuf: ByteBuf,
     ) {
+        check(avatar.currentCoord != CoordGrid.INVALID) {
+            "Avatar position must be updated via playerinfo#updateCoord before sending RebuildLogin/ReconnectOk."
+        }
         val details = getDetails(worldId)
         byteBuf.toBitBuf().use { buffer ->
             buffer.pBits(30, avatar.currentCoord.packed)
