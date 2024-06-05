@@ -16,6 +16,7 @@ import net.rsprot.protocol.game.outgoing.info.npcinfo.NpcAvatarFactory
 import net.rsprot.protocol.game.outgoing.info.npcinfo.NpcIndexSupplier
 import net.rsprot.protocol.game.outgoing.info.npcinfo.NpcInfo
 import net.rsprot.protocol.game.outgoing.info.npcinfo.NpcInfoProtocol
+import net.rsprot.protocol.game.outgoing.info.util.BuildArea
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import kotlin.random.Random
@@ -72,6 +73,13 @@ class NpcInfoTest {
 
     private fun tick() {
         localNpcInfo.updateCoord(NpcInfo.ROOT_WORLD, localPlayerCoord.level, localPlayerCoord.x, localPlayerCoord.z)
+        localNpcInfo.updateBuildArea(
+            NpcInfo.ROOT_WORLD,
+            BuildArea(
+                (localPlayerCoord.x ushr 3) - 6,
+                (localPlayerCoord.z ushr 3) - 6,
+            ),
+        )
         protocol.update()
     }
 

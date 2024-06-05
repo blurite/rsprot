@@ -18,6 +18,7 @@ import net.rsprot.protocol.game.outgoing.info.npcinfo.NpcAvatarFactory
 import net.rsprot.protocol.game.outgoing.info.npcinfo.NpcIndexSupplier
 import net.rsprot.protocol.game.outgoing.info.npcinfo.NpcInfo
 import net.rsprot.protocol.game.outgoing.info.npcinfo.NpcInfoProtocol
+import net.rsprot.protocol.game.outgoing.info.util.BuildArea
 import net.rsprot.protocol.game.outgoing.info.worker.DefaultProtocolWorker
 import org.openjdk.jmh.annotations.Benchmark
 import org.openjdk.jmh.annotations.BenchmarkMode
@@ -82,6 +83,12 @@ class NpcInfoBenchmark {
         val infos = otherNpcInfos + localNpcInfo
         for (info in infos) {
             info.updateCoord(localPlayerCoord.level, localPlayerCoord.x, localPlayerCoord.z)
+            info.updateBuildArea(
+                BuildArea(
+                    (localPlayerCoord.x ushr 3) - 6,
+                    (localPlayerCoord.z ushr 3) - 6,
+                ),
+            )
         }
     }
 

@@ -10,6 +10,7 @@ import net.rsprot.protocol.common.client.OldSchoolClientType
 import net.rsprot.protocol.common.game.outgoing.info.CoordGrid
 import net.rsprot.protocol.common.game.outgoing.info.npcinfo.encoder.NpcResolutionChangeEncoder
 import net.rsprot.protocol.game.outgoing.info.exceptions.InfoProcessException
+import net.rsprot.protocol.game.outgoing.info.util.BuildArea
 import net.rsprot.protocol.game.outgoing.info.util.ReferencePooledObject
 import net.rsprot.protocol.message.OutgoingGameMessage
 import kotlin.contracts.ExperimentalContracts
@@ -68,6 +69,25 @@ public class NpcInfo internal constructor(
     init {
         // There is always a root world!
         details[WORLD_ENTITY_CAPACITY] = detailsStorage.poll(ROOT_WORLD)
+    }
+
+    /**
+     * Updates the build area of a given world to the specified one.
+     * This will ensure that no NPCs outside of this box will be
+     * added to high resolution view.
+     * @param worldId the id of the world to set the build area of,
+     * with -1 being the root world.
+     * @param buildArea the build area to assign.
+     */
+    public fun updateBuildArea(
+        worldId: Int,
+        buildArea: BuildArea,
+    ) {
+        require(worldId == ROOT_WORLD || worldId in 0..<2048) {
+            "World id must be -1 or in range of 0..<2048"
+        }
+        val details = getDetails(worldId)
+        details.buildArea = buildArea
     }
 
     /**
@@ -370,7 +390,24 @@ public class NpcInfo internal constructor(
         ) {
             return true
         }
-        return !withinDistance(details.localPlayerCurrentCoord, avatar.details.currentCoord, viewDistance)
+        val coord = avatar.details.currentCoord
+        if (!withinDistance(details.localPlayerCurrentCoord, coord, viewDistance)) {
+            return true
+        }
+        return coord !in details.buildArea
+    }
+
+    /**
+     * Checks whether a given NPC avatar is still within our build area,
+     * before adding it to our high resolution view.
+     * @param details the world info details.
+     * @param avatar the npc avatar to check
+     */
+    private fun isInBuildArea(
+        details: NpcInfoWorldDetails,
+        avatar: NpcAvatar,
+    ): Boolean {
+        return avatar.details.currentCoord in details.buildArea
     }
 
     /**
@@ -432,6 +469,9 @@ public class NpcInfo internal constructor(
             }
             val avatar = repository.getOrNull(index) ?: continue
             if (avatar.details.inaccessible) {
+                continue
+            }
+            if (!isInBuildArea(details, avatar)) {
                 continue
             }
             avatar.addObserver()

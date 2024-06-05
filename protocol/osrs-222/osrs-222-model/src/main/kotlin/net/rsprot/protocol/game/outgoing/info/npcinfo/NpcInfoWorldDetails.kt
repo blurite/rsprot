@@ -3,6 +3,7 @@ package net.rsprot.protocol.game.outgoing.info.npcinfo
 import io.netty.buffer.ByteBuf
 import net.rsprot.protocol.common.game.outgoing.info.CoordGrid
 import net.rsprot.protocol.game.outgoing.info.ObserverExtendedInfoFlags
+import net.rsprot.protocol.game.outgoing.info.util.BuildArea
 
 /**
  * A world detail implementation for NPC info, tracking local NPCs in a specific world.
@@ -26,6 +27,12 @@ internal class NpcInfoWorldDetails(
      * packet. This will be cross-referenced against NPCs to ensure they are within distance.
      */
     internal var localPlayerCurrentCoord: CoordGrid = CoordGrid.INVALID
+
+    /**
+     * The entire build area of this world - this effectively caps what we can see
+     * to be within this block of land. Anything outside will be excluded.
+     */
+    internal var buildArea: BuildArea = BuildArea.INVALID
 
     /**
      * The indices of the high resolution NPCs, in the order as they came in.
@@ -143,6 +150,7 @@ internal class NpcInfoWorldDetails(
         this.worldId = worldId
         this.localPlayerCurrentCoord = CoordGrid.INVALID
         this.localPlayerLastCoord = localPlayerCurrentCoord
+        this.buildArea = BuildArea.INVALID
         this.highResolutionNpcIndexCount = 0
         this.highResolutionNpcIndices.fill(0u)
         this.temporaryHighResolutionNpcIndices.fill(0u)

@@ -11,6 +11,7 @@ import net.rsprot.protocol.common.game.outgoing.info.CoordGrid
 import net.rsprot.protocol.common.game.outgoing.info.npcinfo.encoder.NpcResolutionChangeEncoder
 import net.rsprot.protocol.game.outgoing.info.ObserverExtendedInfoFlags
 import net.rsprot.protocol.game.outgoing.info.exceptions.InfoProcessException
+import net.rsprot.protocol.game.outgoing.info.util.BuildArea
 import net.rsprot.protocol.game.outgoing.info.util.ReferencePooledObject
 import net.rsprot.protocol.message.OutgoingGameMessage
 import kotlin.contracts.ExperimentalContracts
@@ -58,6 +59,12 @@ public class NpcInfo internal constructor(
      * packet. This will be cross-referenced against NPCs to ensure they are within distance.
      */
     private var localPlayerCurrentCoord: CoordGrid = CoordGrid.INVALID
+
+    /**
+     * The entire build area of this world - this effectively caps what we can see
+     * to be within this block of land. Anything outside will be excluded.
+     */
+    private var buildArea: BuildArea = BuildArea.INVALID
 
     /**
      * The maximum view distance how far a player will see other NPCs.
@@ -182,6 +189,16 @@ public class NpcInfo internal constructor(
         } else {
             NpcInfoSmall(backingBuffer())
         }
+    }
+
+    /**
+     * Updates the build area for this NPC info.
+     * This will ensure that no NPCs outside of this box will be
+     * added to high resolution view.
+     * @param buildArea the build area to assign.
+     */
+    public fun updateBuildArea(buildArea: BuildArea) {
+        this.buildArea = buildArea
     }
 
     /**
@@ -404,10 +421,26 @@ public class NpcInfo internal constructor(
         contract {
             returns(false) implies (avatar != null)
         }
-        return avatar == null ||
+        if (avatar == null ||
             avatar.details.inaccessible ||
-            avatar.details.isTeleporting() ||
-            !withinDistance(localPlayerCurrentCoord, avatar.details.currentCoord, viewDistance)
+            avatar.details.isTeleporting()
+        ) {
+            return true
+        }
+        val coord = avatar.details.currentCoord
+        if (!withinDistance(localPlayerCurrentCoord, coord, viewDistance)) {
+            return true
+        }
+        return coord !in buildArea
+    }
+
+    /**
+     * Checks whether a given NPC avatar is still within our build area,
+     * before adding it to our high resolution view.
+     * @param avatar the npc avatar to check
+     */
+    private fun isInBuildArea(avatar: NpcAvatar): Boolean {
+        return avatar.details.currentCoord in buildArea
     }
 
     /**
@@ -465,6 +498,9 @@ public class NpcInfo internal constructor(
             }
             val avatar = repository.getOrNull(index) ?: continue
             if (avatar.details.inaccessible) {
+                continue
+            }
+            if (!isInBuildArea(avatar)) {
                 continue
             }
             avatar.addObserver()
