@@ -30,13 +30,13 @@ public class RebuildLogin private constructor(
     public constructor(
         zoneX: Int,
         zoneZ: Int,
-        worldId: Int,
+        worldArea: Int,
         keyProvider: XteaProvider,
         playerInfo: PlayerInfo,
     ) : this(
         zoneX.toUShort(),
         zoneZ.toUShort(),
-        worldId.toUShort(),
+        worldArea.toUShort(),
         buildXteaKeyList(zoneX, zoneZ, keyProvider),
         initializePlayerInfo(playerInfo),
     )
