@@ -112,7 +112,7 @@ public abstract class LoginBlockDecoder<T>(
         crc[14] = buffer.g4()
         crc[13] = buffer.g4Alt1()
         crc[5] = buffer.g4Alt1()
-        crc[1] = buffer.g4Alt1()
+        crc[1] = buffer.g4Alt2()
         crc[4] = buffer.g4()
         crc[20] = buffer.g4Alt2()
         crc[19] = buffer.g4Alt2()
