@@ -30,9 +30,11 @@ public interface InetAddressValidator {
      * based on the current number of active Js5 connections
      * @param address the address attempting to establish a JS5 connection
      * @param activeJs5Connections the number of currently active JS5 connections from that address
+     * @param seed the seed used for reconnections and xtea block decryption.
      */
     public fun acceptJs5Connection(
         address: InetAddress,
         activeJs5Connections: Int,
+        seed: IntArray,
     ): Boolean
 }

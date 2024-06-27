@@ -15,6 +15,10 @@ public class InitJs5RemoteConnectionDecoder : MessageDecoder<InitJs5RemoteConnec
         tools: MessageDecodingTools,
     ): InitJs5RemoteConnection {
         val revision = buffer.g4()
-        return InitJs5RemoteConnection(revision)
+        val seed =
+            IntArray(4) {
+                buffer.g4()
+            }
+        return InitJs5RemoteConnection(revision, seed)
     }
 }

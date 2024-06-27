@@ -47,7 +47,7 @@ public class LoginChannelHandler(
                 handleInitGameConnection(ctx)
             }
             is InitJs5RemoteConnection -> {
-                handleInitJs5RemoteConnection(ctx, msg.revision)
+                handleInitJs5RemoteConnection(ctx, msg.revision, msg.seed)
             }
             // TODO: Unknown, SSL web
             else -> {
@@ -85,7 +85,8 @@ public class LoginChannelHandler(
         networkLog(logger) {
             "Game connection accepted with session id: ${NumberFormat.getNumberInstance().format(sessionId)}"
         }
-        ctx.write(LoginResponse.Successful(sessionId))
+        ctx
+            .write(LoginResponse.Successful(sessionId))
             .addListener(
                 ChannelFutureListener { future ->
                     if (!future.isSuccess) {
@@ -117,6 +118,7 @@ public class LoginChannelHandler(
     private fun handleInitJs5RemoteConnection(
         ctx: ChannelHandlerContext,
         revision: Int,
+        seed: IntArray,
     ) {
         if (revision != NetworkService.REVISION) {
             networkLog(logger) {
@@ -137,7 +139,7 @@ public class LoginChannelHandler(
             networkService
                 .iNetAddressHandlers
                 .inetAddressValidator
-                .acceptGameConnection(address, count)
+                .acceptJs5Connection(address, count, seed)
         if (!accepted) {
             networkLog(logger) {
                 "INetAddressValidator rejected JS5 connection for channel ${ctx.channel()}"
@@ -147,7 +149,8 @@ public class LoginChannelHandler(
                 .addListener(ChannelFutureListener.CLOSE)
             return
         }
-        ctx.write(LoginResponse.Successful(null))
+        ctx
+            .write(LoginResponse.Successful(null))
             .addListener(
                 ChannelFutureListener { future ->
                     if (!future.isSuccess) {

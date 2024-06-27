@@ -13,16 +13,13 @@ public class DefaultInetAddressValidator(
     override fun acceptGameConnection(
         address: InetAddress,
         activeGameConnections: Int,
-    ): Boolean {
-        return activeGameConnections < MAX_CONNECTIONS
-    }
+    ): Boolean = activeGameConnections < MAX_CONNECTIONS
 
     override fun acceptJs5Connection(
         address: InetAddress,
         activeJs5Connections: Int,
-    ): Boolean {
-        return activeJs5Connections < MAX_CONNECTIONS
-    }
+        seed: IntArray,
+    ): Boolean = activeJs5Connections < MAX_CONNECTIONS
 
     private companion object {
         private const val MAX_CONNECTIONS: Int = 10
