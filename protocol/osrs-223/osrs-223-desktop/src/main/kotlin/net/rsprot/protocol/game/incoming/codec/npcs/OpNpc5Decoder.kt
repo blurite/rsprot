@@ -14,8 +14,8 @@ public class OpNpc5Decoder : MessageDecoder<OpNpc> {
         buffer: JagByteBuf,
         tools: MessageDecodingTools,
     ): OpNpc {
-        val index = buffer.g2Alt3()
-        val controlKey = buffer.g1() == 1
+        val index = buffer.g2Alt2()
+        val controlKey = buffer.g1Alt1() == 1
         return OpNpc(
             index,
             controlKey,

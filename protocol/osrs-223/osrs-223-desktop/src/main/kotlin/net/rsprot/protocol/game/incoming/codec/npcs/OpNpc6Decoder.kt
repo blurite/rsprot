@@ -14,7 +14,7 @@ public class OpNpc6Decoder : MessageDecoder<OpNpc6> {
         buffer: JagByteBuf,
         tools: MessageDecodingTools,
     ): OpNpc6 {
-        val id = buffer.g2Alt2()
+        val id = buffer.g2Alt3()
         return OpNpc6(id)
     }
 }

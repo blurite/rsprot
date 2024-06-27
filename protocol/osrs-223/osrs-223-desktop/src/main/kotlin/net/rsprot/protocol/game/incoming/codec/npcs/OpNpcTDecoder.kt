@@ -15,11 +15,11 @@ public class OpNpcTDecoder : MessageDecoder<OpNpcT> {
         buffer: JagByteBuf,
         tools: MessageDecodingTools,
     ): OpNpcT {
+        val selectedCombinedId = buffer.gCombinedId()
         val controlKey = buffer.g1Alt1() == 1
         val selectedSub = buffer.g2Alt1()
-        val selectedCombinedId = buffer.gCombinedId()
+        val selectedObj = buffer.g2Alt1()
         val index = buffer.g2Alt2()
-        val selectedObj = buffer.g2()
         return OpNpcT(
             index,
             controlKey,

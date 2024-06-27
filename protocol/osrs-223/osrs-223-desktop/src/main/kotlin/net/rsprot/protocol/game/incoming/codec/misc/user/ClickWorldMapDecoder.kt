@@ -15,7 +15,7 @@ public class ClickWorldMapDecoder : MessageDecoder<ClickWorldMap> {
         buffer: JagByteBuf,
         tools: MessageDecodingTools,
     ): ClickWorldMap {
-        val packed = buffer.g4()
+        val packed = buffer.g4Alt2()
         return ClickWorldMap(CoordGrid(packed))
     }
 }

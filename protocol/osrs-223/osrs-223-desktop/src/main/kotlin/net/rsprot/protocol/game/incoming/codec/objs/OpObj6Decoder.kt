@@ -14,9 +14,9 @@ public class OpObj6Decoder : MessageDecoder<OpObj6> {
         buffer: JagByteBuf,
         tools: MessageDecodingTools,
     ): OpObj6 {
-        val x = buffer.g2Alt3()
-        val z = buffer.g2Alt1()
+        val x = buffer.g2Alt2()
         val id = buffer.g2()
+        val z = buffer.g2()
         return OpObj6(
             id,
             x,

@@ -14,8 +14,8 @@ public class FriendChatSetRankDecoder : MessageDecoder<FriendChatSetRank> {
         buffer: JagByteBuf,
         tools: MessageDecodingTools,
     ): FriendChatSetRank {
-        val rank = buffer.g1Alt2()
         val name = buffer.gjstr()
+        val rank = buffer.g1()
         return FriendChatSetRank(
             name,
             rank,

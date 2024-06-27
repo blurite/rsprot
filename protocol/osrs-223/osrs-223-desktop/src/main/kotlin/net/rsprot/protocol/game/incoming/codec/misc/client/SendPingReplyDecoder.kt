@@ -14,10 +14,10 @@ public class SendPingReplyDecoder : MessageDecoder<SendPingReply> {
         buffer: JagByteBuf,
         tools: MessageDecodingTools,
     ): SendPingReply {
-        val fps = buffer.g1Alt2()
-        val value1 = buffer.g4()
-        val value2 = buffer.g4Alt2()
-        val gcPercentTime = buffer.g1()
+        val gcPercentTime = buffer.g1Alt3()
+        val value1 = buffer.g4Alt1()
+        val value2 = buffer.g4()
+        val fps = buffer.g1Alt1()
         return SendPingReply(
             fps,
             gcPercentTime,

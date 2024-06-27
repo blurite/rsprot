@@ -15,7 +15,7 @@ public class OpNpc1Decoder : MessageDecoder<OpNpc> {
         tools: MessageDecodingTools,
     ): OpNpc {
         val index = buffer.g2Alt2()
-        val controlKey = buffer.g1Alt2() == 1
+        val controlKey = buffer.g1() == 1
         return OpNpc(
             index,
             controlKey,

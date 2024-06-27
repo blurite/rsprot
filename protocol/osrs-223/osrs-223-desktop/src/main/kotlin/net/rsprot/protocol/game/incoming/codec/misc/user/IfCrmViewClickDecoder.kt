@@ -6,7 +6,7 @@ import net.rsprot.protocol.game.incoming.misc.user.IfCrmViewClick
 import net.rsprot.protocol.game.incoming.prot.GameClientProt
 import net.rsprot.protocol.message.codec.MessageDecoder
 import net.rsprot.protocol.tools.MessageDecodingTools
-import net.rsprot.protocol.util.gCombinedIdAlt3
+import net.rsprot.protocol.util.gCombinedIdAlt1
 
 public class IfCrmViewClickDecoder : MessageDecoder<IfCrmViewClick> {
     override val prot: ClientProt = GameClientProt.IF_CRMVIEW_CLICK
@@ -15,12 +15,12 @@ public class IfCrmViewClickDecoder : MessageDecoder<IfCrmViewClick> {
         buffer: JagByteBuf,
         tools: MessageDecodingTools,
     ): IfCrmViewClick {
-        val serverTarget = buffer.g4Alt2()
-        val behaviour2 = buffer.g4Alt2()
-        val behaviour3 = buffer.g4Alt3()
-        val sub = buffer.g2Alt2()
-        val combinedId = buffer.gCombinedIdAlt3()
+        val combinedId = buffer.gCombinedIdAlt1()
+        val sub = buffer.g2Alt1()
+        val behaviour2 = buffer.g4Alt3()
+        val serverTarget = buffer.g4Alt3()
         val behaviour1 = buffer.g4Alt1()
+        val behaviour3 = buffer.g4Alt1()
         return IfCrmViewClick(
             serverTarget,
             combinedId,

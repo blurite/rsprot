@@ -14,10 +14,10 @@ public class OpLoc5Decoder : MessageDecoder<OpLoc> {
         buffer: JagByteBuf,
         tools: MessageDecodingTools,
     ): OpLoc {
-        val z = buffer.g2Alt2()
+        val z = buffer.g2Alt3()
         val id = buffer.g2Alt2()
-        val controlKey = buffer.g1() == 1
         val x = buffer.g2Alt2()
+        val controlKey = buffer.g1Alt2() == 1
         return OpLoc(
             id,
             x,

@@ -15,11 +15,11 @@ public class OpPlayerTDecoder : MessageDecoder<OpPlayerT> {
         buffer: JagByteBuf,
         tools: MessageDecodingTools,
     ): OpPlayerT {
-        val controlKey = buffer.g1Alt1() == 1
+        val selectedObj = buffer.g2()
+        val selectedSub = buffer.g2Alt3()
         val index = buffer.g2()
         val combinedId = buffer.gCombinedIdAlt3()
-        val selectedSub = buffer.g2Alt3()
-        val selectedObj = buffer.g2Alt1()
+        val controlKey = buffer.g1Alt1() == 1
         return OpPlayerT(
             index,
             controlKey,
