@@ -85,7 +85,8 @@ public class LoginChannelHandler(
         networkLog(logger) {
             "Game connection accepted with session id: ${NumberFormat.getNumberInstance().format(sessionId)}"
         }
-        ctx.write(LoginResponse.Successful(sessionId))
+        ctx
+            .write(LoginResponse.Successful(sessionId))
             .addListener(
                 ChannelFutureListener { future ->
                     if (!future.isSuccess) {
@@ -137,7 +138,7 @@ public class LoginChannelHandler(
             networkService
                 .iNetAddressHandlers
                 .inetAddressValidator
-                .acceptGameConnection(address, count)
+                .acceptJs5Connection(address, count)
         if (!accepted) {
             networkLog(logger) {
                 "INetAddressValidator rejected JS5 connection for channel ${ctx.channel()}"
@@ -147,7 +148,8 @@ public class LoginChannelHandler(
                 .addListener(ChannelFutureListener.CLOSE)
             return
         }
-        ctx.write(LoginResponse.Successful(null))
+        ctx
+            .write(LoginResponse.Successful(null))
             .addListener(
                 ChannelFutureListener { future ->
                     if (!future.isSuccess) {
