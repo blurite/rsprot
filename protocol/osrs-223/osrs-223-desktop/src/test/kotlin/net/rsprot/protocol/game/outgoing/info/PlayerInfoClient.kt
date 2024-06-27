@@ -170,10 +170,10 @@ class PlayerInfoClient {
             val index = extendedInfoIndices[i]
             val player = checkNotNull(cachedPlayers[index])
             var flag = buffer.g1()
-            if (flag and 0x40 != 0) {
+            if (flag and 0x10 != 0) {
                 flag += buffer.g1() shl 8
             }
-            if (flag and 0x8000 != 0) {
+            if (flag and 0x1000 != 0) {
                 flag += buffer.g1() shl 16
             }
             decodeExtendedInfoBlocks(buffer, index, player, flag)
@@ -186,13 +186,13 @@ class PlayerInfoClient {
         player: Player,
         flag: Int,
     ) {
-        if (flag and 0x4 != 0) {
-            val len = buffer.g1()
+        if (flag and 0x1 != 0) {
+            val len = buffer.g1Alt3()
             val data = ByteArray(len)
-            buffer.gdata(data)
+            buffer.gdataAlt2(data)
             decodeAppearance(Unpooled.wrappedBuffer(data).toJagByteBuf(), player)
         }
-        require(flag and 0x4.inv() == 0)
+        require(flag and 0x1.inv() == 0)
     }
 
     private fun decodeAppearance(
@@ -503,7 +503,9 @@ class PlayerInfoClient {
         private const val CUR_CYCLE_INACTIVE = 0x1
         private const val NEXT_CYCLE_INACTIVE = 0x2
 
-        class Player(val playerId: Int) {
+        class Player(
+            val playerId: Int,
+        ) {
             var queuedMove: Boolean = false
             var coord: CoordGrid = CoordGrid.INVALID
             var skullIcon: Int = -1
@@ -527,8 +529,8 @@ class PlayerInfoClient {
             var identKit: IntArray = IntArray(12)
             var colours: IntArray = IntArray(5)
 
-            override fun toString(): String {
-                return "Player(" +
+            override fun toString(): String =
+                "Player(" +
                     "playerId=$playerId, " +
                     "queuedMove=$queuedMove, " +
                     "coord=$coord, " +
@@ -553,7 +555,6 @@ class PlayerInfoClient {
                     "identKit=${identKit.contentToString()}, " +
                     "colours=${colours.contentToString()}" +
                     ")"
-            }
         }
     }
 }
