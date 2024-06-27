@@ -3,7 +3,7 @@ package net.rsprot.protocol.game.incoming.prot
 internal object GameClientProtId {
     const val RESUME_PAUSEBUTTON = 0
     const val EVENT_KEYBOARD = 1
-    const val EVENT_NATIVE_MOUSE_MOVE = 2 // TODO: Verify that it isn't swapped with hiscore request
+    const val HISCORE_REQUEST = 2
     const val RESUME_P_STRINGDIALOG = 3
     const val SOUND_JINGLEEND = 4
     const val OPNPC6 = 5
@@ -52,7 +52,7 @@ internal object GameClientProtId {
     const val OPLOC6 = 48
     const val BUG_REPORT = 49
     const val OPPLAYER7 = 50
-    const val HISCORE_REQUEST = 51
+    const val EVENT_NATIVE_MOUSE_MOVE = 51
     const val CLANSETTINGS_FULL_REQUEST = 52
     const val IF_BUTTON8 = 53
     const val SET_CHATFILTERSETTINGS = 54
