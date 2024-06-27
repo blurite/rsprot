@@ -12,6 +12,7 @@ import net.rsprot.protocol.game.outgoing.codec.camera.CamMoveToEncoder
 import net.rsprot.protocol.game.outgoing.codec.camera.CamResetEncoder
 import net.rsprot.protocol.game.outgoing.codec.camera.CamShakeEncoder
 import net.rsprot.protocol.game.outgoing.codec.camera.CamSmoothResetEncoder
+import net.rsprot.protocol.game.outgoing.codec.camera.CamTargetEncoder
 import net.rsprot.protocol.game.outgoing.codec.camera.CamTargetOldEncoder
 import net.rsprot.protocol.game.outgoing.codec.camera.OculusSyncEncoder
 import net.rsprot.protocol.game.outgoing.codec.clan.ClanChannelDeltaEncoder
@@ -230,6 +231,7 @@ public object DesktopGameMessageEncoderRepository {
                 bind(CamLookAtEasedAngleRelativeEncoder())
                 bind(CamLookAtEasedAngleAbsoluteEncoder())
                 bind(CamModeEncoder())
+                bind(CamTargetEncoder())
                 bind(CamTargetOldEncoder())
                 bind(OculusSyncEncoder())
 
