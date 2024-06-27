@@ -34,9 +34,9 @@ public class DesktopUpdateZonePartialEnclosedEncoder : MessageEncoder<UpdateZone
         buffer: JagByteBuf,
         message: UpdateZonePartialEnclosed,
     ) {
-        buffer.p1Alt3(message.zoneX)
-        buffer.p1Alt2(message.zoneZ)
-        buffer.p1Alt1(message.level)
+        buffer.p1Alt1(message.zoneZ)
+        buffer.p1(message.zoneX)
+        buffer.p1Alt2(message.level)
         buffer.buffer.writeBytes(
             message.payload,
             message.payload.readerIndex(),
@@ -66,10 +66,11 @@ public class DesktopUpdateZonePartialEnclosedEncoder : MessageEncoder<UpdateZone
             messages: List<T>,
         ): ByteBuf {
             val buffer =
-                allocator.buffer(
-                    min(IndexedZoneProtEncoder.maxZoneProtSize * messages.size, MAX_PARTIAL_ENCLOSED_SIZE),
-                    MAX_PARTIAL_ENCLOSED_SIZE,
-                ).toJagByteBuf()
+                allocator
+                    .buffer(
+                        min(IndexedZoneProtEncoder.maxZoneProtSize * messages.size, MAX_PARTIAL_ENCLOSED_SIZE),
+                        MAX_PARTIAL_ENCLOSED_SIZE,
+                    ).toJagByteBuf()
             for (message in messages) {
                 val indexedEncoder = IndexedZoneProtEncoder.indexedEncoders[message.protId]
                 buffer.p1(indexedEncoder.ordinal)
@@ -117,17 +118,17 @@ public class DesktopUpdateZonePartialEnclosedEncoder : MessageEncoder<UpdateZone
             private val protId: Int,
             val encoder: ZoneProtEncoder<*>,
         ) {
-            OBJ_DEL(OldSchoolZoneProt.OBJ_DEL, ObjDelEncoder()),
-            LOC_ADD_CHANGE(OldSchoolZoneProt.LOC_ADD_CHANGE, LocAddChangeEncoder()),
-            OBJ_ADD(OldSchoolZoneProt.OBJ_ADD, ObjAddEncoder()),
-            LOC_ANIM(OldSchoolZoneProt.LOC_ANIM, LocAnimEncoder()),
-            MAP_PROJANIM(OldSchoolZoneProt.MAP_PROJANIM, MapProjAnimEncoder()),
             LOC_DEL(OldSchoolZoneProt.LOC_DEL, LocDelEncoder()),
-            OBJ_OPFILTER(OldSchoolZoneProt.OBJ_OPFILTER, ObjOpFilterEncoder()),
             SOUND_AREA(OldSchoolZoneProt.SOUND_AREA, SoundAreaEncoder()),
-            OBJ_COUNT(OldSchoolZoneProt.OBJ_COUNT, ObjCountEncoder()),
-            MAP_ANIM(OldSchoolZoneProt.MAP_ANIM, MapAnimEncoder()),
+            OBJ_ADD(OldSchoolZoneProt.OBJ_ADD, ObjAddEncoder()),
             LOC_MERGE(OldSchoolZoneProt.LOC_MERGE, LocMergeEncoder()),
+            OBJ_OPFILTER(OldSchoolZoneProt.OBJ_OPFILTER, ObjOpFilterEncoder()),
+            LOC_ANIM(OldSchoolZoneProt.LOC_ANIM, LocAnimEncoder()),
+            LOC_ADD_CHANGE(OldSchoolZoneProt.LOC_ADD_CHANGE, LocAddChangeEncoder()),
+            MAP_ANIM(OldSchoolZoneProt.MAP_ANIM, MapAnimEncoder()),
+            OBJ_COUNT(OldSchoolZoneProt.OBJ_COUNT, ObjCountEncoder()),
+            MAP_PROJANIM(OldSchoolZoneProt.MAP_PROJANIM, MapProjAnimEncoder()),
+            OBJ_DEL(OldSchoolZoneProt.OBJ_DEL, ObjDelEncoder()),
             ;
 
             companion object {

@@ -12,7 +12,7 @@ import net.rsprot.protocol.message.OutgoingGameMessage
  * is used. Other types will use the traditional priority system.
  * @property type the camera target type to focus on.
  */
-public class CamTarget(
+public class CamTargetOld(
     public val type: CamTargetType,
 ) : OutgoingGameMessage {
     override val category: ServerProtCategory
@@ -22,18 +22,14 @@ public class CamTarget(
         if (this === other) return true
         if (javaClass != other?.javaClass) return false
 
-        other as CamTarget
+        other as CamTargetOld
 
         return type == other.type
     }
 
-    override fun hashCode(): Int {
-        return type.hashCode()
-    }
+    override fun hashCode(): Int = type.hashCode()
 
-    override fun toString(): String {
-        return "CamTarget(type=$type)"
-    }
+    override fun toString(): String = "CamTargetOld(type=$type)"
 
     /**
      * A sealed interface for various camera target types.
@@ -46,7 +42,9 @@ public class CamTarget(
      * local player.
      * @property index the index of the player who to set the camera on.
      */
-    public class PlayerCamTarget(public val index: Int) : CamTargetType {
+    public class PlayerCamTarget(
+        public val index: Int,
+    ) : CamTargetType {
         init {
             require(index in 0..<2048) {
                 "Index must be in range of 0..<2048"
@@ -62,13 +60,9 @@ public class CamTarget(
             return index == other.index
         }
 
-        override fun hashCode(): Int {
-            return index
-        }
+        override fun hashCode(): Int = index
 
-        override fun toString(): String {
-            return "PlayerCamTarget(index=$index)"
-        }
+        override fun toString(): String = "PlayerCamTarget(index=$index)"
     }
 
     /**
@@ -77,7 +71,9 @@ public class CamTarget(
      * local player.
      * @property index the index of the NPC who to set the camera on.
      */
-    public class NpcCamTarget(public val index: Int) : CamTargetType {
+    public class NpcCamTarget(
+        public val index: Int,
+    ) : CamTargetType {
         init {
             require(index in 0..<65536) {
                 "Index must be in range of 0..<65536"
@@ -93,13 +89,9 @@ public class CamTarget(
             return index == other.index
         }
 
-        override fun hashCode(): Int {
-            return index
-        }
+        override fun hashCode(): Int = index
 
-        override fun toString(): String {
-            return "NpcCamTarget(index=$index)"
-        }
+        override fun toString(): String = "NpcCamTarget(index=$index)"
     }
 
     /**
@@ -109,7 +101,9 @@ public class CamTarget(
      * Additionally, depth buffering (z-buffer) will be enabled when this type of camera target is used.
      * @property index the index of the world entity who to set the camera on.
      */
-    public class WorldEntityTarget(public val index: Int) : CamTargetType {
+    public class WorldEntityTarget(
+        public val index: Int,
+    ) : CamTargetType {
         init {
             require(index in 0..<2048) {
                 "Index must be in range of 0..<2048"
@@ -125,12 +119,8 @@ public class CamTarget(
             return index == other.index
         }
 
-        override fun hashCode(): Int {
-            return index
-        }
+        override fun hashCode(): Int = index
 
-        override fun toString(): String {
-            return "WorldEntityTarget(index=$index)"
-        }
+        override fun toString(): String = "WorldEntityTarget(index=$index)"
     }
 }

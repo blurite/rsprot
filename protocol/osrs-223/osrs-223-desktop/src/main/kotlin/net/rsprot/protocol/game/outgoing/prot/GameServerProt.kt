@@ -111,7 +111,8 @@ public enum class GameServerProt(
     CAM_LOOKAT_EASED_ANGLE_RELATIVE(GameServerProtId.CAM_LOOKAT_EASED_ANGLE_RELATIVE, 7),
     CAM_LOOKAT_EASED_ANGLE_ABSOLUTE(GameServerProtId.CAM_LOOKAT_EASED_ANGLE_ABSOLUTE, 7),
     CAM_MODE(GameServerProtId.CAM_MODE, 1),
-    CAM_TARGET(GameServerProtId.CAM_TARGET, 3),
+    CAM_TARGET(GameServerProtId.CAM_TARGET, 5),
+    CAM_TARGET_OLD(GameServerProtId.CAM_TARGET_OLD, 3),
     OCULUS_SYNC(GameServerProtId.OCULUS_SYNC, 4),
 
     // Inventory packets
@@ -172,6 +173,9 @@ public enum class GameServerProt(
     HEATMAP_TOGGLE(GameServerProtId.HEATMAP_TOGGLE, 1),
     MINIMAP_TOGGLE(GameServerProtId.MINIMAP_TOGGLE, 1),
     SERVER_TICK_END(GameServerProtId.SERVER_TICK_END, 0),
+    HIDENPCOPS(GameServerProtId.HIDENPCOPS, 1),
+    HIDEPLAYEROPS(GameServerProtId.HIDEPLAYEROPS, 1),
+    HIDELOCOPS(GameServerProtId.HIDELOCOPS, 1),
 
     // Misc. client packets
     URL_OPEN(GameServerProtId.URL_OPEN, Prot.VAR_SHORT),

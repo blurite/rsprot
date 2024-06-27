@@ -19,6 +19,6 @@ public class MidiSongStopEncoder : MessageEncoder<MidiSongStop> {
         // of the packet, as:
         // fadeOut(fadeOutDelay, fadeOutSpeed)
         buffer.p2Alt3(message.fadeOutSpeed)
-        buffer.p2Alt2(message.fadeOutDelay)
+        buffer.p2Alt1(message.fadeOutDelay)
     }
 }

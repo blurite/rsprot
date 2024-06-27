@@ -15,7 +15,7 @@ public class PlayerAnimSpecificEncoder : MessageEncoder<PlayerAnimSpecific> {
         buffer: JagByteBuf,
         message: PlayerAnimSpecific,
     ) {
+        buffer.p1Alt1(message.delay)
         buffer.p2(message.id)
-        buffer.p1Alt3(message.delay)
     }
 }

@@ -16,8 +16,8 @@ public class ObjOpFilterEncoder : ZoneProtEncoder<ObjOpFilter> {
         // The function at the bottom of the OBJ_OPFILTER has a consistent order,
         // making it easy to identify all the properties of this packet:
         // obj_opfilter(level, x, z, id, opFlags)
-        buffer.p2(message.id)
         buffer.p1Alt2(message.opFlags.value)
-        buffer.p1Alt1(message.coordInZonePacked)
+        buffer.p1Alt2(message.coordInZonePacked)
+        buffer.p2(message.id)
     }
 }
