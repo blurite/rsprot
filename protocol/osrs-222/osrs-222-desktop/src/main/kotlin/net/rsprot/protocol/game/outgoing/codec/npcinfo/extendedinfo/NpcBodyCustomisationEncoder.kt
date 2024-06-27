@@ -45,8 +45,8 @@ public class NpcBodyCustomisationEncoder : PrecomputedExtendedInfoEncoder<BodyCu
             flag = flag or FLAG_MIRROR_LOCAL_PLAYER
         }
         buffer.pFlag(flag)
-        buffer.p1Alt1(customisation.models.size)
         if (flag and FLAG_REMODEL != 0) {
+            buffer.p1Alt1(customisation.models.size)
             for (model in customisation.models) {
                 buffer.p2Alt1(model)
             }
