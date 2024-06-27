@@ -62,6 +62,9 @@ import net.rsprot.protocol.game.outgoing.codec.map.RebuildNormalEncoder
 import net.rsprot.protocol.game.outgoing.codec.map.RebuildRegionEncoder
 import net.rsprot.protocol.game.outgoing.codec.map.RebuildWorldEntityEncoder
 import net.rsprot.protocol.game.outgoing.codec.misc.client.HeatmapToggleEncoder
+import net.rsprot.protocol.game.outgoing.codec.misc.client.HideLocOpsEncoder
+import net.rsprot.protocol.game.outgoing.codec.misc.client.HideNpcOpsEncoder
+import net.rsprot.protocol.game.outgoing.codec.misc.client.HidePlayerOpsEncoder
 import net.rsprot.protocol.game.outgoing.codec.misc.client.HintArrowEncoder
 import net.rsprot.protocol.game.outgoing.codec.misc.client.HiscoreReplyEncoder
 import net.rsprot.protocol.game.outgoing.codec.misc.client.MinimapToggleEncoder
@@ -285,6 +288,9 @@ public object DesktopGameMessageEncoderRepository {
                 bind(HeatmapToggleEncoder())
                 bind(MinimapToggleEncoder())
                 bind(ServerTickEndEncoder())
+                bind(HideNpcOpsEncoder())
+                bind(HidePlayerOpsEncoder())
+                bind(HideLocOpsEncoder())
 
                 bind(UrlOpenEncoder())
                 bind(UpdateSiteSettingsEncoder())
