@@ -148,7 +148,8 @@ public class NetworkService<R, T : Js5GroupType>
                             .map(initializer::bind)
                             .map<ChannelFuture, CompletableFuture<Void>>(ChannelFuture::asCompletableFuture)
                     val future =
-                        CompletableFuture.allOf(*futures.toTypedArray())
+                        CompletableFuture
+                            .allOf(*futures.toTypedArray())
                             .handle { _, exception ->
                                 if (exception != null) {
                                     bossGroup.shutdownGracefully()
@@ -300,12 +301,10 @@ public class NetworkService<R, T : Js5GroupType>
         /**
          * Checks whether the provided [clientType] is supported by the service.
          */
-        public fun isSupported(clientType: OldSchoolClientType): Boolean {
-            return clientType in clientTypes
-        }
+        public fun isSupported(clientType: OldSchoolClientType): Boolean = clientType in clientTypes
 
         public companion object {
-            public const val REVISION: Int = 222
+            public const val REVISION: Int = 223
             public const val LOGIN_TIMEOUT_SECONDS: Long = 60
             public const val JS5_TIMEOUT_SECONDS: Long = 30
             private val logger = InlineLogger()
