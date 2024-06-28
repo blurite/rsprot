@@ -1,6 +1,6 @@
 # RSProt
 
-[![GitHub Actions][actions-badge]][actions] [![MIT license][mit-badge]][mit] [![OldSchool - 221 (Alpha)](https://img.shields.io/badge/OldSchool-222_(Alpha)-9a1abd)](https://github.com/blurite/rsprot/tree/master/protocol/osrs-222/osrs-222-api/src/main/kotlin/net/rsprot/protocol/api) [![OldSchool - 221 (Alpha)](https://img.shields.io/badge/OldSchool-221_(Alpha)-9a1abd)](https://github.com/blurite/rsprot/tree/master/protocol/osrs-221-api/src/main/kotlin/net/rsprot/protocol/api)
+[![GitHub Actions][actions-badge]][actions] [![MIT license][mit-badge]][mit] [![OldSchool - 223 (Alpha)](https://img.shields.io/badge/OldSchool-223_(Alpha)-9a1abd)](https://github.com/blurite/rsprot/tree/master/protocol/osrs-223/osrs-223-api/src/main/kotlin/net/rsprot/protocol/api) [![OldSchool - 222 (Alpha)](https://img.shields.io/badge/OldSchool-222_(Alpha)-9a1abd)](https://github.com/blurite/rsprot/tree/master/protocol/osrs-222/osrs-222-api/src/main/kotlin/net/rsprot/protocol/api) [![OldSchool - 221 (Alpha)](https://img.shields.io/badge/OldSchool-221_(Alpha)-9a1abd)](https://github.com/blurite/rsprot/tree/master/protocol/osrs-221-api/src/main/kotlin/net/rsprot/protocol/api)
 
 ## Status
 > [!NOTE]
@@ -15,7 +15,7 @@ In order to add it to your server, add the below line under dependencies
 in your build.gradle.kts.
 
 ```kts
-implementation("net.rsprot:osrs-222-api:1.0.0-ALPHA-20240605")
+implementation("net.rsprot:osrs-223-api:1.0.0-ALPHA-20240629")
 ```
 
 An in-depth tutorial on how to implement it will be added into this read-me
@@ -31,13 +31,14 @@ other revisions are welcome, but will not be provided by default.
 - Java 11
 
 ## Supported Versions
-This library currently supports revision 221 and 222 OldSchool desktop clients.
+This library currently supports revision 221, 222 and 223 OldSchool desktop clients.
 
 ## Quick Guide
 This section covers a quick guide for how to use the protocol after implementing
 the base API. It is not a guide for the base API itself, that will come in the
 future. This specific quick guide refers to revision 222, which brought changes
 to the complicated info packets.
+Revision 223 is almost entirely the same, and is recommended to be used over 222.
 
 #### Player Initialization
 When a player logs in, a new protocol instance must be allocated for
@@ -234,6 +235,28 @@ protocol. This can be done via:
 `service.worldEntityAvatarFactory.release(avatar)`
 
 ## Changes
+
+### Revision 223
+Not many changes occurred in revision 223 - four new packets were introduced,
+one of which is an updated variant of an older one.
+
+#### Deprecations
+CAM_TARGET_OLD has been deprecated. This class was previously called CAM_TARGET,
+but Jagex has introduced a new variant of this that supports passing in the
+index of the player to focus on when on a world entity. Previously, you could
+only focus on a world entity itself.
+
+#### Additions
+Three brand-new packets were added:
+1. HIDENPCOPS
+2. HIDEPLAYEROPS
+3. HIDELOCOPS
+
+All these packets will hide right-click options 1-5 on any of the respective
+elements. The examine option, if present, will still render, however.
+The intended purpose here is to make moving on a ship more convenient,
+as mis-clicks on random things are quite easy to occur while at the wheel of
+a ship.
 
 ### Revision 222
 In revision 222, Jagex released the first prototype of the tech used for sailing.
