@@ -541,7 +541,17 @@ public class PlayerAvatarExtendedInfo(
      * If a headbar by the same id already exists, updates the status of the old one.
      * Up to four distinct headbars can be rendered simultaneously.
      *
-     * @param id the id of the headbar to render
+     * @param sourceIndex the index of the entity that dealt the hit that resulted in this headbar.
+     * If the target avatar is a player, add 0x10000 to the real index value (0-2048).
+     * If the target avatar is a NPC, set the index as it is.
+     * If there is no source, set the index to -1.
+     * The index will be used for rendering purposes, as both the player who dealt
+     * the hit, and the recipient will see the [selfType] variant, and everyone else
+     * will see the [otherType] variant, which, if set to -1 will be skipped altogether.
+     * @param selfType the id of the headbar to render to the entity on which the headbar appears,
+     * as well as the source who resulted in the creation of the headbar.
+     * @param otherType the id of the headbar to render to everyone that doesn't fit the [selfType]
+     * criteria. If set to -1, the headbar will not be rendered to these individuals.
      * @param startFill the number of pixels to render of this headbar at in the start.
      * The number of pixels that a headbar supports is defined in its respective headbar config.
      * @param endFill the number of pixels to render of this headbar at in the end,
@@ -551,15 +561,24 @@ public class PlayerAvatarExtendedInfo(
      */
     @JvmOverloads
     public fun addHeadBar(
-        id: Int,
+        sourceIndex: Int,
+        selfType: Int,
+        otherType: Int = selfType,
         startFill: Int,
         endFill: Int = startFill,
         startTime: Int = 0,
         endTime: Int = 0,
     ) {
         verify {
-            require(id in UNSIGNED_SMART_1_OR_2_RANGE) {
-                "Unexpected id: $id, expected range $UNSIGNED_SMART_1_OR_2_RANGE"
+            require(sourceIndex == -1 || sourceIndex in 0..0x107FF) {
+                "Unexpected source index: $sourceIndex, expected values: -1 to reset, " +
+                    "0-65535 for NPCs, 65536-67583 for players"
+            }
+            require(selfType == -1 || selfType in UNSIGNED_SMART_1_OR_2_RANGE) {
+                "Unexpected id: $selfType, expected value -1 or in range $UNSIGNED_SMART_1_OR_2_RANGE"
+            }
+            require(otherType == -1 || otherType in UNSIGNED_SMART_1_OR_2_RANGE) {
+                "Unexpected id: $otherType, expected value -1 or in range $UNSIGNED_SMART_1_OR_2_RANGE"
             }
             require(startFill in UNSIGNED_BYTE_RANGE) {
                 "Unexpected startFill: $startFill, expected range $UNSIGNED_BYTE_RANGE"
@@ -579,7 +598,9 @@ public class PlayerAvatarExtendedInfo(
         }
         blocks.hit.headBarList +=
             HeadBar(
-                id.toUShort(),
+                sourceIndex,
+                selfType.toUShort(),
+                otherType.toUShort(),
                 startFill.toUByte(),
                 endFill.toUByte(),
                 startTime.toUShort(),
@@ -594,6 +615,7 @@ public class PlayerAvatarExtendedInfo(
      */
     public fun removeHeadBar(id: Int) {
         addHeadBar(
+            -1,
             id,
             startFill = 0,
             endTime = HeadBar.REMOVED.toInt(),
@@ -1270,9 +1292,8 @@ public class PlayerAvatarExtendedInfo(
      * @return true if the [observer] needs an updated version of our avatar, false if the cached
      * variant is still up-to-date.
      */
-    private fun checkOutOfDate(observer: PlayerAvatarExtendedInfo): Boolean {
-        return observer.otherAppearanceChangesCounter[localIndex] != appearanceChangesCounter
-    }
+    private fun checkOutOfDate(observer: PlayerAvatarExtendedInfo): Boolean =
+        observer.otherAppearanceChangesCounter[localIndex] != appearanceChangesCounter
 
     /**
      * Silently synchronizes the angle of the avatar, meaning any new observers will see them

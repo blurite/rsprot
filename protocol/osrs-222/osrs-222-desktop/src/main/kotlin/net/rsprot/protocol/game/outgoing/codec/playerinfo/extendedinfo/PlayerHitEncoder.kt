@@ -3,6 +3,7 @@ package net.rsprot.protocol.game.outgoing.codec.playerinfo.extendedinfo
 import net.rsprot.buffer.JagByteBuf
 import net.rsprot.protocol.common.game.outgoing.info.encoder.OnDemandExtendedInfoEncoder
 import net.rsprot.protocol.common.game.outgoing.info.shared.extendedinfo.Hit
+import net.rsprot.protocol.message.toIntOrMinusOne
 
 public class PlayerHitEncoder : OnDemandExtendedInfoEncoder<Hit> {
     override fun encode(
@@ -12,7 +13,7 @@ public class PlayerHitEncoder : OnDemandExtendedInfoEncoder<Hit> {
         extendedInfo: Hit,
     ) {
         pHits(buffer, localPlayerIndex, updatedAvatarIndex, extendedInfo)
-        pHeadBars(buffer, extendedInfo)
+        pHeadBars(buffer, localPlayerIndex, updatedAvatarIndex, extendedInfo)
     }
 
     private fun pHits(
@@ -63,13 +64,27 @@ public class PlayerHitEncoder : OnDemandExtendedInfoEncoder<Hit> {
 
     private fun pHeadBars(
         buffer: JagByteBuf,
+        localPlayerIndex: Int,
+        updatedPlayerIndex: Int,
         info: Hit,
     ) {
         val countMarker = buffer.writerIndex()
         buffer.skipWrite(1)
         var count = 0
         for (headBar in info.headBarList) {
-            buffer.pSmart1or2(headBar.id.toInt())
+            val selfType = headBar.selfType.toIntOrMinusOne()
+            val isSelf =
+                localPlayerIndex == updatedPlayerIndex ||
+                    localPlayerIndex == (headBar.sourceIndex - 0x10_000)
+            if (isSelf && selfType == -1) {
+                continue
+            }
+            val otherType = headBar.otherType.toIntOrMinusOne()
+            if (!isSelf && otherType == -1) {
+                continue
+            }
+            val type = if (isSelf) selfType else otherType
+            buffer.pSmart1or2(type)
             val endTime = headBar.endTime.toInt()
             buffer.pSmart1or2(endTime)
             if (endTime == 0x7FFF) {
