@@ -7,6 +7,21 @@ dependencies {
     implementation(projects.compression)
 }
 
+testing {
+    suites {
+        register("konsistTest", JvmTestSuite::class) {
+            dependencies {
+                implementation(project())
+                implementation(libs.konsist)
+            }
+        }
+    }
+}
+
+tasks.named("check") {
+    dependsOn(testing.suites.named("konsistTest"))
+}
+
 mavenPublishing {
     pom {
         name = "RsProt Protocol"

@@ -11,6 +11,7 @@ ktlint = "12.1.0"
 jnagmp = "3.0.0"
 dokka = "1.9.20"
 mavenpublish = "0.28.0"
+konsist = "0.14.0"
 
 [libraries]
 netty-bom = { module = "io.netty:netty-bom", version.ref = "netty" }
@@ -25,6 +26,7 @@ junit-api = { module = "org.junit.jupiter:junit-jupiter-api" }
 junit-engine = { module = "org.junit.jupiter:junit-jupiter-engine" }
 junit-params = { module = "org.junit.jupiter:junit-jupiter-params" }
 junit-launcher = { module = "org.junit.platform:junit-platform-launcher", version = "1.10.2" }
+konsist = { module = "com.lemonappdev:konsist", version.ref = "konsist" }
 log4j-bom = { module = "org.apache.logging.log4j:log4j-bom", version.ref = "log4j" }
 log4j-core = { module = "org.apache.logging.log4j:log4j-core" }
 log4j-api = { module = "org.apache.logging.log4j:log4j-api" }
