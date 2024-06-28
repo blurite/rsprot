@@ -9,6 +9,20 @@ import net.rsprot.protocol.util.CombinedId
 /**
  * If open-sub messages are used to open non-root interfaces
  * on root interfaces.
+ *
+ * Interface types:
+ * ```
+ * | Id |   Name  | Is modal |
+ * |:--:|:-------:|:--------:|
+ * |  0 |  Modal  |    Yes   |
+ * |  1 | Overlay |    No    |
+ * |  3 |  Client |    Yes   |
+ * ```
+ *
+ * Note: Client type is only intended to be created/used by the client.
+ * It is used for interfaces like input box (int, name, string) and is fully
+ * managed client-sided.
+ *
  * @property destinationInterfaceId the destination interface on which the sub
  * interface is being opened
  * @property destinationComponentId the component on the destination interface
@@ -64,12 +78,11 @@ public class IfOpenSub(
         return result
     }
 
-    override fun toString(): String {
-        return "IfOpenSub(" +
+    override fun toString(): String =
+        "IfOpenSub(" +
             "destinationInterfaceId=$destinationInterfaceId, " +
             "destinationComponentId=$destinationComponentId, " +
             "interfaceId=$interfaceId, " +
             "type=$type" +
             ")"
-    }
 }
