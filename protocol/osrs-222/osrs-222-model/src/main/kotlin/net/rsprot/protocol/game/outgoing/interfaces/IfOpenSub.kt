@@ -19,9 +19,7 @@ import net.rsprot.protocol.util.CombinedId
  * |  3 |  Client |    Yes   |
  * ```
  *
- * Note: Client type is only intended to be created/used by the client.
- * It is used for interfaces like input box (int, name, string) and is fully
- * managed client-sided.
+ * Note: Client type is supported by the client, but is not actually in use by anything!
  *
  * @property destinationInterfaceId the destination interface on which the sub
  * interface is being opened
