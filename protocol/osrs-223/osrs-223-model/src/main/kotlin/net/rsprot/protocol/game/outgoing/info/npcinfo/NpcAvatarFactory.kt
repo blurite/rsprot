@@ -18,7 +18,6 @@ import net.rsprot.protocol.game.outgoing.info.filter.ExtendedInfoFilter
  * While NPCs do not currently have any such extended info blocks, the interface requires
  * it be passed in, so we must still provide it.
  */
-@ExperimentalUnsignedTypes
 public class NpcAvatarFactory(
     allocator: ByteBufAllocator,
     extendedInfoFilter: ExtendedInfoFilter,
@@ -72,8 +71,8 @@ public class NpcAvatarFactory(
         z: Int,
         spawnCycle: Int = 0,
         direction: Int = 0,
-    ): NpcAvatar {
-        return avatarRepository.getOrAlloc(
+    ): NpcAvatar =
+        avatarRepository.getOrAlloc(
             index,
             id,
             level,
@@ -82,7 +81,6 @@ public class NpcAvatarFactory(
             spawnCycle,
             direction,
         )
-    }
 
     /**
      * Releases the avatar back into the repository to be used by other NPCs.

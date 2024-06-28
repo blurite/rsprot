@@ -9,7 +9,7 @@ import net.rsprot.protocol.game.outgoing.info.util.BuildArea
  * A world detail implementation for NPC info, tracking local NPCs in a specific world.
  * @property worldId the id of the world in which the NPCs exist.
  */
-@ExperimentalUnsignedTypes
+@OptIn(ExperimentalUnsignedTypes::class)
 internal class NpcInfoWorldDetails(
     internal var worldId: Int,
 ) {
@@ -50,7 +50,7 @@ internal class NpcInfoWorldDetails(
      * with significantly fewer operations to defragment the array, as we don't have to
      * shift every entry over, we only need to fill in the ones that still exist.
      */
-    internal var temporaryHighResolutionNpcIndices: UShortArray =
+    private var temporaryHighResolutionNpcIndices: UShortArray =
         UShortArray(MAX_HIGH_RESOLUTION_NPCS) {
             NPC_INDEX_TERMINATOR
         }

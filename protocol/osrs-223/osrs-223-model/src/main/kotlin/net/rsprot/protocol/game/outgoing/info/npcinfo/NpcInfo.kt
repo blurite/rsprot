@@ -34,8 +34,8 @@ import kotlin.contracts.contract
  * change encoders, used to move a npc into high resolution for the given player.
  * As this is scrambled, a separate client-specific implementation is required.
  */
+@OptIn(ExperimentalUnsignedTypes::class)
 @Suppress("ReplaceUntilWithRangeUntil")
-@ExperimentalUnsignedTypes
 public class NpcInfo internal constructor(
     private val allocator: ByteBufAllocator,
     private val repository: NpcAvatarRepository,
@@ -146,9 +146,7 @@ public class NpcInfo internal constructor(
      * initialized for this cycle.
      */
     @Throws(IllegalStateException::class)
-    public fun backingBuffer(worldId: Int): ByteBuf {
-        return checkNotNull(getDetails(worldId).buffer)
-    }
+    public fun backingBuffer(worldId: Int): ByteBuf = checkNotNull(getDetails(worldId).buffer)
 
     /**
      * Returns the backing byte buffer holding all the computed information.
@@ -156,9 +154,7 @@ public class NpcInfo internal constructor(
      * initialized for this cycle.
      */
     @Throws(IllegalStateException::class)
-    private fun backingBuffer(details: NpcInfoWorldDetails): ByteBuf {
-        return checkNotNull(details.buffer)
-    }
+    private fun backingBuffer(details: NpcInfoWorldDetails): ByteBuf = checkNotNull(details.buffer)
 
     /**
      * Sets the view distance, meaning how far the player can see NPCs.
@@ -406,9 +402,7 @@ public class NpcInfo internal constructor(
     private fun isInBuildArea(
         details: NpcInfoWorldDetails,
         avatar: NpcAvatar,
-    ): Boolean {
-        return avatar.details.currentCoord in details.buildArea
-    }
+    ): Boolean = avatar.details.currentCoord in details.buildArea
 
     /**
      * Checks if the player has moved a greater distance from their previous coordinate
@@ -421,13 +415,12 @@ public class NpcInfo internal constructor(
     private fun isTooFar(
         details: NpcInfoWorldDetails,
         viewDistance: Int,
-    ): Boolean {
-        return !withinDistance(
+    ): Boolean =
+        !withinDistance(
             details.localPlayerLastCoord,
             details.localPlayerCurrentCoord,
             viewDistance,
         )
-    }
 
     /**
      * Processes the NPCs that are in low resolution by requesting an iterator of NPC indices
@@ -521,12 +514,11 @@ public class NpcInfo internal constructor(
         localPlayerCoordGrid: CoordGrid,
         coord: CoordGrid,
         distance: Int,
-    ): Boolean {
-        return localPlayerCoordGrid.inDistance(
+    ): Boolean =
+        localPlayerCoordGrid.inDistance(
             coord,
             distance,
         )
-    }
 
     /**
      * This function allocates a new clean world details object,

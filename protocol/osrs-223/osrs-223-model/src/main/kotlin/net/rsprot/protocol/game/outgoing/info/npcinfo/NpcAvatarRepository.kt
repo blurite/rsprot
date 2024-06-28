@@ -21,7 +21,6 @@ import java.lang.ref.SoftReference
  * While NPCs do not currently have any such extended info blocks, the interface requires
  * it be passed in, so we must still provide it.
  */
-@ExperimentalUnsignedTypes
 internal class NpcAvatarRepository(
     private val allocator: ByteBufAllocator,
     private val extendedInfoFilter: ExtendedInfoFilter,
@@ -56,9 +55,7 @@ internal class NpcAvatarRepository(
      * @return the npc avatar, or null if it doesn't exist
      * @throws ArrayIndexOutOfBoundsException if the [idx] is below 0, or >= [AVATAR_CAPACITY]
      */
-    fun getOrNull(idx: Int): NpcAvatar? {
-        return elements[idx]
-    }
+    fun getOrNull(idx: Int): NpcAvatar? = elements[idx]
 
     /**
      * Gets an older avatar, or makes a new one depending on the circumstances.
