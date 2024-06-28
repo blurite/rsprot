@@ -14,6 +14,7 @@ plugins {
     alias(libs.plugins.ktlint)
     alias(libs.plugins.vanniktech.publish)
     alias(libs.plugins.dokka)
+    `jvm-test-suite`
 }
 
 allprojects {
@@ -56,6 +57,7 @@ subprojects {
     apply(plugin = "signing")
     apply(plugin = "org.jetbrains.dokka")
     apply(plugin = "org.jetbrains.kotlin.jvm")
+    apply(plugin = "jvm-test-suite")
 
     // Do not publish the 'group' modules, as they got nothing in them.
     if (exclusionRegex.matches(name)) {

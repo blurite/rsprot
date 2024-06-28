@@ -86,7 +86,7 @@ public enum class GameServerProt(
     // World entity packets
     CLEAR_ENTITIES(GameServerProtId.CLEAR_ENTITIES, 0),
     SET_ACTIVE_WORLD(GameServerProtId.SET_ACTIVE_WORLD, 4),
-    WORLDENTITY_INFO(GameServerProtId.WORLDENTITY_INFO, -2),
+    WORLDENTITY_INFO(GameServerProtId.WORLDENTITY_INFO, Prot.VAR_SHORT),
 
     // Map packets
     REBUILD_NORMAL(GameServerProtId.REBUILD_NORMAL, Prot.VAR_SHORT),
