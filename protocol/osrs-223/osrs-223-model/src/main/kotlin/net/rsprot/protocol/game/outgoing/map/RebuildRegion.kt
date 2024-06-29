@@ -70,14 +70,13 @@ public class RebuildRegion private constructor(
         return result
     }
 
-    override fun toString(): String {
-        return "RebuildRegion(" +
+    override fun toString(): String =
+        "RebuildRegion(" +
             "zoneX=$zoneX, " +
             "zoneZ=$zoneZ, " +
             "reload=$reload, " +
             "zones=$zones" +
             ")"
-    }
 
     /**
      * Zone provider acts as a function to provide all the necessary information
@@ -108,9 +107,7 @@ public class RebuildRegion private constructor(
         public fun getMapsquareId(
             zoneX: Int,
             zoneZ: Int,
-        ): Int {
-            return (zoneX shl 11) or (zoneZ shl 3)
-        }
+        ): Int = (zoneX and 0x7FF ushr 3 shl 8) or (zoneZ and 0x7FF ushr 3)
     }
 
     private companion object {

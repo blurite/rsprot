@@ -99,9 +99,7 @@ public class RebuildWorldEntity private constructor(
         public fun getMapsquareId(
             zoneX: Int,
             zoneZ: Int,
-        ): Int {
-            return (zoneX shl 11) or (zoneZ shl 3)
-        }
+        ): Int = (zoneX and 0x7FF ushr 3 shl 8) or (zoneZ and 0x7FF ushr 3)
     }
 
     private companion object {
