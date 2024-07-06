@@ -386,7 +386,7 @@ always required for non-reconnect logins. The server sends out a request
 to the client containing a large 495-byte random block of bytes turned into
 a hexadecimal string. Along with the block, a difficulty value is provided.
 The client will then iterate from 0 to infinity, taking the iteration number
-and appending it to the end of hte random text block. It then runs the
+and appending it to the end of the random text block. It then runs the
 SHA-256 hashing algorithm on that string. Once done, the client has to check
 if the number of leading zero bits in the resulting string is equal to or
 greater than the input difficulty - if it is, it transmits that number
