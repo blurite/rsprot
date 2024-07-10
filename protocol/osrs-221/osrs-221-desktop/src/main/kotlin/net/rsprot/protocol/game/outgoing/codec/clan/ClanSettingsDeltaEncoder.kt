@@ -30,30 +30,30 @@ public class ClanSettingsDeltaEncoder : MessageEncoder<ClanSettingsDelta> {
                 is ClanSettingsDelta.ClanSettingsDeltaAddBannedUpdate -> {
                     buffer.p1(3)
                     val hash = update.hash
-                    if (hash and 0xFF != 255.toLong()) {
+                    if (hash and 0xFF != 0xFF.toLong()) {
                         buffer.p8(hash)
                     } else {
-                        buffer.p1(0)
+                        buffer.p1(0xFF)
                     }
                     buffer.pjstrnull(update.name)
                 }
                 is ClanSettingsDelta.ClanSettingsDeltaAddMemberV1Update -> {
                     buffer.p1(1)
                     val hash = update.hash
-                    if (hash and 0xFF != 255.toLong()) {
+                    if (hash and 0xFF != 0xFF.toLong()) {
                         buffer.p8(hash)
                     } else {
-                        buffer.p1(0)
+                        buffer.p1(0xFF)
                     }
                     buffer.pjstrnull(update.name)
                 }
                 is ClanSettingsDelta.ClanSettingsDeltaAddMemberV2Update -> {
                     buffer.p1(13)
                     val hash = update.hash
-                    if (hash and 0xFF != 255.toLong()) {
+                    if (hash and 0xFF != 0xFF.toLong()) {
                         buffer.p8(hash)
                     } else {
-                        buffer.p1(0)
+                        buffer.p1(0xFF)
                     }
                     buffer.pjstrnull(update.name)
                     buffer.p2(update.joinRuneDay)
