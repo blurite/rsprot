@@ -29,6 +29,12 @@ public class ClanChannelFull private constructor(
     override val category: ServerProtCategory
         get() = GameServerProtCategory.HIGH_PRIORITY_PROT
 
+    override fun toString(): String =
+        "ClanChannelFull(" +
+            "update=$update, " +
+            "clanType=$clanType" +
+            ")"
+
     public sealed interface ClanChannelFullUpdate
 
     /**
@@ -136,8 +142,8 @@ public class ClanChannelFull private constructor(
             return result
         }
 
-        override fun toString(): String {
-            return "ClanChannelFullJoinUpdate(" +
+        override fun toString(): String =
+            "ClanChannelFullJoinUpdate(" +
                 "useBase37Names=$useBase37Names, " +
                 "useDisplayNames=$useDisplayNames, " +
                 "hasVersion=$hasVersion, " +
@@ -150,7 +156,6 @@ public class ClanChannelFull private constructor(
                 "talkRank=$talkRank, " +
                 "members=$members" +
                 ")"
-        }
     }
 
     /**
@@ -224,14 +229,13 @@ public class ClanChannelFull private constructor(
             return result
         }
 
-        override fun toString(): String {
-            return "ClanMember(" +
+        override fun toString(): String =
+            "ClanMember(" +
                 "name='$name', " +
                 "rank=$rank, " +
                 "world=$world, " +
                 "discardedBoolean=$discardedBoolean" +
                 ")"
-        }
     }
 
     public companion object {

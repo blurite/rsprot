@@ -26,6 +26,12 @@ public class ClanSettingsFull private constructor(
     override val category: ServerProtCategory
         get() = GameServerProtCategory.HIGH_PRIORITY_PROT
 
+    override fun toString(): String =
+        "ClanSettingsFull(" +
+            "update=$update, " +
+            "clanType=$clanType" +
+            ")"
+
     public sealed interface ClanSettingsFullUpdate
 
     /**
@@ -72,7 +78,8 @@ public class ClanSettingsFull private constructor(
             hasAffinedDisplayNames: Boolean = true,
         ) : this(
             (if (hasAffinedHashes) FLAG_HAS_AFFINED_HASHES else 0)
-                .or(if (hasAffinedDisplayNames) FLAG_HAS_AFFINED_DISPLAY_NAMES else 0).toUByte(),
+                .or(if (hasAffinedDisplayNames) FLAG_HAS_AFFINED_DISPLAY_NAMES else 0)
+                .toUByte(),
             updateNum,
             creationTime,
             clanName,
@@ -144,8 +151,8 @@ public class ClanSettingsFull private constructor(
             return result
         }
 
-        override fun toString(): String {
-            return "ClanSettingsFullJoinUpdate(" +
+        override fun toString(): String =
+            "ClanSettingsFullJoinUpdate(" +
                 "flags=$flags, " +
                 "updateNum=$updateNum, " +
                 "creationTime=$creationTime, " +
@@ -159,7 +166,6 @@ public class ClanSettingsFull private constructor(
                 "bannedMembers=$bannedMembers, " +
                 "settings=$settings" +
                 ")"
-        }
     }
 
     public data object ClanSettingsFullLeaveUpdate : ClanSettingsFullUpdate
@@ -271,8 +277,8 @@ public class ClanSettingsFull private constructor(
             return result
         }
 
-        override fun toString(): String {
-            return "AffinedClanMember(" +
+        override fun toString(): String =
+            "AffinedClanMember(" +
                 "hash=$hash, " +
                 "name=$name, " +
                 "rank=$rank, " +
@@ -280,7 +286,6 @@ public class ClanSettingsFull private constructor(
                 "joinRuneDay=$joinRuneDay, " +
                 "muted=$muted" +
                 ")"
-        }
     }
 
     /**
@@ -325,12 +330,11 @@ public class ClanSettingsFull private constructor(
             return result
         }
 
-        override fun toString(): String {
-            return "BannedClanMember(" +
+        override fun toString(): String =
+            "BannedClanMember(" +
                 "hash=$hash, " +
                 "name=$name" +
                 ")"
-        }
     }
 
     public sealed interface ClanSetting
@@ -369,12 +373,11 @@ public class ClanSettingsFull private constructor(
             return result
         }
 
-        override fun toString(): String {
-            return "IntClanSetting(" +
+        override fun toString(): String =
+            "IntClanSetting(" +
                 "id=$id, " +
                 "value=$value" +
                 ")"
-        }
     }
 
     /**
@@ -411,12 +414,11 @@ public class ClanSettingsFull private constructor(
             return result
         }
 
-        override fun toString(): String {
-            return "LongClanSetting(" +
+        override fun toString(): String =
+            "LongClanSetting(" +
                 "id=$id, " +
                 "value=$value" +
                 ")"
-        }
     }
 
     /**
@@ -453,12 +455,11 @@ public class ClanSettingsFull private constructor(
             return result
         }
 
-        override fun toString(): String {
-            return "StringClanSetting(" +
+        override fun toString(): String =
+            "StringClanSetting(" +
                 "id=$id, " +
                 "value='$value'" +
                 ")"
-        }
     }
 
     public companion object {
