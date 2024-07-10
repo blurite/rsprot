@@ -17,15 +17,22 @@ public class UpdateFriendChatChannelFullV2Encoder : MessageEncoder<UpdateFriendC
         buffer: JagByteBuf,
         message: UpdateFriendChatChannelFullV2,
     ) {
-        buffer.pjstr(message.channelOwner)
-        buffer.p8(message.channelNameBase37)
-        buffer.p1(message.kickRank)
-        buffer.pSmart1or2null(message.entries.size)
-        for (entry in message.entries) {
-            buffer.pjstr(entry.name)
-            buffer.p2(entry.worldId)
-            buffer.p1(entry.rank)
-            buffer.pjstr(entry.worldName)
+        when (val update = message.updateType) {
+            is UpdateFriendChatChannelFullV2.JoinUpdate -> {
+                buffer.pjstr(update.channelOwner)
+                buffer.p8(update.channelNameBase37)
+                buffer.p1(update.kickRank)
+                buffer.pSmart1or2null(update.entries.size)
+                for (entry in update.entries) {
+                    buffer.pjstr(entry.name)
+                    buffer.p2(entry.worldId)
+                    buffer.p1(entry.rank)
+                    buffer.pjstr(entry.worldName)
+                }
+            }
+            UpdateFriendChatChannelFullV2.LeaveUpdate -> {
+                // No-op, empty packet
+            }
         }
     }
 }
