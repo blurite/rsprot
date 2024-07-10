@@ -23,12 +23,12 @@ public sealed class UpdateFriendChatChannelFull {
             name: String,
             worldId: Int,
             rank: Int,
-            string: String,
+            worldName: String,
         ) : this(
             name,
             worldId.toUShort(),
             rank.toByte(),
-            string,
+            worldName,
         )
 
         public val worldId: Int
@@ -58,13 +58,12 @@ public sealed class UpdateFriendChatChannelFull {
             return result
         }
 
-        override fun toString(): String {
-            return "FriendChatEntry(" +
+        override fun toString(): String =
+            "FriendChatEntry(" +
                 "name='$name', " +
                 "worldId=$worldId, " +
                 "rank=$rank, " +
                 "worldName='$worldName'" +
                 ")"
-        }
     }
 }
