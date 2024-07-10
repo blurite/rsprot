@@ -20,7 +20,7 @@ public class UpdateFriendChatChannelFullV2Encoder : MessageEncoder<UpdateFriendC
         buffer.pjstr(message.channelOwner)
         buffer.p8(message.channelNameBase37)
         buffer.p1(message.kickRank)
-        buffer.pSmart1or2(message.entries.size)
+        buffer.pSmart1or2null(message.entries.size)
         for (entry in message.entries) {
             buffer.pjstr(entry.name)
             buffer.p2(entry.worldId)
