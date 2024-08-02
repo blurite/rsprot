@@ -171,7 +171,7 @@ public abstract class AbstractNetworkServiceFactory<R> {
      * allocated. Similarly to the avatar, this object MUST be deallocated
      * when the player is removed from the game, be that normally or abnormally.
      */
-    public abstract fun getNpcInfoSupplier(): NpcInfoSupplier
+    public open fun getNpcInfoSupplier(): NpcInfoSupplier = NpcInfoSupplier()
 
     /**
      * Gets the supplier for all the context that the Player info protocol requires
@@ -181,7 +181,7 @@ public abstract class AbstractNetworkServiceFactory<R> {
      */
     public open fun getPlayerInfoSupplier(): PlayerInfoSupplier = PlayerInfoSupplier()
 
-    public abstract fun getWorldEntityInfoSupplier(): WorldEntityInfoSupplier
+    public open fun getWorldEntityInfoSupplier(): WorldEntityInfoSupplier = WorldEntityInfoSupplier()
 
     /**
      * Gets the exception handlers for channel exceptions as well as any incoming
