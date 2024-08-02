@@ -4,6 +4,7 @@ import com.github.michaelbull.logging.InlineLogger
 import io.netty.buffer.ByteBuf
 import io.netty.buffer.ByteBufAllocator
 import io.netty.channel.ChannelFuture
+import io.netty.channel.EventLoopGroup
 import net.rsprot.compression.provider.HuffmanCodecProvider
 import net.rsprot.crypto.rsa.RsaKeyPair
 import net.rsprot.protocol.api.bootstrap.BootstrapFactory
@@ -34,6 +35,7 @@ import java.util.ArrayDeque
 import java.util.EnumMap
 import java.util.LinkedList
 import java.util.concurrent.CompletableFuture
+import java.util.concurrent.ScheduledFuture
 import kotlin.time.measureTime
 
 /**
@@ -122,6 +124,10 @@ public class NetworkService<R>
         public val worldEntityInfoProtocol: WorldEntityProtocol
             get() = entityInfoProtocols.worldEntityInfoProtocol
 
+        private lateinit var bossGroup: EventLoopGroup
+        private lateinit var childGroup: EventLoopGroup
+        private lateinit var js5PrefetchFuture: ScheduledFuture<*>
+
         /**
          * Starts the network service by binding the provided ports.
          * If any of them fail, the service is shut down and the exception is propagated forward.
@@ -131,8 +137,8 @@ public class NetworkService<R>
         public fun start() {
             val time =
                 measureTime {
-                    val bossGroup = bootstrapFactory.createParentLoopGroup()
-                    val childGroup = bootstrapFactory.createChildLoopGroup()
+                    bossGroup = bootstrapFactory.createParentLoopGroup()
+                    childGroup = bootstrapFactory.createChildLoopGroup()
                     val initializer =
                         bootstrapFactory
                             .createServerBootstrap(bossGroup, childGroup)
@@ -154,7 +160,7 @@ public class NetworkService<R>
                                 }
                             }
                     js5ServiceExecutor.start()
-                    Js5Service.startPrefetching(js5Service)
+                    js5PrefetchFuture = Js5Service.startPrefetching(js5Service)
                     try {
                         // join it, which will propagate any exceptions
                         future.join()
@@ -171,6 +177,15 @@ public class NetworkService<R>
                     it.name.lowercase().replaceFirstChar(Char::uppercase)
                 }
             logger.info { "Supported client types: $clientTypeNames" }
+        }
+
+        public fun shutdown() {
+            logger.info { "Attempting to shut down network service." }
+            js5Service.triggerShutdown()
+            js5PrefetchFuture.cancel(true)
+            bossGroup.shutdownGracefully()
+            childGroup.shutdownGracefully()
+            logger.info { "Network service successfully shut down." }
         }
 
         private fun initializeUpdateZonePartialEnclosedCacheClientMap(): ClientTypeMap<UpdateZonePartialEnclosedCache> {
