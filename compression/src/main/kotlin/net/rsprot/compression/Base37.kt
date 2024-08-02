@@ -65,7 +65,7 @@ public data object Base37 {
         }
         val indexOfInvalidCharacter =
             charSequence.indexOfFirst {
-                it !in ALPHABET
+                it.lowercaseChar() !in ALPHABET
             }
         require(indexOfInvalidCharacter == -1) {
             "Invalid character in charSequence at index $indexOfInvalidCharacter: " +
