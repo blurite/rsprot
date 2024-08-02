@@ -2,20 +2,20 @@ package net.rsprot.protocol.game.incoming.codec.misc.client
 
 import net.rsprot.buffer.JagByteBuf
 import net.rsprot.protocol.ClientProt
-import net.rsprot.protocol.game.incoming.misc.client.Timings
+import net.rsprot.protocol.game.incoming.misc.client.ConnectionTelemetry
 import net.rsprot.protocol.game.incoming.prot.GameClientProt
 import net.rsprot.protocol.message.codec.MessageDecoder
 import net.rsprot.protocol.metadata.Consistent
 import net.rsprot.protocol.tools.MessageDecodingTools
 
 @Consistent
-public class TimingsDecoder : MessageDecoder<Timings> {
-    override val prot: ClientProt = GameClientProt.TIMINGS
+public class ConnectionTelemetryDecoder : MessageDecoder<ConnectionTelemetry> {
+    override val prot: ClientProt = GameClientProt.CONNECTION_TELEMETRY
 
     override fun decode(
         buffer: JagByteBuf,
         tools: MessageDecodingTools,
-    ): Timings {
+    ): ConnectionTelemetry {
         val connectionLostDuration = buffer.g2()
         val loginDuration = buffer.g2()
         val unusedDuration = buffer.g2()
@@ -32,7 +32,7 @@ public class TimingsDecoder : MessageDecoder<Timings> {
         check(unused2 == 0) {
             "Unused2 property value detected: $unused2"
         }
-        return Timings(
+        return ConnectionTelemetry(
             connectionLostDuration,
             loginDuration,
             clientState,

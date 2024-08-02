@@ -17,7 +17,7 @@ import net.rsprot.protocol.game.outgoing.codec.zone.payload.MapProjAnimEncoder
 import net.rsprot.protocol.game.outgoing.codec.zone.payload.ObjAddEncoder
 import net.rsprot.protocol.game.outgoing.codec.zone.payload.ObjCountEncoder
 import net.rsprot.protocol.game.outgoing.codec.zone.payload.ObjDelEncoder
-import net.rsprot.protocol.game.outgoing.codec.zone.payload.ObjOpFilterEncoder
+import net.rsprot.protocol.game.outgoing.codec.zone.payload.ObjEnabledOpsEncoder
 import net.rsprot.protocol.game.outgoing.codec.zone.payload.SoundAreaEncoder
 import net.rsprot.protocol.game.outgoing.prot.GameServerProt
 import net.rsprot.protocol.game.outgoing.zone.header.UpdateZonePartialEnclosed
@@ -122,7 +122,7 @@ public class DesktopUpdateZonePartialEnclosedEncoder : MessageEncoder<UpdateZone
             SOUND_AREA(OldSchoolZoneProt.SOUND_AREA, SoundAreaEncoder()),
             OBJ_ADD(OldSchoolZoneProt.OBJ_ADD, ObjAddEncoder()),
             LOC_MERGE(OldSchoolZoneProt.LOC_MERGE, LocMergeEncoder()),
-            OBJ_OPFILTER(OldSchoolZoneProt.OBJ_OPFILTER, ObjOpFilterEncoder()),
+            OBJ_ENABLED_OPS(OldSchoolZoneProt.OBJ_ENABLED_OPS, ObjEnabledOpsEncoder()),
             LOC_ANIM(OldSchoolZoneProt.LOC_ANIM, LocAnimEncoder()),
             LOC_ADD_CHANGE(OldSchoolZoneProt.LOC_ADD_CHANGE, LocAddChangeEncoder()),
             MAP_ANIM(OldSchoolZoneProt.MAP_ANIM, MapAnimEncoder()),

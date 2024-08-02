@@ -5,7 +5,7 @@ import net.rsprot.protocol.game.incoming.GameClientProtCategory
 import net.rsprot.protocol.message.IncomingGameMessage
 
 /**
- * Timings are sent as part of the first packets during login,
+ * Connection telemetry is sent as part of the first packets during login,
  * written during the part of login that handles login rebuild messages
  * and player info initialization.
  * While the packet sends more properties than the four listed here,
@@ -18,7 +18,7 @@ import net.rsprot.protocol.message.IncomingGameMessage
  * @property loginCount how many login attempts have occurred.
  */
 @Suppress("MemberVisibilityCanBePrivate")
-public class Timings private constructor(
+public class ConnectionTelemetry private constructor(
     private val _connectionLostDuration: UShort,
     private val _loginDuration: UShort,
     private val _clientState: UShort,
@@ -51,7 +51,7 @@ public class Timings private constructor(
         if (this === other) return true
         if (javaClass != other?.javaClass) return false
 
-        other as Timings
+        other as ConnectionTelemetry
 
         if (_connectionLostDuration != other._connectionLostDuration) return false
         if (_loginDuration != other._loginDuration) return false
@@ -69,12 +69,11 @@ public class Timings private constructor(
         return result
     }
 
-    override fun toString(): String {
-        return "Timings(" +
+    override fun toString(): String =
+        "ConnectionTelemetry(" +
             "connectionLostDuration=$connectionLostDuration, " +
             "loginDuration=$loginDuration, " +
             "clientState=$clientState, " +
             "loginCount=$loginCount" +
             ")"
-    }
 }

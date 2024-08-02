@@ -3,20 +3,20 @@ package net.rsprot.protocol.game.outgoing.codec.interfaces
 import io.netty.channel.ChannelHandlerContext
 import net.rsprot.buffer.JagByteBuf
 import net.rsprot.protocol.ServerProt
-import net.rsprot.protocol.game.outgoing.interfaces.IfInitialState
+import net.rsprot.protocol.game.outgoing.interfaces.IfResync
 import net.rsprot.protocol.game.outgoing.prot.GameServerProt
 import net.rsprot.protocol.message.codec.MessageEncoder
 import net.rsprot.protocol.metadata.Consistent
 import net.rsprot.protocol.util.pCombinedId
 
 @Consistent
-public class IfInitialStateEncoder : MessageEncoder<IfInitialState> {
-    override val prot: ServerProt = GameServerProt.IF_INITIALSTATE
+public class IfResyncEncoder : MessageEncoder<IfResync> {
+    override val prot: ServerProt = GameServerProt.IF_RESYNC
 
     override fun encode(
         ctx: ChannelHandlerContext,
         buffer: JagByteBuf,
-        message: IfInitialState,
+        message: IfResync,
     ) {
         buffer.p2(message.topLevelInterface)
         buffer.p2(message.subInterfaces.size)

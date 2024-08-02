@@ -1,15 +1,15 @@
 package net.rsprot.protocol.game.outgoing.prot
 
 import net.rsprot.protocol.ProtRepository
-import net.rsprot.protocol.game.outgoing.codec.camera.CamLookAtEasedAngleAbsoluteEncoder
-import net.rsprot.protocol.game.outgoing.codec.camera.CamLookAtEasedAngleRelativeEncoder
 import net.rsprot.protocol.game.outgoing.codec.camera.CamLookAtEasedCoordEncoder
 import net.rsprot.protocol.game.outgoing.codec.camera.CamLookAtEncoder
 import net.rsprot.protocol.game.outgoing.codec.camera.CamModeEncoder
-import net.rsprot.protocol.game.outgoing.codec.camera.CamMoveToEasedCircularEncoder
-import net.rsprot.protocol.game.outgoing.codec.camera.CamMoveToEasedEncoder
+import net.rsprot.protocol.game.outgoing.codec.camera.CamMoveToArc
+import net.rsprot.protocol.game.outgoing.codec.camera.CamMoveToCyclesEncoder
 import net.rsprot.protocol.game.outgoing.codec.camera.CamMoveToEncoder
 import net.rsprot.protocol.game.outgoing.codec.camera.CamResetEncoder
+import net.rsprot.protocol.game.outgoing.codec.camera.CamRotateByEncoder
+import net.rsprot.protocol.game.outgoing.codec.camera.CamRotateToEncoder
 import net.rsprot.protocol.game.outgoing.codec.camera.CamShakeEncoder
 import net.rsprot.protocol.game.outgoing.codec.camera.CamSmoothResetEncoder
 import net.rsprot.protocol.game.outgoing.codec.camera.CamTargetEncoder
@@ -30,10 +30,10 @@ import net.rsprot.protocol.game.outgoing.codec.friendchat.UpdateFriendChatChanne
 import net.rsprot.protocol.game.outgoing.codec.friendchat.UpdateFriendChatChannelSingleUserEncoder
 import net.rsprot.protocol.game.outgoing.codec.interfaces.IfClearInvEncoder
 import net.rsprot.protocol.game.outgoing.codec.interfaces.IfCloseSubEncoder
-import net.rsprot.protocol.game.outgoing.codec.interfaces.IfInitialStateEncoder
 import net.rsprot.protocol.game.outgoing.codec.interfaces.IfMoveSubEncoder
 import net.rsprot.protocol.game.outgoing.codec.interfaces.IfOpenSubEncoder
 import net.rsprot.protocol.game.outgoing.codec.interfaces.IfOpenTopEncoder
+import net.rsprot.protocol.game.outgoing.codec.interfaces.IfResyncEncoder
 import net.rsprot.protocol.game.outgoing.codec.interfaces.IfSetAngleEncoder
 import net.rsprot.protocol.game.outgoing.codec.interfaces.IfSetAnimEncoder
 import net.rsprot.protocol.game.outgoing.codec.interfaces.IfSetColourEncoder
@@ -61,7 +61,6 @@ import net.rsprot.protocol.game.outgoing.codec.logout.LogoutWithReasonEncoder
 import net.rsprot.protocol.game.outgoing.codec.map.RebuildNormalEncoder
 import net.rsprot.protocol.game.outgoing.codec.map.RebuildRegionEncoder
 import net.rsprot.protocol.game.outgoing.codec.map.RebuildWorldEntityEncoder
-import net.rsprot.protocol.game.outgoing.codec.misc.client.HeatmapToggleEncoder
 import net.rsprot.protocol.game.outgoing.codec.misc.client.HideLocOpsEncoder
 import net.rsprot.protocol.game.outgoing.codec.misc.client.HideNpcOpsEncoder
 import net.rsprot.protocol.game.outgoing.codec.misc.client.HidePlayerOpsEncoder
@@ -72,8 +71,9 @@ import net.rsprot.protocol.game.outgoing.codec.misc.client.ReflectionCheckerEnco
 import net.rsprot.protocol.game.outgoing.codec.misc.client.ResetAnimsEncoder
 import net.rsprot.protocol.game.outgoing.codec.misc.client.SendPingEncoder
 import net.rsprot.protocol.game.outgoing.codec.misc.client.ServerTickEndEncoder
+import net.rsprot.protocol.game.outgoing.codec.misc.client.SetHeatmapEnabledEncoder
+import net.rsprot.protocol.game.outgoing.codec.misc.client.SiteSettingsEncoder
 import net.rsprot.protocol.game.outgoing.codec.misc.client.UpdateRebootTimerEncoder
-import net.rsprot.protocol.game.outgoing.codec.misc.client.UpdateSiteSettingsEncoder
 import net.rsprot.protocol.game.outgoing.codec.misc.client.UpdateUid192Encoder
 import net.rsprot.protocol.game.outgoing.codec.misc.client.UrlOpenEncoder
 import net.rsprot.protocol.game.outgoing.codec.misc.player.ChatFilterSettingsEncoder
@@ -132,7 +132,7 @@ import net.rsprot.protocol.game.outgoing.codec.zone.payload.MapProjAnimEncoder
 import net.rsprot.protocol.game.outgoing.codec.zone.payload.ObjAddEncoder
 import net.rsprot.protocol.game.outgoing.codec.zone.payload.ObjCountEncoder
 import net.rsprot.protocol.game.outgoing.codec.zone.payload.ObjDelEncoder
-import net.rsprot.protocol.game.outgoing.codec.zone.payload.ObjOpFilterEncoder
+import net.rsprot.protocol.game.outgoing.codec.zone.payload.ObjEnabledOpsEncoder
 import net.rsprot.protocol.game.outgoing.codec.zone.payload.SoundAreaEncoder
 import net.rsprot.protocol.game.outgoing.map.RebuildLogin
 import net.rsprot.protocol.game.outgoing.map.RebuildNormal
@@ -147,7 +147,7 @@ public object DesktopGameMessageEncoderRepository {
             MessageEncoderRepositoryBuilder(
                 protRepository,
             ).apply {
-                bind(IfInitialStateEncoder())
+                bind(IfResyncEncoder())
                 bind(IfOpenTopEncoder())
                 bind(IfOpenSubEncoder())
                 bind(IfCloseSubEncoder())
@@ -191,7 +191,7 @@ public object DesktopGameMessageEncoderRepository {
                 bind(ObjAddEncoder())
                 bind(ObjDelEncoder())
                 bind(ObjCountEncoder())
-                bind(ObjOpFilterEncoder())
+                bind(ObjEnabledOpsEncoder())
                 bind(MapAnimEncoder())
                 bind(MapProjAnimEncoder())
                 bind(SoundAreaEncoder())
@@ -227,12 +227,12 @@ public object DesktopGameMessageEncoderRepository {
                 bind(CamResetEncoder())
                 bind(CamSmoothResetEncoder())
                 bind(CamMoveToEncoder())
-                bind(CamMoveToEasedEncoder())
-                bind(CamMoveToEasedCircularEncoder())
+                bind(CamMoveToCyclesEncoder())
+                bind(CamMoveToArc())
                 bind(CamLookAtEncoder())
                 bind(CamLookAtEasedCoordEncoder())
-                bind(CamLookAtEasedAngleRelativeEncoder())
-                bind(CamLookAtEasedAngleAbsoluteEncoder())
+                bind(CamRotateByEncoder())
+                bind(CamRotateToEncoder())
                 bind(CamModeEncoder())
                 bind(CamTargetEncoder())
                 bind(CamTargetOldEncoder())
@@ -285,7 +285,7 @@ public object DesktopGameMessageEncoderRepository {
                 bind(HintArrowEncoder())
                 bind(ResetAnimsEncoder())
                 bind(UpdateRebootTimerEncoder())
-                bind(HeatmapToggleEncoder())
+                bind(SetHeatmapEnabledEncoder())
                 bind(MinimapToggleEncoder())
                 bind(ServerTickEndEncoder())
                 bind(HideNpcOpsEncoder())
@@ -293,7 +293,7 @@ public object DesktopGameMessageEncoderRepository {
                 bind(HideLocOpsEncoder())
 
                 bind(UrlOpenEncoder())
-                bind(UpdateSiteSettingsEncoder())
+                bind(SiteSettingsEncoder())
                 bind(UpdateUid192Encoder())
                 bind(ReflectionCheckerEncoder())
                 bind(SendPingEncoder())

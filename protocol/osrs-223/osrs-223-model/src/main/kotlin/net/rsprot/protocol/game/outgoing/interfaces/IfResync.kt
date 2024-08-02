@@ -7,16 +7,13 @@ import net.rsprot.protocol.message.toIntOrMinusOne
 import net.rsprot.protocol.util.CombinedId
 
 /**
- * If initial state is a way to compress sending initial interfaces
- * to the client in a single packet, reducing the overall packet count
- * sent, as well as bandwidth used by a tiny amount (by not sending packet
- * headers and size with each one).
+ * If resync is used to synchronize opened interfaces with the client.
  * @property topLevelInterface the top-level interface being opened
  * @property subInterfaces the sub interfaces being opened in this batch
  * @property events the interface events being set in this batch
  */
 @Suppress("MemberVisibilityCanBePrivate")
-public class IfInitialState private constructor(
+public class IfResync private constructor(
     private val _topLevelInterface: UShort,
     public val subInterfaces: List<SubInterfaceMessage>,
     public val events: List<InterfaceEventsMessage>,
@@ -40,7 +37,7 @@ public class IfInitialState private constructor(
         if (this === other) return true
         if (javaClass != other?.javaClass) return false
 
-        other as IfInitialState
+        other as IfResync
 
         if (_topLevelInterface != other._topLevelInterface) return false
         if (subInterfaces != other.subInterfaces) return false
@@ -56,13 +53,12 @@ public class IfInitialState private constructor(
         return result
     }
 
-    override fun toString(): String {
-        return "IfInitialState(" +
+    override fun toString(): String =
+        "IfResync(" +
             "topLevelInterface=$topLevelInterface, " +
             "subInterfaces=$subInterfaces, " +
             "events=$events" +
             ")"
-    }
 
     /**
      * Sub interface holds state about a sub interface to be opened.
@@ -119,14 +115,13 @@ public class IfInitialState private constructor(
             return result
         }
 
-        override fun toString(): String {
-            return "SubInterfaceMessage(" +
+        override fun toString(): String =
+            "SubInterfaceMessage(" +
                 "destinationInterfaceId=$destinationInterfaceId, " +
                 "destinationComponentId=$destinationComponentId, " +
                 "interfaceId=$interfaceId, " +
                 "type=$type" +
                 ")"
-        }
     }
 
     /**
@@ -188,14 +183,13 @@ public class IfInitialState private constructor(
             return result
         }
 
-        override fun toString(): String {
-            return "InterfaceEvents(" +
+        override fun toString(): String =
+            "InterfaceEvents(" +
                 "interfaceId=$interfaceId, " +
                 "componentId=$componentId, " +
                 "start=$start, " +
                 "end=$end, " +
                 "events=$events" +
                 ")"
-        }
     }
 }

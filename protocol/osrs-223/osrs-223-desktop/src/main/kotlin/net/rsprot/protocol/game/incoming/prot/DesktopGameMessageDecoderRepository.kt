@@ -30,6 +30,7 @@ import net.rsprot.protocol.game.incoming.codec.locs.OpLoc6Decoder
 import net.rsprot.protocol.game.incoming.codec.locs.OpLocTDecoder
 import net.rsprot.protocol.game.incoming.codec.messaging.MessagePrivateDecoder
 import net.rsprot.protocol.game.incoming.codec.messaging.MessagePublicDecoder
+import net.rsprot.protocol.game.incoming.codec.misc.client.ConnectionTelemetryDecoder
 import net.rsprot.protocol.game.incoming.codec.misc.client.DetectModifiedClientDecoder
 import net.rsprot.protocol.game.incoming.codec.misc.client.IdleDecoder
 import net.rsprot.protocol.game.incoming.codec.misc.client.MapBuildCompleteDecoder
@@ -38,7 +39,6 @@ import net.rsprot.protocol.game.incoming.codec.misc.client.NoTimeoutDecoder
 import net.rsprot.protocol.game.incoming.codec.misc.client.ReflectionCheckReplyDecoder
 import net.rsprot.protocol.game.incoming.codec.misc.client.SendPingReplyDecoder
 import net.rsprot.protocol.game.incoming.codec.misc.client.SoundJingleEndDecoder
-import net.rsprot.protocol.game.incoming.codec.misc.client.TimingsDecoder
 import net.rsprot.protocol.game.incoming.codec.misc.client.WindowStatusDecoder
 import net.rsprot.protocol.game.incoming.codec.misc.user.BugReportDecoder
 import net.rsprot.protocol.game.incoming.codec.misc.user.ClickWorldMapDecoder
@@ -191,7 +191,7 @@ public object DesktopGameMessageDecoderRepository {
                 bind(IfCrmViewClickDecoder())
                 bind(UpdatePlayerModelDecoder())
 
-                bind(TimingsDecoder())
+                bind(ConnectionTelemetryDecoder())
                 bind(SendPingReplyDecoder())
                 bind(DetectModifiedClientDecoder())
                 bind(ReflectionCheckReplyDecoder())

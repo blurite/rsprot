@@ -6,7 +6,7 @@ import net.rsprot.protocol.game.outgoing.camera.util.CameraEaseFunction
 import net.rsprot.protocol.message.OutgoingGameMessage
 
 /**
- * Cam look at eased angle relative is used to make the camera look towards
+ * Cam rotate by is used to make the camera look towards
  * an angle relative to the current camera angle.
  * One way to think of this packet is that it **adds** values to the
  * x and y angles of the camera.
@@ -26,7 +26,7 @@ import net.rsprot.protocol.message.OutgoingGameMessage
  * @property function the camera easing function, allowing for finer
  * control over the way it moves from the start coordinate to the end.
  */
-public class CamLookAtEasedAngleRelative private constructor(
+public class CamRotateBy private constructor(
     private val _xAngle: Short,
     private val _yAngle: Short,
     private val _duration: UShort,
@@ -59,7 +59,7 @@ public class CamLookAtEasedAngleRelative private constructor(
         if (this === other) return true
         if (javaClass != other?.javaClass) return false
 
-        other as CamLookAtEasedAngleRelative
+        other as CamRotateBy
 
         if (_xAngle != other._xAngle) return false
         if (_yAngle != other._yAngle) return false
@@ -77,12 +77,11 @@ public class CamLookAtEasedAngleRelative private constructor(
         return result
     }
 
-    override fun toString(): String {
-        return "CamLookAtEasedAngleRelative(" +
+    override fun toString(): String =
+        "CamRotateBy(" +
             "xAngle=$xAngle, " +
             "yAngle=$yAngle, " +
             "duration=$duration, " +
             "function=$function" +
             ")"
-    }
 }
