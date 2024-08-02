@@ -2,7 +2,6 @@ package net.rsprot.protocol.api.js5
 
 import com.github.michaelbull.logging.InlineLogger
 import io.netty.buffer.ByteBuf
-import net.rsprot.protocol.api.Js5GroupSizeProvider
 import net.rsprot.protocol.api.js5.util.UniqueQueue
 import net.rsprot.protocol.api.logging.js5Log
 import net.rsprot.protocol.js5.incoming.Js5GroupRequest
@@ -21,7 +20,6 @@ import kotlin.math.min
 public class Js5Service(
     private val configuration: Js5Configuration,
     private val provider: Js5GroupProvider,
-    private val js5GroupSizeProvider: Js5GroupSizeProvider,
 ) : Runnable {
     private val clients = UniqueQueue<Js5Client>()
     private val connectedClients = ArrayDeque<Js5Client>()
@@ -92,7 +90,7 @@ public class Js5Service(
                     // This is to ensure we don't run into concurrency issues.
                     synchronized(lock) {
                         if (client.transferPrefetch(
-                                js5GroupSizeProvider,
+                                provider,
                                 configuration.prefetchTransferThresholdInBytes,
                             )
                         ) {

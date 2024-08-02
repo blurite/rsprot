@@ -3,7 +3,6 @@ package net.rsprot.protocol.api.js5
 import com.github.michaelbull.logging.InlineLogger
 import io.netty.buffer.ByteBuf
 import io.netty.channel.ChannelHandlerContext
-import net.rsprot.protocol.api.Js5GroupSizeProvider
 import net.rsprot.protocol.api.js5.util.IntArrayDeque
 import net.rsprot.protocol.api.logging.js5Log
 import net.rsprot.protocol.channel.ChannelAttributes
@@ -122,13 +121,13 @@ public class Js5Client(
     /**
      * Transfers [threshold] worth of bytes of prefetch requests to be served
      * to the client.
-     * @param sizeProvider the provider for JS5 group sizes, allowing for proper throttling
+     * @param groupProvider the provider for JS5 group sizes, allowing for proper throttling
      * @param threshold the threshold at which the loop breaks, stopping any more bytes
      * being transmitted via prefetch than described here
      * @return whether any bytes were transferred to be served to the client.
      */
     internal fun transferPrefetch(
-        sizeProvider: Js5GroupSizeProvider,
+        groupProvider: Js5GroupProvider,
         threshold: Int,
     ): Boolean {
         // Only transfer prefetch over if the connection is effectively idle
@@ -149,7 +148,7 @@ public class Js5Client(
             }
             val archiveId = next ushr 16
             val groupId = next and 0xFFFF
-            val size = sizeProvider.getSize(archiveId, groupId)
+            val size = groupProvider.provide(archiveId, groupId).readableBytes()
             prefetch.addLast(next)
             transferredBytes += size
             // Do not clog the pipeline with more than threshold of prefetch data at a time, as this results
