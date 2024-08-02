@@ -1,5 +1,6 @@
 package net.rsprot.protocol.api.suppliers
 
+import com.github.michaelbull.logging.InlineLogger
 import net.rsprot.protocol.game.outgoing.info.filter.DefaultExtendedInfoFilter
 import net.rsprot.protocol.game.outgoing.info.filter.ExtendedInfoFilter
 import net.rsprot.protocol.game.outgoing.info.npcinfo.NpcAvatarExceptionHandler
@@ -28,7 +29,12 @@ public class NpcInfoSupplier
             NpcIndexSupplier { _, _, _, _, _ ->
                 emptySequence<Int>().iterator()
             },
-        public val npcAvatarExceptionHandler: NpcAvatarExceptionHandler,
+        public val npcAvatarExceptionHandler: NpcAvatarExceptionHandler =
+            NpcAvatarExceptionHandler { index, exception ->
+                logger.error(exception) {
+                    "Exception in processing npc avatar for npc $index"
+                }
+            },
         public val npcExtendedInfoFilter: ExtendedInfoFilter = DefaultExtendedInfoFilter(),
         public val npcInfoProtocolWorker: ProtocolWorker = DefaultProtocolWorker(),
     ) {
@@ -61,4 +67,8 @@ public class NpcInfoSupplier
                 "npcExtendedInfoFilter=$npcExtendedInfoFilter, " +
                 "npcInfoProtocolWorker=$npcInfoProtocolWorker" +
                 ")"
+
+        private companion object {
+            private val logger = InlineLogger()
+        }
     }
