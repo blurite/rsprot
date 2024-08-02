@@ -188,7 +188,17 @@ public abstract class AbstractNetworkServiceFactory<R> {
      * game message consumers that get processed in the library.
      * Further implementations may be introduced in the future if the need arises.
      */
-    public abstract fun getExceptionHandlers(): ExceptionHandlers<R>
+    public open fun getExceptionHandlers(): ExceptionHandlers<R> =
+        ExceptionHandlers(
+            { ctx, cause ->
+                if (ctx.channel().isActive) {
+                    ctx.close()
+                }
+                logger.error(cause) {
+                    "Exception in channel ${ctx.channel()}"
+                }
+            },
+        )
 
     /**
      * Provides the size of a JS5 group, in order to sort it for JS5 serving.
