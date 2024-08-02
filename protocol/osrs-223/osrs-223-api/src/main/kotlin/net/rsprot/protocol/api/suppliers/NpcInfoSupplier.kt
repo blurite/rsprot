@@ -24,7 +24,10 @@ import net.rsprot.protocol.game.outgoing.info.worker.ProtocolWorker
 public class NpcInfoSupplier
     @JvmOverloads
     public constructor(
-        public val npcIndexSupplier: NpcIndexSupplier,
+        public val npcIndexSupplier: NpcIndexSupplier =
+            NpcIndexSupplier { _, _, _, _, _ ->
+                emptySequence<Int>().iterator()
+            },
         public val npcAvatarExceptionHandler: NpcAvatarExceptionHandler,
         public val npcExtendedInfoFilter: ExtendedInfoFilter = DefaultExtendedInfoFilter(),
         public val npcInfoProtocolWorker: ProtocolWorker = DefaultProtocolWorker(),
@@ -51,12 +54,11 @@ public class NpcInfoSupplier
             return result
         }
 
-        override fun toString(): String {
-            return "NpcInfoSupplier(" +
+        override fun toString(): String =
+            "NpcInfoSupplier(" +
                 "npcIndexSupplier=$npcIndexSupplier, " +
                 "npcAvatarExceptionHandler=$npcAvatarExceptionHandler, " +
                 "npcExtendedInfoFilter=$npcExtendedInfoFilter, " +
                 "npcInfoProtocolWorker=$npcInfoProtocolWorker" +
                 ")"
-        }
     }

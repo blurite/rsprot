@@ -18,7 +18,11 @@ import net.rsprot.protocol.game.outgoing.info.worldentityinfo.WorldEntityIndexSu
 public class WorldEntityInfoSupplier
     @JvmOverloads
     public constructor(
-        public val worldEntityIndexSupplier: WorldEntityIndexSupplier,
+        public val worldEntityIndexSupplier: WorldEntityIndexSupplier =
+            WorldEntityIndexSupplier { _, _, _, _, _ ->
+                emptySequence<Int>()
+                    .iterator()
+            },
         public val worldEntityAvatarExceptionHandler: WorldEntityAvatarExceptionHandler,
         public val worldEntityInfoProtocolWorker: ProtocolWorker = DefaultProtocolWorker(),
     )
