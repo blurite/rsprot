@@ -259,12 +259,10 @@ public class LoginConnectionHandler<R>(
             packet.decoder,
         ).handle { block, exception ->
             if (block == null || exception != null) {
-                logger.error(exception) {
-                    "Failed to decode game login block for channel ${ctx.channel()}"
-                }
-                ctx
-                    .writeAndFlush(LoginResponse.LoginFail2)
-                    .addListener(ChannelFutureListener.CLOSE)
+                networkService
+                    .exceptionHandlers
+                    .channelExceptionHandler
+                    .exceptionCaught(ctx, exception)
                 return@handle
             }
             if (sessionId != block.sessionId) {
