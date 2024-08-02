@@ -186,7 +186,7 @@ public class NpcAvatarExtendedInfoDesktopWriter :
         private const val OPS: Int = 0x1000
         private const val LEVEL_CHANGE: Int = 0x2000
         private const val HEAD_CUSTOMISATION: Int = 0x4000
-        private const val BODY_CUSTOMISATION: Int = 0x8000 // ?
+        private const val BODY_CUSTOMISATION: Int = 0x8000
         private const val BAS_CHANGE: Int = 0x10000
         private const val HEADICON_CUSTOMISATION: Int = 0x20000
         private const val SPOTANIM: Int = 0x40000
