@@ -15,27 +15,27 @@ import net.rsprot.protocol.message.OutgoingGameMessage
  * @property destinationZInBuildArea the dest z coordinate within the build area,
  * in range of 0 to 103 (inclusive)
  * @property height the height of the camera
- * @property duration the duration of the movement in client cycles (20ms/cc)
- * @property function the camera easing function, allowing for finer
+ * @property cycles the duration of the movement in client cycles (20ms/cc)
+ * @property easing the camera easing function, allowing for finer
  * control over the way it moves from the start coordinate to the end.
  */
 public class CamLookAtEasedCoord private constructor(
     private val destinationCoordInBuildArea: CoordInBuildArea,
     private val _height: UShort,
-    private val _duration: UShort,
-    private val _function: UByte,
+    private val _cycles: UShort,
+    private val _easing: UByte,
 ) : OutgoingGameMessage {
     public constructor(
         xInBuildArea: Int,
         zInBuildArea: Int,
         height: Int,
-        duration: Int,
-        function: Int,
+        cycles: Int,
+        easing: Int,
     ) : this(
         CoordInBuildArea(xInBuildArea, zInBuildArea),
         height.toUShort(),
-        duration.toUShort(),
-        function.toUByte(),
+        cycles.toUShort(),
+        easing.toUByte(),
     )
 
     public val destinationXInBuildArea: Int
@@ -44,10 +44,10 @@ public class CamLookAtEasedCoord private constructor(
         get() = destinationCoordInBuildArea.zInBuildArea
     public val height: Int
         get() = _height.toInt()
-    public val duration: Int
-        get() = _duration.toInt()
-    public val function: CameraEaseFunction
-        get() = CameraEaseFunction[_function.toInt()]
+    public val cycles: Int
+        get() = _cycles.toInt()
+    public val easing: CameraEaseFunction
+        get() = CameraEaseFunction[_easing.toInt()]
     override val category: ServerProtCategory
         get() = GameServerProtCategory.LOW_PRIORITY_PROT
 
@@ -59,8 +59,8 @@ public class CamLookAtEasedCoord private constructor(
 
         if (destinationCoordInBuildArea != other.destinationCoordInBuildArea) return false
         if (_height != other._height) return false
-        if (_duration != other._duration) return false
-        if (_function != other._function) return false
+        if (_cycles != other._cycles) return false
+        if (_easing != other._easing) return false
 
         return true
     }
@@ -68,18 +68,17 @@ public class CamLookAtEasedCoord private constructor(
     override fun hashCode(): Int {
         var result = destinationCoordInBuildArea.hashCode()
         result = 31 * result + _height.hashCode()
-        result = 31 * result + _duration.hashCode()
-        result = 31 * result + _function.hashCode()
+        result = 31 * result + _cycles.hashCode()
+        result = 31 * result + _easing.hashCode()
         return result
     }
 
-    override fun toString(): String {
-        return "CamLookAtEasedCoord(" +
+    override fun toString(): String =
+        "CamLookAtEasedCoord(" +
             "destinationXInBuildArea=$destinationXInBuildArea, " +
             "destinationZInBuildArea=$destinationZInBuildArea, " +
             "height=$height, " +
-            "duration=$duration, " +
-            "function=$function" +
+            "cycles=$cycles, " +
+            "easing=$easing" +
             ")"
-    }
 }

@@ -25,12 +25,12 @@ import net.rsprot.protocol.message.OutgoingGameMessage
  * @property destinationZInBuildArea the dest z coordinate within the build area,
  * in range of 0 to 103 (inclusive)
  * @property height the height of the camera once it arrives at the destination
- * @property duration the duration of the movement in client cycles (20ms/cc)
- * @property maintainFixedAltitude whether the camera moves along the terrain,
+ * @property cycles the duration of the movement in client cycles (20ms/cc)
+ * @property ignoreTerrain whether the camera moves along the terrain,
  * moving up and down according to bumps in the terrain.
- * If false, the camera will move in a straight line from the starting position
+ * If true, the camera will move in a straight line from the starting position
  * towards the end position, ignoring any changes in the terrain.
- * @property function the camera easing function, allowing for finer
+ * @property easing the camera easing function, allowing for finer
  * control over the way it moves from the start coordinate to the end.
  */
 @Suppress("DuplicatedCode")
@@ -38,9 +38,9 @@ public class CamMoveToArc private constructor(
     private val centerCoordInBuildArea: CoordInBuildArea,
     private val destinationCoordInBuildArea: CoordInBuildArea,
     private val _height: UShort,
-    private val _duration: UShort,
-    public val maintainFixedAltitude: Boolean,
-    private val _function: UByte,
+    private val _cycles: UShort,
+    public val ignoreTerrain: Boolean,
+    private val _easing: UByte,
 ) : OutgoingGameMessage {
     public constructor(
         centerXInBuildArea: Int,
@@ -48,16 +48,16 @@ public class CamMoveToArc private constructor(
         destinationXInBuildArea: Int,
         destinationZInBuildArea: Int,
         height: Int,
-        duration: Int,
-        maintainFixedAltitude: Boolean,
-        function: Int,
+        cycles: Int,
+        ignoreTerrain: Boolean,
+        easing: Int,
     ) : this(
         CoordInBuildArea(centerXInBuildArea, centerZInBuildArea),
         CoordInBuildArea(destinationXInBuildArea, destinationZInBuildArea),
         height.toUShort(),
-        duration.toUShort(),
-        maintainFixedAltitude,
-        function.toUByte(),
+        cycles.toUShort(),
+        ignoreTerrain,
+        easing.toUByte(),
     )
 
     public val centerXInBuildArea: Int
@@ -70,10 +70,10 @@ public class CamMoveToArc private constructor(
         get() = destinationCoordInBuildArea.zInBuildArea
     public val height: Int
         get() = _height.toInt()
-    public val duration: Int
-        get() = _duration.toInt()
-    public val function: CameraEaseFunction
-        get() = CameraEaseFunction[_function.toInt()]
+    public val cycles: Int
+        get() = _cycles.toInt()
+    public val easing: CameraEaseFunction
+        get() = CameraEaseFunction[_easing.toInt()]
     override val category: ServerProtCategory
         get() = GameServerProtCategory.LOW_PRIORITY_PROT
 
@@ -86,9 +86,9 @@ public class CamMoveToArc private constructor(
         if (centerCoordInBuildArea != other.centerCoordInBuildArea) return false
         if (destinationCoordInBuildArea != other.destinationCoordInBuildArea) return false
         if (_height != other._height) return false
-        if (_duration != other._duration) return false
-        if (maintainFixedAltitude != other.maintainFixedAltitude) return false
-        if (_function != other._function) return false
+        if (_cycles != other._cycles) return false
+        if (ignoreTerrain != other.ignoreTerrain) return false
+        if (_easing != other._easing) return false
 
         return true
     }
@@ -97,9 +97,9 @@ public class CamMoveToArc private constructor(
         var result = centerCoordInBuildArea.hashCode()
         result = 31 * result + destinationCoordInBuildArea.hashCode()
         result = 31 * result + _height.hashCode()
-        result = 31 * result + _duration.hashCode()
-        result = 31 * result + maintainFixedAltitude.hashCode()
-        result = 31 * result + _function.hashCode()
+        result = 31 * result + _cycles.hashCode()
+        result = 31 * result + ignoreTerrain.hashCode()
+        result = 31 * result + _easing.hashCode()
         return result
     }
 
@@ -110,8 +110,8 @@ public class CamMoveToArc private constructor(
             "destinationXInBuildArea=$destinationXInBuildArea, " +
             "destinationZInBuildArea=$destinationZInBuildArea, " +
             "height=$height, " +
-            "duration=$duration, " +
-            "maintainFixedAltitude=$maintainFixedAltitude, " +
-            "function=$function" +
+            "cycles=$cycles, " +
+            "ignoreTerrain=$ignoreTerrain, " +
+            "easing=$easing" +
             ")"
 }

@@ -17,28 +17,28 @@ import net.rsprot.protocol.message.OutgoingGameMessage
  * @property destinationZInBuildArea the dest z coordinate within the build area,
  * in range of 0 to 103 (inclusive)
  * @property height the height of the camera
- * @property speed the constant speed at which the camera looks towards
+ * @property rate the constant speed at which the camera looks towards
  * to the new coordinate
- * @property acceleration the speed increase as the camera looks
+ * @property rate2 the speed increase as the camera looks
  * towards the end coordinate.
  */
 public class CamLookAt private constructor(
     private val destinationCoordInBuildArea: CoordInBuildArea,
     private val _height: UShort,
-    private val _speed: UByte,
-    private val _acceleration: UByte,
+    private val _rate: UByte,
+    private val _rate2: UByte,
 ) : OutgoingGameMessage {
     public constructor(
         xInBuildArea: Int,
         zInBuildArea: Int,
         height: Int,
-        speed: Int,
-        acceleration: Int,
+        rate: Int,
+        rate2: Int,
     ) : this(
         CoordInBuildArea(xInBuildArea, zInBuildArea),
         height.toUShort(),
-        speed.toUByte(),
-        acceleration.toUByte(),
+        rate.toUByte(),
+        rate2.toUByte(),
     )
 
     public val destinationXInBuildArea: Int
@@ -47,10 +47,10 @@ public class CamLookAt private constructor(
         get() = destinationCoordInBuildArea.zInBuildArea
     public val height: Int
         get() = _height.toInt()
-    public val speed: Int
-        get() = _speed.toInt()
-    public val acceleration: Int
-        get() = _acceleration.toInt()
+    public val rate: Int
+        get() = _rate.toInt()
+    public val rate2: Int
+        get() = _rate2.toInt()
 
     override val category: ServerProtCategory
         get() = GameServerProtCategory.LOW_PRIORITY_PROT
@@ -63,8 +63,8 @@ public class CamLookAt private constructor(
 
         if (destinationCoordInBuildArea != other.destinationCoordInBuildArea) return false
         if (_height != other._height) return false
-        if (_speed != other._speed) return false
-        if (_acceleration != other._acceleration) return false
+        if (_rate != other._rate) return false
+        if (_rate2 != other._rate2) return false
 
         return true
     }
@@ -72,18 +72,17 @@ public class CamLookAt private constructor(
     override fun hashCode(): Int {
         var result = destinationCoordInBuildArea.hashCode()
         result = 31 * result + _height.hashCode()
-        result = 31 * result + _speed.hashCode()
-        result = 31 * result + _acceleration.hashCode()
+        result = 31 * result + _rate.hashCode()
+        result = 31 * result + _rate2.hashCode()
         return result
     }
 
-    override fun toString(): String {
-        return "CamLookAt(" +
+    override fun toString(): String =
+        "CamLookAt(" +
             "destinationXInBuildArea=$destinationXInBuildArea, " +
             "destinationZInBuildArea=$destinationZInBuildArea, " +
             "height=$height, " +
-            "speed=$speed, " +
-            "acceleration=$acceleration" +
+            "rate=$rate, " +
+            "rate2=$rate2" +
             ")"
-    }
 }

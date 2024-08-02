@@ -11,44 +11,44 @@ import net.rsprot.protocol.message.OutgoingGameMessage
  * One way to think of this packet is that it **adds** values to the
  * x and y angles of the camera.
  *
- * @property xAngle the x angle of the camera to set to.
+ * @property pitch the x angle of the camera to set to.
  * Note that the angle is coerced into a range of 128..383,
  * and incorrectly excludes the third and fifth least significant bits
- * before doing so (by doing [xAngle] & 2027, rather than 2047).
- * @property yAngle the x angle of the camera to set to.
+ * before doing so (by doing [pitch] & 2027, rather than 2047).
+ * @property yaw the x angle of the camera to set to.
  * Note that the angle incorrectly excludes the third and fifth least significant bits
- * (by doing [xAngle] & 2027, rather than 2047).
- * @property duration the duration of the movement in client cycles (20ms/cc)
- * @property function the camera easing function, allowing for finer
+ * (by doing [pitch] & 2027, rather than 2047).
+ * @property cycles the duration of the movement in client cycles (20ms/cc)
+ * @property easing the camera easing function, allowing for finer
  * control over the way it moves from the start coordinate to the end.
  */
 @Suppress("MemberVisibilityCanBePrivate")
 public class CamRotateTo private constructor(
-    private val _xAngle: Short,
-    private val _yAngle: Short,
-    private val _duration: UShort,
-    private val _function: UByte,
+    private val _pitch: Short,
+    private val _yaw: Short,
+    private val _cycles: UShort,
+    private val _easing: UByte,
 ) : OutgoingGameMessage {
     public constructor(
-        xAngle: Int,
-        yAngle: Int,
-        duration: Int,
-        function: Int,
+        pitch: Int,
+        yaw: Int,
+        cycles: Int,
+        easing: Int,
     ) : this(
-        xAngle.toShort(),
-        yAngle.toShort(),
-        duration.toUShort(),
-        function.toUByte(),
+        pitch.toShort(),
+        yaw.toShort(),
+        cycles.toUShort(),
+        easing.toUByte(),
     )
 
-    public val xAngle: Int
-        get() = _xAngle.toInt()
-    public val yAngle: Int
-        get() = _yAngle.toInt()
-    public val duration: Int
-        get() = _duration.toInt()
-    public val function: CameraEaseFunction
-        get() = CameraEaseFunction[_function.toInt()]
+    public val pitch: Int
+        get() = _pitch.toInt()
+    public val yaw: Int
+        get() = _yaw.toInt()
+    public val cycles: Int
+        get() = _cycles.toInt()
+    public val easing: CameraEaseFunction
+        get() = CameraEaseFunction[_easing.toInt()]
     override val category: ServerProtCategory
         get() = GameServerProtCategory.LOW_PRIORITY_PROT
 
@@ -58,27 +58,27 @@ public class CamRotateTo private constructor(
 
         other as CamRotateTo
 
-        if (_xAngle != other._xAngle) return false
-        if (_yAngle != other._yAngle) return false
-        if (_duration != other._duration) return false
-        if (_function != other._function) return false
+        if (_pitch != other._pitch) return false
+        if (_yaw != other._yaw) return false
+        if (_cycles != other._cycles) return false
+        if (_easing != other._easing) return false
 
         return true
     }
 
     override fun hashCode(): Int {
-        var result = _xAngle.toInt()
-        result = 31 * result + _yAngle
-        result = 31 * result + _duration.hashCode()
-        result = 31 * result + _function.hashCode()
+        var result = _pitch.toInt()
+        result = 31 * result + _yaw
+        result = 31 * result + _cycles.hashCode()
+        result = 31 * result + _easing.hashCode()
         return result
     }
 
     override fun toString(): String =
         "CamRotateTo(" +
-            "xAngle=$xAngle, " +
-            "yAngle=$yAngle, " +
-            "duration=$duration, " +
-            "function=$function" +
+            "pitch=$pitch, " +
+            "yaw=$yaw, " +
+            "cycles=$cycles, " +
+            "easing=$easing" +
             ")"
 }

@@ -17,9 +17,9 @@ public class CamShakeEncoder : MessageEncoder<CamShake> {
         buffer: JagByteBuf,
         message: CamShake,
     ) {
-        buffer.p1(message.type)
-        buffer.p1(message.randomAmount)
-        buffer.p1(message.sineAmount)
-        buffer.p1(message.sineFrequency)
+        buffer.p1(message.axis)
+        buffer.p1(message.random)
+        buffer.p1(message.amplitude)
+        buffer.p1(message.rate)
     }
 }

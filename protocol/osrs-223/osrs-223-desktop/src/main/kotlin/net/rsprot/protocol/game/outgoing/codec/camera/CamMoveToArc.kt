@@ -22,8 +22,8 @@ public class CamMoveToArc : MessageEncoder<CamMoveToArc> {
         buffer.p2(message.height)
         buffer.p1(message.centerXInBuildArea)
         buffer.p1(message.centerZInBuildArea)
-        buffer.p2(message.duration)
-        buffer.pboolean(!message.maintainFixedAltitude)
-        buffer.p1(message.function.id)
+        buffer.p2(message.cycles)
+        buffer.pboolean(message.ignoreTerrain)
+        buffer.p1(message.easing.id)
     }
 }

@@ -17,9 +17,9 @@ public class CamRotateToEncoder : MessageEncoder<CamRotateTo> {
         buffer: JagByteBuf,
         message: CamRotateTo,
     ) {
-        buffer.p2(message.yAngle)
-        buffer.p2(message.xAngle)
-        buffer.p2(message.duration)
-        buffer.p1(message.function.id)
+        buffer.p2(message.yaw)
+        buffer.p2(message.pitch)
+        buffer.p2(message.cycles)
+        buffer.p1(message.easing.id)
     }
 }

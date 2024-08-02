@@ -20,7 +20,7 @@ public class CamLookAtEasedCoordEncoder : MessageEncoder<CamLookAtEasedCoord> {
         buffer.p1(message.destinationXInBuildArea)
         buffer.p1(message.destinationZInBuildArea)
         buffer.p2(message.height)
-        buffer.p2(message.duration)
-        buffer.p1(message.function.id)
+        buffer.p2(message.cycles)
+        buffer.p1(message.easing.id)
     }
 }

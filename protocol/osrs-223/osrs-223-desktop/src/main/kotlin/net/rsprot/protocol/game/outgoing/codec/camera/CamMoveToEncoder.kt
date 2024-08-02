@@ -20,7 +20,7 @@ public class CamMoveToEncoder : MessageEncoder<CamMoveTo> {
         buffer.p1(message.destinationXInBuildArea)
         buffer.p1(message.destinationZInBuildArea)
         buffer.p2(message.height)
-        buffer.p1(message.speed)
-        buffer.p1(message.acceleration)
+        buffer.p1(message.rate)
+        buffer.p1(message.rate2)
     }
 }
