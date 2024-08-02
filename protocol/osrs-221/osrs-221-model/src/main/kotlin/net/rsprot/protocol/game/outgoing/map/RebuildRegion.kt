@@ -195,7 +195,7 @@ public class RebuildRegion private constructor(
             get() = packed ushr 24 and 0x3
 
         public val mapsquareId: Int
-            get() = (zoneX shl 11) or (zoneZ shl 3)
+            get() = ((zoneX ushr 3) shl 8) or (zoneZ ushr 3)
 
         override fun toString(): String =
             "ReferenceZone(" +

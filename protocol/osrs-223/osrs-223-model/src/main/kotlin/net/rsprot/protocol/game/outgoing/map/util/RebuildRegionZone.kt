@@ -46,12 +46,11 @@ public class RebuildRegionZone private constructor(
         return result
     }
 
-    override fun toString(): String {
-        return "RebuildRegionZone(" +
+    override fun toString(): String =
+        "RebuildRegionZone(" +
             "referenceZone=$referenceZone, " +
             "key=$key" +
             ")"
-    }
 
     /**
      * A value class around zone objects that bitpacks all the properties into a single
@@ -87,15 +86,14 @@ public class RebuildRegionZone private constructor(
             get() = packed ushr 24 and 0x3
 
         public val mapsquareId: Int
-            get() = (zoneX shl 11) or (zoneZ shl 3)
+            get() = ((zoneX ushr 3) shl 8) or (zoneZ ushr 3)
 
-        override fun toString(): String {
-            return "ReferenceZone(" +
+        override fun toString(): String =
+            "ReferenceZone(" +
                 "zoneX=$zoneX, " +
                 "zoneZ=$zoneZ, " +
                 "level=$level, " +
                 "rotation=$rotation" +
                 ")"
-        }
     }
 }
