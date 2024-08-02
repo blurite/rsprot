@@ -11,11 +11,11 @@ import net.rsprot.protocol.message.OutgoingGameMessage
  */
 public class ClanSettingsFull private constructor(
     private val _clanType: Byte,
-    public val update: ClanSettingsFullUpdate,
+    public val update: Update,
 ) : OutgoingGameMessage {
     public constructor(
         clanType: Int,
-        update: ClanSettingsFullUpdate,
+        update: Update,
     ) : this(
         clanType.toByte(),
         update,
@@ -32,7 +32,7 @@ public class ClanSettingsFull private constructor(
             "clanType=$clanType" +
             ")"
 
-    public sealed interface ClanSettingsFullUpdate
+    public sealed interface Update
 
     /**
      * Clan settings full join update is used to make the player join a clan.
@@ -48,7 +48,7 @@ public class ClanSettingsFull private constructor(
      * @property bannedMembers the list of banned members in this clan
      * @property settings the list of settings to apply to this clan
      */
-    public class ClanSettingsFullJoinUpdate private constructor(
+    public class JoinUpdate private constructor(
         private val _flags: UByte,
         public val updateNum: Int,
         public val creationTime: Int,
@@ -61,7 +61,7 @@ public class ClanSettingsFull private constructor(
         public val affinedMembers: List<AffinedClanMember>,
         public val bannedMembers: List<BannedClanMember>,
         public val settings: List<ClanSetting>,
-    ) : ClanSettingsFullUpdate {
+    ) : Update {
         public constructor(
             updateNum: Int,
             creationTime: Int,
@@ -117,7 +117,7 @@ public class ClanSettingsFull private constructor(
             if (this === other) return true
             if (javaClass != other?.javaClass) return false
 
-            other as ClanSettingsFullJoinUpdate
+            other as JoinUpdate
 
             if (_flags != other._flags) return false
             if (updateNum != other.updateNum) return false
@@ -152,7 +152,7 @@ public class ClanSettingsFull private constructor(
         }
 
         override fun toString(): String =
-            "ClanSettingsFullJoinUpdate(" +
+            "JoinUpdate(" +
                 "flags=$flags, " +
                 "updateNum=$updateNum, " +
                 "creationTime=$creationTime, " +
@@ -168,7 +168,7 @@ public class ClanSettingsFull private constructor(
                 ")"
     }
 
-    public data object ClanSettingsFullLeaveUpdate : ClanSettingsFullUpdate
+    public data object LeaveUpdate : Update
 
     public sealed interface ClanMember
 

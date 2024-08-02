@@ -20,7 +20,7 @@ public class ClanChannelFullEncoder : MessageEncoder<ClanChannelFull> {
     ) {
         buffer.p1(message.clanType)
         when (val update = message.update) {
-            is ClanChannelFull.ClanChannelFullJoinUpdate -> {
+            is ClanChannelFull.JoinUpdate -> {
                 buffer.p1(update.flags)
                 val version = update.version
                 if (update.flags and ClanChannelFull.FLAG_HAS_VERSION != 0) {
@@ -50,7 +50,7 @@ public class ClanChannelFullEncoder : MessageEncoder<ClanChannelFull> {
                     }
                 }
             }
-            ClanChannelFull.ClanChannelFullLeaveUpdate -> {
+            ClanChannelFull.LeaveUpdate -> {
                 // No-op
             }
         }

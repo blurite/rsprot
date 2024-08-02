@@ -20,7 +20,7 @@ public class ClanSettingsFullEncoder : MessageEncoder<ClanSettingsFull> {
         buffer.p1(message.clanType)
         val update = message.update
         when (update) {
-            is ClanSettingsFull.ClanSettingsFullJoinUpdate -> {
+            is ClanSettingsFull.JoinUpdate -> {
                 // Send version always as 6, as it contains the most information
                 buffer.p1(6)
                 buffer.p1(update.flags)
@@ -77,7 +77,7 @@ public class ClanSettingsFullEncoder : MessageEncoder<ClanSettingsFull> {
                     }
                 }
             }
-            ClanSettingsFull.ClanSettingsFullLeaveUpdate -> {
+            ClanSettingsFull.LeaveUpdate -> {
                 // No-op
             }
         }

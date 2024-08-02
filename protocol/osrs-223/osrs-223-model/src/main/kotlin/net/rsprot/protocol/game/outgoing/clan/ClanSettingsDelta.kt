@@ -17,13 +17,13 @@ public class ClanSettingsDelta private constructor(
     private val _clanType: Byte,
     public val owner: Long,
     public val updateNum: Int,
-    public val updates: List<ClanSettingsDeltaUpdate>,
+    public val updates: List<Update>,
 ) : OutgoingGameMessage {
     public constructor(
         clanType: Int,
         owner: Long,
         updateNum: Int,
-        updates: List<ClanSettingsDeltaUpdate>,
+        updates: List<Update>,
     ) : this(
         clanType.toByte(),
         owner,
@@ -57,26 +57,25 @@ public class ClanSettingsDelta private constructor(
         return result
     }
 
-    override fun toString(): String {
-        return "ClanSettingsDelta(" +
+    override fun toString(): String =
+        "ClanSettingsDelta(" +
             "clanType=$clanType, " +
             "owner=$owner, " +
             "updateNum=$updateNum, " +
             "updates=$updates" +
             ")"
-    }
 
-    public sealed interface ClanSettingsDeltaUpdate
+    public sealed interface Update
 
     /**
      * Add banned updates are used to add a member to the banned members list.
      * @property hash the hash of the member, or 0 if this clan does not use hashes.
      * @property name the name of the member.
      */
-    public class ClanSettingsDeltaAddBannedUpdate(
+    public class AddBannedUpdate(
         public val hash: Long,
         public val name: String?,
-    ) : ClanSettingsDeltaUpdate {
+    ) : Update {
         /**
          * A secondary constructor for when the clan does not support hashes.
          */
@@ -91,7 +90,7 @@ public class ClanSettingsDelta private constructor(
             if (this === other) return true
             if (javaClass != other?.javaClass) return false
 
-            other as ClanSettingsDeltaAddBannedUpdate
+            other as AddBannedUpdate
 
             if (hash != other.hash) return false
             if (name != other.name) return false
@@ -105,12 +104,11 @@ public class ClanSettingsDelta private constructor(
             return result
         }
 
-        override fun toString(): String {
-            return "ClanSettingsDeltaAddBannedUpdate(" +
+        override fun toString(): String =
+            "AddBannedUpdate(" +
                 "hash=$hash, " +
                 "name=$name" +
                 ")"
-        }
     }
 
     /**
@@ -118,10 +116,10 @@ public class ClanSettingsDelta private constructor(
      * @property hash the hash of the member, or 0 if this clan does not use hashes.
      * @property name the name of the member.
      */
-    public class ClanSettingsDeltaAddMemberV1Update(
+    public class AddMemberV1Update(
         public val hash: Long,
         public val name: String?,
-    ) : ClanSettingsDeltaUpdate {
+    ) : Update {
         /**
          * A secondary constructor for when the clan does not support hashes.
          */
@@ -136,7 +134,7 @@ public class ClanSettingsDelta private constructor(
             if (this === other) return true
             if (javaClass != other?.javaClass) return false
 
-            other as ClanSettingsDeltaAddMemberV1Update
+            other as AddMemberV1Update
 
             if (hash != other.hash) return false
             if (name != other.name) return false
@@ -150,12 +148,11 @@ public class ClanSettingsDelta private constructor(
             return result
         }
 
-        override fun toString(): String {
-            return "ClanSettingsDeltaAddMemberV1Update(" +
+        override fun toString(): String =
+            "AddMemberV1Update(" +
                 "hash=$hash, " +
                 "name=$name" +
                 ")"
-        }
     }
 
     /**
@@ -164,11 +161,11 @@ public class ClanSettingsDelta private constructor(
      * @property name the name of the member.
      * @property joinRuneDay the rune day when this user joined the clan
      */
-    public class ClanSettingsDeltaAddMemberV2Update private constructor(
+    public class AddMemberV2Update private constructor(
         public val hash: Long,
         public val name: String?,
         private val _joinRuneDay: UShort,
-    ) : ClanSettingsDeltaUpdate {
+    ) : Update {
         public constructor(
             hash: Long,
             name: String?,
@@ -195,7 +192,7 @@ public class ClanSettingsDelta private constructor(
             if (this === other) return true
             if (javaClass != other?.javaClass) return false
 
-            other as ClanSettingsDeltaAddMemberV2Update
+            other as AddMemberV2Update
 
             if (hash != other.hash) return false
             if (name != other.name) return false
@@ -211,13 +208,12 @@ public class ClanSettingsDelta private constructor(
             return result
         }
 
-        override fun toString(): String {
-            return "ClanSettingsDeltaAddMemberV2Update(" +
+        override fun toString(): String =
+            "AddMemberV2Update(" +
                 "hash=$hash, " +
                 "name=$name, " +
                 "joinRuneDay=$joinRuneDay" +
                 ")"
-        }
     }
 
     /**
@@ -229,13 +225,13 @@ public class ClanSettingsDelta private constructor(
      * @property lootshareRank the minimum rank needed to toggle lootshare, unused in OldSchool
      * @property coinshareRank the minimum rank needed to toggle coinshare, unused in OldSchool
      */
-    public class ClanSettingsDeltaBaseSettingsUpdate private constructor(
+    public class BaseSettingsUpdate private constructor(
         public val allowUnaffined: Boolean,
         private val _talkRank: Byte,
         private val _kickRank: Byte,
         private val _lootshareRank: Byte,
         private val _coinshareRank: Byte,
-    ) : ClanSettingsDeltaUpdate {
+    ) : Update {
         public constructor(
             allowUnaffined: Boolean,
             talkRank: Int,
@@ -263,7 +259,7 @@ public class ClanSettingsDelta private constructor(
             if (this === other) return true
             if (javaClass != other?.javaClass) return false
 
-            other as ClanSettingsDeltaBaseSettingsUpdate
+            other as BaseSettingsUpdate
 
             if (allowUnaffined != other.allowUnaffined) return false
             if (_talkRank != other._talkRank) return false
@@ -283,15 +279,14 @@ public class ClanSettingsDelta private constructor(
             return result
         }
 
-        override fun toString(): String {
-            return "ClanSettingsDeltaBaseSettingsUpdate(" +
+        override fun toString(): String =
+            "BaseSettingsUpdate(" +
                 "allowUnaffined=$allowUnaffined, " +
                 "talkRank=$talkRank, " +
                 "kickRank=$kickRank, " +
                 "lootshareRank=$lootshareRank, " +
                 "coinshareRank=$coinshareRank" +
                 ")"
-        }
     }
 
     /**
@@ -299,50 +294,42 @@ public class ClanSettingsDelta private constructor(
      * from the list of banned users.
      * @property index the index of the user in the banned members list.
      */
-    public class ClanSettingsDeltaDeleteBannedUpdate(
+    public class DeleteBannedUpdate(
         public val index: Int,
-    ) : ClanSettingsDeltaUpdate {
+    ) : Update {
         override fun equals(other: Any?): Boolean {
             if (this === other) return true
             if (javaClass != other?.javaClass) return false
 
-            other as ClanSettingsDeltaDeleteBannedUpdate
+            other as DeleteBannedUpdate
 
             return index == other.index
         }
 
-        override fun hashCode(): Int {
-            return index
-        }
+        override fun hashCode(): Int = index
 
-        override fun toString(): String {
-            return "ClanSettingsDeltaDeleteBannedUpdate(index=$index)"
-        }
+        override fun toString(): String = "DeleteBannedUpdate(index=$index)"
     }
 
     /**
      * Delete member updates are used to remove members from this clan.
      * @property index the index of this member within the clan's member list.
      */
-    public class ClanSettingsDeltaDeleteMemberUpdate(
+    public class DeleteMemberUpdate(
         public val index: Int,
-    ) : ClanSettingsDeltaUpdate {
+    ) : Update {
         override fun equals(other: Any?): Boolean {
             if (this === other) return true
             if (javaClass != other?.javaClass) return false
 
-            other as ClanSettingsDeltaDeleteMemberUpdate
+            other as DeleteMemberUpdate
 
             return index == other.index
         }
 
-        override fun hashCode(): Int {
-            return index
-        }
+        override fun hashCode(): Int = index
 
-        override fun toString(): String {
-            return "ClanSettingsDeltaDeleteMemberUpdate(index=$index)"
-        }
+        override fun toString(): String = "DeleteMemberUpdate(index=$index)"
     }
 
     /**
@@ -351,10 +338,10 @@ public class ClanSettingsDelta private constructor(
      * @property index the index of this member within the clan's member list.
      * @property rank the new rank to assign to that member.
      */
-    public class ClanSettingsDeltaSetMemberRankUpdate private constructor(
+    public class SetMemberRankUpdate private constructor(
         private val _index: UShort,
         private val _rank: Byte,
-    ) : ClanSettingsDeltaUpdate {
+    ) : Update {
         public constructor(
             index: Int,
             rank: Int,
@@ -372,7 +359,7 @@ public class ClanSettingsDelta private constructor(
             if (this === other) return true
             if (javaClass != other?.javaClass) return false
 
-            other as ClanSettingsDeltaSetMemberRankUpdate
+            other as SetMemberRankUpdate
 
             if (_index != other._index) return false
             if (_rank != other._rank) return false
@@ -386,12 +373,11 @@ public class ClanSettingsDelta private constructor(
             return result
         }
 
-        override fun toString(): String {
-            return "ClanSettingsDeltaSetMemberRankUpdate(" +
+        override fun toString(): String =
+            "SetMemberRankUpdate(" +
                 "index=$index, " +
                 "rank=$rank" +
                 ")"
-        }
     }
 
     /**
@@ -403,12 +389,12 @@ public class ClanSettingsDelta private constructor(
      * @property startBit the start bit of the bit range to update
      * @property endBit the end bit of the bit range to update
      */
-    public class ClanSettingsDeltaSetMemberExtraInfoUpdate private constructor(
+    public class SetMemberExtraInfoUpdate private constructor(
         private val _index: UShort,
         public val value: Int,
         private val _startBit: UByte,
         private val _endBit: UByte,
-    ) : ClanSettingsDeltaUpdate {
+    ) : Update {
         public constructor(
             index: Int,
             value: Int,
@@ -432,7 +418,7 @@ public class ClanSettingsDelta private constructor(
             if (this === other) return true
             if (javaClass != other?.javaClass) return false
 
-            other as ClanSettingsDeltaSetMemberExtraInfoUpdate
+            other as SetMemberExtraInfoUpdate
 
             if (_index != other._index) return false
             if (value != other.value) return false
@@ -450,14 +436,13 @@ public class ClanSettingsDelta private constructor(
             return result
         }
 
-        override fun toString(): String {
-            return "ClanSettingsDeltaSetMemberExtraInfoUpdate(" +
+        override fun toString(): String =
+            "SetMemberExtraInfoUpdate(" +
                 "index=$index, " +
                 "value=$value, " +
                 "startBit=$startBit, " +
                 "endBit=$endBit" +
                 ")"
-        }
     }
 
     /**
@@ -465,10 +450,10 @@ public class ClanSettingsDelta private constructor(
      * @property index the index of this member within the clan's member list.
      * @property muted whether to set the member muted or unmuted.
      */
-    public class ClanSettingsDeltaSetMemberMutedUpdate private constructor(
+    public class SetMemberMutedUpdate private constructor(
         private val _index: UShort,
         public val muted: Boolean,
-    ) : ClanSettingsDeltaUpdate {
+    ) : Update {
         public constructor(
             index: Int,
             muted: Boolean,
@@ -484,7 +469,7 @@ public class ClanSettingsDelta private constructor(
             if (this === other) return true
             if (javaClass != other?.javaClass) return false
 
-            other as ClanSettingsDeltaSetMemberMutedUpdate
+            other as SetMemberMutedUpdate
 
             if (_index != other._index) return false
             if (muted != other.muted) return false
@@ -498,12 +483,11 @@ public class ClanSettingsDelta private constructor(
             return result
         }
 
-        override fun toString(): String {
-            return "ClanSettingsDeltaSetMemberMutedUpdate(" +
+        override fun toString(): String =
+            "SetMemberMutedUpdate(" +
                 "index=$index, " +
                 "muted=$muted" +
                 ")"
-        }
     }
 
     /**
@@ -512,15 +496,15 @@ public class ClanSettingsDelta private constructor(
      * @property setting the id of the setting to modify, a 30-bit integer.
      * @property value the 32-bit integer value to assign to that setting.
      */
-    public class ClanSettingsDeltaSetIntSettingUpdate(
+    public class SetIntSettingUpdate(
         public val setting: Int,
         public val value: Int,
-    ) : ClanSettingsDeltaUpdate {
+    ) : Update {
         override fun equals(other: Any?): Boolean {
             if (this === other) return true
             if (javaClass != other?.javaClass) return false
 
-            other as ClanSettingsDeltaSetIntSettingUpdate
+            other as SetIntSettingUpdate
 
             if (setting != other.setting) return false
             if (value != other.value) return false
@@ -534,12 +518,11 @@ public class ClanSettingsDelta private constructor(
             return result
         }
 
-        override fun toString(): String {
-            return "ClanSettingsDeltaSetIntSettingUpdate(" +
+        override fun toString(): String =
+            "SetIntSettingUpdate(" +
                 "setting=$setting, " +
                 "value=$value" +
                 ")"
-        }
     }
 
     /**
@@ -548,15 +531,15 @@ public class ClanSettingsDelta private constructor(
      * @property setting the id of the setting to modify, a 30-bit integer.
      * @property value the 64-bit long value to assign to that setting.
      */
-    public class ClanSettingsDeltaSetLongSettingUpdate(
+    public class SetLongSettingUpdate(
         public val setting: Int,
         public val value: Long,
-    ) : ClanSettingsDeltaUpdate {
+    ) : Update {
         override fun equals(other: Any?): Boolean {
             if (this === other) return true
             if (javaClass != other?.javaClass) return false
 
-            other as ClanSettingsDeltaSetLongSettingUpdate
+            other as SetLongSettingUpdate
 
             if (setting != other.setting) return false
             if (value != other.value) return false
@@ -570,12 +553,11 @@ public class ClanSettingsDelta private constructor(
             return result
         }
 
-        override fun toString(): String {
-            return "ClanSettingsDeltaSetLongSettingUpdate(" +
+        override fun toString(): String =
+            "SetLongSettingUpdate(" +
                 "setting=$setting, " +
                 "value=$value" +
                 ")"
-        }
     }
 
     /**
@@ -584,15 +566,15 @@ public class ClanSettingsDelta private constructor(
      * @property setting the id of the setting to modify, a 30-bit integer.
      * @property value the string value to assign to that setting.
      */
-    public class ClanSettingsDeltaSetStringSettingUpdate(
+    public class SetStringSettingUpdate(
         public val setting: Int,
         public val value: String,
-    ) : ClanSettingsDeltaUpdate {
+    ) : Update {
         override fun equals(other: Any?): Boolean {
             if (this === other) return true
             if (javaClass != other?.javaClass) return false
 
-            other as ClanSettingsDeltaSetStringSettingUpdate
+            other as SetStringSettingUpdate
 
             if (setting != other.setting) return false
             if (value != other.value) return false
@@ -606,12 +588,11 @@ public class ClanSettingsDelta private constructor(
             return result
         }
 
-        override fun toString(): String {
-            return "ClanSettingsDeltaSetStringSettingUpdate(" +
+        override fun toString(): String =
+            "SetStringSettingUpdate(" +
                 "setting=$setting, " +
                 "value='$value'" +
                 ")"
-        }
     }
 
     /**
@@ -622,12 +603,12 @@ public class ClanSettingsDelta private constructor(
      * @property startBit the start bit of the bit range to modify
      * @property endBit the end bit of the bit range ot modify
      */
-    public class ClanSettingsDeltaSetVarbitSettingUpdate private constructor(
+    public class SetVarbitSettingUpdate private constructor(
         public val setting: Int,
         public val value: Int,
         private val _startBit: UByte,
         private val _endBit: UByte,
-    ) : ClanSettingsDeltaUpdate {
+    ) : Update {
         public constructor(
             setting: Int,
             value: Int,
@@ -649,7 +630,7 @@ public class ClanSettingsDelta private constructor(
             if (this === other) return true
             if (javaClass != other?.javaClass) return false
 
-            other as ClanSettingsDeltaSetVarbitSettingUpdate
+            other as SetVarbitSettingUpdate
 
             if (setting != other.setting) return false
             if (value != other.value) return false
@@ -667,63 +648,54 @@ public class ClanSettingsDelta private constructor(
             return result
         }
 
-        override fun toString(): String {
-            return "ClanSettingsDeltaSetVarbitSettingUpdate(" +
+        override fun toString(): String =
+            "SetVarbitSettingUpdate(" +
                 "setting=$setting, " +
                 "value=$value, " +
                 "startBit=$startBit, " +
                 "endBit=$endBit" +
                 ")"
-        }
     }
 
     /**
      * Clan name updates are used to modify the name of the clan.
      * @property clanName the new clan name to assign to this clan.
      */
-    public class ClanSettingsDeltaSetClanNameUpdate(
+    public class SetClanNameUpdate(
         public val clanName: String,
-    ) : ClanSettingsDeltaUpdate {
+    ) : Update {
         override fun equals(other: Any?): Boolean {
             if (this === other) return true
             if (javaClass != other?.javaClass) return false
 
-            other as ClanSettingsDeltaSetClanNameUpdate
+            other as SetClanNameUpdate
 
             return clanName == other.clanName
         }
 
-        override fun hashCode(): Int {
-            return clanName.hashCode()
-        }
+        override fun hashCode(): Int = clanName.hashCode()
 
-        override fun toString(): String {
-            return "ClanSettingsDeltaSetClanNameUpdate(clanName='$clanName')"
-        }
+        override fun toString(): String = "SetClanNameUpdate(clanName='$clanName')"
     }
 
     /**
      * Clan owner updates are used to assign a new owner to this clan.
      * @property index the index of the new owner in the clan's members list.
      */
-    public class ClanSettingDeltaSetClanOwnerUpdate(
+    public class SetClanOwnerUpdate(
         public val index: Int,
-    ) : ClanSettingsDeltaUpdate {
+    ) : Update {
         override fun equals(other: Any?): Boolean {
             if (this === other) return true
             if (javaClass != other?.javaClass) return false
 
-            other as ClanSettingDeltaSetClanOwnerUpdate
+            other as SetClanOwnerUpdate
 
             return index == other.index
         }
 
-        override fun hashCode(): Int {
-            return index
-        }
+        override fun hashCode(): Int = index
 
-        override fun toString(): String {
-            return "ClanSettingDeltaSetClanOwnerUpdate(index=$index)"
-        }
+        override fun toString(): String = "SetClanOwnerUpdate(index=$index)"
     }
 }

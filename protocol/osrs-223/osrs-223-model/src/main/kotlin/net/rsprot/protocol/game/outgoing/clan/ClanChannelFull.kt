@@ -9,16 +9,16 @@ import net.rsprot.protocol.message.OutgoingGameMessage
  * the state of a clan upon first joining it, or when the player is leaving it.
  * @property clanType the type of the clan the player is joining or leaving,
  * such as guest or normal.
- * @property update the type of update to perform, either [ClanChannelFullJoinUpdate]
- * or [ClanChannelFullLeaveUpdate].
+ * @property update the type of update to perform, either [JoinUpdate]
+ * or [LeaveUpdate].
  */
 public class ClanChannelFull private constructor(
     private val _clanType: Byte,
-    public val update: ClanChannelFullUpdate,
+    public val update: Update,
 ) : OutgoingGameMessage {
     public constructor(
         clanType: Int,
-        update: ClanChannelFullUpdate,
+        update: Update,
     ) : this(
         clanType.toByte(),
         update,
@@ -35,7 +35,7 @@ public class ClanChannelFull private constructor(
             "clanType=$clanType" +
             ")"
 
-    public sealed interface ClanChannelFullUpdate
+    public sealed interface Update
 
     /**
      * Clan channel full join update implies the user is joining
@@ -58,7 +58,7 @@ public class ClanChannelFull private constructor(
      * @property talkRank the minimum rank needed to talk in the clan
      * @property members the list of members within this clan.
      */
-    public class ClanChannelFullJoinUpdate private constructor(
+    public class JoinUpdate private constructor(
         private val _flags: UByte,
         private val _version: UByte,
         public val clanHash: Long,
@@ -68,7 +68,7 @@ public class ClanChannelFull private constructor(
         private val _kickRank: Byte,
         private val _talkRank: Byte,
         public val members: List<ClanMember>,
-    ) : ClanChannelFullUpdate {
+    ) : Update {
         public constructor(
             key: Long,
             updateNum: Long,
@@ -114,7 +114,7 @@ public class ClanChannelFull private constructor(
             if (this === other) return true
             if (javaClass != other?.javaClass) return false
 
-            other as ClanChannelFullJoinUpdate
+            other as JoinUpdate
 
             if (_flags != other._flags) return false
             if (_version != other._version) return false
@@ -143,7 +143,7 @@ public class ClanChannelFull private constructor(
         }
 
         override fun toString(): String =
-            "ClanChannelFullJoinUpdate(" +
+            "JoinUpdate(" +
                 "useBase37Names=$useBase37Names, " +
                 "useDisplayNames=$useDisplayNames, " +
                 "hasVersion=$hasVersion, " +
@@ -162,7 +162,7 @@ public class ClanChannelFull private constructor(
      * Clan channel full leave update implies the user is leaving an existing
      * clan of theirs.
      */
-    public data object ClanChannelFullLeaveUpdate : ClanChannelFullUpdate
+    public data object LeaveUpdate : Update
 
     /**
      * Clan member classes are used to wrap all the properties shown in the clan

@@ -23,11 +23,11 @@ public class ClanSettingsDeltaEncoder : MessageEncoder<ClanSettingsDelta> {
         val updates = message.updates
         for (update in updates) {
             when (update) {
-                is ClanSettingsDelta.ClanSettingDeltaSetClanOwnerUpdate -> {
+                is ClanSettingsDelta.SetClanOwnerUpdate -> {
                     buffer.p1(15)
                     buffer.p2(update.index)
                 }
-                is ClanSettingsDelta.ClanSettingsDeltaAddBannedUpdate -> {
+                is ClanSettingsDelta.AddBannedUpdate -> {
                     buffer.p1(3)
                     val hash = update.hash
                     if (hash and 0xFF != 0xFF.toLong()) {
@@ -37,7 +37,7 @@ public class ClanSettingsDeltaEncoder : MessageEncoder<ClanSettingsDelta> {
                     }
                     buffer.pjstrnull(update.name)
                 }
-                is ClanSettingsDelta.ClanSettingsDeltaAddMemberV1Update -> {
+                is ClanSettingsDelta.AddMemberV1Update -> {
                     buffer.p1(1)
                     val hash = update.hash
                     if (hash and 0xFF != 0xFF.toLong()) {
@@ -47,7 +47,7 @@ public class ClanSettingsDeltaEncoder : MessageEncoder<ClanSettingsDelta> {
                     }
                     buffer.pjstrnull(update.name)
                 }
-                is ClanSettingsDelta.ClanSettingsDeltaAddMemberV2Update -> {
+                is ClanSettingsDelta.AddMemberV2Update -> {
                     buffer.p1(13)
                     val hash = update.hash
                     if (hash and 0xFF != 0xFF.toLong()) {
@@ -58,7 +58,7 @@ public class ClanSettingsDeltaEncoder : MessageEncoder<ClanSettingsDelta> {
                     buffer.pjstrnull(update.name)
                     buffer.p2(update.joinRuneDay)
                 }
-                is ClanSettingsDelta.ClanSettingsDeltaBaseSettingsUpdate -> {
+                is ClanSettingsDelta.BaseSettingsUpdate -> {
                     buffer.p1(4)
                     buffer.p1(if (update.allowUnaffined) 1 else 0)
                     buffer.p1(update.talkRank)
@@ -66,54 +66,54 @@ public class ClanSettingsDeltaEncoder : MessageEncoder<ClanSettingsDelta> {
                     buffer.p1(update.lootshareRank)
                     buffer.p1(update.coinshareRank)
                 }
-                is ClanSettingsDelta.ClanSettingsDeltaDeleteBannedUpdate -> {
+                is ClanSettingsDelta.DeleteBannedUpdate -> {
                     buffer.p1(6)
                     buffer.p2(update.index)
                 }
-                is ClanSettingsDelta.ClanSettingsDeltaDeleteMemberUpdate -> {
+                is ClanSettingsDelta.DeleteMemberUpdate -> {
                     buffer.p1(5)
                     buffer.p2(update.index)
                 }
-                is ClanSettingsDelta.ClanSettingsDeltaSetClanNameUpdate -> {
+                is ClanSettingsDelta.SetClanNameUpdate -> {
                     buffer.p1(12)
                     buffer.pjstr(update.clanName)
 
                     // Unused in all clients, including RS3
                     buffer.p4(0)
                 }
-                is ClanSettingsDelta.ClanSettingsDeltaSetIntSettingUpdate -> {
+                is ClanSettingsDelta.SetIntSettingUpdate -> {
                     buffer.p1(8)
                     buffer.p4(update.setting)
                     buffer.p4(update.value)
                 }
-                is ClanSettingsDelta.ClanSettingsDeltaSetLongSettingUpdate -> {
+                is ClanSettingsDelta.SetLongSettingUpdate -> {
                     buffer.p1(9)
                     buffer.p4(update.setting)
                     buffer.p8(update.value)
                 }
-                is ClanSettingsDelta.ClanSettingsDeltaSetMemberExtraInfoUpdate -> {
+                is ClanSettingsDelta.SetMemberExtraInfoUpdate -> {
                     buffer.p1(7)
                     buffer.p2(update.index)
                     buffer.p4(update.value)
                     buffer.p1(update.startBit)
                     buffer.p1(update.endBit)
                 }
-                is ClanSettingsDelta.ClanSettingsDeltaSetMemberMutedUpdate -> {
+                is ClanSettingsDelta.SetMemberMutedUpdate -> {
                     buffer.p1(14)
                     buffer.p2(update.index)
                     buffer.p1(if (update.muted) 1 else 0)
                 }
-                is ClanSettingsDelta.ClanSettingsDeltaSetMemberRankUpdate -> {
+                is ClanSettingsDelta.SetMemberRankUpdate -> {
                     buffer.p1(2)
                     buffer.p2(update.index)
                     buffer.p1(update.rank)
                 }
-                is ClanSettingsDelta.ClanSettingsDeltaSetStringSettingUpdate -> {
+                is ClanSettingsDelta.SetStringSettingUpdate -> {
                     buffer.p1(10)
                     buffer.p4(update.setting)
                     buffer.pjstr(update.value)
                 }
-                is ClanSettingsDelta.ClanSettingsDeltaSetVarbitSettingUpdate -> {
+                is ClanSettingsDelta.SetVarbitSettingUpdate -> {
                     buffer.p1(11)
                     buffer.p4(update.setting)
                     buffer.p4(update.value)

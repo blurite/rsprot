@@ -22,7 +22,7 @@ public class ClanChannelDeltaEncoder : MessageEncoder<ClanChannelDelta> {
         buffer.p8(message.updateNum)
         for (event in message.events) {
             when (event) {
-                is ClanChannelDelta.ClanChannelDeltaAddUserEvent -> {
+                is ClanChannelDelta.AddUserEvent -> {
                     buffer.p1(1)
                     buffer.p1(255)
                     buffer.pjstrnull(event.name)
@@ -32,7 +32,7 @@ public class ClanChannelDeltaEncoder : MessageEncoder<ClanChannelDelta> {
                     // Unused in all clients, including RS3
                     buffer.p8(0)
                 }
-                is ClanChannelDelta.ClanChannelDeltaDeleteUserEvent -> {
+                is ClanChannelDelta.DeleteUserEvent -> {
                     buffer.p1(3)
                     buffer.p2(event.index)
 
@@ -40,7 +40,7 @@ public class ClanChannelDeltaEncoder : MessageEncoder<ClanChannelDelta> {
                     buffer.p1(0)
                     buffer.p1(255)
                 }
-                is ClanChannelDelta.ClanChannelDeltaUpdateBaseSettingsEvent -> {
+                is ClanChannelDelta.UpdateBaseSettingsEvent -> {
                     buffer.p1(4)
                     val name = event.clanName
                     buffer.pjstrnull(name)
@@ -52,7 +52,7 @@ public class ClanChannelDeltaEncoder : MessageEncoder<ClanChannelDelta> {
                         buffer.p1(event.kickRank)
                     }
                 }
-                is ClanChannelDelta.ClanChannelDeltaUpdateUserDetailsEvent -> {
+                is ClanChannelDelta.UpdateUserDetailsEvent -> {
                     buffer.p1(2)
                     buffer.p2(event.index)
                     buffer.p1(event.rank)
@@ -63,7 +63,7 @@ public class ClanChannelDeltaEncoder : MessageEncoder<ClanChannelDelta> {
 
                     buffer.pjstr(event.name)
                 }
-                is ClanChannelDelta.ClanChannelDeltaUpdateUserDetailsV2Event -> {
+                is ClanChannelDelta.UpdateUserDetailsV2Event -> {
                     buffer.p1(5)
 
                     // Unused in all clients, including RS3

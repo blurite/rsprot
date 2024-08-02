@@ -20,13 +20,13 @@ public class ClanChannelDelta private constructor(
     private val _clanType: Byte,
     public val clanHash: Long,
     public val updateNum: Long,
-    public val events: List<ClanChannelDeltaEvent>,
+    public val events: List<Event>,
 ) : OutgoingGameMessage {
     public constructor(
         clanType: Int,
         key: Long,
         updateNum: Long,
-        events: List<ClanChannelDeltaEvent>,
+        events: List<Event>,
     ) : this(
         clanType.toByte(),
         key,
@@ -61,16 +61,15 @@ public class ClanChannelDelta private constructor(
         return result
     }
 
-    override fun toString(): String {
-        return "ClanChannelDelta(" +
+    override fun toString(): String =
+        "ClanChannelDelta(" +
             "clanType=$clanType, " +
             "clanHash=$clanHash, " +
             "updateNum=$updateNum, " +
             "events=$events" +
             ")"
-    }
 
-    public sealed interface ClanChannelDeltaEvent
+    public sealed interface Event
 
     /**
      * Clan channel delta adduser event is used to add a new user
@@ -79,11 +78,11 @@ public class ClanChannelDelta private constructor(
      * @property world the id of the world in which the player resides
      * @property rank the rank of the player within the clan
      */
-    public class ClanChannelDeltaAddUserEvent private constructor(
+    public class AddUserEvent private constructor(
         public val name: String,
         private val _world: UShort,
         private val _rank: Byte,
-    ) : ClanChannelDeltaEvent {
+    ) : Event {
         public constructor(
             name: String,
             world: Int,
@@ -98,6 +97,13 @@ public class ClanChannelDelta private constructor(
             get() = _world.toInt()
         public val rank: Int
             get() = _rank.toInt()
+
+        override fun toString(): String =
+            "AddUserEvent(" +
+                "name='$name', " +
+                "world=$world, " +
+                "rank=$rank" +
+                ")"
     }
 
     /**
@@ -107,11 +113,11 @@ public class ClanChannelDelta private constructor(
      * @property talkRank the minimum rank needed to talk
      * @property kickRank the minimum rank needed to kick other members
      */
-    public class ClanChannelDeltaUpdateBaseSettingsEvent private constructor(
+    public class UpdateBaseSettingsEvent private constructor(
         public val clanName: String?,
         private val _talkRank: Byte,
         private val _kickRank: Byte,
-    ) : ClanChannelDeltaEvent {
+    ) : Event {
         public constructor() : this(
             null,
             0,
@@ -137,7 +143,7 @@ public class ClanChannelDelta private constructor(
             if (this === other) return true
             if (javaClass != other?.javaClass) return false
 
-            other as ClanChannelDeltaUpdateBaseSettingsEvent
+            other as UpdateBaseSettingsEvent
 
             if (clanName != other.clanName) return false
             if (_talkRank != other._talkRank) return false
@@ -153,13 +159,12 @@ public class ClanChannelDelta private constructor(
             return result
         }
 
-        override fun toString(): String {
-            return "ClanChannelDeltaUpdateBaseSettingsEvent(" +
+        override fun toString(): String =
+            "UpdateBaseSettingsEvent(" +
                 "clanName=$clanName, " +
                 "talkRank=$talkRank, " +
                 "kickRank=$kickRank" +
                 ")"
-        }
     }
 
     /**
@@ -169,9 +174,9 @@ public class ClanChannelDelta private constructor(
      * Note that this index is the index within this clan, and not a global
      * index of the player.
      */
-    public class ClanChannelDeltaDeleteUserEvent private constructor(
+    public class DeleteUserEvent private constructor(
         private val _index: UShort,
-    ) : ClanChannelDeltaEvent {
+    ) : Event {
         public constructor(
             index: Int,
         ) : this(
@@ -185,18 +190,14 @@ public class ClanChannelDelta private constructor(
             if (this === other) return true
             if (javaClass != other?.javaClass) return false
 
-            other as ClanChannelDeltaDeleteUserEvent
+            other as DeleteUserEvent
 
             return _index == other._index
         }
 
-        override fun hashCode(): Int {
-            return _index.hashCode()
-        }
+        override fun hashCode(): Int = _index.hashCode()
 
-        override fun toString(): String {
-            return "ClanChannelDeltaDeleteUserEvent(index=$index)"
-        }
+        override fun toString(): String = "DeleteUserEvent(index=$index)"
     }
 
     /**
@@ -209,12 +210,12 @@ public class ClanChannelDelta private constructor(
      * @property rank the new rank of this player within the clan
      * @property world the new world of this player within the clan
      */
-    public class ClanChannelDeltaUpdateUserDetailsEvent private constructor(
+    public class UpdateUserDetailsEvent private constructor(
         private val _index: UShort,
         public val name: String,
         private val _rank: Byte,
         private val _world: UShort,
-    ) : ClanChannelDeltaEvent {
+    ) : Event {
         public constructor(
             index: Int,
             name: String,
@@ -238,7 +239,7 @@ public class ClanChannelDelta private constructor(
             if (this === other) return true
             if (javaClass != other?.javaClass) return false
 
-            other as ClanChannelDeltaUpdateUserDetailsEvent
+            other as UpdateUserDetailsEvent
 
             if (_index != other._index) return false
             if (name != other.name) return false
@@ -256,20 +257,19 @@ public class ClanChannelDelta private constructor(
             return result
         }
 
-        override fun toString(): String {
-            return "ClanChannelDeltaUpdateUserDetailsEvent(" +
+        override fun toString(): String =
+            "UpdateUserDetailsEvent(" +
                 "index=$index, " +
                 "name='$name', " +
                 "rank=$rank, " +
                 "world=$world" +
                 ")"
-        }
     }
 
     /**
      * Clan channel delta update user details v2 event is used to modify
      * the details of a user in the clan.
-     * Note that this class is identical to the [ClanChannelDeltaUpdateUserDetailsEvent],
+     * Note that this class is identical to the [UpdateUserDetailsEvent],
      * with the only exception being that more bandwidth is used to transmit this update,
      * as there are multiple unused properties being sent on-top.
      * @property index the index of the player whom to update within the clan.
@@ -279,12 +279,12 @@ public class ClanChannelDelta private constructor(
      * @property rank the new rank of this player within the clan
      * @property world the new world of this player within the clan
      */
-    public class ClanChannelDeltaUpdateUserDetailsV2Event private constructor(
+    public class UpdateUserDetailsV2Event private constructor(
         private val _index: UShort,
         public val name: String,
         private val _rank: Byte,
         private val _world: UShort,
-    ) : ClanChannelDeltaEvent {
+    ) : Event {
         public constructor(
             index: Int,
             name: String,
@@ -308,7 +308,7 @@ public class ClanChannelDelta private constructor(
             if (this === other) return true
             if (javaClass != other?.javaClass) return false
 
-            other as ClanChannelDeltaUpdateUserDetailsV2Event
+            other as UpdateUserDetailsV2Event
 
             if (_index != other._index) return false
             if (name != other.name) return false
@@ -326,13 +326,12 @@ public class ClanChannelDelta private constructor(
             return result
         }
 
-        override fun toString(): String {
-            return "ClanChannelDeltaUpdateUserDetailsV2Event(" +
+        override fun toString(): String =
+            "UpdateUserDetailsV2Event(" +
                 "index=$index, " +
                 "name='$name', " +
                 "rank=$rank, " +
                 "world=$world" +
                 ")"
-        }
     }
 }
