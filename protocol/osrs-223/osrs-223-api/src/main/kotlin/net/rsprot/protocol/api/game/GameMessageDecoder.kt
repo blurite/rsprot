@@ -24,7 +24,7 @@ import net.rsprot.protocol.tools.MessageDecodingTools
  * of decoded messages or buffer slices.
  */
 public class GameMessageDecoder<R>(
-    public val networkService: NetworkService<R, *>,
+    public val networkService: NetworkService<R>,
     private val session: Session<R>,
     override val streamCipher: StreamCipher,
     oldSchoolClientType: OldSchoolClientType,

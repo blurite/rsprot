@@ -10,7 +10,7 @@ import net.rsprot.protocol.message.codec.outgoing.MessageEncoderRepository
  * The game messages encoder, following the traditional outgoing message encoder.
  */
 public class GameMessageEncoder(
-    public val networkService: NetworkService<*, *>,
+    public val networkService: NetworkService<*>,
     override val cipher: StreamCipher,
     client: OldSchoolClientType,
 ) : OutgoingMessageEncoder() {

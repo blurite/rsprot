@@ -28,7 +28,7 @@ import java.util.function.BiFunction
  */
 @Suppress("DuplicatedCode")
 public class LoginConnectionHandler<R>(
-    private val networkService: NetworkService<R, *>,
+    private val networkService: NetworkService<R>,
     private val sessionId: Long,
 ) : SimpleChannelInboundHandler<IncomingLoginMessage>(IncomingLoginMessage::class.java) {
     private var loginState: LoginState = LoginState.UNINITIALIZED
@@ -180,7 +180,8 @@ public class LoginConnectionHandler<R>(
             loginState = LoginState.AWAITING_BETA_RESPONSE
             // Instantly request the remaining beta archives, as that feature
             // is implemented incorrectly and serves no functional purpose
-            ctx.writeAndFlush(ctx.alloc().buffer(1).writeByte(2))
+            ctx
+                .writeAndFlush(ctx.alloc().buffer(1).writeByte(2))
                 .addListener(
                     ChannelFutureListener { future ->
                         if (!future.isSuccess) {
@@ -332,18 +333,17 @@ public class LoginConnectionHandler<R>(
         buf: Buf,
         betaWorld: Boolean,
         function: BiFunction<Buf, Boolean, Fun>,
-    ): CompletableFuture<Fun> {
-        return networkService
+    ): CompletableFuture<Fun> =
+        networkService
             .loginHandlers
             .loginDecoderService
             .decode(buf, betaWorld, function)
-    }
 
     private fun <T : ChallengeType<MetaData>, MetaData : ChallengeMetaData> verifyProofOfWork(
         pow: ProofOfWork<T, MetaData>,
         result: Long,
-    ): CompletableFuture<Boolean> {
-        return networkService
+    ): CompletableFuture<Boolean> =
+        networkService
             .loginHandlers
             .proofOfWorkChallengeWorker
             .verify(
@@ -351,7 +351,6 @@ public class LoginConnectionHandler<R>(
                 pow.challengeType,
                 pow.challengeVerifier,
             )
-    }
 
     private enum class LoginState {
         UNINITIALIZED,

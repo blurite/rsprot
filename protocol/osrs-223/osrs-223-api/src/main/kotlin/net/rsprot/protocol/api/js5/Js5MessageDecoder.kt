@@ -12,7 +12,7 @@ import net.rsprot.protocol.tools.MessageDecodingTools
  * A message decoder for JS5 packets.
  */
 public class Js5MessageDecoder(
-    public val networkService: NetworkService<*, *>,
+    public val networkService: NetworkService<*>,
 ) : IncomingMessageDecoder() {
     override val decoders: MessageDecoderRepository<ClientProt> =
         networkService

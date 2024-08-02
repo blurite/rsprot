@@ -14,7 +14,7 @@ import net.rsprot.protocol.message.codec.outgoing.MessageEncoderRepository
  * A message encoder for JS5 requests.
  */
 public class Js5MessageEncoder(
-    public val networkService: NetworkService<*, *>,
+    public val networkService: NetworkService<*>,
 ) : OutgoingMessageEncoder() {
     override val cipher: StreamCipher = NopStreamCipher
     override val repository: MessageEncoderRepository<*> =

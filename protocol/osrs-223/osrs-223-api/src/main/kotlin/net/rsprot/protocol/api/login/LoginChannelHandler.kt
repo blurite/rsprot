@@ -26,7 +26,7 @@ import java.util.concurrent.TimeUnit
  */
 @Suppress("DuplicatedCode")
 public class LoginChannelHandler(
-    public val networkService: NetworkService<*, *>,
+    public val networkService: NetworkService<*>,
 ) : SimpleChannelInboundHandler<IncomingLoginMessage>(IncomingLoginMessage::class.java) {
     override fun channelActive(ctx: ChannelHandlerContext) {
         ctx.read()

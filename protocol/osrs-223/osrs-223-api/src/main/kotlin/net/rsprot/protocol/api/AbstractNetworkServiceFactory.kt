@@ -1,5 +1,6 @@
 package net.rsprot.protocol.api
 
+import com.github.michaelbull.logging.InlineLogger
 import io.netty.buffer.ByteBufAllocator
 import io.netty.buffer.PooledByteBufAllocator
 import net.rsprot.compression.provider.HuffmanCodecProvider
@@ -22,14 +23,10 @@ import net.rsprot.protocol.message.codec.incoming.provider.GameMessageConsumerRe
  * as the entry point to this library, allowing one to bind the network and supply everything
  * necessary network-wise from one spot.
  * @param R the receiver type that will be consuming game messages, typically a Player
- * @param T the types of JS5 groups that we will be serving, either Netty byte buf based,
- * or using random access file's file regions, allowing for a zero-copy implementation,
- * however at the cost of disk IO with each request. Latter is handy for development environments,
- * where using these file regions allows one to not have to load anything up on server boot,
- * assuming the cache has been exported in a viable format for JS5 to use.
  */
+@Suppress("MemberVisibilityCanBePrivate")
 @ExperimentalUnsignedTypes
-public abstract class AbstractNetworkServiceFactory<R, T : Js5GroupProvider.Js5GroupType> {
+public abstract class AbstractNetworkServiceFactory<R> {
     /**
      * The allocator that will be used for everything in this networking library.
      * This will primarily be passed onto NPC and Player info objects, which will utilize
@@ -134,7 +131,7 @@ public abstract class AbstractNetworkServiceFactory<R, T : Js5GroupProvider.Js5G
      * recommended to pre-compute the JS5 groups in the final form when
      * used in development, to avoid instant no-delay responses.
      */
-    public abstract fun getJs5GroupProvider(): Js5GroupProvider<T>
+    public abstract fun getJs5GroupProvider(): Js5GroupProvider
 
     /**
      * Gets the consumer repository for incoming client game prots.
@@ -256,7 +253,7 @@ public abstract class AbstractNetworkServiceFactory<R, T : Js5GroupProvider.Js5G
      * Builds a network service through this factoring, using all
      * the information provided in here.
      */
-    public fun build(): NetworkService<R, T> {
+    public fun build(): NetworkService<R> {
         val allocator = this.allocator
         val ports = this.ports
         val supportedClientTypes = this.supportedClientTypes
@@ -289,5 +286,9 @@ public abstract class AbstractNetworkServiceFactory<R, T : Js5GroupProvider.Js5G
             getJs5Configuration(),
             getJs5GroupProvider(),
         )
+    }
+
+    private companion object {
+        private val logger = InlineLogger()
     }
 }

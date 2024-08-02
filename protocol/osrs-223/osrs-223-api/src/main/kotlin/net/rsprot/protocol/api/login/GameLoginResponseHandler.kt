@@ -30,7 +30,7 @@ import net.rsprot.protocol.loginprot.outgoing.LoginResponse
  * @property ctx the channel handler context to write the response to
  */
 public class GameLoginResponseHandler<R>(
-    public val networkService: NetworkService<R, *>,
+    public val networkService: NetworkService<R>,
     public val ctx: ChannelHandlerContext,
 ) {
     /**
@@ -142,7 +142,8 @@ public class GameLoginResponseHandler<R>(
         channel
             .attr(ChannelAttributes.STREAM_CIPHER_PAIR)
             .set(StreamCipherPair(encodingCipher, decodingCipher))
-        channel.attr(ChannelAttributes.HUFFMAN_CODEC)
+        channel
+            .attr(ChannelAttributes.HUFFMAN_CODEC)
             .set(networkService.huffmanCodecProvider)
         return Pair(encodingCipher, decodingCipher)
     }

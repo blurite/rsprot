@@ -13,7 +13,6 @@ import net.rsprot.protocol.api.handlers.INetAddressHandlers
 import net.rsprot.protocol.api.handlers.LoginHandlers
 import net.rsprot.protocol.api.js5.Js5Configuration
 import net.rsprot.protocol.api.js5.Js5GroupProvider
-import net.rsprot.protocol.api.js5.Js5GroupProvider.Js5GroupType
 import net.rsprot.protocol.api.js5.Js5Service
 import net.rsprot.protocol.api.repositories.MessageDecoderRepositories
 import net.rsprot.protocol.api.repositories.MessageEncoderRepositories
@@ -41,7 +40,6 @@ import kotlin.time.measureTime
  * The primary network service implementation that brings all the necessary components together
  * in a single "god" object.
  * @param R the receiver type for the incoming game message consumers, typically a player
- * @param T the type of JS5 groups that the JS5 service will be serving
  * @property allocator the byte buffer allocator used throughout the library
  * @property ports the list of ports that the service will connect to
  * @property betaWorld whether this world is a beta world
@@ -83,7 +81,7 @@ import kotlin.time.measureTime
  * to the NPC info packet for every player
  */
 @Suppress("MemberVisibilityCanBePrivate")
-public class NetworkService<R, T : Js5GroupType>
+public class NetworkService<R>
     internal constructor(
         internal val allocator: ByteBufAllocator,
         internal val ports: List<Int>,
@@ -101,11 +99,11 @@ public class NetworkService<R, T : Js5GroupType>
         js5GroupSizeProvider: Js5GroupSizeProvider,
         rsaKeyPair: RsaKeyPair,
         js5Configuration: Js5Configuration,
-        js5GroupProvider: Js5GroupProvider<T>,
+        js5GroupProvider: Js5GroupProvider,
     ) {
         internal val encoderRepositories: MessageEncoderRepositories = MessageEncoderRepositories()
         internal val messageDecodingTools: MessageDecodingTools = MessageDecodingTools(huffmanCodecProvider)
-        internal val js5Service: Js5Service<T> = Js5Service(js5Configuration, js5GroupProvider, js5GroupSizeProvider)
+        internal val js5Service: Js5Service = Js5Service(js5Configuration, js5GroupProvider, js5GroupSizeProvider)
         private val js5ServiceExecutor = Thread(js5Service)
         private val updateZonePartialEnclosedCacheClientTypeMap:
             ClientTypeMap<UpdateZonePartialEnclosedCache> = initializeUpdateZonePartialEnclosedCacheClientMap()

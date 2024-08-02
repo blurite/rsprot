@@ -12,7 +12,7 @@ import net.rsprot.protocol.tools.MessageDecodingTools
  * The decoder for any login messages.
  */
 public class LoginMessageDecoder(
-    public val networkService: NetworkService<*, *>,
+    public val networkService: NetworkService<*>,
 ) : IncomingMessageDecoder() {
     override val decoders: MessageDecoderRepository<ClientProt> =
         networkService
