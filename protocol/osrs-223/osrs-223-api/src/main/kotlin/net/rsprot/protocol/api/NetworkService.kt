@@ -82,7 +82,6 @@ import kotlin.time.measureTime
  * @property npcInfoProtocol the protocol responsible for tracking and computing everything related
  * to the NPC info packet for every player
  */
-@ExperimentalUnsignedTypes
 @Suppress("MemberVisibilityCanBePrivate")
 public class NetworkService<R, T : Js5GroupType>
     internal constructor(
