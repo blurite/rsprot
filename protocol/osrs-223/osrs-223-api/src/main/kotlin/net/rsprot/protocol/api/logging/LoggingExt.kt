@@ -1,6 +1,7 @@
 package net.rsprot.protocol.api.logging
 
 import com.github.michaelbull.logging.InlineLogger
+import net.rsprot.protocol.common.LogLevel
 import net.rsprot.protocol.common.RSProtFlags
 
 /**
@@ -16,9 +17,7 @@ internal inline fun networkLog(
     logger: InlineLogger,
     block: () -> Any?,
 ) {
-    if (RSProtFlags.networkLogging) {
-        logger.debug(block)
-    }
+    logBlock(logger, RSProtFlags.networkLogging, block)
 }
 
 /**
@@ -34,7 +33,32 @@ internal inline fun js5Log(
     logger: InlineLogger,
     block: () -> Any?,
 ) {
-    if (RSProtFlags.js5Logging) {
-        logger.debug(block)
+    logBlock(logger, RSProtFlags.js5Logging, block)
+}
+
+private inline fun logBlock(
+    logger: InlineLogger,
+    level: LogLevel,
+    block: () -> Any?,
+) {
+    when (level) {
+        LogLevel.OFF -> {
+            // no-op
+        }
+        LogLevel.TRACE -> {
+            logger.trace(block)
+        }
+        LogLevel.DEBUG -> {
+            logger.debug(block)
+        }
+        LogLevel.INFO -> {
+            logger.info(block)
+        }
+        LogLevel.WARN -> {
+            logger.warn(block)
+        }
+        LogLevel.ERROR -> {
+            logger.error(block)
+        }
     }
 }

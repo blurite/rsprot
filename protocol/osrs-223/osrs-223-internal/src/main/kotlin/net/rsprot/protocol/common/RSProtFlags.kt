@@ -55,42 +55,85 @@ public object RSProtFlags {
             development,
         )
 
-    @JvmStatic
-    public val networkLogging: Boolean =
-        getBoolean(
+    private val networkLoggingString: String =
+        getString(
             "networkLogging",
-            false,
+            "off",
+        )
+
+    private val js5LoggingString: String =
+        getString(
+            "js5Logging",
+            "off",
         )
 
     @JvmStatic
-    public val js5Logging: Boolean =
-        getBoolean(
-            "js5Logging",
-            false,
-        )
+    public val networkLogging: LogLevel =
+        when (networkLoggingString) {
+            "off" -> LogLevel.OFF
+            "trace" -> LogLevel.TRACE
+            "debug" -> LogLevel.DEBUG
+            "info" -> LogLevel.INFO
+            "warn" -> LogLevel.WARN
+            "error" -> LogLevel.ERROR
+            else -> {
+                logger.warn {
+                    "Unknown network logging option: $networkLoggingString, " +
+                        "expected values: [off, trace, debug, info, warn, error]"
+                }
+                LogLevel.OFF
+            }
+        }
+
+    @JvmStatic
+    public val js5Logging: LogLevel =
+        when (js5LoggingString) {
+            "off" -> LogLevel.OFF
+            "trace" -> LogLevel.TRACE
+            "debug" -> LogLevel.DEBUG
+            "info" -> LogLevel.INFO
+            "warn" -> LogLevel.WARN
+            "error" -> LogLevel.ERROR
+            else -> {
+                logger.warn {
+                    "Unknown js5 logging option: $networkLoggingString, " +
+                        "expected values: [off, trace, debug, info, warn, error]"
+                }
+                LogLevel.OFF
+            }
+        }
 
     init {
         log("development", development)
         log("inventoryObjCheck", inventoryObjCheck)
         log("extendedInfoInputVerification", extendedInfoInputVerification)
         log("clientscriptVerification", clientscriptVerification)
-        log("networkLogging", networkLogging)
-        log("js5Logging", js5Logging)
+        log("networkLogging", networkLoggingString)
+        log("js5Logging", js5LoggingString)
     }
 
     private fun getBoolean(
         propertyName: String,
         defaultValue: Boolean,
-    ): Boolean {
-        return SystemPropertyUtil.getBoolean(
+    ): Boolean =
+        SystemPropertyUtil.getBoolean(
             PREFIX + propertyName,
             defaultValue,
         )
-    }
+
+    @Suppress("SameParameterValue")
+    private fun getString(
+        propertyName: String,
+        defaultValue: String,
+    ): String =
+        SystemPropertyUtil.get(
+            PREFIX + propertyName,
+            defaultValue,
+        )
 
     private fun log(
         name: String,
-        value: Boolean,
+        value: Any,
     ) {
         logger.debug {
             "-D${PREFIX}$name: $value"
