@@ -83,8 +83,8 @@ public class Js5Service<T : Js5GroupType>(
         }
     }
 
-    private fun prefetch(): Runnable {
-        return Runnable {
+    private fun prefetch(): Runnable =
+        Runnable {
             // Ensure the connectedClients collection doesn't modify during it, as modifications
             // during iteration may not occur
             synchronized(clientLock) {
@@ -107,7 +107,6 @@ public class Js5Service<T : Js5GroupType>(
                 }
             }
         }
-    }
 
     internal fun onClientConnected(client: Js5Client<T>) {
         synchronized(clientLock) {
@@ -144,7 +143,7 @@ public class Js5Service<T : Js5GroupType>(
             ctx.flush()
         }
         synchronized(lock) {
-            if (client.isReady()) {
+            if (!flush || client.isReady()) {
                 js5Log(logger) {
                     "Continuing to serve channel ${ctx.channel()}"
                 }
@@ -279,13 +278,12 @@ public class Js5Service<T : Js5GroupType>(
             }
         }
 
-        public fun startPrefetching(service: Js5Service<*>): ScheduledFuture<*> {
-            return Executors.newSingleThreadScheduledExecutor().scheduleWithFixedDelay(
+        public fun startPrefetching(service: Js5Service<*>): ScheduledFuture<*> =
+            Executors.newSingleThreadScheduledExecutor().scheduleWithFixedDelay(
                 service.prefetch(),
                 200,
                 200,
                 TimeUnit.MILLISECONDS,
             )
-        }
     }
 }

@@ -140,7 +140,7 @@ public class Js5Service(
             ctx.flush()
         }
         synchronized(lock) {
-            if (client.isReady()) {
+            if (!flush || client.isReady()) {
                 js5Log(logger) {
                     "Continuing to serve channel ${ctx.channel()}"
                 }
