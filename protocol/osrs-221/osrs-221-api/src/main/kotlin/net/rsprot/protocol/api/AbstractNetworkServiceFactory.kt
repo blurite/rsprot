@@ -21,13 +21,8 @@ import net.rsprot.protocol.message.codec.incoming.provider.GameMessageConsumerRe
  * as the entry point to this library, allowing one to bind the network and supply everything
  * necessary network-wise from one spot.
  * @param R the receiver type that will be consuming game messages, typically a Player
- * @param T the types of JS5 groups that we will be serving, either Netty byte buf based,
- * or using random access file's file regions, allowing for a zero-copy implementation,
- * however at the cost of disk IO with each request. Latter is handy for development environments,
- * where using these file regions allows one to not have to load anything up on server boot,
- * assuming the cache has been exported in a viable format for JS5 to use.
  */
-public abstract class AbstractNetworkServiceFactory<R, T : Js5GroupProvider.Js5GroupType> {
+public abstract class AbstractNetworkServiceFactory<R> {
     /**
      * The allocator that will be used for everything in this networking library.
      * This will primarily be passed onto NPC and Player info objects, which will utilize
@@ -132,7 +127,7 @@ public abstract class AbstractNetworkServiceFactory<R, T : Js5GroupProvider.Js5G
      * recommended to pre-compute the JS5 groups in the final form when
      * used in development, to avoid instant no-delay responses.
      */
-    public abstract fun getJs5GroupProvider(): Js5GroupProvider<T>
+    public abstract fun getJs5GroupProvider(): Js5GroupProvider
 
     /**
      * Gets the consumer repository for incoming client game prots.
@@ -190,18 +185,6 @@ public abstract class AbstractNetworkServiceFactory<R, T : Js5GroupProvider.Js5G
     public abstract fun getExceptionHandlers(): ExceptionHandlers<R>
 
     /**
-     * Provides the size of a JS5 group, in order to sort it for JS5 serving.
-     * This fixes a problem found in OldSchool where the client requests a huge
-     * list of urgent requests for animations, all of which are 0.5mb+ in size.
-     * This creates a significant delay in other, smaller, more important groups
-     * being served and makes the entire thing feel very sluggish.
-     * By prioritizing light-weight groups over the heavy hitters, we can
-     * significantly reduce the perceived lag and slowness, while not sabotaging
-     * anything else - they're all urgent requests, with the same exact priorities.
-     */
-    public abstract fun getJs5GroupSizeProvider(): Js5GroupSizeProvider
-
-    /**
      * Gets the handlers for anything related to INetAddresses.
      * The default implementation will keep track of the number of concurrent
      * game connections and JS5 connections separately.
@@ -252,7 +235,7 @@ public abstract class AbstractNetworkServiceFactory<R, T : Js5GroupProvider.Js5G
      * Builds a network service through this factoring, using all
      * the information provided in here.
      */
-    public fun build(): NetworkService<R, T> {
+    public fun build(): NetworkService<R> {
         val allocator = this.allocator
         val ports = this.ports
         val supportedClientTypes = this.supportedClientTypes
@@ -279,7 +262,6 @@ public abstract class AbstractNetworkServiceFactory<R, T : Js5GroupProvider.Js5G
             getLoginHandlers(),
             huffman,
             getGameMessageConsumerRepositoryProvider(),
-            getJs5GroupSizeProvider(),
             getRsaKeyPair(),
             getJs5Configuration(),
             getJs5GroupProvider(),

@@ -10,7 +10,7 @@ import net.rsprot.protocol.message.codec.outgoing.MessageEncoderRepository
  * The encoder for any login messages.
  */
 public class LoginMessageEncoder(
-    public val networkService: NetworkService<*, *>,
+    public val networkService: NetworkService<*>,
 ) : OutgoingMessageEncoder() {
     override val cipher: StreamCipher = NopStreamCipher
     override val repository: MessageEncoderRepository<*> =

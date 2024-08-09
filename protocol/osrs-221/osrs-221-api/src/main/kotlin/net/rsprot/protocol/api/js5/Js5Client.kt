@@ -1,9 +1,8 @@
 package net.rsprot.protocol.api.js5
 
 import com.github.michaelbull.logging.InlineLogger
+import io.netty.buffer.ByteBuf
 import io.netty.channel.ChannelHandlerContext
-import net.rsprot.protocol.api.Js5GroupSizeProvider
-import net.rsprot.protocol.api.js5.Js5GroupProvider.Js5GroupType
 import net.rsprot.protocol.api.js5.util.IntArrayDeque
 import net.rsprot.protocol.api.logging.js5Log
 import net.rsprot.protocol.js5.incoming.Js5GroupRequest
@@ -27,13 +26,13 @@ import kotlin.math.min
  * @property writtenGroupCount the number of group writes that have completed since
  * the last flush
  */
-public class Js5Client<T : Js5GroupType>(
+public class Js5Client(
     public val ctx: ChannelHandlerContext,
 ) {
     private val urgent: IntArrayDeque = IntArrayDeque(MAX_QUEUE_SIZE)
     private val prefetch: IntArrayDeque = IntArrayDeque(MAX_QUEUE_SIZE)
     private val awaitingPrefetch: IntArrayDeque = IntArrayDeque(MAX_QUEUE_SIZE)
-    private val currentRequest: PartialJs5GroupRequest<T> = PartialJs5GroupRequest()
+    private val currentRequest: PartialJs5GroupRequest = PartialJs5GroupRequest()
     private var lowPriorityChangeCount: Int = 0
     public var priority: ClientPriority = ClientPriority.LOW
         private set
@@ -51,10 +50,10 @@ public class Js5Client<T : Js5GroupType>(
      * @return a group response to write to the client, or null if none exists
      */
     public fun getNextBlock(
-        provider: Js5GroupProvider<T>,
+        provider: Js5GroupProvider,
         blockLength: Int,
     ): Js5GroupResponse? {
-        var block: T? = currentRequest.block
+        var block: ByteBuf? = currentRequest.block
         if (block == null || currentRequest.isComplete()) {
             val request = pop()
             if (request == -1) {
@@ -74,7 +73,12 @@ public class Js5Client<T : Js5GroupType>(
         if (currentRequest.isComplete()) {
             writtenGroupCount++
         }
-        return provider.toJs5GroupResponse(block, progress, length, xorKey)
+        return Js5GroupResponse(
+            block,
+            progress,
+            length,
+            xorKey,
+        )
     }
 
     /**
@@ -118,13 +122,13 @@ public class Js5Client<T : Js5GroupType>(
     /**
      * Transfers [threshold] worth of bytes of prefetch requests to be served
      * to the client.
-     * @param sizeProvider the provider for JS5 group sizes, allowing for proper throttling
+     * @param groupProvider the provider for JS5 group sizes, allowing for proper throttling
      * @param threshold the threshold at which the loop breaks, stopping any more bytes
      * being transmitted via prefetch than described here
      * @return whether any bytes were transferred to be served to the client.
      */
     internal fun transferPrefetch(
-        sizeProvider: Js5GroupSizeProvider,
+        groupProvider: Js5GroupProvider,
         threshold: Int,
     ): Boolean {
         // Only transfer prefetch over if the connection is effectively idle
@@ -145,7 +149,7 @@ public class Js5Client<T : Js5GroupType>(
             }
             val archiveId = next ushr 16
             val groupId = next and 0xFFFF
-            val size = sizeProvider.getSize(archiveId, groupId)
+            val size = groupProvider.provide(archiveId, groupId).readableBytes()
             prefetch.addLast(next)
             transferredBytes += size
             // Do not clog the pipeline with more than threshold of prefetch data at a time, as this results
@@ -216,7 +220,7 @@ public class Js5Client<T : Js5GroupType>(
      * @param key the encryption key to use
      */
     public fun setXorKey(key: Int) {
-        this.xorKey = key
+        xorKey = key
     }
 
     /**
@@ -276,8 +280,8 @@ public class Js5Client<T : Js5GroupType>(
      * @property length the total number of bytes of this block until it has been
      * completely written over.
      */
-    public class PartialJs5GroupRequest<T : Js5GroupType> {
-        public var block: T? = null
+    public class PartialJs5GroupRequest {
+        public var block: ByteBuf? = null
             private set
         public var progress: Int = 0
             private set
@@ -302,10 +306,10 @@ public class Js5Client<T : Js5GroupType>(
          * Sets a new block to be written to the client, resetting the progress and
          * updating the length to that of this block.
          */
-        public fun set(block: T) {
+        public fun set(block: ByteBuf) {
             this.block = block
             this.progress = 0
-            this.length = block.length
+            this.length = block.readableBytes()
         }
     }
 

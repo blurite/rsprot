@@ -6,7 +6,6 @@ import io.netty.channel.SimpleChannelInboundHandler
 import io.netty.handler.timeout.IdleStateEvent
 import net.rsprot.protocol.api.NetworkService
 import net.rsprot.protocol.api.channel.inetAddress
-import net.rsprot.protocol.api.js5.Js5GroupProvider.Js5GroupType
 import net.rsprot.protocol.api.logging.js5Log
 import net.rsprot.protocol.api.logging.networkLog
 import net.rsprot.protocol.js5.incoming.Js5GroupRequest
@@ -18,11 +17,11 @@ import net.rsprot.protocol.message.IncomingJs5Message
 /**
  * A channel handler for the JS5 connections
  */
-public class Js5ChannelHandler<T : Js5GroupType>(
-    private val networkService: NetworkService<*, T>,
+public class Js5ChannelHandler(
+    private val networkService: NetworkService<*>,
 ) : SimpleChannelInboundHandler<IncomingJs5Message>(IncomingJs5Message::class.java) {
-    private lateinit var client: Js5Client<T>
-    private val service: Js5Service<T>
+    private lateinit var client: Js5Client
+    private val service: Js5Service
         get() = networkService.js5Service
 
     override fun channelActive(ctx: ChannelHandlerContext) {

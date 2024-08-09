@@ -14,7 +14,7 @@ import net.rsprot.protocol.message.IncomingGameMessage
  * The handler for game messages.
  */
 public class GameMessageHandler<R>(
-    private val networkService: NetworkService<R, *>,
+    private val networkService: NetworkService<R>,
     private val session: Session<R>,
 ) : SimpleChannelInboundHandler<IncomingGameMessage>() {
     override fun handlerAdded(ctx: ChannelHandlerContext) {

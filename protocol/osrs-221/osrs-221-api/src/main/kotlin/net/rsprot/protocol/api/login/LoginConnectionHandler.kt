@@ -28,7 +28,7 @@ import java.util.function.BiFunction
  */
 @Suppress("DuplicatedCode")
 public class LoginConnectionHandler<R>(
-    private val networkService: NetworkService<R, *>,
+    private val networkService: NetworkService<R>,
     private val sessionId: Long,
 ) : SimpleChannelInboundHandler<IncomingLoginMessage>(IncomingLoginMessage::class.java) {
     private var loginState: LoginState = LoginState.UNINITIALIZED

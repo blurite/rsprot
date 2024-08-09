@@ -2,8 +2,6 @@ package net.rsprot.protocol.api.js5
 
 import com.github.michaelbull.logging.InlineLogger
 import io.netty.buffer.ByteBuf
-import net.rsprot.protocol.api.Js5GroupSizeProvider
-import net.rsprot.protocol.api.js5.Js5GroupProvider.Js5GroupType
 import net.rsprot.protocol.api.js5.util.UniqueQueue
 import net.rsprot.protocol.api.logging.js5Log
 import net.rsprot.protocol.js5.incoming.Js5GroupRequest
@@ -19,13 +17,12 @@ import kotlin.math.min
  * @property configuration the configuration to use for writing the data to clients
  * @property provider the provider for JS5 groups to write over
  */
-public class Js5Service<T : Js5GroupType>(
+public class Js5Service(
     private val configuration: Js5Configuration,
-    private val provider: Js5GroupProvider<T>,
-    private val js5GroupSizeProvider: Js5GroupSizeProvider,
+    private val provider: Js5GroupProvider,
 ) : Runnable {
-    private val clients = UniqueQueue<Js5Client<T>>()
-    private val connectedClients = ArrayDeque<Js5Client<T>>()
+    private val clients = UniqueQueue<Js5Client>()
+    private val connectedClients = ArrayDeque<Js5Client>()
 
     @Suppress("PLATFORM_CLASS_MAPPED_TO_KOTLIN")
     @PublishedApi
@@ -39,7 +36,7 @@ public class Js5Service<T : Js5GroupType>(
 
     override fun run() {
         while (true) {
-            var client: Js5Client<T>
+            var client: Js5Client
             var response: Js5GroupResponse
             var flush: Boolean
             synchronized(lock) {
@@ -93,7 +90,7 @@ public class Js5Service<T : Js5GroupType>(
                     // This is to ensure we don't run into concurrency issues.
                     synchronized(lock) {
                         if (client.transferPrefetch(
-                                js5GroupSizeProvider,
+                                provider,
                                 configuration.prefetchTransferThresholdInBytes,
                             )
                         ) {
@@ -108,13 +105,13 @@ public class Js5Service<T : Js5GroupType>(
             }
         }
 
-    internal fun onClientConnected(client: Js5Client<T>) {
+    internal fun onClientConnected(client: Js5Client) {
         synchronized(clientLock) {
             this.connectedClients += client
         }
     }
 
-    internal fun onClientDisconnected(client: Js5Client<T>) {
+    internal fun onClientDisconnected(client: Js5Client) {
         synchronized(clientLock) {
             this.connectedClients -= client
         }
@@ -127,7 +124,7 @@ public class Js5Service<T : Js5GroupType>(
      * @param flush whether to flush the channel after writing this request
      */
     private fun serveClient(
-        client: Js5Client<T>,
+        client: Js5Client,
         response: Js5GroupResponse,
         flush: Boolean,
     ) {
@@ -170,7 +167,7 @@ public class Js5Service<T : Js5GroupType>(
      * @param request the request to push to this client
      */
     public fun push(
-        client: Js5Client<T>,
+        client: Js5Client,
         request: Js5GroupRequest,
     ) {
         synchronized(lock) {
@@ -191,7 +188,7 @@ public class Js5Service<T : Js5GroupType>(
      * Requests a read from the given channel if it can receive more requests.
      * @param client the client to check
      */
-    public fun readIfNotFull(client: Js5Client<T>) {
+    public fun readIfNotFull(client: Js5Client) {
         synchronized(lock) {
             if (client.isNotFull()) {
                 js5Log(logger) {
@@ -206,7 +203,7 @@ public class Js5Service<T : Js5GroupType>(
      * Notifies the lock if the list of clients is not empty, resuming the JS5
      * service in the process.
      */
-    public fun notifyIfNotEmpty(client: Js5Client<T>) {
+    public fun notifyIfNotEmpty(client: Js5Client) {
         synchronized(lock) {
             if (client.isNotEmpty()) {
                 js5Log(logger) {
@@ -278,7 +275,7 @@ public class Js5Service<T : Js5GroupType>(
             }
         }
 
-        public fun startPrefetching(service: Js5Service<*>): ScheduledFuture<*> =
+        public fun startPrefetching(service: Js5Service): ScheduledFuture<*> =
             Executors.newSingleThreadScheduledExecutor().scheduleWithFixedDelay(
                 service.prefetch(),
                 200,

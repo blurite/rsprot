@@ -11,7 +11,7 @@ import net.rsprot.protocol.message.codec.incoming.MessageDecoderRepository
  * A message decoder for JS5 packets.
  */
 public class Js5MessageDecoder(
-    public val networkService: NetworkService<*, *>,
+    public val networkService: NetworkService<*>,
 ) : IncomingMessageDecoder() {
     override val decoders: MessageDecoderRepository<ClientProt> =
         networkService

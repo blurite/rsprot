@@ -30,7 +30,7 @@ import net.rsprot.protocol.loginprot.outgoing.LoginResponse
  * @property ctx the channel handler context to write the response to
  */
 public class GameLoginResponseHandler<R>(
-    public val networkService: NetworkService<R, *>,
+    public val networkService: NetworkService<R>,
     public val ctx: ChannelHandlerContext,
 ) {
     /**

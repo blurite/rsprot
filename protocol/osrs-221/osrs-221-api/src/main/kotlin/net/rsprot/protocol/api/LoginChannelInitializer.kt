@@ -17,7 +17,7 @@ import java.util.concurrent.TimeUnit
  * idle state handler to ensure the connections are cut short if they go idle.
  */
 public class LoginChannelInitializer<R>(
-    private val networkService: NetworkService<R, *>,
+    private val networkService: NetworkService<R>,
 ) : ChannelInitializer<Channel>() {
     override fun initChannel(ch: Channel) {
         networkLog(logger) {
