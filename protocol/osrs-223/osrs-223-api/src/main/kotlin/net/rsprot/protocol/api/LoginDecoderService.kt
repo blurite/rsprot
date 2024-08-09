@@ -1,7 +1,9 @@
 package net.rsprot.protocol.api
 
+import net.rsprot.buffer.JagByteBuf
+import net.rsprot.protocol.loginprot.incoming.util.LoginBlock
+import net.rsprot.protocol.loginprot.incoming.util.LoginBlockDecodingFunction
 import java.util.concurrent.CompletableFuture
-import java.util.function.BiFunction
 
 /**
  * The service behind decoding login blocks.
@@ -21,9 +23,9 @@ public interface LoginDecoderService {
      * @return a completable future instance that may be completed on a different thread,
      * to avoid blocking Netty threads.
      */
-    public fun <Buf, Result> decode(
-        buffer: Buf,
+    public fun <Result> decode(
+        buffer: JagByteBuf,
         betaWorld: Boolean,
-        decoder: BiFunction<Buf, Boolean, Result>,
-    ): CompletableFuture<Result>
+        decoder: LoginBlockDecodingFunction<Result>,
+    ): CompletableFuture<LoginBlock<Result>>
 }

@@ -5,6 +5,7 @@ import io.netty.channel.ChannelFutureListener
 import io.netty.channel.ChannelHandlerContext
 import io.netty.channel.SimpleChannelInboundHandler
 import io.netty.handler.timeout.IdleStateEvent
+import net.rsprot.buffer.JagByteBuf
 import net.rsprot.protocol.api.NetworkService
 import net.rsprot.protocol.api.channel.inetAddress
 import net.rsprot.protocol.api.logging.networkLog
@@ -15,11 +16,12 @@ import net.rsprot.protocol.loginprot.incoming.RemainingBetaArchives
 import net.rsprot.protocol.loginprot.incoming.pow.ProofOfWork
 import net.rsprot.protocol.loginprot.incoming.pow.challenges.ChallengeMetaData
 import net.rsprot.protocol.loginprot.incoming.pow.challenges.ChallengeType
+import net.rsprot.protocol.loginprot.incoming.util.LoginBlock
+import net.rsprot.protocol.loginprot.incoming.util.LoginBlockDecodingFunction
 import net.rsprot.protocol.loginprot.outgoing.LoginResponse
 import net.rsprot.protocol.message.IncomingLoginMessage
 import java.text.NumberFormat
 import java.util.concurrent.CompletableFuture
-import java.util.function.BiFunction
 
 /**
  * The login connection handler, responsible for handling any game connections.
@@ -327,11 +329,11 @@ public class LoginConnectionHandler<R>(
         }
     }
 
-    private fun <Buf, Fun> decodeLogin(
-        buf: Buf,
+    private fun <Fun> decodeLogin(
+        buf: JagByteBuf,
         betaWorld: Boolean,
-        function: BiFunction<Buf, Boolean, Fun>,
-    ): CompletableFuture<Fun> =
+        function: LoginBlockDecodingFunction<Fun>,
+    ): CompletableFuture<LoginBlock<Fun>> =
         networkService
             .loginHandlers
             .loginDecoderService
