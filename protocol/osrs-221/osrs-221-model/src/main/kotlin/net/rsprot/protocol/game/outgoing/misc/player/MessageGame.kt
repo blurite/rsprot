@@ -68,7 +68,7 @@ public class MessageGame private constructor(
 ) : OutgoingGameMessage {
     public constructor(
         type: Int,
-        name: String,
+        name: String?,
         message: String,
     ) : this(
         type.toUShort(),
@@ -110,11 +110,10 @@ public class MessageGame private constructor(
         return result
     }
 
-    override fun toString(): String {
-        return "MessageGame(" +
+    override fun toString(): String =
+        "MessageGame(" +
             "type=$type, " +
             "name=$name, " +
             "message='$message'" +
             ")"
-    }
 }
