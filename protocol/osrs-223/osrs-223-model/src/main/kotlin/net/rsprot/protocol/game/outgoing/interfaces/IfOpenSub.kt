@@ -21,6 +21,7 @@ import net.rsprot.protocol.util.CombinedId
  *
  * Note: Client type is supported by the client, but is not actually in use by anything!
  *
+ * @property destinationCombinedId the bitpacked combination of [destinationInterfaceId] and [destinationComponentId].
  * @property destinationInterfaceId the destination interface on which the sub
  * interface is being opened
  * @property destinationComponentId the component on the destination interface
@@ -29,8 +30,8 @@ import net.rsprot.protocol.util.CombinedId
  * @property type the type of the interface to be opened as (modal, overlay, client)
  */
 @Suppress("MemberVisibilityCanBePrivate")
-public class IfOpenSub(
-    public val destinationCombinedId: CombinedId,
+public class IfOpenSub private constructor(
+    public val destinationCombinedId: Int,
     private val _interfaceId: UShort,
     private val _type: UByte,
 ) : OutgoingGameMessage {
@@ -40,15 +41,27 @@ public class IfOpenSub(
         interfaceId: Int,
         type: Int,
     ) : this(
-        CombinedId(destinationInterfaceId, destinationComponentId),
+        CombinedId(destinationInterfaceId, destinationComponentId).combinedId,
         interfaceId.toUShort(),
         type.toUByte(),
     )
 
+    public constructor(
+        destinationCombinedId: Int,
+        interfaceId: Int,
+        type: Int,
+    ) : this(
+        destinationCombinedId,
+        interfaceId.toUShort(),
+        type.toUByte(),
+    )
+
+    private val _destinationCombinedId: CombinedId
+        get() = CombinedId(destinationCombinedId)
     public val destinationInterfaceId: Int
-        get() = destinationCombinedId.interfaceId
+        get() = _destinationCombinedId.interfaceId
     public val destinationComponentId: Int
-        get() = destinationCombinedId.componentId
+        get() = _destinationCombinedId.componentId
     public val interfaceId: Int
         get() = _interfaceId.toIntOrMinusOne()
     public val type: Int

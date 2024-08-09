@@ -8,12 +8,13 @@ import net.rsprot.protocol.util.CombinedId
 
 /**
  * If set-anim is used to make a model animate on a component.
+ * @property combinedId the bitpacked combination of [interfaceId] and [componentId].
  * @property interfaceId the id of the interface on which the model resides
  * @property componentId the id of the component on which the model resides
  * @property anim the id of the animation to play, or -1 to reset the animation
  */
 public class IfSetAnim private constructor(
-    public val combinedId: CombinedId,
+    public val combinedId: Int,
     private val _anim: UShort,
 ) : OutgoingGameMessage {
     public constructor(
@@ -21,14 +22,24 @@ public class IfSetAnim private constructor(
         componentId: Int,
         anim: Int,
     ) : this(
-        CombinedId(interfaceId, componentId),
+        CombinedId(interfaceId, componentId).combinedId,
         anim.toUShort(),
     )
 
+    public constructor(
+        combinedId: Int,
+        anim: Int,
+    ) : this(
+        combinedId,
+        anim.toUShort(),
+    )
+
+    private val _combinedId: CombinedId
+        get() = CombinedId(combinedId)
     public val interfaceId: Int
-        get() = combinedId.interfaceId
+        get() = _combinedId.interfaceId
     public val componentId: Int
-        get() = combinedId.componentId
+        get() = _combinedId.componentId
     public val anim: Int
         get() = _anim.toIntOrMinusOne()
     override val category: ServerProtCategory
@@ -52,11 +63,10 @@ public class IfSetAnim private constructor(
         return result
     }
 
-    override fun toString(): String {
-        return "IfSetAnim(" +
+    override fun toString(): String =
+        "IfSetAnim(" +
             "interfaceId=$interfaceId, " +
             "componentId=$componentId, " +
             "anim=$anim" +
             ")"
-    }
 }

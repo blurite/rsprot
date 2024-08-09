@@ -10,13 +10,14 @@ import net.rsprot.protocol.util.CombinedId
  * of a customized player model on an interface. This allows one to build
  * a completely unique player model up without using anyone as reference.
  * The colouring logic is identical to that found within Appearance for players.
+ * @property combinedId the bitpacked combination of [interfaceId] and [componentId].
  * @property interfaceId the id of the interface on which the model resides
  * @property componentId the id of the component on which the model resides
  * @property index the index of the colour, ranging from 0 to 4 (inclusive)
  * @property colour the value of the colour, ranging from 0 to 255 (inclusive)
  */
 public class IfSetPlayerModelBaseColour private constructor(
-    public val combinedId: CombinedId,
+    public val combinedId: Int,
     private val _index: UByte,
     private val _colour: UByte,
 ) : OutgoingGameMessage {
@@ -26,15 +27,27 @@ public class IfSetPlayerModelBaseColour private constructor(
         index: Int,
         colour: Int,
     ) : this(
-        CombinedId(interfaceId, componentId),
+        CombinedId(interfaceId, componentId).combinedId,
         index.toUByte(),
         colour.toUByte(),
     )
 
+    public constructor(
+        combinedId: Int,
+        index: Int,
+        colour: Int,
+    ) : this(
+        combinedId,
+        index.toUByte(),
+        colour.toUByte(),
+    )
+
+    private val _combinedId: CombinedId
+        get() = CombinedId(combinedId)
     public val interfaceId: Int
-        get() = combinedId.interfaceId
+        get() = _combinedId.interfaceId
     public val componentId: Int
-        get() = combinedId.componentId
+        get() = _combinedId.componentId
     public val index: Int
         get() = _index.toInt()
     public val colour: Int
@@ -62,12 +75,11 @@ public class IfSetPlayerModelBaseColour private constructor(
         return result
     }
 
-    override fun toString(): String {
-        return "IfSetPlayerModelBaseColour(" +
+    override fun toString(): String =
+        "IfSetPlayerModelBaseColour(" +
             "interfaceId=$interfaceId, " +
             "componentId=$componentId, " +
             "index=$index, " +
             "colour=$colour" +
             ")"
-    }
 }

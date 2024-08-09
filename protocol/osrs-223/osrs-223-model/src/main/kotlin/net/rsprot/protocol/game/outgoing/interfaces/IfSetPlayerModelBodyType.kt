@@ -9,12 +9,13 @@ import net.rsprot.protocol.util.CombinedId
  * If setplayermodel bodytype is used to change the current body-type of
  * a player model on an interface, making the client prefer swap out
  * the models for the respective type.
+ * @property combinedId the bitpacked combination of [interfaceId] and [componentId].
  * @property interfaceId the id of the interface on which the model resides
  * @property componentId the id of the component on which the model resides
  * @property bodyType the new body-type to set to the player model
  */
 public class IfSetPlayerModelBodyType private constructor(
-    public val combinedId: CombinedId,
+    public val combinedId: Int,
     private val _bodyType: UByte,
 ) : OutgoingGameMessage {
     public constructor(
@@ -22,14 +23,24 @@ public class IfSetPlayerModelBodyType private constructor(
         componentId: Int,
         bodyType: Int,
     ) : this(
-        CombinedId(interfaceId, componentId),
+        CombinedId(interfaceId, componentId).combinedId,
         bodyType.toUByte(),
     )
 
+    public constructor(
+        combinedId: Int,
+        bodyType: Int,
+    ) : this(
+        combinedId,
+        bodyType.toUByte(),
+    )
+
+    private val _combinedId: CombinedId
+        get() = CombinedId(combinedId)
     public val interfaceId: Int
-        get() = combinedId.interfaceId
+        get() = _combinedId.interfaceId
     public val componentId: Int
-        get() = combinedId.componentId
+        get() = _combinedId.componentId
     public val bodyType: Int
         get() = _bodyType.toInt()
     override val category: ServerProtCategory
@@ -53,11 +64,10 @@ public class IfSetPlayerModelBodyType private constructor(
         return result
     }
 
-    override fun toString(): String {
-        return "IfSetPlayerModelBodyType(" +
+    override fun toString(): String =
+        "IfSetPlayerModelBodyType(" +
             "interfaceId=$interfaceId, " +
             "componentId=$componentId, " +
             "bodyType=$bodyType" +
             ")"
-    }
 }

@@ -7,14 +7,15 @@ import net.rsprot.protocol.util.CombinedId
 
 /**
  * If setplayermodel obj is used to set a worn obj on a player model.
+ * @property combinedId the bitpacked combination of [interfaceId] and [componentId].
  * @property interfaceId the id of the interface on which the model resides
  * @property componentId the id of the component on which the model resides
  * @property obj the id of the obj. Interestingly, the client reads a 32-bit int
  * for the obj, even though configs having a strict 32767/65535 limitation elsewhere
  * in the client.
  */
-public class IfSetPlayerModelObj private constructor(
-    public val combinedId: CombinedId,
+public class IfSetPlayerModelObj(
+    public val combinedId: Int,
     public val obj: Int,
 ) : OutgoingGameMessage {
     public constructor(
@@ -22,14 +23,16 @@ public class IfSetPlayerModelObj private constructor(
         componentId: Int,
         obj: Int,
     ) : this(
-        CombinedId(interfaceId, componentId),
+        CombinedId(interfaceId, componentId).combinedId,
         obj,
     )
 
+    private val _combinedId: CombinedId
+        get() = CombinedId(combinedId)
     public val interfaceId: Int
-        get() = combinedId.interfaceId
+        get() = _combinedId.interfaceId
     public val componentId: Int
-        get() = combinedId.componentId
+        get() = _combinedId.componentId
     override val category: ServerProtCategory
         get() = GameServerProtCategory.LOW_PRIORITY_PROT
 
@@ -51,11 +54,10 @@ public class IfSetPlayerModelObj private constructor(
         return result
     }
 
-    override fun toString(): String {
-        return "IfSetPlayerModelObj(" +
+    override fun toString(): String =
+        "IfSetPlayerModelObj(" +
             "interfaceId=$interfaceId, " +
             "componentId=$componentId, " +
             "obj=$obj" +
             ")"
-    }
 }

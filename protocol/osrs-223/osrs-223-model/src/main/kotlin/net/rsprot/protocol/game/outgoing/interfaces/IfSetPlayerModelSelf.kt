@@ -8,12 +8,13 @@ import net.rsprot.protocol.util.CombinedId
 /**
  * If setplayermodel self is used to set the player model on an interface
  * to that of the local player.
+ * @property combinedId the bitpacked combination of [interfaceId] and [componentId].
  * @property interfaceId the id of the interface on which the model resides
  * @property componentId the id of the component on which the model resides
  * @property copyObjs whether to copy all the worn objs over as well
  */
-public class IfSetPlayerModelSelf private constructor(
-    public val combinedId: CombinedId,
+public class IfSetPlayerModelSelf(
+    public val combinedId: Int,
     public val copyObjs: Boolean,
 ) : OutgoingGameMessage {
     public constructor(
@@ -21,14 +22,16 @@ public class IfSetPlayerModelSelf private constructor(
         componentId: Int,
         copyObjs: Boolean,
     ) : this(
-        CombinedId(interfaceId, componentId),
+        CombinedId(interfaceId, componentId).combinedId,
         copyObjs,
     )
 
+    private val _combinedId: CombinedId
+        get() = CombinedId(combinedId)
     public val interfaceId: Int
-        get() = combinedId.interfaceId
+        get() = _combinedId.interfaceId
     public val componentId: Int
-        get() = combinedId.componentId
+        get() = _combinedId.componentId
     override val category: ServerProtCategory
         get() = GameServerProtCategory.LOW_PRIORITY_PROT
 
@@ -50,11 +53,10 @@ public class IfSetPlayerModelSelf private constructor(
         return result
     }
 
-    override fun toString(): String {
-        return "IfSetPlayerModelSelf(" +
+    override fun toString(): String =
+        "IfSetPlayerModelSelf(" +
             "interfaceId=$interfaceId, " +
             "componentId=$componentId, " +
             "copyObjs=$copyObjs" +
             ")"
-    }
 }

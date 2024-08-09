@@ -9,12 +9,13 @@ import net.rsprot.protocol.util.CombinedId
 /**
  * If set-npc-head is used to set a npc's chathead on an interface, commonly
  * in dialogues.
+ * @property combinedId the bitpacked combination of [interfaceId] and [componentId].
  * @property interfaceId the interface id on which the model resides
  * @property componentId the component id on which the model resides
  * @property npc the id of the npc config whose head to set as the model
  */
 public class IfSetNpcHead private constructor(
-    public val combinedId: CombinedId,
+    public val combinedId: Int,
     private val _npc: UShort,
 ) : OutgoingGameMessage {
     public constructor(
@@ -22,14 +23,24 @@ public class IfSetNpcHead private constructor(
         componentId: Int,
         npc: Int,
     ) : this(
-        CombinedId(interfaceId, componentId),
+        CombinedId(interfaceId, componentId).combinedId,
         npc.toUShort(),
     )
 
+    public constructor(
+        combinedId: Int,
+        npc: Int,
+    ) : this(
+        combinedId,
+        npc.toUShort(),
+    )
+
+    private val _combinedId: CombinedId
+        get() = CombinedId(combinedId)
     public val interfaceId: Int
-        get() = combinedId.interfaceId
+        get() = _combinedId.interfaceId
     public val componentId: Int
-        get() = combinedId.componentId
+        get() = _combinedId.componentId
     public val npc: Int
         get() = _npc.toIntOrMinusOne()
     override val category: ServerProtCategory
@@ -53,11 +64,10 @@ public class IfSetNpcHead private constructor(
         return result
     }
 
-    override fun toString(): String {
-        return "IfSetNpcHead(" +
+    override fun toString(): String =
+        "IfSetNpcHead(" +
             "interfaceId=$interfaceId, " +
             "componentId=$componentId, " +
             "npc=$npc" +
             ")"
-    }
 }

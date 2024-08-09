@@ -8,23 +8,26 @@ import net.rsprot.protocol.util.CombinedId
 /**
  * If set-player-head is used to set the local player's chathead on an interface,
  * commonly used for dialogues.
+ * @property combinedId the bitpacked combination of [interfaceId] and [componentId].
  * @property interfaceId the id of the interface on which the chathead model resides
  * @property componentId the id of the component on which the chathead model resides
  */
-public class IfSetPlayerHead private constructor(
-    public val combinedId: CombinedId,
+public class IfSetPlayerHead(
+    public val combinedId: Int,
 ) : OutgoingGameMessage {
     public constructor(
         interfaceId: Int,
         componentId: Int,
     ) : this(
-        CombinedId(interfaceId, componentId),
+        CombinedId(interfaceId, componentId).combinedId,
     )
 
+    private val _combinedId: CombinedId
+        get() = CombinedId(combinedId)
     public val interfaceId: Int
-        get() = combinedId.interfaceId
+        get() = _combinedId.interfaceId
     public val componentId: Int
-        get() = combinedId.componentId
+        get() = _combinedId.componentId
     override val category: ServerProtCategory
         get() = GameServerProtCategory.LOW_PRIORITY_PROT
 
@@ -37,14 +40,11 @@ public class IfSetPlayerHead private constructor(
         return combinedId == other.combinedId
     }
 
-    override fun hashCode(): Int {
-        return combinedId.hashCode()
-    }
+    override fun hashCode(): Int = combinedId.hashCode()
 
-    override fun toString(): String {
-        return "IfSetPlayerHead(" +
+    override fun toString(): String =
+        "IfSetPlayerHead(" +
             "interfaceId=$interfaceId, " +
             "componentId=$componentId" +
             ")"
-    }
 }

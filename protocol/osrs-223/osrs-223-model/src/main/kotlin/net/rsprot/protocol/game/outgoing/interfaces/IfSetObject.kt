@@ -7,6 +7,7 @@ import net.rsprot.protocol.util.CombinedId
 
 /**
  * Sets an object on an interface component.
+ * @property combinedId the bitpacked combination of [interfaceId] and [componentId].
  * @property interfaceId the interface on which the component resides
  * @property componentId the component on which the obj resides
  * @property obj the id of the obj to set on the component
@@ -14,7 +15,7 @@ import net.rsprot.protocol.util.CombinedId
  * of the model of the obj
  */
 public class IfSetObject private constructor(
-    public val combinedId: CombinedId,
+    public val combinedId: Int,
     private val _obj: UShort,
     private val _count: UShort,
 ) : OutgoingGameMessage {
@@ -24,15 +25,27 @@ public class IfSetObject private constructor(
         obj: Int,
         count: Int,
     ) : this(
-        CombinedId(interfaceId, componentId),
+        CombinedId(interfaceId, componentId).combinedId,
         obj.toUShort(),
         count.toUShort(),
     )
 
+    public constructor(
+        combinedId: Int,
+        obj: Int,
+        count: Int,
+    ) : this(
+        combinedId,
+        obj.toUShort(),
+        count.toUShort(),
+    )
+
+    private val _combinedId: CombinedId
+        get() = CombinedId(combinedId)
     public val interfaceId: Int
-        get() = combinedId.interfaceId
+        get() = _combinedId.interfaceId
     public val componentId: Int
-        get() = combinedId.componentId
+        get() = _combinedId.componentId
     public val obj: Int
         get() = _obj.toInt()
     public val count: Int
@@ -60,12 +73,11 @@ public class IfSetObject private constructor(
         return result
     }
 
-    override fun toString(): String {
-        return "IfSetObject(" +
+    override fun toString(): String =
+        "IfSetObject(" +
             "interfaceId=$interfaceId, " +
             "componentId=$componentId, " +
             "obj=$obj, " +
             "count=$count" +
             ")"
-    }
 }

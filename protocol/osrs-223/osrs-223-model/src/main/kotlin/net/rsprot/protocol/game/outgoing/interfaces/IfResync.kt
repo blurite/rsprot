@@ -62,6 +62,7 @@ public class IfResync private constructor(
 
     /**
      * Sub interface holds state about a sub interface to be opened.
+     * @property destinationCombinedId the bitpacked combination of [destinationInterfaceId] and [destinationComponentId].
      * @property destinationInterfaceId the destination interface on which the sub
      * interface is being opened
      * @property destinationComponentId the component on the destination interface
@@ -71,7 +72,7 @@ public class IfResync private constructor(
      */
     @Suppress("MemberVisibilityCanBePrivate")
     public class SubInterfaceMessage private constructor(
-        public val destinationCombinedId: CombinedId,
+        public val destinationCombinedId: Int,
         private val _interfaceId: UShort,
         private val _type: UByte,
     ) {
@@ -81,15 +82,27 @@ public class IfResync private constructor(
             interfaceId: Int,
             type: Int,
         ) : this(
-            CombinedId(destinationInterfaceId, destinationComponentId),
+            CombinedId(destinationInterfaceId, destinationComponentId).combinedId,
             interfaceId.toUShort(),
             type.toUByte(),
         )
 
+        public constructor(
+            destinationCombinedId: Int,
+            interfaceId: Int,
+            type: Int,
+        ) : this(
+            destinationCombinedId,
+            interfaceId.toUShort(),
+            type.toUByte(),
+        )
+
+        private val _destinationCombinedId: CombinedId
+            get() = CombinedId(destinationCombinedId)
         public val destinationInterfaceId: Int
-            get() = destinationCombinedId.interfaceId
+            get() = _destinationCombinedId.interfaceId
         public val destinationComponentId: Int
-            get() = destinationCombinedId.componentId
+            get() = _destinationCombinedId.componentId
         public val interfaceId: Int
             get() = _interfaceId.toIntOrMinusOne()
         public val type: Int
@@ -134,7 +147,7 @@ public class IfResync private constructor(
      * @property events the bitpacked events
      */
     public class InterfaceEventsMessage private constructor(
-        public val combinedId: CombinedId,
+        public val combinedId: Int,
         private val _start: UShort,
         private val _end: UShort,
         public val events: Int,
@@ -146,16 +159,30 @@ public class IfResync private constructor(
             end: Int,
             events: Int,
         ) : this(
-            CombinedId(interfaceId, componentId),
+            CombinedId(interfaceId, componentId).combinedId,
             start.toUShort(),
             end.toUShort(),
             events,
         )
 
+        public constructor(
+            combinedId: Int,
+            start: Int,
+            end: Int,
+            events: Int,
+        ) : this(
+            combinedId,
+            start.toUShort(),
+            end.toUShort(),
+            events,
+        )
+
+        private val _combinedId: CombinedId
+            get() = CombinedId(combinedId)
         public val interfaceId: Int
-            get() = combinedId.interfaceId
+            get() = _combinedId.interfaceId
         public val componentId: Int
-            get() = combinedId.componentId
+            get() = _combinedId.componentId
         public val start: Int
             get() = _start.toInt()
         public val end: Int

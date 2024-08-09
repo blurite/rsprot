@@ -11,12 +11,13 @@ import net.rsprot.protocol.util.CombinedId
  * takes the index of the npc in the world. Npc's model is looked up from the
  * client through npc info, allowing for the chatbox to render a custom-built
  * npc with completely dynamic models, rather than the pre-defined configs.
+ * @property combinedId the bitpacked combination of [interfaceId] and [componentId].
  * @property interfaceId the interface id on which the model resides
  * @property componentId the component id on which the model resides
  * @property index the index of the npc in the world
  */
 public class IfSetNpcHeadActive private constructor(
-    public val combinedId: CombinedId,
+    public val combinedId: Int,
     private val _index: UShort,
 ) : OutgoingGameMessage {
     public constructor(
@@ -24,14 +25,24 @@ public class IfSetNpcHeadActive private constructor(
         componentId: Int,
         index: Int,
     ) : this(
-        CombinedId(interfaceId, componentId),
+        CombinedId(interfaceId, componentId).combinedId,
         index.toUShort(),
     )
 
+    public constructor(
+        combinedId: Int,
+        index: Int,
+    ) : this(
+        combinedId,
+        index.toUShort(),
+    )
+
+    private val _combinedId: CombinedId
+        get() = CombinedId(combinedId)
     public val interfaceId: Int
-        get() = combinedId.interfaceId
+        get() = _combinedId.interfaceId
     public val componentId: Int
-        get() = combinedId.componentId
+        get() = _combinedId.componentId
     public val index: Int
         get() = _index.toInt()
     override val category: ServerProtCategory
@@ -55,11 +66,10 @@ public class IfSetNpcHeadActive private constructor(
         return result
     }
 
-    override fun toString(): String {
-        return "IfSetNpcHead(" +
+    override fun toString(): String =
+        "IfSetNpcHead(" +
             "interfaceId=$interfaceId, " +
             "componentId=$componentId, " +
             "index=$index" +
             ")"
-    }
 }

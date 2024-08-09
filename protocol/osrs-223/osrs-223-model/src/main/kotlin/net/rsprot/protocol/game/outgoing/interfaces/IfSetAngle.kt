@@ -7,6 +7,7 @@ import net.rsprot.protocol.util.CombinedId
 
 /**
  * If set-angle is used to change the angle of a model on an interface component.
+ * @property combinedId the bitpacked combination of [interfaceId] and [componentId].
  * @property interfaceId the interface id on which the component resides
  * @property componentId the component id on which the model resides
  * @property angleX the new x model angle to set to, a value from 0 to 2047 (inclusive)
@@ -15,7 +16,7 @@ import net.rsprot.protocol.util.CombinedId
  * The greater the [zoom] value, the smaller the model will appear - it is inverted.
  */
 public class IfSetAngle private constructor(
-    public val combinedId: CombinedId,
+    public val combinedId: Int,
     private val _angleX: UShort,
     private val _angleY: UShort,
     private val _zoom: UShort,
@@ -27,16 +28,30 @@ public class IfSetAngle private constructor(
         angleY: Int,
         zoom: Int,
     ) : this(
-        CombinedId(interfaceId, componentId),
+        CombinedId(interfaceId, componentId).combinedId,
         angleX.toUShort(),
         angleY.toUShort(),
         zoom.toUShort(),
     )
 
+    public constructor(
+        combinedId: Int,
+        angleX: Int,
+        angleY: Int,
+        zoom: Int,
+    ) : this(
+        combinedId,
+        angleX.toUShort(),
+        angleY.toUShort(),
+        zoom.toUShort(),
+    )
+
+    private val _combinedId: CombinedId
+        get() = CombinedId(combinedId)
     public val interfaceId: Int
-        get() = combinedId.interfaceId
+        get() = _combinedId.interfaceId
     public val componentId: Int
-        get() = combinedId.componentId
+        get() = _combinedId.componentId
     public val angleX: Int
         get() = _angleX.toInt()
     public val angleY: Int
@@ -68,13 +83,12 @@ public class IfSetAngle private constructor(
         return result
     }
 
-    override fun toString(): String {
-        return "IfSetAngle(" +
+    override fun toString(): String =
+        "IfSetAngle(" +
             "interfaceId=$interfaceId, " +
             "componentId=$componentId, " +
             "angleX=$angleX, " +
             "angleY=$angleY, " +
             "zoom=$zoom" +
             ")"
-    }
 }

@@ -7,13 +7,14 @@ import net.rsprot.protocol.util.CombinedId
 
 /**
  * If set-text packet is used to set the text on a text component.
+ * @property combinedId the bitpacked combination of [interfaceId] and [componentId].
  * @property interfaceId the interface id on which the text resides
  * @property componentId the component id on the interface on which the text
  * resides
  * @property text the text to assign
  */
-public class IfSetText private constructor(
-    public val combinedId: CombinedId,
+public class IfSetText(
+    public val combinedId: Int,
     public val text: String,
 ) : OutgoingGameMessage {
     public constructor(
@@ -21,14 +22,16 @@ public class IfSetText private constructor(
         componentId: Int,
         text: String,
     ) : this(
-        CombinedId(interfaceId, componentId),
+        CombinedId(interfaceId, componentId).combinedId,
         text,
     )
 
+    private val _combinedId: CombinedId
+        get() = CombinedId(combinedId)
     public val interfaceId: Int
-        get() = combinedId.interfaceId
+        get() = _combinedId.interfaceId
     public val componentId: Int
-        get() = combinedId.componentId
+        get() = _combinedId.componentId
     override val category: ServerProtCategory
         get() = GameServerProtCategory.LOW_PRIORITY_PROT
 
@@ -50,11 +53,10 @@ public class IfSetText private constructor(
         return result
     }
 
-    override fun toString(): String {
-        return "IfSetText(" +
+    override fun toString(): String =
+        "IfSetText(" +
             "interfaceId=$interfaceId, " +
             "componentId=$componentId, " +
             "text='$text'" +
             ")"
-    }
 }

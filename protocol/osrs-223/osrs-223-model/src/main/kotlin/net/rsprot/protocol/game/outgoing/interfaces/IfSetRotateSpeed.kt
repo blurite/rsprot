@@ -9,6 +9,7 @@ import net.rsprot.protocol.util.CombinedId
  * If set-rotate-speed packet is used to make a model rotate
  * according to the client's update counter. This only has an effect
  * on model-type components.
+ * @property combinedId the bitpacked combination of [interfaceId] and [componentId].
  * @property interfaceId the id of the interface on which the component to rotate
  * lives.
  * @property componentId the component on which the model to rotate lives
@@ -20,7 +21,7 @@ import net.rsprot.protocol.util.CombinedId
  * full circle
  */
 public class IfSetRotateSpeed private constructor(
-    public val combinedId: CombinedId,
+    public val combinedId: Int,
     private val _xSpeed: UShort,
     private val _ySpeed: UShort,
 ) : OutgoingGameMessage {
@@ -30,15 +31,27 @@ public class IfSetRotateSpeed private constructor(
         xSpeed: Int,
         ySpeed: Int,
     ) : this(
-        CombinedId(interfaceId, componentId),
+        CombinedId(interfaceId, componentId).combinedId,
         xSpeed.toUShort(),
         ySpeed.toUShort(),
     )
 
+    public constructor(
+        combinedId: Int,
+        xSpeed: Int,
+        ySpeed: Int,
+    ) : this(
+        combinedId,
+        xSpeed.toUShort(),
+        ySpeed.toUShort(),
+    )
+
+    private val _combinedId: CombinedId
+        get() = CombinedId(combinedId)
     public val interfaceId: Int
-        get() = combinedId.interfaceId
+        get() = _combinedId.interfaceId
     public val componentId: Int
-        get() = combinedId.componentId
+        get() = _combinedId.componentId
     public val xSpeed: Int
         get() = _xSpeed.toInt()
     public val ySpeed: Int
@@ -66,12 +79,11 @@ public class IfSetRotateSpeed private constructor(
         return result
     }
 
-    override fun toString(): String {
-        return "IfSetRotateSpeed(" +
+    override fun toString(): String =
+        "IfSetRotateSpeed(" +
             "interfaceId=$interfaceId, " +
             "componentId=$componentId, " +
             "xSpeed=$xSpeed, " +
             "ySpeed=$ySpeed" +
             ")"
-    }
 }

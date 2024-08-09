@@ -7,23 +7,26 @@ import net.rsprot.protocol.util.CombinedId
 
 /**
  * If close-sub messages are used to close sub-level interfaces.
+ * @property combinedId the bitpacked combination of [interfaceId] and [componentId].
  * @property interfaceId the interface on which the sub-level interface is opened
  * @property componentId the component on which the sub-level interface is opened
  */
-public class IfCloseSub private constructor(
-    public val combinedId: CombinedId,
+public class IfCloseSub(
+    public val combinedId: Int,
 ) : OutgoingGameMessage {
     public constructor(
         interfaceId: Int,
         componentId: Int,
     ) : this(
-        CombinedId(interfaceId, componentId),
+        CombinedId(interfaceId, componentId).combinedId,
     )
 
+    private val _combinedId: CombinedId
+        get() = CombinedId(combinedId)
     public val interfaceId: Int
-        get() = combinedId.interfaceId
+        get() = _combinedId.interfaceId
     public val componentId: Int
-        get() = combinedId.componentId
+        get() = _combinedId.componentId
     override val category: ServerProtCategory
         get() = GameServerProtCategory.LOW_PRIORITY_PROT
 
@@ -33,17 +36,14 @@ public class IfCloseSub private constructor(
 
         other as IfCloseSub
 
-        return combinedId == other.combinedId
+        return _combinedId == other._combinedId
     }
 
-    override fun hashCode(): Int {
-        return combinedId.hashCode()
-    }
+    override fun hashCode(): Int = _combinedId.hashCode()
 
-    override fun toString(): String {
-        return "IfCloseSub(" +
+    override fun toString(): String =
+        "IfCloseSub(" +
             "interfaceId=$interfaceId, " +
             "componentId=$componentId" +
             ")"
-    }
 }

@@ -8,6 +8,7 @@ import java.awt.Color
 
 /**
  * If set-colour is used to set the colour of a text component.
+ * @property combinedId the bitpacked combination of [interfaceId] and [componentId].
  * @property interfaceId the id of the interface on which the text resides
  * @property componentId the id of the component on which the text resides
  * @property red the value of the red colour, ranging from 0 to 31 (inclusive)
@@ -16,7 +17,7 @@ import java.awt.Color
  */
 @Suppress("MemberVisibilityCanBePrivate")
 public class IfSetColour private constructor(
-    public val combinedId: CombinedId,
+    public val combinedId: Int,
     private val colour: Rs15BitColour,
 ) : OutgoingGameMessage {
     public constructor(
@@ -26,12 +27,34 @@ public class IfSetColour private constructor(
         green: Int,
         blue: Int,
     ) : this(
-        CombinedId(interfaceId, componentId),
+        CombinedId(interfaceId, componentId).combinedId,
         Rs15BitColour(
             red,
             green,
             blue,
         ),
+    )
+
+    public constructor(
+        combinedId: Int,
+        red: Int,
+        green: Int,
+        blue: Int,
+    ) : this(
+        combinedId,
+        Rs15BitColour(
+            red,
+            green,
+            blue,
+        ),
+    )
+
+    public constructor(
+        combinedId: Int,
+        colour15BitPacked: Int,
+    ) : this(
+        combinedId,
+        Rs15BitColour(colour15BitPacked.toUShort()),
     )
 
     /**
@@ -47,7 +70,7 @@ public class IfSetColour private constructor(
         componentId: Int,
         color: Color,
     ) : this(
-        CombinedId(interfaceId, componentId),
+        CombinedId(interfaceId, componentId).combinedId,
         Rs15BitColour(
             color.red ushr 3,
             color.green ushr 3,
@@ -55,10 +78,32 @@ public class IfSetColour private constructor(
         ),
     )
 
+    /**
+     * A secondary constructor to build a colour from [Color].
+     * This can be useful to avoid manual colour conversions,
+     * as 8-bit colours are typically used.
+     * This function will strip away the 3 least significant
+     * bits from the colours, as Jagex's colour format only expects
+     * 5 bits per colour, so small changes in tone may occur.
+     */
+    public constructor(
+        combinedId: Int,
+        color: Color,
+    ) : this(
+        combinedId,
+        Rs15BitColour(
+            color.red ushr 3,
+            color.green ushr 3,
+            color.blue ushr 3,
+        ),
+    )
+
+    private val _combinedId: CombinedId
+        get() = CombinedId(combinedId)
     public val interfaceId: Int
-        get() = combinedId.interfaceId
+        get() = _combinedId.interfaceId
     public val componentId: Int
-        get() = combinedId.componentId
+        get() = _combinedId.componentId
     public val red: Int
         get() = colour.red
     public val green: Int
@@ -73,16 +118,17 @@ public class IfSetColour private constructor(
     /**
      * Turns the 15-bit RS RGB colour into a 24-bit normalized RGB colour.
      */
-    public fun toAwtColor(): Color {
-        return Color(
+    public fun toAwtColor(): Color =
+        Color(
             (red shl 19)
                 .or(green shl 11)
                 .or(blue shl 3),
         )
-    }
 
     @JvmInline
-    private value class Rs15BitColour(val packed: UShort) {
+    private value class Rs15BitColour(
+        val packed: UShort,
+    ) {
         constructor(
             red: Int,
             green: Int,
@@ -101,13 +147,12 @@ public class IfSetColour private constructor(
         val blue: Int
             get() = packed.toInt() and 0x1F
 
-        override fun toString(): String {
-            return "Rs15BitColour(" +
+        override fun toString(): String =
+            "Rs15BitColour(" +
                 "red=$red, " +
                 "green=$green, " +
                 "blue=$blue" +
                 ")"
-        }
     }
 
     override fun equals(other: Any?): Boolean {

@@ -8,19 +8,21 @@ import net.rsprot.protocol.util.CombinedId
 /**
  * If move-sub messages are used to move a sub-level interface from
  * one position to another, typically when changing top-level interfaces.
+ * @property sourceCombinedId the bitpacked combination of [sourceInterfaceId] and [sourceComponentId].
  * @property sourceInterfaceId the current interface on which the interface that's
  * being moved is opened on
  * @property sourceComponentId the current component of the [sourceInterfaceId] on which
  * the interface that's being moved is opened on
+ * @property destinationCombinedId the bitpacked combination of [destinationInterfaceId] and [destinationComponentId].
  * @property destinationInterfaceId the destination interface on which the sub-interface
  * should be opened
  * @property destinationComponentId the component id on the [destinationInterfaceId] on
  * which the sub-interface should be opened
  */
 @Suppress("MemberVisibilityCanBePrivate")
-public class IfMoveSub private constructor(
-    public val sourceCombinedId: CombinedId,
-    public val destinationCombinedId: CombinedId,
+public class IfMoveSub(
+    public val sourceCombinedId: Int,
+    public val destinationCombinedId: Int,
 ) : OutgoingGameMessage {
     public constructor(
         sourceInterfaceId: Int,
@@ -28,18 +30,23 @@ public class IfMoveSub private constructor(
         destinationInterfaceId: Int,
         destinationComponentId: Int,
     ) : this(
-        CombinedId(sourceInterfaceId, sourceComponentId),
-        CombinedId(destinationInterfaceId, destinationComponentId),
+        CombinedId(sourceInterfaceId, sourceComponentId).combinedId,
+        CombinedId(destinationInterfaceId, destinationComponentId).combinedId,
     )
 
+    private val _sourceCombinedId: CombinedId
+        get() = CombinedId(sourceCombinedId)
     public val sourceInterfaceId: Int
-        get() = sourceCombinedId.interfaceId
+        get() = _sourceCombinedId.interfaceId
     public val sourceComponentId: Int
-        get() = sourceCombinedId.componentId
+        get() = _sourceCombinedId.componentId
+
+    private val _destinationCombinedId: CombinedId
+        get() = CombinedId(destinationCombinedId)
     public val destinationInterfaceId: Int
-        get() = destinationCombinedId.interfaceId
+        get() = _destinationCombinedId.interfaceId
     public val destinationComponentId: Int
-        get() = destinationCombinedId.componentId
+        get() = _destinationCombinedId.componentId
     override val category: ServerProtCategory
         get() = GameServerProtCategory.LOW_PRIORITY_PROT
 
@@ -61,12 +68,11 @@ public class IfMoveSub private constructor(
         return result
     }
 
-    override fun toString(): String {
-        return "IfMoveSub(" +
+    override fun toString(): String =
+        "IfMoveSub(" +
             "sourceInterfaceId=$sourceInterfaceId, " +
             "sourceComponentId=$sourceComponentId, " +
             "destinationInterfaceId=$destinationInterfaceId, " +
             "destinationComponentId=$destinationComponentId" +
             ")"
-    }
 }

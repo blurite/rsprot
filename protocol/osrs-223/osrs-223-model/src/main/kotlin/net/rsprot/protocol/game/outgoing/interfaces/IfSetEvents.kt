@@ -8,6 +8,7 @@ import net.rsprot.protocol.util.CombinedId
 /**
  * Interface events are sent to set/unlock various options on a component,
  * such as button clicks and dragging.
+ * @property combinedId the bitpacked combination of [interfaceId] and [componentId].
  * @property interfaceId the interface id on which to set the events
  * @property componentId the component on that interface to set the events on
  * @property start the start subcomponent id
@@ -15,7 +16,7 @@ import net.rsprot.protocol.util.CombinedId
  * @property events the bitpacked events
  */
 public class IfSetEvents private constructor(
-    public val combinedId: CombinedId,
+    public val combinedId: Int,
     private val _start: UShort,
     private val _end: UShort,
     public val events: Int,
@@ -27,16 +28,30 @@ public class IfSetEvents private constructor(
         end: Int,
         events: Int,
     ) : this(
-        CombinedId(interfaceId, componentId),
+        CombinedId(interfaceId, componentId).combinedId,
         start.toUShort(),
         end.toUShort(),
         events,
     )
 
+    public constructor(
+        combinedId: Int,
+        start: Int,
+        end: Int,
+        events: Int,
+    ) : this(
+        combinedId,
+        start.toUShort(),
+        end.toUShort(),
+        events,
+    )
+
+    private val _combinedId: CombinedId
+        get() = CombinedId(combinedId)
     public val interfaceId: Int
-        get() = combinedId.interfaceId
+        get() = _combinedId.interfaceId
     public val componentId: Int
-        get() = combinedId.componentId
+        get() = _combinedId.componentId
     public val start: Int
         get() = _start.toInt()
     public val end: Int
@@ -66,13 +81,12 @@ public class IfSetEvents private constructor(
         return result
     }
 
-    override fun toString(): String {
-        return "IfSetEvents(" +
+    override fun toString(): String =
+        "IfSetEvents(" +
             "events=$events, " +
             "interfaceId=$interfaceId, " +
             "componentId=$componentId, " +
             "start=$start, " +
             "end=$end" +
             ")"
-    }
 }

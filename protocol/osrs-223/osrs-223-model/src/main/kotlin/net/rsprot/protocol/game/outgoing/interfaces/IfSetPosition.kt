@@ -7,13 +7,14 @@ import net.rsprot.protocol.util.CombinedId
 
 /**
  * If set-position events are used to move a component on an interface.
+ * @property combinedId the bitpacked combination of [interfaceId] and [componentId].
  * @property interfaceId the interface on which the component to move exists
  * @property componentId the component id to move
  * @property x the x coordinate to move to
  * @property y the y coordinate to move to
  */
 public class IfSetPosition private constructor(
-    public val combinedId: CombinedId,
+    public val combinedId: Int,
     private val _x: UShort,
     private val _y: UShort,
 ) : OutgoingGameMessage {
@@ -23,15 +24,27 @@ public class IfSetPosition private constructor(
         x: Int,
         y: Int,
     ) : this(
-        CombinedId(interfaceId, componentId),
+        CombinedId(interfaceId, componentId).combinedId,
         x.toUShort(),
         y.toUShort(),
     )
 
+    public constructor(
+        combinedId: Int,
+        x: Int,
+        y: Int,
+    ) : this(
+        combinedId,
+        x.toUShort(),
+        y.toUShort(),
+    )
+
+    private val _combinedId: CombinedId
+        get() = CombinedId(combinedId)
     public val interfaceId: Int
-        get() = combinedId.interfaceId
+        get() = _combinedId.interfaceId
     public val componentId: Int
-        get() = combinedId.componentId
+        get() = _combinedId.componentId
     public val x: Int
         get() = _x.toInt()
     public val y: Int
@@ -59,12 +72,11 @@ public class IfSetPosition private constructor(
         return result
     }
 
-    override fun toString(): String {
-        return "IfSetPosition(" +
+    override fun toString(): String =
+        "IfSetPosition(" +
             "interfaceId=$interfaceId, " +
             "componentId=$componentId, " +
             "x=$x, " +
             "y=$y" +
             ")"
-    }
 }

@@ -50,6 +50,7 @@ import net.rsprot.protocol.util.CombinedId
  * a value of < -70000 is expected, this tells the client that the respective
  * inventory is a "mirrored" one.
  * For normal IF3 interfaces, a value of -1 is perfectly acceptable.
+ * @property combinedId the bitpacked combination of [interfaceId] and [componentId].
  * @property interfaceId the IF1 interface on which the inventory lies.
  * For IF3 interfaces, no [interfaceId] should be provided.
  * @property componentId the component on which the inventory lies
@@ -57,7 +58,7 @@ import net.rsprot.protocol.util.CombinedId
  * @property count the number of items added into this partial update.
  */
 public class UpdateInvPartial private constructor(
-    public val combinedId: CombinedId,
+    public val combinedId: Int,
     private val _inventoryId: UShort,
     private val inventory: Inventory,
 ) : OutgoingGameMessage {
@@ -67,7 +68,7 @@ public class UpdateInvPartial private constructor(
         inventoryId: Int,
         provider: IndexedObjectProvider,
     ) : this(
-        CombinedId(interfaceId, componentId),
+        CombinedId(interfaceId, componentId).combinedId,
         inventoryId.toUShort(),
         buildInventory(provider),
     )
@@ -77,7 +78,7 @@ public class UpdateInvPartial private constructor(
         inventoryId: Int,
         provider: IndexedObjectProvider,
     ) : this(
-        CombinedId(combinedId),
+        CombinedId(combinedId).combinedId,
         inventoryId.toUShort(),
         buildInventory(provider),
     )
@@ -86,15 +87,17 @@ public class UpdateInvPartial private constructor(
         inventoryId: Int,
         provider: IndexedObjectProvider,
     ) : this(
-        CombinedId(-1),
+        -1,
         inventoryId.toUShort(),
         buildInventory(provider),
     )
 
+    private val _combinedId: CombinedId
+        get() = CombinedId(combinedId)
     public val interfaceId: Int
-        get() = combinedId.interfaceId
+        get() = _combinedId.interfaceId
     public val componentId: Int
-        get() = combinedId.componentId
+        get() = _combinedId.componentId
     public val inventoryId: Int
         get() = _inventoryId.toInt()
     public val count: Int
@@ -110,9 +113,7 @@ public class UpdateInvPartial private constructor(
      * @throws IndexOutOfBoundsException if the [slot] is outside
      * the inventory's boundaries.
      */
-    public fun getObject(slot: Int): InventoryObject {
-        return inventory[slot]
-    }
+    public fun getObject(slot: Int): InventoryObject = inventory[slot]
 
     public fun returnInventory() {
         inventory.clear()
@@ -139,14 +140,13 @@ public class UpdateInvPartial private constructor(
         return result
     }
 
-    override fun toString(): String {
-        return "UpdateInvPartial(" +
+    override fun toString(): String =
+        "UpdateInvPartial(" +
             "interfaceId=$interfaceId, " +
             "componentId=$componentId, " +
             "inventoryId=$inventoryId, " +
             "count=$count" +
             ")"
-    }
 
     /**
      * An object provider interface is used to acquire the objs

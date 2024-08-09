@@ -9,23 +9,26 @@ import net.rsprot.protocol.util.CombinedId
  * If clear-inv messaged are used to clear all objs on any if-1 type
  * component. As there are very few if-1 type old interfaces remaining,
  * this packet is mostly unused nowadays.
+ * @property combinedId the bitpacked combination of [interfaceId] and [componentId].
  * @property interfaceId the id of the interface on which the inv exists
  * @property componentId the id of the component on the [interfaceId] to be cleared
  */
-public class IfClearInv private constructor(
-    public val combinedId: CombinedId,
+public class IfClearInv(
+    public val combinedId: Int,
 ) : OutgoingGameMessage {
     public constructor(
         interfaceId: Int,
         componentId: Int,
     ) : this(
-        CombinedId(interfaceId, componentId),
+        CombinedId(interfaceId, componentId).combinedId,
     )
 
+    private val _combinedId: CombinedId
+        get() = CombinedId(combinedId)
     public val interfaceId: Int
-        get() = combinedId.interfaceId
+        get() = _combinedId.interfaceId
     public val componentId: Int
-        get() = combinedId.componentId
+        get() = _combinedId.componentId
     override val category: ServerProtCategory
         get() = GameServerProtCategory.LOW_PRIORITY_PROT
 
@@ -35,17 +38,14 @@ public class IfClearInv private constructor(
 
         other as IfClearInv
 
-        return combinedId == other.combinedId
+        return _combinedId == other._combinedId
     }
 
-    override fun hashCode(): Int {
-        return combinedId.hashCode()
-    }
+    override fun hashCode(): Int = _combinedId.hashCode()
 
-    override fun toString(): String {
-        return "IfClearInv(" +
+    override fun toString(): String =
+        "IfClearInv(" +
             "interfaceId=$interfaceId, " +
             "componentId=$componentId" +
             ")"
-    }
 }

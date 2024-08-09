@@ -8,12 +8,13 @@ import net.rsprot.protocol.util.CombinedId
 /**
  * If set scroll pos messages are used to force the scroll position
  * of a layer component.
+ * @property combinedId the bitpacked combination of [interfaceId] and [componentId].
  * @property interfaceId the interface on which the scroll layer exists
  * @property componentId the component id of the scroll layer
  * @property scrollPos the scroll position to set to
  */
 public class IfSetScrollPos private constructor(
-    public val combinedId: CombinedId,
+    public val combinedId: Int,
     private val _scrollPos: UShort,
 ) : OutgoingGameMessage {
     public constructor(
@@ -21,14 +22,24 @@ public class IfSetScrollPos private constructor(
         componentId: Int,
         scrollPos: Int,
     ) : this(
-        CombinedId(interfaceId, componentId),
+        CombinedId(interfaceId, componentId).combinedId,
         scrollPos.toUShort(),
     )
 
+    public constructor(
+        combinedId: Int,
+        scrollPos: Int,
+    ) : this(
+        combinedId,
+        scrollPos.toUShort(),
+    )
+
+    private val _combinedId: CombinedId
+        get() = CombinedId(combinedId)
     public val interfaceId: Int
-        get() = combinedId.interfaceId
+        get() = _combinedId.interfaceId
     public val componentId: Int
-        get() = combinedId.componentId
+        get() = _combinedId.componentId
     public val scrollPos: Int
         get() = _scrollPos.toInt()
     override val category: ServerProtCategory
@@ -52,11 +63,10 @@ public class IfSetScrollPos private constructor(
         return result
     }
 
-    override fun toString(): String {
-        return "IfSetScrollPos(" +
+    override fun toString(): String =
+        "IfSetScrollPos(" +
             "interfaceId=$interfaceId, " +
             "componentId=$componentId, " +
             "scrollPos=$scrollPos" +
             ")"
-    }
 }

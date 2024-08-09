@@ -13,6 +13,12 @@ indent_style = space
 indent_size = 4
 ij_wrap_on_typing = true
 ij_any_wrap_long_lines = true
+# noinspection EditorConfigKeyCorrectness
+ktlint_custom-rule-set = enabled
+# Ktlint has a problem with underscores in property names, need to disable project wide
+# as disabling at call sites doesn't seem to get recognized properly
+# noinspection EditorConfigKeyCorrectness
+ktlint_standard_backing-property-naming = disabled
 
 [*.md]
 max_line_length = 80
