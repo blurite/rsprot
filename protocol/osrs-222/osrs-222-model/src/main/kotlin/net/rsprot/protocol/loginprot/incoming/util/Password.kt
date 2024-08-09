@@ -12,9 +12,10 @@ public value class Password(
     /**
      * Returns the string representation of the password.
      */
-    public fun asString(): String {
-        return String(data)
-    }
+    @Suppress("MemberVisibilityCanBePrivate")
+    public fun asString(): String = String(data)
+
+    override fun toString(): String = "Password(password=${asString()})"
 
     /**
      * Clears the data, setting all bytes to 0.
