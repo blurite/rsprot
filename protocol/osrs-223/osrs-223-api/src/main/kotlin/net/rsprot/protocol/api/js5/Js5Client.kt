@@ -5,7 +5,6 @@ import io.netty.buffer.ByteBuf
 import io.netty.channel.ChannelHandlerContext
 import net.rsprot.protocol.api.js5.util.IntArrayDeque
 import net.rsprot.protocol.api.logging.js5Log
-import net.rsprot.protocol.channel.ChannelAttributes
 import net.rsprot.protocol.js5.incoming.Js5GroupRequest
 import net.rsprot.protocol.js5.incoming.UrgentRequest
 import net.rsprot.protocol.js5.outgoing.Js5GroupResponse
@@ -40,6 +39,7 @@ public class Js5Client(
 
     private var writtenByteCount: Int = 0
     private var writtenGroupCount: Int = 0
+    private var xorKey: Int = 0
 
     /**
      * Gets the next block response for this channel, typically a section of a cache group.
@@ -77,6 +77,7 @@ public class Js5Client(
             block,
             progress,
             length,
+            xorKey,
         )
     }
 
@@ -219,10 +220,7 @@ public class Js5Client(
      * @param key the encryption key to use
      */
     public fun setXorKey(key: Int) {
-        ctx
-            .channel()
-            .attr(ChannelAttributes.XOR_ENCRYPTION_KEY)
-            .set(key)
+        xorKey = key
     }
 
     /**

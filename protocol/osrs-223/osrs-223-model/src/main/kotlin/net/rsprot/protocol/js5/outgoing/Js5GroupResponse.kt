@@ -14,6 +14,7 @@ public class Js5GroupResponse(
     buffer: ByteBuf,
     public val offset: Int,
     public val limit: Int,
+    public val key: Int,
 ) : DefaultByteBufHolder(buffer),
     OutgoingJs5Message {
     override fun equals(other: Any?): Boolean {

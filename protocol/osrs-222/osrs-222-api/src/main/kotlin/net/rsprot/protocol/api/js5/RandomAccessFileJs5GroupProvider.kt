@@ -11,12 +11,14 @@ public abstract class RandomAccessFileJs5GroupProvider :
         input: Js5GroupProvider.RandomAccessFileJs5GroupType,
         offset: Int,
         length: Int,
+        key: Int,
     ): Js5GroupResponse =
         Js5GroupResponse(
             Js5GroupResponse.Js5FileGroupResponse(
                 input.raf,
                 offset,
                 length,
+                key,
             ),
         )
 }

@@ -6,7 +6,6 @@ import net.rsprot.protocol.api.Js5GroupSizeProvider
 import net.rsprot.protocol.api.js5.Js5GroupProvider.Js5GroupType
 import net.rsprot.protocol.api.js5.util.IntArrayDeque
 import net.rsprot.protocol.api.logging.js5Log
-import net.rsprot.protocol.channel.ChannelAttributes
 import net.rsprot.protocol.js5.incoming.Js5GroupRequest
 import net.rsprot.protocol.js5.incoming.UrgentRequest
 import net.rsprot.protocol.js5.outgoing.Js5GroupResponse
@@ -41,6 +40,7 @@ public class Js5Client<T : Js5GroupType>(
 
     private var writtenByteCount: Int = 0
     private var writtenGroupCount: Int = 0
+    private var xorKey: Int = 0
 
     /**
      * Gets the next block response for this channel, typically a section of a cache group.
@@ -74,7 +74,7 @@ public class Js5Client<T : Js5GroupType>(
         if (currentRequest.isComplete()) {
             writtenGroupCount++
         }
-        return provider.toJs5GroupResponse(block, progress, length)
+        return provider.toJs5GroupResponse(block, progress, length, xorKey)
     }
 
     /**
@@ -216,10 +216,7 @@ public class Js5Client<T : Js5GroupType>(
      * @param key the encryption key to use
      */
     public fun setXorKey(key: Int) {
-        ctx
-            .channel()
-            .attr(ChannelAttributes.XOR_ENCRYPTION_KEY)
-            .set(key)
+        this.xorKey = key
     }
 
     /**

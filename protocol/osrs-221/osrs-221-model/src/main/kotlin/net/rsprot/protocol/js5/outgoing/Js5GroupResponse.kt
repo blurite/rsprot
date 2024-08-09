@@ -18,6 +18,7 @@ public class Js5GroupResponse(
     public sealed interface Js5GroupResponseType {
         public val offset: Int
         public val limit: Int
+        public val key: Int
     }
 
     /**
@@ -34,6 +35,7 @@ public class Js5GroupResponse(
         buffer: ByteBuf,
         override val offset: Int,
         override val limit: Int,
+        override val key: Int,
     ) : DefaultByteBufHolder(buffer),
         Js5GroupResponseType {
         override fun equals(other: Any?): Boolean {
@@ -80,6 +82,7 @@ public class Js5GroupResponse(
         public val file: RandomAccessFile,
         override val offset: Int,
         override val limit: Int,
+        override val key: Int,
     ) : Js5GroupResponseType {
         override fun equals(other: Any?): Boolean {
             if (this === other) return true

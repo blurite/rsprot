@@ -10,12 +10,14 @@ public abstract class ByteBufJs5GroupProvider : Js5GroupProvider<Js5GroupProvide
         input: Js5GroupProvider.ByteBufJs5GroupType,
         offset: Int,
         length: Int,
+        key: Int,
     ): Js5GroupResponse =
         Js5GroupResponse(
             Js5GroupResponse.Js5ByteBufGroupResponse(
                 input.buffer,
                 offset,
                 length,
+                key,
             ),
         )
 }

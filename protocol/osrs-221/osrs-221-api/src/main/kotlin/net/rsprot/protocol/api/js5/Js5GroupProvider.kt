@@ -27,12 +27,14 @@ public sealed interface Js5GroupProvider<T : Js5GroupType> {
      * @param input the input full JS5 group
      * @param offset the offset in number of bytes to begin the response at
      * @param length the number of bytes that this full JS5 group supports
+     * @param key the xor key
      * @return a group response that can be written to the client
      */
     public fun toJs5GroupResponse(
         input: T,
         offset: Int,
         length: Int,
+        key: Int,
     ): Js5GroupResponse
 
     /**
