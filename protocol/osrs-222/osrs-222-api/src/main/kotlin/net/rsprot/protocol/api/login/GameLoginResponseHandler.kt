@@ -8,6 +8,7 @@ import io.netty.channel.ChannelHandlerContext
 import io.netty.channel.ChannelPipeline
 import net.rsprot.buffer.extensions.toJagByteBuf
 import net.rsprot.crypto.cipher.IsaacRandom
+import net.rsprot.crypto.cipher.StreamCipher
 import net.rsprot.crypto.cipher.StreamCipherPair
 import net.rsprot.protocol.api.NetworkService
 import net.rsprot.protocol.api.Session
@@ -17,7 +18,6 @@ import net.rsprot.protocol.api.game.GameMessageDecoder
 import net.rsprot.protocol.api.game.GameMessageEncoder
 import net.rsprot.protocol.api.game.GameMessageHandler
 import net.rsprot.protocol.api.logging.networkLog
-import net.rsprot.protocol.channel.ChannelAttributes
 import net.rsprot.protocol.common.client.OldSchoolClientType
 import net.rsprot.protocol.loginprot.incoming.util.LoginBlock
 import net.rsprot.protocol.loginprot.incoming.util.LoginClientType
@@ -74,7 +74,7 @@ public class GameLoginResponseHandler<R>(
                 .addListener(ChannelFutureListener.CLOSE)
             return null
         }
-        val (encodingCipher, decodingCipher) = setEncodingPair(loginBlock)
+        val cipher = createStreamCipherPair(loginBlock)
 
         if (networkService.betaWorld) {
             val encoder =
@@ -84,7 +84,7 @@ public class GameLoginResponseHandler<R>(
                     .getEncoder(response::class.java)
             val buffer = ctx.alloc().buffer(37 + 1).toJagByteBuf()
             buffer.p1(37)
-            encoder.encode(ctx, buffer, response)
+            encoder.encode(cipher.encoderCipher, buffer, response)
             ctx.writeAndFlush(buffer.buffer)
         } else {
             ctx.writeAndFlush(response)
@@ -93,7 +93,7 @@ public class GameLoginResponseHandler<R>(
         val pipeline = ctx.channel().pipeline()
 
         val session =
-            createSession(loginBlock, pipeline, decodingCipher, oldSchoolClientType, encodingCipher)
+            createSession(loginBlock, pipeline, cipher.decodeCipher, oldSchoolClientType, cipher.encoderCipher)
         networkLog(logger) {
             "Successful game login from channel '${ctx.channel()}': $loginBlock"
         }
@@ -114,7 +114,7 @@ public class GameLoginResponseHandler<R>(
             ctx.writeAndFlush(LoginResponse.InvalidLoginPacket)
             return null
         }
-        val (encodingCipher, decodingCipher) = setEncodingPair(loginBlock)
+        val (encodingCipher, decodingCipher) = createStreamCipherPair(loginBlock)
 
         // Unlike in the above case, we kind of have to assume it was successful
         // as the player is already in the game and needs to continue on as normal
@@ -129,7 +129,7 @@ public class GameLoginResponseHandler<R>(
         return session
     }
 
-    private fun setEncodingPair(loginBlock: LoginBlock<*>): Pair<IsaacRandom, IsaacRandom> {
+    private fun createStreamCipherPair(loginBlock: LoginBlock<*>): StreamCipherPair {
         val encodeSeed = loginBlock.seed
         val decodeSeed =
             IntArray(encodeSeed.size) { index ->
@@ -138,11 +138,7 @@ public class GameLoginResponseHandler<R>(
 
         val encodingCipher = IsaacRandom(decodeSeed)
         val decodingCipher = IsaacRandom(encodeSeed)
-        val channel = ctx.channel()
-        channel
-            .attr(ChannelAttributes.STREAM_CIPHER_PAIR)
-            .set(StreamCipherPair(encodingCipher, decodingCipher))
-        return Pair(encodingCipher, decodingCipher)
+        return StreamCipherPair(encodingCipher, decodingCipher)
     }
 
     private fun getOldSchoolClientType(loginBlock: LoginBlock<*>): OldSchoolClientType? {
@@ -160,9 +156,9 @@ public class GameLoginResponseHandler<R>(
     private fun createSession(
         loginBlock: LoginBlock<*>,
         pipeline: ChannelPipeline,
-        decodingCipher: IsaacRandom,
+        decodingCipher: StreamCipher,
         oldSchoolClientType: OldSchoolClientType,
-        encodingCipher: IsaacRandom,
+        encodingCipher: StreamCipher,
     ): Session<R> {
         val session =
             Session(

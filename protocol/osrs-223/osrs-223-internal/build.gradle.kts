@@ -6,6 +6,7 @@ dependencies {
     implementation(rootProject.libs.inline.logger)
     implementation(projects.buffer)
     implementation(projects.compression)
+    implementation(projects.crypto)
     implementation(projects.protocol)
     implementation(projects.protocol.osrs223.osrs223Common)
 }

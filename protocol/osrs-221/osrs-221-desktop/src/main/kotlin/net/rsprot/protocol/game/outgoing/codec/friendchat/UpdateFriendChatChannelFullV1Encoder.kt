@@ -1,7 +1,7 @@
 package net.rsprot.protocol.game.outgoing.codec.friendchat
 
-import io.netty.channel.ChannelHandlerContext
 import net.rsprot.buffer.JagByteBuf
+import net.rsprot.crypto.cipher.StreamCipher
 import net.rsprot.protocol.ServerProt
 import net.rsprot.protocol.game.outgoing.friendchat.UpdateFriendChatChannelFullV1
 import net.rsprot.protocol.game.outgoing.prot.GameServerProt
@@ -13,7 +13,7 @@ public class UpdateFriendChatChannelFullV1Encoder : MessageEncoder<UpdateFriendC
     override val prot: ServerProt = GameServerProt.UPDATE_FRIENDCHAT_CHANNEL_FULL_V1
 
     override fun encode(
-        ctx: ChannelHandlerContext,
+        streamCipher: StreamCipher,
         buffer: JagByteBuf,
         message: UpdateFriendChatChannelFullV1,
     ) {

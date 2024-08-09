@@ -2,9 +2,9 @@ package net.rsprot.protocol.game.outgoing.codec.zone.header
 
 import io.netty.buffer.ByteBuf
 import io.netty.buffer.ByteBufAllocator
-import io.netty.channel.ChannelHandlerContext
 import net.rsprot.buffer.JagByteBuf
 import net.rsprot.buffer.extensions.toJagByteBuf
+import net.rsprot.crypto.cipher.StreamCipher
 import net.rsprot.protocol.ServerProt
 import net.rsprot.protocol.common.game.outgoing.codec.zone.payload.OldSchoolZoneProt
 import net.rsprot.protocol.common.game.outgoing.codec.zone.payload.ZoneProtEncoder
@@ -30,7 +30,7 @@ public class DesktopUpdateZonePartialEnclosedEncoder : MessageEncoder<UpdateZone
     override val prot: ServerProt = GameServerProt.UPDATE_ZONE_PARTIAL_ENCLOSED
 
     override fun encode(
-        ctx: ChannelHandlerContext,
+        streamCipher: StreamCipher,
         buffer: JagByteBuf,
         message: UpdateZonePartialEnclosed,
     ) {

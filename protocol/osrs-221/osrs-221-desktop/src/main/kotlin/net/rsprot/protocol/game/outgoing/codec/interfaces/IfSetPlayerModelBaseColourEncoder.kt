@@ -1,7 +1,7 @@
 package net.rsprot.protocol.game.outgoing.codec.interfaces
 
-import io.netty.channel.ChannelHandlerContext
 import net.rsprot.buffer.JagByteBuf
+import net.rsprot.crypto.cipher.StreamCipher
 import net.rsprot.protocol.ServerProt
 import net.rsprot.protocol.game.outgoing.interfaces.IfSetPlayerModelBaseColour
 import net.rsprot.protocol.game.outgoing.prot.GameServerProt
@@ -11,7 +11,7 @@ public class IfSetPlayerModelBaseColourEncoder : MessageEncoder<IfSetPlayerModel
     override val prot: ServerProt = GameServerProt.IF_SETPLAYERMODEL_BASECOLOUR
 
     override fun encode(
-        ctx: ChannelHandlerContext,
+        streamCipher: StreamCipher,
         buffer: JagByteBuf,
         message: IfSetPlayerModelBaseColour,
     ) {

@@ -1,7 +1,7 @@
 package net.rsprot.protocol.game.outgoing.codec.misc.player
 
-import io.netty.channel.ChannelHandlerContext
 import net.rsprot.buffer.JagByteBuf
+import net.rsprot.crypto.cipher.StreamCipher
 import net.rsprot.protocol.ServerProt
 import net.rsprot.protocol.game.outgoing.misc.player.RunClientScript
 import net.rsprot.protocol.game.outgoing.prot.GameServerProt
@@ -14,7 +14,7 @@ public class RunClientScriptEncoder : MessageEncoder<RunClientScript> {
     override val prot: ServerProt = GameServerProt.RUNCLIENTSCRIPT
 
     override fun encode(
-        ctx: ChannelHandlerContext,
+        streamCipher: StreamCipher,
         buffer: JagByteBuf,
         message: RunClientScript,
     ) {

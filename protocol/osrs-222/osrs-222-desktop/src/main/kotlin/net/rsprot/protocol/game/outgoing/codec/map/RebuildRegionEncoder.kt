@@ -1,8 +1,8 @@
 package net.rsprot.protocol.game.outgoing.codec.map
 
-import io.netty.channel.ChannelHandlerContext
 import net.rsprot.buffer.JagByteBuf
 import net.rsprot.buffer.bitbuffer.toBitBuf
+import net.rsprot.crypto.cipher.StreamCipher
 import net.rsprot.crypto.xtea.XteaKey
 import net.rsprot.protocol.ServerProt
 import net.rsprot.protocol.game.outgoing.map.RebuildRegion
@@ -13,7 +13,7 @@ public class RebuildRegionEncoder : MessageEncoder<RebuildRegion> {
     override val prot: ServerProt = GameServerProt.REBUILD_REGION
 
     override fun encode(
-        ctx: ChannelHandlerContext,
+        streamCipher: StreamCipher,
         buffer: JagByteBuf,
         message: RebuildRegion,
     ) {

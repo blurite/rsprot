@@ -1,8 +1,8 @@
 package net.rsprot.protocol.game.outgoing.codec.friendchat
 
-import io.netty.channel.ChannelHandlerContext
 import net.rsprot.buffer.JagByteBuf
 import net.rsprot.compression.provider.HuffmanCodecProvider
+import net.rsprot.crypto.cipher.StreamCipher
 import net.rsprot.protocol.ServerProt
 import net.rsprot.protocol.game.outgoing.friendchat.MessageFriendChannel
 import net.rsprot.protocol.game.outgoing.prot.GameServerProt
@@ -16,7 +16,7 @@ public class MessageFriendChannelEncoder(
     override val prot: ServerProt = GameServerProt.MESSAGE_FRIENDCHANNEL
 
     override fun encode(
-        ctx: ChannelHandlerContext,
+        streamCipher: StreamCipher,
         buffer: JagByteBuf,
         message: MessageFriendChannel,
     ) {

@@ -1,7 +1,7 @@
 package net.rsprot.protocol.message.codec
 
-import io.netty.channel.ChannelHandlerContext
 import net.rsprot.buffer.JagByteBuf
+import net.rsprot.crypto.cipher.StreamCipher
 import net.rsprot.protocol.message.OutgoingMessage
 
 /**
@@ -10,7 +10,7 @@ import net.rsprot.protocol.message.OutgoingMessage
  */
 public interface NoOpMessageEncoder<in T : OutgoingMessage> : MessageEncoder<T> {
     override fun encode(
-        ctx: ChannelHandlerContext,
+        streamCipher: StreamCipher,
         buffer: JagByteBuf,
         message: T,
     ) {

@@ -1,7 +1,7 @@
 package net.rsprot.protocol.common.game.outgoing.codec.zone.payload
 
-import io.netty.channel.ChannelHandlerContext
 import net.rsprot.buffer.JagByteBuf
+import net.rsprot.crypto.cipher.StreamCipher
 import net.rsprot.protocol.message.ZoneProt
 import net.rsprot.protocol.message.codec.MessageEncoder
 
@@ -18,7 +18,7 @@ public interface ZoneProtEncoder<T : ZoneProt> : MessageEncoder<T> {
     )
 
     override fun encode(
-        ctx: ChannelHandlerContext,
+        streamCipher: StreamCipher,
         buffer: JagByteBuf,
         message: T,
     ) {

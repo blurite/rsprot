@@ -1,7 +1,7 @@
 package net.rsprot.protocol.game.outgoing.codec.camera
 
-import io.netty.channel.ChannelHandlerContext
 import net.rsprot.buffer.JagByteBuf
+import net.rsprot.crypto.cipher.StreamCipher
 import net.rsprot.protocol.ServerProt
 import net.rsprot.protocol.game.outgoing.camera.CamTarget
 import net.rsprot.protocol.game.outgoing.prot.GameServerProt
@@ -13,7 +13,7 @@ public class CamTargetEncoder : MessageEncoder<CamTarget> {
     override val prot: ServerProt = GameServerProt.CAM_TARGET
 
     override fun encode(
-        ctx: ChannelHandlerContext,
+        streamCipher: StreamCipher,
         buffer: JagByteBuf,
         message: CamTarget,
     ) {

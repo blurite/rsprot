@@ -1,7 +1,7 @@
 package net.rsprot.protocol.game.outgoing.codec.misc.client
 
-import io.netty.channel.ChannelHandlerContext
 import net.rsprot.buffer.JagByteBuf
+import net.rsprot.crypto.cipher.StreamCipher
 import net.rsprot.protocol.ServerProt
 import net.rsprot.protocol.game.outgoing.misc.client.HidePlayerOps
 import net.rsprot.protocol.game.outgoing.prot.GameServerProt
@@ -13,7 +13,7 @@ public class HidePlayerOpsEncoder : MessageEncoder<HidePlayerOps> {
     override val prot: ServerProt = GameServerProt.HIDEPLAYEROPS
 
     override fun encode(
-        ctx: ChannelHandlerContext,
+        streamCipher: StreamCipher,
         buffer: JagByteBuf,
         message: HidePlayerOps,
     ) {

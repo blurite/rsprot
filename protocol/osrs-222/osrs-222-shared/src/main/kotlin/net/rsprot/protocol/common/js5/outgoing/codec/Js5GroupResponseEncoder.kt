@@ -1,7 +1,7 @@
 package net.rsprot.protocol.common.js5.outgoing.codec
 
-import io.netty.channel.ChannelHandlerContext
 import net.rsprot.buffer.JagByteBuf
+import net.rsprot.crypto.cipher.StreamCipher
 import net.rsprot.protocol.ServerProt
 import net.rsprot.protocol.common.js5.outgoing.prot.Js5ServerProt
 import net.rsprot.protocol.js5.outgoing.Js5GroupResponse
@@ -11,7 +11,7 @@ public class Js5GroupResponseEncoder : MessageEncoder<Js5GroupResponse> {
     override val prot: ServerProt = Js5ServerProt.JS5_GROUP_RESPONSE
 
     override fun encode(
-        ctx: ChannelHandlerContext,
+        streamCipher: StreamCipher,
         buffer: JagByteBuf,
         message: Js5GroupResponse,
     ) {

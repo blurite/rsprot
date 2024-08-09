@@ -1,7 +1,7 @@
 package net.rsprot.protocol.game.outgoing.codec.sound
 
-import io.netty.channel.ChannelHandlerContext
 import net.rsprot.buffer.JagByteBuf
+import net.rsprot.crypto.cipher.StreamCipher
 import net.rsprot.protocol.ServerProt
 import net.rsprot.protocol.game.outgoing.prot.GameServerProt
 import net.rsprot.protocol.game.outgoing.sound.MidiSongStop
@@ -11,7 +11,7 @@ public class MidiSongStopEncoder : MessageEncoder<MidiSongStop> {
     override val prot: ServerProt = GameServerProt.MIDI_SONG_STOP
 
     override fun encode(
-        ctx: ChannelHandlerContext,
+        streamCipher: StreamCipher,
         buffer: JagByteBuf,
         message: MidiSongStop,
     ) {

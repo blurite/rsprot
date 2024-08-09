@@ -1,7 +1,7 @@
 package net.rsprot.protocol.game.outgoing.codec.inv
 
-import io.netty.channel.ChannelHandlerContext
 import net.rsprot.buffer.JagByteBuf
+import net.rsprot.crypto.cipher.StreamCipher
 import net.rsprot.protocol.ServerProt
 import net.rsprot.protocol.common.game.outgoing.inv.InventoryObject
 import net.rsprot.protocol.game.outgoing.inv.UpdateInvFull
@@ -12,7 +12,7 @@ public class UpdateInvFullEncoder : MessageEncoder<UpdateInvFull> {
     override val prot: ServerProt = GameServerProt.UPDATE_INV_FULL
 
     override fun encode(
-        ctx: ChannelHandlerContext,
+        streamCipher: StreamCipher,
         buffer: JagByteBuf,
         message: UpdateInvFull,
     ) {

@@ -47,7 +47,7 @@ public abstract class OutgoingMessageEncoder : MessageToByteEncoder<OutgoingMess
 
         val payloadMarker = out.writerIndex()
         encoder.encode(
-            ctx,
+            cipher,
             out.toJagByteBuf(),
             msg,
         )

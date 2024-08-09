@@ -1,7 +1,7 @@
 package net.rsprot.protocol.game.outgoing.codec.worldentity
 
-import io.netty.channel.ChannelHandlerContext
 import net.rsprot.buffer.JagByteBuf
+import net.rsprot.crypto.cipher.StreamCipher
 import net.rsprot.protocol.ServerProt
 import net.rsprot.protocol.game.outgoing.prot.GameServerProt
 import net.rsprot.protocol.game.outgoing.worldentity.SetActiveWorld
@@ -13,7 +13,7 @@ public class SetActiveWorldEncoder : MessageEncoder<SetActiveWorld> {
     override val prot: ServerProt = GameServerProt.SET_ACTIVE_WORLD
 
     override fun encode(
-        ctx: ChannelHandlerContext,
+        streamCipher: StreamCipher,
         buffer: JagByteBuf,
         message: SetActiveWorld,
     ) {

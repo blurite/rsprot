@@ -1,7 +1,7 @@
 package net.rsprot.protocol.game.outgoing.codec.camera
 
-import io.netty.channel.ChannelHandlerContext
 import net.rsprot.buffer.JagByteBuf
+import net.rsprot.crypto.cipher.StreamCipher
 import net.rsprot.protocol.ServerProt
 import net.rsprot.protocol.game.outgoing.camera.CamMoveToEasedCircular
 import net.rsprot.protocol.game.outgoing.prot.GameServerProt
@@ -13,7 +13,7 @@ public class CamMoveToEasedCircularEncoder : MessageEncoder<CamMoveToEasedCircul
     override val prot: ServerProt = GameServerProt.CAM_MOVETO_EASED_CIRCULAR
 
     override fun encode(
-        ctx: ChannelHandlerContext,
+        streamCipher: StreamCipher,
         buffer: JagByteBuf,
         message: CamMoveToEasedCircular,
     ) {

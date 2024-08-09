@@ -1,9 +1,8 @@
 package net.rsprot.protocol.common.loginprot.outgoing.codec
 
-import io.netty.channel.ChannelHandlerContext
 import net.rsprot.buffer.JagByteBuf
+import net.rsprot.crypto.cipher.StreamCipher
 import net.rsprot.protocol.ServerProt
-import net.rsprot.protocol.channel.ChannelAttributes
 import net.rsprot.protocol.common.loginprot.outgoing.prot.LoginServerProt
 import net.rsprot.protocol.loginprot.outgoing.LoginResponse
 import net.rsprot.protocol.loginprot.outgoing.util.AuthenticatorResponse
@@ -13,22 +12,18 @@ public class OkLoginResponseEncoder : MessageEncoder<LoginResponse.Ok> {
     override val prot: ServerProt = LoginServerProt.OK
 
     override fun encode(
-        ctx: ChannelHandlerContext,
+        streamCipher: StreamCipher,
         buffer: JagByteBuf,
         message: LoginResponse.Ok,
     ) {
         when (val response = message.authenticatorResponse) {
             is AuthenticatorResponse.AuthenticatorCode -> {
-                val cipherPair =
-                    ctx.channel().attr(ChannelAttributes.STREAM_CIPHER_PAIR).get()
-                        ?: throw IllegalStateException("Stream cipher not initialized.")
-                val encoderCipher = cipherPair.encoderCipher
                 val code = response.code
                 buffer.p1(1)
-                buffer.p1((code ushr 24 and 0xFF) + encoderCipher.nextInt())
-                buffer.p1((code ushr 16 and 0xFF) + encoderCipher.nextInt())
-                buffer.p1((code ushr 8 and 0xFF) + encoderCipher.nextInt())
-                buffer.p1((code and 0xFF) + encoderCipher.nextInt())
+                buffer.p1((code ushr 24 and 0xFF) + streamCipher.nextInt())
+                buffer.p1((code ushr 16 and 0xFF) + streamCipher.nextInt())
+                buffer.p1((code ushr 8 and 0xFF) + streamCipher.nextInt())
+                buffer.p1((code and 0xFF) + streamCipher.nextInt())
             }
             AuthenticatorResponse.NoAuthenticator -> {
                 buffer.p1(0)

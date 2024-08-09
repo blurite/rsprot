@@ -1,7 +1,7 @@
 package net.rsprot.protocol.game.outgoing.codec.map
 
-import io.netty.channel.ChannelHandlerContext
 import net.rsprot.buffer.JagByteBuf
+import net.rsprot.crypto.cipher.StreamCipher
 import net.rsprot.protocol.ServerProt
 import net.rsprot.protocol.game.outgoing.map.RebuildLogin
 import net.rsprot.protocol.game.outgoing.map.StaticRebuildMessage
@@ -12,7 +12,7 @@ public class RebuildNormalEncoder : MessageEncoder<StaticRebuildMessage> {
     override val prot: ServerProt = GameServerProt.REBUILD_NORMAL
 
     override fun encode(
-        ctx: ChannelHandlerContext,
+        streamCipher: StreamCipher,
         buffer: JagByteBuf,
         message: StaticRebuildMessage,
     ) {

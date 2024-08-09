@@ -1,8 +1,8 @@
 package net.rsprot.protocol.game.outgoing.codec.map
 
-import io.netty.channel.ChannelHandlerContext
 import net.rsprot.buffer.JagByteBuf
 import net.rsprot.buffer.bitbuffer.toBitBuf
+import net.rsprot.crypto.cipher.StreamCipher
 import net.rsprot.crypto.xtea.XteaKey
 import net.rsprot.protocol.ServerProt
 import net.rsprot.protocol.game.outgoing.map.RebuildWorldEntity
@@ -15,7 +15,7 @@ public class RebuildWorldEntityEncoder : MessageEncoder<RebuildWorldEntity> {
     override val prot: ServerProt = GameServerProt.REBUILD_WORLDENTITY
 
     override fun encode(
-        ctx: ChannelHandlerContext,
+        streamCipher: StreamCipher,
         buffer: JagByteBuf,
         message: RebuildWorldEntity,
     ) {

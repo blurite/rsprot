@@ -1,7 +1,7 @@
 package net.rsprot.protocol.game.outgoing.codec.camera
 
-import io.netty.channel.ChannelHandlerContext
 import net.rsprot.buffer.JagByteBuf
+import net.rsprot.crypto.cipher.StreamCipher
 import net.rsprot.protocol.ServerProt
 import net.rsprot.protocol.game.outgoing.camera.CamLookAtEasedAngleRelative
 import net.rsprot.protocol.game.outgoing.prot.GameServerProt
@@ -13,7 +13,7 @@ public class CamLookAtEasedAngleRelativeEncoder : MessageEncoder<CamLookAtEasedA
     override val prot: ServerProt = GameServerProt.CAM_LOOKAT_EASED_ANGLE_RELATIVE
 
     override fun encode(
-        ctx: ChannelHandlerContext,
+        streamCipher: StreamCipher,
         buffer: JagByteBuf,
         message: CamLookAtEasedAngleRelative,
     ) {

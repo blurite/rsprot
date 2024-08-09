@@ -29,7 +29,7 @@ public class Js5MessageEncoder(
         // It simply just writes the request ids followed by the payload itself.
         val encoder = repository.getEncoder(msg::class.java)
         encoder.encode(
-            ctx,
+            cipher,
             out.toJagByteBuf(),
             msg,
         )

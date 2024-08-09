@@ -1,8 +1,8 @@
 package net.rsprot.protocol.game.outgoing.codec.clan
 
-import io.netty.channel.ChannelHandlerContext
 import net.rsprot.buffer.JagByteBuf
 import net.rsprot.compression.Base37
+import net.rsprot.crypto.cipher.StreamCipher
 import net.rsprot.protocol.ServerProt
 import net.rsprot.protocol.game.outgoing.clan.ClanChannelFull
 import net.rsprot.protocol.game.outgoing.prot.GameServerProt
@@ -14,7 +14,7 @@ public class ClanChannelFullEncoder : MessageEncoder<ClanChannelFull> {
     override val prot: ServerProt = GameServerProt.CLANCHANNEL_FULL
 
     override fun encode(
-        ctx: ChannelHandlerContext,
+        streamCipher: StreamCipher,
         buffer: JagByteBuf,
         message: ClanChannelFull,
     ) {

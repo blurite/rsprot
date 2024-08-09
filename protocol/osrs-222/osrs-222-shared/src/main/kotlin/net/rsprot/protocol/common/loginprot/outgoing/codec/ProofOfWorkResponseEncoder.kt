@@ -1,7 +1,7 @@
 package net.rsprot.protocol.common.loginprot.outgoing.codec
 
-import io.netty.channel.ChannelHandlerContext
 import net.rsprot.buffer.JagByteBuf
+import net.rsprot.crypto.cipher.StreamCipher
 import net.rsprot.protocol.ServerProt
 import net.rsprot.protocol.common.loginprot.outgoing.prot.LoginServerProt
 import net.rsprot.protocol.loginprot.outgoing.LoginResponse
@@ -11,7 +11,7 @@ public class ProofOfWorkResponseEncoder : MessageEncoder<LoginResponse.ProofOfWo
     override val prot: ServerProt = LoginServerProt.PROOF_OF_WORK
 
     override fun encode(
-        ctx: ChannelHandlerContext,
+        streamCipher: StreamCipher,
         buffer: JagByteBuf,
         message: LoginResponse.ProofOfWork,
     ) {

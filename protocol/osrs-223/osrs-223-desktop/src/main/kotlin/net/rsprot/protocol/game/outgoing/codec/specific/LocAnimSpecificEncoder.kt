@@ -1,7 +1,7 @@
 package net.rsprot.protocol.game.outgoing.codec.specific
 
-import io.netty.channel.ChannelHandlerContext
 import net.rsprot.buffer.JagByteBuf
+import net.rsprot.crypto.cipher.StreamCipher
 import net.rsprot.protocol.ServerProt
 import net.rsprot.protocol.game.outgoing.prot.GameServerProt
 import net.rsprot.protocol.game.outgoing.specific.LocAnimSpecific
@@ -11,7 +11,7 @@ public class LocAnimSpecificEncoder : MessageEncoder<LocAnimSpecific> {
     override val prot: ServerProt = GameServerProt.LOC_ANIM_SPECIFIC
 
     override fun encode(
-        ctx: ChannelHandlerContext,
+        streamCipher: StreamCipher,
         buffer: JagByteBuf,
         message: LocAnimSpecific,
     ) {

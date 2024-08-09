@@ -1,7 +1,7 @@
 package net.rsprot.protocol.game.outgoing.codec.misc.client
 
-import io.netty.channel.ChannelHandlerContext
 import net.rsprot.buffer.JagByteBuf
+import net.rsprot.crypto.cipher.StreamCipher
 import net.rsprot.crypto.crc.CyclicRedundancyCheck
 import net.rsprot.protocol.ServerProt
 import net.rsprot.protocol.game.outgoing.misc.client.UpdateUid192
@@ -14,7 +14,7 @@ public class UpdateUid192Encoder : MessageEncoder<UpdateUid192> {
     override val prot: ServerProt = GameServerProt.UPDATE_UID192
 
     override fun encode(
-        ctx: ChannelHandlerContext,
+        streamCipher: StreamCipher,
         buffer: JagByteBuf,
         message: UpdateUid192,
     ) {

@@ -1,7 +1,7 @@
 package net.rsprot.protocol.game.outgoing.codec.clan
 
-import io.netty.channel.ChannelHandlerContext
 import net.rsprot.buffer.JagByteBuf
+import net.rsprot.crypto.cipher.StreamCipher
 import net.rsprot.protocol.ServerProt
 import net.rsprot.protocol.game.outgoing.clan.VarClanDisable
 import net.rsprot.protocol.game.outgoing.prot.GameServerProt
@@ -13,7 +13,7 @@ public class VarClanDisableEncoder : MessageEncoder<VarClanDisable> {
     override val prot: ServerProt = GameServerProt.VARCLAN_DISABLE
 
     override fun encode(
-        ctx: ChannelHandlerContext,
+        streamCipher: StreamCipher,
         buffer: JagByteBuf,
         message: VarClanDisable,
     ) {

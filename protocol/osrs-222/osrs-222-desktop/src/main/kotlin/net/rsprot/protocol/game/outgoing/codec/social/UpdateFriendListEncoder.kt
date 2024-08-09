@@ -1,7 +1,7 @@
 package net.rsprot.protocol.game.outgoing.codec.social
 
-import io.netty.channel.ChannelHandlerContext
 import net.rsprot.buffer.JagByteBuf
+import net.rsprot.crypto.cipher.StreamCipher
 import net.rsprot.protocol.ServerProt
 import net.rsprot.protocol.game.outgoing.prot.GameServerProt
 import net.rsprot.protocol.game.outgoing.social.UpdateFriendList
@@ -13,7 +13,7 @@ public class UpdateFriendListEncoder : MessageEncoder<UpdateFriendList> {
     override val prot: ServerProt = GameServerProt.UPDATE_FRIENDLIST
 
     override fun encode(
-        ctx: ChannelHandlerContext,
+        streamCipher: StreamCipher,
         buffer: JagByteBuf,
         message: UpdateFriendList,
     ) {
