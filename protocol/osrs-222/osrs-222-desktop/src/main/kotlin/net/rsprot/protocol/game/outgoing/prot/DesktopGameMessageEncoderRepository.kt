@@ -1,5 +1,6 @@
 package net.rsprot.protocol.game.outgoing.prot
 
+import net.rsprot.compression.provider.HuffmanCodecProvider
 import net.rsprot.protocol.ProtRepository
 import net.rsprot.protocol.game.outgoing.codec.camera.CamLookAtEasedAngleAbsoluteEncoder
 import net.rsprot.protocol.game.outgoing.codec.camera.CamLookAtEasedAngleRelativeEncoder
@@ -137,7 +138,7 @@ import net.rsprot.protocol.message.codec.outgoing.MessageEncoderRepositoryBuilde
 
 public object DesktopGameMessageEncoderRepository {
     @ExperimentalStdlibApi
-    public fun build(): MessageEncoderRepository<GameServerProt> {
+    public fun build(huffmanCodecProvider: HuffmanCodecProvider): MessageEncoderRepository<GameServerProt> {
         val protRepository = ProtRepository.of<GameServerProt>()
         val builder =
             MessageEncoderRepositoryBuilder(
@@ -237,8 +238,8 @@ public object DesktopGameMessageEncoderRepository {
                 bind(UpdateInvPartialEncoder())
                 bind(UpdateInvStopTransmitEncoder())
 
-                bind(MessagePrivateEncoder())
-                bind(MessagePrivateEchoEncoder())
+                bind(MessagePrivateEncoder(huffmanCodecProvider))
+                bind(MessagePrivateEchoEncoder(huffmanCodecProvider))
                 bind(FriendListLoadedEncoder())
                 bind(UpdateFriendListEncoder())
                 bind(UpdateIgnoreListEncoder())
@@ -246,7 +247,7 @@ public object DesktopGameMessageEncoderRepository {
                 bind(UpdateFriendChatChannelFullV1Encoder())
                 bind(UpdateFriendChatChannelFullV2Encoder())
                 bind(UpdateFriendChatChannelSingleUserEncoder())
-                bind(MessageFriendChannelEncoder())
+                bind(MessageFriendChannelEncoder(huffmanCodecProvider))
 
                 bind(VarClanEncoder())
                 bind(VarClanEnableEncoder())
@@ -255,8 +256,8 @@ public object DesktopGameMessageEncoderRepository {
                 bind(ClanChannelDeltaEncoder())
                 bind(ClanSettingsFullEncoder())
                 bind(ClanSettingsDeltaEncoder())
-                bind(MessageClanChannelEncoder())
-                bind(MessageClanChannelSystemEncoder())
+                bind(MessageClanChannelEncoder(huffmanCodecProvider))
+                bind(MessageClanChannelSystemEncoder(huffmanCodecProvider))
 
                 bind(LogoutEncoder())
                 bind(LogoutWithReasonEncoder())

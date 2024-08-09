@@ -1,5 +1,6 @@
 package net.rsprot.protocol.api.repositories
 
+import net.rsprot.compression.provider.HuffmanCodecProvider
 import net.rsprot.protocol.ServerProt
 import net.rsprot.protocol.common.client.ClientTypeMap
 import net.rsprot.protocol.common.client.OldSchoolClientType
@@ -17,12 +18,14 @@ public class MessageEncoderRepositories private constructor(
     public val js5MessageDecoderRepository: MessageEncoderRepository<ServerProt>,
     public val gameMessageDecoderRepositories: ClientTypeMap<MessageEncoderRepository<ServerProt>>,
 ) {
-    public constructor() : this(
+    public constructor(
+        huffmanCodecProvider: HuffmanCodecProvider,
+    ) : this(
         LoginMessageEncoderRepository.build(),
         Js5MessageEncoderRepository.build(),
         ClientTypeMap.of(
             OldSchoolClientType.COUNT,
-            listOf(OldSchoolClientType.DESKTOP to DesktopGameMessageEncoderRepository.build()),
+            listOf(OldSchoolClientType.DESKTOP to DesktopGameMessageEncoderRepository.build(huffmanCodecProvider)),
         ),
     )
 }

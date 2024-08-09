@@ -98,7 +98,7 @@ public class NetworkService<R, T : Js5GroupType>
         js5Configuration: Js5Configuration,
         js5GroupProvider: Js5GroupProvider<T>,
     ) {
-        internal val encoderRepositories: MessageEncoderRepositories = MessageEncoderRepositories()
+        internal val encoderRepositories: MessageEncoderRepositories = MessageEncoderRepositories(huffmanCodecProvider)
         internal val js5Service: Js5Service<T> = Js5Service(js5Configuration, js5GroupProvider, js5GroupSizeProvider)
         private val js5ServiceExecutor = Thread(js5Service)
         private val updateZonePartialEnclosedCacheClientTypeMap:
