@@ -46,9 +46,8 @@ public class Sha256Challenge(
      * must result in [difficulty] number of leading zero bits after having been hashed.
      * @return the base string used for the hashing input.
      */
-    public fun getBaseString(): String {
-        return Integer.toHexString(this.unknown) + Integer.toHexString(this.difficulty) + this.salt
-    }
+    public fun getBaseString(): String =
+        Integer.toHexString(this.unknown) + Integer.toHexString(this.difficulty) + this.salt
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -68,11 +67,10 @@ public class Sha256Challenge(
         return result
     }
 
-    override fun toString(): String {
-        return "Sha256Challenge(" +
+    override fun toString(): String =
+        "Sha256Challenge(" +
             "unknown=$unknown, " +
             "difficulty=$difficulty, " +
             "salt='$salt'" +
             ")"
-    }
 }

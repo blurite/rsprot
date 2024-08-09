@@ -55,11 +55,10 @@ public class OpNpc private constructor(
         return result
     }
 
-    override fun toString(): String {
-        return "OpNpc(" +
+    override fun toString(): String =
+        "OpNpc(" +
             "index=$index, " +
             "controlKey=$controlKey, " +
             "op=$op" +
             ")"
-    }
 }

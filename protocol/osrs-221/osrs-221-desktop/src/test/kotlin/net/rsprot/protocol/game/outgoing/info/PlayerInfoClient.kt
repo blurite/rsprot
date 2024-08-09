@@ -503,7 +503,9 @@ class PlayerInfoClient {
         private const val CUR_CYCLE_INACTIVE = 0x1
         private const val NEXT_CYCLE_INACTIVE = 0x2
 
-        class Player(val playerId: Int) {
+        class Player(
+            val playerId: Int,
+        ) {
             var queuedMove: Boolean = false
             var coord: CoordGrid = CoordGrid.INVALID
             var skullIcon: Int = -1
@@ -527,8 +529,8 @@ class PlayerInfoClient {
             var identKit: IntArray = IntArray(12)
             var colours: IntArray = IntArray(5)
 
-            override fun toString(): String {
-                return "Player(" +
+            override fun toString(): String =
+                "Player(" +
                     "playerId=$playerId, " +
                     "queuedMove=$queuedMove, " +
                     "coord=$coord, " +
@@ -553,7 +555,6 @@ class PlayerInfoClient {
                     "identKit=${identKit.contentToString()}, " +
                     "colours=${colours.contentToString()}" +
                     ")"
-            }
         }
     }
 }

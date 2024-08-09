@@ -30,7 +30,6 @@ import net.rsprot.protocol.game.outgoing.info.worldentityinfo.WorldEntityProtoco
 import net.rsprot.protocol.message.ZoneProt
 import net.rsprot.protocol.message.codec.UpdateZonePartialEnclosedCache
 import net.rsprot.protocol.message.codec.incoming.provider.GameMessageConsumerRepositoryProvider
-import net.rsprot.protocol.tools.MessageDecodingTools
 import java.util.ArrayDeque
 import java.util.EnumMap
 import java.util.LinkedList
@@ -63,9 +62,6 @@ import kotlin.time.measureTime
  * for serving any connected clients
  * @param js5GroupProvider the provider for any JS5 requests that the client makes
  * @property encoderRepositories the encoder repositories for all the connection types
- * @property messageDecodingTools the set of message decoding tools, which currently
- * only includes Huffman, but may require more instances in the future. This is passed to all
- * the message decoders.
  * @property js5Service the service behind the JS5, serving all connected clients fairly
  * @property js5ServiceExecutor the thread executing the JS5 service. Since the main JS5
  * service is fairly lightweight and doesn't actually process much, a single thread
@@ -105,7 +101,6 @@ public class NetworkService<R, T : Js5GroupType>
         js5GroupProvider: Js5GroupProvider<T>,
     ) {
         internal val encoderRepositories: MessageEncoderRepositories = MessageEncoderRepositories()
-        internal val messageDecodingTools: MessageDecodingTools = MessageDecodingTools(huffmanCodecProvider)
         internal val js5Service: Js5Service<T> = Js5Service(js5Configuration, js5GroupProvider, js5GroupSizeProvider)
         private val js5ServiceExecutor = Thread(js5Service)
         private val updateZonePartialEnclosedCacheClientTypeMap:
@@ -114,6 +109,7 @@ public class NetworkService<R, T : Js5GroupType>
             MessageDecoderRepositories.initialize(
                 clientTypes,
                 rsaKeyPair,
+                huffmanCodecProvider,
             )
         public val playerInfoProtocol: PlayerInfoProtocol
             get() = entityInfoProtocols.playerInfoProtocol
@@ -148,7 +144,8 @@ public class NetworkService<R, T : Js5GroupType>
                             .map(initializer::bind)
                             .map<ChannelFuture, CompletableFuture<Void>>(ChannelFuture::asCompletableFuture)
                     val future =
-                        CompletableFuture.allOf(*futures.toTypedArray())
+                        CompletableFuture
+                            .allOf(*futures.toTypedArray())
                             .handle { _, exception ->
                                 if (exception != null) {
                                     bossGroup.shutdownGracefully()
@@ -300,9 +297,7 @@ public class NetworkService<R, T : Js5GroupType>
         /**
          * Checks whether the provided [clientType] is supported by the service.
          */
-        public fun isSupported(clientType: OldSchoolClientType): Boolean {
-            return clientType in clientTypes
-        }
+        public fun isSupported(clientType: OldSchoolClientType): Boolean = clientType in clientTypes
 
         public companion object {
             public const val REVISION: Int = 222

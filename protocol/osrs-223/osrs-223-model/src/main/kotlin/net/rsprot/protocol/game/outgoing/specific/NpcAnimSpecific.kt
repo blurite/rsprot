@@ -55,11 +55,10 @@ public class NpcAnimSpecific private constructor(
         return result
     }
 
-    override fun toString(): String {
-        return "NpcAnimSpecific(" +
+    override fun toString(): String =
+        "NpcAnimSpecific(" +
             "index=$index, " +
             "id=$id, " +
             "delay=$delay" +
             ")"
-    }
 }

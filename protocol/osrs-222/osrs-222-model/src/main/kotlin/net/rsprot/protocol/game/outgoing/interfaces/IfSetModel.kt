@@ -52,11 +52,10 @@ public class IfSetModel private constructor(
         return result
     }
 
-    override fun toString(): String {
-        return "IfSetModel(" +
+    override fun toString(): String =
+        "IfSetModel(" +
             "interfaceId=$interfaceId, " +
             "componentId=$componentId, " +
             "model=$model" +
             ")"
-    }
 }

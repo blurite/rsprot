@@ -49,11 +49,10 @@ public class IfSetHide private constructor(
         return result
     }
 
-    override fun toString(): String {
-        return "IfSetHide(" +
+    override fun toString(): String =
+        "IfSetHide(" +
             "interfaceId=$interfaceId, " +
             "componentId=$componentId, " +
             "hidden=$hidden" +
             ")"
-    }
 }

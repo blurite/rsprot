@@ -74,15 +74,14 @@ public class RebuildLogin private constructor(
         return result
     }
 
-    override fun toString(): String {
-        return "RebuildLogin(" +
+    override fun toString(): String =
+        "RebuildLogin(" +
             "keys=$keys, " +
             "gpiInitBlock=$gpiInitBlock, " +
             "zoneX=$zoneX, " +
             "zoneZ=$zoneZ, " +
             "worldArea=$worldArea" +
             ")"
-    }
 
     private companion object {
         private const val REBUILD_NORMAL_MAXIMUM_SIZE: Int = 44

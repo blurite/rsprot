@@ -43,11 +43,10 @@ public class GameMessageHandlers
             return result
         }
 
-        override fun toString(): String {
-            return "GameMessageHandlers(" +
+        override fun toString(): String =
+            "GameMessageHandlers(" +
                 "incomingGameMessageQueueProvider=$incomingGameMessageQueueProvider, " +
                 "outgoingGameMessageQueueProvider=$outgoingGameMessageQueueProvider, " +
                 "gameMessageCounterProvider=$gameMessageCounterProvider" +
                 ")"
-        }
     }

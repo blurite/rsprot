@@ -25,13 +25,9 @@ public class HintArrow(
         return type == other.type
     }
 
-    override fun hashCode(): Int {
-        return type.hashCode()
-    }
+    override fun hashCode(): Int = type.hashCode()
 
-    override fun toString(): String {
-        return "HintArrow(type=$type)"
-    }
+    override fun toString(): String = "HintArrow(type=$type)"
 
     public sealed interface HintArrowType
 
@@ -60,13 +56,9 @@ public class HintArrow(
             return index == other.index
         }
 
-        override fun hashCode(): Int {
-            return index
-        }
+        override fun hashCode(): Int = index
 
-        override fun toString(): String {
-            return "NpcHintArrow(index=$index)"
-        }
+        override fun toString(): String = "NpcHintArrow(index=$index)"
     }
 
     /**
@@ -88,13 +80,9 @@ public class HintArrow(
             return index == other.index
         }
 
-        override fun hashCode(): Int {
-            return index
-        }
+        override fun hashCode(): Int = index
 
-        override fun toString(): String {
-            return "PlayerHintArrow(index=$index)"
-        }
+        override fun toString(): String = "PlayerHintArrow(index=$index)"
     }
 
     /**
@@ -169,9 +157,7 @@ public class HintArrow(
             ;
 
             internal companion object {
-                operator fun get(id: Int): HintArrowTilePosition {
-                    return entries.first { it.id == id }
-                }
+                operator fun get(id: Int): HintArrowTilePosition = entries.first { it.id == id }
             }
         }
 
@@ -197,13 +183,12 @@ public class HintArrow(
             return result
         }
 
-        override fun toString(): String {
-            return "TileHintArrow(" +
+        override fun toString(): String =
+            "TileHintArrow(" +
                 "x=$x, " +
                 "z=$z, " +
                 "height=$height, " +
                 "position=$position" +
                 ")"
-        }
     }
 }

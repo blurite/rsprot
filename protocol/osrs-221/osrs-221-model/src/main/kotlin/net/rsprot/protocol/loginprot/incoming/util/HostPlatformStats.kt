@@ -127,8 +127,8 @@ public class HostPlatformStats(
         return result
     }
 
-    override fun toString(): String {
-        return "HostPlatformStats(" +
+    override fun toString(): String =
+        "HostPlatformStats(" +
             "os64Bit=$os64Bit, " +
             "systemMemory=$systemMemory, " +
             "gpuDxName='$gpuDxName', " +
@@ -157,5 +157,4 @@ public class HostPlatformStats(
             "cpuCount1=$cpuCount1, " +
             "cpuCount2=$cpuCount2" +
             ")"
-    }
 }

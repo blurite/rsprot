@@ -71,11 +71,10 @@ public class SetChatFilterSettings private constructor(
         return result
     }
 
-    override fun toString(): String {
-        return "SetChatFilterSettings(" +
+    override fun toString(): String =
+        "SetChatFilterSettings(" +
             "publicChatFilter=$publicChatFilter, " +
             "privateChatFilter=$privateChatFilter, " +
             "tradeChatFilter=$tradeChatFilter" +
             ")"
-    }
 }

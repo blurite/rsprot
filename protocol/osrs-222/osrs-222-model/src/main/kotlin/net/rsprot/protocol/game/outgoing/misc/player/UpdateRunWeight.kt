@@ -23,11 +23,7 @@ public class UpdateRunWeight(
         return runweight == other.runweight
     }
 
-    override fun hashCode(): Int {
-        return runweight
-    }
+    override fun hashCode(): Int = runweight
 
-    override fun toString(): String {
-        return "UpdateRunWeight(runweight=$runweight)"
-    }
+    override fun toString(): String = "UpdateRunWeight(runweight=$runweight)"
 }

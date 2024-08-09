@@ -72,13 +72,12 @@ public class NpcSpotAnimSpecific private constructor(
         return result
     }
 
-    override fun toString(): String {
-        return "NpcSpotAnimSpecific(" +
+    override fun toString(): String =
+        "NpcSpotAnimSpecific(" +
             "index=$index, " +
             "id=$id, " +
             "slot=$slot, " +
             "height=$height, " +
             "delay=$delay" +
             ")"
-    }
 }

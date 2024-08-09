@@ -60,12 +60,11 @@ public class SendPingReply private constructor(
         return result
     }
 
-    override fun toString(): String {
-        return "SendPingReply(" +
+    override fun toString(): String =
+        "SendPingReply(" +
             "fps=$fps, " +
             "gcPercentTime=$gcPercentTime, " +
             "value1=$value1, " +
             "value2=$value2" +
             ")"
-    }
 }

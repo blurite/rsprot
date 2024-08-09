@@ -48,12 +48,11 @@ public class EventMouseMove private constructor(
     override val category: ClientProtCategory
         get() = GameClientProtCategory.CLIENT_EVENT
 
-    override fun toString(): String {
-        return "EventMouseMove(" +
+    override fun toString(): String =
+        "EventMouseMove(" +
             "movements=$movements, " +
             "totalTime=$totalTime, " +
             "averageTime=$averageTime, " +
             "remainingTime=$remainingTime" +
             ")"
-    }
 }

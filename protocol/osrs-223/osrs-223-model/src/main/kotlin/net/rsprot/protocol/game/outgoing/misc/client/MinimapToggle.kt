@@ -37,11 +37,7 @@ public class MinimapToggle(
         return minimapState == other.minimapState
     }
 
-    override fun hashCode(): Int {
-        return minimapState
-    }
+    override fun hashCode(): Int = minimapState
 
-    override fun toString(): String {
-        return "MinimapToggle(minimapState=$minimapState)"
-    }
+    override fun toString(): String = "MinimapToggle(minimapState=$minimapState)"
 }

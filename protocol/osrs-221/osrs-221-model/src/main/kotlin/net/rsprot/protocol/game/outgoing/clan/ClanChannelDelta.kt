@@ -61,14 +61,13 @@ public class ClanChannelDelta private constructor(
         return result
     }
 
-    override fun toString(): String {
-        return "ClanChannelDelta(" +
+    override fun toString(): String =
+        "ClanChannelDelta(" +
             "clanType=$clanType, " +
             "clanHash=$clanHash, " +
             "updateNum=$updateNum, " +
             "events=$events" +
             ")"
-    }
 
     public sealed interface ClanChannelDeltaEvent
 
@@ -153,13 +152,12 @@ public class ClanChannelDelta private constructor(
             return result
         }
 
-        override fun toString(): String {
-            return "ClanChannelDeltaUpdateBaseSettingsEvent(" +
+        override fun toString(): String =
+            "ClanChannelDeltaUpdateBaseSettingsEvent(" +
                 "clanName=$clanName, " +
                 "talkRank=$talkRank, " +
                 "kickRank=$kickRank" +
                 ")"
-        }
     }
 
     /**
@@ -190,13 +188,9 @@ public class ClanChannelDelta private constructor(
             return _index == other._index
         }
 
-        override fun hashCode(): Int {
-            return _index.hashCode()
-        }
+        override fun hashCode(): Int = _index.hashCode()
 
-        override fun toString(): String {
-            return "ClanChannelDeltaDeleteUserEvent(index=$index)"
-        }
+        override fun toString(): String = "ClanChannelDeltaDeleteUserEvent(index=$index)"
     }
 
     /**
@@ -256,14 +250,13 @@ public class ClanChannelDelta private constructor(
             return result
         }
 
-        override fun toString(): String {
-            return "ClanChannelDeltaUpdateUserDetailsEvent(" +
+        override fun toString(): String =
+            "ClanChannelDeltaUpdateUserDetailsEvent(" +
                 "index=$index, " +
                 "name='$name', " +
                 "rank=$rank, " +
                 "world=$world" +
                 ")"
-        }
     }
 
     /**
@@ -326,13 +319,12 @@ public class ClanChannelDelta private constructor(
             return result
         }
 
-        override fun toString(): String {
-            return "ClanChannelDeltaUpdateUserDetailsV2Event(" +
+        override fun toString(): String =
+            "ClanChannelDeltaUpdateUserDetailsV2Event(" +
                 "index=$index, " +
                 "name='$name', " +
                 "rank=$rank, " +
                 "world=$world" +
                 ")"
-        }
     }
 }

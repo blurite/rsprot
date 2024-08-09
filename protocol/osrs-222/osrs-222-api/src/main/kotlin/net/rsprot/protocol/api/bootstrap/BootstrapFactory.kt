@@ -31,27 +31,25 @@ public class BootstrapFactory(
      * Creates a parent loop group with a single thread behind it, based on the best
      * available event loop group.
      */
-    public fun createParentLoopGroup(): EventLoopGroup {
-        return when {
+    public fun createParentLoopGroup(): EventLoopGroup =
+        when {
             IOUring.isAvailable() -> IOUringEventLoopGroup(1)
             Epoll.isAvailable() -> EpollEventLoopGroup(1)
             KQueue.isAvailable() -> KQueueEventLoopGroup(1)
             else -> NioEventLoopGroup(1)
         }
-    }
 
     /**
      * Creates a child loop group with a number of threads based on availableProcessors * 2,
      * which is done at Netty level.
      */
-    public fun createChildLoopGroup(): EventLoopGroup {
-        return when {
+    public fun createChildLoopGroup(): EventLoopGroup =
+        when {
             IOUring.isAvailable() -> IOUringEventLoopGroup()
             Epoll.isAvailable() -> EpollEventLoopGroup()
             KQueue.isAvailable() -> KQueueEventLoopGroup()
             else -> NioEventLoopGroup()
         }
-    }
 
     /**
      * Creates a server bootstrap using the parent and child event loop groups with

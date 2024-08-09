@@ -24,11 +24,7 @@ public class EventAppletFocus(
         return inFocus == other.inFocus
     }
 
-    override fun hashCode(): Int {
-        return inFocus.hashCode()
-    }
+    override fun hashCode(): Int = inFocus.hashCode()
 
-    override fun toString(): String {
-        return "EventAppletFocus(inFocus=$inFocus)"
-    }
+    override fun toString(): String = "EventAppletFocus(inFocus=$inFocus)"
 }

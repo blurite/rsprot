@@ -25,11 +25,7 @@ public class IfOpenTop(
         return interfaceId == other.interfaceId
     }
 
-    override fun hashCode(): Int {
-        return interfaceId
-    }
+    override fun hashCode(): Int = interfaceId
 
-    override fun toString(): String {
-        return "IfOpenTop(interfaceId=$interfaceId)"
-    }
+    override fun toString(): String = "IfOpenTop(interfaceId=$interfaceId)"
 }

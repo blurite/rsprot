@@ -24,11 +24,7 @@ public class OpLoc6(
         return id == other.id
     }
 
-    override fun hashCode(): Int {
-        return id
-    }
+    override fun hashCode(): Int = id
 
-    override fun toString(): String {
-        return "OpLoc6(id=$id)"
-    }
+    override fun toString(): String = "OpLoc6(id=$id)"
 }

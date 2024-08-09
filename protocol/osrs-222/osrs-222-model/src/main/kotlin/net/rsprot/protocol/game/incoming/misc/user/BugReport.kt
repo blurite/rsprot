@@ -57,11 +57,10 @@ public class BugReport private constructor(
         return result
     }
 
-    override fun toString(): String {
-        return "BugReport(" +
+    override fun toString(): String =
+        "BugReport(" +
             "description='$description', " +
             "instructions='$instructions', " +
             "type=$type" +
             ")"
-    }
 }

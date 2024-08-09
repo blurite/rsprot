@@ -66,12 +66,11 @@ public class LocDel private constructor(
         return result
     }
 
-    override fun toString(): String {
-        return "LocDel(" +
+    override fun toString(): String =
+        "LocDel(" +
             "xInZone=$xInZone, " +
             "zInZone=$zInZone, " +
             "shape=$shape, " +
             "rotation=$rotation" +
             ")"
-    }
 }

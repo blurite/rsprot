@@ -68,13 +68,12 @@ public class IfSetAngle private constructor(
         return result
     }
 
-    override fun toString(): String {
-        return "IfSetAngle(" +
+    override fun toString(): String =
+        "IfSetAngle(" +
             "interfaceId=$interfaceId, " +
             "componentId=$componentId, " +
             "angleX=$angleX, " +
             "angleY=$angleY, " +
             "zoom=$zoom" +
             ")"
-    }
 }

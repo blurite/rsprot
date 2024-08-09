@@ -66,12 +66,11 @@ public class IfSetRotateSpeed private constructor(
         return result
     }
 
-    override fun toString(): String {
-        return "IfSetRotateSpeed(" +
+    override fun toString(): String =
+        "IfSetRotateSpeed(" +
             "interfaceId=$interfaceId, " +
             "componentId=$componentId, " +
             "xSpeed=$xSpeed, " +
             "ySpeed=$ySpeed" +
             ")"
-    }
 }

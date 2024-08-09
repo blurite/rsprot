@@ -55,11 +55,10 @@ public class HiscoreRequest(
         return result
     }
 
-    override fun toString(): String {
-        return "HiscoreRequest(" +
+    override fun toString(): String =
+        "HiscoreRequest(" +
             "name='$name', " +
             "type=$type, " +
             "requestId=$requestId" +
             ")"
-    }
 }

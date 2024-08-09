@@ -48,10 +48,9 @@ public class EventCameraPosition private constructor(
         return result
     }
 
-    override fun toString(): String {
-        return "EventCameraPosition(" +
+    override fun toString(): String =
+        "EventCameraPosition(" +
             "angleX=$angleX, " +
             "angleY=$angleY" +
             ")"
-    }
 }

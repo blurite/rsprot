@@ -142,7 +142,8 @@ public class GameLoginResponseHandler<R>(
         channel
             .attr(ChannelAttributes.STREAM_CIPHER_PAIR)
             .set(StreamCipherPair(encodingCipher, decodingCipher))
-        channel.attr(ChannelAttributes.HUFFMAN_CODEC)
+        channel
+            .attr(ChannelAttributes.HUFFMAN_CODEC)
             .set(networkService.huffmanCodecProvider)
         return Pair(encodingCipher, decodingCipher)
     }

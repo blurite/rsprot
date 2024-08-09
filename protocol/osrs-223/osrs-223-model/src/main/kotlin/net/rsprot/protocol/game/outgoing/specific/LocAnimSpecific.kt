@@ -110,8 +110,8 @@ public class LocAnimSpecific private constructor(
         return result
     }
 
-    override fun toString(): String {
-        return "LocAnimSpecific(" +
+    override fun toString(): String =
+        "LocAnimSpecific(" +
             "id=$id, " +
             "zoneX=$zoneX, " +
             "xInZone=$xInZone, " +
@@ -120,5 +120,4 @@ public class LocAnimSpecific private constructor(
             "shape=$shape, " +
             "rotation=$rotation" +
             ")"
-    }
 }

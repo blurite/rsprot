@@ -9,7 +9,5 @@ import net.rsprot.protocol.api.StreamCipherProvider
  * stream cipher based on the input seed.
  */
 public class DefaultStreamCipherProvider : StreamCipherProvider {
-    override fun provide(seed: IntArray): StreamCipher {
-        return IsaacRandom(seed)
-    }
+    override fun provide(seed: IntArray): StreamCipher = IsaacRandom(seed)
 }

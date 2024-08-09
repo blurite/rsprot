@@ -25,13 +25,9 @@ public class UpdateTradingPost(
         return updateType == other.updateType
     }
 
-    override fun hashCode(): Int {
-        return updateType.hashCode()
-    }
+    override fun hashCode(): Int = updateType.hashCode()
 
-    override fun toString(): String {
-        return "UpdateTradingPost(updateType=$updateType)"
-    }
+    override fun toString(): String = "UpdateTradingPost(updateType=$updateType)"
 
     public sealed interface TradingPostUpdateType
 
@@ -84,14 +80,13 @@ public class UpdateTradingPost(
             return result
         }
 
-        override fun toString(): String {
-            return "SetTradingPostOfferList(" +
+        override fun toString(): String =
+            "SetTradingPostOfferList(" +
                 "age=$age, " +
                 "obj=$obj, " +
                 "status=$status, " +
                 "offers=$offers" +
                 ")"
-        }
     }
 
     public class TradingPostOffer private constructor(
@@ -147,8 +142,8 @@ public class UpdateTradingPost(
             return result
         }
 
-        override fun toString(): String {
-            return "TradingPostOffer(" +
+        override fun toString(): String =
+            "TradingPostOffer(" +
                 "name='$name', " +
                 "previousName='$previousName', " +
                 "world=$world, " +
@@ -156,6 +151,5 @@ public class UpdateTradingPost(
                 "price=$price, " +
                 "count=$count" +
                 ")"
-        }
     }
 }

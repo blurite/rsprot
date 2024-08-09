@@ -47,8 +47,8 @@ public sealed interface LoginResponse : OutgoingLoginMessage {
         public val index: Int
             get() = _index.toInt()
 
-        override fun toString(): String {
-            return "Ok(" +
+        override fun toString(): String =
+            "Ok(" +
                 "authenticatorResponse=$authenticatorResponse, " +
                 "playerMod=$playerMod, " +
                 "member=$member, " +
@@ -58,7 +58,6 @@ public sealed interface LoginResponse : OutgoingLoginMessage {
                 "staffModLevel=$staffModLevel, " +
                 "index=$index" +
                 ")"
-        }
     }
 
     public data object InvalidUsernameOrPassword : LoginResponse
@@ -85,7 +84,10 @@ public sealed interface LoginResponse : OutgoingLoginMessage {
 
     public data object UpdateInProgress : LoginResponse
 
-    public class ReconnectOk(buffer: ByteBuf) : LoginResponse, DefaultByteBufHolder(buffer) {
+    public class ReconnectOk(
+        buffer: ByteBuf,
+    ) : DefaultByteBufHolder(buffer),
+        LoginResponse {
         public constructor(worldId: Int, playerInfo: PlayerInfo) : this(
             initializePlayerInfo(worldId, playerInfo),
         )
@@ -116,13 +118,9 @@ public sealed interface LoginResponse : OutgoingLoginMessage {
             return true
         }
 
-        override fun hashCode(): Int {
-            return super.hashCode()
-        }
+        override fun hashCode(): Int = super.hashCode()
 
-        override fun toString(): String {
-            return "ReconnectOk()"
-        }
+        override fun toString(): String = "ReconnectOk()"
     }
 
     public data object TooManyAttempts : LoginResponse

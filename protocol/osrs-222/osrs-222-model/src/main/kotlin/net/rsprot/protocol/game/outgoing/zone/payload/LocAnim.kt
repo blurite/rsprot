@@ -74,13 +74,12 @@ public class LocAnim private constructor(
         return result
     }
 
-    override fun toString(): String {
-        return "LocAnim(" +
+    override fun toString(): String =
+        "LocAnim(" +
             "id=$id, " +
             "xInZone=$xInZone, " +
             "zInZone=$zInZone, " +
             "shape=$shape, " +
             "rotation=$rotation" +
             ")"
-    }
 }

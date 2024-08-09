@@ -147,20 +147,18 @@ public class EntityInfoProtocols
                 npcInfoSupplier: NpcInfoSupplier,
                 npcWriters: MutableList<NpcAvatarExtendedInfoWriter>,
                 huffmanCodecProvider: HuffmanCodecProvider,
-            ): NpcAvatarFactory {
-                return NpcAvatarFactory(
+            ): NpcAvatarFactory =
+                NpcAvatarFactory(
                     allocator,
                     npcInfoSupplier.npcExtendedInfoFilter,
                     npcWriters,
                     huffmanCodecProvider,
                 )
-            }
 
-            private fun buildWorldEntityAvatarFactory(allocator: ByteBufAllocator): WorldEntityAvatarFactory {
-                return WorldEntityAvatarFactory(
+            private fun buildWorldEntityAvatarFactory(allocator: ByteBufAllocator): WorldEntityAvatarFactory =
+                WorldEntityAvatarFactory(
                     allocator,
                 )
-            }
 
             private fun buildWorldEntityInfoProtocol(
                 allocator: ByteBufAllocator,
@@ -177,26 +175,24 @@ public class EntityInfoProtocols
                 allocator: ByteBufAllocator,
                 playerInfoSupplier: PlayerInfoSupplier,
                 playerAvatarFactory: PlayerAvatarFactory,
-            ): PlayerInfoProtocol {
-                return PlayerInfoProtocol(
+            ): PlayerInfoProtocol =
+                PlayerInfoProtocol(
                     allocator,
                     playerInfoSupplier.playerInfoProtocolWorker,
                     playerAvatarFactory,
                 )
-            }
 
             private fun buildPlayerAvatarFactory(
                 allocator: ByteBufAllocator,
                 playerInfoSupplier: PlayerInfoSupplier,
                 playerWriters: MutableList<PlayerAvatarExtendedInfoWriter>,
                 huffmanCodecProvider: HuffmanCodecProvider,
-            ): PlayerAvatarFactory {
-                return PlayerAvatarFactory(
+            ): PlayerAvatarFactory =
+                PlayerAvatarFactory(
                     allocator,
                     playerInfoSupplier.playerExtendedInfoFilter,
                     playerWriters,
                     huffmanCodecProvider,
                 )
-            }
         }
     }

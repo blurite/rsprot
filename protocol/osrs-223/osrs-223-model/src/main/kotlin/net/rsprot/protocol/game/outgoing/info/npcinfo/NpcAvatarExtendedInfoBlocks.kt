@@ -70,10 +70,9 @@ public class NpcAvatarExtendedInfoBlocks(
         private inline fun <T : ExtendedInfo<T, E>, reified E : ExtendedInfoEncoder<T>> encoders(
             allEncoders: NpcExtendedInfoWriters,
             selector: (NpcExtendedInfoEncoders) -> E,
-        ): ClientTypeMap<E> {
-            return ClientTypeMap.ofType(allEncoders, OldSchoolClientType.COUNT) {
+        ): ClientTypeMap<E> =
+            ClientTypeMap.ofType(allEncoders, OldSchoolClientType.COUNT) {
                 it.encoders.oldSchoolClientType to selector(it.encoders)
             }
-        }
     }
 }

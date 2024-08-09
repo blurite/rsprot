@@ -77,9 +77,7 @@ public class IntArrayDeque {
         elementData = newElements
     }
 
-    private inline fun internalGet(internalIndex: Int): Int {
-        return elementData[internalIndex]
-    }
+    private inline fun internalGet(internalIndex: Int): Int = elementData[internalIndex]
 
     private fun positiveMod(index: Int): Int = if (index >= elementData.size) index - elementData.size else index
 
@@ -578,9 +576,7 @@ public class IntArrayDeque {
     }
 
     @Suppress("NOTHING_TO_OVERRIDE")
-    public fun toArray(): IntArray {
-        return toArray(IntArray(size))
-    }
+    public fun toArray(): IntArray = toArray(IntArray(size))
 
     internal companion object {
         private val emptyElementData = IntArray(0)

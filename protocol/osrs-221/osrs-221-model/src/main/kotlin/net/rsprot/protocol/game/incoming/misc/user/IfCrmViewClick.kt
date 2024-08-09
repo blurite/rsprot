@@ -80,8 +80,8 @@ public class IfCrmViewClick private constructor(
         return result
     }
 
-    override fun toString(): String {
-        return "IfCrmViewClick(" +
+    override fun toString(): String =
+        "IfCrmViewClick(" +
             "crmServerTarget=$crmServerTarget, " +
             "interfaceId=$interfaceId, " +
             "componentId=$componentId, " +
@@ -90,5 +90,4 @@ public class IfCrmViewClick private constructor(
             "behaviour2=$behaviour2, " +
             "behaviour3=$behaviour3" +
             ")"
-    }
 }

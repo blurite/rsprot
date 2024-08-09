@@ -69,12 +69,11 @@ public class Timings private constructor(
         return result
     }
 
-    override fun toString(): String {
-        return "Timings(" +
+    override fun toString(): String =
+        "Timings(" +
             "connectionLostDuration=$connectionLostDuration, " +
             "loginDuration=$loginDuration, " +
             "clientState=$clientState, " +
             "loginCount=$loginCount" +
             ")"
-    }
 }

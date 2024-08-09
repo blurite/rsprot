@@ -70,13 +70,12 @@ public class OpObj private constructor(
         return result
     }
 
-    override fun toString(): String {
-        return "OpObj(" +
+    override fun toString(): String =
+        "OpObj(" +
             "id=$id, " +
             "x=$x, " +
             "z=$z, " +
             "controlKey=$controlKey, " +
             "op=$op" +
             ")"
-    }
 }

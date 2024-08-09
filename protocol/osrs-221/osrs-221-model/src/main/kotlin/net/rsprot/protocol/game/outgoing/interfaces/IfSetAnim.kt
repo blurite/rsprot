@@ -52,11 +52,10 @@ public class IfSetAnim private constructor(
         return result
     }
 
-    override fun toString(): String {
-        return "IfSetAnim(" +
+    override fun toString(): String =
+        "IfSetAnim(" +
             "interfaceId=$interfaceId, " +
             "componentId=$componentId, " +
             "anim=$anim" +
             ")"
-    }
 }

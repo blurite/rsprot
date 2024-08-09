@@ -48,10 +48,9 @@ public class VarpLarge private constructor(
         return result
     }
 
-    override fun toString(): String {
-        return "VarpLarge(" +
+    override fun toString(): String =
+        "VarpLarge(" +
             "id=$id, " +
             "value=$value" +
             ")"
-    }
 }

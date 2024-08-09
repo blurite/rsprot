@@ -43,9 +43,7 @@ public abstract class ExtendedInfo<in T : ExtendedInfo<T, E>, E : ExtendedInfoEn
      * @param oldSchoolClientType the client for which to obtain the buffer.
      * @return the pre-computed buffer, or null if it does not exist.
      */
-    public fun getBuffer(oldSchoolClientType: OldSchoolClientType): ByteBuf? {
-        return buffers[oldSchoolClientType.id]
-    }
+    public fun getBuffer(oldSchoolClientType: OldSchoolClientType): ByteBuf? = buffers[oldSchoolClientType.id]
 
     /**
      * Gets the encoder for a given [oldSchoolClientType].
@@ -53,9 +51,7 @@ public abstract class ExtendedInfo<in T : ExtendedInfo<T, E>, E : ExtendedInfoEn
      * @return the client-specific encoder of this extended info block, or null
      * if one has not been registered.
      */
-    public fun getEncoder(oldSchoolClientType: OldSchoolClientType): E? {
-        return encoders.getOrNull(oldSchoolClientType)
-    }
+    public fun getEncoder(oldSchoolClientType: OldSchoolClientType): E? = encoders.getOrNull(oldSchoolClientType)
 
     /**
      * Releases all the client-specific buffers of this extended info block,

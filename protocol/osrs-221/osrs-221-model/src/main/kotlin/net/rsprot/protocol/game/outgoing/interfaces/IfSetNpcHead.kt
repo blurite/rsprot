@@ -53,11 +53,10 @@ public class IfSetNpcHead private constructor(
         return result
     }
 
-    override fun toString(): String {
-        return "IfSetNpcHead(" +
+    override fun toString(): String =
+        "IfSetNpcHead(" +
             "interfaceId=$interfaceId, " +
             "componentId=$componentId, " +
             "npc=$npc" +
             ")"
-    }
 }

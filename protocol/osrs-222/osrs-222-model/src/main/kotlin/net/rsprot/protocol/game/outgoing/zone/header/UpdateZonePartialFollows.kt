@@ -67,11 +67,10 @@ public class UpdateZonePartialFollows private constructor(
         return result
     }
 
-    override fun toString(): String {
-        return "UpdateZonePartialFollows(" +
+    override fun toString(): String =
+        "UpdateZonePartialFollows(" +
             "zoneX=$zoneX, " +
             "zoneZ=$zoneZ, " +
             "level=$level" +
             ")"
-    }
 }

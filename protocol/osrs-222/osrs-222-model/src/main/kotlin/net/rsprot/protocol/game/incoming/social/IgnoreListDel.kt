@@ -24,11 +24,7 @@ public class IgnoreListDel(
         return name == other.name
     }
 
-    override fun hashCode(): Int {
-        return name.hashCode()
-    }
+    override fun hashCode(): Int = name.hashCode()
 
-    override fun toString(): String {
-        return "IgnoreListDel(name='$name')"
-    }
+    override fun toString(): String = "IgnoreListDel(name='$name')"
 }

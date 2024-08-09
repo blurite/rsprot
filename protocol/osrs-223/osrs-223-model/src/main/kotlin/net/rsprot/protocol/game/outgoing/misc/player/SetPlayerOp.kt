@@ -53,11 +53,10 @@ public class SetPlayerOp private constructor(
         return result
     }
 
-    override fun toString(): String {
-        return "SetPlayerOp(" +
+    override fun toString(): String =
+        "SetPlayerOp(" +
             "id=$id, " +
             "priority=$priority, " +
             "op='$op'" +
             ")"
-    }
 }

@@ -207,8 +207,8 @@ public class ProjAnimSpecific private constructor(
         return result
     }
 
-    override fun toString(): String {
-        return "ProjAnimSpecific(" +
+    override fun toString(): String =
+        "ProjAnimSpecific(" +
             "id=$id, " +
             "startHeight=$startHeight, " +
             "endHeight=$endHeight, " +
@@ -224,5 +224,4 @@ public class ProjAnimSpecific private constructor(
             "deltaX=$deltaX, " +
             "deltaZ=$deltaZ" +
             ")"
-    }
 }

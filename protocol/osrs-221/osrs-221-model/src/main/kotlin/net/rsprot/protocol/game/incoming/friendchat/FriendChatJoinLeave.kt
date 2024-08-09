@@ -25,11 +25,7 @@ public class FriendChatJoinLeave(
         return name == other.name
     }
 
-    override fun hashCode(): Int {
-        return name.hashCode()
-    }
+    override fun hashCode(): Int = name.hashCode()
 
-    override fun toString(): String {
-        return "FriendChatJoinLeave(name='$name')"
-    }
+    override fun toString(): String = "FriendChatJoinLeave(name='$name')"
 }

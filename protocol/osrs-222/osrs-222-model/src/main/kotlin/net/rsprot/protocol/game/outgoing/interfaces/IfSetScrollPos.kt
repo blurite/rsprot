@@ -52,11 +52,10 @@ public class IfSetScrollPos private constructor(
         return result
     }
 
-    override fun toString(): String {
-        return "IfSetScrollPos(" +
+    override fun toString(): String =
+        "IfSetScrollPos(" +
             "interfaceId=$interfaceId, " +
             "componentId=$componentId, " +
             "scrollPos=$scrollPos" +
             ")"
-    }
 }

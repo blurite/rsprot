@@ -23,11 +23,7 @@ public class OpNpc6(
         return id == other.id
     }
 
-    override fun hashCode(): Int {
-        return id
-    }
+    override fun hashCode(): Int = id
 
-    override fun toString(): String {
-        return "OpNpc6(id=$id)"
-    }
+    override fun toString(): String = "OpNpc6(id=$id)"
 }

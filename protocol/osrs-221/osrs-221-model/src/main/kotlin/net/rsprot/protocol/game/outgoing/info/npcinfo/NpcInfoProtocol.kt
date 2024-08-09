@@ -68,9 +68,7 @@ public class NpcInfoProtocol(
     public fun alloc(
         idx: Int,
         oldSchoolClientType: OldSchoolClientType,
-    ): NpcInfo {
-        return npcInfoRepository.alloc(idx, oldSchoolClientType)
-    }
+    ): NpcInfo = npcInfoRepository.alloc(idx, oldSchoolClientType)
 
     /**
      * Deallocates the provided npc info object, allowing it to be used up
@@ -88,9 +86,7 @@ public class NpcInfoProtocol(
      * @throws IllegalStateException if the npc info is null at that index
      * @throws ArrayIndexOutOfBoundsException if the index is out of bounds
      */
-    public operator fun get(idx: Int): NpcInfo {
-        return npcInfoRepository[idx]
-    }
+    public operator fun get(idx: Int): NpcInfo = npcInfoRepository[idx]
 
     /**
      * Updates the npc info protocol for this cycle.

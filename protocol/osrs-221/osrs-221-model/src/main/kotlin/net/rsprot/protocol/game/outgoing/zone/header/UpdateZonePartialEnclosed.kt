@@ -69,11 +69,10 @@ public class UpdateZonePartialEnclosed private constructor(
         return result
     }
 
-    override fun toString(): String {
-        return "UpdateZonePartialEnclosed(" +
+    override fun toString(): String =
+        "UpdateZonePartialEnclosed(" +
             "zoneX=$zoneX, " +
             "zoneZ=$zoneZ, " +
             "level=$level" +
             ")"
-    }
 }

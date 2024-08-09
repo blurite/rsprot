@@ -10,7 +10,5 @@ import net.rsprot.protocol.message.codec.incoming.GameMessageConsumerRepository
 public class DefaultGameMessageConsumerRepositoryProvider<R>(
     private val repository: GameMessageConsumerRepository<R>,
 ) : GameMessageConsumerRepositoryProvider<R> {
-    override fun provide(): GameMessageConsumerRepository<R> {
-        return repository
-    }
+    override fun provide(): GameMessageConsumerRepository<R> = repository
 }

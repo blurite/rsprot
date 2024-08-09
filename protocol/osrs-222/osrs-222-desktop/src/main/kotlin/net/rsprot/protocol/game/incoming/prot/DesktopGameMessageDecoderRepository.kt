@@ -1,5 +1,6 @@
 package net.rsprot.protocol.game.incoming.prot
 
+import net.rsprot.compression.provider.HuffmanCodecProvider
 import net.rsprot.protocol.ProtRepository
 import net.rsprot.protocol.game.incoming.codec.buttons.If1ButtonDecoder
 import net.rsprot.protocol.game.incoming.codec.buttons.If3ButtonDecoder
@@ -90,7 +91,7 @@ import net.rsprot.protocol.message.codec.incoming.MessageDecoderRepositoryBuilde
 
 public object DesktopGameMessageDecoderRepository {
     @ExperimentalStdlibApi
-    public fun build(): MessageDecoderRepository<GameClientProt> {
+    public fun build(huffmanCodecProvider: HuffmanCodecProvider): MessageDecoderRepository<GameClientProt> {
         val protRepository = ProtRepository.of<GameClientProt>()
         val builder =
             MessageDecoderRepositoryBuilder(
@@ -174,8 +175,8 @@ public object DesktopGameMessageDecoderRepository {
                 bind(IgnoreListAddDecoder())
                 bind(IgnoreListDelDecoder())
 
-                bind(MessagePublicDecoder())
-                bind(MessagePrivateDecoder())
+                bind(MessagePublicDecoder(huffmanCodecProvider))
+                bind(MessagePrivateDecoder(huffmanCodecProvider))
 
                 bind(MoveGameClickDecoder())
                 bind(MoveMinimapClickDecoder())

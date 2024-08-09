@@ -5,15 +5,11 @@ import net.rsprot.protocol.ClientProt
 import net.rsprot.protocol.game.incoming.misc.user.Teleport
 import net.rsprot.protocol.game.incoming.prot.GameClientProt
 import net.rsprot.protocol.message.codec.MessageDecoder
-import net.rsprot.protocol.tools.MessageDecodingTools
 
 public class TeleportDecoder : MessageDecoder<Teleport> {
     override val prot: ClientProt = GameClientProt.TELEPORT
 
-    override fun decode(
-        buffer: JagByteBuf,
-        tools: MessageDecodingTools,
-    ): Teleport {
+    override fun decode(buffer: JagByteBuf): Teleport {
         val oculusSyncValue = buffer.g4Alt2()
         val x = buffer.g2Alt1()
         val level = buffer.g1Alt1()

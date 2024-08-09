@@ -25,11 +25,7 @@ public class UpdateSiteSettings(
         return settings == other.settings
     }
 
-    override fun hashCode(): Int {
-        return settings.hashCode()
-    }
+    override fun hashCode(): Int = settings.hashCode()
 
-    override fun toString(): String {
-        return "UpdateSiteSettings(settings='$settings')"
-    }
+    override fun toString(): String = "UpdateSiteSettings(settings='$settings')"
 }

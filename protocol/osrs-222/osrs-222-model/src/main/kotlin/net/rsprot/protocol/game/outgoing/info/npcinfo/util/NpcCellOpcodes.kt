@@ -27,9 +27,7 @@ internal object NpcCellOpcodes {
     private fun singleCellIndex(
         deltaX: Int,
         deltaZ: Int,
-    ): Int {
-        return (deltaX + 1).or((deltaZ + 1) shl 2)
-    }
+    ): Int = (deltaX + 1).or((deltaZ + 1) shl 2)
 
     /**
      * Gets the single cell movement opcode value for the provided deltas.
@@ -43,9 +41,7 @@ internal object NpcCellOpcodes {
     internal fun singleCellMovementOpcode(
         deltaX: Int,
         deltaZ: Int,
-    ): Int {
-        return singleCellMovementOpcodes[singleCellIndex(deltaX, deltaZ)]
-    }
+    ): Int = singleCellMovementOpcodes[singleCellIndex(deltaX, deltaZ)]
 
     /**
      * Builds a simple bitpacked array of the bit codes for all the possible deltas.

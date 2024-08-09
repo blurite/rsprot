@@ -30,11 +30,7 @@ public class OculusSync(
         return value == other.value
     }
 
-    override fun hashCode(): Int {
-        return value
-    }
+    override fun hashCode(): Int = value
 
-    override fun toString(): String {
-        return "OculusSync(value=$value)"
-    }
+    override fun toString(): String = "OculusSync(value=$value)"
 }

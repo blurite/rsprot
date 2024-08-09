@@ -54,11 +54,10 @@ public class SynthSound private constructor(
         return result
     }
 
-    override fun toString(): String {
-        return "SynthSound(" +
+    override fun toString(): String =
+        "SynthSound(" +
             "id=$id, " +
             "loops=$loops, " +
             "delay=$delay" +
             ")"
-    }
 }

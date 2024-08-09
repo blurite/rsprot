@@ -25,11 +25,7 @@ public class ResumePNameDialog(
         return name == other.name
     }
 
-    override fun hashCode(): Int {
-        return name.hashCode()
-    }
+    override fun hashCode(): Int = name.hashCode()
 
-    override fun toString(): String {
-        return "ResumePNameDialog(name='$name')"
-    }
+    override fun toString(): String = "ResumePNameDialog(name='$name')"
 }

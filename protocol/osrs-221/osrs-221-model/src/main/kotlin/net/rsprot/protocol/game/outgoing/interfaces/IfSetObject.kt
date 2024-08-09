@@ -60,12 +60,11 @@ public class IfSetObject private constructor(
         return result
     }
 
-    override fun toString(): String {
-        return "IfSetObject(" +
+    override fun toString(): String =
+        "IfSetObject(" +
             "interfaceId=$interfaceId, " +
             "componentId=$componentId, " +
             "obj=$obj, " +
             "count=$count" +
             ")"
-    }
 }

@@ -52,11 +52,10 @@ public class ResumePauseButton private constructor(
         return result
     }
 
-    override fun toString(): String {
-        return "ResumePauseButton(" +
+    override fun toString(): String =
+        "ResumePauseButton(" +
             "interfaceId=$interfaceId, " +
             "componentId=$componentId, " +
             "sub=$sub" +
             ")"
-    }
 }

@@ -37,10 +37,9 @@ public class MessagePrivateEcho(
         return result
     }
 
-    override fun toString(): String {
-        return "MessagePrivateEcho(" +
+    override fun toString(): String =
+        "MessagePrivateEcho(" +
             "recipient='$recipient', " +
             "message='$message'" +
             ")"
-    }
 }

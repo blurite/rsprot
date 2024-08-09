@@ -25,11 +25,7 @@ public class ResumePObjDialog(
         return obj == other.obj
     }
 
-    override fun hashCode(): Int {
-        return obj
-    }
+    override fun hashCode(): Int = obj
 
-    override fun toString(): String {
-        return "ResumePObjDialog(obj=$obj)"
-    }
+    override fun toString(): String = "ResumePObjDialog(obj=$obj)"
 }

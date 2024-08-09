@@ -70,13 +70,12 @@ public class OpLoc private constructor(
         return result
     }
 
-    override fun toString(): String {
-        return "OpLoc(" +
+    override fun toString(): String =
+        "OpLoc(" +
             "id=$id, " +
             "x=$x, " +
             "z=$z, " +
             "controlKey=$controlKey, " +
             "op=$op" +
             ")"
-    }
 }

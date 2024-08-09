@@ -57,10 +57,9 @@ internal value class CoordInBuildArea private constructor(
                 .or(xInZone shl 4)
                 .or(zInZone)
 
-    override fun toString(): String {
-        return "CoordInBuildArea(" +
+    override fun toString(): String =
+        "CoordInBuildArea(" +
             "xInBuildArea=$xInBuildArea, " +
             "zInBuildArea=$zInBuildArea" +
             ")"
-    }
 }

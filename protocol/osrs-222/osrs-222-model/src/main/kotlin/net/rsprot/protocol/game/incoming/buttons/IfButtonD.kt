@@ -93,8 +93,8 @@ public class IfButtonD private constructor(
         return result
     }
 
-    override fun toString(): String {
-        return "IfButtonD(" +
+    override fun toString(): String =
+        "IfButtonD(" +
             "selectedInterfaceId=$selectedInterfaceId, " +
             "selectedComponentId=$selectedComponentId, " +
             "selectedSub=$selectedSub, " +
@@ -104,5 +104,4 @@ public class IfButtonD private constructor(
             "targetSub=$targetSub, " +
             "targetObj=$targetObj" +
             ")"
-    }
 }

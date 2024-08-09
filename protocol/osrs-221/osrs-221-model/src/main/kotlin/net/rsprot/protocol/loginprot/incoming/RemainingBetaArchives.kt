@@ -14,11 +14,7 @@ public class RemainingBetaArchives(
         return crc.contentEquals(other.crc)
     }
 
-    override fun hashCode(): Int {
-        return crc.contentHashCode()
-    }
+    override fun hashCode(): Int = crc.contentHashCode()
 
-    override fun toString(): String {
-        return "RemainingBetaArchives(crc=${crc.contentToString()})"
-    }
+    override fun toString(): String = "RemainingBetaArchives(crc=${crc.contentToString()})"
 }

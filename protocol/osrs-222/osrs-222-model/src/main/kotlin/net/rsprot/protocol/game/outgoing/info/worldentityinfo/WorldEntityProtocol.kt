@@ -56,9 +56,7 @@ public class WorldEntityProtocol(
     public fun alloc(
         idx: Int,
         oldSchoolClientType: OldSchoolClientType,
-    ): WorldEntityInfo {
-        return worldEntityInfoRepository.alloc(idx, oldSchoolClientType)
-    }
+    ): WorldEntityInfo = worldEntityInfoRepository.alloc(idx, oldSchoolClientType)
 
     /**
      * Deallocates the world entity info, allowing for it to be re-used in the future.

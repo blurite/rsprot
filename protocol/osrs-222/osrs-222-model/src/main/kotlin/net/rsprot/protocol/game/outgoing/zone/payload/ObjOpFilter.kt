@@ -68,12 +68,11 @@ public class ObjOpFilter private constructor(
         return result
     }
 
-    override fun toString(): String {
-        return "ObjOpFilter(" +
+    override fun toString(): String =
+        "ObjOpFilter(" +
             "id=$id, " +
             "opFlags=$opFlags, " +
             "xInZone=$xInZone, " +
             "zInZone=$zInZone" +
             ")"
-    }
 }

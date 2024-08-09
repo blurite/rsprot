@@ -58,11 +58,10 @@ public class AffinedClanSettingsAddBannedFromChannel private constructor(
         return result
     }
 
-    override fun toString(): String {
-        return "AffinedClanSettingsAddBannedFromChannel(" +
+    override fun toString(): String =
+        "AffinedClanSettingsAddBannedFromChannel(" +
             "name='$name', " +
             "clanId=$clanId, " +
             "memberIndex=$memberIndex" +
             ")"
-    }
 }

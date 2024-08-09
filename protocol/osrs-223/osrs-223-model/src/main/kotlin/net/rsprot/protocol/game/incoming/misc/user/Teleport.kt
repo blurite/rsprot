@@ -72,12 +72,11 @@ public class Teleport private constructor(
         return result
     }
 
-    override fun toString(): String {
-        return "Teleport(" +
+    override fun toString(): String =
+        "Teleport(" +
             "oculusSyncValue=$oculusSyncValue, " +
             "x=$x, " +
             "z=$z, " +
             "level=$level" +
             ")"
-    }
 }

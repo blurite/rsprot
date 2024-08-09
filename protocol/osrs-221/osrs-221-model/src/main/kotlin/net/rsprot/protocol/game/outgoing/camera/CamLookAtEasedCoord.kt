@@ -73,13 +73,12 @@ public class CamLookAtEasedCoord private constructor(
         return result
     }
 
-    override fun toString(): String {
-        return "CamLookAtEasedCoord(" +
+    override fun toString(): String =
+        "CamLookAtEasedCoord(" +
             "destinationXInBuildArea=$destinationXInBuildArea, " +
             "destinationZInBuildArea=$destinationZInBuildArea, " +
             "height=$height, " +
             "duration=$duration, " +
             "function=$function" +
             ")"
-    }
 }

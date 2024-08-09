@@ -153,8 +153,8 @@ public class MapProjAnim private constructor(
         return result
     }
 
-    override fun toString(): String {
-        return "MapProjAnim(" +
+    override fun toString(): String =
+        "MapProjAnim(" +
             "id=$id, " +
             "startHeight=$startHeight, " +
             "endHeight=$endHeight, " +
@@ -169,7 +169,6 @@ public class MapProjAnim private constructor(
             "deltaX=$deltaX, " +
             "deltaZ=$deltaZ" +
             ")"
-    }
 
     /**
      * A value class to compress several properties into one.
@@ -181,14 +180,17 @@ public class MapProjAnim private constructor(
      * instead of the usual 20.
      */
     @JvmInline
-    private value class CompressedMapProjAnimInfo private constructor(private val packed: Long) {
+    private value class CompressedMapProjAnimInfo private constructor(
+        private val packed: Long,
+    ) {
         constructor(
             sourceIndex: Int,
             targetIndex: Int,
             startHeight: UByte,
             endHeight: UByte,
         ) : this(
-            (sourceIndex and 0xFFFFFF).toLong()
+            (sourceIndex and 0xFFFFFF)
+                .toLong()
                 .or((targetIndex and 0xFFFFFF).toLong() shl 24)
                 .or((startHeight.toLong() and 0xFF) shl 48)
                 .or((endHeight.toLong() and 0xFF) shl 56),
@@ -203,13 +205,12 @@ public class MapProjAnim private constructor(
         val endHeight: Int
             get() = (packed ushr 56 and 0xFF).toInt()
 
-        override fun toString(): String {
-            return "MapProjAnimInfo(" +
+        override fun toString(): String =
+            "MapProjAnimInfo(" +
                 "sourceIndex=$sourceIndex, " +
                 "targetIndex=$targetIndex, " +
                 "startHeight=$startHeight, " +
                 "endHeight=$endHeight" +
                 ")"
-        }
     }
 }

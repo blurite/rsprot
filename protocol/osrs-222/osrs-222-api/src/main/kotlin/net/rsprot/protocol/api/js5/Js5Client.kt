@@ -225,31 +225,24 @@ public class Js5Client<T : Js5GroupType>(
     /**
      * Checks that the JS5 client isn't full and can accept more requests in both queues.
      */
-    public fun isNotFull(): Boolean {
-        return urgent.size < MAX_QUEUE_SIZE && (prefetch.size + awaitingPrefetch.size) < (MAX_QUEUE_SIZE + 1)
-    }
+    public fun isNotFull(): Boolean =
+        urgent.size < MAX_QUEUE_SIZE && (prefetch.size + awaitingPrefetch.size) < (MAX_QUEUE_SIZE + 1)
 
     /**
      * Checks if the client is empty of any requests and has no pending request to still write.
      */
-    private fun isEmpty(): Boolean {
-        return currentRequest.isComplete() && urgent.isEmpty() && prefetch.isEmpty()
-    }
+    private fun isEmpty(): Boolean = currentRequest.isComplete() && urgent.isEmpty() && prefetch.isEmpty()
 
     /**
      * Checks that the client is not empty, meaning it has some requests, or a group is half-written.
      */
-    public fun isNotEmpty(): Boolean {
-        return !isEmpty()
-    }
+    public fun isNotEmpty(): Boolean = !isEmpty()
 
     /**
      * Checks if the client is ready by ensuring it can be written to, and there is some data
      * to be written to the client.
      */
-    public fun isReady(): Boolean {
-        return ctx.channel().isWritable && isNotEmpty()
-    }
+    public fun isReady(): Boolean = ctx.channel().isWritable && isNotEmpty()
 
     /**
      * Checks if the client needs flushing based on the input thresholds.
@@ -263,12 +256,11 @@ public class Js5Client<T : Js5GroupType>(
     public fun needsFlushing(
         flushThresholdInBytes: Int,
         flushThresholdInGroups: Int,
-    ): Boolean {
-        return writtenGroupCount >= flushThresholdInGroups ||
+    ): Boolean =
+        writtenGroupCount >= flushThresholdInGroups ||
             (writtenGroupCount > 0 && writtenByteCount >= flushThresholdInBytes) ||
             (writtenByteCount > 0 && isEmpty()) ||
             !ctx.channel().isWritable
-    }
 
     /**
      * Resets the number of bytes and groups written.
@@ -297,9 +289,7 @@ public class Js5Client<T : Js5GroupType>(
         /**
          * Checks whether this group has been fully written over to the client
          */
-        public fun isComplete(): Boolean {
-            return progress >= length
-        }
+        public fun isComplete(): Boolean = progress >= length
 
         /**
          * Gets the length of the next block, capped to [blockLength],

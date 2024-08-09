@@ -50,11 +50,10 @@ public class IfSetPlayerModelSelf private constructor(
         return result
     }
 
-    override fun toString(): String {
-        return "IfSetPlayerModelSelf(" +
+    override fun toString(): String =
+        "IfSetPlayerModelSelf(" +
             "interfaceId=$interfaceId, " +
             "componentId=$componentId, " +
             "copyObjs=$copyObjs" +
             ")"
-    }
 }

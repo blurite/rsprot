@@ -49,10 +49,9 @@ public class PlayerAnimSpecific private constructor(
         return result
     }
 
-    override fun toString(): String {
-        return "PlayerAnimSpecific(" +
+    override fun toString(): String =
+        "PlayerAnimSpecific(" +
             "id=$id, " +
             "delay=$delay" +
             ")"
-    }
 }

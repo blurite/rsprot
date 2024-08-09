@@ -6,7 +6,9 @@ package net.rsprot.protocol.common.game.outgoing.info
  * @param packed the 30-bit bitpacked integer representing the coord grid.
  */
 @JvmInline
-public value class CoordGrid(public val packed: Int) {
+public value class CoordGrid(
+    public val packed: Int,
+) {
     /**
      * @param level the height level of the avatar.
      * @param x the absolute x coordinate of the avatar.
@@ -73,29 +75,20 @@ public value class CoordGrid(public val packed: Int) {
      * unless directly using the single-argument constructor.
      */
     @Suppress("NOTHING_TO_INLINE")
-    public inline fun invalid(): Boolean {
-        return this == INVALID
-    }
+    public inline fun invalid(): Boolean = this == INVALID
 
-    public operator fun component1(): Int {
-        return level
-    }
+    public operator fun component1(): Int = level
 
-    public operator fun component2(): Int {
-        return x
-    }
+    public operator fun component2(): Int = x
 
-    public operator fun component3(): Int {
-        return z
-    }
+    public operator fun component3(): Int = z
 
-    override fun toString(): String {
-        return "CoordGrid(" +
+    override fun toString(): String =
+        "CoordGrid(" +
             "level=$level, " +
             "x=$x, " +
             "z=$z" +
             ")"
-    }
 
     public companion object {
         public val INVALID: CoordGrid = CoordGrid(-1)

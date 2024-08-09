@@ -24,11 +24,7 @@ public class UrlOpen(
         return url == other.url
     }
 
-    override fun hashCode(): Int {
-        return url.hashCode()
-    }
+    override fun hashCode(): Int = url.hashCode()
 
-    override fun toString(): String {
-        return "UrlOpen(url='$url')"
-    }
+    override fun toString(): String = "UrlOpen(url='$url')"
 }

@@ -1,7 +1,9 @@
 package net.rsprot.protocol.util
 
 @JvmInline
-public value class CombinedId(public val combinedId: Int) {
+public value class CombinedId(
+    public val combinedId: Int,
+) {
     public constructor(
         interfaceId: Int,
         componentId: Int,
@@ -30,18 +32,13 @@ public value class CombinedId(public val combinedId: Int) {
             }
         }
 
-    public operator fun component1(): Int {
-        return interfaceId
-    }
+    public operator fun component1(): Int = interfaceId
 
-    public operator fun component2(): Int {
-        return componentId
-    }
+    public operator fun component2(): Int = componentId
 
-    override fun toString(): String {
-        return "CombinedId(" +
+    override fun toString(): String =
+        "CombinedId(" +
             "interfaceId=$interfaceId, " +
             "componentId=$componentId" +
             ")"
-    }
 }

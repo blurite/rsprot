@@ -69,13 +69,12 @@ public class If3Button private constructor(
         return result
     }
 
-    override fun toString(): String {
-        return "If3Button(" +
+    override fun toString(): String =
+        "If3Button(" +
             "interfaceId=$interfaceId, " +
             "componentId=$componentId, " +
             "sub=$sub, " +
             "obj=$obj, " +
             "op=$op" +
             ")"
-    }
 }

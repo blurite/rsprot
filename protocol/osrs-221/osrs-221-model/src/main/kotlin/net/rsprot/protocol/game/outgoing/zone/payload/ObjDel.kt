@@ -68,12 +68,11 @@ public class ObjDel private constructor(
         return result
     }
 
-    override fun toString(): String {
-        return "ObjDel(" +
+    override fun toString(): String =
+        "ObjDel(" +
             "id=$id, " +
             "quantity=$quantity, " +
             "xInZone=$xInZone, " +
             "zInZone=$zInZone" +
             ")"
-    }
 }

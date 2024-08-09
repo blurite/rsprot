@@ -88,8 +88,8 @@ public class MidiSongWithSecondary private constructor(
         return result
     }
 
-    override fun toString(): String {
-        return "MidiSongWithSecondary(" +
+    override fun toString(): String =
+        "MidiSongWithSecondary(" +
             "primaryId=$primaryId, " +
             "secondaryId=$secondaryId, " +
             "fadeOutSpeed=$fadeOutSpeed, " +
@@ -97,5 +97,4 @@ public class MidiSongWithSecondary private constructor(
             "fadeInDelay=$fadeInDelay, " +
             "fadeInSpeed=$fadeInSpeed" +
             ")"
-    }
 }

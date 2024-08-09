@@ -84,8 +84,8 @@ public class LocAddChange private constructor(
         return result
     }
 
-    override fun toString(): String {
-        return "LocAddChange(" +
+    override fun toString(): String =
+        "LocAddChange(" +
             "id=$id, " +
             "xInZone=$xInZone, " +
             "zInZone=$zInZone, " +
@@ -93,5 +93,4 @@ public class LocAddChange private constructor(
             "rotation=$rotation, " +
             "opFlags=$opFlags" +
             ")"
-    }
 }

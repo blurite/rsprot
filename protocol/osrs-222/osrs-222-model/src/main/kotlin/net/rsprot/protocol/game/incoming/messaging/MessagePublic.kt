@@ -130,8 +130,8 @@ public class MessagePublic private constructor(
         return result
     }
 
-    override fun toString(): String {
-        return "MessagePublicEvent(" +
+    override fun toString(): String =
+        "MessagePublicEvent(" +
             "message='$message', " +
             "pattern=$pattern, " +
             "type=$type, " +
@@ -139,7 +139,6 @@ public class MessagePublic private constructor(
             "effect=$effect, " +
             "clanType=$clanType" +
             ")"
-    }
 
     /**
      * A value class for message colour patterns, allowing easy
@@ -149,7 +148,9 @@ public class MessagePublic private constructor(
      * crash the players in vicinity.
      */
     @JvmInline
-    public value class MessageColourPattern(private val bytes: ByteArray) {
+    public value class MessageColourPattern(
+        private val bytes: ByteArray,
+    ) {
         public val length: Int
             get() = bytes.size
 
@@ -157,16 +158,12 @@ public class MessagePublic private constructor(
          * @return the backing byte array for the pattern.
          * Changes done to this array will reflect on the pattern itself.
          */
-        public fun asByteArray(): ByteArray {
-            return bytes
-        }
+        public fun asByteArray(): ByteArray = bytes
 
         /**
          * @return a copy of the backing pattern byte array.
          */
-        public fun toByteArray(): ByteArray {
-            return bytes.copyOf()
-        }
+        public fun toByteArray(): ByteArray = bytes.copyOf()
 
         /**
          * Checks if the pattern itself is valid (as in, will not crash the client).
@@ -206,9 +203,7 @@ public class MessagePublic private constructor(
             return colours
         }
 
-        override fun toString(): String {
-            return "MessageColourPattern(bytes=${bytes.contentToString()})"
-        }
+        override fun toString(): String = "MessageColourPattern(bytes=${bytes.contentToString()})"
 
         private companion object {
             private val colourCodes =

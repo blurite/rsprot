@@ -94,8 +94,8 @@ public class MessageFriendChannel private constructor(
         return result
     }
 
-    override fun toString(): String {
-        return "MessageFriendChannel(" +
+    override fun toString(): String =
+        "MessageFriendChannel(" +
             "sender='$sender', " +
             "channelName='$channelName', " +
             "worldId=$worldId, " +
@@ -103,5 +103,4 @@ public class MessageFriendChannel private constructor(
             "chatCrownType=$chatCrownType, " +
             "message='$message'" +
             ")"
-    }
 }

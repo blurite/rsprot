@@ -74,12 +74,11 @@ public class CamLookAtEasedAngleAbsolute private constructor(
         return result
     }
 
-    override fun toString(): String {
-        return "CamLookAtEasedAngleAbsolute(" +
+    override fun toString(): String =
+        "CamLookAtEasedAngleAbsolute(" +
             "xAngle=$xAngle, " +
             "yAngle=$yAngle, " +
             "duration=$duration, " +
             "function=$function" +
             ")"
-    }
 }

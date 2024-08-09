@@ -9,7 +9,10 @@ import net.rsprot.protocol.message.OutgoingGameMessage
 /**
  * A small npc info wrapper packet, used to wrap the pre-built buffer from the npc info class.
  */
-public class NpcInfoSmall(buffer: ByteBuf) : DefaultByteBufHolder(buffer), OutgoingGameMessage {
+public class NpcInfoSmall(
+    buffer: ByteBuf,
+) : DefaultByteBufHolder(buffer),
+    OutgoingGameMessage {
     override val category: ServerProtCategory
         get() = GameServerProtCategory.HIGH_PRIORITY_PROT
 
@@ -20,11 +23,7 @@ public class NpcInfoSmall(buffer: ByteBuf) : DefaultByteBufHolder(buffer), Outgo
         return true
     }
 
-    override fun hashCode(): Int {
-        return super.hashCode()
-    }
+    override fun hashCode(): Int = super.hashCode()
 
-    override fun toString(): String {
-        return super.toString()
-    }
+    override fun toString(): String = super.toString()
 }

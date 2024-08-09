@@ -57,11 +57,10 @@ public class ClanChannelKickUser private constructor(
         return result
     }
 
-    override fun toString(): String {
-        return "ClanChannelKickUser(" +
+    override fun toString(): String =
+        "ClanChannelKickUser(" +
             "name='$name', " +
             "clanId=$clanId, " +
             "memberIndex=$memberIndex" +
             ")"
-    }
 }

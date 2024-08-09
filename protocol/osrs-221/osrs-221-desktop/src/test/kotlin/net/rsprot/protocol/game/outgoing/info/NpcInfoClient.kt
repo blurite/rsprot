@@ -183,8 +183,8 @@ class NpcInfoClient {
     private fun decodeDelta(
         large: Boolean,
         buffer: BitBuf,
-    ): Int {
-        return if (large) {
+    ): Int =
+        if (large) {
             var delta = buffer.gBits(8)
             if (delta > 127) {
                 delta -= 256
@@ -197,7 +197,6 @@ class NpcInfoClient {
             }
             delta
         }
-    }
 
     class Npc(
         val index: Int,
@@ -275,8 +274,8 @@ class NpcInfoClient {
             moveSpeed = speed
         }
 
-        override fun toString(): String {
-            return "Npc(" +
+        override fun toString(): String =
+            "Npc(" +
                 "index=$index, " +
                 "id=$id, " +
                 "coord=$coord, " +
@@ -288,10 +287,11 @@ class NpcInfoClient {
                 "turnSpeed=$turnSpeed, " +
                 "jump=$jump" +
                 ")"
-        }
     }
 
-    enum class MoveSpeed(val id: Int) {
+    enum class MoveSpeed(
+        val id: Int,
+    ) {
         STATIONARY(-1),
         CRAWL(0),
         WALK(1),

@@ -11,19 +11,16 @@ import net.rsprot.protocol.loginprot.incoming.util.OtpAuthenticationType
 import net.rsprot.protocol.loginprot.incoming.util.Password
 import net.rsprot.protocol.loginprot.incoming.util.Token
 import net.rsprot.protocol.message.codec.MessageDecoder
-import net.rsprot.protocol.tools.MessageDecodingTools
 import java.math.BigInteger
 
 public class GameLoginDecoder(
     exp: BigInteger,
     mod: BigInteger,
-) : MessageDecoder<GameLogin>, LoginBlockDecoder<AuthenticationType<*>>(exp, mod) {
+) : LoginBlockDecoder<AuthenticationType<*>>(exp, mod),
+    MessageDecoder<GameLogin> {
     override val prot: ClientProt = LoginClientProt.GAMELOGIN
 
-    override fun decode(
-        buffer: JagByteBuf,
-        tools: MessageDecodingTools,
-    ): GameLogin {
+    override fun decode(buffer: JagByteBuf): GameLogin {
         val copy = buffer.buffer.copy()
         // Mark the buffer as "read" as copy function doesn't do it automatically.
         buffer.buffer.readerIndex(buffer.buffer.writerIndex())
@@ -51,8 +48,8 @@ public class GameLoginDecoder(
         }
     }
 
-    private fun decodeOtpAuthentication(buffer: JagByteBuf): OtpAuthenticationType {
-        return when (val otpType = buffer.g1()) {
+    private fun decodeOtpAuthentication(buffer: JagByteBuf): OtpAuthenticationType =
+        when (val otpType = buffer.g1()) {
             OTP_TOKEN -> {
                 val identifier = buffer.g4()
                 OtpAuthenticationType.TrustedComputer(identifier)
@@ -75,7 +72,6 @@ public class GameLoginDecoder(
                 throw IllegalStateException("Unknown authentication type: $otpType")
             }
         }
-    }
 
     private companion object {
         private const val OTP_TOKEN = 0

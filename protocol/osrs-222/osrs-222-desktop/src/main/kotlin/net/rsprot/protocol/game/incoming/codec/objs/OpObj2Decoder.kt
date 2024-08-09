@@ -5,15 +5,11 @@ import net.rsprot.protocol.ClientProt
 import net.rsprot.protocol.game.incoming.objs.OpObj
 import net.rsprot.protocol.game.incoming.prot.GameClientProt
 import net.rsprot.protocol.message.codec.MessageDecoder
-import net.rsprot.protocol.tools.MessageDecodingTools
 
 public class OpObj2Decoder : MessageDecoder<OpObj> {
     override val prot: ClientProt = GameClientProt.OPOBJ2
 
-    override fun decode(
-        buffer: JagByteBuf,
-        tools: MessageDecodingTools,
-    ): OpObj {
+    override fun decode(buffer: JagByteBuf): OpObj {
         val id = buffer.g2()
         val controlKey = buffer.g1Alt1() == 1
         val x = buffer.g2Alt2()

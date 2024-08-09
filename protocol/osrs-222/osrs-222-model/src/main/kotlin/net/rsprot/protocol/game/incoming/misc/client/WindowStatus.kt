@@ -53,11 +53,10 @@ public class WindowStatus private constructor(
         return result
     }
 
-    override fun toString(): String {
-        return "WindowStatus(" +
+    override fun toString(): String =
+        "WindowStatus(" +
             "windowMode=$windowMode, " +
             "frameWidth=$frameWidth, " +
             "frameHeight=$frameHeight" +
             ")"
-    }
 }

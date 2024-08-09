@@ -53,11 +53,10 @@ public class IfSetPlayerModelBodyType private constructor(
         return result
     }
 
-    override fun toString(): String {
-        return "IfSetPlayerModelBodyType(" +
+    override fun toString(): String =
+        "IfSetPlayerModelBodyType(" +
             "interfaceId=$interfaceId, " +
             "componentId=$componentId, " +
             "bodyType=$bodyType" +
             ")"
-    }
 }

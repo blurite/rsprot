@@ -30,14 +30,11 @@ public class If1Button(
         return combinedId == other.combinedId
     }
 
-    override fun hashCode(): Int {
-        return combinedId.hashCode()
-    }
+    override fun hashCode(): Int = combinedId.hashCode()
 
-    override fun toString(): String {
-        return "If1Button(" +
+    override fun toString(): String =
+        "If1Button(" +
             "interfaceId=$interfaceId, " +
             "componentId=$componentId" +
             ")"
-    }
 }

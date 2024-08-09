@@ -56,13 +56,12 @@ public class IfInitialState private constructor(
         return result
     }
 
-    override fun toString(): String {
-        return "IfInitialState(" +
+    override fun toString(): String =
+        "IfInitialState(" +
             "topLevelInterface=$topLevelInterface, " +
             "subInterfaces=$subInterfaces, " +
             "events=$events" +
             ")"
-    }
 
     /**
      * Sub interface holds state about a sub interface to be opened.
@@ -119,14 +118,13 @@ public class IfInitialState private constructor(
             return result
         }
 
-        override fun toString(): String {
-            return "SubInterfaceMessage(" +
+        override fun toString(): String =
+            "SubInterfaceMessage(" +
                 "destinationInterfaceId=$destinationInterfaceId, " +
                 "destinationComponentId=$destinationComponentId, " +
                 "interfaceId=$interfaceId, " +
                 "type=$type" +
                 ")"
-        }
     }
 
     /**
@@ -188,14 +186,13 @@ public class IfInitialState private constructor(
             return result
         }
 
-        override fun toString(): String {
-            return "InterfaceEvents(" +
+        override fun toString(): String =
+            "InterfaceEvents(" +
                 "interfaceId=$interfaceId, " +
                 "componentId=$componentId, " +
                 "start=$start, " +
                 "end=$end, " +
                 "events=$events" +
                 ")"
-        }
     }
 }

@@ -68,12 +68,11 @@ public class EventNativeMouseClick private constructor(
         return result
     }
 
-    override fun toString(): String {
-        return "EventNativeMouseClick(" +
+    override fun toString(): String =
+        "EventNativeMouseClick(" +
             "lastTransmittedMouseClick=$lastTransmittedMouseClick, " +
             "code=$code, " +
             "x=$x, " +
             "y=$y" +
             ")"
-    }
 }

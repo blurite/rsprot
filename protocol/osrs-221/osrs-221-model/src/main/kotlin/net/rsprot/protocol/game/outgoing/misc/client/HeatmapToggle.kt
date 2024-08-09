@@ -29,11 +29,7 @@ public class HeatmapToggle(
         return enabled == other.enabled
     }
 
-    override fun hashCode(): Int {
-        return enabled.hashCode()
-    }
+    override fun hashCode(): Int = enabled.hashCode()
 
-    override fun toString(): String {
-        return "HeatmapToggle(enabled=$enabled)"
-    }
+    override fun toString(): String = "HeatmapToggle(enabled=$enabled)"
 }

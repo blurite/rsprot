@@ -88,8 +88,8 @@ public class OpLocT private constructor(
         return result
     }
 
-    override fun toString(): String {
-        return "OpLocT(" +
+    override fun toString(): String =
+        "OpLocT(" +
             "id=$id, " +
             "x=$x, " +
             "z=$z, " +
@@ -99,5 +99,4 @@ public class OpLocT private constructor(
             "selectedSub=$selectedSub, " +
             "selectedObj=$selectedObj" +
             ")"
-    }
 }

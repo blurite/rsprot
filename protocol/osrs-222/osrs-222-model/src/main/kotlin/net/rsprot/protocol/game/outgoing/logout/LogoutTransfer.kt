@@ -90,11 +90,10 @@ public class LogoutTransfer private constructor(
         return result
     }
 
-    override fun toString(): String {
-        return "LogoutTransfer(" +
+    override fun toString(): String =
+        "LogoutTransfer(" +
             "host='$host', " +
             "id=$id, " +
             "properties=$properties" +
             ")"
-    }
 }

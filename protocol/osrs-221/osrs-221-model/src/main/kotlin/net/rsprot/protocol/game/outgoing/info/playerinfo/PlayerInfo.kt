@@ -172,9 +172,7 @@ public class PlayerInfo internal constructor(
      * @throws IllegalStateException if the buffer has not been allocated yet.
      */
     @Throws(IllegalStateException::class)
-    public fun backingBuffer(): ByteBuf {
-        return checkNotNull(buffer)
-    }
+    public fun backingBuffer(): ByteBuf = checkNotNull(buffer)
 
     /**
      * Updates the build area of this player info object.

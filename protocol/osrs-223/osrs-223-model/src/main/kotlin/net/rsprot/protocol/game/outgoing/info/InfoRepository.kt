@@ -30,9 +30,7 @@ internal abstract class InfoRepository<T>(
      * @throws ArrayIndexOutOfBoundsException if the index is below zero, or above [capacity].
      */
     @Throws(ArrayIndexOutOfBoundsException::class)
-    fun getOrNull(idx: Int): T? {
-        return elements[idx]
-    }
+    fun getOrNull(idx: Int): T? = elements[idx]
 
     /**
      * Gets the current element at index [idx].
@@ -44,16 +42,12 @@ internal abstract class InfoRepository<T>(
         ArrayIndexOutOfBoundsException::class,
         IllegalStateException::class,
     )
-    operator fun get(idx: Int): T {
-        return checkNotNull(elements[idx])
-    }
+    operator fun get(idx: Int): T = checkNotNull(elements[idx])
 
     /**
      * Gets the maximum capacity of this object array.
      */
-    fun capacity(): Int {
-        return elements.size
-    }
+    fun capacity(): Int = elements.size
 
     /**
      * Allocates a new element at the specified [idx].

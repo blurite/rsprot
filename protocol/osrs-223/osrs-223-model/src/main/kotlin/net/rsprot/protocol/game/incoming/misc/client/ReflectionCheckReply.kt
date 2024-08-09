@@ -91,8 +91,8 @@ public class ReflectionCheckReply(
      * @param opcode the opcode value
      * @return the exception class corresponding to that opcode
      */
-    private fun getExceptionClass(opcode: Int): Class<*> {
-        return when (opcode) {
+    private fun getExceptionClass(opcode: Int): Class<*> =
+        when (opcode) {
             -10 -> ClassNotFoundException::class.java
             -11 -> InvalidClassException::class.java
             -12 -> StreamCorruptedException::class.java
@@ -107,14 +107,12 @@ public class ReflectionCheckReply(
             -21 -> Throwable::class.java
             else -> throw IllegalArgumentException("Unknown exception opcode: $opcode")
         }
-    }
 
-    override fun toString(): String {
-        return "ReflectionCheckReply(" +
+    override fun toString(): String =
+        "ReflectionCheckReply(" +
             "id=$id, " +
             "result=$result" +
             ")"
-    }
 
     public sealed interface ReflectionCheckResult<T : ReflectionChecker.ReflectionCheck> {
         public val check: T
@@ -148,12 +146,11 @@ public class ReflectionCheckReply(
             return result
         }
 
-        override fun toString(): String {
-            return "ErrorResult(" +
+        override fun toString(): String =
+            "ErrorResult(" +
                 "check=$check, " +
                 "exceptionClass=$exceptionClass" +
                 ")"
-        }
     }
 
     /**
@@ -184,12 +181,11 @@ public class ReflectionCheckReply(
             return result
         }
 
-        override fun toString(): String {
-            return "GetFieldValueResult(" +
+        override fun toString(): String =
+            "GetFieldValueResult(" +
                 "check=$check, " +
                 "value=$value" +
                 ")"
-        }
     }
 
     /**
@@ -209,13 +205,9 @@ public class ReflectionCheckReply(
             return check == other.check
         }
 
-        override fun hashCode(): Int {
-            return check.hashCode()
-        }
+        override fun hashCode(): Int = check.hashCode()
 
-        override fun toString(): String {
-            return "SetFieldValueResult(check=$check)"
-        }
+        override fun toString(): String = "SetFieldValueResult(check=$check)"
     }
 
     /**
@@ -246,12 +238,11 @@ public class ReflectionCheckReply(
             return result
         }
 
-        override fun toString(): String {
-            return "GetFieldModifiersResult(" +
+        override fun toString(): String =
+            "GetFieldModifiersResult(" +
                 "check=$check, " +
                 "modifiers=$modifiers" +
                 ")"
-        }
     }
 
     /**
@@ -282,12 +273,11 @@ public class ReflectionCheckReply(
             return result1
         }
 
-        override fun toString(): String {
-            return "InvokeMethodResult(" +
+        override fun toString(): String =
+            "InvokeMethodResult(" +
                 "check=$check, " +
                 "result=$result" +
                 ")"
-        }
     }
 
     /**
@@ -318,12 +308,11 @@ public class ReflectionCheckReply(
             return result
         }
 
-        override fun toString(): String {
-            return "GetMethodModifiersResult(" +
+        override fun toString(): String =
+            "GetMethodModifiersResult(" +
                 "check=$check, " +
                 "modifiers=$modifiers" +
                 ")"
-        }
     }
 
     public sealed interface MethodInvocationReturnValue
@@ -351,13 +340,9 @@ public class ReflectionCheckReply(
             return longValue == other.longValue
         }
 
-        override fun hashCode(): Int {
-            return longValue.hashCode()
-        }
+        override fun hashCode(): Int = longValue.hashCode()
 
-        override fun toString(): String {
-            return "NumberReturnValue(longValue=$longValue)"
-        }
+        override fun toString(): String = "NumberReturnValue(longValue=$longValue)"
     }
 
     /**
@@ -377,13 +362,9 @@ public class ReflectionCheckReply(
             return stringValue == other.stringValue
         }
 
-        override fun hashCode(): Int {
-            return stringValue.hashCode()
-        }
+        override fun hashCode(): Int = stringValue.hashCode()
 
-        override fun toString(): String {
-            return "StringReturnValue(stringValue='$stringValue')"
-        }
+        override fun toString(): String = "StringReturnValue(stringValue='$stringValue')"
     }
 
     /**

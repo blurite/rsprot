@@ -29,13 +29,10 @@ public class UpdateRebootTimer(
         return gameCycles == other.gameCycles
     }
 
-    override fun hashCode(): Int {
-        return gameCycles
-    }
+    override fun hashCode(): Int = gameCycles
 
-    override fun toString(): String {
-        return "UpdateRebootTimer(" +
+    override fun toString(): String =
+        "UpdateRebootTimer(" +
             "gameCycles=$gameCycles" +
             ")"
-    }
 }

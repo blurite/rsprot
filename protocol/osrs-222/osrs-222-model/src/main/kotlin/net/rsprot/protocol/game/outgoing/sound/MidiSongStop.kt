@@ -46,10 +46,9 @@ public class MidiSongStop private constructor(
         return result
     }
 
-    override fun toString(): String {
-        return "MidiSongStop(" +
+    override fun toString(): String =
+        "MidiSongStop(" +
             "fadeOutDelay=$fadeOutDelay, " +
             "fadeOutSpeed=$fadeOutSpeed" +
             ")"
-    }
 }

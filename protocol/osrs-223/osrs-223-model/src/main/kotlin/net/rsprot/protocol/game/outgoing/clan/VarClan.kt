@@ -49,12 +49,11 @@ public class VarClan private constructor(
         return result
     }
 
-    override fun toString(): String {
-        return "VarClan(" +
+    override fun toString(): String =
+        "VarClan(" +
             "id=$id, " +
             "value=$value" +
             ")"
-    }
 
     public sealed interface VarClanData
 
@@ -63,7 +62,9 @@ public class VarClan private constructor(
      * value.
      * @property value the 32-bit integer value for this varclan.
      */
-    public class VarClanIntData(public val value: Int) : VarClanData {
+    public class VarClanIntData(
+        public val value: Int,
+    ) : VarClanData {
         override fun equals(other: Any?): Boolean {
             if (this === other) return true
             if (javaClass != other?.javaClass) return false
@@ -73,13 +74,9 @@ public class VarClan private constructor(
             return value == other.value
         }
 
-        override fun hashCode(): Int {
-            return value
-        }
+        override fun hashCode(): Int = value
 
-        override fun toString(): String {
-            return "VarClanIntData(value=$value)"
-        }
+        override fun toString(): String = "VarClanIntData(value=$value)"
     }
 
     /**
@@ -87,7 +84,9 @@ public class VarClan private constructor(
      * value.
      * @property value the 64-bit long value for this varclan.
      */
-    public class VarClanLongData(public val value: Long) : VarClanData {
+    public class VarClanLongData(
+        public val value: Long,
+    ) : VarClanData {
         override fun equals(other: Any?): Boolean {
             if (this === other) return true
             if (javaClass != other?.javaClass) return false
@@ -97,13 +96,9 @@ public class VarClan private constructor(
             return value == other.value
         }
 
-        override fun hashCode(): Int {
-            return value.hashCode()
-        }
+        override fun hashCode(): Int = value.hashCode()
 
-        override fun toString(): String {
-            return "VarClanLongData(value=$value)"
-        }
+        override fun toString(): String = "VarClanLongData(value=$value)"
     }
 
     /**
@@ -111,7 +106,9 @@ public class VarClan private constructor(
      * value.
      * @property value the string for this varclan.
      */
-    public class VarClanStringData(public val value: String) : VarClanData {
+    public class VarClanStringData(
+        public val value: String,
+    ) : VarClanData {
         override fun equals(other: Any?): Boolean {
             if (this === other) return true
             if (javaClass != other?.javaClass) return false
@@ -121,12 +118,8 @@ public class VarClan private constructor(
             return value == other.value
         }
 
-        override fun hashCode(): Int {
-            return value.hashCode()
-        }
+        override fun hashCode(): Int = value.hashCode()
 
-        override fun toString(): String {
-            return "VarClanStringData(value='$value')"
-        }
+        override fun toString(): String = "VarClanStringData(value='$value')"
     }
 }

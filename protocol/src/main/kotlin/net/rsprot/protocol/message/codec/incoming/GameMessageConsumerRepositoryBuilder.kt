@@ -39,11 +39,7 @@ public class GameMessageConsumerRepositoryBuilder<R> {
     @JvmSynthetic
     public inline fun <reified T : IncomingGameMessage> addListener(
         crossinline listener: R.(message: T) -> Unit,
-    ): GameMessageConsumerRepositoryBuilder<R> {
-        return addListener(T::class.java) { r, t -> listener(r, t) }
-    }
+    ): GameMessageConsumerRepositoryBuilder<R> = addListener(T::class.java) { r, t -> listener(r, t) }
 
-    public fun build(): GameMessageConsumerRepository<R> {
-        return GameMessageConsumerRepository(consumers.toMap(HashMap()))
-    }
+    public fun build(): GameMessageConsumerRepository<R> = GameMessageConsumerRepository(consumers.toMap(HashMap()))
 }

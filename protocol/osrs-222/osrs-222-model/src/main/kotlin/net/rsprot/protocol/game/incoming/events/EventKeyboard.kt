@@ -43,12 +43,11 @@ public class EventKeyboard(
         return result
     }
 
-    override fun toString(): String {
-        return "EventKeyboard(" +
+    override fun toString(): String =
+        "EventKeyboard(" +
             "lastTransmittedKeyPress=$lastTransmittedKeyPress, " +
             "keysPressed=$keysPressed" +
             ")"
-    }
 
     /**
      * KeySequence class represents a sequence of keys pressed in a byte array.
@@ -57,7 +56,9 @@ public class EventKeyboard(
      * @property length the length of the key sequence
      */
     @JvmInline
-    public value class KeySequence(private val array: ByteArray) {
+    public value class KeySequence(
+        private val array: ByteArray,
+    ) {
         public val length: Int
             get() = array.size
 
@@ -67,31 +68,27 @@ public class EventKeyboard(
          * modify this key sequence.
          * All valid keys will be positive byte values.
          */
-        public fun asByteArray(): ByteArray {
-            return array
-        }
+        public fun asByteArray(): ByteArray = array
 
         /**
          * Copies this backing key array into an int array, normalizing the
          * values in the process - all keys will be either positive integers,
          * or -1.
          */
-        public fun toIntArray(): IntArray {
-            return IntArray(length) { index ->
+        public fun toIntArray(): IntArray =
+            IntArray(length) { index ->
                 getJagexKey(index)
             }
-        }
 
         /**
          * Transforms the backing key array into an int array with
          * [java.awt.event.KeyEvent] key codes instead of the compressed
          * Jagex format. Any invalid key will be represented as -1.
          */
-        public fun toAwtKeyCodeIntArray(): IntArray {
-            return IntArray(length) { index ->
+        public fun toAwtKeyCodeIntArray(): IntArray =
+            IntArray(length) { index ->
                 getAwtKey(index)
             }
-        }
 
         /**
          * Gets the Jagex key code at the provided [index].

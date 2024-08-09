@@ -62,12 +62,11 @@ public class IfSetPlayerModelBaseColour private constructor(
         return result
     }
 
-    override fun toString(): String {
-        return "IfSetPlayerModelBaseColour(" +
+    override fun toString(): String =
+        "IfSetPlayerModelBaseColour(" +
             "interfaceId=$interfaceId, " +
             "componentId=$componentId, " +
             "index=$index, " +
             "colour=$colour" +
             ")"
-    }
 }

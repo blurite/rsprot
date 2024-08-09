@@ -6,16 +6,12 @@ import net.rsprot.protocol.game.incoming.clan.ClanSettingsFullRequest
 import net.rsprot.protocol.game.incoming.prot.GameClientProt
 import net.rsprot.protocol.message.codec.MessageDecoder
 import net.rsprot.protocol.metadata.Consistent
-import net.rsprot.protocol.tools.MessageDecodingTools
 
 @Consistent
 public class ClanSettingsFullRequestDecoder : MessageDecoder<ClanSettingsFullRequest> {
     override val prot: ClientProt = GameClientProt.CLANSETTINGS_FULL_REQUEST
 
-    override fun decode(
-        buffer: JagByteBuf,
-        tools: MessageDecodingTools,
-    ): ClanSettingsFullRequest {
+    override fun decode(buffer: JagByteBuf): ClanSettingsFullRequest {
         val clanId = buffer.g1s()
         return ClanSettingsFullRequest(clanId)
     }

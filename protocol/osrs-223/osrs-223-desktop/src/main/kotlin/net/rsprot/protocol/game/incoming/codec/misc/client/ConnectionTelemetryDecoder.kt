@@ -6,16 +6,12 @@ import net.rsprot.protocol.game.incoming.misc.client.ConnectionTelemetry
 import net.rsprot.protocol.game.incoming.prot.GameClientProt
 import net.rsprot.protocol.message.codec.MessageDecoder
 import net.rsprot.protocol.metadata.Consistent
-import net.rsprot.protocol.tools.MessageDecodingTools
 
 @Consistent
 public class ConnectionTelemetryDecoder : MessageDecoder<ConnectionTelemetry> {
     override val prot: ClientProt = GameClientProt.CONNECTION_TELEMETRY
 
-    override fun decode(
-        buffer: JagByteBuf,
-        tools: MessageDecodingTools,
-    ): ConnectionTelemetry {
+    override fun decode(buffer: JagByteBuf): ConnectionTelemetry {
         val connectionLostDuration = buffer.g2()
         val loginDuration = buffer.g2()
         val unusedDuration = buffer.g2()

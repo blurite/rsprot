@@ -66,10 +66,11 @@ public class DesktopUpdateZonePartialEnclosedEncoder : MessageEncoder<UpdateZone
             messages: List<T>,
         ): ByteBuf {
             val buffer =
-                allocator.buffer(
-                    min(IndexedZoneProtEncoder.maxZoneProtSize * messages.size, MAX_PARTIAL_ENCLOSED_SIZE),
-                    MAX_PARTIAL_ENCLOSED_SIZE,
-                ).toJagByteBuf()
+                allocator
+                    .buffer(
+                        min(IndexedZoneProtEncoder.maxZoneProtSize * messages.size, MAX_PARTIAL_ENCLOSED_SIZE),
+                        MAX_PARTIAL_ENCLOSED_SIZE,
+                    ).toJagByteBuf()
             for (message in messages) {
                 val indexedEncoder = IndexedZoneProtEncoder.indexedEncoders[message.protId]
                 buffer.p1(indexedEncoder.ordinal)

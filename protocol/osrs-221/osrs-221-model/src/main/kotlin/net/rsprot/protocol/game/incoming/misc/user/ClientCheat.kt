@@ -23,11 +23,7 @@ public class ClientCheat(
         return command == other.command
     }
 
-    override fun hashCode(): Int {
-        return command.hashCode()
-    }
+    override fun hashCode(): Int = command.hashCode()
 
-    override fun toString(): String {
-        return "ClientCheat(command='$command')"
-    }
+    override fun toString(): String = "ClientCheat(command='$command')"
 }

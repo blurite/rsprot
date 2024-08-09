@@ -34,11 +34,7 @@ public class ChatFilterSettingsPrivateChat(
         return privateChatFilter == other.privateChatFilter
     }
 
-    override fun hashCode(): Int {
-        return privateChatFilter
-    }
+    override fun hashCode(): Int = privateChatFilter
 
-    override fun toString(): String {
-        return "ChatFilterSettingsPrivateChat(privateChatFilter=$privateChatFilter)"
-    }
+    override fun toString(): String = "ChatFilterSettingsPrivateChat(privateChatFilter=$privateChatFilter)"
 }

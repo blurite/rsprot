@@ -18,10 +18,9 @@ internal value class LocProperties private constructor(
     val rotation: Int
         get() = packed.toInt() and 0x3
 
-    override fun toString(): String {
-        return "LocProperties(" +
+    override fun toString(): String =
+        "LocProperties(" +
             "shape=$shape, " +
             "rotation=$rotation" +
             ")"
-    }
 }

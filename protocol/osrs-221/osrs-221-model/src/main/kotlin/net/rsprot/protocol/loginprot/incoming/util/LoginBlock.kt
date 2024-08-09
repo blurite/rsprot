@@ -105,8 +105,8 @@ public class LoginBlock<T>(
         return result
     }
 
-    override fun toString(): String {
-        return "LoginBlock(" +
+    override fun toString(): String =
+        "LoginBlock(" +
             "version=$version, " +
             "subVersion=$subVersion, " +
             "seed=${seed.contentToString()}, " +
@@ -129,7 +129,6 @@ public class LoginBlock<T>(
             "crcBlockHeader=$crcBlockHeader, " +
             "authentication=$authentication" +
             ")"
-    }
 
     private companion object {
         private val remainingBetaArchiveIndices =

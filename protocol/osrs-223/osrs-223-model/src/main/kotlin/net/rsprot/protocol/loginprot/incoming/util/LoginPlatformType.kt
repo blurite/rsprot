@@ -11,9 +11,8 @@ public enum class LoginPlatformType(
     ;
 
     public companion object {
-        public operator fun get(id: Int): LoginPlatformType {
-            return entries.firstOrNull { it.id == id }
+        public operator fun get(id: Int): LoginPlatformType =
+            entries.firstOrNull { it.id == id }
                 ?: throw IllegalArgumentException("Unknown platform type: $id")
-        }
     }
 }

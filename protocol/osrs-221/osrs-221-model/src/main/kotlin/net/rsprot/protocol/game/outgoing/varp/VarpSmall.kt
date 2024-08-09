@@ -49,10 +49,9 @@ public class VarpSmall private constructor(
         return result
     }
 
-    override fun toString(): String {
-        return "VarpSmall(" +
+    override fun toString(): String =
+        "VarpSmall(" +
             "id=$id, " +
             "value=$value" +
             ")"
-    }
 }

@@ -9,7 +9,5 @@ import java.util.concurrent.ConcurrentLinkedQueue
  * The default message queue provider, returning a concurrent linked queue.
  */
 public class DefaultMessageQueueProvider<T : Message> : MessageQueueProvider<T> {
-    override fun provide(): Queue<T> {
-        return ConcurrentLinkedQueue()
-    }
+    override fun provide(): Queue<T> = ConcurrentLinkedQueue()
 }

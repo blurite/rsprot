@@ -23,7 +23,8 @@ public value class BuildArea private constructor(
         widthInZones: Int = DEFAULT_BUILD_AREA_SIZE,
         heightInZones: Int = DEFAULT_BUILD_AREA_SIZE,
     ) : this(
-        (zoneX and 0xFFFF).toLong()
+        (zoneX and 0xFFFF)
+            .toLong()
             .or((zoneZ and 0xFFFF).toLong() shl 16)
             .or((widthInZones and 0xFFFF).toLong() shl 32)
             .or((heightInZones and 0xFFFF).toLong() shl 48),

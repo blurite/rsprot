@@ -113,9 +113,7 @@ public class WorldEntityInfo internal constructor(
      * allowing for correct functionality for player and npc infos, as well as zone updates.
      * @return a list of indices of the world entities currently in high resolution.
      */
-    public fun getAllWorldEntityIndices(): List<Int> {
-        return this.allWorldEntities
-    }
+    public fun getAllWorldEntityIndices(): List<Int> = this.allWorldEntities
 
     /**
      * Gets the indices of all the world entities that were added to high resolution in this cycle,
@@ -124,9 +122,7 @@ public class WorldEntityInfo internal constructor(
      * @return a list of all the world entity indices added to the high resolution view in this
      * cycle.
      */
-    public fun getAddedWorldEntityIndices(): List<Int> {
-        return this.addedWorldEntities
-    }
+    public fun getAddedWorldEntityIndices(): List<Int> = this.addedWorldEntities
 
     /**
      * Gets the indices of all the world entities that were removed from the high resolution in
@@ -135,9 +131,7 @@ public class WorldEntityInfo internal constructor(
      * @return a list of all the indices of the world entities that were removed from the high
      * resolution view this cycle.
      */
-    public fun getRemovedWorldEntityIndices(): List<Int> {
-        return this.removedWorldEntities
-    }
+    public fun getRemovedWorldEntityIndices(): List<Int> = this.removedWorldEntities
 
     /**
      * Updates the current real absolute coordinate of the local player in the world.
@@ -190,9 +184,7 @@ public class WorldEntityInfo internal constructor(
      * @throws IllegalStateException if the buffer has not yet been allocated.
      */
     @Throws(IllegalStateException::class)
-    public fun backingBuffer(): ByteBuf {
-        return checkNotNull(buffer)
-    }
+    public fun backingBuffer(): ByteBuf = checkNotNull(buffer)
 
     /**
      * Turns the previously-computed world entity info into a packet instance
@@ -382,13 +374,14 @@ public class WorldEntityInfo internal constructor(
         return avatar.currentCoord.inDistance(
             this.currentCoord,
             renderDistance,
-        ) || (
-            renderCoord != CoordGrid.INVALID &&
-                avatar.currentCoord.inDistance(
-                    this.renderCoord,
-                    renderDistance,
-                )
-        )
+        ) ||
+            (
+                renderCoord != CoordGrid.INVALID &&
+                    avatar.currentCoord.inDistance(
+                        this.renderCoord,
+                        renderDistance,
+                    )
+            )
     }
 
     override fun onAlloc(

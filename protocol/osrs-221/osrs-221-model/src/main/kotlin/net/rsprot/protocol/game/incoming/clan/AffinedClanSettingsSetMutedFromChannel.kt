@@ -64,12 +64,11 @@ public class AffinedClanSettingsSetMutedFromChannel private constructor(
         return result
     }
 
-    override fun toString(): String {
-        return "AffinedClanSettingsSetMutedFromChannel(" +
+    override fun toString(): String =
+        "AffinedClanSettingsSetMutedFromChannel(" +
             "name='$name', " +
             "clanId=$clanId, " +
             "memberIndex=$memberIndex, " +
             "muted=$muted" +
             ")"
-    }
 }

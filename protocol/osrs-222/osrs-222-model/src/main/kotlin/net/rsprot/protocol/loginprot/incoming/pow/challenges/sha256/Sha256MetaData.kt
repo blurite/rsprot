@@ -42,12 +42,11 @@ public class Sha256MetaData
             return result
         }
 
-        override fun toString(): String {
-            return "Sha256MetaData(" +
+        override fun toString(): String =
+            "Sha256MetaData(" +
                 "world=$world, " +
                 "difficulty=$difficulty, " +
                 "epochTimeMillis=$epochTimeMillis, " +
                 "unknown=$unknown" +
                 ")"
-        }
     }

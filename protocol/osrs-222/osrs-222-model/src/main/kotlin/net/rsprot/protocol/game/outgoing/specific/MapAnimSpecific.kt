@@ -112,8 +112,8 @@ public class MapAnimSpecific private constructor(
         return result
     }
 
-    override fun toString(): String {
-        return "MapAnimSpecific(" +
+    override fun toString(): String =
+        "MapAnimSpecific(" +
             "id=$id, " +
             "delay=$delay, " +
             "height=$height, " +
@@ -122,5 +122,4 @@ public class MapAnimSpecific private constructor(
             "zoneZ=$zoneZ, " +
             "zInZone=$zInZone" +
             ")"
-    }
 }

@@ -10,9 +10,7 @@ import java.net.InetAddress
  */
 public object NopProofOfWorkProvider :
     ProofOfWorkProvider<NopProofOfWorkProvider.NopChallengeType, NopProofOfWorkProvider.NopChallengeMetaData> {
-    override fun provide(inetAddress: InetAddress): ProofOfWork<NopChallengeType, NopChallengeMetaData>? {
-        return null
-    }
+    override fun provide(inetAddress: InetAddress): ProofOfWork<NopChallengeType, NopChallengeMetaData>? = null
 
     public object NopChallengeType : ChallengeType<NopChallengeMetaData> {
         override val id: Int = 0

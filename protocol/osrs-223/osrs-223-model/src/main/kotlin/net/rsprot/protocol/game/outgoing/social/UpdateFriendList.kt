@@ -27,13 +27,9 @@ public class UpdateFriendList(
         return friends == other.friends
     }
 
-    override fun hashCode(): Int {
-        return friends.hashCode()
-    }
+    override fun hashCode(): Int = friends.hashCode()
 
-    override fun toString(): String {
-        return "UpdateFriendList(friends=$friends)"
-    }
+    override fun toString(): String = "UpdateFriendList(friends=$friends)"
 
     public sealed interface Friend {
         public val added: Boolean
@@ -151,8 +147,8 @@ public class UpdateFriendList(
             return result
         }
 
-        override fun toString(): String {
-            return "OnlineFriend(" +
+        override fun toString(): String =
+            "OnlineFriend(" +
                 "added=$added, " +
                 "name='$name', " +
                 "previousName=$previousName, " +
@@ -164,7 +160,6 @@ public class UpdateFriendList(
                 "worldFlags=$worldFlags, " +
                 "notes='$notes'" +
                 ")"
-        }
     }
 
     /**
@@ -240,8 +235,8 @@ public class UpdateFriendList(
             return result
         }
 
-        override fun toString(): String {
-            return "OfflineFriend(" +
+        override fun toString(): String =
+            "OfflineFriend(" +
                 "added=$added, " +
                 "name='$name', " +
                 "previousName=$previousName, " +
@@ -249,7 +244,6 @@ public class UpdateFriendList(
                 "properties=$properties, " +
                 "notes='$notes'" +
                 ")"
-        }
     }
 
     public companion object {

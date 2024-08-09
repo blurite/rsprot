@@ -57,10 +57,9 @@ public class MidiJingle private constructor(
         return result
     }
 
-    override fun toString(): String {
-        return "MidiJingle(" +
+    override fun toString(): String =
+        "MidiJingle(" +
             "id=$id, " +
             "lengthInMillis=$lengthInMillis" +
             ")"
-    }
 }

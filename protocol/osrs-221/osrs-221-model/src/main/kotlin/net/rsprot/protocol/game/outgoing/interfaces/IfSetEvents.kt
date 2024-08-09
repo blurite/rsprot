@@ -66,13 +66,12 @@ public class IfSetEvents private constructor(
         return result
     }
 
-    override fun toString(): String {
-        return "IfSetEvents(" +
+    override fun toString(): String =
+        "IfSetEvents(" +
             "events=$events, " +
             "interfaceId=$interfaceId, " +
             "componentId=$componentId, " +
             "start=$start, " +
             "end=$end" +
             ")"
-    }
 }

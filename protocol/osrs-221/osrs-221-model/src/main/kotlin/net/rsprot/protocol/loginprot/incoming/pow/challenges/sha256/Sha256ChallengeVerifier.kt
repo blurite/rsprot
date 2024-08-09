@@ -72,11 +72,7 @@ public class Sha256ChallengeVerifier(
         return true
     }
 
-    override fun hashCode(): Int {
-        return hashFunction.hashCode()
-    }
+    override fun hashCode(): Int = hashFunction.hashCode()
 
-    override fun toString(): String {
-        return "Sha256ChallengeVerifier(hashFunction=$hashFunction)"
-    }
+    override fun toString(): String = "Sha256ChallengeVerifier(hashFunction=$hashFunction)"
 }

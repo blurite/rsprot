@@ -52,18 +52,14 @@ public class NpcAvatarDetails internal constructor(
      * Whether the npc is tele jumping, meaning it will jump over to the destination
      * coord, even if it is just one tile away.
      */
-    public fun isJumping(): Boolean {
-        return movementType and TELEJUMP != 0
-    }
+    public fun isJumping(): Boolean = movementType and TELEJUMP != 0
 
     /**
      * Whether the npc is teleporting. This means the npc will render as jumping
      * if the destination is > 2 tiles away, and normal walk/run/in-between if the
      * distance is 2 tiles or less.
      */
-    public fun isTeleporting(): Boolean {
-        return movementType and (TELE or TELEJUMP) != 0
-    }
+    public fun isTeleporting(): Boolean = movementType and (TELE or TELEJUMP) != 0
 
     /**
      * Updates the current direction of the npc, allowing the server to sync up

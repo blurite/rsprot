@@ -81,12 +81,11 @@ public object RSProtFlags {
     private fun getBoolean(
         propertyName: String,
         defaultValue: Boolean,
-    ): Boolean {
-        return SystemPropertyUtil.getBoolean(
+    ): Boolean =
+        SystemPropertyUtil.getBoolean(
             PREFIX + propertyName,
             defaultValue,
         )
-    }
 
     private fun log(
         name: String,

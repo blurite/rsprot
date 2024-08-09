@@ -66,12 +66,11 @@ public class MidiSwap private constructor(
         return result
     }
 
-    override fun toString(): String {
-        return "MidiSwap(" +
+    override fun toString(): String =
+        "MidiSwap(" +
             "fadeOutDelay=$fadeOutDelay, " +
             "fadeInDelay=$fadeInDelay, " +
             "fadeInSpeed=$fadeInSpeed, " +
             "fadeOutSpeed=$fadeOutSpeed" +
             ")"
-    }
 }

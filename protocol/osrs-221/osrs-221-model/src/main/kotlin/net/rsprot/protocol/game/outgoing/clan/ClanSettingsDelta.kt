@@ -57,14 +57,13 @@ public class ClanSettingsDelta private constructor(
         return result
     }
 
-    override fun toString(): String {
-        return "ClanSettingsDelta(" +
+    override fun toString(): String =
+        "ClanSettingsDelta(" +
             "clanType=$clanType, " +
             "owner=$owner, " +
             "updateNum=$updateNum, " +
             "updates=$updates" +
             ")"
-    }
 
     public sealed interface ClanSettingsDeltaUpdate
 
@@ -105,12 +104,11 @@ public class ClanSettingsDelta private constructor(
             return result
         }
 
-        override fun toString(): String {
-            return "ClanSettingsDeltaAddBannedUpdate(" +
+        override fun toString(): String =
+            "ClanSettingsDeltaAddBannedUpdate(" +
                 "hash=$hash, " +
                 "name=$name" +
                 ")"
-        }
     }
 
     /**
@@ -150,12 +148,11 @@ public class ClanSettingsDelta private constructor(
             return result
         }
 
-        override fun toString(): String {
-            return "ClanSettingsDeltaAddMemberV1Update(" +
+        override fun toString(): String =
+            "ClanSettingsDeltaAddMemberV1Update(" +
                 "hash=$hash, " +
                 "name=$name" +
                 ")"
-        }
     }
 
     /**
@@ -211,13 +208,12 @@ public class ClanSettingsDelta private constructor(
             return result
         }
 
-        override fun toString(): String {
-            return "ClanSettingsDeltaAddMemberV2Update(" +
+        override fun toString(): String =
+            "ClanSettingsDeltaAddMemberV2Update(" +
                 "hash=$hash, " +
                 "name=$name, " +
                 "joinRuneDay=$joinRuneDay" +
                 ")"
-        }
     }
 
     /**
@@ -283,15 +279,14 @@ public class ClanSettingsDelta private constructor(
             return result
         }
 
-        override fun toString(): String {
-            return "ClanSettingsDeltaBaseSettingsUpdate(" +
+        override fun toString(): String =
+            "ClanSettingsDeltaBaseSettingsUpdate(" +
                 "allowUnaffined=$allowUnaffined, " +
                 "talkRank=$talkRank, " +
                 "kickRank=$kickRank, " +
                 "lootshareRank=$lootshareRank, " +
                 "coinshareRank=$coinshareRank" +
                 ")"
-        }
     }
 
     /**
@@ -311,13 +306,9 @@ public class ClanSettingsDelta private constructor(
             return index == other.index
         }
 
-        override fun hashCode(): Int {
-            return index
-        }
+        override fun hashCode(): Int = index
 
-        override fun toString(): String {
-            return "ClanSettingsDeltaDeleteBannedUpdate(index=$index)"
-        }
+        override fun toString(): String = "ClanSettingsDeltaDeleteBannedUpdate(index=$index)"
     }
 
     /**
@@ -336,13 +327,9 @@ public class ClanSettingsDelta private constructor(
             return index == other.index
         }
 
-        override fun hashCode(): Int {
-            return index
-        }
+        override fun hashCode(): Int = index
 
-        override fun toString(): String {
-            return "ClanSettingsDeltaDeleteMemberUpdate(index=$index)"
-        }
+        override fun toString(): String = "ClanSettingsDeltaDeleteMemberUpdate(index=$index)"
     }
 
     /**
@@ -386,12 +373,11 @@ public class ClanSettingsDelta private constructor(
             return result
         }
 
-        override fun toString(): String {
-            return "ClanSettingsDeltaSetMemberRankUpdate(" +
+        override fun toString(): String =
+            "ClanSettingsDeltaSetMemberRankUpdate(" +
                 "index=$index, " +
                 "rank=$rank" +
                 ")"
-        }
     }
 
     /**
@@ -450,14 +436,13 @@ public class ClanSettingsDelta private constructor(
             return result
         }
 
-        override fun toString(): String {
-            return "ClanSettingsDeltaSetMemberExtraInfoUpdate(" +
+        override fun toString(): String =
+            "ClanSettingsDeltaSetMemberExtraInfoUpdate(" +
                 "index=$index, " +
                 "value=$value, " +
                 "startBit=$startBit, " +
                 "endBit=$endBit" +
                 ")"
-        }
     }
 
     /**
@@ -498,12 +483,11 @@ public class ClanSettingsDelta private constructor(
             return result
         }
 
-        override fun toString(): String {
-            return "ClanSettingsDeltaSetMemberMutedUpdate(" +
+        override fun toString(): String =
+            "ClanSettingsDeltaSetMemberMutedUpdate(" +
                 "index=$index, " +
                 "muted=$muted" +
                 ")"
-        }
     }
 
     /**
@@ -534,12 +518,11 @@ public class ClanSettingsDelta private constructor(
             return result
         }
 
-        override fun toString(): String {
-            return "ClanSettingsDeltaSetIntSettingUpdate(" +
+        override fun toString(): String =
+            "ClanSettingsDeltaSetIntSettingUpdate(" +
                 "setting=$setting, " +
                 "value=$value" +
                 ")"
-        }
     }
 
     /**
@@ -570,12 +553,11 @@ public class ClanSettingsDelta private constructor(
             return result
         }
 
-        override fun toString(): String {
-            return "ClanSettingsDeltaSetLongSettingUpdate(" +
+        override fun toString(): String =
+            "ClanSettingsDeltaSetLongSettingUpdate(" +
                 "setting=$setting, " +
                 "value=$value" +
                 ")"
-        }
     }
 
     /**
@@ -606,12 +588,11 @@ public class ClanSettingsDelta private constructor(
             return result
         }
 
-        override fun toString(): String {
-            return "ClanSettingsDeltaSetStringSettingUpdate(" +
+        override fun toString(): String =
+            "ClanSettingsDeltaSetStringSettingUpdate(" +
                 "setting=$setting, " +
                 "value='$value'" +
                 ")"
-        }
     }
 
     /**
@@ -667,14 +648,13 @@ public class ClanSettingsDelta private constructor(
             return result
         }
 
-        override fun toString(): String {
-            return "ClanSettingsDeltaSetVarbitSettingUpdate(" +
+        override fun toString(): String =
+            "ClanSettingsDeltaSetVarbitSettingUpdate(" +
                 "setting=$setting, " +
                 "value=$value, " +
                 "startBit=$startBit, " +
                 "endBit=$endBit" +
                 ")"
-        }
     }
 
     /**
@@ -693,13 +673,9 @@ public class ClanSettingsDelta private constructor(
             return clanName == other.clanName
         }
 
-        override fun hashCode(): Int {
-            return clanName.hashCode()
-        }
+        override fun hashCode(): Int = clanName.hashCode()
 
-        override fun toString(): String {
-            return "ClanSettingsDeltaSetClanNameUpdate(clanName='$clanName')"
-        }
+        override fun toString(): String = "ClanSettingsDeltaSetClanNameUpdate(clanName='$clanName')"
     }
 
     /**
@@ -718,12 +694,8 @@ public class ClanSettingsDelta private constructor(
             return index == other.index
         }
 
-        override fun hashCode(): Int {
-            return index
-        }
+        override fun hashCode(): Int = index
 
-        override fun toString(): String {
-            return "ClanSettingDeltaSetClanOwnerUpdate(index=$index)"
-        }
+        override fun toString(): String = "ClanSettingDeltaSetClanOwnerUpdate(index=$index)"
     }
 }

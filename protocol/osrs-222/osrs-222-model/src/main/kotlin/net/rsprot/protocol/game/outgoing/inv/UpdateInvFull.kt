@@ -94,9 +94,7 @@ public class UpdateInvFull private constructor(
      * @throws IndexOutOfBoundsException if the [slot] is outside
      * the inventory's boundaries.
      */
-    public fun getObject(slot: Int): InventoryObject {
-        return inventory[slot]
-    }
+    public fun getObject(slot: Int): InventoryObject = inventory[slot]
 
     public fun returnInventory() {
         inventory.clear()
@@ -123,14 +121,13 @@ public class UpdateInvFull private constructor(
         return result
     }
 
-    override fun toString(): String {
-        return "UpdateInvFull(" +
+    override fun toString(): String =
+        "UpdateInvFull(" +
             "interfaceId=$interfaceId, " +
             "componentId=$componentId, " +
             "inventoryId=$inventoryId, " +
             "capacity=$capacity" +
             ")"
-    }
 
     /**
      * An object provider interface is used to acquire the objs

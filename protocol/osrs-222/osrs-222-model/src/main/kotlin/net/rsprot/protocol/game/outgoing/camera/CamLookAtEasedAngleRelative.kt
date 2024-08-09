@@ -77,12 +77,11 @@ public class CamLookAtEasedAngleRelative private constructor(
         return result
     }
 
-    override fun toString(): String {
-        return "CamLookAtEasedAngleRelative(" +
+    override fun toString(): String =
+        "CamLookAtEasedAngleRelative(" +
             "xAngle=$xAngle, " +
             "yAngle=$yAngle, " +
             "duration=$duration, " +
             "function=$function" +
             ")"
-    }
 }

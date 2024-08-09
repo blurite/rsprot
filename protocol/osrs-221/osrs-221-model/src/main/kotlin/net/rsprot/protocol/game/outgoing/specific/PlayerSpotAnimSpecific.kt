@@ -72,13 +72,12 @@ public class PlayerSpotAnimSpecific private constructor(
         return result
     }
 
-    override fun toString(): String {
-        return "PlayerSpotAnimSpecific(" +
+    override fun toString(): String =
+        "PlayerSpotAnimSpecific(" +
             "index=$index, " +
             "id=$id, " +
             "slot=$slot, " +
             "height=$height, " +
             "delay=$delay" +
             ")"
-    }
 }

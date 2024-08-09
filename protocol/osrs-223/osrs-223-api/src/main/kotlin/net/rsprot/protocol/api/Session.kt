@@ -133,9 +133,7 @@ public class Session<R>(
     /**
      * Polls one incoming game message from the queue, or null if none exists.
      */
-    private fun pollIncomingMessage(): IncomingGameMessage? {
-        return incomingMessageQueue.poll()
-    }
+    private fun pollIncomingMessage(): IncomingGameMessage? = incomingMessageQueue.poll()
 
     /**
      * Resets the incoming message counter and resumes reading.
@@ -277,9 +275,7 @@ public class Session<R>(
      * Whether any of the incoming message categories are full, meaning
      * no more packets should be decoded.
      */
-    internal fun isFull(): Boolean {
-        return counter.isFull()
-    }
+    internal fun isFull(): Boolean = counter.isFull()
 
     private companion object {
         private val logger: InlineLogger = InlineLogger()

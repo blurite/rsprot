@@ -37,16 +37,13 @@ public class UpdateStockMarketSlot private constructor(
         return update == other.update
     }
 
-    override fun hashCode(): Int {
-        return update.hashCode()
-    }
+    override fun hashCode(): Int = update.hashCode()
 
-    override fun toString(): String {
-        return "UpdateStockMarketSlot(" +
+    override fun toString(): String =
+        "UpdateStockMarketSlot(" +
             "slot=$slot, " +
             "update=$update" +
             ")"
-    }
 
     public sealed interface StockMarketUpdateType
 
@@ -120,8 +117,8 @@ public class UpdateStockMarketSlot private constructor(
             return result
         }
 
-        override fun toString(): String {
-            return "SetStockMarketSlot(" +
+        override fun toString(): String =
+            "SetStockMarketSlot(" +
                 "status=$status, " +
                 "obj=$obj, " +
                 "price=$price, " +
@@ -129,6 +126,5 @@ public class UpdateStockMarketSlot private constructor(
                 "completedCount=$completedCount, " +
                 "completedGold=$completedGold" +
                 ")"
-        }
     }
 }

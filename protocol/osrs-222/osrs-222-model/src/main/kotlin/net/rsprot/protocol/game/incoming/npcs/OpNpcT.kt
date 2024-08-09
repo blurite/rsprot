@@ -76,8 +76,8 @@ public class OpNpcT private constructor(
         return result
     }
 
-    override fun toString(): String {
-        return "OpNpcT(" +
+    override fun toString(): String =
+        "OpNpcT(" +
             "index=$index, " +
             "controlKey=$controlKey, " +
             "selectedInterfaceId=$selectedInterfaceId, " +
@@ -85,5 +85,4 @@ public class OpNpcT private constructor(
             "selectedSub=$selectedSub, " +
             "selectedObj=$selectedObj" +
             ")"
-    }
 }

@@ -233,18 +233,14 @@ public class PlayerInfo internal constructor(
      * @throws IllegalStateException if the buffer has not been allocated yet.
      */
     @Throws(IllegalStateException::class)
-    public fun backingBuffer(worldId: Int): ByteBuf {
-        return checkNotNull(getDetails(worldId).buffer)
-    }
+    public fun backingBuffer(worldId: Int): ByteBuf = checkNotNull(getDetails(worldId).buffer)
 
     /**
      * Returns the backing buffer for this cycle, for the specified world details.
      * @throws IllegalStateException if the buffer has not been allocated yet.
      */
     @Throws(IllegalStateException::class)
-    internal fun backingBuffer(details: PlayerInfoWorldDetails): ByteBuf {
-        return checkNotNull(details.buffer)
-    }
+    internal fun backingBuffer(details: PlayerInfoWorldDetails): ByteBuf = checkNotNull(details.buffer)
 
     /**
      * Turns the player info object into a wrapped packet.

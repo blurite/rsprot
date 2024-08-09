@@ -6,16 +6,12 @@ import net.rsprot.protocol.game.incoming.misc.user.UpdatePlayerModel
 import net.rsprot.protocol.game.incoming.prot.GameClientProt
 import net.rsprot.protocol.message.codec.MessageDecoder
 import net.rsprot.protocol.metadata.Consistent
-import net.rsprot.protocol.tools.MessageDecodingTools
 
 @Consistent
 public class UpdatePlayerModelDecoder : MessageDecoder<UpdatePlayerModel> {
     override val prot: ClientProt = GameClientProt.UPDATE_PLAYER_MODEL
 
-    override fun decode(
-        buffer: JagByteBuf,
-        tools: MessageDecodingTools,
-    ): UpdatePlayerModel {
+    override fun decode(buffer: JagByteBuf): UpdatePlayerModel {
         val bodyType = buffer.g1()
         val identKit = ByteArray(7)
         for (i in identKit.indices) {

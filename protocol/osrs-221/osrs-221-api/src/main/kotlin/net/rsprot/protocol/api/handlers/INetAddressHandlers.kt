@@ -39,11 +39,10 @@ public class INetAddressHandlers
             return result
         }
 
-        override fun toString(): String {
-            return "INetAddressHandlers(" +
+        override fun toString(): String =
+            "INetAddressHandlers(" +
                 "inetAddressValidator=$inetAddressValidator, " +
                 "js5InetAddressTracker=$js5InetAddressTracker, " +
                 "gameInetAddressTracker=$gameInetAddressTracker" +
                 ")"
-        }
     }

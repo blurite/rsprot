@@ -34,9 +34,7 @@ public class WorldEntityAvatarRepository internal constructor(
      * @throws ArrayIndexOutOfBoundsException if the [idx] is < 0, or >= [AVATAR_CAPACITY].
      */
     @Throws(ArrayIndexOutOfBoundsException::class)
-    public fun getOrNull(idx: Int): WorldEntityAvatar? {
-        return elements[idx]
-    }
+    public fun getOrNull(idx: Int): WorldEntityAvatar? = elements[idx]
 
     /**
      * Gets an existing world entity avatar from the queue if one is ready, or constructs

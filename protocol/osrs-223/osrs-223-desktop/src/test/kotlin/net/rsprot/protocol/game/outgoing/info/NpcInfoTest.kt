@@ -22,7 +22,6 @@ import org.junit.jupiter.api.Test
 import kotlin.random.Random
 import kotlin.test.assertEquals
 
-@Suppress("OPT_IN_USAGE")
 class NpcInfoTest {
     private lateinit var protocol: NpcInfoProtocol
     private lateinit var client: NpcInfoClient
@@ -65,11 +64,10 @@ class NpcInfoTest {
         this.localNpcInfo = protocol.alloc(500, OldSchoolClientType.DESKTOP)
     }
 
-    private fun npcExceptionHandler(): NpcAvatarExceptionHandler {
-        return NpcAvatarExceptionHandler { _, _ ->
+    private fun npcExceptionHandler(): NpcAvatarExceptionHandler =
+        NpcAvatarExceptionHandler { _, _ ->
             // No-op
         }
-    }
 
     private fun tick() {
         localNpcInfo.updateCoord(NpcInfo.ROOT_WORLD, localPlayerCoord.level, localPlayerCoord.x, localPlayerCoord.z)
@@ -256,14 +254,13 @@ class NpcInfoTest {
         assertEquals("Hello world", clientNpc.overheadChat)
     }
 
-    private fun createNpcIndexSupplier(): NpcIndexSupplier {
-        return NpcIndexSupplier { _, level, x, z, viewDistance ->
+    private fun createNpcIndexSupplier(): NpcIndexSupplier =
+        NpcIndexSupplier { _, level, x, z, viewDistance ->
             serverNpcs
                 .filter { it.coordGrid.inDistance(CoordGrid(level, x, z), viewDistance) }
                 .map { it.index }
                 .iterator()
         }
-    }
 
     private fun createPhantomNpcs(factory: NpcAvatarFactory): List<Npc> {
         val npcs = ArrayList<Npc>(500)
@@ -296,19 +293,16 @@ class NpcInfoTest {
         val coordGrid: CoordGrid
             get() = avatar.getCoordGrid()
 
-        override fun toString(): String {
-            return "Npc(" +
+        override fun toString(): String =
+            "Npc(" +
                 "index=$index, " +
                 "id=$id, " +
                 "coordGrid=${avatar.getCoordGrid()}" +
                 ")"
-        }
     }
 
     private companion object {
-        private fun NpcAvatar.getCoordGrid(): CoordGrid {
-            return CoordGrid(level(), x(), z())
-        }
+        private fun NpcAvatar.getCoordGrid(): CoordGrid = CoordGrid(level(), x(), z())
 
         private fun createHuffmanCodec(): HuffmanCodec {
             val resource = PlayerInfoTest::class.java.getResourceAsStream("huffman.dat")

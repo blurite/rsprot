@@ -48,18 +48,16 @@ internal class GlobalLowResolutionPositionRepository {
      * @param index the index of the player
      * @return the low resolution position of that player in the last cycle.
      */
-    internal fun getPreviousLowResolutionPosition(index: Int): LowResolutionPosition {
-        return LowResolutionPosition(previousLowResPositions[index])
-    }
+    internal fun getPreviousLowResolutionPosition(index: Int): LowResolutionPosition =
+        LowResolutionPosition(previousLowResPositions[index])
 
     /**
      * Gets the current cycle's low resolution position of the player at index [index].
      * @param index the index of the player
      * @return the low resolution position of that player in the current cycle.
      */
-    internal fun getCurrentLowResolutionPosition(index: Int): LowResolutionPosition {
-        return LowResolutionPosition(currentLowResPositions[index])
-    }
+    internal fun getCurrentLowResolutionPosition(index: Int): LowResolutionPosition =
+        LowResolutionPosition(currentLowResPositions[index])
 
     /**
      * Synchronize the low resolution positions at the end of the cycle.

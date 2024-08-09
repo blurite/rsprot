@@ -59,13 +59,12 @@ public class LoginHandlers
             return result
         }
 
-        override fun toString(): String {
-            return "LoginHandlers(" +
+        override fun toString(): String =
+            "LoginHandlers(" +
                 "sessionIdGenerator=$sessionIdGenerator, " +
                 "streamCipherProvider=$streamCipherProvider, " +
                 "loginDecoderService=$loginDecoderService, " +
                 "proofOfWorkProvider=$proofOfWorkProvider, " +
                 "proofOfWorkChallengeWorker=$proofOfWorkChallengeWorker" +
                 ")"
-        }
     }

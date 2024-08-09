@@ -24,11 +24,7 @@ public class SoundJingleEnd(
         return jingleId == other.jingleId
     }
 
-    override fun hashCode(): Int {
-        return jingleId
-    }
+    override fun hashCode(): Int = jingleId
 
-    override fun toString(): String {
-        return "SoundJingleEnd(jingleId=$jingleId)"
-    }
+    override fun toString(): String = "SoundJingleEnd(jingleId=$jingleId)"
 }

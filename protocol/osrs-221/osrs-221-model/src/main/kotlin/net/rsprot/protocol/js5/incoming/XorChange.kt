@@ -14,11 +14,7 @@ public class XorChange(
         return true
     }
 
-    override fun hashCode(): Int {
-        return key
-    }
+    override fun hashCode(): Int = key
 
-    override fun toString(): String {
-        return "XorChange(key=$key)"
-    }
+    override fun toString(): String = "XorChange(key=$key)"
 }

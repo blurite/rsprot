@@ -7,7 +7,9 @@ import net.rsprot.protocol.common.game.outgoing.info.CoordGrid
  * @param packed the bitpacked representation of the low resolution position
  */
 @JvmInline
-internal value class LowResolutionPosition(val packed: Int) {
+internal value class LowResolutionPosition(
+    val packed: Int,
+) {
     val x: Int
         get() = packed ushr 8 and 0xFF
     val z: Int
@@ -22,10 +24,9 @@ internal value class LowResolutionPosition(val packed: Int) {
  * @param coordGrid the absolute coordinate to turn into a low resolution position.
  * @return the low resolution representation of the given [coordGrid]
  */
-internal fun LowResolutionPosition(coordGrid: CoordGrid): LowResolutionPosition {
-    return LowResolutionPosition(
+internal fun LowResolutionPosition(coordGrid: CoordGrid): LowResolutionPosition =
+    LowResolutionPosition(
         (coordGrid.z ushr 13)
             .or((coordGrid.x ushr 13) shl 8)
             .or((coordGrid.level shl 16)),
     )
-}

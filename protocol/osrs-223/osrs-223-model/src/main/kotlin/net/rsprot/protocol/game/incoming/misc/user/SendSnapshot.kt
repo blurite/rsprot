@@ -83,11 +83,10 @@ public class SendSnapshot private constructor(
         return result
     }
 
-    override fun toString(): String {
-        return "SendSnapshot(" +
+    override fun toString(): String =
+        "SendSnapshot(" +
             "name='$name', " +
             "ruleId=$ruleId, " +
             "mute=$mute" +
             ")"
-    }
 }

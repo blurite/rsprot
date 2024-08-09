@@ -11,7 +11,9 @@ package net.rsprot.protocol.game.outgoing.info
  * When setting up the tinting, rather than flagging tinting on the recipient,
  * we flag the observer-dependent flag on the receiver of the given extended info block.
  */
-internal class ObserverExtendedInfoFlags(capacity: Int) {
+internal class ObserverExtendedInfoFlags(
+    capacity: Int,
+) {
     /**
      * The observer-dependent flags. This array will not include "static" flags.
      */
@@ -41,7 +43,5 @@ internal class ObserverExtendedInfoFlags(capacity: Int) {
      * @param index the index of the recipient player or npc
      * @return the observer-dependent flag value
      */
-    fun getFlag(index: Int): Int {
-        return flags[index].toInt()
-    }
+    fun getFlag(index: Int): Int = flags[index].toInt()
 }

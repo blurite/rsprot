@@ -37,14 +37,11 @@ public class IfSetPlayerHead private constructor(
         return combinedId == other.combinedId
     }
 
-    override fun hashCode(): Int {
-        return combinedId.hashCode()
-    }
+    override fun hashCode(): Int = combinedId.hashCode()
 
-    override fun toString(): String {
-        return "IfSetPlayerHead(" +
+    override fun toString(): String =
+        "IfSetPlayerHead(" +
             "interfaceId=$interfaceId, " +
             "componentId=$componentId" +
             ")"
-    }
 }

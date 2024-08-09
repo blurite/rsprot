@@ -39,10 +39,9 @@ public class SendPing(
         return result
     }
 
-    override fun toString(): String {
-        return "SendPing(" +
+    override fun toString(): String =
+        "SendPing(" +
             "value1=$value1, " +
             "value2=$value2" +
             ")"
-    }
 }

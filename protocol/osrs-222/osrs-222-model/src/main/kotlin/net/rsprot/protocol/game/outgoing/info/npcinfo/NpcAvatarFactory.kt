@@ -72,8 +72,8 @@ public class NpcAvatarFactory(
         z: Int,
         spawnCycle: Int = 0,
         direction: Int = 0,
-    ): NpcAvatar {
-        return avatarRepository.getOrAlloc(
+    ): NpcAvatar =
+        avatarRepository.getOrAlloc(
             index,
             id,
             level,
@@ -82,7 +82,6 @@ public class NpcAvatarFactory(
             spawnCycle,
             direction,
         )
-    }
 
     /**
      * Releases the avatar back into the repository to be used by other NPCs.

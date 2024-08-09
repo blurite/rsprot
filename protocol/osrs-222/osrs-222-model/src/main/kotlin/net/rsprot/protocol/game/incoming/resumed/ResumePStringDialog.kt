@@ -24,11 +24,7 @@ public class ResumePStringDialog(
         return string == other.string
     }
 
-    override fun hashCode(): Int {
-        return string.hashCode()
-    }
+    override fun hashCode(): Int = string.hashCode()
 
-    override fun toString(): String {
-        return "ResumePStringDialog(string='$string')"
-    }
+    override fun toString(): String = "ResumePStringDialog(string='$string')"
 }

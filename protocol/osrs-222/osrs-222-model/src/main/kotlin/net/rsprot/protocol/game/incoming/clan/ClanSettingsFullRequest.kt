@@ -28,11 +28,7 @@ public class ClanSettingsFullRequest(
         return clanId == other.clanId
     }
 
-    override fun hashCode(): Int {
-        return clanId
-    }
+    override fun hashCode(): Int = clanId
 
-    override fun toString(): String {
-        return "ClanSettingsFullRequest(clanId=$clanId)"
-    }
+    override fun toString(): String = "ClanSettingsFullRequest(clanId=$clanId)"
 }

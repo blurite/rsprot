@@ -68,12 +68,11 @@ public class CamSmoothReset private constructor(
         return result
     }
 
-    override fun toString(): String {
-        return "CamSmoothReset(" +
+    override fun toString(): String =
+        "CamSmoothReset(" +
             "cameraMoveConstantSpeed=$cameraMoveConstantSpeed, " +
             "cameraMoveProportionalSpeed=$cameraMoveProportionalSpeed, " +
             "cameraLookConstantSpeed=$cameraLookConstantSpeed, " +
             "cameraLookProportionalSpeed=$cameraLookProportionalSpeed" +
             ")"
-    }
 }

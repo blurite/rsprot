@@ -109,9 +109,7 @@ public class NpcAvatar internal constructor(
      * Checks if this NPC has any observers, necessary to determine whether cached information
      * must be computed for this NPC.
      */
-    internal fun hasObservers(): Boolean {
-        return observerCount.get() > 0
-    }
+    internal fun hasObservers(): Boolean = observerCount.get() > 0
 
     /**
      * Resets the observer count.
@@ -362,23 +360,17 @@ public class NpcAvatar internal constructor(
     /**
      * The current height level of this avatar.
      */
-    public fun level(): Int {
-        return details.currentCoord.level
-    }
+    public fun level(): Int = details.currentCoord.level
 
     /**
      * The current absolute x coordinate of this avatar.
      */
-    public fun x(): Int {
-        return details.currentCoord.x
-    }
+    public fun x(): Int = details.currentCoord.x
 
     /**
      * The current absolute z coordinate of this avatar.
      */
-    public fun z(): Int {
-        return details.currentCoord.z
-    }
+    public fun z(): Int = details.currentCoord.z
 
     /**
      * Sets this avatar inaccessible, meaning no player can observe this NPC,

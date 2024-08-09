@@ -74,13 +74,12 @@ public class ObjCount private constructor(
         return result
     }
 
-    override fun toString(): String {
-        return "ObjCount(" +
+    override fun toString(): String =
+        "ObjCount(" +
             "id=$id, " +
             "oldQuantity=$oldQuantity, " +
             "newQuantity=$newQuantity, " +
             "xInZone=$xInZone, " +
             "zInZone=$zInZone" +
             ")"
-    }
 }

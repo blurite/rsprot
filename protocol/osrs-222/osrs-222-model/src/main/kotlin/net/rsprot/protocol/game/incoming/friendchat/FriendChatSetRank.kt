@@ -46,10 +46,9 @@ public class FriendChatSetRank private constructor(
         return result
     }
 
-    override fun toString(): String {
-        return "FriendChatSetRank(" +
+    override fun toString(): String =
+        "FriendChatSetRank(" +
             "name='$name', " +
             "rank=$rank" +
             ")"
-    }
 }

@@ -24,11 +24,7 @@ public class UpdateRunEnergy(
         return runenergy == other.runenergy
     }
 
-    override fun hashCode(): Int {
-        return runenergy
-    }
+    override fun hashCode(): Int = runenergy
 
-    override fun toString(): String {
-        return "UpdateRunEnergy(runenergy=$runenergy)"
-    }
+    override fun toString(): String = "UpdateRunEnergy(runenergy=$runenergy)"
 }

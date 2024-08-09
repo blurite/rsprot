@@ -47,12 +47,11 @@ public class HiscoreReply private constructor(
         return result
     }
 
-    override fun toString(): String {
-        return "HiscoreReply(" +
+    override fun toString(): String =
+        "HiscoreReply(" +
             "requestId=$requestId, " +
             "response=$response" +
             ")"
-    }
 
     public sealed interface HiscoreReplyResponse
 
@@ -94,14 +93,13 @@ public class HiscoreReply private constructor(
             return result
         }
 
-        override fun toString(): String {
-            return "SuccessfulHiscoreReply(" +
+        override fun toString(): String =
+            "SuccessfulHiscoreReply(" +
                 "statResults=$statResults, " +
                 "overallRank=$overallRank, " +
                 "overallExperience=$overallExperience, " +
                 "activityResults=$activityResults" +
                 ")"
-        }
     }
 
     /**
@@ -123,13 +121,9 @@ public class HiscoreReply private constructor(
             return reason == other.reason
         }
 
-        override fun hashCode(): Int {
-            return reason.hashCode()
-        }
+        override fun hashCode(): Int = reason.hashCode()
 
-        override fun toString(): String {
-            return "FailedHiscoreReply(reason='$reason')"
-        }
+        override fun toString(): String = "FailedHiscoreReply(reason='$reason')"
     }
 
     public class HiscoreResult(
@@ -157,12 +151,11 @@ public class HiscoreReply private constructor(
             return result1
         }
 
-        override fun toString(): String {
-            return "HiscoreResult(" +
+        override fun toString(): String =
+            "HiscoreResult(" +
                 "id=$id, " +
                 "rank=$rank, " +
                 "result=$result" +
                 ")"
-        }
     }
 }

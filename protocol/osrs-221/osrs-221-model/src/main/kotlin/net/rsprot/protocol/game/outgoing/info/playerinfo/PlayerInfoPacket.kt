@@ -13,7 +13,8 @@ import net.rsprot.protocol.message.OutgoingGameMessage
  */
 public class PlayerInfoPacket(
     buffer: ByteBuf,
-) : DefaultByteBufHolder(buffer), OutgoingGameMessage {
+) : DefaultByteBufHolder(buffer),
+    OutgoingGameMessage {
     override val category: ServerProtCategory
         get() = GameServerProtCategory.HIGH_PRIORITY_PROT
 
@@ -24,11 +25,7 @@ public class PlayerInfoPacket(
         return true
     }
 
-    override fun hashCode(): Int {
-        return super.hashCode()
-    }
+    override fun hashCode(): Int = super.hashCode()
 
-    override fun toString(): String {
-        return super.toString()
-    }
+    override fun toString(): String = super.toString()
 }

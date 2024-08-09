@@ -12,13 +12,11 @@ import net.rsprot.protocol.ClientProt
 import net.rsprot.protocol.Prot
 import net.rsprot.protocol.message.codec.MessageDecoder
 import net.rsprot.protocol.message.codec.incoming.MessageDecoderRepository
-import net.rsprot.protocol.tools.MessageDecodingTools
 
 /**
  * A general-purpose incoming message decoder, responsible for decoding all types
  * of messages, including login, JS5 and game.
  * @property decoder the decoder repository containing all the decoders for each opcode
- * @property messageDecodingTools the decoding tools necessary to decode the messages
  * @property streamCipher the stream cipher used to properly decode the encrypted opcodes
  * @property state the current state in this decoder, following a typical
  * opcode -> (optional) size -> payload structure.
@@ -28,7 +26,6 @@ import net.rsprot.protocol.tools.MessageDecodingTools
  */
 public abstract class IncomingMessageDecoder : ByteToMessageDecoder() {
     protected abstract val decoders: MessageDecoderRepository<ClientProt>
-    protected abstract val messageDecodingTools: MessageDecodingTools
     protected abstract val streamCipher: StreamCipher
 
     private enum class State {
@@ -106,7 +103,7 @@ public abstract class IncomingMessageDecoder : ByteToMessageDecoder() {
         out: MutableList<Any>,
     ) {
         val payload = input.readSlice(length)
-        out += decoder.decode(payload.toJagByteBuf(), messageDecodingTools)
+        out += decoder.decode(payload.toJagByteBuf())
         if (payload.isReadable) {
             throw DecoderException(
                 "Decoder ${decoder.javaClass} did not read entire payload " +

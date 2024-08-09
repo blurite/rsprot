@@ -111,8 +111,8 @@ public class SoundArea private constructor(
         return result
     }
 
-    override fun toString(): String {
-        return "SoundArea(" +
+    override fun toString(): String =
+        "SoundArea(" +
             "id=$id, " +
             "delay=$delay, " +
             "loops=$loops, " +
@@ -121,5 +121,4 @@ public class SoundArea private constructor(
             "xInZone=$xInZone, " +
             "zInZone=$zInZone" +
             ")"
-    }
 }

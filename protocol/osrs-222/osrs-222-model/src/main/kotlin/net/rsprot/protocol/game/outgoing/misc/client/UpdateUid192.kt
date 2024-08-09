@@ -27,11 +27,7 @@ public class UpdateUid192(
         return uid.contentEquals(other.uid)
     }
 
-    override fun hashCode(): Int {
-        return uid.contentHashCode()
-    }
+    override fun hashCode(): Int = uid.contentHashCode()
 
-    override fun toString(): String {
-        return "UpdateUid192(uid=${uid.contentToString()})"
-    }
+    override fun toString(): String = "UpdateUid192(uid=${uid.contentToString()})"
 }

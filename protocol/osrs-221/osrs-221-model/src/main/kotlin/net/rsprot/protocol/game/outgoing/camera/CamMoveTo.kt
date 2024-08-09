@@ -76,13 +76,12 @@ public class CamMoveTo private constructor(
         return result
     }
 
-    override fun toString(): String {
-        return "CamMoveTo(" +
+    override fun toString(): String =
+        "CamMoveTo(" +
             "destinationXInBuildArea=$destinationXInBuildArea, " +
             "destinationZInBuildArea=$destinationZInBuildArea, " +
             "height=$height, " +
             "speed=$speed, " +
             "acceleration=$acceleration" +
             ")"
-    }
 }

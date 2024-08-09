@@ -74,9 +74,7 @@ public class PlayerInfoProtocol(
      * or above [PlayerInfoProtocol.PROTOCOL_CAPACITY].
      */
     @Throws(ArrayIndexOutOfBoundsException::class)
-    internal fun getPlayerInfo(idx: Int): PlayerInfo? {
-        return playerInfoRepository.getOrNull(idx)
-    }
+    internal fun getPlayerInfo(idx: Int): PlayerInfo? = playerInfoRepository.getOrNull(idx)
 
     /**
      * Allocates a new player info instance at index [idx]
@@ -117,9 +115,8 @@ public class PlayerInfoProtocol(
      * @param idx the index of the player
      * @return the low resolution position of that player in the current cycle.
      */
-    internal fun getLowResolutionPosition(idx: Int): LowResolutionPosition {
-        return lowResolutionPositionRepository.getCurrentLowResolutionPosition(idx)
-    }
+    internal fun getLowResolutionPosition(idx: Int): LowResolutionPosition =
+        lowResolutionPositionRepository.getCurrentLowResolutionPosition(idx)
 
     public fun update() {
         prepare()

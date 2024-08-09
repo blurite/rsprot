@@ -92,8 +92,8 @@ public class OpObjT private constructor(
         return result
     }
 
-    override fun toString(): String {
-        return "OpObjT(" +
+    override fun toString(): String =
+        "OpObjT(" +
             "id=$id, " +
             "x=$x, " +
             "z=$z, " +
@@ -103,5 +103,4 @@ public class OpObjT private constructor(
             "selectedSub=$selectedSub, " +
             "selectedObj=$selectedObj" +
             ")"
-    }
 }

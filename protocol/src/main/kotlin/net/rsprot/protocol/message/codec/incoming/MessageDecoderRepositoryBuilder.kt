@@ -28,11 +28,10 @@ public class MessageDecoderRepositoryBuilder<P : ClientProt>(
         decoderClassToMessageClassMap[decoder::class.java] = messageClass
     }
 
-    public fun build(): MessageDecoderRepository<P> {
-        return MessageDecoderRepository(
+    public fun build(): MessageDecoderRepository<P> =
+        MessageDecoderRepository(
             protRepository,
             decoders.copyOf(),
             decoderClassToMessageClassMap.toMap(),
         )
-    }
 }

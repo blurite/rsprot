@@ -6,7 +6,6 @@ import net.rsprot.protocol.ClientProt
 import net.rsprot.protocol.api.NetworkService
 import net.rsprot.protocol.api.decoder.IncomingMessageDecoder
 import net.rsprot.protocol.message.codec.incoming.MessageDecoderRepository
-import net.rsprot.protocol.tools.MessageDecodingTools
 
 /**
  * The decoder for any login messages.
@@ -18,6 +17,5 @@ public class LoginMessageDecoder(
         networkService
             .decoderRepositories
             .loginMessageDecoderRepository
-    override val messageDecodingTools: MessageDecodingTools = networkService.messageDecodingTools
     override val streamCipher: StreamCipher = NopStreamCipher
 }

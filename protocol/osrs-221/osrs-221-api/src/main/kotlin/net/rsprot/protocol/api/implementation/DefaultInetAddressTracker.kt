@@ -26,7 +26,5 @@ public class DefaultInetAddressTracker : InetAddressTracker {
         }
     }
 
-    override fun getCount(address: InetAddress): Int {
-        return counts.getOrDefault(address, 0)
-    }
+    override fun getCount(address: InetAddress): Int = counts.getOrDefault(address, 0)
 }

@@ -56,11 +56,10 @@ public class UpdateStatOld private constructor(
         return result
     }
 
-    override fun toString(): String {
-        return "UpdateStat(" +
+    override fun toString(): String =
+        "UpdateStat(" +
             "stat=$stat, " +
             "currentLevel=$currentLevel, " +
             "experience=$experience" +
             ")"
-    }
 }

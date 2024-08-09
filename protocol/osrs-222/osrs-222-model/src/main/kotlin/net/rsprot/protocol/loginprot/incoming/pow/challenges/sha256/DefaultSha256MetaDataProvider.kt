@@ -11,7 +11,5 @@ import java.net.InetAddress
 public class DefaultSha256MetaDataProvider(
     private val world: Int,
 ) : ChallengeMetaDataProvider<Sha256MetaData> {
-    override fun provide(inetAddress: InetAddress): Sha256MetaData {
-        return Sha256MetaData(world)
-    }
+    override fun provide(inetAddress: InetAddress): Sha256MetaData = Sha256MetaData(world)
 }

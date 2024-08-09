@@ -35,11 +35,7 @@ public class LogoutWithReason(
         return reason == other.reason
     }
 
-    override fun hashCode(): Int {
-        return reason
-    }
+    override fun hashCode(): Int = reason
 
-    override fun toString(): String {
-        return "LogoutWithReason(reason=$reason)"
-    }
+    override fun toString(): String = "LogoutWithReason(reason=$reason)"
 }

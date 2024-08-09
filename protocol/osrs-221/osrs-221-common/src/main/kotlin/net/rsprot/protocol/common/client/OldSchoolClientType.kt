@@ -2,7 +2,9 @@ package net.rsprot.protocol.common.client
 
 import net.rsprot.protocol.client.ClientType
 
-public enum class OldSchoolClientType(override val id: Int) : ClientType {
+public enum class OldSchoolClientType(
+    override val id: Int,
+) : ClientType {
     /**
      * The desktop clients.
      * As the protocol is the same between the Java and C++ versions of desktop,

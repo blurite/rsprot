@@ -141,8 +141,8 @@ public class LocMerge private constructor(
         return result
     }
 
-    override fun toString(): String {
-        return "LocMerge(" +
+    override fun toString(): String =
+        "LocMerge(" +
             "index=$index, " +
             "id=$id, " +
             "xInZone=$xInZone, " +
@@ -156,5 +156,4 @@ public class LocMerge private constructor(
             "maxX=$maxX, " +
             "maxZ=$maxZ" +
             ")"
-    }
 }

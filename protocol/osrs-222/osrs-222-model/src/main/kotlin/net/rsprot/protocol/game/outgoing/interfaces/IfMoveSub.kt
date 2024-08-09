@@ -61,12 +61,11 @@ public class IfMoveSub private constructor(
         return result
     }
 
-    override fun toString(): String {
-        return "IfMoveSub(" +
+    override fun toString(): String =
+        "IfMoveSub(" +
             "sourceInterfaceId=$sourceInterfaceId, " +
             "sourceComponentId=$sourceComponentId, " +
             "destinationInterfaceId=$destinationInterfaceId, " +
             "destinationComponentId=$destinationComponentId" +
             ")"
-    }
 }

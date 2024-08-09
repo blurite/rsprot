@@ -27,13 +27,9 @@ public class UpdateFriendChatChannelSingleUser(
         return user == other.user
     }
 
-    override fun hashCode(): Int {
-        return user.hashCode()
-    }
+    override fun hashCode(): Int = user.hashCode()
 
-    override fun toString(): String {
-        return "UpdateFriendChatChannelSingleUser(user=$user)"
-    }
+    override fun toString(): String = "UpdateFriendChatChannelSingleUser(user=$user)"
 
     public sealed interface FriendChatUser {
         public val name: String
@@ -98,14 +94,13 @@ public class UpdateFriendChatChannelSingleUser(
             return result
         }
 
-        override fun toString(): String {
-            return "AddedFriendChatUser(" +
+        override fun toString(): String =
+            "AddedFriendChatUser(" +
                 "name='$name', " +
                 "worldId=$worldId, " +
                 "rank=$rank, " +
                 "worldName='$worldName'" +
                 ")"
-        }
     }
 
     /**
@@ -150,11 +145,10 @@ public class UpdateFriendChatChannelSingleUser(
             return result
         }
 
-        override fun toString(): String {
-            return "RemovedFriendChatUser(" +
+        override fun toString(): String =
+            "RemovedFriendChatUser(" +
                 "name='$name', " +
                 "worldId=$worldId" +
                 ")"
-        }
     }
 }

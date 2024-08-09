@@ -34,10 +34,9 @@ public class ProofOfWork<T : ChallengeType<MetaData>, in MetaData : ChallengeMet
         return result
     }
 
-    override fun toString(): String {
-        return "ProofOfWork(" +
+    override fun toString(): String =
+        "ProofOfWork(" +
             "challengeType=$challengeType, " +
             "challengeVerifier=$challengeVerifier" +
             ")"
-    }
 }

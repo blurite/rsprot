@@ -92,8 +92,8 @@ public class MessageClanChannel private constructor(
         return result
     }
 
-    override fun toString(): String {
-        return "MessageClanChannel(" +
+    override fun toString(): String =
+        "MessageClanChannel(" +
             "clanType=$clanType, " +
             "name='$name', " +
             "worldId=$worldId, " +
@@ -101,5 +101,4 @@ public class MessageClanChannel private constructor(
             "chatCrownType=$chatCrownType, " +
             "message='$message'" +
             ")"
-    }
 }

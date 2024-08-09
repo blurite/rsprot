@@ -25,13 +25,9 @@ public class UpdateIgnoreList(
         return ignores == other.ignores
     }
 
-    override fun hashCode(): Int {
-        return ignores.hashCode()
-    }
+    override fun hashCode(): Int = ignores.hashCode()
 
-    override fun toString(): String {
-        return "UpdateIgnoreList(ignores=$ignores)"
-    }
+    override fun toString(): String = "UpdateIgnoreList(ignores=$ignores)"
 
     public sealed interface IgnoredPlayer {
         public val name: String
@@ -54,13 +50,9 @@ public class UpdateIgnoreList(
             return name == other.name
         }
 
-        override fun hashCode(): Int {
-            return name.hashCode()
-        }
+        override fun hashCode(): Int = name.hashCode()
 
-        override fun toString(): String {
-            return "RemovedIgnoredEntry(name='$name')"
-        }
+        override fun toString(): String = "RemovedIgnoredEntry(name='$name')"
     }
 
     /**
@@ -104,13 +96,12 @@ public class UpdateIgnoreList(
             return result
         }
 
-        override fun toString(): String {
-            return "AddedIgnoredEntry(" +
+        override fun toString(): String =
+            "AddedIgnoredEntry(" +
                 "name='$name', " +
                 "previousName=$previousName, " +
                 "note='$note', " +
                 "added=$added" +
                 ")"
-        }
     }
 }

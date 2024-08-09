@@ -16,11 +16,10 @@ public class DefaultGameMessageCounter : GameMessageCounter {
         counts[clientProtCategory.id]++
     }
 
-    override fun isFull(): Boolean {
-        return GameClientProtCategory.entries.any { entry ->
+    override fun isFull(): Boolean =
+        GameClientProtCategory.entries.any { entry ->
             counts[entry.id] >= entry.limit
         }
-    }
 
     override fun reset() {
         counts.fill(0)

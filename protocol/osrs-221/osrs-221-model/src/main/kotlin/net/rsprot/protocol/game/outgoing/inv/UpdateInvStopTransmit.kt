@@ -29,11 +29,7 @@ public class UpdateInvStopTransmit(
         return inventoryId == other.inventoryId
     }
 
-    override fun hashCode(): Int {
-        return inventoryId
-    }
+    override fun hashCode(): Int = inventoryId
 
-    override fun toString(): String {
-        return "UpdateInvStopTransmit(inventoryId=$inventoryId)"
-    }
+    override fun toString(): String = "UpdateInvStopTransmit(inventoryId=$inventoryId)"
 }

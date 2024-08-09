@@ -39,14 +39,11 @@ public class SetMapFlag private constructor(
         return coordInBuildArea == other.coordInBuildArea
     }
 
-    override fun hashCode(): Int {
-        return coordInBuildArea.hashCode()
-    }
+    override fun hashCode(): Int = coordInBuildArea.hashCode()
 
-    override fun toString(): String {
-        return "SetMapFlag(" +
+    override fun toString(): String =
+        "SetMapFlag(" +
             "xInBuildArea=$xInBuildArea, " +
             "zInBuildArea=$zInBuildArea" +
             ")"
-    }
 }

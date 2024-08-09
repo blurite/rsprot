@@ -35,10 +35,9 @@ public class PlayerInfoSupplier
             return result
         }
 
-        override fun toString(): String {
-            return "PlayerInfoSupplier(" +
+        override fun toString(): String =
+            "PlayerInfoSupplier(" +
                 "playerExtendedInfoFilter=$playerExtendedInfoFilter, " +
                 "playerInfoProtocolWorker=$playerInfoProtocolWorker" +
                 ")"
-        }
     }

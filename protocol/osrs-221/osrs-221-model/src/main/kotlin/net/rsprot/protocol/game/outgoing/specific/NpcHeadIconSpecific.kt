@@ -80,12 +80,11 @@ public class NpcHeadIconSpecific private constructor(
         return result
     }
 
-    override fun toString(): String {
-        return "NpcHeadIconSpecific(" +
+    override fun toString(): String =
+        "NpcHeadIconSpecific(" +
             "index=$index, " +
             "headIconSlot=$headIconSlot, " +
             "spriteGroup=$spriteGroup, " +
             "spriteIndex=$spriteIndex" +
             ")"
-    }
 }

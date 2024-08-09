@@ -1,5 +1,3 @@
-@file:Suppress("OPT_IN_USAGE")
-
 package net.rsprot.protocol.game.outgoing.info
 
 import io.netty.buffer.PooledByteBufAllocator
@@ -93,11 +91,10 @@ class NpcInfoBenchmark {
         }
     }
 
-    private fun npcExceptionHandler(): NpcAvatarExceptionHandler {
-        return NpcAvatarExceptionHandler { _, _ ->
+    private fun npcExceptionHandler(): NpcAvatarExceptionHandler =
+        NpcAvatarExceptionHandler { _, _ ->
             // No-op
         }
-    }
 
     @Benchmark
     fun benchmark() {
@@ -124,8 +121,8 @@ class NpcInfoBenchmark {
         }
     }
 
-    private fun createNpcIndexSupplier(): NpcIndexSupplier {
-        return NpcIndexSupplier { _, level, x, z, viewDistance ->
+    private fun createNpcIndexSupplier(): NpcIndexSupplier =
+        NpcIndexSupplier { _, level, x, z, viewDistance ->
             serverNpcs
                 .asSequence()
                 .filter { it.coordGrid.inDistance(CoordGrid(level, x, z), viewDistance) }
@@ -133,7 +130,6 @@ class NpcInfoBenchmark {
                 .mapTo(ArrayList(250)) { it.index }
                 .iterator()
         }
-    }
 
     private fun createPhantomNpcs(factory: NpcAvatarFactory): List<Npc> {
         val npcs = ArrayList<Npc>(500)
@@ -166,19 +162,16 @@ class NpcInfoBenchmark {
         val coordGrid: CoordGrid
             get() = avatar.getCoordGrid()
 
-        override fun toString(): String {
-            return "Npc(" +
+        override fun toString(): String =
+            "Npc(" +
                 "index=$index, " +
                 "id=$id, " +
                 "coordGrid=${avatar.getCoordGrid()}" +
                 ")"
-        }
     }
 
     private companion object {
-        private fun NpcAvatar.getCoordGrid(): CoordGrid {
-            return CoordGrid(level(), x(), z())
-        }
+        private fun NpcAvatar.getCoordGrid(): CoordGrid = CoordGrid(level(), x(), z())
 
         private fun createHuffmanCodec(): HuffmanCodec {
             val resource = PlayerInfoTest::class.java.getResourceAsStream("huffman.dat")

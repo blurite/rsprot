@@ -55,11 +55,10 @@ public class OpPlayer private constructor(
         return result
     }
 
-    override fun toString(): String {
-        return "OpPlayer(" +
+    override fun toString(): String =
+        "OpPlayer(" +
             "index=$index, " +
             "controlKey=$controlKey, " +
             "op=$op" +
             ")"
-    }
 }

@@ -54,11 +54,10 @@ public class OpObj6 private constructor(
         return result
     }
 
-    override fun toString(): String {
-        return "OpObj6(" +
+    override fun toString(): String =
+        "OpObj6(" +
             "id=$id, " +
             "x=$x, " +
             "z=$z" +
             ")"
-    }
 }

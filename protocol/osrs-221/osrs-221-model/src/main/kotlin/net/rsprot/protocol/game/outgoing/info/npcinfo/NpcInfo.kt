@@ -152,9 +152,7 @@ public class NpcInfo internal constructor(
      * initialized for this cycle.
      */
     @Throws(IllegalStateException::class)
-    public fun backingBuffer(): ByteBuf {
-        return checkNotNull(buffer)
-    }
+    public fun backingBuffer(): ByteBuf = checkNotNull(buffer)
 
     /**
      * Sets the view distance, meaning how far the player can see NPCs.
@@ -439,9 +437,7 @@ public class NpcInfo internal constructor(
      * before adding it to our high resolution view.
      * @param avatar the npc avatar to check
      */
-    private fun isInBuildArea(avatar: NpcAvatar): Boolean {
-        return avatar.details.currentCoord in buildArea
-    }
+    private fun isInBuildArea(avatar: NpcAvatar): Boolean = avatar.details.currentCoord in buildArea
 
     /**
      * Checks if the player has moved a greater distance from their previous coordinate
@@ -451,13 +447,12 @@ public class NpcInfo internal constructor(
      * @return whether the player has moved a greater distance than [viewDistance] since
      * the last cycle.
      */
-    private fun isTooFar(viewDistance: Int): Boolean {
-        return !withinDistance(
+    private fun isTooFar(viewDistance: Int): Boolean =
+        !withinDistance(
             this.localPlayerLastCoord,
             this.localPlayerCurrentCoord,
             viewDistance,
         )
-    }
 
     /**
      * Processes the NPCs that are in low resolution by requesting an iterator of NPC indices
@@ -547,12 +542,11 @@ public class NpcInfo internal constructor(
         localPlayerCoordGrid: CoordGrid,
         coord: CoordGrid,
         distance: Int,
-    ): Boolean {
-        return localPlayerCoordGrid.inDistance(
+    ): Boolean =
+        localPlayerCoordGrid.inDistance(
             coord,
             distance,
         )
-    }
 
     /**
      * This function allocates a new clean world details object,

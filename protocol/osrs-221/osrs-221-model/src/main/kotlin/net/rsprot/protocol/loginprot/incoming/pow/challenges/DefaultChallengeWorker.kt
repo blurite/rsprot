@@ -12,11 +12,10 @@ public data object DefaultChallengeWorker : ChallengeWorker {
         result: Long,
         challenge: T,
         verifier: V,
-    ): CompletableFuture<Boolean> {
-        return try {
+    ): CompletableFuture<Boolean> =
+        try {
             CompletableFuture.completedFuture(verifier.verify(result, challenge))
         } catch (t: Throwable) {
             CompletableFuture.failedFuture(t)
         }
-    }
 }

@@ -40,17 +40,13 @@ public class UpdatePlayerModel private constructor(
      * Gets the backing ident kits byte array.
      * Changes done to this byte array reflect on this packet.
      */
-    public fun getIdentKitsByteArray(): ByteArray {
-        return identKits
-    }
+    public fun getIdentKitsByteArray(): ByteArray = identKits
 
     /**
      * Gets the backing colours byte array.
      * Changes done to this byte array reflect on the packet.
      */
-    public fun getColoursByteArray(): ByteArray {
-        return colours
-    }
+    public fun getColoursByteArray(): ByteArray = colours
 
     /**
      * Gets the ident kit at index [index], or -1 if it doesn't exist.
@@ -75,9 +71,7 @@ public class UpdatePlayerModel private constructor(
      * @throws ArrayIndexOutOfBoundsException if the index is below 0, or >= 5
      */
     @Throws(ArrayIndexOutOfBoundsException::class)
-    public fun getColour(index: Int): Int {
-        return colours[index].toInt()
-    }
+    public fun getColour(index: Int): Int = colours[index].toInt()
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -99,11 +93,10 @@ public class UpdatePlayerModel private constructor(
         return result
     }
 
-    override fun toString(): String {
-        return "UpdatePlayerModel(" +
+    override fun toString(): String =
+        "UpdatePlayerModel(" +
             "bodyType=$bodyType, " +
             "identKits=${identKits.contentToString()}, " +
             "colours=${colours.contentToString()}" +
             ")"
-    }
 }

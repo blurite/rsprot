@@ -45,9 +45,7 @@ public data object InventoryPool {
                 return Inventory(5713)
             }
 
-            override fun wrap(p0: Inventory): PooledObject<Inventory> {
-                return DefaultPooledObject(p0)
-            }
+            override fun wrap(p0: Inventory): PooledObject<Inventory> = DefaultPooledObject(p0)
         }
     }
 }

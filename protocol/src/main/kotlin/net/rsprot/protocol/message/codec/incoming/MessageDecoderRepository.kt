@@ -10,18 +10,14 @@ public class MessageDecoderRepository<out P : ClientProt> internal constructor(
     private val decoders: Array<MessageDecoder<*>?>,
     private val decoderToMessageClassMap: Map<Class<out MessageDecoder<IncomingMessage>>, Class<out IncomingMessage>>,
 ) {
-    public fun getDecoder(opcode: Int): MessageDecoder<*> {
-        return decoders[opcode]
+    public fun getDecoder(opcode: Int): MessageDecoder<*> =
+        decoders[opcode]
             ?: throw IllegalArgumentException("Opcode $opcode is not registered.")
-    }
 
-    public fun getMessageClass(decoderClazz: Class<out MessageDecoder<IncomingMessage>>): Class<out IncomingMessage> {
-        return requireNotNull(decoderToMessageClassMap[decoderClazz]) {
+    public fun getMessageClass(decoderClazz: Class<out MessageDecoder<IncomingMessage>>): Class<out IncomingMessage> =
+        requireNotNull(decoderToMessageClassMap[decoderClazz]) {
             "Message class does not exist for $decoderClazz"
         }
-    }
 
-    public fun getSize(opcode: Int): Int {
-        return protRepository.getSize(opcode)
-    }
+    public fun getSize(opcode: Int): Int = protRepository.getSize(opcode)
 }

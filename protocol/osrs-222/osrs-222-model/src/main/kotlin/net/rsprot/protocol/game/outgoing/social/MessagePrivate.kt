@@ -87,13 +87,12 @@ public class MessagePrivate private constructor(
         return result
     }
 
-    override fun toString(): String {
-        return "MessagePrivate(" +
+    override fun toString(): String =
+        "MessagePrivate(" +
             "sender='$sender', " +
             "worldId=$worldId, " +
             "worldMessageCounter=$worldMessageCounter, " +
             "chatCrownType=$chatCrownType, " +
             "message='$message'" +
             ")"
-    }
 }

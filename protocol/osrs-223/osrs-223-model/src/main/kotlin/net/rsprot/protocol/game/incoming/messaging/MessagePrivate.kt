@@ -36,10 +36,9 @@ public class MessagePrivate(
         return result
     }
 
-    override fun toString(): String {
-        return "MessagePrivate(" +
+    override fun toString(): String =
+        "MessagePrivate(" +
             "name='$name', " +
             "message='$message'" +
             ")"
-    }
 }

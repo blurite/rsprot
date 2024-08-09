@@ -15,11 +15,7 @@ public class GameMessageConsumerRepository<R>(
         return true
     }
 
-    override fun hashCode(): Int {
-        return consumers.hashCode()
-    }
+    override fun hashCode(): Int = consumers.hashCode()
 
-    override fun toString(): String {
-        return "GameMessageConsumerRepository(consumers=$consumers)"
-    }
+    override fun toString(): String = "GameMessageConsumerRepository(consumers=$consumers)"
 }

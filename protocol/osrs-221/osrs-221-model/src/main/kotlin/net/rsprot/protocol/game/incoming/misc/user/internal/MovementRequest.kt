@@ -12,7 +12,9 @@ package net.rsprot.protocol.game.incoming.misc.user.internal
  * them being completely wasted in the process.
  */
 @JvmInline
-internal value class MovementRequest private constructor(private val packed: Int) {
+internal value class MovementRequest private constructor(
+    private val packed: Int,
+) {
     internal constructor(
         x: Int,
         z: Int,

@@ -6,16 +6,12 @@ import net.rsprot.protocol.game.incoming.misc.user.BugReport
 import net.rsprot.protocol.game.incoming.prot.GameClientProt
 import net.rsprot.protocol.message.codec.MessageDecoder
 import net.rsprot.protocol.metadata.Consistent
-import net.rsprot.protocol.tools.MessageDecodingTools
 
 @Consistent
 public class BugReportDecoder : MessageDecoder<BugReport> {
     override val prot: ClientProt = GameClientProt.BUG_REPORT
 
-    override fun decode(
-        buffer: JagByteBuf,
-        tools: MessageDecodingTools,
-    ): BugReport {
+    override fun decode(buffer: JagByteBuf): BugReport {
         val type = buffer.g1()
         val description = buffer.gjstr()
         val instructions = buffer.gjstr()

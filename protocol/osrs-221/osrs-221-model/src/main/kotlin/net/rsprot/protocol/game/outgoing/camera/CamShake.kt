@@ -87,12 +87,11 @@ public class CamShake private constructor(
         return result
     }
 
-    override fun toString(): String {
-        return "CamShake(" +
+    override fun toString(): String =
+        "CamShake(" +
             "type=$type, " +
             "randomAmount=$randomAmount, " +
             "sineAmount=$sineAmount, " +
             "sineFrequency=$sineFrequency" +
             ")"
-    }
 }

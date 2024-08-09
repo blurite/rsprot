@@ -7,13 +7,17 @@ public sealed interface OtpAuthenticationType {
      */
     public fun clear()
 
-    public data class TrustedComputer(public var identifier: Int) : OtpAuthenticationType {
+    public data class TrustedComputer(
+        public var identifier: Int,
+    ) : OtpAuthenticationType {
         override fun clear() {
             identifier = Int.MIN_VALUE
         }
     }
 
-    public data class TrustedAuthenticator(override var otp: Int) : OtpAuthentication {
+    public data class TrustedAuthenticator(
+        override var otp: Int,
+    ) : OtpAuthentication {
         override fun clear() {
             otp = Int.MIN_VALUE
         }
@@ -24,7 +28,9 @@ public sealed interface OtpAuthenticationType {
         }
     }
 
-    public data class UntrustedAuthentication(override var otp: Int) : OtpAuthentication {
+    public data class UntrustedAuthentication(
+        override var otp: Int,
+    ) : OtpAuthentication {
         override fun clear() {
             otp = Int.MIN_VALUE
         }

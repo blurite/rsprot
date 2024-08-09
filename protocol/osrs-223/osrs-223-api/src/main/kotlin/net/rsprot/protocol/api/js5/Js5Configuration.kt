@@ -77,13 +77,12 @@ public class Js5Configuration public constructor(
         return result
     }
 
-    override fun toString(): String {
-        return "Js5Configuration(" +
+    override fun toString(): String =
+        "Js5Configuration(" +
             "blockSizeInBytes=$blockSizeInBytes, " +
             "flushThresholdInBytes=$flushThresholdInBytes, " +
             "flushThresholdInRequests=$flushThresholdInRequests, " +
             "priorityRatio=$priorityRatio, " +
             "prefetchTransferThresholdInBytes=$prefetchTransferThresholdInBytes" +
             ")"
-    }
 }

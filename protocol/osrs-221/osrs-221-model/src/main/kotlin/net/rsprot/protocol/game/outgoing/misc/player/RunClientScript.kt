@@ -103,11 +103,10 @@ public class RunClientScript : OutgoingGameMessage {
         return result
     }
 
-    override fun toString(): String {
-        return "RunClientScript(" +
+    override fun toString(): String =
+        "RunClientScript(" +
             "id=$id, " +
             "types=${types.contentToString()}, " +
             "values=$values" +
             ")"
-    }
 }

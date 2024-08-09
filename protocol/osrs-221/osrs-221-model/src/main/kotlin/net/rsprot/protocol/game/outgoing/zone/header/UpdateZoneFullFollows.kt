@@ -68,11 +68,10 @@ public class UpdateZoneFullFollows private constructor(
         return result
     }
 
-    override fun toString(): String {
-        return "UpdateZoneFullFollows(" +
+    override fun toString(): String =
+        "UpdateZoneFullFollows(" +
             "zoneX=$zoneX, " +
             "zoneZ=$zoneZ, " +
             "level=$level" +
             ")"
-    }
 }

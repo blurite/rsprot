@@ -140,8 +140,8 @@ public class ObjAdd private constructor(
         return result
     }
 
-    override fun toString(): String {
-        return "ObjAdd(" +
+    override fun toString(): String =
+        "ObjAdd(" +
             "id=$id, " +
             "quantity=$quantity, " +
             "xInZone=$xInZone, " +
@@ -151,5 +151,4 @@ public class ObjAdd private constructor(
             "timeUntilDespawn=$timeUntilDespawn, " +
             "ownershipType=$ownershipType" +
             ")"
-    }
 }

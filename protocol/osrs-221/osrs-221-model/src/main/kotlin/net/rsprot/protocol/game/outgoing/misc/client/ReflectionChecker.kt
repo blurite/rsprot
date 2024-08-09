@@ -49,12 +49,11 @@ public class ReflectionChecker(
         return result
     }
 
-    override fun toString(): String {
-        return "ReflectionChecker(" +
+    override fun toString(): String =
+        "ReflectionChecker(" +
             "id=$id, " +
             "checks=$checks" +
             ")"
-    }
 
     public sealed interface ReflectionCheck
 
@@ -87,12 +86,11 @@ public class ReflectionChecker(
             return result
         }
 
-        override fun toString(): String {
-            return "GetFieldValue(" +
+        override fun toString(): String =
+            "GetFieldValue(" +
                 "className='$className', " +
                 "fieldName='$fieldName'" +
                 ")"
-        }
     }
 
     /**
@@ -127,13 +125,12 @@ public class ReflectionChecker(
             return result
         }
 
-        override fun toString(): String {
-            return "SetFieldValue(" +
+        override fun toString(): String =
+            "SetFieldValue(" +
                 "className='$className', " +
                 "fieldName='$fieldName', " +
                 "value=$value" +
                 ")"
-        }
     }
 
     /**
@@ -164,12 +161,11 @@ public class ReflectionChecker(
             return result
         }
 
-        override fun toString(): String {
-            return "GetFieldModifiers(" +
+        override fun toString(): String =
+            "GetFieldModifiers(" +
                 "className='$className', " +
                 "fieldName='$fieldName'" +
                 ")"
-        }
     }
 
     /**
@@ -221,15 +217,14 @@ public class ReflectionChecker(
             return result
         }
 
-        override fun toString(): String {
-            return "InvokeMethod(" +
+        override fun toString(): String =
+            "InvokeMethod(" +
                 "className='$className', " +
                 "methodName='$methodName', " +
                 "parameterClasses=$parameterClasses, " +
                 "parameterValues=$parameterValues, " +
                 "returnClass=$returnClass" +
                 ")"
-        }
     }
 
     /**
@@ -267,13 +262,12 @@ public class ReflectionChecker(
             return result
         }
 
-        override fun toString(): String {
-            return "GetMethodModifiers(" +
+        override fun toString(): String =
+            "GetMethodModifiers(" +
                 "className='$className', " +
                 "methodName='$methodName', " +
                 "parameterClasses=$parameterClasses, " +
                 "returnClass=$returnClass" +
                 ")"
-        }
     }
 }

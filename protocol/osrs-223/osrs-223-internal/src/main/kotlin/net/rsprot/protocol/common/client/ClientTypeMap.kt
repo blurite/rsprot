@@ -13,23 +13,16 @@ public class ClientTypeMap<out T>
         public val notNullSize: Int
             get() = array.count { it != null }
 
-        public operator fun get(clientType: ClientType): T {
-            return requireNotNull(array[clientType.id]) {
+        public operator fun get(clientType: ClientType): T =
+            requireNotNull(array[clientType.id]) {
                 "Client type $clientType not initialized!"
             }
-        }
 
-        public fun getOrNull(clientType: ClientType): T? {
-            return array[clientType.id]
-        }
+        public fun getOrNull(clientType: ClientType): T? = array[clientType.id]
 
-        public fun getOrNull(clientId: Int): T? {
-            return array[clientId]
-        }
+        public fun getOrNull(clientId: Int): T? = array[clientId]
 
-        public operator fun contains(clientType: ClientType): Boolean {
-            return array[clientType.id] != null
-        }
+        public operator fun contains(clientType: ClientType): Boolean = array[clientType.id] != null
 
         public companion object {
             public inline fun <reified T> of(

@@ -1,21 +1,20 @@
 package net.rsprot.protocol.game.incoming.codec.messaging
 
 import net.rsprot.buffer.JagByteBuf
+import net.rsprot.compression.provider.HuffmanCodecProvider
 import net.rsprot.protocol.ClientProt
 import net.rsprot.protocol.game.incoming.messaging.MessagePublic
 import net.rsprot.protocol.game.incoming.prot.GameClientProt
 import net.rsprot.protocol.message.codec.MessageDecoder
 import net.rsprot.protocol.metadata.Consistent
-import net.rsprot.protocol.tools.MessageDecodingTools
 
 @Consistent
-public class MessagePublicDecoder : MessageDecoder<MessagePublic> {
+public class MessagePublicDecoder(
+    private val huffmanCodecProvider: HuffmanCodecProvider,
+) : MessageDecoder<MessagePublic> {
     override val prot: ClientProt = GameClientProt.MESSAGE_PUBLIC
 
-    override fun decode(
-        buffer: JagByteBuf,
-        tools: MessageDecodingTools,
-    ): MessagePublic {
+    override fun decode(buffer: JagByteBuf): MessagePublic {
         val type = buffer.g1()
         val colour = buffer.g1()
         val effect = buffer.g1()
@@ -27,7 +26,7 @@ public class MessagePublicDecoder : MessageDecoder<MessagePublic> {
             } else {
                 null
             }
-        val huffman = tools.huffmanCodec.provide()
+        val huffman = huffmanCodecProvider.provide()
         val hasTrailingByte = type == CLAN_MAIN_CHANNEL_TYPE
         val huffmanSlice =
             if (hasTrailingByte) {

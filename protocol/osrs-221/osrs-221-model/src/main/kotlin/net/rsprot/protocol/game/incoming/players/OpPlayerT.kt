@@ -76,8 +76,8 @@ public class OpPlayerT private constructor(
         return result
     }
 
-    override fun toString(): String {
-        return "OpPlayerT(" +
+    override fun toString(): String =
+        "OpPlayerT(" +
             "index=$index, " +
             "controlKey=$controlKey, " +
             "selectedInterfaceId=$selectedInterfaceId, " +
@@ -85,5 +85,4 @@ public class OpPlayerT private constructor(
             "selectedSub=$selectedSub, " +
             "selectedObj=$selectedObj" +
             ")"
-    }
 }

@@ -5,7 +5,9 @@ package net.rsprot.protocol.common.game.outgoing.info.shared.extendedinfo.util
  * @param packed the bitpacked long value of this spotanim.
  */
 @JvmInline
-public value class SpotAnim(internal val packed: Long) {
+public value class SpotAnim(
+    internal val packed: Long,
+) {
     /**
      * @param id the id of the spotanim.
      * @param delay the delay in client cycles (20ms/cc) until the given spotanim begins rendering.

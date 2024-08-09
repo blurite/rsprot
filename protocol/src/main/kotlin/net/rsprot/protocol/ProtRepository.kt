@@ -5,13 +5,9 @@ import kotlin.enums.enumEntries
 public class ProtRepository<T : Prot> internal constructor(
     private val sizes: IntArray,
 ) {
-    public fun getSize(opcode: Int): Int {
-        return sizes[opcode]
-    }
+    public fun getSize(opcode: Int): Int = sizes[opcode]
 
-    public fun capacity(): Int {
-        return sizes.size
-    }
+    public fun capacity(): Int = sizes.size
 
     public companion object {
         @ExperimentalStdlibApi

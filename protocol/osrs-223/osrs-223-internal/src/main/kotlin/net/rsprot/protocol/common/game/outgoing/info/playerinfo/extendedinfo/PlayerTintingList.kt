@@ -19,9 +19,7 @@ public class PlayerTintingList(
     public val global: Tinting = Tinting()
     public val observerDependent: MutableMap<Int, Tinting> = HashMap()
 
-    public operator fun get(index: Int): Tinting {
-        return observerDependent.getOrDefault(index, global)
-    }
+    public operator fun get(index: Int): Tinting = observerDependent.getOrDefault(index, global)
 
     override fun clear() {
         releaseBuffers()

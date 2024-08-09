@@ -78,12 +78,11 @@ public class MessageClanChannelSystem private constructor(
         return result
     }
 
-    override fun toString(): String {
-        return "MessageClanChannelSystem(" +
+    override fun toString(): String =
+        "MessageClanChannelSystem(" +
             "clanType=$clanType, " +
             "worldId=$worldId, " +
             "worldLocalCounter=$worldMessageCounter, " +
             "message='$message'" +
             ")"
-    }
 }

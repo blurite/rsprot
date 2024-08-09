@@ -10,10 +10,9 @@ public class MessageEncoderRepository<out P : ServerProt> internal constructor(
     private val encoders: Array<MessageEncoder<*>?>,
     private val messageClassToServerProtMap: Map<Class<out OutgoingMessage>, ServerProt>,
 ) {
-    private fun getEncoder(opcode: Int): MessageEncoder<*> {
-        return encoders[opcode]
+    private fun getEncoder(opcode: Int): MessageEncoder<*> =
+        encoders[opcode]
             ?: throw IllegalArgumentException("Opcode $opcode is not registered.")
-    }
 
     public fun <Type : OutgoingMessage> getEncoder(clazz: Class<out Type>): MessageEncoder<Type> {
         val prot = getServerProt(clazz)
@@ -29,7 +28,5 @@ public class MessageEncoderRepository<out P : ServerProt> internal constructor(
         return serverProt
     }
 
-    public fun getSize(opcode: Int): Int {
-        return protRepository.getSize(opcode)
-    }
+    public fun getSize(opcode: Int): Int = protRepository.getSize(opcode)
 }

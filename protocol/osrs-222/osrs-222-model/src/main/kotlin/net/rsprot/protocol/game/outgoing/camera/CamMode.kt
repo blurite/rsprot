@@ -25,11 +25,7 @@ public class CamMode(
         return mode == other.mode
     }
 
-    override fun hashCode(): Int {
-        return mode
-    }
+    override fun hashCode(): Int = mode
 
-    override fun toString(): String {
-        return "CamMode(mode=$mode)"
-    }
+    override fun toString(): String = "CamMode(mode=$mode)"
 }

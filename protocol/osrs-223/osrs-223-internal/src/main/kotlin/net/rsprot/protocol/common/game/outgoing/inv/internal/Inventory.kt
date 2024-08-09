@@ -48,9 +48,7 @@ public class Inventory private constructor(
      * @throws ArrayIndexOutOfBoundsException if the index is out of bounds
      */
     @Throws(ArrayIndexOutOfBoundsException::class)
-    public operator fun get(slot: Int): InventoryObject {
-        return InventoryObject(contents[slot])
-    }
+    public operator fun get(slot: Int): InventoryObject = InventoryObject(contents[slot])
 
     /**
      * Clears the inventory by setting the count to zero.

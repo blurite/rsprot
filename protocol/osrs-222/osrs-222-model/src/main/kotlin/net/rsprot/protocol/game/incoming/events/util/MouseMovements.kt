@@ -7,7 +7,9 @@ package net.rsprot.protocol.game.incoming.events.util
  */
 @Suppress("MemberVisibilityCanBePrivate")
 @JvmInline
-public value class MouseMovements(private val movements: LongArray) {
+public value class MouseMovements(
+    private val movements: LongArray,
+) {
     public val length: Int
         get() = movements.size
 
@@ -20,9 +22,7 @@ public value class MouseMovements(private val movements: LongArray) {
      * at a later date.
      * Changes to the backing array will directly reflect on this class.
      */
-    public fun asLongArray(): LongArray {
-        return movements
-    }
+    public fun asLongArray(): LongArray = movements
 
     /**
      * Gets the mouse position change at the specified [index]
@@ -31,9 +31,7 @@ public value class MouseMovements(private val movements: LongArray) {
      * @throws ArrayIndexOutOfBoundsException if the index is below 0, or >= [length]
      */
     @Throws(ArrayIndexOutOfBoundsException::class)
-    public fun getMousePosChange(index: Int): MousePosChange {
-        return MousePosChange(movements[index])
-    }
+    public fun getMousePosChange(index: Int): MousePosChange = MousePosChange(movements[index])
 
     /**
      * A value class for mouse position changes, packed into a primitive long.
@@ -58,7 +56,8 @@ public value class MouseMovements(private val movements: LongArray) {
             xDelta: Int,
             yDelta: Int,
         ) : this(
-            (timeDelta and 0xFFFF).toLong()
+            (timeDelta and 0xFFFF)
+                .toLong()
                 .or(xDelta.toLong() and 0xFFFF shl 16)
                 .or(yDelta.toLong() and 0xFFFF shl 32),
         )
@@ -70,12 +69,11 @@ public value class MouseMovements(private val movements: LongArray) {
         public val yDelta: Int
             get() = (packed ushr 32 and 0xFFFF).toShort().toInt()
 
-        override fun toString(): String {
-            return "MousePosChange(" +
+        override fun toString(): String =
+            "MousePosChange(" +
                 "timeDelta=$timeDelta, " +
                 "xDelta=$xDelta, " +
                 "yDelta=$yDelta" +
                 ")"
-        }
     }
 }

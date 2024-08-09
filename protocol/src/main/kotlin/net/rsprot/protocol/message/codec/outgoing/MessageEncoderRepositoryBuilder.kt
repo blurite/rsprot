@@ -40,11 +40,10 @@ public class MessageEncoderRepositoryBuilder<P : ServerProt>(
         messageClassToServerProtMap[messageClass] = prot
     }
 
-    public fun build(): MessageEncoderRepository<P> {
-        return MessageEncoderRepository(
+    public fun build(): MessageEncoderRepository<P> =
+        MessageEncoderRepository(
             protRepository,
             encoders.copyOf(),
             messageClassToServerProtMap,
         )
-    }
 }

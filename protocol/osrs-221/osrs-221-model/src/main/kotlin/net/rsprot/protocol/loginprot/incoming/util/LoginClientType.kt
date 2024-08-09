@@ -14,9 +14,8 @@ public enum class LoginClientType(
     ;
 
     public companion object {
-        public operator fun get(id: Int): LoginClientType {
-            return entries.firstOrNull { it.id == id }
+        public operator fun get(id: Int): LoginClientType =
+            entries.firstOrNull { it.id == id }
                 ?: throw IllegalArgumentException("Unknown client type: $id")
-        }
     }
 }

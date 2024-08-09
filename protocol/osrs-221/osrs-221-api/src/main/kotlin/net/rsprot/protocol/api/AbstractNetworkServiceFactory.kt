@@ -123,9 +123,7 @@ public abstract class AbstractNetworkServiceFactory<R, T : Js5GroupProvider.Js5G
      * The default configuration is set to be fast enough to not show any
      * client speed reduction via localhost.
      */
-    public open fun getJs5Configuration(): Js5Configuration {
-        return Js5Configuration()
-    }
+    public open fun getJs5Configuration(): Js5Configuration = Js5Configuration()
 
     /**
      * Gets the JS5 group provider, used to return the respective byte buffers
@@ -182,9 +180,7 @@ public abstract class AbstractNetworkServiceFactory<R, T : Js5GroupProvider.Js5G
      * player that logs in. Just like with NPC info, the object must be deallocated
      * when the player is removed.
      */
-    public open fun getPlayerInfoSupplier(): PlayerInfoSupplier {
-        return PlayerInfoSupplier()
-    }
+    public open fun getPlayerInfoSupplier(): PlayerInfoSupplier = PlayerInfoSupplier()
 
     /**
      * Gets the exception handlers for channel exceptions as well as any incoming
@@ -219,9 +215,7 @@ public abstract class AbstractNetworkServiceFactory<R, T : Js5GroupProvider.Js5G
      * It should be noted that the tracking mechanism is fairly straightforward
      * and doesn't cost much in performance.
      */
-    public open fun getINetAddressHandlers(): INetAddressHandlers {
-        return INetAddressHandlers()
-    }
+    public open fun getINetAddressHandlers(): INetAddressHandlers = INetAddressHandlers()
 
     /**
      * Gets the handlers for game messages, which includes providing
@@ -239,9 +233,7 @@ public abstract class AbstractNetworkServiceFactory<R, T : Js5GroupProvider.Js5G
      * This means the TCP protocol is responsible for ensuring too much data cannot
      * be passed onto us.
      */
-    public open fun getGameMessageHandlers(): GameMessageHandlers {
-        return GameMessageHandlers()
-    }
+    public open fun getGameMessageHandlers(): GameMessageHandlers = GameMessageHandlers()
 
     /**
      * Gets the handlers for the login related things.
@@ -254,9 +246,7 @@ public abstract class AbstractNetworkServiceFactory<R, T : Js5GroupProvider.Js5G
      * as of writing this. It is possible to disable Proof of Work entirely, which
      * can be useful for development environments.
      */
-    public open fun getLoginHandlers(): LoginHandlers {
-        return LoginHandlers()
-    }
+    public open fun getLoginHandlers(): LoginHandlers = LoginHandlers()
 
     /**
      * Builds a network service through this factoring, using all

@@ -48,7 +48,9 @@ public sealed interface Js5GroupProvider<T : Js5GroupType> {
      * development, where one can skip the opening of the JS5 cache altogether.
      * @property raf the random access file behind this group
      */
-    public class RandomAccessFileJs5GroupType(public val raf: RandomAccessFile) : Js5GroupType {
+    public class RandomAccessFileJs5GroupType(
+        public val raf: RandomAccessFile,
+    ) : Js5GroupType {
         override val length: Int
             get() = raf.length().toInt()
     }
@@ -57,7 +59,9 @@ public sealed interface Js5GroupProvider<T : Js5GroupType> {
      * A traditional ByteBuf based Js5 group response.
      * @property buffer the byte buffer behind this group
      */
-    public class ByteBufJs5GroupType(public val buffer: ByteBuf) : Js5GroupType {
+    public class ByteBufJs5GroupType(
+        public val buffer: ByteBuf,
+    ) : Js5GroupType {
         override val length: Int
             get() = buffer.readableBytes()
     }

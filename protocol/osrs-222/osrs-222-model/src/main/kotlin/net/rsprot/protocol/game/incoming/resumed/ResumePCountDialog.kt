@@ -27,11 +27,7 @@ public class ResumePCountDialog(
         return count == other.count
     }
 
-    override fun hashCode(): Int {
-        return count
-    }
+    override fun hashCode(): Int = count
 
-    override fun toString(): String {
-        return "ResumePCountDialog(count=$count)"
-    }
+    override fun toString(): String = "ResumePCountDialog(count=$count)"
 }

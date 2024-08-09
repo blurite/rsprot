@@ -5,16 +5,12 @@ import net.rsprot.protocol.ClientProt
 import net.rsprot.protocol.game.incoming.locs.OpLocT
 import net.rsprot.protocol.game.incoming.prot.GameClientProt
 import net.rsprot.protocol.message.codec.MessageDecoder
-import net.rsprot.protocol.tools.MessageDecodingTools
 import net.rsprot.protocol.util.gCombinedId
 
 public class OpLocTDecoder : MessageDecoder<OpLocT> {
     override val prot: ClientProt = GameClientProt.OPLOCT
 
-    override fun decode(
-        buffer: JagByteBuf,
-        tools: MessageDecodingTools,
-    ): OpLocT {
+    override fun decode(buffer: JagByteBuf): OpLocT {
         val selectedObj = buffer.g2Alt1()
         val x = buffer.g2Alt3()
         val z = buffer.g2Alt3()

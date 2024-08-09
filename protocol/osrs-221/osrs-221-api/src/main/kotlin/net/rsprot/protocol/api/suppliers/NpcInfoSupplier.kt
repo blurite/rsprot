@@ -51,12 +51,11 @@ public class NpcInfoSupplier
             return result
         }
 
-        override fun toString(): String {
-            return "NpcInfoSupplier(" +
+        override fun toString(): String =
+            "NpcInfoSupplier(" +
                 "npcIndexSupplier=$npcIndexSupplier, " +
                 "npcAvatarExceptionHandler=$npcAvatarExceptionHandler, " +
                 "npcExtendedInfoFilter=$npcExtendedInfoFilter, " +
                 "npcInfoProtocolWorker=$npcInfoProtocolWorker" +
                 ")"
-        }
     }

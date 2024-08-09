@@ -12,9 +12,8 @@ public class DefaultLoginDecoderService : LoginDecoderService {
         buffer: Buf,
         betaWorld: Boolean,
         decoder: BiFunction<Buf, Boolean, Result>,
-    ): CompletableFuture<Result> {
-        return CompletableFuture<Result>().completeAsync {
+    ): CompletableFuture<Result> =
+        CompletableFuture<Result>().completeAsync {
             decoder.apply(buffer, betaWorld)
         }
-    }
 }

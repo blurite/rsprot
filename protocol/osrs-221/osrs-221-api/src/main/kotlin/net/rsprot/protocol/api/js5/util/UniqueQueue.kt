@@ -47,7 +47,5 @@ public class UniqueQueue<T> : Iterable<T> {
         set.clear()
     }
 
-    override fun iterator(): Iterator<T> {
-        return queue.iterator()
-    }
+    override fun iterator(): Iterator<T> = queue.iterator()
 }

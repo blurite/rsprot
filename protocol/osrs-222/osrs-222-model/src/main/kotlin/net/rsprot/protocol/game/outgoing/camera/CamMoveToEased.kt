@@ -82,8 +82,8 @@ public class CamMoveToEased private constructor(
         return result
     }
 
-    override fun toString(): String {
-        return "CamMoveToEased(" +
+    override fun toString(): String =
+        "CamMoveToEased(" +
             "destinationXInBuildArea=$destinationXInBuildArea, " +
             "destinationZInBuildArea=$destinationZInBuildArea, " +
             "height=$height, " +
@@ -91,5 +91,4 @@ public class CamMoveToEased private constructor(
             "maintainFixedAltitude=$maintainFixedAltitude, " +
             "function=$function" +
             ")"
-    }
 }

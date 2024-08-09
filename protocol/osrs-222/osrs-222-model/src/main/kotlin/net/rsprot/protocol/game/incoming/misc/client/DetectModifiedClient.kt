@@ -25,11 +25,7 @@ public class DetectModifiedClient(
         return code == other.code
     }
 
-    override fun hashCode(): Int {
-        return code
-    }
+    override fun hashCode(): Int = code
 
-    override fun toString(): String {
-        return "DetectModifiedClient(code=$code)"
-    }
+    override fun toString(): String = "DetectModifiedClient(code=$code)"
 }

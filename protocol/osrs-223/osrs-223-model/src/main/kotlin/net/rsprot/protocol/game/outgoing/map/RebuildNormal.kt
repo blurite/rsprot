@@ -62,12 +62,11 @@ public class RebuildNormal private constructor(
         return result
     }
 
-    override fun toString(): String {
-        return "RebuildNormal(" +
+    override fun toString(): String =
+        "RebuildNormal(" +
             "keys=$keys, " +
             "zoneX=$zoneX, " +
             "zoneZ=$zoneZ, " +
             "worldArea=$worldArea" +
             ")"
-    }
 }

@@ -28,11 +28,7 @@ public abstract class CyclicRedundancyCheckBlock(
         this.clientCrc[index] = value
     }
 
-    override fun hashCode(): Int {
-        return clientCrc.contentHashCode()
-    }
+    override fun hashCode(): Int = clientCrc.contentHashCode()
 
-    override fun toString(): String {
-        return "CyclicRedundancyCheckBlock(clientCrc=${clientCrc.contentToString()})"
-    }
+    override fun toString(): String = "CyclicRedundancyCheckBlock(clientCrc=${clientCrc.contentToString()})"
 }

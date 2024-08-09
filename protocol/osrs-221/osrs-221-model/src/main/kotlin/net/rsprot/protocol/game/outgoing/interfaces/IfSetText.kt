@@ -50,11 +50,10 @@ public class IfSetText private constructor(
         return result
     }
 
-    override fun toString(): String {
-        return "IfSetText(" +
+    override fun toString(): String =
+        "IfSetText(" +
             "interfaceId=$interfaceId, " +
             "componentId=$componentId, " +
             "text='$text'" +
             ")"
-    }
 }

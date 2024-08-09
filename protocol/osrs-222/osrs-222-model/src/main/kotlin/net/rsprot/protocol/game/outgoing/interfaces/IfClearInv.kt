@@ -38,14 +38,11 @@ public class IfClearInv private constructor(
         return combinedId == other.combinedId
     }
 
-    override fun hashCode(): Int {
-        return combinedId.hashCode()
-    }
+    override fun hashCode(): Int = combinedId.hashCode()
 
-    override fun toString(): String {
-        return "IfClearInv(" +
+    override fun toString(): String =
+        "IfClearInv(" +
             "interfaceId=$interfaceId, " +
             "componentId=$componentId" +
             ")"
-    }
 }

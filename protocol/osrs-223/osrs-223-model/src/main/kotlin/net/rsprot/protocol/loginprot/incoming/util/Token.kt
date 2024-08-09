@@ -12,9 +12,7 @@ public value class Token(
     /**
      * Returns the string representation of the token.
      */
-    public fun asString(): String {
-        return String(data)
-    }
+    public fun asString(): String = String(data)
 
     /**
      * Clears the data, setting all bytes to 0.

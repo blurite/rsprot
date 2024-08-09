@@ -73,16 +73,17 @@ public class IfSetColour private constructor(
     /**
      * Turns the 15-bit RS RGB colour into a 24-bit normalized RGB colour.
      */
-    public fun toAwtColor(): Color {
-        return Color(
+    public fun toAwtColor(): Color =
+        Color(
             (red shl 19)
                 .or(green shl 11)
                 .or(blue shl 3),
         )
-    }
 
     @JvmInline
-    private value class Rs15BitColour(val packed: UShort) {
+    private value class Rs15BitColour(
+        val packed: UShort,
+    ) {
         constructor(
             red: Int,
             green: Int,
@@ -101,13 +102,12 @@ public class IfSetColour private constructor(
         val blue: Int
             get() = packed.toInt() and 0x1F
 
-        override fun toString(): String {
-            return "Rs15BitColour(" +
+        override fun toString(): String =
+            "Rs15BitColour(" +
                 "red=$red, " +
                 "green=$green, " +
                 "blue=$blue" +
                 ")"
-        }
     }
 
     override fun equals(other: Any?): Boolean {

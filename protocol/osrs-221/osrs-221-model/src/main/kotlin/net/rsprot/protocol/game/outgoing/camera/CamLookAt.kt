@@ -77,13 +77,12 @@ public class CamLookAt private constructor(
         return result
     }
 
-    override fun toString(): String {
-        return "CamLookAt(" +
+    override fun toString(): String =
+        "CamLookAt(" +
             "destinationXInBuildArea=$destinationXInBuildArea, " +
             "destinationZInBuildArea=$destinationZInBuildArea, " +
             "height=$height, " +
             "speed=$speed, " +
             "acceleration=$acceleration" +
             ")"
-    }
 }

@@ -5,7 +5,8 @@ import net.rsprot.protocol.message.IncomingJs5Message
 public class PrefetchRequest(
     private val _archiveId: UByte,
     private val _groupId: UShort,
-) : IncomingJs5Message, Js5GroupRequest {
+) : IncomingJs5Message,
+    Js5GroupRequest {
     override val archiveId: Int
         get() = _archiveId.toInt()
     override val groupId: Int
@@ -27,10 +28,9 @@ public class PrefetchRequest(
         return result
     }
 
-    override fun toString(): String {
-        return "PrefetchRequest(" +
+    override fun toString(): String =
+        "PrefetchRequest(" +
             "archiveId=$archiveId, " +
             "groupId=$groupId" +
             ")"
-    }
 }

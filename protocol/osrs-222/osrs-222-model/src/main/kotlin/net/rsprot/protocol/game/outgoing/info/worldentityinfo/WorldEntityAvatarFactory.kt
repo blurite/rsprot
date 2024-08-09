@@ -38,8 +38,8 @@ public class WorldEntityAvatarFactory(
         z: Int,
         level: Int,
         angle: Int,
-    ): WorldEntityAvatar {
-        return avatarRepository.getOrAlloc(
+    ): WorldEntityAvatar =
+        avatarRepository.getOrAlloc(
             index,
             sizeX,
             sizeZ,
@@ -48,7 +48,6 @@ public class WorldEntityAvatarFactory(
             level,
             angle,
         )
-    }
 
     /**
      * Releases a world entity avatar back into the pool, allowing it to be re-used in the future.

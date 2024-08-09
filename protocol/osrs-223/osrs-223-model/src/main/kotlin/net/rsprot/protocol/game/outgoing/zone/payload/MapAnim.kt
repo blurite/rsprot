@@ -75,13 +75,12 @@ public class MapAnim private constructor(
         return result
     }
 
-    override fun toString(): String {
-        return "MapAnim(" +
+    override fun toString(): String =
+        "MapAnim(" +
             "id=$id, " +
             "delay=$delay, " +
             "height=$height, " +
             "xInZone=$xInZone, " +
             "zInZone=$zInZone" +
             ")"
-    }
 }

@@ -14,9 +14,7 @@ public class DefaultExtendedInfoFilter : ExtendedInfoFilter {
         constantFlag: Int,
         remainingAvatars: Int,
         previouslyObserved: Boolean,
-    ): Boolean {
-        return (writableBytes - remainingAvatars) >= THEORETICAL_HIGHEST_EXTENDED_INFO_BLOCK_SIZE
-    }
+    ): Boolean = (writableBytes - remainingAvatars) >= THEORETICAL_HIGHEST_EXTENDED_INFO_BLOCK_SIZE
 
     public companion object {
         /**

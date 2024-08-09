@@ -7,7 +7,9 @@ package net.rsprot.protocol.game.outgoing.util
  */
 @Suppress("MemberVisibilityCanBePrivate")
 @JvmInline
-public value class OpFlags(private val packed: Byte) {
+public value class OpFlags(
+    private val packed: Byte,
+) {
     public constructor(
         op1: Boolean,
         op2: Boolean,
@@ -41,15 +43,14 @@ public value class OpFlags(private val packed: Byte) {
         return packed.toInt() and flag != 0
     }
 
-    override fun toString(): String {
-        return "OpFlags(" +
+    override fun toString(): String =
+        "OpFlags(" +
             "op1=${isEnabled(1)}, " +
             "op2=${isEnabled(2)}, " +
             "op3=${isEnabled(3)}, " +
             "op4=${isEnabled(4)}, " +
             "op5=${isEnabled(5)}" +
             ")"
-    }
 
     public companion object {
         /**
@@ -66,8 +67,6 @@ public value class OpFlags(private val packed: Byte) {
          * Turns the boolean to an integer.
          * @return 1 if the boolean is enabled, 0 otherwise.
          */
-        private fun toInt(value: Boolean): Int {
-            return if (value) 1 else 0
-        }
+        private fun toInt(value: Boolean): Int = if (value) 1 else 0
     }
 }

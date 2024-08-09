@@ -7,7 +7,9 @@ package net.rsprot.protocol.common.game.outgoing.inv
  * be created by making lists of objs repeatedly.
  */
 @JvmInline
-public value class InventoryObject(public val packed: Long) {
+public value class InventoryObject(
+    public val packed: Long,
+) {
     public constructor(
         slot: Int,
         id: Int,
@@ -48,13 +50,12 @@ public value class InventoryObject(public val packed: Long) {
     public val count: Int
         get() = (packed ushr 32).toInt()
 
-    override fun toString(): String {
-        return "InventoryObject(" +
+    override fun toString(): String =
+        "InventoryObject(" +
             "slot=$slot, " +
             "id=$id, " +
             "count=$count" +
             ")"
-    }
 
     public companion object {
         public val NULL: InventoryObject = InventoryObject(-1)

@@ -5,15 +5,11 @@ import net.rsprot.protocol.ClientProt
 import net.rsprot.protocol.game.incoming.misc.user.MoveMinimapClick
 import net.rsprot.protocol.game.incoming.prot.GameClientProt
 import net.rsprot.protocol.message.codec.MessageDecoder
-import net.rsprot.protocol.tools.MessageDecodingTools
 
 public class MoveMinimapClickDecoder : MessageDecoder<MoveMinimapClick> {
     override val prot: ClientProt = GameClientProt.MOVE_MINIMAPCLICK
 
-    override fun decode(
-        buffer: JagByteBuf,
-        tools: MessageDecodingTools,
-    ): MoveMinimapClick {
+    override fun decode(buffer: JagByteBuf): MoveMinimapClick {
         // The x, z and keyCombination get scrambled between revisions
         val z = buffer.g2Alt1()
         val keyCombination = buffer.g1()

@@ -59,12 +59,11 @@ public class IfSetPosition private constructor(
         return result
     }
 
-    override fun toString(): String {
-        return "IfSetPosition(" +
+    override fun toString(): String =
+        "IfSetPosition(" +
             "interfaceId=$interfaceId, " +
             "componentId=$componentId, " +
             "x=$x, " +
             "y=$y" +
             ")"
-    }
 }

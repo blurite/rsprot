@@ -25,11 +25,7 @@ public class EventMouseScroll(
         return mouseWheelRotation == other.mouseWheelRotation
     }
 
-    override fun hashCode(): Int {
-        return mouseWheelRotation
-    }
+    override fun hashCode(): Int = mouseWheelRotation
 
-    override fun toString(): String {
-        return "EventMouseScroll(mouseWheelRotation=$mouseWheelRotation)"
-    }
+    override fun toString(): String = "EventMouseScroll(mouseWheelRotation=$mouseWheelRotation)"
 }

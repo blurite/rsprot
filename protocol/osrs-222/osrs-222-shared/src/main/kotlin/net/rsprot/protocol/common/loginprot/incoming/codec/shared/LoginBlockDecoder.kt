@@ -31,11 +31,12 @@ public abstract class LoginBlockDecoder<T>(
                 throw IllegalStateException("RSA buffer not readable: $rsaSize, ${buffer.readableBytes()}")
             }
             val rsaBuffer =
-                buffer.buffer.decipherRsa(
-                    exp,
-                    mod,
-                    rsaSize,
-                ).toJagByteBuf()
+                buffer.buffer
+                    .decipherRsa(
+                        exp,
+                        mod,
+                        rsaSize,
+                    ).toJagByteBuf()
             try {
                 val encryptionCheck = rsaBuffer.g1()
                 check(encryptionCheck == 1) {

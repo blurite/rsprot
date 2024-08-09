@@ -55,9 +55,7 @@ internal object CellOpcodes {
     private fun singleCellIndex(
         deltaX: Int,
         deltaZ: Int,
-    ): Int {
-        return (deltaX + 1).or((deltaZ + 1) shl 2)
-    }
+    ): Int = (deltaX + 1).or((deltaZ + 1) shl 2)
 
     /**
      * Gets the index of the dual cell movement opcode based on the deltas,
@@ -69,9 +67,7 @@ internal object CellOpcodes {
     private fun dualCellIndex(
         deltaX: Int,
         deltaZ: Int,
-    ): Int {
-        return (deltaX + 2).or((deltaZ + 2) shl 3)
-    }
+    ): Int = (deltaX + 2).or((deltaZ + 2) shl 3)
 
     /**
      * Gets the single cell movement opcode value for the provided deltas.
@@ -85,9 +81,7 @@ internal object CellOpcodes {
     internal fun singleCellMovementOpcode(
         deltaX: Int,
         deltaZ: Int,
-    ): Int {
-        return singleCellMovementOpcodes[singleCellIndex(deltaX, deltaZ)]
-    }
+    ): Int = singleCellMovementOpcodes[singleCellIndex(deltaX, deltaZ)]
 
     /**
      * Gets the dual cell movement opcode value for the provided deltas.
@@ -101,9 +95,7 @@ internal object CellOpcodes {
     internal fun dualCellMovementOpcode(
         deltaX: Int,
         deltaZ: Int,
-    ): Int {
-        return dualCellMovementOpcodes[dualCellIndex(deltaX, deltaZ)]
-    }
+    ): Int = dualCellMovementOpcodes[dualCellIndex(deltaX, deltaZ)]
 
     /**
      * Builds a simple bitpacked array of the bit codes for all the possible deltas.

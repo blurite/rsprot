@@ -26,13 +26,9 @@ public class SetActiveWorld(
         return worldType == other.worldType
     }
 
-    override fun hashCode(): Int {
-        return worldType.hashCode()
-    }
+    override fun hashCode(): Int = worldType.hashCode()
 
-    override fun toString(): String {
-        return "SetActiveWorld(worldType=$worldType)"
-    }
+    override fun toString(): String = "SetActiveWorld(worldType=$worldType)"
 
     /**
      * A world type to set as the currently active world, allowing for updates
@@ -45,7 +41,9 @@ public class SetActiveWorld(
      * @property activeLevel the level at which various events will take place, such as
      * zone updates.
      */
-    public class RootWorldType private constructor(private val _activeLevel: UByte) : WorldType {
+    public class RootWorldType private constructor(
+        private val _activeLevel: UByte,
+    ) : WorldType {
         public constructor(activeLevel: Int) : this(activeLevel.toUByte()) {
             require(activeLevel in 0..<4) {
                 "Active level must be in range of 0..<4"
@@ -64,13 +62,9 @@ public class SetActiveWorld(
             return _activeLevel == other._activeLevel
         }
 
-        override fun hashCode(): Int {
-            return _activeLevel.hashCode()
-        }
+        override fun hashCode(): Int = _activeLevel.hashCode()
 
-        override fun toString(): String {
-            return "RootWorldType(activeLevel=$activeLevel)"
-        }
+        override fun toString(): String = "RootWorldType(activeLevel=$activeLevel)"
     }
 
     /**
@@ -123,11 +117,10 @@ public class SetActiveWorld(
             return result
         }
 
-        override fun toString(): String {
-            return "DynamicWorldType(" +
+        override fun toString(): String =
+            "DynamicWorldType(" +
                 "index=$index, " +
                 "activeLevel=$activeLevel" +
                 ")"
-        }
     }
 }

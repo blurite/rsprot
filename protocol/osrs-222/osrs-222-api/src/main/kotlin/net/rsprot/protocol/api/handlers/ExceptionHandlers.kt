@@ -38,10 +38,9 @@ public class ExceptionHandlers<R>
             return result
         }
 
-        override fun toString(): String {
-            return "ExceptionHandlers(" +
+        override fun toString(): String =
+            "ExceptionHandlers(" +
                 "channelExceptionHandler=$channelExceptionHandler, " +
                 "incomingGameMessageConsumerExceptionHandler=$incomingGameMessageConsumerExceptionHandler" +
                 ")"
-        }
     }

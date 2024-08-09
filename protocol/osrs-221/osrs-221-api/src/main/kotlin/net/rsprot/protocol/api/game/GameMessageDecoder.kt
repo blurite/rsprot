@@ -14,7 +14,6 @@ import net.rsprot.protocol.api.logging.networkLog
 import net.rsprot.protocol.common.client.OldSchoolClientType
 import net.rsprot.protocol.message.IncomingGameMessage
 import net.rsprot.protocol.message.codec.incoming.MessageDecoderRepository
-import net.rsprot.protocol.tools.MessageDecodingTools
 
 /**
  * A decoder for game messages, one that respects the limitations set in place
@@ -33,7 +32,6 @@ public class GameMessageDecoder<R>(
         networkService
             .decoderRepositories
             .gameMessageDecoderRepositories[oldSchoolClientType]
-    override val messageDecodingTools: MessageDecodingTools = networkService.messageDecodingTools
 
     override fun decodePayload(
         ctx: ChannelHandlerContext,
@@ -57,7 +55,7 @@ public class GameMessageDecoder<R>(
             return
         }
         val payload = input.readSlice(length)
-        val message = decoder.decode(payload.toJagByteBuf(), networkService.messageDecodingTools)
+        val message = decoder.decode(payload.toJagByteBuf())
         if (payload.isReadable) {
             throw DecoderException(
                 "Decoder ${decoder.javaClass} did not read entire payload: ${payload.readableBytes()}",

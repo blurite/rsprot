@@ -24,11 +24,7 @@ public class FriendListDel(
         return name == other.name
     }
 
-    override fun hashCode(): Int {
-        return name.hashCode()
-    }
+    override fun hashCode(): Int = name.hashCode()
 
-    override fun toString(): String {
-        return "FriendListDel(name='$name')"
-    }
+    override fun toString(): String = "FriendListDel(name='$name')"
 }

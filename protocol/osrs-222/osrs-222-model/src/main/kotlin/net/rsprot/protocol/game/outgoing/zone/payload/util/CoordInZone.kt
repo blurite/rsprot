@@ -9,7 +9,8 @@ internal value class CoordInZone private constructor(
         zInZone: Int,
     ) : this(
         (xInZone and 0x7 shl 4)
-            .or(zInZone and 0x7).toUByte(),
+            .or(zInZone and 0x7)
+            .toUByte(),
     )
 
     val xInZone: Int
@@ -17,10 +18,9 @@ internal value class CoordInZone private constructor(
     val zInZone: Int
         get() = packed.toInt() and 0x7
 
-    override fun toString(): String {
-        return "CoordInZone(" +
+    override fun toString(): String =
+        "CoordInZone(" +
             "xInZone=$xInZone, " +
             "zInZone=$zInZone" +
             ")"
-    }
 }

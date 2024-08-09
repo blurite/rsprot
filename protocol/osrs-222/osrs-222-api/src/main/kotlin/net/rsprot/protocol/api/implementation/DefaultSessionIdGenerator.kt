@@ -10,7 +10,5 @@ import java.security.SecureRandom
 public class DefaultSessionIdGenerator : SessionIdGenerator {
     private val random = SecureRandom()
 
-    override fun generate(address: InetAddress): Long {
-        return random.nextLong()
-    }
+    override fun generate(address: InetAddress): Long = random.nextLong()
 }

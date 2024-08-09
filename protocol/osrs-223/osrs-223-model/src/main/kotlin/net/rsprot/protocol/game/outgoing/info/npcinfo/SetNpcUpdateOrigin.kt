@@ -54,10 +54,9 @@ public class SetNpcUpdateOrigin private constructor(
         return result
     }
 
-    override fun toString(): String {
-        return "SetNpcUpdateOrigin(" +
+    override fun toString(): String =
+        "SetNpcUpdateOrigin(" +
             "originX=$originX, " +
             "originZ=$originZ" +
             ")"
-    }
 }

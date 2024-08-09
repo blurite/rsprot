@@ -52,10 +52,9 @@ public class MembershipPromotionEligibility private constructor(
         return result
     }
 
-    override fun toString(): String {
-        return "MembershipPromotionEligibility(" +
+    override fun toString(): String =
+        "MembershipPromotionEligibility(" +
             "eligibleForIntroductoryPrice=$eligibleForIntroductoryPrice, " +
             "eligibleForTrialPurchase=$eligibleForTrialPurchase" +
             ")"
-    }
 }

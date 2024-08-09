@@ -103,8 +103,8 @@ public class CamMoveToEasedCircular private constructor(
         return result
     }
 
-    override fun toString(): String {
-        return "CameraMoveToEasedCircular(" +
+    override fun toString(): String =
+        "CameraMoveToEasedCircular(" +
             "centerXInBuildArea=$centerXInBuildArea, " +
             "centerZInBuildArea=$centerZInBuildArea, " +
             "destinationXInBuildArea=$destinationXInBuildArea, " +
@@ -114,5 +114,4 @@ public class CamMoveToEasedCircular private constructor(
             "maintainFixedAltitude=$maintainFixedAltitude, " +
             "function=$function" +
             ")"
-    }
 }
