@@ -1,8 +1,6 @@
 package net.rsprot.protocol.message.codec.incoming
 
 import net.rsprot.protocol.message.IncomingGameMessage
-import net.rsprot.protocol.message.IncomingMessage
-import java.util.function.BiConsumer
 
 /**
  * Message consumer repository is a repository of listeners that the server will register
@@ -12,7 +10,8 @@ import java.util.function.BiConsumer
  * @property consumers the hashmap of consumers, using incoming message classes as keys.
  */
 public class GameMessageConsumerRepositoryBuilder<R> {
-    private val consumers: MutableMap<Class<out IncomingGameMessage>, BiConsumer<R, in IncomingGameMessage>> = HashMap()
+    private val consumers: MutableMap<Class<out IncomingGameMessage>, MessageConsumer<R, IncomingGameMessage>> =
+        HashMap()
 
     /**
      * Adds a listener for the provided [clazz].
@@ -22,9 +21,13 @@ public class GameMessageConsumerRepositoryBuilder<R> {
     @Suppress("UNCHECKED_CAST")
     public fun <T : IncomingGameMessage> addListener(
         clazz: Class<out T>,
-        consumer: BiConsumer<R, in T>,
+        consumer: MessageConsumer<R, T>,
     ): GameMessageConsumerRepositoryBuilder<R> {
-        val old = consumers.put(clazz, consumer as BiConsumer<R, in IncomingMessage>)
+        val old =
+            consumers.put(
+                clazz,
+                consumer as MessageConsumer<R, IncomingGameMessage>,
+            )
         require(old == null) {
             "Overwriting old listener for class $clazz"
         }

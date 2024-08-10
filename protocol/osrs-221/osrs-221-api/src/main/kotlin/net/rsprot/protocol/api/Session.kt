@@ -11,9 +11,9 @@ import net.rsprot.protocol.game.outgoing.GameServerProtCategory
 import net.rsprot.protocol.loginprot.incoming.util.LoginBlock
 import net.rsprot.protocol.message.IncomingGameMessage
 import net.rsprot.protocol.message.OutgoingGameMessage
+import net.rsprot.protocol.message.codec.incoming.MessageConsumer
 import java.net.InetAddress
 import java.util.Queue
-import java.util.function.BiConsumer
 
 /**
  * The session objects are used to link the player instances together with the respective
@@ -45,7 +45,7 @@ public class Session<R>(
     private val incomingMessageQueue: Queue<IncomingGameMessage>,
     outgoingMessageQueueProvider: MessageQueueProvider<OutgoingGameMessage>,
     private val counter: GameMessageCounter,
-    private val consumers: Map<Class<out IncomingGameMessage>, BiConsumer<R, in IncomingGameMessage>>,
+    private val consumers: Map<Class<out IncomingGameMessage>, MessageConsumer<R, IncomingGameMessage>>,
     public val loginBlock: LoginBlock<*>,
     private val incomingGameMessageConsumerExceptionHandler: IncomingGameMessageConsumerExceptionHandler<R>,
 ) {
@@ -106,7 +106,7 @@ public class Session<R>(
                 "Processing incoming game packet from channel '${ctx.channel()}': $packet"
             }
             try {
-                consumer.accept(receiver, packet)
+                consumer.consume(receiver, packet)
             } catch (cause: Throwable) {
                 incomingGameMessageConsumerExceptionHandler.exceptionCaught(this, packet, cause)
             }

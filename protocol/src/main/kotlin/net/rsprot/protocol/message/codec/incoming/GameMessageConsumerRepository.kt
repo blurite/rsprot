@@ -1,10 +1,9 @@
 package net.rsprot.protocol.message.codec.incoming
 
 import net.rsprot.protocol.message.IncomingGameMessage
-import java.util.function.BiConsumer
 
 public class GameMessageConsumerRepository<R>(
-    public val consumers: Map<Class<out IncomingGameMessage>, BiConsumer<R, in IncomingGameMessage>>,
+    public val consumers: Map<Class<out IncomingGameMessage>, MessageConsumer<R, IncomingGameMessage>>,
 ) {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
