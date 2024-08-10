@@ -158,7 +158,7 @@ public class PlayerAppearanceEncoder : PrecomputedExtendedInfoEncoder<Appearance
             pObjTypeCustomisation(intermediate, objTypeCustomisation)
             flag = flag or (1 shl (12 - wearpos))
         }
-        if (flag > 0) flag = flag or 0x8000
+        if (extendedInfo.forceModelRefresh) flag = flag or 0x8000
         val pos = intermediate.writerIndex()
         intermediate.writerIndex(marker)
         intermediate.p2(flag)

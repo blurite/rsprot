@@ -1067,6 +1067,15 @@ public class PlayerAvatarExtendedInfo(
     }
 
     /**
+     * Forces a model refresh client-side even if the worn objects + base colour + gender have not changed.
+     * This is particularly important to enable when setting or clearing any obj type customisations,
+     * as those are not considered when calculating the hash code.
+     */
+    public fun forceModelRefresh(enabled: Boolean) {
+        blocks.appearance.forceModelRefresh = enabled
+    }
+
+    /**
      * Clears any obj type customisations applied to [wearpos].
      * @param wearpos the worn item slot.
      */

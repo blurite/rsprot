@@ -127,6 +127,13 @@ public class Appearance(
     public var runAnim: UShort = MAX_UNSIGNED_SHORT
 
     /**
+     * Whether to force a model refresh client-side, removing the cached model of the player
+     * even if the worn objects + base colour + gender have not changed.
+     * This is important to flag when setting or removing an obj type customization.
+     */
+    public var forceModelRefresh: Boolean = false
+
+    /**
      * The customisations applied to worn objs, indexed by the respective obj's primary wearpos.
      */
     public val objTypeCustomisation: Array<ObjTypeCustomisation?> = arrayOfNulls(12)
@@ -164,6 +171,7 @@ public class Appearance(
         wornObjs.fill(-1)
         hiddenWearPos.fill(-1)
         colours.fill(0)
+        forceModelRefresh = false
         objTypeCustomisation.fill(null)
         readyAnim = MAX_UNSIGNED_SHORT
         turnAnim = MAX_UNSIGNED_SHORT
