@@ -1,14 +1,14 @@
 dependencies {
-    implementation(platform(rootProject.libs.netty.bom))
-    implementation(rootProject.libs.netty.buffer)
+    api(platform(rootProject.libs.netty.bom))
+    api(rootProject.libs.netty.buffer)
     implementation(rootProject.libs.inline.logger)
-    implementation(rootProject.libs.commons.pool2)
-    implementation(projects.buffer)
-    implementation(projects.compression)
-    implementation(projects.crypto)
-    implementation(projects.protocol)
-    implementation(projects.protocol.osrs221.osrs221Internal)
-    implementation(projects.protocol.osrs221.osrs221Common)
+    api(rootProject.libs.commons.pool2)
+    api(projects.buffer)
+    api(projects.compression)
+    api(projects.crypto)
+    api(projects.protocol)
+    api(projects.protocol.osrs221.osrs221Internal)
+    api(projects.protocol.osrs221.osrs221Common)
 }
 
 mavenPublishing {

@@ -1,7 +1,7 @@
 dependencies {
-    implementation(platform(rootProject.libs.netty.bom))
-    implementation(rootProject.libs.netty.buffer)
-    implementation(projects.buffer)
+    api(platform(rootProject.libs.netty.bom))
+    api(rootProject.libs.netty.buffer)
+    api(projects.buffer)
     implementation(rootProject.libs.inline.logger)
 }
 

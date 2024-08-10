@@ -5,8 +5,8 @@ plugins {
 }
 
 dependencies {
-    implementation(platform(rootProject.libs.netty.bom))
-    implementation(rootProject.libs.netty.buffer)
+    api(platform(rootProject.libs.netty.bom))
+    api(rootProject.libs.netty.buffer)
     implementation(rootProject.libs.inline.logger)
     testImplementation(platform(rootProject.libs.log4j.bom))
     testImplementation(rootProject.libs.bundles.logging)
