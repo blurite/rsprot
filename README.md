@@ -175,6 +175,12 @@ if (currentWorldEntityId != -1) {
 packets.npcInfo(NpcInfo.ROOT_WORLD, npcInfo)
 ```
 
+> [!IMPORTANT]
+> The `toPacket()` function must be called on all info packets after they have
+> been calculated. This function __may__ result in an exception being thrown.
+> In such cases, the exception happened when the info was calculated.
+> If successful, write the result of the `toPacket()` function call to the session.
+
 #### Map Reload
 Whenever a map reload occurs, we must inform the protocol of the build area.
 Both the player info and npc info protocols will require doing so:
