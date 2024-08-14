@@ -13,6 +13,7 @@ import net.rsprot.protocol.game.outgoing.info.util.Avatar
  * Every player will have a respective avatar that contains basic information about that player,
  * such as their coordinates and how far to render other players.
  */
+@Suppress("MemberVisibilityCanBePrivate")
 public class PlayerAvatar internal constructor(
     allocator: ByteBufAllocator,
     localIndex: Int,
@@ -121,10 +122,37 @@ public class PlayerAvatar internal constructor(
         this.lastCoord = currentCoord
     }
 
+    /**
+     * Sets the preferred resize range, effectively how far to render players from.
+     * The preferred bit here means that it can resize down if there are too many
+     * players around.
+     * @param range the range from which to render other players.
+     */
     public fun setPreferredResizeRange(range: Int) {
         this.preferredResizeRange = range
         this.resizeRange = range
     }
+
+    /**
+     * Forces the resize range to [range] while disabling the auto resizing feature.
+     * @param range the range from which to render other players.
+     */
+    public fun forceResizeRange(range: Int) {
+        this.resizeRange = range
+        this.preferredResizeRange = Int.MAX_VALUE
+    }
+
+    /**
+     * Gets the current resize range. This variable might change over time.
+     */
+    public fun getResizeRange(): Int = this.resizeRange
+
+    /**
+     * Gets the preferred resize range. This value represents the ideal number
+     * that player info will strive towards. If the value is [Int.MAX_VALUE],
+     * resizing is disabled and [getResizeRange] is what is used as a constant.
+     */
+    public fun getPreferredResizeRange(): Int = this.preferredResizeRange
 
     /**
      * Resizes the view range according to the number of high resolution players currently observed.
