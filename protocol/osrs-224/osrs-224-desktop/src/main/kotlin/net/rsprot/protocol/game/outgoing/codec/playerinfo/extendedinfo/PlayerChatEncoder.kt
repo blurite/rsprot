@@ -32,7 +32,7 @@ public class PlayerChatEncoder : PrecomputedExtendedInfoEncoder<Chat> {
         codec.encode(huffmanBuffer, text)
         buffer.p1Alt1(huffmanBuffer.readableBytes())
         try {
-            buffer.pdataAlt1(huffmanBuffer.buffer)
+            buffer.pdataAlt2(huffmanBuffer.buffer)
         } finally {
             huffmanBuffer.buffer.release()
         }
