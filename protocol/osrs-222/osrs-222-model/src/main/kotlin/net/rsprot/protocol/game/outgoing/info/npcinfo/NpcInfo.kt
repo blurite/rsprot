@@ -545,8 +545,17 @@ public class NpcInfo internal constructor(
     override fun onDealloc() {
         for (index in this.details.indices) {
             val details = this.details[index] ?: continue
+            releaseObservers(details)
             detailsStorage.push(details)
             this.details[index] = null
+        }
+    }
+
+    private fun releaseObservers(details: NpcInfoWorldDetails) {
+        for (i in 0..<details.highResolutionNpcIndexCount) {
+            val npcIndex = details.highResolutionNpcIndices[i].toInt()
+            val avatar = repository.getOrNull(npcIndex) ?: continue
+            avatar.removeObserver()
         }
     }
 

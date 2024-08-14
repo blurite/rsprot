@@ -582,6 +582,11 @@ public class NpcInfo internal constructor(
             }
         }
         this.buffer = null
+        for (i in 0..<highResolutionNpcIndexCount) {
+            val npcIndex = highResolutionNpcIndices[i].toInt()
+            val avatar = repository.getOrNull(npcIndex) ?: continue
+            avatar.removeObserver()
+        }
     }
 
     private companion object {
