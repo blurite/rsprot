@@ -16,7 +16,7 @@ public class UpdateStatOldEncoder : MessageEncoder<UpdateStatOld> {
         message: UpdateStatOld,
     ) {
         buffer.p4(message.experience)
+        buffer.p1Alt2(message.stat)
         buffer.p1Alt3(message.currentLevel)
-        buffer.p1Alt3(message.stat)
     }
 }

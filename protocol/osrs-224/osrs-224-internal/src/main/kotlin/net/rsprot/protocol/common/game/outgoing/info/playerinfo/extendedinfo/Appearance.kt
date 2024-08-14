@@ -67,9 +67,6 @@ public class Appearance(
 
     /**
      * An array of ident kit ids, indexed by the respective wearpos.
-     * While there are only 256 potential values that the client can accept,
-     * all 256 are possible values, leaving us no room for a default.
-     * This is why a short array is used here instead.
      */
     public val identKit: ShortArray = ShortArray(7) { -1 }
 

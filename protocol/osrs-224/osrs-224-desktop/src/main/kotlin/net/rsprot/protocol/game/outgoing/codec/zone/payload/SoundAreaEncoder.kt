@@ -16,11 +16,11 @@ public class SoundAreaEncoder : ZoneProtEncoder<SoundArea> {
         // While the sound area packet doesn't have a static function call like
         // most of these other packets, one can still identify it with relative ease
         // using the screenshot below: https://media.z-kris.com/2024/04/0QX3RtlJF9.png
-        buffer.p1Alt1(message.loops)
-        buffer.p1Alt3(message.radius)
         buffer.p1Alt3(message.delay)
-        buffer.p1Alt1(message.coordInZonePacked)
-        buffer.p1Alt1(message.size)
-        buffer.p2Alt1(message.id)
+        buffer.p1(message.loops)
+        buffer.p1(message.coordInZonePacked)
+        buffer.p2Alt2(message.id)
+        buffer.p1(message.radius)
+        buffer.p1Alt2(message.size)
     }
 }

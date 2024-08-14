@@ -17,8 +17,8 @@ public class LocAddChangeEncoder : ZoneProtEncoder<LocAddChange> {
         // making it easy to identify all the properties of this packet:
         // loc_add_change_del(world, level, x, z, layer, id, shape, rotation, opFlags, 0, -1)
         buffer.p1Alt2(message.locPropertiesPacked)
-        buffer.p1Alt3(message.opFlags.value)
-        buffer.p1Alt3(message.coordInZonePacked)
-        buffer.p2Alt2(message.id)
+        buffer.p1(message.coordInZonePacked)
+        buffer.p1Alt2(message.opFlags.value)
+        buffer.p2Alt1(message.id)
     }
 }

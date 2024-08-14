@@ -17,6 +17,6 @@ public class IfSetModelEncoder : MessageEncoder<IfSetModel> {
         message: IfSetModel,
     ) {
         buffer.pCombinedIdAlt3(message.combinedId)
-        buffer.p2Alt2(message.model)
+        buffer.p2(message.model)
     }
 }

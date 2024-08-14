@@ -16,6 +16,6 @@ public class ChatFilterSettingsEncoder : MessageEncoder<ChatFilterSettings> {
         message: ChatFilterSettings,
     ) {
         buffer.p1Alt3(message.tradeChatFilter)
-        buffer.p1(message.publicChatFilter)
+        buffer.p1Alt1(message.publicChatFilter)
     }
 }

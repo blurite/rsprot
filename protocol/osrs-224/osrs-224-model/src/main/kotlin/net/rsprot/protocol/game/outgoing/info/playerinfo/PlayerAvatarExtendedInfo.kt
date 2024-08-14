@@ -914,8 +914,8 @@ public class PlayerAvatarExtendedInfo(
             require(identKitSlot in 0..6) {
                 "Unexpected wearPos $identKitSlot, expected range 0..6"
             }
-            require(value == -1 || value in UNSIGNED_BYTE_RANGE) {
-                "Unexpected value $value, expected value -1 or in range $UNSIGNED_BYTE_RANGE"
+            require(value == -1 || value in 0..<2048) {
+                "Unexpected value $value, expected value -1 or in range 0..<2048"
             }
         }
         val valueAsShort = value.toShort()

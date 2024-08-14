@@ -6,7 +6,7 @@ import net.rsprot.protocol.ServerProt
 import net.rsprot.protocol.game.outgoing.interfaces.IfSetPosition
 import net.rsprot.protocol.game.outgoing.prot.GameServerProt
 import net.rsprot.protocol.message.codec.MessageEncoder
-import net.rsprot.protocol.util.pCombinedIdAlt1
+import net.rsprot.protocol.util.pCombinedId
 
 public class IfSetPositionEncoder : MessageEncoder<IfSetPosition> {
     override val prot: ServerProt = GameServerProt.IF_SETPOSITION
@@ -16,8 +16,8 @@ public class IfSetPositionEncoder : MessageEncoder<IfSetPosition> {
         buffer: JagByteBuf,
         message: IfSetPosition,
     ) {
+        buffer.p2Alt1(message.x)
         buffer.p2Alt2(message.y)
-        buffer.pCombinedIdAlt1(message.combinedId)
-        buffer.p2Alt3(message.x)
+        buffer.pCombinedId(message.combinedId)
     }
 }

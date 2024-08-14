@@ -38,9 +38,9 @@ public class PlayerAppearanceEncoder : PrecomputedExtendedInfoEncoder<Appearance
         intermediate.p1(extendedInfo.textGender.toInt())
         val capacity = intermediate.readableBytes() + 1
         val buffer = alloc.buffer(capacity, capacity).toJagByteBuf()
-        buffer.p1Alt3(capacity - 1)
+        buffer.p1Alt1(capacity - 1)
         try {
-            buffer.pdataAlt2(intermediate.buffer)
+            buffer.pdataAlt3(intermediate.buffer)
         } finally {
             intermediate.buffer.release()
         }
@@ -85,7 +85,7 @@ public class PlayerAppearanceEncoder : PrecomputedExtendedInfoEncoder<Appearance
             }
             val obj = objs[wearpos].toInt() and 0xFFFF
             if (obj != 0xFFFF) {
-                intermediate.p2(obj + 0x200)
+                intermediate.p2(obj + 0x800)
                 continue
             }
             val identKitSlot = Appearance.identKitSlotList[wearpos]

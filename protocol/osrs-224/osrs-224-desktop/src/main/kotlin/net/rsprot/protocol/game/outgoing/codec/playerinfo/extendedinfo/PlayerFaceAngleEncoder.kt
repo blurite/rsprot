@@ -17,7 +17,7 @@ public class PlayerFaceAngleEncoder : PrecomputedExtendedInfoEncoder<FaceAngle> 
             alloc
                 .buffer(2, 2)
                 .toJagByteBuf()
-        buffer.p2Alt1(extendedInfo.angle.toInt())
+        buffer.p2Alt3(extendedInfo.angle.toInt())
         return buffer
     }
 }

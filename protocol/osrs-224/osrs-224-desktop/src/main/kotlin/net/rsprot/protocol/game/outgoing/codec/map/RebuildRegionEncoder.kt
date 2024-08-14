@@ -16,9 +16,9 @@ public class RebuildRegionEncoder : MessageEncoder<RebuildRegion> {
         buffer: JagByteBuf,
         message: RebuildRegion,
     ) {
-        buffer.p1Alt3(if (message.reload) 1 else 0)
-        buffer.p2Alt3(message.zoneZ)
-        buffer.p2(message.zoneX)
+        buffer.p2Alt2(message.zoneZ)
+        buffer.p1Alt1(if (message.reload) 1 else 0)
+        buffer.p2Alt2(message.zoneX)
 
         encodeRegion(buffer, message.zones)
     }
