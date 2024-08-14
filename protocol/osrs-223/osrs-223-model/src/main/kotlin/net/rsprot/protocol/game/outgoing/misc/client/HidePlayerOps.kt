@@ -5,10 +5,10 @@ import net.rsprot.protocol.game.outgoing.GameServerProtCategory
 import net.rsprot.protocol.message.OutgoingGameMessage
 
 /**
- * Hide player ops packet is used to hide the right-click menu of all players across the game.
- * @property hidden whether to hide all the click options of players.
+ * Hide obj ops packet is used to hide the right-click menu of all objs on the ground.
+ * @property hidden whether to hide all the click options of objs.
  */
-public class HidePlayerOps(
+public class HideObjOps(
     public val hidden: Boolean,
 ) : OutgoingGameMessage {
     override val category: ServerProtCategory
@@ -18,12 +18,12 @@ public class HidePlayerOps(
         if (this === other) return true
         if (javaClass != other?.javaClass) return false
 
-        other as HidePlayerOps
+        other as HideObjOps
 
         return hidden == other.hidden
     }
 
     override fun hashCode(): Int = hidden.hashCode()
 
-    override fun toString(): String = "HidePlayerOps(hidden=$hidden)"
+    override fun toString(): String = "HideObjOps(hidden=$hidden)"
 }
