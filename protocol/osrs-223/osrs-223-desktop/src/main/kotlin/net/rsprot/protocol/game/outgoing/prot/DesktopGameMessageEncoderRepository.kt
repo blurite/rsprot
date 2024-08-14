@@ -64,7 +64,7 @@ import net.rsprot.protocol.game.outgoing.codec.map.RebuildRegionEncoder
 import net.rsprot.protocol.game.outgoing.codec.map.RebuildWorldEntityEncoder
 import net.rsprot.protocol.game.outgoing.codec.misc.client.HideLocOpsEncoder
 import net.rsprot.protocol.game.outgoing.codec.misc.client.HideNpcOpsEncoder
-import net.rsprot.protocol.game.outgoing.codec.misc.client.HidePlayerOpsEncoder
+import net.rsprot.protocol.game.outgoing.codec.misc.client.HideObjOpsEncoder
 import net.rsprot.protocol.game.outgoing.codec.misc.client.HintArrowEncoder
 import net.rsprot.protocol.game.outgoing.codec.misc.client.HiscoreReplyEncoder
 import net.rsprot.protocol.game.outgoing.codec.misc.client.MinimapToggleEncoder
@@ -290,7 +290,7 @@ public object DesktopGameMessageEncoderRepository {
                 bind(MinimapToggleEncoder())
                 bind(ServerTickEndEncoder())
                 bind(HideNpcOpsEncoder())
-                bind(HidePlayerOpsEncoder())
+                bind(HideObjOpsEncoder())
                 bind(HideLocOpsEncoder())
 
                 bind(UrlOpenEncoder())
