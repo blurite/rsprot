@@ -26,8 +26,8 @@ public data class HeadBar(
     public var otherType: UShort,
     public val startFill: UByte,
     public val endFill: UByte,
-    public val endTime: UShort,
     public val startTime: UShort,
+    public val endTime: UShort,
 ) {
     public companion object {
         /**
