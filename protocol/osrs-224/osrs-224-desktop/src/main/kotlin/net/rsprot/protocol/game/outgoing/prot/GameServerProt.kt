@@ -102,7 +102,7 @@ public enum class GameServerProt(
     // Camera packets
     CAM_SHAKE(GameServerProtId.CAM_SHAKE, 4),
     CAM_RESET(GameServerProtId.CAM_RESET, 0),
-    CAM_SMOOTHRESET(GameServerProtId.CAM_SMOOTH_RESET, 4),
+    CAM_SMOOTHRESET(GameServerProtId.CAM_SMOOTHRESET, 4),
     CAM_MOVETO(GameServerProtId.CAM_MOVETO, 6),
     CAM_MOVETO_CYCLES(GameServerProtId.CAM_MOVETO_CYCLES, 8),
     CAM_MOVETO_ARC(GameServerProtId.CAM_MOVETO_ARC, 10),
@@ -174,7 +174,7 @@ public enum class GameServerProt(
     MINIMAP_TOGGLE(GameServerProtId.MINIMAP_TOGGLE, 1),
     SERVER_TICK_END(GameServerProtId.SERVER_TICK_END, 0),
     HIDENPCOPS(GameServerProtId.HIDENPCOPS, 1),
-    HIDEPLAYEROPS(GameServerProtId.HIDEPLAYEROPS, 1),
+    HIDEOBJOPS(GameServerProtId.HIDEOBJOPS, 1),
     HIDELOCOPS(GameServerProtId.HIDELOCOPS, 1),
 
     // Misc. client packets
@@ -184,4 +184,7 @@ public enum class GameServerProt(
     REFLECTION_CHECKER(GameServerProtId.REFLECTION_CHECKER, Prot.VAR_SHORT),
     SEND_PING(GameServerProtId.SEND_PING, 8),
     HISCORE_REPLY(GameServerProtId.HISCORE_REPLY, Prot.VAR_SHORT),
+
+    // Unknown packets
+    UNKNOWN_STRING(GameServerProtId.UNKNOWN_STRING, Prot.VAR_BYTE),
 }

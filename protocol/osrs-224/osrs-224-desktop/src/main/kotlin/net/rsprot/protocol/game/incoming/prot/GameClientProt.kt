@@ -19,6 +19,7 @@ public enum class GameClientProt(
     IF_BUTTON8(GameClientProtId.IF_BUTTON8, 8),
     IF_BUTTON9(GameClientProtId.IF_BUTTON9, 8),
     IF_BUTTON10(GameClientProtId.IF_BUTTON10, 8),
+    IF_SUBOP(GameClientProtId.IF_SUBOP, 10),
     IF_BUTTOND(GameClientProtId.IF_BUTTOND, 16),
     IF_BUTTONT(GameClientProtId.IF_BUTTONT, 16),
 
@@ -151,7 +152,8 @@ public enum class GameClientProt(
     SEND_SNAPSHOT(GameClientProtId.SEND_SNAPSHOT, Prot.VAR_BYTE),
     HISCORE_REQUEST(GameClientProtId.HISCORE_REQUEST, Prot.VAR_BYTE),
     IF_CRMVIEW_CLICK(GameClientProtId.IF_CRMVIEW_CLICK, 22),
-    UPDATE_PLAYER_MODEL(GameClientProtId.UPDATE_PLAYER_MODEL, 13),
+    UPDATE_PLAYER_MODEL(GameClientProtId.UPDATE_PLAYER_MODEL, 26),
+    UPDATE_PLAYER_MODEL_OLD(GameClientProtId.UPDATE_PLAYER_MODEL_OLD, 13),
 
     // Misc. client packets
     CONNECTION_TELEMETRY(GameClientProtId.CONNECTION_TELEMETRY, Prot.VAR_BYTE),
