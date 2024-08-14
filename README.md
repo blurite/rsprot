@@ -1,6 +1,6 @@
 # RSProt
 
-[![GitHub Actions][actions-badge]][actions] [![MIT license][mit-badge]][mit] [![OldSchool - 223 (Alpha)](https://img.shields.io/badge/OldSchool-223_(Alpha)-9a1abd)](https://github.com/blurite/rsprot/tree/master/protocol/osrs-223/osrs-223-api/src/main/kotlin/net/rsprot/protocol/api) [![OldSchool - 222 (Alpha)](https://img.shields.io/badge/OldSchool-222_(Alpha)-9a1abd)](https://github.com/blurite/rsprot/tree/master/protocol/osrs-222/osrs-222-api/src/main/kotlin/net/rsprot/protocol/api) [![OldSchool - 221 (Alpha)](https://img.shields.io/badge/OldSchool-221_(Alpha)-9a1abd)](https://github.com/blurite/rsprot/tree/master/protocol/osrs-221-api/src/main/kotlin/net/rsprot/protocol/api)
+[![GitHub Actions][actions-badge]][actions] [![MIT license][mit-badge]][mit] [![OldSchool - 224 (Alpha)](https://img.shields.io/badge/OldSchool-224_(Alpha)-9a1abd)](https://github.com/blurite/rsprot/tree/master/protocol/osrs-224/osrs-224-api/src/main/kotlin/net/rsprot/protocol/api) [![OldSchool - 223 (Alpha)](https://img.shields.io/badge/OldSchool-223_(Alpha)-9a1abd)](https://github.com/blurite/rsprot/tree/master/protocol/osrs-223/osrs-223-api/src/main/kotlin/net/rsprot/protocol/api) [![OldSchool - 222 (Alpha)](https://img.shields.io/badge/OldSchool-222_(Alpha)-9a1abd)](https://github.com/blurite/rsprot/tree/master/protocol/osrs-222/osrs-222-api/src/main/kotlin/net/rsprot/protocol/api) [![OldSchool - 221 (Alpha)](https://img.shields.io/badge/OldSchool-221_(Alpha)-9a1abd)](https://github.com/blurite/rsprot/tree/master/protocol/osrs-221-api/src/main/kotlin/net/rsprot/protocol/api)
 
 ## Status
 > [!NOTE]
@@ -31,14 +31,14 @@ other revisions are welcome, but will not be provided by default.
 - Java 11
 
 ## Supported Versions
-This library currently supports revision 221, 222 and 223 OldSchool desktop clients.
+This library currently supports revision 221, 222, 223 and 224 OldSchool desktop clients.
 
 ## Quick Guide
 This section covers a quick guide for how to use the protocol after implementing
 the base API. It is not a guide for the base API itself, that will come in the
 future. This specific quick guide refers to revision 222, which brought changes
 to the complicated info packets.
-Revision 223 is almost entirely the same, and is recommended to be used over 222.
+Revision 223 and 224 are almost entirely the same, and is recommended to be used over 222.
 
 #### Player Initialization
 When a player logs in, a new protocol instance must be allocated for
@@ -242,6 +242,31 @@ protocol. This can be done via:
 
 ## Changes
 
+### Revision 224
+Revision 224 saw the introduction of submenus in interfaces, as well as
+more diversity changes.
+
+#### Additions
+Two client-to-server packets, and one server-to-client packet was introduced.
+1. UPDATE_PLAYER_MODEL
+2. IF_SUBOP
+3. UNKNOWN
+
+The update player model is a newer 224-specific variant of the previous
+UPDATE_PLAYER_MODEL, which was renamed to UPDATE_PLAYER_MODEL_OLD.
+Neither of these packets is actually in use. The new addition is also riddled
+with bugs: In the C++ client, the revision check if >= 24 rather than >= 224,
+and the size defined for this packet is 26, when the sum of the payload only
+adds up to 20 bytes. As this packet is completely bugged, no variant of this
+was implemented in RSProt in the current stage.
+
+The unknown packet, while sent and available in the java client, is currently
+unidentified. Only empty strings are ever sent in it, and the property only
+gets passed to a clientscript instruction. There are no clientscripts that
+would use this property right now. Due to the lack of information surrounding
+this packet right now, the packet will not be implemented yet. Once we know
+what it is for, support will be added retroactively.
+
 ### Revision 223
 Not many changes occurred in revision 223 - four new packets were introduced,
 one of which is an updated variant of an older one.
@@ -255,7 +280,7 @@ only focus on a world entity itself.
 #### Additions
 Three brand-new packets were added:
 1. HIDENPCOPS
-2. HIDEPLAYEROPS
+2. HIDEOBJOPS
 3. HIDELOCOPS
 
 All these packets will hide right-click options 1-5 on any of the respective
