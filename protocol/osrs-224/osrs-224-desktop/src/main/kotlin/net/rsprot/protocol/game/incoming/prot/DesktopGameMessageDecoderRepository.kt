@@ -6,6 +6,7 @@ import net.rsprot.protocol.game.incoming.codec.buttons.If1ButtonDecoder
 import net.rsprot.protocol.game.incoming.codec.buttons.If3ButtonDecoder
 import net.rsprot.protocol.game.incoming.codec.buttons.IfButtonDDecoder
 import net.rsprot.protocol.game.incoming.codec.buttons.IfButtonTDecoder
+import net.rsprot.protocol.game.incoming.codec.buttons.IfSubOpDecoder
 import net.rsprot.protocol.game.incoming.codec.clan.AffinedClanSettingsAddBannedFromChannelDecoder
 import net.rsprot.protocol.game.incoming.codec.clan.AffinedClanSettingsSetMutedFromChannelDecoder
 import net.rsprot.protocol.game.incoming.codec.clan.ClanChannelFullRequestDecoder
@@ -108,6 +109,7 @@ public object DesktopGameMessageDecoderRepository {
                 bind(If3ButtonDecoder(GameClientProt.IF_BUTTON8, 8))
                 bind(If3ButtonDecoder(GameClientProt.IF_BUTTON9, 9))
                 bind(If3ButtonDecoder(GameClientProt.IF_BUTTON10, 10))
+                bind(IfSubOpDecoder())
                 bind(IfButtonDDecoder())
                 bind(IfButtonTDecoder())
 

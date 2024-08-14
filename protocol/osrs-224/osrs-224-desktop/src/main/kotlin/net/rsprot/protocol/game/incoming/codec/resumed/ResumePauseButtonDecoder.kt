@@ -11,8 +11,8 @@ public class ResumePauseButtonDecoder : MessageDecoder<ResumePauseButton> {
     override val prot: ClientProt = GameClientProt.RESUME_PAUSEBUTTON
 
     override fun decode(buffer: JagByteBuf): ResumePauseButton {
+        val sub = buffer.g2()
         val combinedId = buffer.gCombinedIdAlt2()
-        val sub = buffer.g2Alt2()
         return ResumePauseButton(
             combinedId,
             sub,

@@ -10,7 +10,7 @@ public class OpNpc3Decoder : MessageDecoder<OpNpc> {
     override val prot: ClientProt = GameClientProt.OPNPC3
 
     override fun decode(buffer: JagByteBuf): OpNpc {
-        val index = buffer.g2Alt3()
+        val index = buffer.g2Alt1()
         val controlKey = buffer.g1Alt3() == 1
         return OpNpc(
             index,
