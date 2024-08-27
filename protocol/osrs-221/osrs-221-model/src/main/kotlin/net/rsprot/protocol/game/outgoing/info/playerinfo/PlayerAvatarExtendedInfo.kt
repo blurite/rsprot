@@ -409,6 +409,9 @@ public class PlayerAvatarExtendedInfo(
         value: Int,
         delay: Int = 0,
     ) {
+        if (blocks.hit.hitMarkList.size >= 0xFF) {
+            return
+        }
         verify {
             require(sourceIndex == -1 || sourceIndex in 0..0x107FF) {
                 "Unexpected source index: $sourceIndex, expected values: -1 to reset, " +
@@ -444,6 +447,9 @@ public class PlayerAvatarExtendedInfo(
      * @param delay the delay in client cycles (20ms/cc) until the hitmark is removed.
      */
     public fun removeHitMark(delay: Int = 0) {
+        if (blocks.hit.hitMarkList.size >= 0xFF) {
+            return
+        }
         verify {
             require(delay in UNSIGNED_SMART_1_OR_2_RANGE) {
                 "Unexpected delay: $delay, expected range $UNSIGNED_SMART_1_OR_2_RANGE"
@@ -488,6 +494,9 @@ public class PlayerAvatarExtendedInfo(
         soakValue: Int,
         delay: Int = 0,
     ) {
+        if (blocks.hit.hitMarkList.size >= 0xFF) {
+            return
+        }
         verify {
             require(sourceIndex == -1 || sourceIndex in 0..0x107FF) {
                 "Unexpected source index: $sourceIndex, expected values: -1 to reset, " +
@@ -562,6 +571,9 @@ public class PlayerAvatarExtendedInfo(
         startTime: Int = 0,
         endTime: Int = 0,
     ) {
+        if (blocks.hit.headBarList.size >= 0xFF) {
+            return
+        }
         verify {
             require(sourceIndex == -1 || sourceIndex in 0..0x107FF) {
                 "Unexpected source index: $sourceIndex, expected values: -1 to reset, " +
