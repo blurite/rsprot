@@ -13,13 +13,26 @@ public class DefaultInetAddressValidator(
     override fun acceptGameConnection(
         address: InetAddress,
         activeGameConnections: Int,
-    ): Boolean = activeGameConnections < MAX_CONNECTIONS
+    ): Boolean = activeGameConnections < limit
 
     override fun acceptJs5Connection(
         address: InetAddress,
         activeJs5Connections: Int,
         seed: IntArray,
-    ): Boolean = activeJs5Connections < MAX_CONNECTIONS
+    ): Boolean = activeJs5Connections < limit
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as DefaultInetAddressValidator
+
+        return limit == other.limit
+    }
+
+    override fun hashCode(): Int = limit
+
+    override fun toString(): String = "DefaultInetAddressValidator(limit=$limit)"
 
     private companion object {
         private const val MAX_CONNECTIONS: Int = 10
