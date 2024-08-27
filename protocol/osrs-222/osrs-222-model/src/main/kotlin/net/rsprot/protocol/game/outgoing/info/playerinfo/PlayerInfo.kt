@@ -107,11 +107,6 @@ public class PlayerInfo internal constructor(
      */
     private var invalidateAppearanceCache: Boolean = false
 
-    init {
-        // There is always a root world!
-        details[PROTOCOL_CAPACITY] = protocol.detailsStorage.poll(ROOT_WORLD)
-    }
-
     /**
      * Checks if appearance needs invalidation, and invalidates if so.
      */
@@ -790,13 +785,18 @@ public class PlayerInfo internal constructor(
     override fun onAlloc(
         index: Int,
         oldSchoolClientType: OldSchoolClientType,
+        newInstance: Boolean,
     ) {
         this.localIndex = index
         avatar.extendedInfo.localIndex = index
         this.oldSchoolClientType = oldSchoolClientType
         avatar.reset()
         this.activeWorldId = ROOT_WORLD
-        val rootDetails = getDetails(-1)
+        // There is always a root world!
+        val rootDetails = protocol.detailsStorage.poll(ROOT_WORLD)
+        details[PROTOCOL_CAPACITY] = rootDetails
+
+        if (newInstance) return
         rootDetails.lowResolutionIndices.fill(0)
         rootDetails.lowResolutionCount = 0
         rootDetails.highResolutionIndices.fill(0)

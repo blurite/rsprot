@@ -66,11 +66,6 @@ public class NpcInfo internal constructor(
      */
     internal val details: Array<NpcInfoWorldDetails?> = arrayOfNulls(WORLD_ENTITY_CAPACITY + 1)
 
-    init {
-        // There is always a root world!
-        details[WORLD_ENTITY_CAPACITY] = detailsStorage.poll(ROOT_WORLD)
-    }
-
     /**
      * Updates the build area of a given world to the specified one.
      * This will ensure that no NPCs outside of this box will be
@@ -536,10 +531,13 @@ public class NpcInfo internal constructor(
     override fun onAlloc(
         index: Int,
         oldSchoolClientType: OldSchoolClientType,
+        newInstance: Boolean,
     ) {
         this.localPlayerIndex = index
         this.oldSchoolClientType = oldSchoolClientType
         this.viewDistance = MAX_SMALL_PACKET_DISTANCE
+        // There is always a root world!
+        details[WORLD_ENTITY_CAPACITY] = detailsStorage.poll(ROOT_WORLD)
     }
 
     override fun onDealloc() {

@@ -77,11 +77,12 @@ internal abstract class InfoRepository<T>(
         }
         val cached = queue.poll()?.get()
         if (cached != null) {
-            onAlloc(cached, idx, oldSchoolClientType)
+            onAlloc(cached, idx, oldSchoolClientType, false)
             elements[idx] = cached
             return cached
         }
         val new = allocator(idx, oldSchoolClientType)
+        onAlloc(new, idx, oldSchoolClientType, true)
         elements[idx] = new
         return new
     }
@@ -97,6 +98,7 @@ internal abstract class InfoRepository<T>(
         element: T,
         idx: Int,
         oldSchoolClientType: OldSchoolClientType,
+        newInstance: Boolean,
     )
 
     /**

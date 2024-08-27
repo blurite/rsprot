@@ -41,7 +41,8 @@ internal class PlayerInfoRepository(
         element: PlayerInfo,
         idx: Int,
         oldSchoolClientType: OldSchoolClientType,
+        newInstance: Boolean,
     ) {
-        element.onAlloc(idx, oldSchoolClientType)
+        element.onAlloc(idx, oldSchoolClientType, newInstance)
     }
 }

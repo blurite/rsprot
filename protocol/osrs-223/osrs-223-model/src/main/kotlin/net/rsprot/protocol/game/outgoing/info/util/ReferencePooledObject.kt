@@ -19,6 +19,7 @@ public interface ReferencePooledObject {
     public fun onAlloc(
         index: Int,
         oldSchoolClientType: OldSchoolClientType,
+        newInstance: Boolean,
     )
 
     /**

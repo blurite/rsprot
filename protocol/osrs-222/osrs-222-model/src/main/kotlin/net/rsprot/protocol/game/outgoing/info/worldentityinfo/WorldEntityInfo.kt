@@ -387,6 +387,7 @@ public class WorldEntityInfo internal constructor(
     override fun onAlloc(
         index: Int,
         oldSchoolClientType: OldSchoolClientType,
+        newInstance: Boolean,
     ) {
         this.localIndex = index
         this.oldSchoolClientType = oldSchoolClientType
