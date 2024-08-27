@@ -157,9 +157,18 @@ internal class NpcInfoWorldDetails(
         this.extendedInfoCount = 0
         this.extendedInfoIndices.fill(0u)
         this.observerExtendedInfoFlags.reset()
+        this.builtIntoPacket = false
+        val buffer = this.buffer
+        if (buffer != null && buffer.refCnt() > 0) {
+            buffer.release(buffer.refCnt())
+            this.buffer = null
+        }
+    }
+
+    internal fun onDealloc() {
         val buffer = this.buffer
         if (buffer != null) {
-            if (!builtIntoPacket) {
+            if (!builtIntoPacket && buffer.refCnt() > 0) {
                 buffer.release(buffer.refCnt())
             }
             this.buffer = null

@@ -33,6 +33,7 @@ internal class NpcInfoWorldDetailsStorage {
      * @param details the object containing the implementation details.
      */
     internal fun push(details: NpcInfoWorldDetails) {
+        details.onDealloc()
         val reference = SoftReference(details, queue)
         reference.enqueue()
     }
