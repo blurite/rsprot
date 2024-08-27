@@ -10,7 +10,7 @@ public class PlayerAvatarFactory(
     private val extendedInfoWriter: List<PlayerAvatarExtendedInfoWriter>,
     private val huffmanCodec: HuffmanCodecProvider,
 ) {
-    public fun alloc(index: Int): PlayerAvatar {
+    internal fun alloc(index: Int): PlayerAvatar {
         // It is possible to just pass in the extended info from here, but based on benchmarks,
         // due to the field order changing, the performance will absolutely tank in doing so,
         // going from ~160ms in the benchmark to around 200ms
