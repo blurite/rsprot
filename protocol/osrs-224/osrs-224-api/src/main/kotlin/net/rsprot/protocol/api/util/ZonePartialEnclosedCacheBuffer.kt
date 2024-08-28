@@ -11,7 +11,6 @@ import net.rsprot.protocol.message.ZoneProt
 import net.rsprot.protocol.message.codec.UpdateZonePartialEnclosedCache
 import java.util.EnumMap
 import java.util.LinkedList
-import kotlin.collections.plusAssign
 
 public class ZonePartialEnclosedCacheBuffer(
     public val supportedClients: List<OldSchoolClientType>,
