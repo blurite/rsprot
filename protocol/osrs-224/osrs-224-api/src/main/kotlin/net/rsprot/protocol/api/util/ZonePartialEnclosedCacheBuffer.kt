@@ -13,7 +13,7 @@ import java.util.EnumMap
 import java.util.LinkedList
 
 public class ZonePartialEnclosedCacheBuffer(
-    public val supportedClients: List<OldSchoolClientType>,
+    public val supportedClients: List<OldSchoolClientType> = OldSchoolClientType.entries,
     private val byteBufAllocator: ByteBufAllocator = PooledByteBufAllocator.DEFAULT,
     internal var activeCachedBuffers: LinkedList<ByteBuf> = LinkedList(),
 ) {
