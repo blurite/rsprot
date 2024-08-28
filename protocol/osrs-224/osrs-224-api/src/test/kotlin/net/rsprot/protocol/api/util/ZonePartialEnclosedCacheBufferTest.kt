@@ -29,7 +29,7 @@ class ZonePartialEnclosedCacheBufferTest {
 
     @Test
     fun `computeZone creates buffers for supported clients`() {
-        val cache = createCacheBuffer()
+        val cache = ZonePartialEnclosedCacheBuffer()
         val buffers = cache.computeZone(emptyList())
 
         assertEquals(buffers.keys.toSet(), cache.supportedClients.toSet())
@@ -41,7 +41,7 @@ class ZonePartialEnclosedCacheBufferTest {
 
     @Test
     fun `compute zone partial enclosed buffers`() {
-        val cache = createCacheBuffer()
+        val cache = ZonePartialEnclosedCacheBuffer()
 
         val zoneProt = createFullZoneProtList()
         val buffers = cache.computeZone(zoneProt)
@@ -65,7 +65,7 @@ class ZonePartialEnclosedCacheBufferTest {
 
     @Test
     fun `releaseBuffers resets computation count and releases buffers correctly`() {
-        val cache = createCacheBuffer(listOf(OldSchoolClientType.DESKTOP))
+        val cache = ZonePartialEnclosedCacheBuffer(listOf(OldSchoolClientType.DESKTOP))
 
         val emptyBuffer = Unpooled.wrappedBuffer(ByteArray(0))
         cache.activeCachedBuffers.add(emptyBuffer)
@@ -77,9 +77,6 @@ class ZonePartialEnclosedCacheBufferTest {
         assertEquals(0, cache.currentZoneComputationCount)
         assertEquals(0, cache.retainedBufferReferences.size)
     }
-
-    private fun createCacheBuffer(supportedClients: List<OldSchoolClientType> = OldSchoolClientType.entries) =
-        ZonePartialEnclosedCacheBuffer(supportedClients)
 
     private fun <T> ClientTypeMap<T>.toClientList(): List<OldSchoolClientType> =
         OldSchoolClientType.entries.filter { it in this }
