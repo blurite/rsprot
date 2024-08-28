@@ -1,7 +1,6 @@
 package net.rsprot.protocol.api
 
 import com.github.michaelbull.logging.InlineLogger
-import io.netty.buffer.ByteBuf
 import io.netty.buffer.ByteBufAllocator
 import io.netty.channel.ChannelFuture
 import io.netty.channel.EventLoopGroup
@@ -18,21 +17,13 @@ import net.rsprot.protocol.api.js5.Js5Service
 import net.rsprot.protocol.api.repositories.MessageDecoderRepositories
 import net.rsprot.protocol.api.repositories.MessageEncoderRepositories
 import net.rsprot.protocol.api.util.asCompletableFuture
-import net.rsprot.protocol.client.ClientType
-import net.rsprot.protocol.common.client.ClientTypeMap
 import net.rsprot.protocol.common.client.OldSchoolClientType
-import net.rsprot.protocol.game.outgoing.codec.zone.header.DesktopUpdateZonePartialEnclosedEncoder
 import net.rsprot.protocol.game.outgoing.info.npcinfo.NpcAvatarFactory
 import net.rsprot.protocol.game.outgoing.info.npcinfo.NpcInfoProtocol
 import net.rsprot.protocol.game.outgoing.info.playerinfo.PlayerInfoProtocol
 import net.rsprot.protocol.game.outgoing.info.worldentityinfo.WorldEntityAvatarFactory
 import net.rsprot.protocol.game.outgoing.info.worldentityinfo.WorldEntityProtocol
-import net.rsprot.protocol.message.ZoneProt
-import net.rsprot.protocol.message.codec.UpdateZonePartialEnclosedCache
 import net.rsprot.protocol.message.codec.incoming.provider.GameMessageConsumerRepositoryProvider
-import java.util.ArrayDeque
-import java.util.EnumMap
-import java.util.LinkedList
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.ScheduledFuture
 import kotlin.time.measureTime
@@ -67,9 +58,6 @@ import kotlin.time.measureTime
  * service is fairly lightweight and doesn't actually process much, a single thread
  * is more than sufficient here. Utilizing more threads makes implementing a fair JS5
  * service significantly more difficult.
- * @property updateZonePartialEnclosedCacheClientTypeMap the map of update zone partial enclosed
- * cache builders for each client type registered. This is because the events in a zone are
- * computed once for all observers and written to all of them in one go.
  * @property decoderRepositories the repositories for decoding all the incoming client packets
  * @property playerInfoProtocol the protocol responsible for tracking and computing player info
  * for all the players in the game
@@ -101,8 +89,6 @@ public class NetworkService<R>
         internal val encoderRepositories: MessageEncoderRepositories = MessageEncoderRepositories(huffmanCodecProvider)
         internal val js5Service: Js5Service = Js5Service(js5Configuration, js5GroupProvider)
         private val js5ServiceExecutor = Thread(js5Service)
-        private val updateZonePartialEnclosedCacheClientTypeMap:
-            ClientTypeMap<UpdateZonePartialEnclosedCache> = initializeUpdateZonePartialEnclosedCacheClientMap()
         internal val decoderRepositories: MessageDecoderRepositories =
             MessageDecoderRepositories.initialize(
                 clientTypes,
@@ -182,127 +168,6 @@ public class NetworkService<R>
             bossGroup.shutdownGracefully()
             childGroup.shutdownGracefully()
             logger.info { "Network service successfully shut down." }
-        }
-
-        private fun initializeUpdateZonePartialEnclosedCacheClientMap(): ClientTypeMap<UpdateZonePartialEnclosedCache> {
-            val list = mutableListOf<Pair<ClientType, UpdateZonePartialEnclosedCache>>()
-            if (OldSchoolClientType.DESKTOP in clientTypes) {
-                list += OldSchoolClientType.DESKTOP to DesktopUpdateZonePartialEnclosedEncoder
-            }
-            return ClientTypeMap.of(OldSchoolClientType.COUNT, list)
-        }
-
-        private val updateZonePartialEnclosedBufferList = ArrayDeque<LinkedList<ByteBuf>>()
-        private var currentUpdateOnePartialEnclosedBuffers = LinkedList<ByteBuf>()
-        private var currentZoneCallCount = 0
-
-        /**
-         * Computes the buffer for the update zone partial enclosed packet payload for
-         * a given list of events, for every platform that is registered.
-         * @param events the list of zone prot events in a given zone
-         * @return a client type map that contains buffers for every client type that was
-         * initially registered. The server should write the same buffer for every observing client.
-         * For the enclosed packets, the reference count is not increased or decreased per observer,
-         * nor are the writer and reader indices modified. The server must, however, release these buffers
-         * at the end of the cycle, when they have been written to each client.
-         */
-        public fun <T : ZoneProt> computeUpdateZonePartialEnclosedCache(
-            events: List<T>,
-        ): EnumMap<OldSchoolClientType, ByteBuf> {
-            val map = EnumMap<OldSchoolClientType, ByteBuf>(OldSchoolClientType::class.java)
-            for (type in clientTypes) {
-                val buffer = this.updateZonePartialEnclosedCacheClientTypeMap[type].buildCache(allocator, events)
-                map[type] = buffer
-                currentUpdateOnePartialEnclosedBuffers += buffer
-            }
-            // If there's an absurd amount of buffers in the list, it probably means the server
-            // hasn't been releasing them via the postUpdate function.
-            // If this is the case, it is only a matter of time before the server runs out of
-            // memory for the buffers.
-            // In here, the maximum is set to exactly 1 gigabyte allocated by these buffers
-            // In normal circumstances, it should never hit this scenario, as
-            // it requires 25,000 unique zones to have a partial enclosed buffer
-            // which is basically an eight of the entire game map as a whole, excluding instances.
-            if (++currentZoneCallCount >= 25_000) {
-                logger.warn {
-                    "Update zone partial enclosed buffers have not been correctly released!"
-                }
-            }
-            return map
-        }
-
-        /**
-         * Clear any update zone partial enclosed prebuilt buffers that no longer have
-         * any references to them, meaning all the observers' netty channels have
-         * had these buffers written out. If a buffer is requested to be written over, but
-         * the socket closes or the player logs out before that can actually hit the
-         * encoder, the ref count will never be released. In these cases, a fail-safe
-         * mechanism is utilized to release the buffer after an entire minute has passed.
-         * Under normal circumstances, it should never get into a scenario where this
-         * is hit.
-         */
-        public fun postUpdate() {
-            currentZoneCallCount = 0
-            val bufferList = this.updateZonePartialEnclosedBufferList
-            if (bufferList.size >= 100) {
-                val first = bufferList.removeFirst()
-                releaseBuffers(first, true)
-            }
-            val curBuf = this.currentUpdateOnePartialEnclosedBuffers
-            if (curBuf.size > 0) {
-                bufferList.addLast(curBuf)
-                this.currentUpdateOnePartialEnclosedBuffers = LinkedList()
-            }
-            for (buffers in bufferList) {
-                // Just release the buffers, the linked list may become empty as a result
-                // But this is fine, we have a rotating fixed-size 100 list anyhow.
-                releaseBuffers(buffers, false)
-            }
-        }
-
-        /**
-         * Releases the buffers in the linked list if they no longer have any references,
-         * meaning all the Netty encoders have transferred the data over to the respective
-         * channels. This state is reached whenever the ref count reaches 1.
-         * If a buffer is allocated for a player, but the session closes before it can
-         * be transferred over, the reference count will never be decreases.
-         * In such scenarios, a safety mechanism will be used to forcibly release the buffer
-         * after one minute has passed (based on the number of postUpdate() calls).
-         * In normal circumstances, the encoder should be triggered in under one cycle,
-         * so this should absolutely never be hit in normal circumstances, and if it is,
-         * it implies there's a bigger underlying problem and that connection is doomed
-         * anyhow.
-         * @param buffers the linked list of buffers that were computed in the past
-         * @param forceRelease whether to force release all the buffers, this is only done
-         * after one minute has passed and the buffer has not been released still.
-         */
-        private fun releaseBuffers(
-            buffers: LinkedList<ByteBuf>,
-            forceRelease: Boolean,
-        ) {
-            if (buffers.isEmpty()) {
-                return
-            }
-            val iterator = buffers.iterator()
-            while (iterator.hasNext()) {
-                val next = iterator.next()
-                val refCount = next.refCnt()
-                if (forceRelease) {
-                    // Don't bother removing from the list if force removing,
-                    // let the garbage collector deal with it
-                    if (refCount > 0) {
-                        next.release(refCount)
-                    }
-                    continue
-                }
-                if (refCount > 1) {
-                    continue
-                }
-                if (refCount == 1) {
-                    next.release()
-                }
-                iterator.remove()
-            }
         }
 
         /**
