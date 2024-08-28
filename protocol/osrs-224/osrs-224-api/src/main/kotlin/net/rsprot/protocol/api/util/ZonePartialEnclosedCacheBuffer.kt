@@ -51,13 +51,13 @@ public class ZonePartialEnclosedCacheBuffer(
      * - [net.rsprot.protocol.game.outgoing.zone.payload.SoundArea]
      */
     public fun <T : ZoneProt> computeZone(pendingTickProtList: List<T>): EnumMap<OldSchoolClientType, ByteBuf> {
-        val clientBuffers = buildZoneProtCache(pendingTickProtList)
+        val clientBuffers = buildZoneProtBuffers(pendingTickProtList)
         activeCachedBuffers += clientBuffers.values
         incrementZoneComputationCount()
         return clientBuffers
     }
 
-    private fun <T : ZoneProt> buildZoneProtCache(protList: List<T>): EnumMap<OldSchoolClientType, ByteBuf> {
+    private fun <T : ZoneProt> buildZoneProtBuffers(protList: List<T>): EnumMap<OldSchoolClientType, ByteBuf> {
         val map = createClientBufferEnumMap()
         for (client in supportedClients) {
             val encoder = supportedEncoders[client]
