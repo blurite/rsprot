@@ -46,7 +46,6 @@ public class ZonePartialEnclosedCacheBuffer(
      * - [net.rsprot.protocol.game.outgoing.zone.payload.MapAnim]
      * - [net.rsprot.protocol.game.outgoing.zone.payload.MapProjAnim]
      * - [net.rsprot.protocol.game.outgoing.zone.payload.ObjAdd]: *Only for "publicly-visible" objs*
-     * - [net.rsprot.protocol.game.outgoing.zone.payload.ObjCount]: *Only for "privately-owned" objs*
      * - [net.rsprot.protocol.game.outgoing.zone.payload.ObjDel]: *Only for "publicly-visible" objs*
      * - [net.rsprot.protocol.game.outgoing.zone.payload.ObjEnabledOps]
      * - [net.rsprot.protocol.game.outgoing.zone.payload.SoundArea]
