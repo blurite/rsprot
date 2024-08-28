@@ -15,4 +15,5 @@ public class LoginMessageEncoder(
     override val cipher: StreamCipher = NopStreamCipher
     override val repository: MessageEncoderRepository<*> =
         networkService.encoderRepositories.loginMessageDecoderRepository
+    override val validate: Boolean = false
 }

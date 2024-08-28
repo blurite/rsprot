@@ -19,6 +19,7 @@ public class Js5MessageEncoder(
     override val cipher: StreamCipher = NopStreamCipher
     override val repository: MessageEncoderRepository<*> =
         networkService.encoderRepositories.js5MessageDecoderRepository
+    override val validate: Boolean = false
 
     override fun encode(
         ctx: ChannelHandlerContext,

@@ -21,6 +21,7 @@ import net.rsprot.protocol.message.codec.outgoing.MessageEncoderRepository
 public abstract class OutgoingMessageEncoder : MessageToByteEncoder<OutgoingMessage>(OutgoingMessage::class.java) {
     protected abstract val cipher: StreamCipher
     protected abstract val repository: MessageEncoderRepository<*>
+    protected abstract val validate: Boolean
 
     override fun encode(
         ctx: ChannelHandlerContext,
@@ -76,10 +77,30 @@ public abstract class OutgoingMessageEncoder : MessageToByteEncoder<OutgoingMess
             }
             out.writerIndex(sizeMarker)
             when (prot.size) {
-                Prot.VAR_BYTE -> out.p1(length)
-                Prot.VAR_SHORT -> out.p2(length)
+                Prot.VAR_BYTE -> {
+                    if (validate) {
+                        check(length in 0..UByte.MAX_VALUE.toInt()) {
+                            "Server prot $prot length out of bounds; expected 0..255, received $length; message: $msg"
+                        }
+                    }
+                    out.p1(length)
+                }
+                Prot.VAR_SHORT -> {
+                    if (validate) {
+                        check(length in 0..MAX_PAYLOAD_SIZE) {
+                            "Server prot $prot length out of bounds; expected 0..40_000, received $length; message: $msg"
+                        }
+                    }
+                    out.p2(length)
+                }
             }
             out.writerIndex(writerIndex)
+        } else if (validate) {
+            val writerIndex = out.writerIndex()
+            val length = writerIndex - payloadMarker
+            check(length == prot.size) {
+                "Server prot $prot length mismatch; expected ${prot.size}, received $length; message: $msg"
+            }
         }
     }
 
@@ -106,5 +127,6 @@ public abstract class OutgoingMessageEncoder : MessageToByteEncoder<OutgoingMess
          * using a 1 or 2 byte smart.
          */
         private const val MAX_OPCODE_VALUE_FOR_SINGLE_BYTE_OPCODE: Int = 127
+        private const val MAX_PAYLOAD_SIZE: Int = 40_000
     }
 }
