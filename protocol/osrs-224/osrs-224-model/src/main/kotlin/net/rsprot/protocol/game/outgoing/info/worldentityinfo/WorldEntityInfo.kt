@@ -212,6 +212,13 @@ public class WorldEntityInfo internal constructor(
      * @return the buffer into which everything is written about this packet.
      */
     private fun allocBuffer(): ByteBuf {
+        // If a given player's packet was never sent out, we need to release the old buffer
+        if (!builtIntoPacket) {
+            val oldBuf = buffer
+            if (oldBuf != null && oldBuf.refCnt() > 0) {
+                oldBuf.release()
+            }
+        }
         // Acquire a new buffer with each cycle, in case the previous one isn't fully written out yet
         val buffer = allocator.buffer(BUF_CAPACITY, BUF_CAPACITY)
         this.buffer = buffer

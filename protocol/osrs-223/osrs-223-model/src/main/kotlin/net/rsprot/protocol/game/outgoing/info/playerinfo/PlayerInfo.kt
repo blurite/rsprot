@@ -729,6 +729,13 @@ public class PlayerInfo internal constructor(
      * The old [PlayerInfoWorldDetails.buffer] will not be released, as that is the duty of the encoder class.
      */
     private fun allocBuffer(details: PlayerInfoWorldDetails): ByteBuf {
+        // If a given player's packet was never sent out, we need to release the old buffer
+        if (!details.builtIntoPacket) {
+            val oldBuf = details.buffer
+            if (oldBuf != null && oldBuf.refCnt() > 0) {
+                oldBuf.release()
+            }
+        }
         // Acquire a new buffer with each cycle, in case the previous one isn't fully written out yet
         val buffer = allocator.buffer(BUF_CAPACITY, BUF_CAPACITY)
         details.buffer = buffer

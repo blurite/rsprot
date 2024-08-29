@@ -203,7 +203,15 @@ public class NpcInfo internal constructor(
      * Allocates a new buffer from the [allocator] with a capacity of [BUF_CAPACITY].
      * The old [buffer] will not be released, as that is the duty of the encoder class.
      */
+    @Suppress("DuplicatedCode")
     private fun allocBuffer(): ByteBuf {
+        // If a given player's packet was never sent out, we need to release the old buffer
+        if (!builtIntoPacket) {
+            val oldBuf = buffer
+            if (oldBuf != null && oldBuf.refCnt() > 0) {
+                oldBuf.release()
+            }
+        }
         // Acquire a new buffer with each cycle, in case the previous one isn't fully written out yet
         val buffer = allocator.buffer(BUF_CAPACITY, BUF_CAPACITY)
         this.buffer = buffer
