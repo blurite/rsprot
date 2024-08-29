@@ -84,13 +84,9 @@ public class ZonePartialEnclosedCacheBuffer(
      * Netty channels have finished writing these buffers. This method also handles buffers that could not be
      * immediately released due to their reference count ([ByteBuf.refCnt]).
      *
-     * In scenarios where a buffer is allocated for a player but their session closes before the buffer can be
-     * transmitted, the reference count may not decrease as expected, leaving the buffer unreleased. To address this,
-     * a fail-safe mechanism is employed to forcibly release these buffers after a set period, which is approximately
-     * one minute (based on the number of [releaseBuffers] calls).
-     *
-     * Under typical conditions, the encoder should trigger buffer release within a single cycle. If the fail-safe
-     * mechanism is activated, it suggests a deeper underlying issue.
+     * Under typical conditions, the encoder should trigger the buffer release within a single cycle. However, if a
+     * buffer remains unreleased due to a session closing or other interruptions, this method ensures they are
+     * handled correctly. Implementation details on this mechanism can be seen in [releaseBuffersOnThreshold].
      *
      * **Usage Note:** This function should be invoked **once** at the end of **every tick** to ensure proper buffer
      * cleanup and prevent possible memory leaks.
@@ -107,6 +103,17 @@ public class ZonePartialEnclosedCacheBuffer(
         currentZoneComputationCount = 0
     }
 
+    /**
+     * Checks and forcibly releases retained buffers if the number of unreleased buffers exceeds a predefined threshold.
+     *
+     * - **Periodic Forcible Release**: If the total number of retained buffers that could not be released reaches
+     * 100 ([BUF_RETENTION_COUNT_BEFORE_RELEASE]), this method will begin to forcibly release these buffers during
+     * each [releaseBuffers] call to prevent memory leaks.
+     *
+     * This mechanism is a safeguard to ensure that buffers are eventually released even in cases where they were not
+     * properly released due to reference count issues. If this mechanism is triggered, it suggests a deeper
+     * underlying issue.
+     */
     private fun releaseBuffersOnThreshold() {
         if (retainedBufferReferences.size >= BUF_RETENTION_COUNT_BEFORE_RELEASE) {
             val releaseTarget = retainedBufferReferences.removeFirst()
