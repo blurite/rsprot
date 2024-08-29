@@ -68,7 +68,7 @@ class ZonePartialEnclosedCacheBufferTest {
         val cache = ZonePartialEnclosedCacheBuffer(listOf(OldSchoolClientType.DESKTOP))
 
         val emptyBuffer = Unpooled.wrappedBuffer(ByteArray(0))
-        cache.activeCachedBuffers.add(emptyBuffer)
+        cache.activeCachedBuffers += emptyBuffer
         cache.currentZoneComputationCount = 1
 
         cache.releaseBuffers()
@@ -76,6 +76,70 @@ class ZonePartialEnclosedCacheBufferTest {
         assertEquals(0, cache.activeCachedBuffers.size)
         assertEquals(0, cache.currentZoneComputationCount)
         assertEquals(0, cache.retainedBufferReferences.size)
+    }
+
+    @Test
+    fun `retain buffers that cannot be released`() {
+        val cache = ZonePartialEnclosedCacheBuffer(listOf(OldSchoolClientType.DESKTOP))
+
+        val threshold = ZonePartialEnclosedCacheBuffer.BUF_RETENTION_COUNT_BEFORE_RELEASE
+        val retainedBuffers = (0..<threshold).map { Unpooled.buffer().retain() }
+
+        try {
+            for (buffer in retainedBuffers) {
+                cache.activeCachedBuffers += buffer
+                cache.currentZoneComputationCount++
+                cache.releaseBuffers()
+            }
+
+            assertEquals(threshold, cache.retainedBufferReferences.size)
+            assertEquals(0, cache.activeCachedBuffers.size)
+            assertEquals(0, cache.currentZoneComputationCount)
+        } finally {
+            retainedBuffers.forEach { it.release(2) }
+        }
+        check(retainedBuffers.all { it.refCnt() == 0 })
+    }
+
+    @Test
+    fun `force release retained buffers when threshold is reached`() {
+        val cache = ZonePartialEnclosedCacheBuffer(listOf(OldSchoolClientType.DESKTOP))
+
+        val threshold = ZonePartialEnclosedCacheBuffer.BUF_RETENTION_COUNT_BEFORE_RELEASE
+        val retainedBuffersSplit1 = (0..<threshold).map { Unpooled.buffer().retain() }
+        val retainedBuffersSplit2 = (0..<threshold).map { Unpooled.buffer().retain() }
+        val retainedBuffers = retainedBuffersSplit1 + retainedBuffersSplit2
+
+        try {
+            // Fill up the retained buffer reference collection.
+            for (buffer in retainedBuffersSplit1) {
+                cache.activeCachedBuffers += buffer
+                cache.currentZoneComputationCount++
+                cache.releaseBuffers()
+            }
+            assertEquals(threshold, cache.retainedBufferReferences.size)
+            assertEquals(retainedBuffersSplit1, cache.retainedBufferReferences.flatten())
+
+            // The second slice of buffers should overtake the initial retained buffers.
+            for (buffer in retainedBuffersSplit2) {
+                cache.activeCachedBuffers += buffer
+                cache.currentZoneComputationCount++
+                cache.releaseBuffers()
+            }
+            assertEquals(threshold, cache.retainedBufferReferences.size)
+            assertEquals(retainedBuffersSplit2, cache.retainedBufferReferences.flatten())
+
+            // The first slice of buffers should have been forced released via `releaseBuffers`
+            // with the `forceRelease` flag.
+            assertTrue(retainedBuffersSplit1.none { it.refCnt() != 0 })
+        } finally {
+            retainedBuffers.forEach { buffer ->
+                if (buffer.refCnt() > 0) {
+                    buffer.release(buffer.refCnt())
+                }
+            }
+        }
+        check(retainedBuffers.all { it.refCnt() == 0 })
     }
 
     private fun <T> ClientTypeMap<T>.toClientList(): List<OldSchoolClientType> =

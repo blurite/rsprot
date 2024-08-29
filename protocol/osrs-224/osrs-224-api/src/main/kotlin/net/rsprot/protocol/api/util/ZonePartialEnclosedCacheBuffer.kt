@@ -133,7 +133,7 @@ public class ZonePartialEnclosedCacheBuffer(
 
     internal companion object {
         private const val ZONE_COUNT_BEFORE_LEAK_WARNING: Int = 25_000
-        private const val BUF_RETENTION_COUNT_BEFORE_RELEASE: Int = 100
+        internal const val BUF_RETENTION_COUNT_BEFORE_RELEASE: Int = 100
 
         private val supportedEncoders = createEncoderMap()
 
