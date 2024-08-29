@@ -195,11 +195,6 @@ so do we. On the northern and eastern border, two tiles get cut off -
 this is because the client doesn't properly render entities there, even though
 map renders fine.
 
-#### End of Cycle
-After the above steps have been performed for all players, state must be reset:
-Call `service.postUpdate()` - this should be called once for the
-entire game, not per-player or per-npc basis.
-
 ### NPCs
 For each NPC that spawns into the world, an avatar must be allocated.
 This can be done via:
