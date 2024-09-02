@@ -14,6 +14,8 @@ public class MessageDecoderRepository<out P : ClientProt> internal constructor(
         decoders[opcode]
             ?: throw IllegalArgumentException("Opcode $opcode is not registered.")
 
+    public fun getDecoderOrNull(opcode: Int): MessageDecoder<*>? = decoders[opcode]
+
     public fun getMessageClass(decoderClazz: Class<out MessageDecoder<IncomingMessage>>): Class<out IncomingMessage> =
         requireNotNull(decoderToMessageClassMap[decoderClazz]) {
             "Message class does not exist for $decoderClazz"

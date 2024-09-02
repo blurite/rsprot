@@ -28,16 +28,31 @@ public abstract class IncomingMessageDecoder : ByteToMessageDecoder() {
     protected abstract val decoders: MessageDecoderRepository<ClientProt>
     protected abstract val streamCipher: StreamCipher
 
-    private enum class State {
+    protected enum class State {
         READ_OPCODE,
         READ_LENGTH,
         READ_PAYLOAD,
     }
 
-    private var state: State = State.READ_OPCODE
+    protected var state: State = State.READ_OPCODE
     protected lateinit var decoder: MessageDecoder<*>
     protected var opcode: Int = -1
     protected var length: Int = 0
+
+    protected open fun readOpcode(
+        ctx: ChannelHandlerContext,
+        input: ByteBuf,
+    ) {
+        this.opcode = (input.g1() - streamCipher.nextInt()) and 0xFF
+        this.decoder = decoders.getDecoder(opcode)
+        this.length = this.decoder.prot.size
+        state =
+            if (this.length >= 0) {
+                State.READ_PAYLOAD
+            } else {
+                State.READ_LENGTH
+            }
+    }
 
     override fun decode(
         ctx: ChannelHandlerContext,
@@ -48,15 +63,7 @@ public abstract class IncomingMessageDecoder : ByteToMessageDecoder() {
             if (!input.isReadable) {
                 return
             }
-            this.opcode = (input.g1() - streamCipher.nextInt()) and 0xFF
-            this.decoder = decoders.getDecoder(opcode)
-            this.length = this.decoder.prot.size
-            state =
-                if (this.length >= 0) {
-                    State.READ_PAYLOAD
-                } else {
-                    State.READ_LENGTH
-                }
+            readOpcode(ctx, input)
         }
 
         if (state == State.READ_LENGTH) {
