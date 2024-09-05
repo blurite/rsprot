@@ -19,8 +19,8 @@ public class SoundAreaEncoder : ZoneProtEncoder<SoundArea> {
         buffer.p2Alt1(message.id)
         buffer.p1Alt3(message.coordInZonePacked)
         buffer.p1Alt3(message.loops)
-        buffer.p1Alt1(message.radius)
+        buffer.p1Alt1(message.range)
         buffer.p1Alt1(message.delay)
-        buffer.p1Alt1(message.size)
+        buffer.p1Alt1(message.dropOffRange)
     }
 }
