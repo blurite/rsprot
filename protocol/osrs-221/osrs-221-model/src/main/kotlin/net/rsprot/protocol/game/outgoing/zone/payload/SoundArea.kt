@@ -8,7 +8,7 @@ import net.rsprot.protocol.message.ZoneProt
 
 /**
  * Sound area packed is sent to play a sound effect at a specific coord.
- * Any players within [radius] tiles of the destination coord will
+ * Any players within [range] tiles of the destination coord will
  * hear this sound effect played, if they have sound effects enabled.
  * The volume will change according to the player's distance to the
  * origin coord of the sound effect itself.
@@ -21,11 +21,11 @@ import net.rsprot.protocol.message.ZoneProt
  * sound effect starts playing
  * @property loops how many loops the sound effect should do.
  * If the [loops] property is 0, the sound effect will not play.
- * @property radius the radius from the originating coord how far the sound
+ * @property range the radius from the originating coord how far the sound
  * effect can be heard. Note that the client ignores the 4 higher bits of
  * this value, meaning the maximum radius is 31 tiles - anything above has
  * no effect.
- * @property size the size of the origin. In most cases, this should be
+ * @property dropOffRange the size of the origin. In most cases, this should be
  * a value of 1. However, if a larger value is provided, it means the
  * client will treat the south-western coord provided here as the
  * south-western corner of the 'box' that is made with this size in mind,
@@ -43,8 +43,8 @@ public class SoundArea private constructor(
     private val _id: UShort,
     private val _delay: UByte,
     private val _loops: UByte,
-    private val _radius: UByte,
-    private val _size: UByte,
+    private val _range: UByte,
+    private val _dropOffRange: UByte,
     private val coordInZone: CoordInZone,
 ) : ZoneProt {
     public constructor(
@@ -70,10 +70,10 @@ public class SoundArea private constructor(
         get() = _delay.toInt()
     public val loops: Int
         get() = _loops.toInt()
-    public val radius: Int
-        get() = _radius.toInt()
-    public val size: Int
-        get() = _size.toInt()
+    public val range: Int
+        get() = _range.toInt()
+    public val dropOffRange: Int
+        get() = _dropOffRange.toInt()
     public val xInZone: Int
         get() = coordInZone.xInZone
     public val zInZone: Int
@@ -94,8 +94,8 @@ public class SoundArea private constructor(
         if (_id != other._id) return false
         if (_delay != other._delay) return false
         if (_loops != other._loops) return false
-        if (_radius != other._radius) return false
-        if (_size != other._size) return false
+        if (_range != other._range) return false
+        if (_dropOffRange != other._dropOffRange) return false
         if (coordInZone != other.coordInZone) return false
 
         return true
@@ -105,8 +105,8 @@ public class SoundArea private constructor(
         var result = _id.hashCode()
         result = 31 * result + _delay.hashCode()
         result = 31 * result + _loops.hashCode()
-        result = 31 * result + _radius.hashCode()
-        result = 31 * result + _size.hashCode()
+        result = 31 * result + _range.hashCode()
+        result = 31 * result + _dropOffRange.hashCode()
         result = 31 * result + coordInZone.hashCode()
         return result
     }
@@ -116,8 +116,8 @@ public class SoundArea private constructor(
             "id=$id, " +
             "delay=$delay, " +
             "loops=$loops, " +
-            "radius=$radius, " +
-            "size=$size, " +
+            "range=$range, " +
+            "dropOffRange=$dropOffRange, " +
             "xInZone=$xInZone, " +
             "zInZone=$zInZone" +
             ")"
