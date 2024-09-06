@@ -155,7 +155,10 @@ public class ZonePartialEnclosedCacheBuffer(
             return ClientTypeMap.of(OldSchoolClientType.COUNT, list)
         }
 
-        private fun releaseBuffers(buffers: LinkedList<ByteBuf>, forceRelease: Boolean) {
+        private fun releaseBuffers(
+            buffers: LinkedList<ByteBuf>,
+            forceRelease: Boolean,
+        ) {
             if (buffers.isEmpty()) {
                 return
             }

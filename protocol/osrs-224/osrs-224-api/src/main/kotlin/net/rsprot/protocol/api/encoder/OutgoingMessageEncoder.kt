@@ -88,7 +88,8 @@ public abstract class OutgoingMessageEncoder : MessageToByteEncoder<OutgoingMess
                 Prot.VAR_SHORT -> {
                     if (validate) {
                         check(length in 0..MAX_PAYLOAD_SIZE) {
-                            "Server prot $prot length out of bounds; expected 0..40_000, received $length; message: $msg"
+                            "Server prot $prot length out of bounds; " +
+                                "expected 0..40_000, received $length; message: $msg"
                         }
                     }
                     out.p2(length)
