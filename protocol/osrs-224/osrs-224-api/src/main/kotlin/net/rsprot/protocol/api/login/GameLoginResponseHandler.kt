@@ -50,7 +50,9 @@ public class GameLoginResponseHandler<R>(
                 "Unsupported client type received from channel " +
                     "'${ctx.channel()}': $oldSchoolClientType, login block: $loginBlock"
             }
-            ctx.writeAndFlush(LoginResponse.InvalidLoginPacket)
+            ctx
+                .writeAndFlush(LoginResponse.InvalidLoginPacket)
+                .addListener(ChannelFutureListener.CLOSE)
             return null
         }
         val address = ctx.inetAddress()
