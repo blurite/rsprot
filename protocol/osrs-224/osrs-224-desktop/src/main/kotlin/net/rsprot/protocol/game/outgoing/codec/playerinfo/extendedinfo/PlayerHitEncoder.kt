@@ -88,13 +88,12 @@ public class PlayerHitEncoder : OnDemandExtendedInfoEncoder<Hit> {
             buffer.pSmart1or2(type)
             val endTime = headBar.endTime.toInt()
             buffer.pSmart1or2(endTime)
-            if (endTime == 0x7FFF) {
-                continue
-            }
-            buffer.pSmart1or2(headBar.startTime.toInt())
-            buffer.p1Alt2(headBar.startFill.toInt())
-            if (endTime > 0) {
-                buffer.p1Alt2(headBar.endFill.toInt())
+            if (endTime != 0x7FFF) {
+                buffer.pSmart1or2(headBar.startTime.toInt())
+                buffer.p1Alt2(headBar.startFill.toInt())
+                if (endTime > 0) {
+                    buffer.p1Alt2(headBar.endFill.toInt())
+                }
             }
             // Exit out of the loop if there are more than 255 head bars,
             // as that's the highest count we can write
