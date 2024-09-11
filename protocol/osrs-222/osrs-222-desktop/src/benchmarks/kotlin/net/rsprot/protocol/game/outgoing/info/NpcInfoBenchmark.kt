@@ -1,5 +1,3 @@
-@file:Suppress("OPT_IN_USAGE")
-
 package net.rsprot.protocol.game.outgoing.info
 
 import io.netty.buffer.PooledByteBufAllocator

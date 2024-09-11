@@ -31,7 +31,6 @@ class NpcInfoTest {
     private lateinit var localNpcInfo: NpcInfo
     private var localPlayerCoord = CoordGrid(0, 3207, 3207)
 
-    @OptIn(ExperimentalUnsignedTypes::class)
     @BeforeEach
     fun initialize() {
         val allocator = PooledByteBufAllocator.DEFAULT

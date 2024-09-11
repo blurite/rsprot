@@ -22,7 +22,6 @@ import org.junit.jupiter.api.Test
 import kotlin.random.Random
 import kotlin.test.assertEquals
 
-@Suppress("OPT_IN_USAGE")
 class NpcInfoTest {
     private lateinit var protocol: NpcInfoProtocol
     private lateinit var client: NpcInfoClient
@@ -32,7 +31,6 @@ class NpcInfoTest {
     private lateinit var localNpcInfo: NpcInfo
     private var localPlayerCoord = CoordGrid(0, 3207, 3207)
 
-    @OptIn(ExperimentalUnsignedTypes::class)
     @BeforeEach
     fun initialize() {
         val allocator = PooledByteBufAllocator.DEFAULT

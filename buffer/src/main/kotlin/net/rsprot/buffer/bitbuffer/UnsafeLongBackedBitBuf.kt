@@ -7,13 +7,9 @@ public class UnsafeLongBackedBitBuf {
     private var writerIndex: Int = 0
     private var readerIndex: Int = 0
 
-    private inline fun bitmask(pos: Int): Int {
-        return (1 shl pos) - 1
-    }
+    private inline fun bitmask(pos: Int): Int = (1 shl pos) - 1
 
-    private inline fun longBitmask(pos: Int): Long {
-        return (1L shl pos) - 1
-    }
+    private inline fun longBitmask(pos: Int): Long = (1L shl pos) - 1
 
     public fun pBits(
         count: Int,
@@ -45,42 +41,27 @@ public class UnsafeLongBackedBitBuf {
         val bitmask = longBitmask(count)
         val cur = this.value
         val bitpos = LONG_SIZE_BITS - (offset and MASK_BITS_PER_LONG)
-        val result = cur ushr (bitpos - count) and bitmask
-        return result
+        return cur ushr (bitpos - count) and bitmask
     }
 
-    public fun isReadable(): Boolean {
-        return readerIndex < writerIndex
-    }
+    public fun isReadable(): Boolean = readerIndex < writerIndex
 
-    public fun isReadable(count: Int): Boolean {
-        return (readerIndex + count) <= writerIndex
-    }
+    public fun isReadable(count: Int): Boolean = (readerIndex + count) <= writerIndex
 
-    public fun readableBits(): Int {
-        return writerIndex - readerIndex
-    }
+    public fun readableBits(): Int = writerIndex - readerIndex
 
-    public fun isWritable(): Boolean {
-        return writerIndex < Long.SIZE_BITS
-    }
+    public fun isWritable(): Boolean = writerIndex < Long.SIZE_BITS
 
-    public fun isWritable(len: Int): Boolean {
-        return (writerIndex + len) <= Long.SIZE_BITS
-    }
+    public fun isWritable(len: Int): Boolean = (writerIndex + len) <= Long.SIZE_BITS
 
-    public fun readerIndex(): Int {
-        return readerIndex
-    }
+    public fun readerIndex(): Int = readerIndex
 
     public fun readerIndex(index: Int): UnsafeLongBackedBitBuf {
         readerIndex = index
         return this
     }
 
-    public fun writerIndex(): Int {
-        return writerIndex
-    }
+    public fun writerIndex(): Int = writerIndex
 
     public fun writerIndex(index: Int): UnsafeLongBackedBitBuf {
         writerIndex = index

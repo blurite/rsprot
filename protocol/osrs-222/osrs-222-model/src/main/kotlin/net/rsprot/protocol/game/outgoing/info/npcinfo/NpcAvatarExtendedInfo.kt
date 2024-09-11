@@ -1187,6 +1187,12 @@ public class NpcAvatarExtendedInfo(
         }
     }
 
+    override fun toString(): String =
+        "NpcAvatarExtendedInfo(" +
+            "avatarIndex=$avatarIndex, " +
+            "flags=$flags" +
+            ")"
+
     public companion object {
         private val SIGNED_BYTE_RANGE: IntRange = Byte.MIN_VALUE.toInt()..Byte.MAX_VALUE.toInt()
         private val UNSIGNED_BYTE_RANGE: IntRange = UByte.MIN_VALUE.toInt()..UByte.MAX_VALUE.toInt()

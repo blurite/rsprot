@@ -31,6 +31,7 @@ public class NpcAvatarDetails internal constructor(
     public var spawnCycle: Int = 0,
     public var direction: Int = 0,
     public var inaccessible: Boolean = false,
+    public var allocateCycle: Int,
 ) {
     public constructor(
         index: Int,
@@ -40,12 +41,14 @@ public class NpcAvatarDetails internal constructor(
         z: Int,
         spawnCycle: Int = 0,
         direction: Int = 0,
+        allocateCycle: Int,
     ) : this(
         index,
         id,
         CoordGrid(level, x, z),
         spawnCycle = spawnCycle,
         direction = direction,
+        allocateCycle = allocateCycle,
     )
 
     /**
@@ -53,6 +56,11 @@ public class NpcAvatarDetails internal constructor(
      * coord, even if it is just one tile away.
      */
     public fun isJumping(): Boolean = movementType and TELEJUMP != 0
+
+    /**
+     * Whether the npc is teleporting, but not explicitly jumping.
+     */
+    public fun isTeleWithoutJump(): Boolean = movementType and TELE != 0
 
     /**
      * Whether the npc is teleporting. This means the npc will render as jumping
@@ -68,6 +76,21 @@ public class NpcAvatarDetails internal constructor(
     public fun updateDirection(direction: Int) {
         this.direction = direction
     }
+
+    override fun toString(): String =
+        "NpcAvatarDetails(" +
+            "index=$index, " +
+            "id=$id, " +
+            "currentCoord=$currentCoord, " +
+            "stepCount=$stepCount, " +
+            "firstStep=$firstStep, " +
+            "secondStep=$secondStep, " +
+            "movementType=$movementType, " +
+            "spawnCycle=$spawnCycle, " +
+            "direction=$direction, " +
+            "inaccessible=$inaccessible, " +
+            "allocateCycle=$allocateCycle" +
+            ")"
 
     public companion object {
         /**

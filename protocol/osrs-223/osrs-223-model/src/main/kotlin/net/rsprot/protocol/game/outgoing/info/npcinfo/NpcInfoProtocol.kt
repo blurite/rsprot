@@ -23,7 +23,6 @@ import java.util.concurrent.Callable
  * npc info computations.
  */
 @Suppress("DuplicatedCode")
-@OptIn(ExperimentalUnsignedTypes::class)
 public class NpcInfoProtocol(
     private val allocator: ByteBufAllocator,
     private val npcIndexSupplier: NpcIndexSupplier,
@@ -102,6 +101,7 @@ public class NpcInfoProtocol(
         prepareExtendedInfo()
         putExtendedInfo()
         postUpdate()
+        cycleCount++
     }
 
     /**
@@ -195,7 +195,6 @@ public class NpcInfoProtocol(
             val avatar = avatarRepository.getOrNull(i) ?: continue
             avatar.postUpdate()
         }
-        avatarRepository.transferAvatars()
     }
 
     /**
@@ -249,5 +248,21 @@ public class NpcInfoProtocol(
          */
         public const val PROTOCOL_CAPACITY: Int = 2048
         private val logger: InlineLogger = InlineLogger()
+
+        /**
+         * The number of NPC info update cycles that have occurred.
+         * We need to track this to avoid a nasty bug with servers de-allocating + re-allocating
+         * an avatar on the same cycle, in a small area. The effective bug is that another NPC takes
+         * ones' avatar, which leads to info protocol thinking nothing has changed (assuming the new npc
+         * is still within range of the old one, enough to be in high resolution). The problem stems
+         * from the fact that during the re-allocating, the observer count is reset to zero.
+         * Due to this, certain optimizations are performed, such as not calculating the high resolution
+         * movement buffers, which will be necessary since another has taken the avatar over.
+         *
+         * We solve this by forcibly removing a NPC from high resolution view if the avatar was
+         * allocated on current cycle. If the NPC is still within range, they will be re-added
+         * later on in the cycle via low resolution updates - but correctly this time around!
+         */
+        internal var cycleCount: Int = 0
     }
 }

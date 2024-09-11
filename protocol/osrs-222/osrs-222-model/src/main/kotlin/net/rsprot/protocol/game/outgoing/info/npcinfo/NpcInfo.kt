@@ -35,7 +35,7 @@ import kotlin.contracts.contract
  * As this is scrambled, a separate client-specific implementation is required.
  */
 @Suppress("ReplaceUntilWithRangeUntil")
-@ExperimentalUnsignedTypes
+@OptIn(ExperimentalUnsignedTypes::class)
 public class NpcInfo internal constructor(
     private val allocator: ByteBufAllocator,
     private val repository: NpcAvatarRepository,
@@ -361,7 +361,10 @@ public class NpcInfo internal constructor(
             if (avatar.extendedInfo.flags != 0) {
                 details.extendedInfoIndices[details.extendedInfoCount++] = npcIndex.toUShort()
             }
-            val movementBuffer = checkNotNull(avatar.highResMovementBuffer)
+            val movementBuffer =
+                checkNotNull(avatar.highResMovementBuffer) {
+                    "High resolution movement buffer is null for $avatar"
+                }
             buffer.pBits(movementBuffer)
         }
         return processedCount != details.highResolutionNpcIndexCount
@@ -385,7 +388,8 @@ public class NpcInfo internal constructor(
         }
         if (avatar == null ||
             avatar.details.inaccessible ||
-            avatar.details.isTeleporting()
+            avatar.details.isTeleporting() ||
+            avatar.details.allocateCycle == NpcInfoProtocol.cycleCount
         ) {
             return true
         }
@@ -485,6 +489,7 @@ public class NpcInfo internal constructor(
                 extendedInfo,
                 details.localPlayerCurrentCoord,
                 largeDistance,
+                NpcInfoProtocol.cycleCount,
             )
         }
     }

@@ -9,7 +9,6 @@ import java.lang.ref.SoftReference
  * that are thousands in length, it is preferred to pool and re-use these whenever possible.
  * @property queue the soft reference queue holding these objects.
  */
-@OptIn(ExperimentalUnsignedTypes::class)
 internal class NpcInfoWorldDetailsStorage {
     private val queue: ReferenceQueue<NpcInfoWorldDetails> = ReferenceQueue<NpcInfoWorldDetails>()
 

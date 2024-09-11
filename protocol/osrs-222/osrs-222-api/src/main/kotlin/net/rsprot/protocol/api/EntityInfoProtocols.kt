@@ -34,7 +34,6 @@ import net.rsprot.protocol.game.outgoing.info.worldentityinfo.WorldEntityProtoco
  * @property npcInfoProtocol the main NPC info protocol responsible for computing the npc info packet
  * for all the players in the game.
  */
-@Suppress("OPT_IN_USAGE")
 public class EntityInfoProtocols
     private constructor(
         public val playerAvatarFactory: PlayerAvatarFactory,

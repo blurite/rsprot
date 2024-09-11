@@ -42,14 +42,6 @@ internal class NpcAvatarRepository(
     private val queue: ReferenceQueue<NpcAvatar> = ReferenceQueue<NpcAvatar>()
 
     /**
-     * A temporary queue for any avatars that were just released. We reserve the avatars
-     * for one game cycle to ensure that the same avatar doesn't get released & reused
-     * within the same game cycle, as that could have some side effects for anyone
-     * that was already observing that avatar and continues to observe the new one.
-     */
-    private val releasedAvatarQueue: ArrayDeque<NpcAvatar> = ArrayDeque()
-
-    /**
      * Gets a npc avatar at the provided index, or null if it doesn't exist yet.
      * @param idx the index of the avatar to obtain
      * @return the npc avatar, or null if it doesn't exist
@@ -105,6 +97,7 @@ internal class NpcAvatarRepository(
             details.currentCoord = CoordGrid(level, x, z)
             details.spawnCycle = spawnCycle
             details.direction = direction
+            details.allocateCycle = NpcInfoProtocol.cycleCount
             elements[index] = existing
             return existing
         }
@@ -125,6 +118,7 @@ internal class NpcAvatarRepository(
                 z,
                 spawnCycle,
                 direction,
+                NpcInfoProtocol.cycleCount,
                 extendedInfo,
             )
         elements[index] = avatar
@@ -138,21 +132,8 @@ internal class NpcAvatarRepository(
     fun release(avatar: NpcAvatar) {
         this.elements[avatar.details.index] = null
         avatar.extendedInfo.reset()
-        releasedAvatarQueue += avatar
-    }
-
-    /**
-     * Transfers the recently released avatars over to the pool so they can be re-used.
-     */
-    internal fun transferAvatars() {
-        if (releasedAvatarQueue.isEmpty()) {
-            return
-        }
-        while (releasedAvatarQueue.isNotEmpty()) {
-            val avatar = releasedAvatarQueue.removeFirst()
-            val reference = SoftReference(avatar, queue)
-            reference.enqueue()
-        }
+        val reference = SoftReference(avatar, queue)
+        reference.enqueue()
     }
 
     /**

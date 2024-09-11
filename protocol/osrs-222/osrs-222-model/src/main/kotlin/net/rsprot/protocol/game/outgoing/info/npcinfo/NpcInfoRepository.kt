@@ -15,7 +15,6 @@ import net.rsprot.protocol.game.outgoing.info.InfoRepository
  * @param allocator the function that yields new elements on-demand, if none
  * are available within the reference queue.
  */
-@ExperimentalUnsignedTypes
 internal class NpcInfoRepository(
     allocator: (index: Int, oldSchoolClientType: OldSchoolClientType) -> NpcInfo,
 ) : InfoRepository<NpcInfo>(allocator) {

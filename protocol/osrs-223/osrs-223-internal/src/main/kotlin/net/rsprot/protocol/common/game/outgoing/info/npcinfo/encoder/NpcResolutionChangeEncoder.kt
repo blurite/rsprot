@@ -14,5 +14,6 @@ public interface NpcResolutionChangeEncoder {
         extendedInfo: Boolean,
         localPlayerCoordGrid: CoordGrid,
         largeDistance: Boolean,
+        cycleCount: Int,
     )
 }

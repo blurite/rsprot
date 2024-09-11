@@ -42,6 +42,7 @@ public class NpcAvatar internal constructor(
     z: Int,
     spawnCycle: Int = 0,
     direction: Int = 0,
+    allocateCycle: Int,
     /**
      * Extended info repository, commonly referred to as "masks", will track everything relevant
      * inside itself. Setting properties such as a spotanim would be done through this.
@@ -63,6 +64,7 @@ public class NpcAvatar internal constructor(
             z,
             spawnCycle,
             direction,
+            allocateCycle,
         )
 
     /**
@@ -102,6 +104,15 @@ public class NpcAvatar internal constructor(
      * This function must be called when a player logs off for each NPC they were observing.
      */
     internal fun removeObserver() {
+        // If the allocation cycle is the same as current cycle count,
+        // a "hotswap" has occurred.
+        // This means that a npc was deallocated and another allocated the same index
+        // in the same cycle.
+        // Due to the new one being allocated, the observer count is already reset
+        // to zero, and we cannot decrement the observer count further - it would go negative.
+        if (details.allocateCycle == NpcInfoProtocol.cycleCount) {
+            return
+        }
         observerCount.decrementAndGet()
     }
 
@@ -389,4 +400,12 @@ public class NpcAvatar internal constructor(
         details.movementType = 0
         extendedInfo.postUpdate()
     }
+
+    override fun toString(): String =
+        "NpcAvatar(" +
+            "extendedInfo=$extendedInfo, " +
+            "details=$details, " +
+            "observerCount=$observerCount, " +
+            "highResMovementBuffer=$highResMovementBuffer" +
+            ")"
 }

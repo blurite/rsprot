@@ -15,13 +15,16 @@ public class DesktopLowResolutionChangeEncoder : NpcResolutionChangeEncoder {
         extendedInfo: Boolean,
         localPlayerCoordGrid: CoordGrid,
         largeDistance: Boolean,
+        cycleCount: Int,
     ) {
         val numOfBitsUsed = if (largeDistance) 8 else 5
         val maximumDistanceTransmittableByBits = if (largeDistance) 0xFF else 0x1F
         val deltaX = details.currentCoord.x - localPlayerCoordGrid.x
         val deltaZ = details.currentCoord.z - localPlayerCoordGrid.z
         bitBuffer.pBits(16, details.index)
-        bitBuffer.pBits(1, if (details.isJumping()) 1 else 0)
+        // New NPCs should always be marked as "jumping" unless they explicitly only teleported without a jump
+        val noJump = details.isTeleWithoutJump() && details.allocateCycle != cycleCount
+        bitBuffer.pBits(1, if (noJump) 0 else 1)
         if (details.spawnCycle != 0) {
             bitBuffer.pBits(1, 1)
             bitBuffer.pBits(32, details.spawnCycle)
