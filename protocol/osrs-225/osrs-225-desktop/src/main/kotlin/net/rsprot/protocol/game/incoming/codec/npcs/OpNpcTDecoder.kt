@@ -11,11 +11,11 @@ public class OpNpcTDecoder : MessageDecoder<OpNpcT> {
     override val prot: ClientProt = GameClientProt.OPNPCT
 
     override fun decode(buffer: JagByteBuf): OpNpcT {
-        val index = buffer.g2()
+        val index = buffer.g2Alt1()
         val selectedObj = buffer.g2Alt3()
-        val controlKey = buffer.g1Alt3() == 1
         val selectedCombinedId = buffer.gCombinedIdAlt1()
-        val selectedSub = buffer.g2Alt3()
+        val selectedSub = buffer.g2Alt1()
+        val controlKey = buffer.g1Alt2() == 1
         return OpNpcT(
             index,
             controlKey,

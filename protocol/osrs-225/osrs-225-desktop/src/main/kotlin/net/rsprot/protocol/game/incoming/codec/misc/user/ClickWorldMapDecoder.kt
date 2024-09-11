@@ -11,7 +11,7 @@ public class ClickWorldMapDecoder : MessageDecoder<ClickWorldMap> {
     override val prot: ClientProt = GameClientProt.CLICKWORLDMAP
 
     override fun decode(buffer: JagByteBuf): ClickWorldMap {
-        val packed = buffer.g4Alt3()
+        val packed = buffer.g4()
         return ClickWorldMap(CoordGrid(packed))
     }
 }
