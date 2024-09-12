@@ -10,7 +10,7 @@ public class SendPingReplyDecoder : MessageDecoder<SendPingReply> {
     override val prot: ClientProt = GameClientProt.SEND_PING_REPLY
 
     override fun decode(buffer: JagByteBuf): SendPingReply {
-        val fps = buffer.g2Alt2()
+        val fps = buffer.g1Alt2()
         val value1 = buffer.g4Alt2()
         val value2 = buffer.g4()
         val gcPercentTime = buffer.g1Alt2()
