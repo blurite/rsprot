@@ -59,6 +59,7 @@ public class WorldEntityAvatar(
         this.highResolutionBuffer = buffer
         val dx = currentCoord.x - lastCoord.x
         val dz = currentCoord.z - lastCoord.z
+        buffer.p1(currentCoord.level)
         buffer.p1(dx)
         buffer.p1(dz)
         buffer.p2(angle)
