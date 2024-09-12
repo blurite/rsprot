@@ -13,7 +13,7 @@ public class OpLoc1Decoder : MessageDecoder<OpLoc> {
         val x = buffer.g2Alt2()
         val id = buffer.g2()
         val z = buffer.g2()
-        val controlKey = buffer.g2Alt3() == 1
+        val controlKey = buffer.g1Alt3() == 1
         return OpLoc(
             id,
             x,
