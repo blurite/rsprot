@@ -97,8 +97,21 @@ public class PlayerAvatarExtendedInfoDesktopWriter :
             buffer.p1(clientFlag shr 16)
         }
 
+        if (clientFlag and MOVE_SPEED != 0) {
+            pCachedData(buffer, blocks.moveSpeed)
+        }
+        // Name extras
         if (clientFlag and SPOTANIM != 0) {
             pCachedData(buffer, blocks.spotAnims)
+        }
+        if (clientFlag and TEMP_MOVE_SPEED != 0) {
+            pCachedData(buffer, blocks.temporaryMoveSpeed)
+        }
+        if (clientFlag and APPEARANCE != 0) {
+            pCachedData(buffer, blocks.appearance)
+        }
+        if (clientFlag and HITS != 0) {
+            pOnDemandData(buffer, localIndex, blocks.hit, observerIndex)
         }
         if (clientFlag and CHAT != 0) {
             pCachedData(buffer, blocks.chat)
@@ -106,56 +119,43 @@ public class PlayerAvatarExtendedInfoDesktopWriter :
         if (clientFlag and EXACT_MOVE != 0) {
             pCachedData(buffer, blocks.exactMove)
         }
-        if (clientFlag and MOVE_SPEED != 0) {
-            pCachedData(buffer, blocks.moveSpeed)
-        }
-        // Old chat
-        // Name extras
-        if (clientFlag and TINTING != 0) {
-            pOnDemandData(buffer, localIndex, blocks.tinting, observerIndex)
-        }
         if (clientFlag and FACE_PATHINGENTITY != 0) {
             pCachedData(buffer, blocks.facePathingEntity)
-        }
-        if (clientFlag and APPEARANCE != 0) {
-            pCachedData(buffer, blocks.appearance)
-        }
-        if (clientFlag and FACE_ANGLE != 0) {
-            pCachedData(buffer, blocks.faceAngle)
         }
         if (clientFlag and SEQUENCE != 0) {
             pCachedData(buffer, blocks.sequence)
         }
-        if (clientFlag and TEMP_MOVE_SPEED != 0) {
-            pCachedData(buffer, blocks.temporaryMoveSpeed)
-        }
-        if (clientFlag and HITS != 0) {
-            pOnDemandData(buffer, localIndex, blocks.hit, observerIndex)
-        }
         if (clientFlag and SAY != 0) {
             pCachedData(buffer, blocks.say)
+        }
+        // Old chat
+        if (clientFlag and FACE_ANGLE != 0) {
+            pCachedData(buffer, blocks.faceAngle)
+        }
+        if (clientFlag and TINTING != 0) {
+            pOnDemandData(buffer, localIndex, blocks.tinting, observerIndex)
         }
     }
 
     @Suppress("unused")
     private companion object {
-        private const val FACE_ANGLE = 0x1
-        private const val CHAT_OLD = 0x2
-        private const val APPEARANCE = 0x4
-        private const val SAY = 0x8
-        private const val EXTENDED_SHORT = 0x10
-        private const val HITS = 0x20
+        private const val SAY = 0x1
+        private const val FACE_ANGLE = 0x2
+        private const val CHAT_OLD = 0x4
+        private const val EXTENDED_SHORT = 0x8
+        private const val SEQUENCE = 0x10
+        private const val APPEARANCE = 0x20
         private const val FACE_PATHINGENTITY = 0x40
-        private const val SEQUENCE = 0x80
-        private const val TINTING = 0x100
-        private const val TEMP_MOVE_SPEED = 0x200
-        private const val CHAT = 0x800
-        private const val EXTENDED_MEDIUM = 0x1000
-        private const val MOVE_SPEED = 0x2000
-        private const val EXACT_MOVE = 0x8000
+        private const val HITS = 0x80
+        private const val MOVE_SPEED = 0x100
+        private const val TINTING = 0x200
+        private const val EXTENDED_MEDIUM = 0x400
+        private const val TEMP_MOVE_SPEED = 0x800
+        private const val CHAT = 0x2000
+        private const val EXACT_MOVE = 0x4000
         private const val SPOTANIM = 0x10000
 
         // Name extras are part of appearance nowadays, and thus will not be used on their own
-        private const val NAME_EXTRAS = 0x400
+        private const val NAME_EXTRAS = 0x8000
     }
 }
