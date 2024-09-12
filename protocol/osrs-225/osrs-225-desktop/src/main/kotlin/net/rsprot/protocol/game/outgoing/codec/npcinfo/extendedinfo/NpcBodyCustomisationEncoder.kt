@@ -46,7 +46,7 @@ public class NpcBodyCustomisationEncoder : PrecomputedExtendedInfoEncoder<BodyCu
         }
         buffer.pFlag(flag)
         if (flag and FLAG_REMODEL != 0) {
-            buffer.p1Alt2(customisation.models.size)
+            buffer.p1Alt1(customisation.models.size)
             for (model in customisation.models) {
                 buffer.p2Alt1(model)
             }
@@ -62,7 +62,7 @@ public class NpcBodyCustomisationEncoder : PrecomputedExtendedInfoEncoder<BodyCu
             }
         }
         if (flag and FLAG_MIRROR_LOCAL_PLAYER != 0) {
-            buffer.p1Alt2(if (customisation.mirror == true) 1 else 0)
+            buffer.p1Alt3(if (customisation.mirror == true) 1 else 0)
         }
         return buffer
     }
