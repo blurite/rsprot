@@ -33,12 +33,6 @@ public class PlayerInfoProtocol(
     private val avatarFactory: PlayerAvatarFactory,
 ) {
     /**
-     * A storage object for player info world details, allowing the re-use of these
-     * relatively expensive objects.
-     */
-    internal val detailsStorage: PlayerInfoWorldDetailsStorage = PlayerInfoWorldDetailsStorage()
-
-    /**
      * The repository responsible for keeping track of all the players' low resolution
      * position within the world.
      */
@@ -140,7 +134,6 @@ public class PlayerInfoProtocol(
             if (info == null) {
                 lowResolutionPositionRepository.markUnused(i)
             } else {
-                info.checkAppearanceInvalidation()
                 lowResolutionPositionRepository.update(i, info.avatar.currentCoord)
             }
         }
@@ -164,12 +157,7 @@ public class PlayerInfoProtocol(
      */
     private fun putBitcodes() {
         execute {
-            for (details in this.details) {
-                if (details == null) {
-                    continue
-                }
-                pBitcodes(details)
-            }
+            pBitcodes()
         }
     }
 
@@ -197,12 +185,7 @@ public class PlayerInfoProtocol(
      */
     private fun putExtendedInfo() {
         execute {
-            for (details in this.details) {
-                if (details == null) {
-                    continue
-                }
-                putExtendedInfo(details)
-            }
+            putExtendedInfo()
         }
     }
 
@@ -212,13 +195,7 @@ public class PlayerInfoProtocol(
      */
     private fun postUpdate() {
         execute {
-            for (details in this.details) {
-                if (details == null) {
-                    continue
-                }
-                postUpdate(details)
-            }
-            cycleComplete()
+            postUpdate()
         }
         lowResolutionPositionRepository.postUpdate()
     }

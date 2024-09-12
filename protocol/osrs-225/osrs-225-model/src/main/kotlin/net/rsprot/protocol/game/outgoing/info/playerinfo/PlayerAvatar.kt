@@ -59,6 +59,13 @@ public class PlayerAvatar internal constructor(
         private set
 
     /**
+     * The current world that the player is on, by default the root world.
+     * When a player moves onto a world entity (a ship), this value must be updated.
+     */
+    public var worldId: Int = PlayerInfo.ROOT_WORLD
+        private set
+
+    /**
      * The last known coordinate of this player. This property will be used in conjunction
      * with [currentCoord] to determine the coordinate delta, which is then transmitted
      * to the clients.
@@ -95,6 +102,7 @@ public class PlayerAvatar internal constructor(
         resizeCounter = DEFAULT_RESIZE_INTERVAL
         currentCoord = CoordGrid.INVALID
         lastCoord = CoordGrid.INVALID
+        worldId = PlayerInfo.ROOT_WORLD
     }
 
     /**
@@ -112,6 +120,18 @@ public class PlayerAvatar internal constructor(
         z: Int,
     ) {
         this.currentCoord = CoordGrid(level, x, z)
+    }
+
+    /**
+     * Updates the world id for a given player. Whether a player renders to you is determined
+     * based on the player's distance to that world's render coord, as defined by [PlayerInfo].
+     * @param worldId the new world that the player is on.
+     */
+    public fun updateWorld(worldId: Int) {
+        require(worldId == PlayerInfo.ROOT_WORLD || worldId in 0..<PlayerInfoProtocol.PROTOCOL_CAPACITY) {
+            "World id must be PlayerInfo.ROOT_WORLD, or in range of 0..<2048."
+        }
+        this.worldId = worldId
     }
 
     /**

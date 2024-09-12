@@ -42,7 +42,7 @@ import kotlin.math.abs
  * @param oldSchoolClientType the client on which the player is logging into. This is utilized
  * to determine what encoders to use for extended info blocks.
  */
-@Suppress("DuplicatedCode", "ReplaceUntilWithRangeUntil")
+@Suppress("DuplicatedCode", "ReplaceUntilWithRangeUntil", "MemberVisibilityCanBePrivate")
 public class PlayerInfo internal constructor(
     private val protocol: PlayerInfoProtocol,
     internal var localIndex: Int,
@@ -50,6 +50,64 @@ public class PlayerInfo internal constructor(
     private var oldSchoolClientType: OldSchoolClientType,
     public val avatar: PlayerAvatar,
 ) : ReferencePooledObject {
+    /**
+     * Low resolution indices are tracked together with [lowResolutionCount].
+     * Whenever a player enters the low resolution view, their index
+     * is added into this [lowResolutionIndices] array, and the [lowResolutionCount]
+     * is incremented by one.
+     * At the end of each cycle, the [lowResolutionIndices] are rebuilt to sort the indices.
+     */
+    private val lowResolutionIndices: ShortArray = ShortArray(PROTOCOL_CAPACITY)
+
+    /**
+     * The number of players in low resolution according to the protocol.
+     */
+    private var lowResolutionCount: Int = 0
+
+    /**
+     * The tracked high resolution players by their indices.
+     * If a player enters our high resolution, the bit at their index is set to true.
+     * We do not need to use references to players as we can then refer to the [PlayerInfoRepository]
+     * to find the actual [PlayerInfo] implementation.
+     */
+    private val highResolutionPlayers: LongArray = LongArray(PROTOCOL_CAPACITY ushr 6)
+
+    /**
+     * High resolution indices are tracked together with [highResolutionCount].
+     * Whenever an external player enters the high resolution view, their index
+     * is added into this [highResolutionIndices] array, and the [highResolutionCount]
+     * is incremented by one.
+     * At the end of each cycle, the [highResolutionIndices] are rebuilt to sort the indices.
+     */
+    private val highResolutionIndices: ShortArray = ShortArray(PROTOCOL_CAPACITY)
+
+    /**
+     * The number of players in high resolution according to the protocol.
+     */
+    private var highResolutionCount: Int = 0
+
+    /**
+     * The extended info indices contain pointers to all the players for whom we need to
+     * write an extended info block. We do this rather than directly writing them as this
+     * improves CPU cache locality and allows us to batch extended info blocks together.
+     */
+    private val extendedInfoIndices: ShortArray = ShortArray(PROTOCOL_CAPACITY)
+
+    /**
+     * The number of players for whom we need to write extended info blocks this cycle.
+     */
+    private var extendedInfoCount: Int = 0
+
+    /**
+     * The flags indicating the status of the players in the previous and current cycles.
+     * This is used to categorize players who are 'stationary', which implies they did not
+     * move, nor did they have any extended info blocks written for them. By batching
+     * players up this way, the protocol is able to skip a larger number of players
+     * with each skip block, as players are far more likely to be in the same state
+     * as they were in the last cycle.
+     */
+    private val stationary = ByteArray(PROTOCOL_CAPACITY)
+
     /**
      * The observer info flags are used for us to track extended info blocks which weren't necessarily
      * flagged on the target player. This can happen during the transitioning from low resolution
@@ -79,11 +137,29 @@ public class PlayerInfo internal constructor(
     private var lowResMovementBuffer: UnsafeLongBackedBitBuf? = null
 
     /**
+     * The buffer into which all the information is written in this cycle.
+     * It should be noted that this buffer is constantly changing, as we reallocate
+     * a new buffer instance through the [allocator] each cycle. This is to ensure that
+     * we do not start overwriting a buffer before it has been fully written into the pipeline.
+     * Thus, a pooled [allocator] implementation should be preferred to avoid expensive re-allocations.
+     */
+    private var buffer: ByteBuf? = null
+
+    /**
      * The exception that was caught during the processing of this player's playerinfo packet.
      * This exception will be propagated further during the [toPacket] function call,
      * allowing the server to handle it properly at a per-player basis.
      */
     internal var exception: Exception? = null
+
+    /**
+     * Whether the buffer allocated by this player info object has been built
+     * into a packet message. If this returns false, but player info was in fact built,
+     * we have an allocated buffer that needs releasing. If the NPC info itself
+     * is released but isn't built into packet, we make sure to release it, to avoid
+     * any memory leaks.
+     */
+    private var builtIntoPacket: Boolean = false
 
     /**
      * An array of world details, containing all the player info properties specific to a single world.
@@ -92,44 +168,11 @@ public class PlayerInfo internal constructor(
     internal val details: Array<PlayerInfoWorldDetails?> = arrayOfNulls(PROTOCOL_CAPACITY + 1)
 
     /**
-     * The currently active world id in which the local player resides.
-     * We must know this as the local player is placed in every world that is rendered to them,
-     * so implicitly, extended info blocks would be sent for every variant.
-     * This results in unwanted duplication. With this active world value, we can filter local player's
-     * extended info to only send for the world in which the player currently resides.
+     * Returns the backing buffer for this cycle.
+     * @throws IllegalStateException if the buffer has not been allocated yet.
      */
-    private var activeWorldId: Int = ROOT_WORLD
-
-    /**
-     * Whether to invalidate appearance cache.
-     * This will be true only if a new world is being created, as the client keeps track of it per
-     * world basis.
-     */
-    private var invalidateAppearanceCache: Boolean = false
-
-    /**
-     * Checks if appearance needs invalidation, and invalidates if so.
-     */
-    internal fun checkAppearanceInvalidation() {
-        if (!invalidateAppearanceCache) {
-            return
-        }
-        invalidateAppearanceCache = false
-        avatar.extendedInfo.invalidateAppearanceCache()
-    }
-
-    /**
-     * Sets an active world in which the player currently resides.
-     * @param worldId the world id in which the player resides. A value of -1 implies
-     * the root world, which is also the default. If the player moves onto one of the
-     * dynamic worlds, this value must be updated to reflect on it.
-     */
-    public fun setActiveWorld(worldId: Int) {
-        require(worldId == ROOT_WORLD || worldId in 0..<2048) {
-            "World id must be -1 or in range of 0..<2048"
-        }
-        this.activeWorldId = worldId
-    }
+    @Throws(IllegalStateException::class)
+    public fun backingBuffer(): ByteBuf = checkNotNull(buffer)
 
     /**
      * Updates the render coordinate for the provided world id.
@@ -185,8 +228,7 @@ public class PlayerInfo internal constructor(
         require(existing == null) {
             "World $worldId already allocated."
         }
-        details[worldId] = protocol.detailsStorage.poll(worldId)
-        this.invalidateAppearanceCache = true
+        details[worldId] = PlayerInfoWorldDetails(worldId)
     }
 
     /**
@@ -202,7 +244,6 @@ public class PlayerInfo internal constructor(
             "World $worldId does not exist."
         }
         details[worldId] = null
-        protocol.detailsStorage.push(existing)
     }
 
     /**
@@ -224,18 +265,18 @@ public class PlayerInfo internal constructor(
     }
 
     /**
-     * Returns the backing buffer for this cycle, for the specified [worldId].
-     * @throws IllegalStateException if the buffer has not been allocated yet.
+     * Gets the world details implementation of the specified [worldId], or null if it doesn't exist.
+     * The [ROOT_WORLD] will always be not-null.
      */
-    @Throws(IllegalStateException::class)
-    public fun backingBuffer(worldId: Int): ByteBuf = checkNotNull(getDetails(worldId).buffer)
-
-    /**
-     * Returns the backing buffer for this cycle, for the specified world details.
-     * @throws IllegalStateException if the buffer has not been allocated yet.
-     */
-    @Throws(IllegalStateException::class)
-    internal fun backingBuffer(details: PlayerInfoWorldDetails): ByteBuf = checkNotNull(details.buffer)
+    private fun getDetailsOrNull(worldId: Int): PlayerInfoWorldDetails? {
+        val details =
+            if (worldId == ROOT_WORLD) {
+                details[PROTOCOL_CAPACITY]
+            } else {
+                details.getOrNull(worldId)
+            }
+        return details
+    }
 
     /**
      * Turns the player info object into a wrapped packet.
@@ -245,8 +286,7 @@ public class PlayerInfo internal constructor(
      * @throws InfoProcessException if there was an exception during the computation of player info
      * for this specific playerinfo object,
      */
-    public fun toPacket(worldId: Int): PlayerInfoPacket {
-        val details = getDetails(worldId)
+    public fun toPacket(): PlayerInfoPacket {
         val exception = this.exception
         if (exception != null) {
             throw InfoProcessException(
@@ -254,8 +294,8 @@ public class PlayerInfo internal constructor(
                 exception,
             )
         }
-        details.builtIntoPacket = true
-        return PlayerInfoPacket(backingBuffer(details))
+        this.builtIntoPacket = true
+        return PlayerInfoPacket(backingBuffer())
     }
 
     /**
@@ -276,88 +316,80 @@ public class PlayerInfo internal constructor(
         this.avatar.updateCoord(level, x, z)
     }
 
-    /**
-     * Checks whether the player at [index] is currently among high resolution players.
-     * @param highResolutionPlayers a bitpacked long array containing boolean-type information.
-     * @param index the index of the player to check.
-     */
-    private fun isHighResolution(
-        highResolutionPlayers: LongArray,
-        index: Int,
-    ): Boolean {
+    private fun isHighResolution(index: Int): Boolean {
         val longIndex = index ushr 6
         val bit = 1L shl (index and 0x3F)
-        return highResolutionPlayers[longIndex] and bit != 0L
+        return this.highResolutionPlayers[longIndex] and bit != 0L
     }
 
-    /**
-     * Marks the player at index [index] as being in high resolution.
-     * @param highResolutionPlayers a bitpacked long array containing boolean-type information.
-     * @param index the index of the player to mark as high resolution.
-     */
-    private fun setHighResolution(
-        highResolutionPlayers: LongArray,
-        index: Int,
-    ) {
+    private fun setHighResolution(index: Int) {
         val longIndex = index ushr 6
         val bit = 1L shl (index and 0x3F)
-        val cur = highResolutionPlayers[longIndex]
-        highResolutionPlayers[longIndex] = cur or bit
+        val cur = this.highResolutionPlayers[longIndex]
+        this.highResolutionPlayers[longIndex] = cur or bit
     }
 
-    /**
-     * Marks the player at index [index] as being in low resolution.
-     * @param highResolutionPlayers a bitpacked long array containing boolean-type information.
-     * @param index the index of the player to mark as low resolution.
-     */
-    private fun unsetHighResolution(
-        highResolutionPlayers: LongArray,
-        index: Int,
-    ) {
+    private fun unsetHighResolution(index: Int) {
         val longIndex = index ushr 6
         val bit = 1L shl (index and 0x3F)
-        val cur = highResolutionPlayers[longIndex]
-        highResolutionPlayers[longIndex] = cur and bit.inv()
+        val cur = this.highResolutionPlayers[longIndex]
+        this.highResolutionPlayers[longIndex] = cur and bit.inv()
     }
 
     /**
      * Handles initializing absolute player positions.
      * @param byteBuf the buffer into which the information will be written.
      */
-    public fun handleAbsolutePlayerPositions(
-        worldId: Int,
-        byteBuf: ByteBuf,
-    ) {
+    public fun handleAbsolutePlayerPositions(byteBuf: ByteBuf) {
         check(avatar.currentCoord != CoordGrid.INVALID) {
             "Avatar position must be updated via playerinfo#updateCoord before sending RebuildLogin/ReconnectOk."
         }
-        val details = getDetails(worldId)
         byteBuf.toBitBuf().use { buffer ->
             buffer.pBits(30, avatar.currentCoord.packed)
-            setHighResolution(details.highResolutionPlayers, localIndex)
-            details.highResolutionIndices[details.highResolutionCount++] = localIndex.toShort()
+            setHighResolution(localIndex)
+            highResolutionIndices[highResolutionCount++] = localIndex.toShort()
             for (i in 1 until PROTOCOL_CAPACITY) {
                 if (i == localIndex) {
                     continue
                 }
                 val lowResolutionPosition = protocol.getLowResolutionPosition(i)
                 buffer.pBits(18, lowResolutionPosition.packed)
-                details.lowResolutionIndices[details.lowResolutionCount++] = i.toShort()
+                lowResolutionIndices[lowResolutionCount++] = i.toShort()
             }
         }
+        // Sync the coordinate delta here!
+        // Meaning if a player info is sent afterwards, it will not re-send the delta
+        // which often results in the coordinate being 2x'd at the client
+        avatar.postUpdate()
     }
 
     /**
-     * Resets any existing state and allocates a new clean root world.
-     * All other worlds are lost.
+     * Resets any existing state.
      * Cached state should be re-assigned from the server as a result of this.
      */
     public fun onReconnect() {
-        reset()
-        // Restore the root world by polling a new one
-        val details = protocol.detailsStorage.poll(ROOT_WORLD)
-        this.details[PROTOCOL_CAPACITY] = details
-        details.initialized = true
+        // If player info was constructed, but it was not built into a packet object
+        // it implies the packet is never being written to Netty, which means
+        // a memory leak is occurring - if that is the case, release the buffer here
+        if (!builtIntoPacket) {
+            val buffer = this.buffer
+            if (buffer != null && buffer.refCnt() > 0) {
+                buffer.release(buffer.refCnt())
+            }
+        }
+        this.buffer = null
+        highResMovementBuffer = null
+        lowResMovementBuffer = null
+
+        lowResolutionIndices.fill(0)
+        lowResolutionCount = 0
+        highResolutionIndices.fill(0)
+        highResolutionCount = 0
+        highResolutionPlayers.fill(0L)
+        extendedInfoCount = 0
+        extendedInfoIndices.fill(0)
+        stationary.fill(0)
+        observerExtendedInfoFlags.reset()
         avatar.postUpdate()
     }
 
@@ -381,7 +413,7 @@ public class PlayerInfo internal constructor(
 
     /**
      * Writes the extended info blocks of everyone who were marked
-     * during [pBitcodes] to the [PlayerInfoWorldDetails.buffer]. This will utilize fast native memory copying for any
+     * during [pBitcodes] to the [buffer]. This will utilize fast native memory copying for any
      * pre-computed extended info blocks. For any observer-dependent info blocks,
      * a new [ByteBuf] instance is allocated from the [allocator], which is then written
      * the information, followed by a fast native copy, which is further followed by releasing
@@ -390,10 +422,10 @@ public class PlayerInfo internal constructor(
      * This function is thread-safe relative to other players and can be computed for all players
      * concurrently.
      */
-    internal fun putExtendedInfo(details: PlayerInfoWorldDetails) {
-        val jagBuffer = backingBuffer(details).toJagByteBuf()
-        for (i in 0 until details.extendedInfoCount) {
-            val index = details.extendedInfoIndices[i].toInt()
+    internal fun putExtendedInfo() {
+        val jagBuffer = backingBuffer().toJagByteBuf()
+        for (i in 0 until extendedInfoCount) {
+            val index = extendedInfoIndices[i].toInt()
             val other = checkNotNull(protocol.getPlayerInfo(index))
             val observerFlag = observerExtendedInfoFlags.getFlag(index)
             other.avatar.extendedInfo.pExtendedInfo(
@@ -401,7 +433,7 @@ public class PlayerInfo internal constructor(
                 jagBuffer,
                 observerFlag,
                 avatar.extendedInfo,
-                details.extendedInfoCount - i,
+                extendedInfoCount - i,
             )
         }
     }
@@ -410,14 +442,14 @@ public class PlayerInfo internal constructor(
      * Writes to the actual buffers the prepared bitcodes and extended information.
      * This function will be thread-safe relative to other players and can be calculated concurrently for all players.
      */
-    internal fun pBitcodes(details: PlayerInfoWorldDetails) {
-        avatar.resize(details.highResolutionCount)
-        val buffer = allocBuffer(details)
+    internal fun pBitcodes() {
+        avatar.resize(highResolutionCount)
+        val buffer = allocBuffer()
         val bitBuf = buffer.toBitBuf()
-        bitBuf.use { processHighResolution(details, it, skipStationary = true) }
-        bitBuf.use { processHighResolution(details, it, skipStationary = false) }
-        bitBuf.use { processLowResolution(details, it, skipStationary = false) }
-        bitBuf.use { processLowResolution(details, it, skipStationary = true) }
+        bitBuf.use { processHighResolution(it, skipStationary = true) }
+        bitBuf.use { processHighResolution(it, skipStationary = false) }
+        bitBuf.use { processLowResolution(it, skipStationary = false) }
+        bitBuf.use { processLowResolution(it, skipStationary = true) }
     }
 
     /**
@@ -427,27 +459,26 @@ public class PlayerInfo internal constructor(
      * @param skipStationary whether to skip any players who were marked as stationary last cycle.
      */
     private fun processLowResolution(
-        details: PlayerInfoWorldDetails,
         buffer: BitBuf,
         skipStationary: Boolean,
     ) {
         var skips = -1
-        for (i in 0 until details.lowResolutionCount) {
-            val index = details.lowResolutionIndices[i].toInt()
-            val wasStationary = details.stationary[index].toInt() and WAS_STATIONARY != 0
+        for (i in 0 until lowResolutionCount) {
+            val index = lowResolutionIndices[i].toInt()
+            val wasStationary = stationary[index].toInt() and WAS_STATIONARY != 0
             if (skipStationary == wasStationary) {
                 continue
             }
             val other = protocol.getPlayerInfo(index)
             if (other == null) {
                 skips++
-                details.stationary[index] = (details.stationary[index].toInt() or IS_STATIONARY).toByte()
+                stationary[index] = (stationary[index].toInt() or IS_STATIONARY).toByte()
                 continue
             }
-            val visible = shouldMoveToHighResolution(details, other)
-            if (!visible && (!details.initialized || other.lowResMovementBuffer == null)) {
+            val visible = shouldMoveToHighResolution(other)
+            if (!visible && other.lowResMovementBuffer == null) {
                 skips++
-                details.stationary[index] = (details.stationary[index].toInt() or IS_STATIONARY).toByte()
+                stationary[index] = (stationary[index].toInt() or IS_STATIONARY).toByte()
                 continue
             }
             if (skips > -1) {
@@ -459,7 +490,7 @@ public class PlayerInfo internal constructor(
                 buffer.pBits(other.lowResMovementBuffer!!)
                 continue
             }
-            pLowResToHighRes(details, buffer, other)
+            pLowResToHighRes(buffer, other)
         }
         if (skips > -1) {
             pStationary(buffer, skips)
@@ -472,7 +503,6 @@ public class PlayerInfo internal constructor(
      * @param other the player who is being moved from low resolution to high resolution.
      */
     private fun pLowResToHighRes(
-        details: PlayerInfoWorldDetails,
         buffer: BitBuf,
         other: PlayerInfo,
     ) {
@@ -482,7 +512,7 @@ public class PlayerInfo internal constructor(
         // buffer.pBits(2, 0)
         buffer.pBits(3, 1 shl 2)
         val lowResBuf = other.lowResMovementBuffer
-        if (details.initialized && lowResBuf != null) {
+        if (lowResBuf != null) {
             buffer.pBits(1, 1)
             buffer.pBits(lowResBuf)
         } else {
@@ -497,12 +527,12 @@ public class PlayerInfo internal constructor(
         val extraFlags = other.avatar.extendedInfo.getLowToHighResChangeExtendedInfoFlags(avatar.extendedInfo)
         // Mark those flags as observer-dependent.
         observerExtendedInfoFlags.addFlag(index, extraFlags)
-        details.stationary[index] = (details.stationary[index].toInt() or IS_STATIONARY).toByte()
-        setHighResolution(details.highResolutionPlayers, index)
+        stationary[index] = (stationary[index].toInt() or IS_STATIONARY).toByte()
+        setHighResolution(index)
         val flag = other.avatar.extendedInfo.flags or observerExtendedInfoFlags.getFlag(index)
         val hasExtendedInfoBlock = flag != 0
         if (hasExtendedInfoBlock) {
-            details.extendedInfoIndices[details.extendedInfoCount++] = index.toShort()
+            extendedInfoIndices[extendedInfoCount++] = index.toShort()
             buffer.pBits(1, 1)
         } else {
             buffer.pBits(1, 0)
@@ -516,43 +546,40 @@ public class PlayerInfo internal constructor(
      * @param skipStationary whether to skip any players who were marked as stationary last cycle.
      */
     private fun processHighResolution(
-        details: PlayerInfoWorldDetails,
         buffer: BitBuf,
         skipStationary: Boolean,
     ) {
         var skips = -1
-        for (i in 0 until details.highResolutionCount) {
-            val index = details.highResolutionIndices[i].toInt()
-            val wasStationary = (details.stationary[index].toInt() and WAS_STATIONARY) != 0
+        for (i in 0 until highResolutionCount) {
+            val index = highResolutionIndices[i].toInt()
+            val wasStationary = (stationary[index].toInt() and WAS_STATIONARY) != 0
             if (skipStationary == wasStationary) {
                 continue
             }
             val other = protocol.getPlayerInfo(index)
-            if (!shouldStayInHighResolution(details, other)) {
+            if (!shouldStayInHighResolution(other)) {
                 if (skips > -1) {
                     pStationary(buffer, skips)
                     skips = -1
                 }
-                pHighToLowResChange(details, buffer, index, other)
+                pHighToLowResChange(buffer, index, other)
                 continue
             }
 
             val flag = other.avatar.extendedInfo.flags or observerExtendedInfoFlags.getFlag(index)
-            val hasExtendedInfoBlock =
-                flag != 0 &&
-                    (details.worldId == activeWorldId || index != localIndex)
+            val hasExtendedInfoBlock = flag != 0
             val highResBuf = other.highResMovementBuffer
-            val skipped = !hasExtendedInfoBlock && (!details.initialized || highResBuf == null)
+            val skipped = !hasExtendedInfoBlock && highResBuf == null
             if (!skipped) {
                 if (skips > -1) {
                     pStationary(buffer, skips)
                     skips = -1
                 }
-                pHighRes(details, buffer, index, hasExtendedInfoBlock, highResBuf)
+                pHighRes(buffer, index, hasExtendedInfoBlock, highResBuf)
                 continue
             }
             skips++
-            details.stationary[index] = (details.stationary[index].toInt() or IS_STATIONARY).toByte()
+            stationary[index] = (stationary[index].toInt() or IS_STATIONARY).toByte()
         }
         if (skips > -1) {
             pStationary(buffer, skips)
@@ -610,7 +637,6 @@ public class PlayerInfo internal constructor(
      * @param highResBuf the pre-computed bit buffer regarding this player's movement.
      */
     private fun pHighRes(
-        details: PlayerInfoWorldDetails,
         buffer: BitBuf,
         index: Int,
         extendedInfo: Boolean,
@@ -618,12 +644,12 @@ public class PlayerInfo internal constructor(
     ) {
         buffer.pBits(1, 1)
         if (extendedInfo) {
-            details.extendedInfoIndices[details.extendedInfoCount++] = index.toShort()
+            extendedInfoIndices[extendedInfoCount++] = index.toShort()
             buffer.pBits(1, 1)
         } else {
             buffer.pBits(1, 0)
         }
-        if (details.initialized && highResBuf != null) {
+        if (highResBuf != null) {
             buffer.pBits(highResBuf)
         } else {
             buffer.pBits(2, 0)
@@ -636,19 +662,18 @@ public class PlayerInfo internal constructor(
      * @param index the index of the player that is being moved to low resolution.
      */
     private fun pHighToLowResChange(
-        details: PlayerInfoWorldDetails,
         buffer: BitBuf,
         index: Int,
         other: PlayerInfo?,
     ) {
-        unsetHighResolution(details.highResolutionPlayers, index)
+        unsetHighResolution(index)
         // The one-liner pBits is equal to the below comment:
         // buffer.pBits(1, 1)
         // buffer.pBits(1, 0)
         // buffer.pBits(2, 0)
         buffer.pBits(4, 1 shl 3)
         val buf = other?.lowResMovementBuffer
-        if (details.initialized && buf != null) {
+        if (buf != null) {
             buffer.pBits(1, 1)
             buffer.pBits(buf)
         } else {
@@ -664,10 +689,7 @@ public class PlayerInfo internal constructor(
      * @return true if the other should be moved to low resolution.
      */
     @OptIn(ExperimentalContracts::class)
-    private fun shouldStayInHighResolution(
-        details: PlayerInfoWorldDetails,
-        other: PlayerInfo?,
-    ): Boolean {
+    private fun shouldStayInHighResolution(other: PlayerInfo?): Boolean {
         contract {
             returns(true) implies (other != null)
         }
@@ -682,8 +704,10 @@ public class PlayerInfo internal constructor(
         if (other.avatar.hidden) {
             return false
         }
+        val worldId = other.avatar.worldId
+        val details = getDetailsOrNull(worldId) ?: return false
         val coord = other.avatar.currentCoord
-        if (!details.renderCoord.inDistance(coord, this.avatar.resizeRange)) {
+        if (!coord.inDistance(details.renderCoord, this.avatar.resizeRange)) {
             return false
         }
         if (coord !in details.buildArea) {
@@ -700,10 +724,7 @@ public class PlayerInfo internal constructor(
      * @return true if the other player should be moved to high resolution.
      */
     @OptIn(ExperimentalContracts::class)
-    private fun shouldMoveToHighResolution(
-        details: PlayerInfoWorldDetails,
-        other: PlayerInfo?,
-    ): Boolean {
+    private fun shouldMoveToHighResolution(other: PlayerInfo?): Boolean {
         contract {
             returns(true) implies (other != null)
         }
@@ -714,8 +735,10 @@ public class PlayerInfo internal constructor(
         if (other.avatar.hidden) {
             return false
         }
+        val worldId = other.avatar.worldId
+        val details = getDetailsOrNull(worldId) ?: return false
         val coord = other.avatar.currentCoord
-        if (!details.renderCoord.inDistance(coord, this.avatar.resizeRange)) {
+        if (!coord.inDistance(details.renderCoord, this.avatar.resizeRange)) {
             return false
         }
         if (coord !in details.buildArea) {
@@ -726,58 +749,43 @@ public class PlayerInfo internal constructor(
 
     /**
      * Allocates a new buffer from the [allocator] with a capacity of [BUF_CAPACITY].
-     * The old [PlayerInfoWorldDetails.buffer] will not be released, as that is the duty of the encoder class.
+     * The old [buffer] will not be released, as that is the duty of the encoder class.
      */
-    private fun allocBuffer(details: PlayerInfoWorldDetails): ByteBuf {
+    private fun allocBuffer(): ByteBuf {
         // If a given player's packet was never sent out, we need to release the old buffer
-        if (!details.builtIntoPacket) {
-            val oldBuf = details.buffer
+        if (!builtIntoPacket) {
+            val oldBuf = buffer
             if (oldBuf != null && oldBuf.refCnt() > 0) {
                 oldBuf.release()
             }
         }
         // Acquire a new buffer with each cycle, in case the previous one isn't fully written out yet
         val buffer = allocator.buffer(BUF_CAPACITY, BUF_CAPACITY)
-        details.buffer = buffer
-        details.builtIntoPacket = false
+        this.buffer = buffer
+        this.builtIntoPacket = false
         return buffer
     }
 
     /**
      * Reset any temporary properties from this cycle.
      */
-    internal fun postUpdate(details: PlayerInfoWorldDetails) {
-        details.lowResolutionCount = 0
-        details.highResolutionCount = 0
-        // Only need to reset the count here, the actual numbers don't matter.
-        details.extendedInfoCount = 0
-        for (i in 1 until PROTOCOL_CAPACITY) {
-            details.initialized = true
-            details.stationary[i] = (details.stationary[i].toInt() shr 1).toByte()
-            if (isHighResolution(details.highResolutionPlayers, i)) {
-                details.highResolutionIndices[details.highResolutionCount++] = i.toShort()
-            } else {
-                details.lowResolutionIndices[details.lowResolutionCount++] = i.toShort()
-            }
-        }
-    }
-
-    /**
-     * Marks the player info object as initialized, allowing for any further coordinate changes to take effect.
-     */
-    public fun postRebuildLogin() {
-        val rootDetails = getDetails(ROOT_WORLD)
-        rootDetails.initialized = true
-        avatar.postUpdate()
-    }
-
-    /**
-     * A function to reset non-world specific properties when a cycle finishes.
-     */
-    internal fun cycleComplete() {
+    internal fun postUpdate() {
         this.avatar.postUpdate()
         avatar.extendedInfo.postUpdate()
+        lowResolutionCount = 0
+        highResolutionCount = 0
+        // Only need to reset the count here, the actual numbers don't matter.
+        extendedInfoCount = 0
+        for (i in 1 until PROTOCOL_CAPACITY) {
+            stationary[i] = (stationary[i].toInt() shr 1).toByte()
+            if (isHighResolution(i)) {
+                highResolutionIndices[highResolutionCount++] = i.toShort()
+            } else {
+                lowResolutionIndices[lowResolutionCount++] = i.toShort()
+            }
+        }
         observerExtendedInfoFlags.reset()
+        avatar.extendedInfo.postUpdate()
     }
 
     /**
@@ -797,22 +805,17 @@ public class PlayerInfo internal constructor(
         this.localIndex = index
         avatar.extendedInfo.localIndex = index
         this.oldSchoolClientType = oldSchoolClientType
-        this.activeWorldId = ROOT_WORLD
-        // There is always a root world!
-        val rootDetails = protocol.detailsStorage.poll(ROOT_WORLD)
-        details[PROTOCOL_CAPACITY] = rootDetails
-
-        if (newInstance) return
         avatar.reset()
-        rootDetails.lowResolutionIndices.fill(0)
-        rootDetails.lowResolutionCount = 0
-        rootDetails.highResolutionIndices.fill(0)
-        rootDetails.highResolutionCount = 0
-        rootDetails.highResolutionPlayers.fill(0L)
-        rootDetails.extendedInfoCount = 0
-        rootDetails.extendedInfoIndices.fill(0)
-        rootDetails.stationary.fill(0)
+        lowResolutionIndices.fill(0)
+        lowResolutionCount = 0
+        highResolutionIndices.fill(0)
+        highResolutionCount = 0
+        highResolutionPlayers.fill(0L)
+        extendedInfoCount = 0
+        extendedInfoIndices.fill(0)
+        stationary.fill(0)
         observerExtendedInfoFlags.reset()
+        allocateWorld(ROOT_WORLD)
     }
 
     /**
@@ -820,33 +823,25 @@ public class PlayerInfo internal constructor(
      * to stick around for extended periods of time. Any primitive properties will remain untouched.
      */
     override fun onDealloc() {
-        reset()
-        avatar.extendedInfo.reset()
-    }
-
-    private fun reset() {
         // If player info was constructed, but it was not built into a packet object
         // it implies the packet is never being written to Netty, which means
         // a memory leak is occurring - if that is the case, release the buffer here
-        for (details in this.details) {
-            if (details == null) {
-                continue
+        if (!builtIntoPacket) {
+            val buffer = this.buffer
+            if (buffer != null && buffer.refCnt() > 0) {
+                buffer.release(buffer.refCnt())
             }
-            if (!details.builtIntoPacket) {
-                val buffer = details.buffer
-                if (buffer != null && buffer.refCnt() > 0) {
-                    buffer.release(buffer.refCnt())
-                }
-            }
-            details.buffer = null
         }
-        for (i in 0..PROTOCOL_CAPACITY) {
-            val details = this.details[i] ?: continue
-            protocol.detailsStorage.push(details)
-            this.details[i] = null
-        }
+        this.buffer = null
+        avatar.extendedInfo.reset()
         highResMovementBuffer = null
         lowResMovementBuffer = null
+        for (i in this.details.indices) {
+            val world = this.details[i]
+            if (world != null) {
+                this.details[i] = null
+            }
+        }
     }
 
     /**
