@@ -104,6 +104,6 @@ public class WorldEntityAvatar(
         /**
          * The maximum buffer size for the high resolution precomputed buffer.
          */
-        private const val MAX_HIGH_RES_BUF_SIZE: Int = 5
+        private const val MAX_HIGH_RES_BUF_SIZE: Int = 6
     }
 }
