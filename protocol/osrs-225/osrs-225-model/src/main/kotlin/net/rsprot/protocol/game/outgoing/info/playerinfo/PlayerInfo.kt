@@ -815,7 +815,7 @@ public class PlayerInfo internal constructor(
         extendedInfoIndices.fill(0)
         stationary.fill(0)
         observerExtendedInfoFlags.reset()
-        allocateWorld(ROOT_WORLD)
+        details[PROTOCOL_CAPACITY] = PlayerInfoWorldDetails(PROTOCOL_CAPACITY)
     }
 
     /**

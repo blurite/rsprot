@@ -88,8 +88,8 @@ public sealed interface LoginResponse : OutgoingLoginMessage {
         buffer: ByteBuf,
     ) : DefaultByteBufHolder(buffer),
         LoginResponse {
-        public constructor(worldId: Int, playerInfo: PlayerInfo) : this(
-            initializePlayerInfo(worldId, playerInfo),
+        public constructor(playerInfo: PlayerInfo) : this(
+            initializePlayerInfo(playerInfo),
         )
 
         private companion object {
@@ -100,13 +100,10 @@ public sealed interface LoginResponse : OutgoingLoginMessage {
              * @param playerInfo the player info protocol of this player to be initialized
              * @return a buffer containing the initialization block of the player info protocol
              */
-            private fun initializePlayerInfo(
-                worldId: Int,
-                playerInfo: PlayerInfo,
-            ): ByteBuf {
+            private fun initializePlayerInfo(playerInfo: PlayerInfo): ByteBuf {
                 val allocator = playerInfo.allocator
                 val buffer = allocator.buffer(PLAYER_INFO_BLOCK_SIZE)
-                playerInfo.handleAbsolutePlayerPositions(worldId, buffer)
+                playerInfo.handleAbsolutePlayerPositions(buffer)
                 return buffer
             }
         }

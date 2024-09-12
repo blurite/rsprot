@@ -1,9 +1,7 @@
 package net.rsprot.protocol.game.outgoing.map
 
-import io.netty.buffer.ByteBuf
 import net.rsprot.protocol.ServerProtCategory
 import net.rsprot.protocol.game.outgoing.GameServerProtCategory
-import net.rsprot.protocol.game.outgoing.info.playerinfo.PlayerInfo
 import net.rsprot.protocol.game.outgoing.map.util.RebuildRegionZone
 import net.rsprot.protocol.message.OutgoingGameMessage
 
@@ -14,14 +12,12 @@ import net.rsprot.protocol.message.OutgoingGameMessage
  * @property baseX the absolute base x coordinate of the world entity in the instance land
  * @property baseZ the absolute base z coordinate of the world entity in the instance land
  * @property zones the list of zones that will be built into the root world
- * @property gpiInitBlock the player info initialization block for the world entity
  */
 public class RebuildWorldEntity private constructor(
     private val _index: UShort,
     private val _baseX: UShort,
     private val _baseZ: UShort,
     public val zones: List<RebuildRegionZone?>,
-    public val gpiInitBlock: ByteBuf,
 ) : OutgoingGameMessage {
     public constructor(
         index: Int,
@@ -30,13 +26,11 @@ public class RebuildWorldEntity private constructor(
         sizeX: Int,
         sizeZ: Int,
         zoneProvider: RebuildWorldEntityZoneProvider,
-        playerInfo: PlayerInfo,
     ) : this(
         index.toUShort(),
         baseX.toUShort(),
         baseZ.toUShort(),
         buildRebuildWorldEntityZones(index, sizeX, sizeZ, zoneProvider),
-        initializePlayerInfo(playerInfo, index),
     ) {
         require(sizeX in 0..<13) {
             "Size x must be in range of 0..<13: $sizeX"
@@ -134,23 +128,6 @@ public class RebuildWorldEntity private constructor(
                 }
             }
             return zones
-        }
-
-        private const val PLAYER_INFO_BLOCK_SIZE = ((30 + (2046 * 18)) + Byte.SIZE_BITS - 1) ushr 3
-
-        /**
-         * Initializes the player info block into a buffer provided by allocator in the playerinfo object
-         * @param playerInfo the player info protocol of this player to be initialized
-         * @return a buffer containing the initialization block of the player info protocol
-         */
-        private fun initializePlayerInfo(
-            playerInfo: PlayerInfo,
-            worldId: Int,
-        ): ByteBuf {
-            val allocator = playerInfo.allocator
-            val buffer = allocator.buffer(PLAYER_INFO_BLOCK_SIZE)
-            playerInfo.handleAbsolutePlayerPositions(worldId, buffer)
-            return buffer
         }
     }
 }

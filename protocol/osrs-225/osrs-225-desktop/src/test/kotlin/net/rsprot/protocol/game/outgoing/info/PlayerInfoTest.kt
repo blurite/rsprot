@@ -49,7 +49,7 @@ class PlayerInfoTest {
 
     private fun gpiInit() {
         val gpiBuffer = Unpooled.buffer(5000)
-        localPlayerInfo.handleAbsolutePlayerPositions(PlayerInfo.ROOT_WORLD, gpiBuffer)
+        localPlayerInfo.handleAbsolutePlayerPositions(gpiBuffer)
         client.gpiInit(LOCAL_PLAYER_INDEX, gpiBuffer)
         clientLocalPlayer = checkNotNull(client.cachedPlayers[client.localIndex])
     }
@@ -61,7 +61,7 @@ class PlayerInfoTest {
 
     private fun tick() {
         protocol.update()
-        val buffer = localPlayerInfo.backingBuffer(PlayerInfo.ROOT_WORLD)
+        val buffer = localPlayerInfo.backingBuffer()
         client.decode(buffer)
         assertFalse(buffer.isReadable)
     }

@@ -21,16 +21,6 @@ public class RebuildWorldEntityEncoder : MessageEncoder<RebuildWorldEntity> {
         buffer.p2(message.index)
         buffer.p2(message.baseX)
         buffer.p2(message.baseZ)
-        try {
-            buffer.buffer.writeBytes(
-                message.gpiInitBlock,
-                message.gpiInitBlock.readerIndex(),
-                message.gpiInitBlock.readableBytes(),
-            )
-        } finally {
-            message.gpiInitBlock.release()
-        }
-
         encodeRegion(buffer, message.zones)
     }
 }

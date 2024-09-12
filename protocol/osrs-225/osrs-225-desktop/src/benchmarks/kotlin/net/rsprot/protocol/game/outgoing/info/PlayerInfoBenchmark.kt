@@ -125,7 +125,7 @@ class PlayerInfoBenchmark {
         protocol.update()
         for (i in 1..<MAX_IDX) {
             val player = checkNotNull(players[i])
-            player.backingBuffer(PlayerInfo.ROOT_WORLD).release()
+            player.backingBuffer().release()
         }
     }
 
