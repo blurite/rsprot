@@ -15,9 +15,9 @@ public class MapAnimSpecificEncoder : MessageEncoder<MapAnimSpecific> {
         buffer: JagByteBuf,
         message: MapAnimSpecific,
     ) {
-        buffer.p1(message.height)
+        buffer.p3Alt3(message.coordInBuildAreaPacked)
         buffer.p2Alt3(message.id)
+        buffer.p1Alt2(message.height)
         buffer.p2Alt1(message.delay)
-        buffer.p3Alt2(message.coordInBuildAreaPacked)
     }
 }

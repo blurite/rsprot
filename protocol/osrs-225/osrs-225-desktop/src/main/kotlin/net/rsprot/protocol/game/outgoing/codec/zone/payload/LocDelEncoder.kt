@@ -17,6 +17,6 @@ public class LocDelEncoder : ZoneProtEncoder<LocDel> {
         // making it easy to identify all the properties of this packet:
         // loc_add_change_del(world, level, x, z, layer, -1, shape, rotation, 31, 0, -1)
         buffer.p1(message.coordInZonePacked)
-        buffer.p1Alt3(message.locPropertiesPacked)
+        buffer.p1(message.locPropertiesPacked)
     }
 }

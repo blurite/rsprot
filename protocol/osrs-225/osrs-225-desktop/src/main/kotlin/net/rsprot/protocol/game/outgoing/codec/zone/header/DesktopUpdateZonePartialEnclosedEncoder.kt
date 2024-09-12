@@ -35,8 +35,8 @@ public class DesktopUpdateZonePartialEnclosedEncoder : MessageEncoder<UpdateZone
         message: UpdateZonePartialEnclosed,
     ) {
         buffer.p1(message.zoneZ)
-        buffer.p1Alt3(message.level)
-        buffer.p1Alt3(message.zoneX)
+        buffer.p1Alt2(message.zoneX)
+        buffer.p1Alt1(message.level)
         buffer.buffer.writeBytes(
             message.payload,
             message.payload.readerIndex(),
@@ -119,16 +119,16 @@ public class DesktopUpdateZonePartialEnclosedEncoder : MessageEncoder<UpdateZone
             val encoder: ZoneProtEncoder<*>,
         ) {
             LOC_ADD_CHANGE(OldSchoolZoneProt.LOC_ADD_CHANGE, LocAddChangeEncoder()),
-            OBJ_COUNT(OldSchoolZoneProt.OBJ_COUNT, ObjCountEncoder()),
-            OBJ_ENABLED_OPS(OldSchoolZoneProt.OBJ_ENABLED_OPS, ObjEnabledOpsEncoder()),
-            MAP_ANIM(OldSchoolZoneProt.MAP_ANIM, MapAnimEncoder()),
-            OBJ_DEL(OldSchoolZoneProt.OBJ_DEL, ObjDelEncoder()),
             OBJ_ADD(OldSchoolZoneProt.OBJ_ADD, ObjAddEncoder()),
-            LOC_MERGE(OldSchoolZoneProt.LOC_MERGE, LocMergeEncoder()),
-            LOC_ANIM(OldSchoolZoneProt.LOC_ANIM, LocAnimEncoder()),
-            MAP_PROJANIM(OldSchoolZoneProt.MAP_PROJANIM, MapProjAnimEncoder()),
             LOC_DEL(OldSchoolZoneProt.LOC_DEL, LocDelEncoder()),
             SOUND_AREA(OldSchoolZoneProt.SOUND_AREA, SoundAreaEncoder()),
+            OBJ_ENABLED_OPS(OldSchoolZoneProt.OBJ_ENABLED_OPS, ObjEnabledOpsEncoder()),
+            MAP_ANIM(OldSchoolZoneProt.MAP_ANIM, MapAnimEncoder()),
+            LOC_MERGE(OldSchoolZoneProt.LOC_MERGE, LocMergeEncoder()),
+            MAP_PROJANIM(OldSchoolZoneProt.MAP_PROJANIM, MapProjAnimEncoder()),
+            OBJ_COUNT(OldSchoolZoneProt.OBJ_COUNT, ObjCountEncoder()),
+            OBJ_DEL(OldSchoolZoneProt.OBJ_DEL, ObjDelEncoder()),
+            LOC_ANIM(OldSchoolZoneProt.LOC_ANIM, LocAnimEncoder()),
             ;
 
             companion object {

@@ -17,8 +17,8 @@ public class MapAnimEncoder : ZoneProtEncoder<MapAnim> {
         // the constructor for the SpotAnimation object itself has the following order:
         // SpotAnimation(id, level, fineX, fineZ, getGroundHeight(fineX, fineZ, level) - height, delay, cycle)
         buffer.p1Alt3(message.coordInZonePacked)
-        buffer.p1Alt2(message.height)
-        buffer.p2(message.id)
-        buffer.p2(message.delay)
+        buffer.p2Alt2(message.id)
+        buffer.p1Alt3(message.height)
+        buffer.p2Alt2(message.delay)
     }
 }
