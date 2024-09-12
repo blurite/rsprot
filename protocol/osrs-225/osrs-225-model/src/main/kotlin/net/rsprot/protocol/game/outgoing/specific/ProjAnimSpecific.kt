@@ -10,12 +10,7 @@ import net.rsprot.protocol.message.OutgoingGameMessage
  * without anyone else in the world seeing it.
  * Unlike the regular [net.rsprot.protocol.game.outgoing.zone.payload.MapProjAnim]
  * zone packet, this packet does not support transmitting the source index.
- *
- * While it is possible to compress this message further as the [targetIndex]
- * only needs to be a 24-bit integer, the entire payload of this packet
- * sums to just 19 bytes, which is 1 less than the 8-byte padding that will
- * be performed by the JVM anyway - so there are no benefits in doing so.
- *
+
  * @property id the id of the spotanim that is this projectile
  * @property startHeight the height of the projectile as it begins flying
  * @property endHeight the height of the projectile as it finishes flying
@@ -36,6 +31,10 @@ import net.rsprot.protocol.message.OutgoingGameMessage
  * and set the value of this property to 128 - ensuring that the projectile
  * will appear to fly completely vertically, with no horizontal movement whatsoever.
  * In the event inspector, this property is called 'distanceOffset'.
+ * @property sourceIndex the index of the pathing entity from whom the projectile is shot.
+ * If the value is 0, the projectile will not be locked to any source entity.
+ * If the source avatar is a player, add 0x10000 to the real index value (0-2048).
+ * If the source avatar is a NPC, set the index as it is.
  * @property targetIndex the index of the pathing entity at whom the projectile is shot.
  * If the value is 0, the projectile will not be locked to any target entity.
  * If the target avatar is a player, add 0x10000 to the real index value (0-2048).
@@ -70,6 +69,7 @@ public class ProjAnimSpecific private constructor(
     private val _endTime: UShort,
     private val _angle: UByte,
     private val _progress: UShort,
+    public val sourceIndex: Int,
     public val targetIndex: Int,
     private val coordInBuildArea: CoordInBuildArea,
     private val _deltaX: Byte,
@@ -98,6 +98,43 @@ public class ProjAnimSpecific private constructor(
         endTime.toUShort(),
         angle.toUByte(),
         progress.toUShort(),
+        0,
+        targetIndex,
+        CoordInBuildArea(
+            zoneX,
+            xInZone,
+            zoneZ,
+            zInZone,
+        ),
+        deltaX.toByte(),
+        deltaZ.toByte(),
+    )
+
+    public constructor(
+        id: Int,
+        startHeight: Int,
+        endHeight: Int,
+        startTime: Int,
+        endTime: Int,
+        angle: Int,
+        progress: Int,
+        sourceIndex: Int,
+        targetIndex: Int,
+        zoneX: Int,
+        xInZone: Int,
+        zoneZ: Int,
+        zInZone: Int,
+        deltaX: Int,
+        deltaZ: Int,
+    ) : this(
+        id.toUShort(),
+        startHeight.toUByte(),
+        endHeight.toUByte(),
+        startTime.toUShort(),
+        endTime.toUShort(),
+        angle.toUByte(),
+        progress.toUShort(),
+        sourceIndex,
         targetIndex,
         CoordInBuildArea(
             zoneX,
@@ -130,6 +167,39 @@ public class ProjAnimSpecific private constructor(
         endTime.toUShort(),
         angle.toUByte(),
         progress.toUShort(),
+        0,
+        targetIndex,
+        CoordInBuildArea(
+            xInBuildArea,
+            zInBuildArea,
+        ),
+        deltaX.toByte(),
+        deltaZ.toByte(),
+    )
+
+    public constructor(
+        id: Int,
+        startHeight: Int,
+        endHeight: Int,
+        startTime: Int,
+        endTime: Int,
+        angle: Int,
+        progress: Int,
+        sourceIndex: Int,
+        targetIndex: Int,
+        xInBuildArea: Int,
+        zInBuildArea: Int,
+        deltaX: Int,
+        deltaZ: Int,
+    ) : this(
+        id.toUShort(),
+        startHeight.toUByte(),
+        endHeight.toUByte(),
+        startTime.toUShort(),
+        endTime.toUShort(),
+        angle.toUByte(),
+        progress.toUShort(),
+        sourceIndex,
         targetIndex,
         CoordInBuildArea(
             xInBuildArea,
@@ -184,6 +254,7 @@ public class ProjAnimSpecific private constructor(
         if (_endTime != other._endTime) return false
         if (_angle != other._angle) return false
         if (_progress != other._progress) return false
+        if (sourceIndex != other.sourceIndex) return false
         if (targetIndex != other.targetIndex) return false
         if (coordInBuildArea != other.coordInBuildArea) return false
         if (_deltaX != other._deltaX) return false
@@ -200,6 +271,7 @@ public class ProjAnimSpecific private constructor(
         result = 31 * result + _endTime.hashCode()
         result = 31 * result + _angle.hashCode()
         result = 31 * result + _progress.hashCode()
+        result = 31 * result + sourceIndex
         result = 31 * result + targetIndex
         result = 31 * result + coordInBuildArea.hashCode()
         result = 31 * result + _deltaX
@@ -216,6 +288,7 @@ public class ProjAnimSpecific private constructor(
             "endTime=$endTime, " +
             "angle=$angle, " +
             "progress=$progress, " +
+            "sourceIndex=$sourceIndex, " +
             "targetIndex=$targetIndex, " +
             "zoneX=$zoneX, " +
             "xInZone=$xInZone, " +
