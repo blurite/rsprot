@@ -277,7 +277,7 @@ public class WorldEntityInfo internal constructor(
         for (i in 0..<count) {
             val index = this.highResolutionIndices[i].toInt()
             val avatar = avatarRepository.getOrNull(index)
-            if (avatar == null || !inRange(avatar)) {
+            if (avatar == null || !inRange(avatar) || isReallocated(avatar)) {
                 highResolutionIndices[i] = INDEX_TERMINATOR
                 this.highResolutionIndicesCount--
                 this.removedWorldEntities += index
@@ -393,6 +393,13 @@ public class WorldEntityInfo internal constructor(
                         renderDistance,
                     )
             )
+    }
+
+    private fun isReallocated(avatar: WorldEntityAvatar): Boolean {
+        // If the avatar was allocated on this cycle, ensure we remove (and potentially re-add later)
+        // this avatar. This is due to a worldentity of the same index being deallocated and reallocated
+        // as a new instance in the same cycle.
+        return avatar.allocateCycle == WorldEntityProtocol.cycleCount
     }
 
     override fun onAlloc(
