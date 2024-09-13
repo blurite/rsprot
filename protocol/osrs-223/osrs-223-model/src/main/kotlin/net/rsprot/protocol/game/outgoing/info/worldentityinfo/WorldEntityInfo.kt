@@ -113,6 +113,24 @@ public class WorldEntityInfo internal constructor(
     }
 
     /**
+     * Updates the build area for this player. This should always perfectly correspond to
+     * the actual build area that is sent via REBUILD_NORMAL or REBUILD_REGION packets.
+     * @property zoneX the south-western zone x coordinate of the build area
+     * @property zoneZ the south-western zone z coordinate of the build area
+     * @property widthInZones the build area width in zones (typically 13, meaning 104 tiles)
+     * @property heightInZones the build area height in zones (typically 13, meaning 104 tiles)
+     */
+    @JvmOverloads
+    public fun updateBuildArea(
+        zoneX: Int,
+        zoneZ: Int,
+        widthInZones: Int = BuildArea.DEFAULT_BUILD_AREA_SIZE,
+        heightInZones: Int = BuildArea.DEFAULT_BUILD_AREA_SIZE,
+    ) {
+        this.buildArea = BuildArea(zoneX, zoneZ, widthInZones, heightInZones)
+    }
+
+    /**
      * Gets a list of all the world entity indices that are currently in high resolution,
      * allowing for correct functionality for player and npc infos, as well as zone updates.
      * @return a list of indices of the world entities currently in high resolution.
