@@ -122,6 +122,7 @@ public class PlayerInfoProtocol(
         prepareExtendedInfo()
         putExtendedInfo()
         postUpdate()
+        cycleCount++
     }
 
     /**
@@ -258,5 +259,18 @@ public class PlayerInfoProtocol(
          */
         public const val PROTOCOL_CAPACITY: Int = 2048
         private val logger: InlineLogger = InlineLogger()
+
+        /**
+         * The number of Player info update cycles that have occurred.
+         * We need to track this to avoid a nasty bug with servers de-allocating + re-allocating
+         * an avatar on the same cycle, in a small area. The effective bug is that another player takes
+         * ones' avatar, which leads to info protocol thinking nothing has changed (assuming the new player
+         * is still within range of the old one, enough to be in high resolution).
+         *
+         * We solve this by forcibly removing a player from high resolution view if the avatar was
+         * allocated on current cycle. If the player is still within range, they will be re-added
+         * later on in the cycle via low resolution updates - but correctly this time around!
+         */
+        internal var cycleCount: Int = 0
     }
 }

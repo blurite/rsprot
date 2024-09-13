@@ -685,6 +685,12 @@ public class PlayerInfo internal constructor(
         if (other.avatar.hidden) {
             return false
         }
+        // If the avatar was allocated on this cycle, ensure we remove (and potentially re-add later)
+        // this avatar. This is due to someone logging out and another player taking the avatar the same
+        // cycle - which would otherwise potentially go by unnoticed, with the client assuming nothing changed.
+        if (other.avatar.allocateCycle == PlayerInfoProtocol.cycleCount) {
+            return false
+        }
         val coord = other.avatar.currentCoord
         if (!details.renderCoord.inDistance(coord, this.avatar.resizeRange)) {
             return false
@@ -800,13 +806,14 @@ public class PlayerInfo internal constructor(
         this.localIndex = index
         avatar.extendedInfo.localIndex = index
         this.oldSchoolClientType = oldSchoolClientType
+        avatar.reset()
+        this.avatar.allocateCycle = PlayerInfoProtocol.cycleCount
         this.activeWorldId = ROOT_WORLD
         // There is always a root world!
         val rootDetails = protocol.detailsStorage.poll(ROOT_WORLD)
         details[PROTOCOL_CAPACITY] = rootDetails
 
         if (newInstance) return
-        avatar.reset()
         rootDetails.lowResolutionIndices.fill(0)
         rootDetails.lowResolutionCount = 0
         rootDetails.highResolutionIndices.fill(0)

@@ -613,6 +613,12 @@ public class PlayerInfo internal constructor(
         if (other.avatar.hidden) {
             return false
         }
+        // If the avatar was allocated on this cycle, ensure we remove (and potentially re-add later)
+        // this avatar. This is due to someone logging out and another player taking the avatar the same
+        // cycle - which would otherwise potentially go by unnoticed, with the client assuming nothing changed.
+        if (other.avatar.allocateCycle == PlayerInfoProtocol.cycleCount) {
+            return false
+        }
         val coord = other.avatar.currentCoord
         if (!coord.inDistance(this.avatar.currentCoord, this.avatar.resizeRange)) {
             return false
@@ -711,6 +717,7 @@ public class PlayerInfo internal constructor(
         this.oldSchoolClientType = oldSchoolClientType
         this.buildArea = BuildArea.INVALID
         avatar.reset()
+        this.avatar.allocateCycle = PlayerInfoProtocol.cycleCount
         lowResolutionIndices.fill(0)
         lowResolutionCount = 0
         highResolutionIndices.fill(0)
