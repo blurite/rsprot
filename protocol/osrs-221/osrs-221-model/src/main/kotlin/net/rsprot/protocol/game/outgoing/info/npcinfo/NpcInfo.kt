@@ -203,6 +203,25 @@ public class NpcInfo internal constructor(
     }
 
     /**
+     * Updates the build area for this NPC info.
+     * This will ensure that no NPCs outside of this box will be
+     * added to high resolution view.
+     * @param zoneX the south-western zone x coordinate of the build area
+     * @param zoneZ the south-western zone z coordinate of the build area
+     * @param widthInZones the build area width in zones (typically 13, meaning 104 tiles)
+     * @param heightInZones the build area height in zones (typically 13, meaning 104 tiles)
+     */
+    @JvmOverloads
+    public fun updateBuildArea(
+        zoneX: Int,
+        zoneZ: Int,
+        widthInZones: Int = BuildArea.DEFAULT_BUILD_AREA_SIZE,
+        heightInZones: Int = BuildArea.DEFAULT_BUILD_AREA_SIZE,
+    ) {
+        this.buildArea = BuildArea(zoneX, zoneZ, widthInZones, heightInZones)
+    }
+
+    /**
      * Allocates a new buffer from the [allocator] with a capacity of [BUF_CAPACITY].
      * The old [buffer] will not be released, as that is the duty of the encoder class.
      */
