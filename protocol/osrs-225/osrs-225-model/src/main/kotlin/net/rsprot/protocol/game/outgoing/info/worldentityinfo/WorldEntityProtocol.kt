@@ -63,6 +63,10 @@ public class WorldEntityProtocol(
      * @param info the world entity info to be deallocated.
      */
     public fun dealloc(info: WorldEntityInfo) {
+        // Prevent returning a destroyed worldentity info object back into the pool
+        if (info.isDestroyed()) {
+            return
+        }
         worldEntityInfoRepository.dealloc(info.localIndex)
     }
 
@@ -73,6 +77,7 @@ public class WorldEntityProtocol(
         prepareHighResolutionBuffers()
         updateInfos()
         postUpdate()
+        cycleCount++
     }
 
     /**
@@ -111,7 +116,6 @@ public class WorldEntityProtocol(
             val avatar = avatarRepository.getOrNull(i) ?: continue
             avatar.postUpdate()
         }
-        avatarRepository.transferAvatars()
     }
 
     /**
@@ -165,5 +169,18 @@ public class WorldEntityProtocol(
          * The logger used to notify about exceptions that may otherwise be lost.
          */
         private val logger: InlineLogger = InlineLogger()
+
+        /**
+         * The number of Worldentity info update cycles that have occurred.
+         * We need to track this to avoid a nasty bug with servers de-allocating + re-allocating
+         * an avatar on the same cycle, in a small area. The effective bug is that another worldentity takes
+         * ones' avatar, which leads to info protocol thinking nothing has changed (assuming the new worldentity
+         * is still within range of the old one, enough to be in high resolution).
+         *
+         * We solve this by forcibly removing a worldentity from high resolution view if the avatar was
+         * allocated on current cycle. If the worldentity is still within range, they will be re-added
+         * later on in the cycle via low resolution updates - but correctly this time around!
+         */
+        internal var cycleCount: Int = 0
     }
 }

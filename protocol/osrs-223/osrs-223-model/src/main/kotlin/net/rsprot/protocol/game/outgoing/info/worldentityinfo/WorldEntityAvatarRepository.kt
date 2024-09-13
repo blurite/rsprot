@@ -15,19 +15,12 @@ import java.lang.ref.SoftReference
  * As a soft reference queue, it will hold on-to the unused references until the JVM
  * absolutely needs the memory - before that, these can be reused, making it a perfect
  * use case for the pooling mechanism.
- * @property releasedAvatarQueue the avatars that were released within this cycle.
- * These avatars are initially put into a different structure as we cannot immediately
- * release them - they could be picked up by something else the same cycle, which could
- * lead to some weird bugs occurring. Instead, we wait for one cycle to pass before
- * pushing them to the queue to be re-usable. This ensures no one is relying on this
- * same instance still.
  */
 public class WorldEntityAvatarRepository internal constructor(
     private val allocator: ByteBufAllocator,
 ) {
     private val elements: Array<WorldEntityAvatar?> = arrayOfNulls(AVATAR_CAPACITY)
     private val queue: ReferenceQueue<WorldEntityAvatar> = ReferenceQueue<WorldEntityAvatar>()
-    private val releasedAvatarQueue: ArrayDeque<WorldEntityAvatar> = ArrayDeque()
 
     /**
      * Gets a world entity at the provided [idx], or null if it doesn't exist.
@@ -67,6 +60,7 @@ public class WorldEntityAvatarRepository internal constructor(
             existing.currentCoord = CoordGrid(level, x, z)
             existing.lastCoord = existing.currentCoord
             existing.angle = angle
+            existing.allocateCycle = WorldEntityProtocol.cycleCount
             elements[index] = existing
             return existing
         }
@@ -89,21 +83,8 @@ public class WorldEntityAvatarRepository internal constructor(
      */
     public fun release(avatar: WorldEntityAvatar) {
         this.elements[avatar.index] = null
-        releasedAvatarQueue += avatar
-    }
-
-    /**
-     * Transfers the recently released avatars over to the pool, so they can be re-used.
-     */
-    internal fun transferAvatars() {
-        if (releasedAvatarQueue.isEmpty()) {
-            return
-        }
-        while (releasedAvatarQueue.isNotEmpty()) {
-            val avatar = releasedAvatarQueue.removeFirst()
-            val reference = SoftReference(avatar, queue)
-            reference.enqueue()
-        }
+        val reference = SoftReference(avatar, queue)
+        reference.enqueue()
     }
 
     internal companion object {

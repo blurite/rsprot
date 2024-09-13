@@ -52,6 +52,15 @@ public class WorldEntityAvatar(
     internal var highResolutionBuffer: ByteBuf? = null
 
     /**
+     * The [WorldEntityProtocol.cycleCount] when this avatar was allocated.
+     * We use this to determine whether to perform a re-synchronization of a worldentity,
+     * which can happen when a worldentity is deallocated and reallocated on the same cycle,
+     * which could result in other clients not seeing any change take place. While rare,
+     * this possibility exists, and it could result in some rather odd bugs.
+     */
+    internal var allocateCycle: Int = WorldEntityProtocol.cycleCount
+
+    /**
      * Precomputes the high resolution buffer of this world entity.
      */
     internal fun precompute() {

@@ -135,6 +135,7 @@ public class NpcInfo internal constructor(
      * This exception will be propagated further during the [toNpcInfoPacket] function call,
      * allowing the server to handle it properly at a per-player basis.
      */
+    @Volatile
     internal var exception: Exception? = null
 
     /**
@@ -145,6 +146,8 @@ public class NpcInfo internal constructor(
      * any memory leaks.
      */
     private var builtIntoPacket: Boolean = false
+
+    override fun isDestroyed(): Boolean = this.exception != null
 
     /**
      * Returns the backing byte buffer holding all the computed information.

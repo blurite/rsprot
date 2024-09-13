@@ -83,6 +83,7 @@ public class PlayerInfo internal constructor(
      * This exception will be propagated further during the [toPacket] function call,
      * allowing the server to handle it properly at a per-player basis.
      */
+    @Volatile
     internal var exception: Exception? = null
 
     /**
@@ -106,6 +107,8 @@ public class PlayerInfo internal constructor(
      * world basis.
      */
     private var invalidateAppearanceCache: Boolean = false
+
+    override fun isDestroyed(): Boolean = this.exception != null
 
     /**
      * Checks if appearance needs invalidation, and invalidates if so.
@@ -682,6 +685,12 @@ public class PlayerInfo internal constructor(
         if (other.avatar.hidden) {
             return false
         }
+        // If the avatar was allocated on this cycle, ensure we remove (and potentially re-add later)
+        // this avatar. This is due to someone logging out and another player taking the avatar the same
+        // cycle - which would otherwise potentially go by unnoticed, with the client assuming nothing changed.
+        if (other.avatar.allocateCycle == PlayerInfoProtocol.cycleCount) {
+            return false
+        }
         val coord = other.avatar.currentCoord
         if (!details.renderCoord.inDistance(coord, this.avatar.resizeRange)) {
             return false
@@ -798,6 +807,7 @@ public class PlayerInfo internal constructor(
         avatar.extendedInfo.localIndex = index
         this.oldSchoolClientType = oldSchoolClientType
         avatar.reset()
+        this.avatar.allocateCycle = PlayerInfoProtocol.cycleCount
         this.activeWorldId = ROOT_WORLD
         // There is always a root world!
         val rootDetails = protocol.detailsStorage.poll(ROOT_WORLD)

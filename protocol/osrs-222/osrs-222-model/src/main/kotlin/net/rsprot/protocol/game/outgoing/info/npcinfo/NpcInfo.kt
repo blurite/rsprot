@@ -58,6 +58,7 @@ public class NpcInfo internal constructor(
      * This exception will be propagated further during the [toNpcInfoPacket] function call,
      * allowing the server to handle it properly at a per-player basis.
      */
+    @Volatile
     internal var exception: Exception? = null
 
     /**
@@ -65,6 +66,8 @@ public class NpcInfo internal constructor(
      * The root world is placed at the end of this array, however id -1 will be treated as the root.
      */
     internal val details: Array<NpcInfoWorldDetails?> = arrayOfNulls(WORLD_ENTITY_CAPACITY + 1)
+
+    override fun isDestroyed(): Boolean = this.exception != null
 
     /**
      * Updates the build area of a given world to the specified one.
