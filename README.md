@@ -1,6 +1,6 @@
 # RSProt
 
-[![GitHub Actions][actions-badge]][actions] [![MIT license][mit-badge]][mit] [![OldSchool - 224 (Alpha)](https://img.shields.io/badge/OldSchool-224_(Alpha)-9a1abd)](https://github.com/blurite/rsprot/tree/master/protocol/osrs-224/osrs-224-api/src/main/kotlin/net/rsprot/protocol/api) [![OldSchool - 223 (Alpha)](https://img.shields.io/badge/OldSchool-223_(Alpha)-9a1abd)](https://github.com/blurite/rsprot/tree/master/protocol/osrs-223/osrs-223-api/src/main/kotlin/net/rsprot/protocol/api) [![OldSchool - 222 (Alpha)](https://img.shields.io/badge/OldSchool-222_(Alpha)-9a1abd)](https://github.com/blurite/rsprot/tree/master/protocol/osrs-222/osrs-222-api/src/main/kotlin/net/rsprot/protocol/api) [![OldSchool - 221 (Alpha)](https://img.shields.io/badge/OldSchool-221_(Alpha)-9a1abd)](https://github.com/blurite/rsprot/tree/master/protocol/osrs-221-api/src/main/kotlin/net/rsprot/protocol/api)
+[![GitHub Actions][actions-badge]][actions] [![MIT license][mit-badge]][mit] [![OldSchool - 225 (Alpha)](https://img.shields.io/badge/OldSchool-225_(Alpha)-9a1abd)](https://github.com/blurite/rsprot/tree/master/protocol/osrs-225/osrs-225-api/src/main/kotlin/net/rsprot/protocol/api) [![OldSchool - 224 (Alpha)](https://img.shields.io/badge/OldSchool-224_(Alpha)-9a1abd)](https://github.com/blurite/rsprot/tree/master/protocol/osrs-224/osrs-224-api/src/main/kotlin/net/rsprot/protocol/api) [![OldSchool - 223 (Alpha)](https://img.shields.io/badge/OldSchool-223_(Alpha)-9a1abd)](https://github.com/blurite/rsprot/tree/master/protocol/osrs-223/osrs-223-api/src/main/kotlin/net/rsprot/protocol/api) [![OldSchool - 222 (Alpha)](https://img.shields.io/badge/OldSchool-222_(Alpha)-9a1abd)](https://github.com/blurite/rsprot/tree/master/protocol/osrs-222/osrs-222-api/src/main/kotlin/net/rsprot/protocol/api) [![OldSchool - 221 (Alpha)](https://img.shields.io/badge/OldSchool-221_(Alpha)-9a1abd)](https://github.com/blurite/rsprot/tree/master/protocol/osrs-221-api/src/main/kotlin/net/rsprot/protocol/api)
 
 ## Status
 > [!NOTE]
@@ -15,7 +15,7 @@ In order to add it to your server, add the below line under dependencies
 in your build.gradle.kts.
 
 ```kts
-implementation("net.rsprot:osrs-224-api:1.0.0-ALPHA-20240910")
+implementation("net.rsprot:osrs-225-api:1.0.0-ALPHA-20240912")
 ```
 
 An in-depth tutorial on how to implement it will be added into this read-me
@@ -31,14 +31,12 @@ other revisions are welcome, but will not be provided by default.
 - Java 11
 
 ## Supported Versions
-This library currently supports revision 221, 222, 223 and 224 OldSchool desktop clients.
+This library currently supports revision 221, 222, 223, 224 and 225 OldSchool desktop clients.
 
 ## Quick Guide
 This section covers a quick guide for how to use the protocol after implementing
 the base API. It is not a guide for the base API itself, that will come in the
-future. This specific quick guide refers to revision 222, which brought changes
-to the complicated info packets.
-Revision 223 and 224 are almost entirely the same, and is recommended to be used over 222.
+future. This specific quick guide refers to revision 225.
 
 #### Player Initialization
 When a player logs in, a new protocol instance must be allocated for
@@ -154,7 +152,6 @@ currently being tracked. This can be done as:
 packets.setNpcUpdateOrigin(0, 0)
 for (index in worldEntityInfo.getAllWorldEntityIndices()) {
     packets.setActiveWorld(index, player.level)
-    packets.playerInfo(index, playerInfo)
     packets.npcInfo(index, npcInfo)
     // Send zone updates for this world entity
 }
@@ -236,6 +233,22 @@ protocol. This can be done via:
 `service.worldEntityAvatarFactory.release(avatar)`
 
 ## Changes
+
+### Revision 225
+Revision 225 brought a small-scale refactoring to the player info packet,
+reducing it back to a single instance rather than one per worldentity.
+This means slight changes in the API, but overall the differences are miniscule.
+These changes bring significant performance improvements over the past 3
+revisions, though.
+
+#### Additions
+1. A new server prot for PROJANIM_SPECIFIC, which now includes the source index
+property. The old ones are now deprecated.
+2. A new server prot for WORLDENTITY_INFO, which has a new byte addition
+for the current height level of the world entity, allowing it to teleport up
+and down.
+3. EVENT_NATIVE_MOUSE_MOVE packet has been restored, and comes with a small
+change - it now includes information about a recently pressed mouse button.
 
 ### Revision 224
 Revision 224 saw the introduction of submenus in interfaces, as well as
