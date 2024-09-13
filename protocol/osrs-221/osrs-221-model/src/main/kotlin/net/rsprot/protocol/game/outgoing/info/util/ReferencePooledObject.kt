@@ -30,4 +30,14 @@ public interface ReferencePooledObject {
      * during the [onAlloc], to ensure no work is 'wasted'.
      */
     public fun onDealloc()
+
+    /**
+     * Whether this reference pooled object is destroyed.
+     * A destroyed object will not be returned back to the pool and instead will be left off for the
+     * garbage collector to clean up in due time. This condition is only hit when there was some error
+     * thrown during the processing of a given info object. In order to mitigate potential future
+     * problems that might continue to stem from re-using this object, we discard it altogether.
+     * @return whether the info object is destroyed and should not be returned to the pool.
+     */
+    public fun isDestroyed(): Boolean
 }

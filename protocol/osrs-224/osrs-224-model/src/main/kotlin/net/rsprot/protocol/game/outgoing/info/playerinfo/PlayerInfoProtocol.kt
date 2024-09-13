@@ -107,6 +107,10 @@ public class PlayerInfoProtocol(
      * @param info the player info object
      */
     public fun dealloc(info: PlayerInfo) {
+        // Prevent returning a destroyed player info object back into the pool
+        if (info.isDestroyed()) {
+            return
+        }
         playerInfoRepository.dealloc(info.localIndex)
     }
 

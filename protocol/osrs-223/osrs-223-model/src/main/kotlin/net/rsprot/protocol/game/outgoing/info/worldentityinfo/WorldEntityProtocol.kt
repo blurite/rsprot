@@ -63,6 +63,10 @@ public class WorldEntityProtocol(
      * @param info the world entity info to be deallocated.
      */
     public fun dealloc(info: WorldEntityInfo) {
+        // Prevent returning a destroyed worldentity info object back into the pool
+        if (info.isDestroyed()) {
+            return
+        }
         worldEntityInfoRepository.dealloc(info.localIndex)
     }
 

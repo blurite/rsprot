@@ -75,6 +75,10 @@ public class NpcInfoProtocol(
      * @param info the npc info object to deallocate
      */
     public fun dealloc(info: NpcInfo) {
+        // Prevent returning a destroyed npc info object back into the pool
+        if (info.isDestroyed()) {
+            return
+        }
         npcInfoRepository.dealloc(info.localPlayerIndex)
     }
 

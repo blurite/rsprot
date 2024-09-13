@@ -83,6 +83,7 @@ public class PlayerInfo internal constructor(
      * This exception will be propagated further during the [toPacket] function call,
      * allowing the server to handle it properly at a per-player basis.
      */
+    @Volatile
     internal var exception: Exception? = null
 
     /**
@@ -117,6 +118,8 @@ public class PlayerInfo internal constructor(
         invalidateAppearanceCache = false
         avatar.extendedInfo.invalidateAppearanceCache()
     }
+
+    override fun isDestroyed(): Boolean = this.exception != null
 
     /**
      * Sets an active world in which the player currently resides.

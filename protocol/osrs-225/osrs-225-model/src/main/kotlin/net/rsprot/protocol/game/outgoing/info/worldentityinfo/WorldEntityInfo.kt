@@ -82,9 +82,13 @@ public class WorldEntityInfo internal constructor(
     private val addedWorldEntities = ArrayList<Int>()
     private val removedWorldEntities = ArrayList<Int>()
     private var buffer: ByteBuf? = null
+
+    @Volatile
     internal var exception: Exception? = null
     private var builtIntoPacket: Boolean = false
     private var renderCoord: CoordGrid = CoordGrid.INVALID
+
+    override fun isDestroyed(): Boolean = this.exception != null
 
     /**
      * Updates the render distance for this player, potentially allowing

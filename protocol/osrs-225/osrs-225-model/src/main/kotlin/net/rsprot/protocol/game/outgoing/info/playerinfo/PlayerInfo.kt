@@ -150,6 +150,7 @@ public class PlayerInfo internal constructor(
      * This exception will be propagated further during the [toPacket] function call,
      * allowing the server to handle it properly at a per-player basis.
      */
+    @Volatile
     internal var exception: Exception? = null
 
     /**
@@ -173,6 +174,8 @@ public class PlayerInfo internal constructor(
      */
     @Throws(IllegalStateException::class)
     public fun backingBuffer(): ByteBuf = checkNotNull(buffer)
+
+    override fun isDestroyed(): Boolean = this.exception != null
 
     /**
      * Updates the render coordinate for the provided world id.
