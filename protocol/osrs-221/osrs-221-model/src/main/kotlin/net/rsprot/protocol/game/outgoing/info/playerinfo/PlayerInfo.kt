@@ -188,6 +188,25 @@ public class PlayerInfo internal constructor(
     }
 
     /**
+     * Updates the build area of this player info object.
+     * This will ensure that no players outside of this box will be
+     * added to high resolution view.
+     * @param zoneX the south-western zone x coordinate of the build area
+     * @param zoneZ the south-western zone z coordinate of the build area
+     * @param widthInZones the build area width in zones (typically 13, meaning 104 tiles)
+     * @param heightInZones the build area height in zones (typically 13, meaning 104 tiles)
+     */
+    @JvmOverloads
+    public fun updateBuildArea(
+        zoneX: Int,
+        zoneZ: Int,
+        widthInZones: Int = BuildArea.DEFAULT_BUILD_AREA_SIZE,
+        heightInZones: Int = BuildArea.DEFAULT_BUILD_AREA_SIZE,
+    ) {
+        this.buildArea = BuildArea(zoneX, zoneZ, widthInZones, heightInZones)
+    }
+
+    /**
      * Turns the player info object into a wrapped packet.
      * This is necessary because the encoder itself is only triggered in Netty, and it is possible
      * that the buffer has already been replaced with a new variant before it gets to that stage.
