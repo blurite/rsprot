@@ -10,10 +10,22 @@ public object InventoryObject {
 
     @JvmSynthetic
     public operator fun invoke(
+        id: Int,
+        count: Int,
+    ): Long = pack(0, id, count)
+
+    @JvmSynthetic
+    public operator fun invoke(
         slot: Int,
         id: Int,
         count: Int,
     ): Long = pack(slot, id, count)
+
+    @JvmStatic
+    public fun pack(
+        id: Int,
+        count: Int,
+    ): Long = pack(0, id, count)
 
     @JvmStatic
     public fun pack(
