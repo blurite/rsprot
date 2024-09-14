@@ -28,6 +28,18 @@ public class RebuildRegionZone private constructor(
         key,
     )
 
+    public val rotation: Int
+        get() = referenceZone.rotation
+    public val zoneX: Int
+        get() = referenceZone.zoneX
+    public val zoneZ: Int
+        get() = referenceZone.zoneZ
+    public val level: Int
+        get() = referenceZone.level
+
+    public val mapsquareId: Int
+        get() = ((zoneX ushr 3) shl 8) or (zoneZ ushr 3)
+
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (javaClass != other?.javaClass) return false
