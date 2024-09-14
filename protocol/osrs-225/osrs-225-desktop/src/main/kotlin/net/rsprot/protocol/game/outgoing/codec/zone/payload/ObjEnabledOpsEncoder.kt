@@ -18,6 +18,6 @@ public class ObjEnabledOpsEncoder : ZoneProtEncoder<ObjEnabledOps> {
         // obj_opfilter(level, x, z, id, opFlags)
         buffer.p1Alt1(message.coordInZonePacked)
         buffer.p2Alt2(message.id)
-        buffer.p1Alt2(message.opFlags.value)
+        buffer.p1Alt2(message.opFlags.toInt())
     }
 }

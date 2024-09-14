@@ -19,6 +19,6 @@ public class LocAddChangeEncoder : ZoneProtEncoder<LocAddChange> {
         buffer.p2Alt2(message.id)
         buffer.p1Alt1(message.coordInZonePacked)
         buffer.p1Alt3(message.locPropertiesPacked)
-        buffer.p1Alt3(message.opFlags.value)
+        buffer.p1Alt3(message.opFlags.toInt())
     }
 }

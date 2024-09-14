@@ -18,7 +18,7 @@ public class LocAddChangeEncoder : ZoneProtEncoder<LocAddChange> {
         // loc_add_change_del(world, level, x, z, layer, id, shape, rotation, opFlags, 0, -1)
         buffer.p1Alt2(message.locPropertiesPacked)
         buffer.p1(message.coordInZonePacked)
-        buffer.p1Alt2(message.opFlags.value)
+        buffer.p1Alt2(message.opFlags.toInt())
         buffer.p2Alt1(message.id)
     }
 }

@@ -20,7 +20,7 @@ public class ObjAddEncoder : ZoneProtEncoder<ObjAdd> {
         buffer.p2Alt1(message.timeUntilDespawn)
         buffer.p1Alt3(if (message.neverBecomesPublic) 1 else 0)
         buffer.p2Alt2(message.id)
-        buffer.p1Alt1(message.opFlags.value)
+        buffer.p1Alt1(message.opFlags.toInt())
         buffer.p1Alt1(message.ownershipType)
         buffer.p2(message.timeUntilPublic)
         buffer.p4Alt3(message.quantity)
