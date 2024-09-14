@@ -28,8 +28,8 @@ public class UpdateInvFullEncoder : MessageEncoder<UpdateInvFull> {
                 buffer.p1Alt2(0)
                 continue
             }
-            buffer.p2Alt3(obj.id + 1)
-            val count = obj.count
+            buffer.p2Alt3(InventoryObject.getId(obj) + 1)
+            val count = InventoryObject.getCount(obj)
             buffer.p1Alt2(count.coerceAtMost(0xFF))
             if (count >= 255) {
                 buffer.p4Alt2(count)

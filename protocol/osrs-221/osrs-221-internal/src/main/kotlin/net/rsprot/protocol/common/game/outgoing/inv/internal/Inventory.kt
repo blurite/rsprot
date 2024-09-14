@@ -37,8 +37,8 @@ public class Inventory private constructor(
      * @throws ArrayIndexOutOfBoundsException if the inventory is full
      */
     @Throws(ArrayIndexOutOfBoundsException::class)
-    public fun add(obj: InventoryObject) {
-        contents[count++] = obj.packed
+    public fun add(obj: Long) {
+        contents[count++] = obj
     }
 
     /**
@@ -48,7 +48,7 @@ public class Inventory private constructor(
      * @throws ArrayIndexOutOfBoundsException if the index is out of bounds
      */
     @Throws(ArrayIndexOutOfBoundsException::class)
-    public operator fun get(slot: Int): InventoryObject = InventoryObject(contents[slot])
+    public operator fun get(slot: Int): Long = contents[slot]
 
     /**
      * Clears the inventory by setting the count to zero.

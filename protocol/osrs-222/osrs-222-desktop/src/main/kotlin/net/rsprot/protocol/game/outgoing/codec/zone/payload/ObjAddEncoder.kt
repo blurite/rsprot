@@ -24,6 +24,6 @@ public class ObjAddEncoder : ZoneProtEncoder<ObjAdd> {
         buffer.p1(message.ownershipType)
         buffer.p1(if (message.neverBecomesPublic) 1 else 0)
         buffer.p1Alt3(message.coordInZonePacked)
-        buffer.p1Alt3(message.opFlags.value)
+        buffer.p1Alt3(message.opFlags.toInt())
     }
 }

@@ -136,6 +136,15 @@ public class RebuildRegion private constructor(
             key,
         )
 
+        public val rotation: Int
+            get() = referenceZone.rotation
+        public val zoneX: Int
+            get() = referenceZone.zoneX
+        public val zoneZ: Int
+            get() = referenceZone.zoneZ
+        public val level: Int
+            get() = referenceZone.level
+
         override fun equals(other: Any?): Boolean {
             if (this === other) return true
             if (javaClass != other?.javaClass) return false

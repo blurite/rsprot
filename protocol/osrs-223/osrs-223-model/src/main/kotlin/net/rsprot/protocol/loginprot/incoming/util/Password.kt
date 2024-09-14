@@ -1,12 +1,11 @@
 package net.rsprot.protocol.loginprot.incoming.util
 
 /**
- * A value class to hold the password.
+ * A class to hold the password.
  * This class offers additional functionality to clear the data from memory,
  * to avoid any potential memory attacks.
  */
-@JvmInline
-public value class Password(
+public class Password(
     public val data: ByteArray,
 ) {
     /**

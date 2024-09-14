@@ -16,7 +16,7 @@ public class LocAddChangeEncoder : ZoneProtEncoder<LocAddChange> {
         // The function at the bottom of the LOC_ADD_CHANGE has a consistent order,
         // making it easy to identify all the properties of this packet:
         // loc_add_change_del(world, level, x, z, layer, id, shape, rotation, opFlags, 0, -1)
-        buffer.p1(message.opFlags.value)
+        buffer.p1(message.opFlags.toInt())
         buffer.p1Alt1(message.coordInZonePacked)
         buffer.p1Alt1(message.locPropertiesPacked)
         buffer.p2Alt2(message.id)

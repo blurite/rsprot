@@ -3,7 +3,6 @@ package net.rsprot.protocol.game.outgoing.zone.payload
 import net.rsprot.protocol.ServerProtCategory
 import net.rsprot.protocol.common.game.outgoing.codec.zone.payload.OldSchoolZoneProt
 import net.rsprot.protocol.game.outgoing.GameServerProtCategory
-import net.rsprot.protocol.game.outgoing.util.OpFlags
 import net.rsprot.protocol.game.outgoing.zone.payload.util.CoordInZone
 import net.rsprot.protocol.message.ZoneProt
 
@@ -27,6 +26,8 @@ import net.rsprot.protocol.message.ZoneProt
  * @property zInZone the z coordinate of the obj within the zone it is in,
  * a value in range of 0 to 7 (inclusive) is expected. Any bits outside that are ignored.
  * @property opFlags the right-click options enabled on this obj.
+ * Use the [net.rsprot.protocol.game.outgoing.util.OpFlags] helper object to create these
+ * bitpacked values which can be passed into it.
  * @property timeUntilPublic how many game cycles until the obj turns public.
  * This property is only used on the C++-based clients.
  * @property timeUntilDespawn how many game cycles until the obj disappears.
@@ -41,7 +42,7 @@ public class ObjAdd private constructor(
     private val _id: UShort,
     public val quantity: Int,
     private val coordInZone: CoordInZone,
-    public val opFlags: OpFlags,
+    public val opFlags: Byte,
     private val _timeUntilPublic: UShort,
     private val _timeUntilDespawn: UShort,
     private val _ownershipType: UByte,
@@ -52,7 +53,7 @@ public class ObjAdd private constructor(
         quantity: Int,
         xInZone: Int,
         zInZone: Int,
-        opFlags: OpFlags,
+        opFlags: Byte,
         timeUntilPublic: Int,
         timeUntilDespawn: Int,
         ownershipType: Int,
@@ -78,7 +79,7 @@ public class ObjAdd private constructor(
         quantity: Int,
         xInZone: Int,
         zInZone: Int,
-        opFlags: OpFlags,
+        opFlags: Byte,
     ) : this(
         id,
         quantity,

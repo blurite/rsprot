@@ -87,14 +87,14 @@ public class UpdateInvFull private constructor(
         get() = GameServerProtCategory.HIGH_PRIORITY_PROT
 
     /**
-     * Gets the obj in the [slot] provided.
+     * Gets the bitpacked obj in the [slot] provided.
      * @param slot the slot in the inventory.
      * @return the inventory object that's in that slot,
      * or [InventoryObject.NULL] if there's no object.
      * @throws IndexOutOfBoundsException if the [slot] is outside
      * the inventory's boundaries.
      */
-    public fun getObject(slot: Int): InventoryObject = inventory[slot]
+    public fun getObject(slot: Int): Long = inventory[slot]
 
     public fun returnInventory() {
         inventory.clear()
@@ -138,11 +138,11 @@ public class UpdateInvFull private constructor(
      */
     public fun interface ObjectProvider {
         /**
-         * Provides an [InventoryObject] instance for a given slot
+         * Provides an [InventoryObject] for a given slot
          * in inventory. If there is no object in that slot,
          * use [InventoryObject.NULL] as an indicator of it.
          */
-        public fun provide(slot: Int): InventoryObject
+        public fun provide(slot: Int): Long
     }
 
     private companion object {
@@ -153,7 +153,7 @@ public class UpdateInvFull private constructor(
          * @param provider the object provider, used to return information
          * about an object in a slot of an inventory.
          * @return an inventory object, which is a compressed representation
-         * of a list of [InventoryObject]s, backed by a long array.
+         * of a list of [InventoryObject]s as longs, backed by a long array.
          */
         private fun buildInventory(
             capacity: Int,
@@ -163,7 +163,7 @@ public class UpdateInvFull private constructor(
             for (i in 0..<capacity) {
                 val obj = provider.provide(i)
                 if (RSProtFlags.inventoryObjCheck) {
-                    check(obj == InventoryObject.NULL || obj.count >= 0) {
+                    check(obj == InventoryObject.NULL || InventoryObject.getCount(obj) >= 0) {
                         "Obj count cannot be below zero: $obj @ $i"
                     }
                 }

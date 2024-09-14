@@ -89,6 +89,32 @@ public class NpcInfo internal constructor(
     }
 
     /**
+     * Updates the build area of a given world to the specified one.
+     * This will ensure that no NPCs outside of this box will be
+     * added to high resolution view.
+     * @param worldId the id of the world to set the build area of,
+     * with -1 being the root world.
+     * @param zoneX the south-western zone x coordinate of the build area
+     * @param zoneZ the south-western zone z coordinate of the build area
+     * @param widthInZones the build area width in zones (typically 13, meaning 104 tiles)
+     * @param heightInZones the build area height in zones (typically 13, meaning 104 tiles)
+     */
+    @JvmOverloads
+    public fun updateBuildArea(
+        worldId: Int,
+        zoneX: Int,
+        zoneZ: Int,
+        widthInZones: Int = BuildArea.DEFAULT_BUILD_AREA_SIZE,
+        heightInZones: Int = BuildArea.DEFAULT_BUILD_AREA_SIZE,
+    ) {
+        require(worldId == ROOT_WORLD || worldId in 0..<2048) {
+            "World id must be -1 or in range of 0..<2048"
+        }
+        val details = getDetails(worldId)
+        details.buildArea = BuildArea(zoneX, zoneZ, widthInZones, heightInZones)
+    }
+
+    /**
      * Allocates a new NPC info tracking object for the respective [worldId],
      * keeping track of everyone that's within this new world entity.
      * @param worldId the new world entity id

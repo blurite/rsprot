@@ -3,7 +3,6 @@ package net.rsprot.protocol.game.outgoing.zone.payload
 import net.rsprot.protocol.ServerProtCategory
 import net.rsprot.protocol.common.game.outgoing.codec.zone.payload.OldSchoolZoneProt
 import net.rsprot.protocol.game.outgoing.GameServerProtCategory
-import net.rsprot.protocol.game.outgoing.util.OpFlags
 import net.rsprot.protocol.game.outgoing.zone.payload.util.CoordInZone
 import net.rsprot.protocol.game.outgoing.zone.payload.util.LocProperties
 import net.rsprot.protocol.message.ZoneProt
@@ -21,12 +20,14 @@ import net.rsprot.protocol.message.ZoneProt
  * @property shape the shape of the loc, a value of 0 to 22 (inclusive) is expected.
  * @property rotation the rotation of the loc, a value of 0 to 3 (inclusive) is expected.
  * @property opFlags the right-click options enabled on this loc.
+ * Use the [net.rsprot.protocol.game.outgoing.util.OpFlags] helper object to create these
+ * bitpacked values which can be passed into it.
  */
 public class LocAddChange private constructor(
     private val _id: UShort,
     private val coordInZone: CoordInZone,
     private val locProperties: LocProperties,
-    public val opFlags: OpFlags,
+    public val opFlags: Byte,
 ) : ZoneProt {
     public constructor(
         id: Int,
@@ -34,7 +35,7 @@ public class LocAddChange private constructor(
         zInZone: Int,
         shape: Int,
         rotation: Int,
-        opFlags: OpFlags,
+        opFlags: Byte,
     ) : this(
         id.toUShort(),
         CoordInZone(xInZone, zInZone),

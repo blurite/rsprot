@@ -55,8 +55,7 @@ public class EventKeyboard(
      * format back into the normalized [java.awt.event.KeyEvent] format.
      * @property length the length of the key sequence
      */
-    @JvmInline
-    public value class KeySequence(
+    public class KeySequence(
         private val array: ByteArray,
     ) {
         public val length: Int

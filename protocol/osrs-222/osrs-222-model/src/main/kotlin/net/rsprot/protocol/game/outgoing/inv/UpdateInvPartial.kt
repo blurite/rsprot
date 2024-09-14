@@ -103,14 +103,14 @@ public class UpdateInvPartial private constructor(
         get() = GameServerProtCategory.HIGH_PRIORITY_PROT
 
     /**
-     * Gets the obj in the [slot] provided.
+     * Gets the bitpacked obj in the [slot] provided.
      * @param slot the slot in the inventory.
      * @return the inventory object that's in that slot,
      * or [InventoryObject.NULL] if there's no object.
      * @throws IndexOutOfBoundsException if the [slot] is outside
      * the inventory's boundaries.
      */
-    public fun getObject(slot: Int): InventoryObject = inventory[slot]
+    public fun getObject(slot: Int): Long = inventory[slot]
 
     public fun returnInventory() {
         inventory.clear()
@@ -156,11 +156,11 @@ public class UpdateInvPartial private constructor(
         internal val indices: Iterator<Int>,
     ) {
         /**
-         * Provides an [InventoryObject] instance for a given slot
+         * Provides an [InventoryObject] for a given slot
          * in inventory. If there is no object in that slot,
          * use [InventoryObject.NULL] as an indicator of it.
          */
-        public abstract fun provide(slot: Int): InventoryObject
+        public abstract fun provide(slot: Int): Long
     }
 
     private companion object {
@@ -169,7 +169,7 @@ public class UpdateInvPartial private constructor(
          * @param provider the object provider, used to return information
          * about an object in a slot of an inventory.
          * @return an inventory object, which is a compressed representation
-         * of a list of [InventoryObject]s, backed by a long array.
+         * of a list of [InventoryObject]s as longs, backed by a long array.
          */
         private fun buildInventory(provider: IndexedObjectProvider): Inventory {
             val inventory = InventoryPool.pool.borrowObject()
@@ -180,10 +180,10 @@ public class UpdateInvPartial private constructor(
                         "Obj cannot be InventoryObject.NULL for partial updates. Use InventoryObject(slot, -1, -1) " +
                             "instead."
                     }
-                    check(obj.slot >= 0) {
+                    check(InventoryObject.getSlot(obj) >= 0) {
                         "Obj slot cannot be below zero: $obj $ $index"
                     }
-                    check(obj.id == -1 || obj.count >= 0) {
+                    check(InventoryObject.getId(obj) == -1 || InventoryObject.getCount(obj) >= 0) {
                         "Obj count cannot be below zero: $obj @ $index"
                     }
                 }
