@@ -1,63 +1,50 @@
 package net.rsprot.protocol.common.game.outgoing.inv
 
 /**
- * Inventory objects are a value class around the primitive 'long'
- * to efficiently compress an inventory's contents into a long array.
- * This allows us to avoid any garbage creation that would otherwise
- * be created by making lists of objs repeatedly.
+ * Inventory object is a helper object built around the primitive 'long' type.
+ * We utilize longs directly here to reduce the effects of garbage creation
+ * via inventories, as this can otherwise get quite severe with a lot of players.
  */
-@JvmInline
-public value class InventoryObject(
-    public val packed: Long,
-) {
-    public constructor(
+public object InventoryObject {
+    public const val NULL: Long = -1
+
+    @JvmSynthetic
+    public operator fun invoke(
         slot: Int,
         id: Int,
         count: Int,
-    ) : this(
-        (slot.toLong() and 0xFFFF)
-            .or((id.toLong() and 0xFFFF) shl 16)
-            .or((count.toLong() and 0xFFFFFFFF) shl 32),
-    )
+    ): Long = pack(slot, id, count)
 
-    public constructor(
+    @JvmStatic
+    public fun pack(
+        slot: Int,
         id: Int,
         count: Int,
-    ) : this(
-        0,
-        id,
-        count,
-    )
+    ): Long =
+        (slot.toLong() and 0xFFFF)
+            .or((id.toLong() and 0xFFFF) shl 16)
+            .or((count.toLong() and 0xFFFFFFFF) shl 32)
 
-    public val slot: Int
-        get() {
-            val value = (packed and 0xFFFF).toInt()
-            return if (value == 0xFFFF) {
-                -1
-            } else {
-                value
-            }
+    @JvmStatic
+    public fun getSlot(packed: Long): Int {
+        val value = (packed and 0xFFFF).toInt()
+        return if (value == 0xFFFF) {
+            -1
+        } else {
+            value
         }
-    public val id: Int
-        get() {
-            val value = (packed ushr 16 and 0xFFFF).toInt()
-            return if (value == 0xFFFF) {
-                -1
-            } else {
-                value
-            }
-        }
-    public val count: Int
-        get() = (packed ushr 32).toInt()
-
-    override fun toString(): String =
-        "InventoryObject(" +
-            "slot=$slot, " +
-            "id=$id, " +
-            "count=$count" +
-            ")"
-
-    public companion object {
-        public val NULL: InventoryObject = InventoryObject(-1)
     }
+
+    @JvmStatic
+    public fun getId(packed: Long): Int {
+        val value = (packed ushr 16 and 0xFFFF).toInt()
+        return if (value == 0xFFFF) {
+            -1
+        } else {
+            value
+        }
+    }
+
+    @JvmStatic
+    public fun getCount(packed: Long): Int = (packed ushr 32).toInt()
 }
