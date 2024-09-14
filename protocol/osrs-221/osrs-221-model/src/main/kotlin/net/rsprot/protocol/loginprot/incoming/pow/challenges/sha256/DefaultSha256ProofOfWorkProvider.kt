@@ -4,12 +4,11 @@ import net.rsprot.protocol.loginprot.incoming.pow.ProofOfWorkProvider
 import net.rsprot.protocol.loginprot.incoming.pow.SingleTypeProofOfWorkProvider
 
 /**
- * A value class to wrap the properties of a SHA-256 into a single instance.
+ * A class to wrap the properties of a SHA-256 into a single instance.
  * @property provider the SHA-256 proof of work provider.
  */
 @Suppress("MemberVisibilityCanBePrivate")
-@JvmInline
-public value class DefaultSha256ProofOfWorkProvider private constructor(
+public class DefaultSha256ProofOfWorkProvider private constructor(
     public val provider: SingleTypeProofOfWorkProvider<Sha256Challenge, Sha256MetaData>,
 ) : ProofOfWorkProvider<Sha256Challenge, Sha256MetaData> by provider {
     public constructor(
