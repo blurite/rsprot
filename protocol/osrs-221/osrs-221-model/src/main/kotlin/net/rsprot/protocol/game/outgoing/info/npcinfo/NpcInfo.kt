@@ -173,6 +173,35 @@ public class NpcInfo internal constructor(
     }
 
     /**
+     * Gets the high resolution indices in a new arraylist of integers.
+     * The list is initialized to an initial capacity equal to the high resolution npc index count.
+     * @return the newly created arraylist of indices
+     */
+    public fun getHighResolutionIndices(): ArrayList<Int> {
+        val collection = ArrayList<Int>(highResolutionNpcIndexCount)
+        for (i in 0..<highResolutionNpcIndexCount) {
+            val index = highResolutionNpcIndices[i].toInt()
+            collection.add(index)
+        }
+        return collection
+    }
+
+    /**
+     * Appends the high resolution indices to the provided [collection]. This can be used to determine which NPCs the
+     * player is currently seeing in the client. Servers often rely on this metric to determine things
+     * such as aggression/hunt.
+     * @param collection the mutable collection of integer indices to append the indices into.
+     * @return the provided [collection] to chaining.
+     */
+    public fun <T> appendHighResolutionIndices(collection: T): T where T : MutableCollection<Int> {
+        for (i in 0..<highResolutionNpcIndexCount) {
+            val index = highResolutionNpcIndices[i].toInt()
+            collection.add(index)
+        }
+        return collection
+    }
+
+    /**
      * Turns this npc info structure into a respective npc info packet, depending
      * on the current known view distance.
      */

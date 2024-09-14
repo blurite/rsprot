@@ -165,6 +165,100 @@ public class NpcInfo internal constructor(
     }
 
     /**
+     * Gets the world details implementation of the specified [worldId], or null if it doesn't exist.
+     * This function will throw an exception if it is called post-deallocation for the root world,
+     * as it will then be deallocated.
+     */
+    private fun getDetailsOrNull(worldId: Int): NpcInfoWorldDetails? {
+        val details =
+            if (worldId == ROOT_WORLD) {
+                details[WORLD_ENTITY_CAPACITY]
+            } else {
+                if (worldId !in 0..<WORLD_ENTITY_CAPACITY) {
+                    return null
+                }
+                details[worldId]
+            }
+        return details
+    }
+
+    /**
+     * Gets the high resolution indices of the given [worldId] in a new arraylist of integers.
+     * The list is initialized to an initial capacity equal to the high resolution npc index count.
+     * @param worldId the worldId to collect the indices from. For root world, use [ROOT_WORLD].
+     * @throws IllegalArgumentException if the world id is not in range of 0..<2048, or [ROOT_WORLD].
+     * @throws IllegalStateException if the provided world has not been allocated. It is up to the
+     * caller to ensure the world they're accessible is available. Root world will always be available
+     * as long as the given info object is allocated.
+     * @return the newly created arraylist of indices
+     */
+    public fun getHighResolutionIndices(worldId: Int): ArrayList<Int> {
+        val details = getDetails(worldId)
+        val collection = ArrayList<Int>(details.highResolutionNpcIndexCount)
+        for (i in 0..<details.highResolutionNpcIndexCount) {
+            val index = details.highResolutionNpcIndices[i].toInt()
+            collection.add(index)
+        }
+        return collection
+    }
+
+    /**
+     * Gets the high resolution indices of the given [worldId] in a new arraylist of integers, or null
+     * if the provided world does not exist.
+     * The list is initialized to an initial capacity equal to the high resolution npc index count.
+     * @param worldId the worldId to collect the indices from. For root world, use [ROOT_WORLD].
+     * @throws IllegalArgumentException if the world id is not in range of 0..<2048, or [ROOT_WORLD].
+     * @throws IllegalStateException if the provided world has not been allocated. It is up to the
+     * caller to ensure the world they're accessible is available. Root world will always be available
+     * as long as the given info object is allocated.
+     * @return the newly created arraylist of indices, or null if the world does not exist.
+     */
+    public fun getHighResolutionIndicesOrNull(worldId: Int): ArrayList<Int>? {
+        val details = getDetailsOrNull(worldId) ?: return null
+        val collection = ArrayList<Int>(details.highResolutionNpcIndexCount)
+        for (i in 0..<details.highResolutionNpcIndexCount) {
+            val index = details.highResolutionNpcIndices[i].toInt()
+            collection.add(index)
+        }
+        return collection
+    }
+
+    /**
+     * Appends the high resolution indices of the given [worldId] to the provided
+     * [collection]. This can be used to determine which NPCs the player is currently
+     * seeing in the client. Servers often rely on this metric to determine things
+     * such as aggression/hunt.
+     * @param worldId the worldId to collect the indices from. For root world, use [ROOT_WORLD].
+     * @param collection the mutable collection of integer indices to append the indices into.
+     * @param throwExceptionIfNoWorld whether to throw an exception if the world does not exist.
+     * @throws IllegalArgumentException if the world id is not in range of 0..<2048, or [ROOT_WORLD],
+     * as long as [throwExceptionIfNoWorld] is true.
+     * @throws IllegalStateException if the provided world has not been allocated. It is up to the
+     * caller to ensure the world they're accessible is available. Root world will always be available
+     * as long as the given info object is allocated. This will only be thrown if [throwExceptionIfNoWorld]
+     * is true.
+     * @return the provided [collection] to chaining.
+     */
+    @JvmOverloads
+    public fun <T> appendHighResolutionIndices(
+        worldId: Int,
+        collection: T,
+        throwExceptionIfNoWorld: Boolean = true,
+    ): T where T : MutableCollection<Int> {
+        val details =
+            if (throwExceptionIfNoWorld) {
+                getDetails(worldId)
+            } else {
+                getDetailsOrNull(worldId) ?: return collection
+            }
+        for (i in 0..<details.highResolutionNpcIndexCount) {
+            val index = details.highResolutionNpcIndices[i].toInt()
+            collection.add(index)
+        }
+        return collection
+    }
+
+    /**
      * Returns the backing byte buffer holding all the computed information.
      * @throws IllegalStateException if the buffer is null, meaning it has no yet been
      * initialized for this cycle.
