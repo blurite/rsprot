@@ -141,14 +141,13 @@ public class MessagePublic private constructor(
             ")"
 
     /**
-     * A value class for message colour patterns, allowing easy
+     * A class for message colour patterns, allowing easy
      * conversion from the byte array to the respective 24-bit RGB colours.
      * This wrapper class additionally provides a helpful [isValid] function,
      * as it is possible to otherwise send bad data from the client and
      * crash the players in vicinity.
      */
-    @JvmInline
-    public value class MessageColourPattern(
+    public class MessageColourPattern(
         private val bytes: ByteArray,
     ) {
         public val length: Int
