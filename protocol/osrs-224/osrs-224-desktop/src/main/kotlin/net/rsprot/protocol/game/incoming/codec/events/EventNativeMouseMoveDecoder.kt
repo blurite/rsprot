@@ -50,12 +50,12 @@ public class EventNativeMouseMoveDecoder : MessageDecoder<EventNativeMouseMove> 
                 deltaY = (packed and 0x3F) - 32
             }
             val change =
-                MouseMovements.MousePosChange(
+                MouseMovements.MousePosChange.pack(
                     timeSinceLastMovement,
                     deltaX,
                     deltaY,
                 )
-            array[count++] = change.packed
+            array[count++] = change
         }
         val slice = array.copyOf(count)
         return EventNativeMouseMove(
