@@ -15,7 +15,9 @@ import net.rsprot.protocol.game.outgoing.info.npcinfo.NpcAvatarExceptionHandler
 import net.rsprot.protocol.game.outgoing.info.npcinfo.NpcAvatarFactory
 import net.rsprot.protocol.game.outgoing.info.npcinfo.NpcIndexSupplier
 import net.rsprot.protocol.game.outgoing.info.npcinfo.NpcInfo
+import net.rsprot.protocol.game.outgoing.info.npcinfo.NpcInfoLarge
 import net.rsprot.protocol.game.outgoing.info.npcinfo.NpcInfoProtocol
+import net.rsprot.protocol.game.outgoing.info.npcinfo.NpcInfoSmall
 import net.rsprot.protocol.game.outgoing.info.util.BuildArea
 import net.rsprot.protocol.game.outgoing.info.worker.DefaultProtocolWorker
 import org.openjdk.jmh.annotations.Benchmark
@@ -113,7 +115,11 @@ class NpcInfoBenchmark {
         protocol.update()
         for (i in 1..2046) {
             val info = protocol[i]
-            info.backingBuffer().release()
+            when (val packet = info.toNpcInfoPacket()) {
+                is NpcInfoSmall -> packet.release()
+                is NpcInfoLarge -> packet.release()
+                else -> throw IllegalStateException("Unknown packet type: $packet")
+            }
         }
         for (npc in serverNpcs) {
             npc.avatar.postUpdate()
