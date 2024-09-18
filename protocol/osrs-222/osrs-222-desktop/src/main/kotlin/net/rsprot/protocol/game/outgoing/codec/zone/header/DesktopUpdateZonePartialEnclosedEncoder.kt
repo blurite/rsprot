@@ -42,7 +42,6 @@ public class DesktopUpdateZonePartialEnclosedEncoder : MessageEncoder<UpdateZone
             message.payload.readerIndex(),
             message.payload.readableBytes(),
         )
-        message.payload.release()
     }
 
     public companion object : UpdateZonePartialEnclosedCache {

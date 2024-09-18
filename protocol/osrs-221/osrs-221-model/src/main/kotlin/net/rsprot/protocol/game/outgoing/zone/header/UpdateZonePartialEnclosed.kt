@@ -1,6 +1,7 @@
 package net.rsprot.protocol.game.outgoing.zone.header
 
 import io.netty.buffer.ByteBuf
+import io.netty.buffer.DefaultByteBufHolder
 import net.rsprot.protocol.ServerProtCategory
 import net.rsprot.protocol.game.outgoing.GameServerProtCategory
 import net.rsprot.protocol.message.OutgoingGameMessage
@@ -27,7 +28,8 @@ public class UpdateZonePartialEnclosed private constructor(
     private val _zoneZ: UByte,
     private val _level: UByte,
     public val payload: ByteBuf,
-) : OutgoingGameMessage {
+) : DefaultByteBufHolder(payload),
+    OutgoingGameMessage {
     public constructor(
         zoneX: Int,
         zoneZ: Int,
