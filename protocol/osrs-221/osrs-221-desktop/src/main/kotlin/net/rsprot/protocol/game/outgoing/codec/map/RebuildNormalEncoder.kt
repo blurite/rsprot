@@ -20,15 +20,11 @@ public class RebuildNormalEncoder : MessageEncoder<StaticRebuildMessage> {
         // under the hood to map the encoders down
         if (message is RebuildLogin) {
             val gpiInitBlock = message.gpiInitBlock
-            try {
-                buffer.buffer.writeBytes(
-                    gpiInitBlock,
-                    gpiInitBlock.readerIndex(),
-                    gpiInitBlock.readableBytes(),
-                )
-            } finally {
-                gpiInitBlock.release()
-            }
+            buffer.buffer.writeBytes(
+                gpiInitBlock,
+                gpiInitBlock.readerIndex(),
+                gpiInitBlock.readableBytes(),
+            )
         }
         buffer.p2Alt3(message.zoneX)
         buffer.p2Alt3(message.zoneZ)

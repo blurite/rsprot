@@ -1,6 +1,7 @@
 package net.rsprot.protocol.game.outgoing.map
 
 import io.netty.buffer.ByteBuf
+import io.netty.buffer.DefaultByteBufHolder
 import net.rsprot.crypto.xtea.XteaKey
 import net.rsprot.protocol.ServerProtCategory
 import net.rsprot.protocol.game.outgoing.GameServerProtCategory
@@ -25,7 +26,8 @@ public class RebuildLogin private constructor(
     private val _worldArea: UShort,
     override val keys: List<XteaKey>,
     public val gpiInitBlock: ByteBuf,
-) : StaticRebuildMessage {
+) : DefaultByteBufHolder(gpiInitBlock),
+    StaticRebuildMessage {
     public constructor(
         zoneX: Int,
         zoneZ: Int,
