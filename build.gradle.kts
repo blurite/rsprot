@@ -15,6 +15,7 @@ plugins {
     alias(libs.plugins.vanniktech.publish)
     alias(libs.plugins.dokka)
     `jvm-test-suite`
+    `maven-publish`
 }
 
 allprojects {
@@ -64,6 +65,29 @@ subprojects {
         return@subprojects
     }
     apply(plugin = "com.vanniktech.maven.publish")
+    publishing {
+        repositories {
+            // Support for GitHub Packages publishing.
+            // We do not directly use this, it is only included to make publishing for forks easier.
+            maven {
+                name = "GitHubPackages"
+                // Change the organization and project URL to match with where you're publishing.
+                url = uri("https://maven.pkg.github.com/blurite/rsprot")
+                credentials {
+                    // The gpr.user and gpr.key properties should be defined where your `gradle.properties`
+                    // file is stored, which is typically at `user.home/.gradle/gradle.properties`
+                    // IntelliJ does support overriding the Gradle user home in
+                    // Build, Execution, Deployment -> Build Tools -> Gradle
+                    // So the gradle.properties path may differ. If the file doesn't exist, create it
+                    // and fill in the user (GitHub username) and key (GitHub Personal Access Token) as shown below.
+                    // Personal access tokens can be generated at https://github.com/settings/tokens
+                    // Only the packages:read and packages:write permissions are required.
+                    username = project.findProperty("gpr.user") as String? ?: System.getenv("GITHUB_ACTOR")
+                    password = project.findProperty("gpr.key") as String? ?: System.getenv("GITHUB_TOKEN")
+                }
+            }
+        }
+    }
     mavenPublishing {
         coordinates(
             groupId = project.group.toString(),
@@ -110,7 +134,9 @@ subprojects {
             // Configure publishing to Maven Central
             publishToMavenCentral(SonatypeHost.CENTRAL_PORTAL)
 
-            // Enable GPG signing for all publications
+            // Enable GPG signing for all publications.
+            // Signing can be skipped for localhost and GitHub packages,
+            // it is only required for Maven Central.
             signAllPublications()
         }
     }
