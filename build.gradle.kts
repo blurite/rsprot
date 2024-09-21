@@ -3,9 +3,6 @@ import com.vanniktech.maven.publish.KotlinJvm
 import com.vanniktech.maven.publish.SonatypeHost
 import org.jetbrains.kotlin.gradle.plugin.KotlinPluginWrapper
 
-val ossrhUsername: String? by ext
-val ossrhPassword: String? by ext
-
 plugins {
     application
     signing
