@@ -5,7 +5,7 @@ import io.netty.buffer.ByteBufAllocator
 import io.netty.buffer.PooledByteBufAllocator
 import net.rsprot.compression.provider.HuffmanCodecProvider
 import net.rsprot.crypto.rsa.RsaKeyPair
-import net.rsprot.protocol.api.bootstrap.BootstrapFactory
+import net.rsprot.protocol.api.bootstrap.BootstrapBuilder
 import net.rsprot.protocol.api.handlers.ExceptionHandlers
 import net.rsprot.protocol.api.handlers.GameMessageHandlers
 import net.rsprot.protocol.api.handlers.INetAddressHandlers
@@ -84,12 +84,12 @@ public abstract class AbstractNetworkServiceFactory<R> {
         get() = false
 
     /**
-     * Gets the bootstrap factory used to register the network service.
-     * The bootstrap factory offers the initial socket and Netty configurations
+     * Gets the bootstrap factory builder to register the network service.
+     * The bootstrap builder offers the initial socket and Netty configurations
      * to be used within this library. These configurations are by default
      * made to mirror the client as much as possible.
      */
-    public abstract fun getBootstrapFactory(): BootstrapFactory
+    public open fun getBootstrapBuilder(): BootstrapBuilder = BootstrapBuilder()
 
     /**
      * Gets the RSA key pair that will be used to decipher the login blocks
@@ -269,7 +269,7 @@ public abstract class AbstractNetworkServiceFactory<R> {
             allocator,
             ports,
             betaWorld,
-            getBootstrapFactory(),
+            getBootstrapBuilder(),
             entityInfoProtocols,
             supportedClientTypes,
             getGameConnectionHandler(),

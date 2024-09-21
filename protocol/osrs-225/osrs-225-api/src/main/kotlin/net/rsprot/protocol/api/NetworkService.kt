@@ -6,7 +6,7 @@ import io.netty.channel.ChannelFuture
 import io.netty.channel.EventLoopGroup
 import net.rsprot.compression.provider.HuffmanCodecProvider
 import net.rsprot.crypto.rsa.RsaKeyPair
-import net.rsprot.protocol.api.bootstrap.BootstrapFactory
+import net.rsprot.protocol.api.bootstrap.BootstrapBuilder
 import net.rsprot.protocol.api.handlers.ExceptionHandlers
 import net.rsprot.protocol.api.handlers.GameMessageHandlers
 import net.rsprot.protocol.api.handlers.INetAddressHandlers
@@ -35,7 +35,7 @@ import kotlin.time.measureTime
  * @property allocator the byte buffer allocator used throughout the library
  * @property ports the list of ports that the service will connect to
  * @property betaWorld whether this world is a beta world
- * @property bootstrapFactory the bootstrap factory used to configure the socket and Netty
+ * @property bootstrapBuilder the bootstrap builder used to configure the socket and Netty
  * @property entityInfoProtocols a wrapper object to bring together player and NPC info protocols
  * @property clientTypes the list of client types that were registered
  * @property gameConnectionHandler the handler for game logins and reconnections
@@ -72,7 +72,7 @@ public class NetworkService<R>
         internal val allocator: ByteBufAllocator,
         internal val ports: List<Int>,
         internal val betaWorld: Boolean,
-        internal val bootstrapFactory: BootstrapFactory,
+        internal val bootstrapBuilder: BootstrapBuilder,
         internal val entityInfoProtocols: EntityInfoProtocols,
         internal val clientTypes: List<OldSchoolClientType>,
         internal val gameConnectionHandler: GameConnectionHandler<R>,
@@ -119,14 +119,13 @@ public class NetworkService<R>
         public fun start() {
             val time =
                 measureTime {
-                    bossGroup = bootstrapFactory.createParentLoopGroup()
-                    childGroup = bootstrapFactory.createChildLoopGroup()
+                    val bootstrap = bootstrapBuilder.build()
                     val initializer =
-                        bootstrapFactory
-                            .createServerBootstrap(bossGroup, childGroup)
-                            .childHandler(
-                                LoginChannelInitializer(this),
-                            )
+                        bootstrap.childHandler(
+                            LoginChannelInitializer(this),
+                        )
+                    this.bossGroup = initializer.config().group()
+                    this.childGroup = initializer.config().childGroup()
                     val futures =
                         ports
                             .map(initializer::bind)
