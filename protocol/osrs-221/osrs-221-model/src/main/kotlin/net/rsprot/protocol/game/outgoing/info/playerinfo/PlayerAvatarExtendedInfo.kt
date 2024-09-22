@@ -739,11 +739,6 @@ public class PlayerAvatarExtendedInfo(
      * @param name the name to assign.
      */
     public fun setName(name: String) {
-        verify {
-            require(name.length in 1..12) {
-                "Unexpected name length, expected range 1..12"
-            }
-        }
         if (blocks.appearance.name == name) {
             return
         }
