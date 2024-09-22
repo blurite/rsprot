@@ -7,7 +7,6 @@ import io.netty.channel.ChannelFutureListener
 import io.netty.channel.ChannelHandlerContext
 import io.netty.channel.ChannelPipeline
 import net.rsprot.buffer.extensions.toJagByteBuf
-import net.rsprot.crypto.cipher.IsaacRandom
 import net.rsprot.crypto.cipher.StreamCipher
 import net.rsprot.crypto.cipher.StreamCipherPair
 import net.rsprot.protocol.api.NetworkService
@@ -138,8 +137,9 @@ public class GameLoginResponseHandler<R>(
                 encodeSeed[index] + DECODE_SEED_OFFSET
             }
 
-        val encodingCipher = IsaacRandom(decodeSeed)
-        val decodingCipher = IsaacRandom(encodeSeed)
+        val provider = networkService.loginHandlers.streamCipherProvider
+        val encodingCipher = provider.provide(decodeSeed)
+        val decodingCipher = provider.provide(encodeSeed)
         return StreamCipherPair(encodingCipher, decodingCipher)
     }
 
