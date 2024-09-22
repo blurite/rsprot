@@ -43,6 +43,7 @@ public class UpdateInvFull private constructor(
     private val _inventoryId: UShort,
     private val inventory: Inventory,
 ) : OutgoingGameMessage {
+    @Deprecated(message = "Interface Id/Component Id are no longer supported by the client, guaranteed crashing.")
     public constructor(
         interfaceId: Int,
         componentId: Int,
@@ -64,7 +65,11 @@ public class UpdateInvFull private constructor(
         CombinedId(combinedId).combinedId,
         inventoryId.toUShort(),
         buildInventory(capacity, provider),
-    )
+    ) {
+        require(combinedId < 0) {
+            "Positive combined id will always lead to crashing as the client no longer supports it."
+        }
+    }
 
     public constructor(
         inventoryId: Int,
