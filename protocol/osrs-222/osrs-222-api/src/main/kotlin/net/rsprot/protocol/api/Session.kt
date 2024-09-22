@@ -108,9 +108,17 @@ public class Session<R>(
             }
             try {
                 consumer.consume(receiver, packet)
-                globalConsumers.forEach { it.consume(receiver, packet)  }
             } catch (cause: Throwable) {
                 incomingGameMessageConsumerExceptionHandler.exceptionCaught(this, packet, cause)
+            }
+            if (globalConsumers.isNotEmpty()) {
+                for (globalConsumer in globalConsumers) {
+                    try {
+                        globalConsumer.consume(receiver, packet)
+                    } catch (cause: Throwable) {
+                        incomingGameMessageConsumerExceptionHandler.exceptionCaught(this, packet, cause)
+                    }
+                }
             }
             count++
         }
