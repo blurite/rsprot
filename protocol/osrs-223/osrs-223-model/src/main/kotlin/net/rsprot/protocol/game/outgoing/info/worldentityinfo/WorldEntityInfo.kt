@@ -473,7 +473,7 @@ public class WorldEntityInfo internal constructor(
         }
     }
 
-    private companion object {
+    public companion object {
         /**
          * The index value that marks a termination for high resolution indices.
          */
@@ -487,7 +487,7 @@ public class WorldEntityInfo internal constructor(
         /**
          * The id of the root world.
          */
-        private const val ROOT_WORLD: Int = -1
+        public const val ROOT_WORLD: Int = -1
 
         /**
          * The default render distance for world entities.
