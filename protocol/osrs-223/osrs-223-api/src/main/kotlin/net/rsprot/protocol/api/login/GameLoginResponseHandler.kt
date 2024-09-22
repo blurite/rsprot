@@ -162,9 +162,10 @@ public class GameLoginResponseHandler<R>(
         oldSchoolClientType: OldSchoolClientType,
         encodingCipher: StreamCipher,
     ): Session<R> {
-        val gameMessageConsumerRepository = networkService
-            .gameMessageConsumerRepositoryProvider
-            .provide()
+        val gameMessageConsumerRepository =
+            networkService
+                .gameMessageConsumerRepositoryProvider
+                .provide()
         val session =
             Session(
                 ctx,

@@ -56,8 +56,9 @@ public class GameMessageConsumerRepositoryBuilder<R> {
         crossinline listener: R.(message: T) -> Unit,
     ): GameMessageConsumerRepositoryBuilder<R> = addListener(T::class.java) { r, t -> listener(r, t) }
 
-    public fun build(): GameMessageConsumerRepository<R> = GameMessageConsumerRepository(
-        consumers.toMap(HashMap()),
-        globalConsumers.toList(),
-    )
+    public fun build(): GameMessageConsumerRepository<R> =
+        GameMessageConsumerRepository(
+            consumers.toMap(HashMap()),
+            globalConsumers.toList(),
+        )
 }
