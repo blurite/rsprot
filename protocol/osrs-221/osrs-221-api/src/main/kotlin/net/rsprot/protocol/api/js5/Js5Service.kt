@@ -36,47 +36,69 @@ public class Js5Service(
 
     override fun run() {
         while (true) {
-            var client: Js5Client
-            var response: Js5GroupResponse
-            var flush: Boolean
-            synchronized(lock) {
-                while (true) {
-                    if (!isRunning) {
-                        return
-                    }
-                    val next = clients.removeFirstOrNull()
-                    if (next == null) {
-                        lock.wait()
-                        continue
-                    }
-                    client = next
-                    if (!client.ctx.channel().isActive) {
-                        continue
-                    }
-                    val priority = client.priority
-                    val ratio =
-                        if (priority == Js5Client.ClientPriority.HIGH) {
-                            configuration.priorityRatio
-                        } else {
-                            1
+            try {
+                var client: Js5Client
+                var response: Js5GroupResponse
+                var flush: Boolean
+                synchronized(lock) {
+                    while (true) {
+                        if (!isRunning) {
+                            return
                         }
-                    response = client.getNextBlock(
-                        provider,
-                        configuration.blockSizeInBytes * ratio,
-                    ) ?: continue
-                    flush =
-                        client.needsFlushing(
-                            configuration.flushThresholdInBytes,
-                            configuration.flushThresholdInRequests,
-                        )
-                    if (flush) {
-                        client.resetTracker()
+                        val next = clients.removeFirstOrNull()
+                        if (next == null) {
+                            lock.wait()
+                            continue
+                        }
+                        client = next
+                        if (!client.ctx.channel().isActive) {
+                            continue
+                        }
+                        val priority = client.priority
+                        val ratio =
+                            if (priority == Js5Client.ClientPriority.HIGH) {
+                                configuration.priorityRatio
+                            } else {
+                                1
+                            }
+                        try {
+                            response = client.getNextBlock(
+                                provider,
+                                configuration.blockSizeInBytes * ratio,
+                            ) ?: continue
+                        } catch (t: Throwable) {
+                            logger.warn(t) {
+                                "Unable to serve channel '${client.ctx.channel()}', dropping connection."
+                            }
+                            client.ctx.close()
+                            continue
+                        }
+                        flush =
+                            client.needsFlushing(
+                                configuration.flushThresholdInBytes,
+                                configuration.flushThresholdInRequests,
+                            )
+                        if (flush) {
+                            client.resetTracker()
+                        }
+                        break
                     }
-                    break
                 }
-            }
 
-            serveClient(client, response, flush)
+                try {
+                    serveClient(client, response, flush)
+                } catch (t: Throwable) {
+                    logger.error(t) {
+                        "Unable to serve channel ${client.ctx.channel()}, dropping connection."
+                    }
+                    client.ctx.close()
+                }
+            } catch (t: Throwable) {
+                logger.error(t) {
+                    "Error in JS5 service processing - JS5 service has been killed."
+                }
+                throw t
+            }
         }
     }
 

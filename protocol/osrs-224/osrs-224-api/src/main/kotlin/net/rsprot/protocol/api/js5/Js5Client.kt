@@ -64,7 +64,11 @@ public class Js5Client(
             js5Log(logger) {
                 "Assigned next request block: $archiveId:$groupId"
             }
-            block = provider.provide(archiveId, groupId)
+            try {
+                block = provider.provide(archiveId, groupId)
+            } catch (t: Throwable) {
+                throw RuntimeException("Failed to respond to request $archiveId:$groupId", t)
+            }
             currentRequest.set(block)
         }
         val progress = currentRequest.progress
