@@ -22,5 +22,6 @@ public class GameMessageConsumerRepository<R>(
         return result
     }
 
-    override fun toString(): String = "GameMessageConsumerRepository(consumers=$consumers, globalConsumers=$globalConsumers)"
+    override fun toString(): String =
+        "GameMessageConsumerRepository(consumers=$consumers, globalConsumers=$globalConsumers)"
 }
