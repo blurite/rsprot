@@ -12,6 +12,7 @@ import net.rsprot.protocol.message.IncomingGameMessage
 public class GameMessageConsumerRepositoryBuilder<R> {
     private val consumers: MutableMap<Class<out IncomingGameMessage>, MessageConsumer<R, IncomingGameMessage>> =
         HashMap()
+    private val globalConsumers: MutableList<MessageConsumer<R, IncomingGameMessage>> = ArrayList()
 
     /**
      * Adds a listener for the provided [clazz].
@@ -35,6 +36,27 @@ public class GameMessageConsumerRepositoryBuilder<R> {
     }
 
     /**
+     * Adds a listener for any type of [IncomingGameMessage].
+     * These listeners are always invoked _after_ listeners registered for specific message types with [addListener].
+     */
+    public fun addGlobalListener(
+        consumer: MessageConsumer<R, IncomingGameMessage>,
+    ): GameMessageConsumerRepositoryBuilder<R> {
+        globalConsumers.add(consumer)
+        return this
+    }
+
+    /**
+     * Removes a global listener for [IncomingGameMessage]s.
+     */
+    public fun removeGlobalListener(
+        consumer: MessageConsumer<R, IncomingGameMessage>,
+    ): GameMessageConsumerRepositoryBuilder<R> {
+        globalConsumers.remove(consumer)
+        return this
+    }
+
+    /**
      * Adds a listener for the provided [T]; this function is an overload of the [addListener],
      * intended to make registering listeners from Kotlin easier
      * @param listener the listener of the message.
@@ -44,5 +66,8 @@ public class GameMessageConsumerRepositoryBuilder<R> {
         crossinline listener: R.(message: T) -> Unit,
     ): GameMessageConsumerRepositoryBuilder<R> = addListener(T::class.java) { r, t -> listener(r, t) }
 
-    public fun build(): GameMessageConsumerRepository<R> = GameMessageConsumerRepository(consumers.toMap(HashMap()))
+    public fun build(): GameMessageConsumerRepository<R> = GameMessageConsumerRepository(
+        consumers.toMap(HashMap()),
+        globalConsumers.toList(),
+    )
 }

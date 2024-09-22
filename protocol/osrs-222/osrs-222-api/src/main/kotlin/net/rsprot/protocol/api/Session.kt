@@ -46,6 +46,7 @@ public class Session<R>(
     outgoingMessageQueueProvider: MessageQueueProvider<OutgoingGameMessage>,
     private val counter: GameMessageCounter,
     private val consumers: Map<Class<out IncomingGameMessage>, MessageConsumer<R, IncomingGameMessage>>,
+    private val globalConsumers: List<MessageConsumer<R, IncomingGameMessage>>,
     public val loginBlock: LoginBlock<*>,
     private val incomingGameMessageConsumerExceptionHandler: IncomingGameMessageConsumerExceptionHandler<R>,
 ) {
@@ -107,6 +108,7 @@ public class Session<R>(
             }
             try {
                 consumer.consume(receiver, packet)
+                globalConsumers.forEach { it.consume(receiver, packet)  }
             } catch (cause: Throwable) {
                 incomingGameMessageConsumerExceptionHandler.exceptionCaught(this, packet, cause)
             }
