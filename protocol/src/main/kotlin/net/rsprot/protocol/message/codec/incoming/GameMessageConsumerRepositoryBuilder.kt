@@ -47,16 +47,6 @@ public class GameMessageConsumerRepositoryBuilder<R> {
     }
 
     /**
-     * Removes a global listener for [IncomingGameMessage]s.
-     */
-    public fun removeGlobalListener(
-        consumer: MessageConsumer<R, IncomingGameMessage>,
-    ): GameMessageConsumerRepositoryBuilder<R> {
-        globalConsumers.remove(consumer)
-        return this
-    }
-
-    /**
      * Adds a listener for the provided [T]; this function is an overload of the [addListener],
      * intended to make registering listeners from Kotlin easier
      * @param listener the listener of the message.
