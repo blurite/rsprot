@@ -1,6 +1,7 @@
 package net.rsprot.protocol.game.outgoing.info.worldentityinfo
 
 import io.netty.buffer.ByteBufAllocator
+import net.rsprot.protocol.common.checkCommunicationThread
 
 /**
  * An avatar factory for world entities.
@@ -12,7 +13,7 @@ import io.netty.buffer.ByteBufAllocator
 public class WorldEntityAvatarFactory(
     allocator: ByteBufAllocator,
 ) {
-    public val avatarRepository: WorldEntityAvatarRepository =
+    internal val avatarRepository: WorldEntityAvatarRepository =
         WorldEntityAvatarRepository(
             allocator,
         )
@@ -38,8 +39,9 @@ public class WorldEntityAvatarFactory(
         z: Int,
         level: Int,
         angle: Int,
-    ): WorldEntityAvatar =
-        avatarRepository.getOrAlloc(
+    ): WorldEntityAvatar {
+        checkCommunicationThread()
+        return avatarRepository.getOrAlloc(
             index,
             sizeX,
             sizeZ,
@@ -48,12 +50,14 @@ public class WorldEntityAvatarFactory(
             level,
             angle,
         )
+    }
 
     /**
      * Releases a world entity avatar back into the pool, allowing it to be re-used in the future.
      * @param avatar the world entity avatar to be released.
      */
     public fun release(avatar: WorldEntityAvatar) {
+        checkCommunicationThread()
         avatarRepository.release(avatar)
     }
 }

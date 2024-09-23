@@ -2,6 +2,7 @@ package net.rsprot.protocol.game.outgoing.info.npcinfo
 
 import io.netty.buffer.ByteBufAllocator
 import net.rsprot.compression.provider.HuffmanCodecProvider
+import net.rsprot.protocol.common.checkCommunicationThread
 import net.rsprot.protocol.game.outgoing.info.filter.ExtendedInfoFilter
 
 /**
@@ -71,8 +72,9 @@ public class NpcAvatarFactory(
         z: Int,
         spawnCycle: Int = 0,
         direction: Int = 0,
-    ): NpcAvatar =
-        avatarRepository.getOrAlloc(
+    ): NpcAvatar {
+        checkCommunicationThread()
+        return avatarRepository.getOrAlloc(
             index,
             id,
             level,
@@ -81,12 +83,14 @@ public class NpcAvatarFactory(
             spawnCycle,
             direction,
         )
+    }
 
     /**
      * Releases the avatar back into the repository to be used by other NPCs.
      * @param avatar the avatar to release.
      */
     public fun release(avatar: NpcAvatar) {
+        checkCommunicationThread()
         avatarRepository.release(avatar)
     }
 }
