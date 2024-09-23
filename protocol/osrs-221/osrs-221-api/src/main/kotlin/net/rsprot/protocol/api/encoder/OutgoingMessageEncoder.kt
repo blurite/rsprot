@@ -91,7 +91,8 @@ public abstract class OutgoingMessageEncoder : MessageToByteEncoder<OutgoingMess
                         if (length !in 0..MAX_UBYTE_PAYLOAD_SIZE) {
                             out.writerIndex(startMarker)
                             logger.warn {
-                                "Server prot $prot length out of bounds; expected 0..255, received $length; message: $msg"
+                                "Server prot $prot length out of bounds; " +
+                                    "expected 0..255, received $length; message: $msg"
                             }
                             return
                         }
