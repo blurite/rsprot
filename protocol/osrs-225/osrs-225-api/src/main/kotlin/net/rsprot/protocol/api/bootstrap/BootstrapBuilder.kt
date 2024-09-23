@@ -47,7 +47,6 @@ public class BootstrapBuilder {
     private var childThreadCount: Int? = null
     private var soRcvBufSize: Int? = null
     private var soSndBufSize: Int? = null
-    private var soTimeout: Int? = null
     private var writeBufferWatermarkLow: Int? = null
     private var writeBufferWatermarkHigh: Int? = null
     private var tcpNoDelay: Boolean? = null
@@ -122,20 +121,6 @@ public class BootstrapBuilder {
      */
     public fun socketSendBufferSize(numBytes: Int): BootstrapBuilder {
         this.soSndBufSize = numBytes
-        return this
-    }
-
-    /**
-     * Sets the socket's timeout in milliseconds to [timeoutMillis].
-     * The default value is 40,000 milliseconds (40 seconds), which is based
-     * on the highest common denominator - login, which times out after 2,000
-     * client cycles at 20ms each, meaning 40,000 milliseconds.
-     *
-     * @param timeoutMillis the timeout in milliseconds for waiting for new data
-     * before the connection is killed.
-     */
-    public fun socketTimeout(timeoutMillis: Int): BootstrapBuilder {
-        this.soTimeout = timeoutMillis
         return this
     }
 
@@ -328,9 +313,6 @@ public class BootstrapBuilder {
         val soSndBufSize = this.soSndBufSize ?: 65536
         bootstrap.childOption(ChannelOption.SO_SNDBUF, soSndBufSize)
         log { "Socket send buffer size: ${formatter.format(soSndBufSize)}" }
-        val soTimeout = this.soTimeout ?: 40_000
-        bootstrap.childOption(ChannelOption.SO_TIMEOUT, soTimeout)
-        log { "Socket timeout milliseconds: ${formatter.format(soTimeout)}" }
         val lowWatermark = this.writeBufferWatermarkLow ?: 524_288
         val highWatermark = this.writeBufferWatermarkHigh ?: 2_097_152
         bootstrap.childOption(
