@@ -1,5 +1,6 @@
 package net.rsprot.protocol.api.encoder
 
+import com.github.michaelbull.logging.InlineLogger
 import io.netty.buffer.ByteBuf
 import io.netty.channel.ChannelHandlerContext
 import io.netty.handler.codec.MessageToByteEncoder
@@ -28,10 +29,18 @@ public abstract class OutgoingMessageEncoder : MessageToByteEncoder<OutgoingMess
         msg: OutgoingMessage,
         out: ByteBuf,
     ) {
+        val startMarker = out.writerIndex()
         val encoder = repository.getEncoder(msg::class.java)
         val prot = encoder.prot
         val opcode = prot.opcode
-        pSmart1Or2Enc(out, opcode)
+        // Write a temporary value for the opcode first
+        // We cannot immediately write the real stream-cipher modified opcode
+        // as that alters the stream cipher's own state
+        if (opcode < 0x80) {
+            out.p1(0)
+        } else {
+            out.p2(0)
+        }
 
         val sizeMarker =
             when (prot.size) {
@@ -53,10 +62,10 @@ public abstract class OutgoingMessageEncoder : MessageToByteEncoder<OutgoingMess
             msg,
         )
 
+        val endMarker = out.writerIndex()
         // Update the size based on the number of bytes written, if it's a var-* packet
         if (sizeMarker != -1) {
-            val writerIndex = out.writerIndex()
-            var length = writerIndex - payloadMarker
+            var length = endMarker - payloadMarker
 
             // Ok login response is a relatively special case that requires encoding the size
             // as either 3 or 4 bytes bigger than it actually is.
@@ -79,30 +88,45 @@ public abstract class OutgoingMessageEncoder : MessageToByteEncoder<OutgoingMess
             when (prot.size) {
                 Prot.VAR_BYTE -> {
                     if (validate) {
-                        check(length in 0..UByte.MAX_VALUE.toInt()) {
-                            "Server prot $prot length out of bounds; expected 0..255, received $length; message: $msg"
+                        if (length !in 0..MAX_UBYTE_PAYLOAD_SIZE) {
+                            out.writerIndex(startMarker)
+                            logger.warn {
+                                "Server prot $prot length out of bounds; expected 0..255, received $length; message: $msg"
+                            }
+                            return
                         }
                     }
                     out.p1(length)
                 }
                 Prot.VAR_SHORT -> {
                     if (validate) {
-                        check(length in 0..MAX_PAYLOAD_SIZE) {
-                            "Server prot $prot length out of bounds; " +
-                                "expected 0..40_000, received $length; message: $msg"
+                        if (length !in 0..MAX_USHORT_PAYLOAD_SIZE) {
+                            out.writerIndex(startMarker)
+                            logger.warn {
+                                "Server prot $prot length out of bounds; " +
+                                    "expected 0..40_000, received $length; message: $msg"
+                            }
+                            return
                         }
                     }
                     out.p2(length)
                 }
             }
-            out.writerIndex(writerIndex)
+            out.writerIndex(endMarker)
         } else if (validate) {
-            val writerIndex = out.writerIndex()
-            val length = writerIndex - payloadMarker
-            check(length == prot.size) {
-                "Server prot $prot length mismatch; expected ${prot.size}, received $length; message: $msg"
+            val length = endMarker - payloadMarker
+            if (length != prot.size) {
+                out.writerIndex(startMarker)
+                logger.warn {
+                    "Server prot $prot length out of bounds; " +
+                        "expected 0..40_000, received $length; message: $msg"
+                }
+                return
             }
         }
+        out.writerIndex(startMarker)
+        pSmart1Or2Enc(out, opcode)
+        out.writerIndex(endMarker)
     }
 
     /**
@@ -128,6 +152,8 @@ public abstract class OutgoingMessageEncoder : MessageToByteEncoder<OutgoingMess
          * using a 1 or 2 byte smart.
          */
         private const val MAX_OPCODE_VALUE_FOR_SINGLE_BYTE_OPCODE: Int = 127
-        private const val MAX_PAYLOAD_SIZE: Int = 40_000
+        private const val MAX_USHORT_PAYLOAD_SIZE: Int = 40_000
+        private const val MAX_UBYTE_PAYLOAD_SIZE: Int = 255
+        private val logger = InlineLogger()
     }
 }
