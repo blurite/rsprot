@@ -1,6 +1,7 @@
 dependencies {
     api(platform(rootProject.libs.netty.bom))
     api(rootProject.libs.netty.buffer)
+    implementation(rootProject.libs.inline.logger)
     api(rootProject.libs.netty.transport)
     api(projects.buffer)
     api(projects.compression)
