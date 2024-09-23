@@ -707,7 +707,7 @@ public class NpcInfo internal constructor(
         private const val WORLD_ENTITY_CAPACITY: Int = 2048
 
         /**
-         * The default capacity of the backing byte buffer into which all player info is written.
+         * The default capacity of the backing byte buffer into which all npc info is written.
          */
         private const val BUF_CAPACITY: Int = 40_000
 

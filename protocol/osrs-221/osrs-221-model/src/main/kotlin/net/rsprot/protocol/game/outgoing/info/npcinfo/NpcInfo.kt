@@ -655,7 +655,7 @@ public class NpcInfo internal constructor(
 
     private companion object {
         /**
-         * The default capacity of the backing byte buffer into which all player info is written.
+         * The default capacity of the backing byte buffer into which all npc info is written.
          */
         private const val BUF_CAPACITY: Int = 40_000
 
