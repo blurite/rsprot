@@ -6,6 +6,7 @@ import net.rsprot.buffer.JagByteBuf
 import net.rsprot.buffer.extensions.toJagByteBuf
 import net.rsprot.protocol.common.client.OldSchoolClientType
 import net.rsprot.protocol.common.game.outgoing.info.CoordGrid
+import net.rsprot.protocol.game.outgoing.info.ByteBufRecycler
 import net.rsprot.protocol.game.outgoing.info.exceptions.InfoProcessException
 import net.rsprot.protocol.game.outgoing.info.util.BuildArea
 import net.rsprot.protocol.game.outgoing.info.util.ReferencePooledObject
@@ -44,10 +45,6 @@ import net.rsprot.protocol.game.outgoing.info.util.ReferencePooledObject
  * and not necessarily the world itself. This allows the server to inform NPC and player info
  * protocol to deallocate the instances.
  * @property buffer the buffer for this world entity info packet.
- * @property builtIntoPacket whether the buffer has been built into a packet,
- * which means the responsibility of releasing the buffer falls to the server.
- * If false, the protocol will release the buffer when this instance is being
- * deallocated.
  * @property exception the exception that was caught during the computations
  * of this world entity info, if any. This will be thrown as the [toPacket]
  * function is called, allowing the server to handle it from the correct
@@ -64,6 +61,7 @@ public class WorldEntityInfo internal constructor(
     private var oldSchoolClientType: OldSchoolClientType,
     private val avatarRepository: WorldEntityAvatarRepository,
     private val indexSupplier: WorldEntityIndexSupplier,
+    private val recycler: ByteBufRecycler = ByteBufRecycler(),
 ) : ReferencePooledObject {
     private var renderDistance: Int = DEFAULT_RENDER_DISTANCE
     private var currentWorldEntityId: Int = ROOT_WORLD
@@ -85,7 +83,6 @@ public class WorldEntityInfo internal constructor(
 
     @Volatile
     internal var exception: Exception? = null
-    private var builtIntoPacket: Boolean = false
     private var renderCoord: CoordGrid = CoordGrid.INVALID
 
     override fun isDestroyed(): Boolean = this.exception != null
@@ -224,7 +221,6 @@ public class WorldEntityInfo internal constructor(
                 exception,
             )
         }
-        builtIntoPacket = true
         return WorldEntityInfoPacket(backingBuffer())
     }
 
@@ -234,17 +230,10 @@ public class WorldEntityInfo internal constructor(
      * @return the buffer into which everything is written about this packet.
      */
     private fun allocBuffer(): ByteBuf {
-        // If a given player's packet was never sent out, we need to release the old buffer
-        if (!builtIntoPacket) {
-            val oldBuf = buffer
-            if (oldBuf != null && oldBuf.refCnt() > 0) {
-                oldBuf.release()
-            }
-        }
         // Acquire a new buffer with each cycle, in case the previous one isn't fully written out yet
         val buffer = allocator.buffer(BUF_CAPACITY, BUF_CAPACITY)
         this.buffer = buffer
-        this.builtIntoPacket = false
+        recycler += buffer
         this.addedWorldEntities.clear()
         this.removedWorldEntities.clear()
         return buffer
@@ -438,7 +427,6 @@ public class WorldEntityInfo internal constructor(
         this.allWorldEntities.clear()
         this.addedWorldEntities.clear()
         this.removedWorldEntities.clear()
-        this.builtIntoPacket = false
         this.buffer = null
         this.exception = null
     }
@@ -447,15 +435,8 @@ public class WorldEntityInfo internal constructor(
      * Resets any existing world entity state, as a clean state is required.
      */
     public fun onReconnect() {
-        if (!builtIntoPacket) {
-            val buffer = this.buffer
-            if (buffer != null && buffer.refCnt() > 0) {
-                buffer.release(buffer.refCnt())
-            }
-            this.builtIntoPacket = false
-            this.buffer = null
-            this.exception = null
-        }
+        this.buffer = null
+        this.exception = null
         this.highResolutionIndicesCount = 0
         this.highResolutionIndices.fill(0)
         this.temporaryHighResolutionIndices.fill(0)
@@ -465,12 +446,7 @@ public class WorldEntityInfo internal constructor(
     }
 
     override fun onDealloc() {
-        if (!builtIntoPacket) {
-            val buffer = this.buffer
-            if (buffer != null && buffer.refCnt() > 0) {
-                buffer.release(buffer.refCnt())
-            }
-        }
+        this.buffer = null
     }
 
     public companion object {

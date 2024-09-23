@@ -3,6 +3,7 @@ package net.rsprot.protocol.game.outgoing.info.worldentityinfo
 import com.github.michaelbull.logging.InlineLogger
 import io.netty.buffer.ByteBufAllocator
 import net.rsprot.protocol.common.client.OldSchoolClientType
+import net.rsprot.protocol.game.outgoing.info.ByteBufRecycler
 import net.rsprot.protocol.game.outgoing.info.worker.DefaultProtocolWorker
 import net.rsprot.protocol.game.outgoing.info.worker.ProtocolWorker
 import java.util.concurrent.Callable
@@ -19,7 +20,7 @@ import java.util.concurrent.Callable
  * of avatar and info buffers on the thread(s) specified by the implementation.
  * @property avatarRepository the repository containing all the world entity avatars.
  * @property worldEntityInfoRepository the repository containing all the currently
- * in used world entity info instances.
+ * in-use world entity info instances.
  */
 public class WorldEntityProtocol(
     private val allocator: ByteBufAllocator,
@@ -28,6 +29,7 @@ public class WorldEntityProtocol(
     factory: WorldEntityAvatarFactory,
     private val worker: ProtocolWorker = DefaultProtocolWorker(),
 ) {
+    private val recycler: ByteBufRecycler = ByteBufRecycler()
     private val avatarRepository = factory.avatarRepository
     private val worldEntityInfoRepository: WorldEntityInfoRepository =
         WorldEntityInfoRepository { localIndex, clientType ->
@@ -37,6 +39,7 @@ public class WorldEntityProtocol(
                 clientType,
                 factory.avatarRepository,
                 indexSupplier,
+                recycler,
             )
         }
 
@@ -77,6 +80,7 @@ public class WorldEntityProtocol(
         prepareHighResolutionBuffers()
         updateInfos()
         postUpdate()
+        recycler.cycle()
         cycleCount++
     }
 
