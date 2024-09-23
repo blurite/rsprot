@@ -2,6 +2,7 @@ package net.rsprot.protocol.game.outgoing.info.playerinfo
 
 import io.netty.buffer.ByteBufAllocator
 import net.rsprot.compression.provider.HuffmanCodecProvider
+import net.rsprot.protocol.common.checkCommunicationThread
 import net.rsprot.protocol.common.game.outgoing.info.CoordGrid
 import net.rsprot.protocol.common.game.outgoing.info.playerinfo.encoder.PlayerExtendedInfoEncoders
 import net.rsprot.protocol.game.outgoing.info.AvatarExtendedInfoWriter
@@ -114,6 +115,7 @@ public class PlayerAvatar internal constructor(
      * smooth as with the appearance variant, since it first appears as if the player teleported in.
      */
     public fun setHidden(hidden: Boolean) {
+        checkCommunicationThread()
         this.hidden = hidden
     }
 
@@ -143,6 +145,7 @@ public class PlayerAvatar internal constructor(
         x: Int,
         z: Int,
     ) {
+        checkCommunicationThread()
         this.currentCoord = CoordGrid(level, x, z)
     }
 
@@ -152,6 +155,7 @@ public class PlayerAvatar internal constructor(
      * @param worldId the new world that the player is on.
      */
     public fun updateWorld(worldId: Int) {
+        checkCommunicationThread()
         require(worldId == PlayerInfo.ROOT_WORLD || worldId in 0..<PlayerInfoProtocol.PROTOCOL_CAPACITY) {
             "World id must be PlayerInfo.ROOT_WORLD, or in range of 0..<2048."
         }
@@ -173,6 +177,7 @@ public class PlayerAvatar internal constructor(
      * @param range the range from which to render other players.
      */
     public fun setPreferredResizeRange(range: Int) {
+        checkCommunicationThread()
         this.preferredResizeRange = range
         this.resizeRange = range
     }
@@ -182,6 +187,7 @@ public class PlayerAvatar internal constructor(
      * @param range the range from which to render other players.
      */
     public fun forceResizeRange(range: Int) {
+        checkCommunicationThread()
         this.resizeRange = range
         this.preferredResizeRange = Int.MAX_VALUE
     }

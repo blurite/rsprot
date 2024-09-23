@@ -6,6 +6,7 @@ import net.rsprot.buffer.bitbuffer.BitBuf
 import net.rsprot.buffer.bitbuffer.UnsafeLongBackedBitBuf
 import net.rsprot.buffer.bitbuffer.toBitBuf
 import net.rsprot.buffer.extensions.toJagByteBuf
+import net.rsprot.protocol.common.checkCommunicationThread
 import net.rsprot.protocol.common.client.OldSchoolClientType
 import net.rsprot.protocol.common.game.outgoing.info.CoordGrid
 import net.rsprot.protocol.game.outgoing.info.ByteBufRecycler
@@ -185,6 +186,7 @@ public class PlayerInfo internal constructor(
         x: Int,
         z: Int,
     ) {
+        checkCommunicationThread()
         require(worldId == ROOT_WORLD || worldId in 0..<2048) {
             "World id must be -1 or in range of 0..<2048"
         }
@@ -204,6 +206,7 @@ public class PlayerInfo internal constructor(
         worldId: Int,
         buildArea: BuildArea,
     ) {
+        checkCommunicationThread()
         require(worldId == ROOT_WORLD || worldId in 0..<2048) {
             "World id must be -1 or in range of 0..<2048"
         }
@@ -230,6 +233,7 @@ public class PlayerInfo internal constructor(
         widthInZones: Int = BuildArea.DEFAULT_BUILD_AREA_SIZE,
         heightInZones: Int = BuildArea.DEFAULT_BUILD_AREA_SIZE,
     ) {
+        checkCommunicationThread()
         require(worldId == ROOT_WORLD || worldId in 0..<2048) {
             "World id must be -1 or in range of 0..<2048"
         }
@@ -243,6 +247,7 @@ public class PlayerInfo internal constructor(
      * @param worldId the new world entity id
      */
     public fun allocateWorld(worldId: Int) {
+        checkCommunicationThread()
         require(worldId in 0..<PROTOCOL_CAPACITY) {
             "World id out of bounds: $worldId"
         }
@@ -258,6 +263,7 @@ public class PlayerInfo internal constructor(
      * This is intended to be used when one of the world entities leaves the render distance.
      */
     public fun destroyWorld(worldId: Int) {
+        checkCommunicationThread()
         require(worldId in 0..<PROTOCOL_CAPACITY) {
             "World id out of bounds: $worldId"
         }
@@ -334,6 +340,7 @@ public class PlayerInfo internal constructor(
         x: Int,
         z: Int,
     ) {
+        checkCommunicationThread()
         this.avatar.updateCoord(level, x, z)
     }
 
@@ -362,6 +369,7 @@ public class PlayerInfo internal constructor(
      * @param byteBuf the buffer into which the information will be written.
      */
     public fun handleAbsolutePlayerPositions(byteBuf: ByteBuf) {
+        checkCommunicationThread()
         check(avatar.currentCoord != CoordGrid.INVALID) {
             "Avatar position must be updated via playerinfo#updateCoord before sending RebuildLogin/ReconnectOk."
         }
@@ -389,6 +397,7 @@ public class PlayerInfo internal constructor(
      * Cached state should be re-assigned from the server as a result of this.
      */
     public fun onReconnect() {
+        checkCommunicationThread()
         buffer = null
         highResMovementBuffer = null
         lowResMovementBuffer = null

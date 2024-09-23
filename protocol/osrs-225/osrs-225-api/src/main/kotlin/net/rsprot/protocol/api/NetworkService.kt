@@ -27,6 +27,7 @@ import net.rsprot.protocol.message.codec.incoming.provider.GameMessageConsumerRe
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.ScheduledFuture
 import kotlin.time.measureTime
+import net.rsprot.protocol.common.setCommunicationThread as setInternalCommunicationThread
 
 /**
  * The primary network service implementation that brings all the necessary components together
@@ -167,6 +168,15 @@ public class NetworkService<R>
             bossGroup.shutdownGracefully()
             childGroup.shutdownGracefully()
             logger.info { "Network service successfully shut down." }
+        }
+
+        /**
+         * Sets the thread which is permitted to communicate with RSProt's thread-unsafe
+         * properties. If set to null, all threads are allowed to communicate again.
+         * @param thread the thread permitted to communicate with RSProt's thread-unsafe functions.
+         */
+        public fun setCommunicationThread(thread: Thread?) {
+            setInternalCommunicationThread(thread)
         }
 
         /**

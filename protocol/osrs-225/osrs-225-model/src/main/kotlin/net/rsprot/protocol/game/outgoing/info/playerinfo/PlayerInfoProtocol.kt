@@ -3,6 +3,7 @@ package net.rsprot.protocol.game.outgoing.info.playerinfo
 import com.github.michaelbull.logging.InlineLogger
 import io.netty.buffer.ByteBuf
 import io.netty.buffer.ByteBufAllocator
+import net.rsprot.protocol.common.checkCommunicationThread
 import net.rsprot.protocol.common.client.OldSchoolClientType
 import net.rsprot.protocol.game.outgoing.info.ByteBufRecycler
 import net.rsprot.protocol.game.outgoing.info.playerinfo.util.LowResolutionPosition
@@ -94,6 +95,7 @@ public class PlayerInfoProtocol(
         idx: Int,
         oldSchoolClientType: OldSchoolClientType,
     ): PlayerInfo {
+        checkCommunicationThread()
         // Only handle index 0 as a special case, as the protocol
         // does not allow putting an avatar at index 0.
         // Other index exceptions are handled by the alloc function.
@@ -108,6 +110,7 @@ public class PlayerInfoProtocol(
      * @param info the player info object
      */
     public fun dealloc(info: PlayerInfo) {
+        checkCommunicationThread()
         // Prevent returning a destroyed player info object back into the pool
         if (info.isDestroyed()) {
             return
@@ -124,6 +127,7 @@ public class PlayerInfoProtocol(
         lowResolutionPositionRepository.getCurrentLowResolutionPosition(idx)
 
     public fun update() {
+        checkCommunicationThread()
         prepare()
         putBitcodes()
         prepareExtendedInfo()
