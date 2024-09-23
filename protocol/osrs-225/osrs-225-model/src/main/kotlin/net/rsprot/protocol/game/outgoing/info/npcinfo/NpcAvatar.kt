@@ -1,6 +1,7 @@
 package net.rsprot.protocol.game.outgoing.info.npcinfo
 
 import net.rsprot.buffer.bitbuffer.UnsafeLongBackedBitBuf
+import net.rsprot.protocol.common.checkCommunicationThread
 import net.rsprot.protocol.common.game.outgoing.info.CoordGrid
 import net.rsprot.protocol.common.game.outgoing.info.npcinfo.NpcAvatarDetails
 import net.rsprot.protocol.game.outgoing.info.npcinfo.util.NpcCellOpcodes
@@ -149,6 +150,7 @@ public class NpcAvatar internal constructor(
      * @param direction the direction for the NPC to face.
      */
     public fun updateDirection(direction: Int) {
+        checkCommunicationThread()
         require(direction in 0..7) {
             "Direction must be a value in range of 0..7. " +
                 "See the table in documentation. Value: $direction"
@@ -162,6 +164,7 @@ public class NpcAvatar internal constructor(
      * @param id the id of the npc to set to - any new observers will see that id instead.
      */
     public fun setId(id: Int) {
+        checkCommunicationThread()
         require(id in 0..16383) {
             "Id must be a value in range of 0..16383. Value: $id"
         }
@@ -189,6 +192,7 @@ public class NpcAvatar internal constructor(
         z: Int,
         jump: Boolean,
     ) {
+        checkCommunicationThread()
         details.currentCoord = CoordGrid(level, x, z)
         details.movementType = details.movementType or (if (jump) NpcAvatarDetails.TELEJUMP else NpcAvatarDetails.TELE)
     }
@@ -207,6 +211,7 @@ public class NpcAvatar internal constructor(
         deltaX: Int,
         deltaZ: Int,
     ) {
+        checkCommunicationThread()
         singleStepMovement(
             deltaX,
             deltaZ,
@@ -228,6 +233,7 @@ public class NpcAvatar internal constructor(
         deltaX: Int,
         deltaZ: Int,
     ) {
+        checkCommunicationThread()
         singleStepMovement(
             deltaX,
             deltaZ,
@@ -390,6 +396,7 @@ public class NpcAvatar internal constructor(
      * @param inaccessible whether the npc is inaccessible to all players (not rendered)
      */
     public fun setInaccessible(inaccessible: Boolean) {
+        checkCommunicationThread()
         details.inaccessible = inaccessible
     }
 

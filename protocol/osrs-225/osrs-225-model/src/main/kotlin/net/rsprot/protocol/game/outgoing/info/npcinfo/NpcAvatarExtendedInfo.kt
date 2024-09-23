@@ -4,6 +4,7 @@ import io.netty.buffer.ByteBufAllocator
 import net.rsprot.buffer.JagByteBuf
 import net.rsprot.compression.provider.HuffmanCodecProvider
 import net.rsprot.protocol.common.RSProtFlags
+import net.rsprot.protocol.common.checkCommunicationThread
 import net.rsprot.protocol.common.client.OldSchoolClientType
 import net.rsprot.protocol.common.game.outgoing.info.npcinfo.encoder.NpcExtendedInfoEncoders
 import net.rsprot.protocol.common.game.outgoing.info.npcinfo.extendedinfo.BaseAnimationSet
@@ -68,6 +69,7 @@ public class NpcAvatarExtendedInfo(
         id: Int,
         delay: Int,
     ) {
+        checkCommunicationThread()
         verify {
             require(id == -1 || id in UNSIGNED_SHORT_RANGE) {
                 "Unexpected sequence id: $id, expected value -1 or in range $UNSIGNED_SHORT_RANGE"
@@ -89,6 +91,7 @@ public class NpcAvatarExtendedInfo(
      * @param index the index of the target to face-lock onto (read above)
      */
     public fun setFacePathingEntity(index: Int) {
+        checkCommunicationThread()
         verify {
             require(index == -1 || index in 0..0x107FF) {
                 "Unexpected pathing entity index: $index, expected values: -1 to reset, " +
@@ -108,6 +111,7 @@ public class NpcAvatarExtendedInfo(
      * @param text the text to render overhead.
      */
     public fun setSay(text: String) {
+        checkCommunicationThread()
         verify {
             require(text.length <= 80) {
                 "Unexpected say input; expected value 80 characters or less, " +
@@ -150,6 +154,7 @@ public class NpcAvatarExtendedInfo(
         delay2: Int,
         angle: Int,
     ) {
+        checkCommunicationThread()
         verify {
             require(delay1 >= 0) {
                 "First delay cannot be negative: $delay1"
@@ -200,6 +205,7 @@ public class NpcAvatarExtendedInfo(
         delay: Int,
         height: Int,
     ) {
+        checkCommunicationThread()
         verify {
             require(slot in UNSIGNED_BYTE_RANGE) {
                 "Unexpected slot: $slot, expected range: $UNSIGNED_BYTE_RANGE"
@@ -243,6 +249,7 @@ public class NpcAvatarExtendedInfo(
         value: Int,
         delay: Int = 0,
     ) {
+        checkCommunicationThread()
         if (blocks.hit.hitMarkList.size >= 0xFF) {
             return
         }
@@ -281,6 +288,7 @@ public class NpcAvatarExtendedInfo(
      * @param delay the delay in client cycles (20ms/cc) until the hitmark is removed.
      */
     public fun removeHitMark(delay: Int = 0) {
+        checkCommunicationThread()
         if (blocks.hit.hitMarkList.size >= 0xFF) {
             return
         }
@@ -328,6 +336,7 @@ public class NpcAvatarExtendedInfo(
         soakValue: Int,
         delay: Int = 0,
     ) {
+        checkCommunicationThread()
         if (blocks.hit.hitMarkList.size >= 0xFF) {
             return
         }
@@ -405,6 +414,7 @@ public class NpcAvatarExtendedInfo(
         startTime: Int = 0,
         endTime: Int = 0,
     ) {
+        checkCommunicationThread()
         if (blocks.hit.headBarList.size >= 0xFF) {
             return
         }
@@ -453,6 +463,7 @@ public class NpcAvatarExtendedInfo(
      * @param id the id of the head bar to remove.
      */
     public fun removeHeadBar(id: Int) {
+        checkCommunicationThread()
         addHeadBar(
             -1,
             id,
@@ -478,6 +489,7 @@ public class NpcAvatarExtendedInfo(
         lightness: Int,
         weight: Int,
     ) {
+        checkCommunicationThread()
         verify {
             require(startTime in UNSIGNED_SHORT_RANGE) {
                 "Unexpected startTime: $startTime, expected range $UNSIGNED_SHORT_RANGE"
@@ -527,6 +539,7 @@ public class NpcAvatarExtendedInfo(
         z: Int,
         instant: Boolean = false,
     ) {
+        checkCommunicationThread()
         verify {
             require(x in 0..<16384) {
                 "Unexpected x coord: $x, expected range: 0..<16384"
@@ -550,6 +563,7 @@ public class NpcAvatarExtendedInfo(
      * @param id the new id of the npc to transform to.
      */
     public fun transformation(id: Int) {
+        checkCommunicationThread()
         verify {
             require(id in UNSIGNED_SHORT_RANGE) {
                 "Unexpected id: $id, expected in range: $UNSIGNED_SHORT_RANGE"
@@ -564,6 +578,7 @@ public class NpcAvatarExtendedInfo(
      * @param level the combat leve to render, or -1 to remove the combat level override.
      */
     public fun combatLevelChange(level: Int) {
+        checkCommunicationThread()
         blocks.combatLevelChange.level = level
         flags = flags or LEVEL_CHANGE
     }
@@ -573,6 +588,7 @@ public class NpcAvatarExtendedInfo(
      * @param name the name to override with, or null to reset an existing override.
      */
     public fun nameChange(name: String?) {
+        checkCommunicationThread()
         blocks.nameChange.name = name
         flags = flags or NAME_CHANGE
     }
@@ -586,6 +602,7 @@ public class NpcAvatarExtendedInfo(
      */
     @Suppress("MemberVisibilityCanBePrivate")
     public fun visibleOps(flag: Int) {
+        checkCommunicationThread()
         blocks.visibleOps.ops = flag.toUByte()
         flags = flags or OPS
     }
@@ -666,6 +683,7 @@ public class NpcAvatarExtendedInfo(
         crawlAnimRight: Int = Int.MIN_VALUE,
         readyAnim: Int = Int.MIN_VALUE,
     ) {
+        checkCommunicationThread()
         var flag = 0
         val bas = blocks.baseAnimationSet
         if (turnLeftAnim != Int.MIN_VALUE) {
@@ -838,6 +856,7 @@ public class NpcAvatarExtendedInfo(
         group: Int,
         index: Int,
     ) {
+        checkCommunicationThread()
         verify {
             require(slot in 0..<8) {
                 "Unexpected headicon slot: $slot, expected slot range: 0..<8"
@@ -858,6 +877,7 @@ public class NpcAvatarExtendedInfo(
      * @param slot the slot of the head icon to reset.
      */
     public fun resetHeadIcon(slot: Int) {
+        checkCommunicationThread()
         verify {
             require(slot in 0..<8) {
                 "Unexpected headicon slot: $slot, expected slot range: 0..<8"
@@ -874,6 +894,7 @@ public class NpcAvatarExtendedInfo(
      * Resets any chathead customisations applied to this NPC.
      */
     public fun resetHeadCustomisations() {
+        checkCommunicationThread()
         blocks.headCustomisation.customisation = null
         flags = flags or HEAD_CUSTOMISATION
     }
@@ -882,6 +903,7 @@ public class NpcAvatarExtendedInfo(
      * Sets the chathead of the NPC to be a mirror of the local player's own chathead.
      */
     public fun setHeadCustomisationMirrored() {
+        checkCommunicationThread()
         blocks.headCustomisation.customisation =
             TypeCustomisation(
                 emptyList(),
@@ -909,6 +931,7 @@ public class NpcAvatarExtendedInfo(
         recolours: List<Int>,
         retextures: List<Int>,
     ) {
+        checkCommunicationThread()
         blocks.headCustomisation.customisation =
             TypeCustomisation(
                 models,
@@ -923,6 +946,7 @@ public class NpcAvatarExtendedInfo(
      * Resets any NPC body customisations applied.
      */
     public fun resetBodyCustomisations() {
+        checkCommunicationThread()
         blocks.bodyCustomisation.customisation = null
         flags = flags or BODY_CUSTOMISATION
     }
@@ -931,6 +955,7 @@ public class NpcAvatarExtendedInfo(
      * Sets the NPC to mirror the body of the local player in its entirety, including any worn gear.
      */
     public fun setBodyCustomisationMirrored() {
+        checkCommunicationThread()
         blocks.bodyCustomisation.customisation =
             TypeCustomisation(
                 emptyList(),
@@ -958,6 +983,7 @@ public class NpcAvatarExtendedInfo(
         recolours: List<Int>,
         retextures: List<Int>,
     ) {
+        checkCommunicationThread()
         blocks.bodyCustomisation.customisation =
             TypeCustomisation(
                 models,

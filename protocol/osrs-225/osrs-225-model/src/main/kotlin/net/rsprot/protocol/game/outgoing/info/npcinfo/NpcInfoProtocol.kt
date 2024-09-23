@@ -2,6 +2,7 @@ package net.rsprot.protocol.game.outgoing.info.npcinfo
 
 import com.github.michaelbull.logging.InlineLogger
 import io.netty.buffer.ByteBufAllocator
+import net.rsprot.protocol.common.checkCommunicationThread
 import net.rsprot.protocol.common.client.ClientTypeMap
 import net.rsprot.protocol.common.client.OldSchoolClientType
 import net.rsprot.protocol.common.game.outgoing.info.npcinfo.encoder.NpcResolutionChangeEncoder
@@ -73,7 +74,10 @@ public class NpcInfoProtocol(
     public fun alloc(
         idx: Int,
         oldSchoolClientType: OldSchoolClientType,
-    ): NpcInfo = npcInfoRepository.alloc(idx, oldSchoolClientType)
+    ): NpcInfo {
+        checkCommunicationThread()
+        return npcInfoRepository.alloc(idx, oldSchoolClientType)
+    }
 
     /**
      * Deallocates the provided npc info object, allowing it to be used up
@@ -81,6 +85,7 @@ public class NpcInfoProtocol(
      * @param info the npc info object to deallocate
      */
     public fun dealloc(info: NpcInfo) {
+        checkCommunicationThread()
         // Prevent returning a destroyed npc info object back into the pool
         if (info.isDestroyed()) {
             return
@@ -95,7 +100,10 @@ public class NpcInfoProtocol(
      * @throws IllegalStateException if the npc info is null at that index
      * @throws ArrayIndexOutOfBoundsException if the index is out of bounds
      */
-    public operator fun get(idx: Int): NpcInfo = npcInfoRepository[idx]
+    public operator fun get(idx: Int): NpcInfo {
+        checkCommunicationThread()
+        return npcInfoRepository[idx]
+    }
 
     /**
      * Updates the npc info protocol for this cycle.
@@ -103,6 +111,7 @@ public class NpcInfoProtocol(
      * allowing multithreaded execution if selected.
      */
     public fun update() {
+        checkCommunicationThread()
         prepareBitcodes()
         putBitcodes()
         prepareExtendedInfo()

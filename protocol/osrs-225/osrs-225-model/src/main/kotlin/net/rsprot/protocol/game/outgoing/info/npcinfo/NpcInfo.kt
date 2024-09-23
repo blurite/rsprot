@@ -5,6 +5,7 @@ import io.netty.buffer.ByteBufAllocator
 import net.rsprot.buffer.bitbuffer.BitBuf
 import net.rsprot.buffer.bitbuffer.toBitBuf
 import net.rsprot.buffer.extensions.toJagByteBuf
+import net.rsprot.protocol.common.checkCommunicationThread
 import net.rsprot.protocol.common.client.ClientTypeMap
 import net.rsprot.protocol.common.client.OldSchoolClientType
 import net.rsprot.protocol.common.game.outgoing.info.CoordGrid
@@ -83,6 +84,7 @@ public class NpcInfo internal constructor(
         worldId: Int,
         buildArea: BuildArea,
     ) {
+        checkCommunicationThread()
         require(worldId == ROOT_WORLD || worldId in 0..<2048) {
             "World id must be -1 or in range of 0..<2048"
         }
@@ -109,6 +111,7 @@ public class NpcInfo internal constructor(
         widthInZones: Int = BuildArea.DEFAULT_BUILD_AREA_SIZE,
         heightInZones: Int = BuildArea.DEFAULT_BUILD_AREA_SIZE,
     ) {
+        checkCommunicationThread()
         require(worldId == ROOT_WORLD || worldId in 0..<2048) {
             "World id must be -1 or in range of 0..<2048"
         }
@@ -122,6 +125,7 @@ public class NpcInfo internal constructor(
      * @param worldId the new world entity id
      */
     public fun allocateWorld(worldId: Int) {
+        checkCommunicationThread()
         require(worldId in 0..<WORLD_ENTITY_CAPACITY) {
             "World id out of bounds: $worldId"
         }
@@ -137,6 +141,7 @@ public class NpcInfo internal constructor(
      * This is intended to be used when one of the world entities leaves the render distance.
      */
     public fun destroyWorld(worldId: Int) {
+        checkCommunicationThread()
         require(worldId in 0..<WORLD_ENTITY_CAPACITY) {
             "World id out of bounds: $worldId"
         }
@@ -195,6 +200,7 @@ public class NpcInfo internal constructor(
      * @return the newly created arraylist of indices
      */
     public fun getHighResolutionIndices(worldId: Int): ArrayList<Int> {
+        checkCommunicationThread()
         val details = getDetails(worldId)
         val collection = ArrayList<Int>(details.highResolutionNpcIndexCount)
         for (i in 0..<details.highResolutionNpcIndexCount) {
@@ -216,6 +222,7 @@ public class NpcInfo internal constructor(
      * @return the newly created arraylist of indices, or null if the world does not exist.
      */
     public fun getHighResolutionIndicesOrNull(worldId: Int): ArrayList<Int>? {
+        checkCommunicationThread()
         val details = getDetailsOrNull(worldId) ?: return null
         val collection = ArrayList<Int>(details.highResolutionNpcIndexCount)
         for (i in 0..<details.highResolutionNpcIndexCount) {
@@ -247,6 +254,7 @@ public class NpcInfo internal constructor(
         collection: T,
         throwExceptionIfNoWorld: Boolean = true,
     ): T where T : MutableCollection<Int> {
+        checkCommunicationThread()
         val details =
             if (throwExceptionIfNoWorld) {
                 getDetails(worldId)
@@ -281,6 +289,7 @@ public class NpcInfo internal constructor(
      * @param num the distance from which NPCs become visible
      */
     public fun setViewDistance(num: Int) {
+        checkCommunicationThread()
         this.viewDistance = num
     }
 
@@ -288,6 +297,7 @@ public class NpcInfo internal constructor(
      * Resets the view distance back to a default value of 15 tile radius.
      */
     public fun resetViewDistance() {
+        checkCommunicationThread()
         this.viewDistance = MAX_SMALL_PACKET_DISTANCE
     }
 
@@ -338,6 +348,7 @@ public class NpcInfo internal constructor(
         x: Int,
         z: Int,
     ) {
+        checkCommunicationThread()
         val details = getDetails(worldId)
         details.localPlayerCurrentCoord =
             CoordGrid(
@@ -377,7 +388,7 @@ public class NpcInfo internal constructor(
      * in high resolution more efficient, as we can avoid distance checks against every
      * NPC, and only do so against the player's last coordinate.
      */
-    public fun afterUpdate() {
+    internal fun afterUpdate() {
         for (details in this.details) {
             if (details == null) {
                 continue
@@ -653,6 +664,7 @@ public class NpcInfo internal constructor(
      * whenever a reconnect occurs.
      */
     public fun onReconnect() {
+        checkCommunicationThread()
         onDealloc()
         // Restore the root world by polling a new one
         val details = detailsStorage.poll(ROOT_WORLD)
@@ -664,6 +676,7 @@ public class NpcInfo internal constructor(
         oldSchoolClientType: OldSchoolClientType,
         newInstance: Boolean,
     ) {
+        checkCommunicationThread()
         this.localPlayerIndex = index
         this.oldSchoolClientType = oldSchoolClientType
         this.viewDistance = MAX_SMALL_PACKET_DISTANCE
@@ -672,6 +685,7 @@ public class NpcInfo internal constructor(
     }
 
     override fun onDealloc() {
+        checkCommunicationThread()
         for (index in this.details.indices) {
             val details = this.details[index] ?: continue
             releaseObservers(details)
