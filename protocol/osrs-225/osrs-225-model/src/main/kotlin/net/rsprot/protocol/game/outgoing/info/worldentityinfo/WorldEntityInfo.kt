@@ -4,6 +4,7 @@ import io.netty.buffer.ByteBuf
 import io.netty.buffer.ByteBufAllocator
 import net.rsprot.buffer.JagByteBuf
 import net.rsprot.buffer.extensions.toJagByteBuf
+import net.rsprot.protocol.common.checkCommunicationThread
 import net.rsprot.protocol.common.client.OldSchoolClientType
 import net.rsprot.protocol.common.game.outgoing.info.CoordGrid
 import net.rsprot.protocol.game.outgoing.info.ByteBufRecycler
@@ -97,6 +98,7 @@ public class WorldEntityInfo internal constructor(
      * be rendered from the player (or the camera's POV)
      */
     public fun updateRenderDistance(distance: Int) {
+        checkCommunicationThread()
         this.renderDistance = distance
     }
 
@@ -106,6 +108,7 @@ public class WorldEntityInfo internal constructor(
      * @param buildArea the build area in which everything is rendered.
      */
     public fun updateBuildArea(buildArea: BuildArea) {
+        checkCommunicationThread()
         this.buildArea = buildArea
     }
 
@@ -124,6 +127,7 @@ public class WorldEntityInfo internal constructor(
         widthInZones: Int = BuildArea.DEFAULT_BUILD_AREA_SIZE,
         heightInZones: Int = BuildArea.DEFAULT_BUILD_AREA_SIZE,
     ) {
+        checkCommunicationThread()
         this.buildArea = BuildArea(zoneX, zoneZ, widthInZones, heightInZones)
     }
 
@@ -167,6 +171,7 @@ public class WorldEntityInfo internal constructor(
         x: Int,
         z: Int,
     ) {
+        checkCommunicationThread()
         this.currentWorldEntityId = worldId
         this.currentCoord = CoordGrid(level, x, z)
     }
@@ -185,6 +190,7 @@ public class WorldEntityInfo internal constructor(
         x: Int,
         z: Int,
     ) {
+        checkCommunicationThread()
         this.renderCoord = CoordGrid(level, x, z)
     }
 
@@ -193,6 +199,7 @@ public class WorldEntityInfo internal constructor(
      * leaves one of the dynamic world entities and moves back onto the root world.
      */
     public fun resetRenderCoord() {
+        checkCommunicationThread()
         this.renderCoord = CoordGrid.INVALID
     }
 
@@ -414,6 +421,7 @@ public class WorldEntityInfo internal constructor(
         oldSchoolClientType: OldSchoolClientType,
         newInstance: Boolean,
     ) {
+        checkCommunicationThread()
         this.localIndex = index
         this.oldSchoolClientType = oldSchoolClientType
         this.renderDistance = DEFAULT_RENDER_DISTANCE
@@ -435,6 +443,7 @@ public class WorldEntityInfo internal constructor(
      * Resets any existing world entity state, as a clean state is required.
      */
     public fun onReconnect() {
+        checkCommunicationThread()
         this.buffer = null
         this.exception = null
         this.highResolutionIndicesCount = 0
@@ -446,6 +455,7 @@ public class WorldEntityInfo internal constructor(
     }
 
     override fun onDealloc() {
+        checkCommunicationThread()
         this.buffer = null
     }
 

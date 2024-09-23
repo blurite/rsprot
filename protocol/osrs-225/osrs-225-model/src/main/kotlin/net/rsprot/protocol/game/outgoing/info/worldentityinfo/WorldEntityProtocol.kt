@@ -2,6 +2,7 @@ package net.rsprot.protocol.game.outgoing.info.worldentityinfo
 
 import com.github.michaelbull.logging.InlineLogger
 import io.netty.buffer.ByteBufAllocator
+import net.rsprot.protocol.common.checkCommunicationThread
 import net.rsprot.protocol.common.client.OldSchoolClientType
 import net.rsprot.protocol.game.outgoing.info.ByteBufRecycler
 import net.rsprot.protocol.game.outgoing.info.worker.DefaultProtocolWorker
@@ -59,13 +60,17 @@ public class WorldEntityProtocol(
     public fun alloc(
         idx: Int,
         oldSchoolClientType: OldSchoolClientType,
-    ): WorldEntityInfo = worldEntityInfoRepository.alloc(idx, oldSchoolClientType)
+    ): WorldEntityInfo {
+        checkCommunicationThread()
+        return worldEntityInfoRepository.alloc(idx, oldSchoolClientType)
+    }
 
     /**
      * Deallocates the world entity info, allowing for it to be re-used in the future.
      * @param info the world entity info to be deallocated.
      */
     public fun dealloc(info: WorldEntityInfo) {
+        checkCommunicationThread()
         // Prevent returning a destroyed worldentity info object back into the pool
         if (info.isDestroyed()) {
             return
@@ -77,6 +82,7 @@ public class WorldEntityProtocol(
      * Updates all the world entities that exist in one go.
      */
     public fun update() {
+        checkCommunicationThread()
         prepareHighResolutionBuffers()
         updateInfos()
         postUpdate()
