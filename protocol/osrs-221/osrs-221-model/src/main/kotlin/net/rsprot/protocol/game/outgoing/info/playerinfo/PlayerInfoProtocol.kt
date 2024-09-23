@@ -4,6 +4,7 @@ import com.github.michaelbull.logging.InlineLogger
 import io.netty.buffer.ByteBuf
 import io.netty.buffer.ByteBufAllocator
 import net.rsprot.protocol.common.client.OldSchoolClientType
+import net.rsprot.protocol.game.outgoing.info.ByteBufRecycler
 import net.rsprot.protocol.game.outgoing.info.playerinfo.util.LowResolutionPosition
 import net.rsprot.protocol.game.outgoing.info.worker.DefaultProtocolWorker
 import net.rsprot.protocol.game.outgoing.info.worker.ProtocolWorker
@@ -33,6 +34,11 @@ public class PlayerInfoProtocol(
     private val avatarFactory: PlayerAvatarFactory,
 ) {
     /**
+     * A recycler to ensure all buffers allocated by player info eventually get released.
+     */
+    private val recycler: ByteBufRecycler = ByteBufRecycler()
+
+    /**
      * The repository responsible for keeping track of all the players' low resolution
      * position within the world.
      */
@@ -51,6 +57,7 @@ public class PlayerInfoProtocol(
                 allocator,
                 clientType,
                 avatarFactory.alloc(localIndex),
+                recycler,
             )
         }
 
@@ -122,6 +129,7 @@ public class PlayerInfoProtocol(
         prepareExtendedInfo()
         putExtendedInfo()
         postUpdate()
+        recycler.cycle()
         cycleCount++
     }
 

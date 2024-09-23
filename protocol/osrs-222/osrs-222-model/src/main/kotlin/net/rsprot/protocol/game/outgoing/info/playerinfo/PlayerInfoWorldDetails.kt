@@ -85,15 +85,6 @@ internal class PlayerInfoWorldDetails(
     internal var buffer: ByteBuf? = null
 
     /**
-     * Whether the buffer allocated by this player info object has been built
-     * into a packet message. If this returns false, but player info was in fact built,
-     * we have an allocated buffer that needs releasing. If the NPC info itself
-     * is released but isn't built into packet, we make sure to release it, to avoid
-     * any memory leaks.
-     */
-    internal var builtIntoPacket: Boolean = false
-
-    /**
      * The coordinate from which distance checks are done against other players.
      */
     internal var renderCoord: CoordGrid = CoordGrid.INVALID
@@ -117,13 +108,6 @@ internal class PlayerInfoWorldDetails(
         highResolutionPlayers.fill(0)
         extendedInfoCount = 0
         extendedInfoIndices.fill(0)
-        val buffer = this.buffer
-        if (buffer != null) {
-            if (!builtIntoPacket) {
-                buffer.release(buffer.refCnt())
-            }
-            this.buffer = null
-        }
-        this.builtIntoPacket = false
+        this.buffer = null
     }
 }

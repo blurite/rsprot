@@ -8,6 +8,7 @@ import net.rsprot.buffer.bitbuffer.toBitBuf
 import net.rsprot.buffer.extensions.toJagByteBuf
 import net.rsprot.protocol.common.client.OldSchoolClientType
 import net.rsprot.protocol.common.game.outgoing.info.CoordGrid
+import net.rsprot.protocol.game.outgoing.info.ByteBufRecycler
 import net.rsprot.protocol.game.outgoing.info.ObserverExtendedInfoFlags
 import net.rsprot.protocol.game.outgoing.info.exceptions.InfoProcessException
 import net.rsprot.protocol.game.outgoing.info.playerinfo.PlayerInfoProtocol.Companion.PROTOCOL_CAPACITY
@@ -49,6 +50,7 @@ public class PlayerInfo internal constructor(
     internal val allocator: ByteBufAllocator,
     private var oldSchoolClientType: OldSchoolClientType,
     public val avatar: PlayerAvatar,
+    private val recycler: ByteBufRecycler,
 ) : ReferencePooledObject {
     /**
      * Low resolution indices are tracked together with [lowResolutionCount].
@@ -152,15 +154,6 @@ public class PlayerInfo internal constructor(
      */
     @Volatile
     internal var exception: Exception? = null
-
-    /**
-     * Whether the buffer allocated by this player info object has been built
-     * into a packet message. If this returns false, but player info was in fact built,
-     * we have an allocated buffer that needs releasing. If the NPC info itself
-     * is released but isn't built into packet, we make sure to release it, to avoid
-     * any memory leaks.
-     */
-    private var builtIntoPacket: Boolean = false
 
     /**
      * An array of world details, containing all the player info properties specific to a single world.
@@ -323,7 +316,6 @@ public class PlayerInfo internal constructor(
                 exception,
             )
         }
-        this.builtIntoPacket = true
         return PlayerInfoPacket(backingBuffer())
     }
 
@@ -397,16 +389,7 @@ public class PlayerInfo internal constructor(
      * Cached state should be re-assigned from the server as a result of this.
      */
     public fun onReconnect() {
-        // If player info was constructed, but it was not built into a packet object
-        // it implies the packet is never being written to Netty, which means
-        // a memory leak is occurring - if that is the case, release the buffer here
-        if (!builtIntoPacket) {
-            val buffer = this.buffer
-            if (buffer != null && buffer.refCnt() > 0) {
-                buffer.release(buffer.refCnt())
-            }
-        }
-        this.buffer = null
+        buffer = null
         highResMovementBuffer = null
         lowResMovementBuffer = null
 
@@ -787,17 +770,10 @@ public class PlayerInfo internal constructor(
      * The old [buffer] will not be released, as that is the duty of the encoder class.
      */
     private fun allocBuffer(): ByteBuf {
-        // If a given player's packet was never sent out, we need to release the old buffer
-        if (!builtIntoPacket) {
-            val oldBuf = buffer
-            if (oldBuf != null && oldBuf.refCnt() > 0) {
-                oldBuf.release()
-            }
-        }
         // Acquire a new buffer with each cycle, in case the previous one isn't fully written out yet
         val buffer = allocator.buffer(BUF_CAPACITY, BUF_CAPACITY)
         this.buffer = buffer
-        this.builtIntoPacket = false
+        recycler += buffer
         return buffer
     }
 
@@ -852,6 +828,7 @@ public class PlayerInfo internal constructor(
         stationary.fill(0)
         observerExtendedInfoFlags.reset()
         details[PROTOCOL_CAPACITY] = PlayerInfoWorldDetails(PROTOCOL_CAPACITY)
+        buffer = null
     }
 
     /**
@@ -859,15 +836,6 @@ public class PlayerInfo internal constructor(
      * to stick around for extended periods of time. Any primitive properties will remain untouched.
      */
     override fun onDealloc() {
-        // If player info was constructed, but it was not built into a packet object
-        // it implies the packet is never being written to Netty, which means
-        // a memory leak is occurring - if that is the case, release the buffer here
-        if (!builtIntoPacket) {
-            val buffer = this.buffer
-            if (buffer != null && buffer.refCnt() > 0) {
-                buffer.release(buffer.refCnt())
-            }
-        }
         this.buffer = null
         avatar.extendedInfo.reset()
         highResMovementBuffer = null
