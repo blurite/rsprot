@@ -5,6 +5,7 @@ import io.netty.buffer.ByteBufAllocator
 import net.rsprot.protocol.common.client.ClientTypeMap
 import net.rsprot.protocol.common.client.OldSchoolClientType
 import net.rsprot.protocol.common.game.outgoing.info.npcinfo.encoder.NpcResolutionChangeEncoder
+import net.rsprot.protocol.game.outgoing.info.ByteBufRecycler
 import net.rsprot.protocol.game.outgoing.info.worker.DefaultProtocolWorker
 import net.rsprot.protocol.game.outgoing.info.worker.ProtocolWorker
 import java.util.concurrent.Callable
@@ -32,6 +33,7 @@ public class NpcInfoProtocol(
     private val worker: ProtocolWorker = DefaultProtocolWorker(),
 ) {
     private val detailsStorage: NpcInfoWorldDetailsStorage = NpcInfoWorldDetailsStorage()
+    private val recycler: ByteBufRecycler = ByteBufRecycler()
 
     /**
      * The avatar repository keeps track of all the avatars currently in the game.
@@ -52,6 +54,7 @@ public class NpcInfoProtocol(
                 npcIndexSupplier,
                 resolutionChangeEncoders,
                 detailsStorage,
+                recycler,
             )
         }
 
@@ -105,6 +108,7 @@ public class NpcInfoProtocol(
         prepareExtendedInfo()
         putExtendedInfo()
         postUpdate()
+        recycler.cycle()
         cycleCount++
     }
 

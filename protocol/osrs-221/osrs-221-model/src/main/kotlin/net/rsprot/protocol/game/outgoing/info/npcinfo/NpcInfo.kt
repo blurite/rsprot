@@ -9,6 +9,7 @@ import net.rsprot.protocol.common.client.ClientTypeMap
 import net.rsprot.protocol.common.client.OldSchoolClientType
 import net.rsprot.protocol.common.game.outgoing.info.CoordGrid
 import net.rsprot.protocol.common.game.outgoing.info.npcinfo.encoder.NpcResolutionChangeEncoder
+import net.rsprot.protocol.game.outgoing.info.ByteBufRecycler
 import net.rsprot.protocol.game.outgoing.info.ObserverExtendedInfoFlags
 import net.rsprot.protocol.game.outgoing.info.exceptions.InfoProcessException
 import net.rsprot.protocol.game.outgoing.info.util.BuildArea
@@ -44,6 +45,7 @@ public class NpcInfo internal constructor(
     internal var localPlayerIndex: Int,
     private val indexSupplier: NpcIndexSupplier,
     private val lowResolutionToHighResolutionEncoders: ClientTypeMap<NpcResolutionChangeEncoder>,
+    private val recycler: ByteBufRecycler,
 ) : ReferencePooledObject {
     /**
      * The last cycle's coordinate of the local player, used to perform faster npc removal.
@@ -138,15 +140,6 @@ public class NpcInfo internal constructor(
     @Volatile
     internal var exception: Exception? = null
 
-    /**
-     * Whether the buffer allocated by this NPC info object has been built
-     * into a packet message. If this returns false, but NPC info was in fact built,
-     * we have an allocated buffer that needs releasing. If the NPC info itself
-     * is released but isn't built into packet, we make sure to release it, to avoid
-     * any memory leaks.
-     */
-    private var builtIntoPacket: Boolean = false
-
     override fun isDestroyed(): Boolean = this.exception != null
 
     /**
@@ -213,7 +206,6 @@ public class NpcInfo internal constructor(
                 exception,
             )
         }
-        builtIntoPacket = true
         return if (this.viewDistance > MAX_SMALL_PACKET_DISTANCE) {
             NpcInfoLarge(backingBuffer())
         } else {
@@ -256,17 +248,10 @@ public class NpcInfo internal constructor(
      */
     @Suppress("DuplicatedCode")
     private fun allocBuffer(): ByteBuf {
-        // If a given player's packet was never sent out, we need to release the old buffer
-        if (!builtIntoPacket) {
-            val oldBuf = buffer
-            if (oldBuf != null && oldBuf.refCnt() > 0) {
-                oldBuf.release()
-            }
-        }
         // Acquire a new buffer with each cycle, in case the previous one isn't fully written out yet
         val buffer = allocator.buffer(BUF_CAPACITY, BUF_CAPACITY)
         this.buffer = buffer
-        this.builtIntoPacket = false
+        recycler += buffer
         return buffer
     }
 
@@ -636,15 +621,10 @@ public class NpcInfo internal constructor(
         this.highResolutionNpcIndexCount = 0
         this.extendedInfoCount = 0
         this.observerExtendedInfoFlags.reset()
+        this.buffer = null
     }
 
     override fun onDealloc() {
-        if (!builtIntoPacket) {
-            val buffer = this.buffer
-            if (buffer != null && buffer.refCnt() > 0) {
-                buffer.release(buffer.refCnt())
-            }
-        }
         this.buffer = null
         for (i in 0..<highResolutionNpcIndexCount) {
             val npcIndex = highResolutionNpcIndices[i].toInt()

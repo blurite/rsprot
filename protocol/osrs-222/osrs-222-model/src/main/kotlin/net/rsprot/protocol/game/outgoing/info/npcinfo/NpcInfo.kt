@@ -9,6 +9,7 @@ import net.rsprot.protocol.common.client.ClientTypeMap
 import net.rsprot.protocol.common.client.OldSchoolClientType
 import net.rsprot.protocol.common.game.outgoing.info.CoordGrid
 import net.rsprot.protocol.common.game.outgoing.info.npcinfo.encoder.NpcResolutionChangeEncoder
+import net.rsprot.protocol.game.outgoing.info.ByteBufRecycler
 import net.rsprot.protocol.game.outgoing.info.exceptions.InfoProcessException
 import net.rsprot.protocol.game.outgoing.info.util.BuildArea
 import net.rsprot.protocol.game.outgoing.info.util.ReferencePooledObject
@@ -44,6 +45,7 @@ public class NpcInfo internal constructor(
     private val indexSupplier: NpcIndexSupplier,
     private val lowResolutionToHighResolutionEncoders: ClientTypeMap<NpcResolutionChangeEncoder>,
     private val detailsStorage: NpcInfoWorldDetailsStorage,
+    private val recycler: ByteBufRecycler,
 ) : ReferencePooledObject {
     /**
      * The maximum view distance how far a player will see other NPCs.
@@ -301,8 +303,6 @@ public class NpcInfo internal constructor(
                 exception,
             )
         }
-        val details = getDetails(worldId)
-        details.builtIntoPacket = true
         return if (this.viewDistance > MAX_SMALL_PACKET_DISTANCE) {
             NpcInfoLarge(backingBuffer(worldId))
         } else {
@@ -317,17 +317,10 @@ public class NpcInfo internal constructor(
     @Suppress("DuplicatedCode")
     private fun allocBuffer(worldId: Int): ByteBuf {
         val details = getDetails(worldId)
-        // If a given player's packet was never sent out, we need to release the old buffer
-        if (!details.builtIntoPacket) {
-            val oldBuf = details.buffer
-            if (oldBuf != null && oldBuf.refCnt() > 0) {
-                oldBuf.release()
-            }
-        }
         // Acquire a new buffer with each cycle, in case the previous one isn't fully written out yet
         val buffer = allocator.buffer(BUF_CAPACITY, BUF_CAPACITY)
         details.buffer = buffer
-        details.builtIntoPacket = false
+        recycler += buffer
         return buffer
     }
 

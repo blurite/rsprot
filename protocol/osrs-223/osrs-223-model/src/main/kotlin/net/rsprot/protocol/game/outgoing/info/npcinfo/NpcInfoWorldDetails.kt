@@ -91,15 +91,6 @@ internal class NpcInfoWorldDetails(
     internal var buffer: ByteBuf? = null
 
     /**
-     * Whether the buffer allocated by this NPC info object has been built
-     * into a packet message. If this returns false, but NPC info was in fact built,
-     * we have an allocated buffer that needs releasing. If the NPC info itself
-     * is released but isn't built into packet, we make sure to release it, to avoid
-     * any memory leaks.
-     */
-    internal var builtIntoPacket: Boolean = false
-
-    /**
      * Performs an index defragmentation on the [highResolutionNpcIndices] array.
      * This function will effectively take all indices that are NOT [NPC_INDEX_TERMINATOR]
      * and put them into the [temporaryHighResolutionNpcIndices] in a consecutive order,
@@ -157,23 +148,11 @@ internal class NpcInfoWorldDetails(
         this.extendedInfoCount = 0
         this.extendedInfoIndices.fill(0u)
         this.observerExtendedInfoFlags.reset()
-        this.builtIntoPacket = false
-        val buffer = this.buffer
-        if (buffer != null && buffer.refCnt() > 0) {
-            buffer.release(buffer.refCnt())
-            this.buffer = null
-        }
+        this.buffer = null
     }
 
     internal fun onDealloc() {
-        val buffer = this.buffer
-        if (buffer != null) {
-            if (!builtIntoPacket && buffer.refCnt() > 0) {
-                buffer.release(buffer.refCnt())
-            }
-            this.buffer = null
-        }
-        this.builtIntoPacket = false
+        this.buffer = null
     }
 
     private companion object {

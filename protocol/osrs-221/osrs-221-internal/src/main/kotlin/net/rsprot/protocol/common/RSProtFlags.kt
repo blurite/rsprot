@@ -69,6 +69,13 @@ public object RSProtFlags {
             false,
         )
 
+    @JvmStatic
+    public val byteBufRecyclerCycleThreshold: Int =
+        getInt(
+            "recyclerCycleThreshold",
+            50,
+        )
+
     init {
         log("development", development)
         log("inventoryObjCheck", inventoryObjCheck)
@@ -86,6 +93,17 @@ public object RSProtFlags {
             PREFIX + propertyName,
             defaultValue,
         )
+
+    @Suppress("SameParameterValue")
+    private fun getInt(
+        propertyName: String,
+        defaultValue: Int,
+    ): Int =
+        SystemPropertyUtil
+            .get(
+                PREFIX + propertyName,
+                defaultValue.toString(),
+            )?.toIntOrNull() ?: defaultValue
 
     private fun log(
         name: String,
