@@ -24,6 +24,7 @@ import net.rsprot.protocol.game.outgoing.info.playerinfo.PlayerInfoProtocol
 import net.rsprot.protocol.game.outgoing.info.worldentityinfo.WorldEntityAvatarFactory
 import net.rsprot.protocol.game.outgoing.info.worldentityinfo.WorldEntityProtocol
 import net.rsprot.protocol.message.codec.incoming.provider.GameMessageConsumerRepositoryProvider
+import net.rsprot.protocol.threads.IllegalThreadAccessException
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.ScheduledFuture
 import kotlin.time.measureTime
@@ -174,9 +175,15 @@ public class NetworkService<R>
          * Sets the thread which is permitted to communicate with RSProt's thread-unsafe
          * properties. If set to null, all threads are allowed to communicate again.
          * @param thread the thread permitted to communicate with RSProt's thread-unsafe functions.
+         * @param warnOnError whether to warn on a thread violation error. If false, am
+         * [IllegalThreadAccessException] is thrown instead.
          */
-        public fun setCommunicationThread(thread: Thread?) {
-            setInternalCommunicationThread(thread)
+        @JvmOverloads
+        public fun setCommunicationThread(
+            thread: Thread?,
+            warnOnError: Boolean = true,
+        ) {
+            setInternalCommunicationThread(thread, warnOnError)
         }
 
         /**
