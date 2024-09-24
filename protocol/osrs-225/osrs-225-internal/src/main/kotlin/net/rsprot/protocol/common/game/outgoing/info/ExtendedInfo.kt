@@ -66,6 +66,14 @@ public abstract class ExtendedInfo<in T : ExtendedInfo<T, E>, E : ExtendedInfoEn
     }
 
     /**
+     * Checks whether a buffer has been precomputed on the specified client type.
+     * @param oldSchoolClientType the client for which to check a precomputed buffer.
+     * @return whether the buffer has been precomputed for the specified client.
+     */
+    public fun isPrecomputed(oldSchoolClientType: OldSchoolClientType): Boolean =
+        buffers[oldSchoolClientType.id] != null
+
+    /**
      * Clears this extended info block, making it ready for use by another avatar.
      */
     public abstract fun clear()

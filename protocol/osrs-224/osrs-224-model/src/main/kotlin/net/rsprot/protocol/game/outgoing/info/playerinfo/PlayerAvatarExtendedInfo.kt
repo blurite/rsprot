@@ -1277,25 +1277,32 @@ public class PlayerAvatarExtendedInfo(
      * @param observer the avatar observing us.
      * @return the flags that need updating.
      */
-    internal fun getLowToHighResChangeExtendedInfoFlags(observer: PlayerAvatarExtendedInfo): Int {
+    internal fun getLowToHighResChangeExtendedInfoFlags(
+        observer: PlayerAvatarExtendedInfo,
+        oldSchoolClientType: OldSchoolClientType,
+    ): Int {
         var flag = 0
         if (this.flags and APPEARANCE == 0 &&
-            checkOutOfDate(observer)
+            checkOutOfDate(observer) &&
+            blocks.appearance.isPrecomputed(oldSchoolClientType)
         ) {
             flag = flag or APPEARANCE
         }
         if (this.flags and MOVE_SPEED == 0 &&
-            blocks.moveSpeed.value != MoveSpeed.DEFAULT_MOVESPEED
+            blocks.moveSpeed.value != MoveSpeed.DEFAULT_MOVESPEED &&
+            blocks.moveSpeed.isPrecomputed(oldSchoolClientType)
         ) {
             flag = flag or MOVE_SPEED
         }
         if (this.flags and FACE_PATHINGENTITY == 0 &&
-            blocks.facePathingEntity.index != FacePathingEntity.DEFAULT_VALUE
+            blocks.facePathingEntity.index != FacePathingEntity.DEFAULT_VALUE &&
+            blocks.facePathingEntity.isPrecomputed(oldSchoolClientType)
         ) {
             flag = flag or FACE_PATHINGENTITY
         }
         if (this.flags and FACE_ANGLE == 0 &&
-            blocks.faceAngle.angle != FaceAngle.DEFAULT_VALUE
+            blocks.faceAngle.angle != FaceAngle.DEFAULT_VALUE &&
+            blocks.faceAngle.isPrecomputed(oldSchoolClientType)
         ) {
             flag = flag or FACE_ANGLE
         }

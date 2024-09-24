@@ -493,7 +493,11 @@ public class PlayerInfo internal constructor(
         buffer.pBits(13, z)
 
         // Get a flags of all the extended info blocks that are 'outdated' to us and must be sent again.
-        val extraFlags = other.avatar.extendedInfo.getLowToHighResChangeExtendedInfoFlags(avatar.extendedInfo)
+        val extraFlags =
+            other.avatar.extendedInfo.getLowToHighResChangeExtendedInfoFlags(
+                avatar.extendedInfo,
+                oldSchoolClientType,
+            )
         // Mark those flags as observer-dependent.
         observerExtendedInfoFlags.addFlag(index, extraFlags)
         stationary[index] = (stationary[index].toInt() or IS_STATIONARY).toByte()
@@ -538,7 +542,11 @@ public class PlayerInfo internal constructor(
 
             // If we still haven't tracked extended info for them, re-try
             if (!isHighResolutionExtendedInfoTracked(index)) {
-                val extraFlags = other.avatar.extendedInfo.getLowToHighResChangeExtendedInfoFlags(avatar.extendedInfo)
+                val extraFlags =
+                    other.avatar.extendedInfo.getLowToHighResChangeExtendedInfoFlags(
+                        avatar.extendedInfo,
+                        oldSchoolClientType,
+                    )
                 observerExtendedInfoFlags.addFlag(index, extraFlags)
             }
             val flag = other.avatar.extendedInfo.flags or observerExtendedInfoFlags.getFlag(index)
