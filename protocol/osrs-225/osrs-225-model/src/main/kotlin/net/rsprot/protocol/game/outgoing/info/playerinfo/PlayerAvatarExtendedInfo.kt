@@ -69,18 +69,18 @@ public class PlayerAvatarExtendedInfo(
         buildClientWriterArray(extendedInfoWriters)
 
     /**
-     * An int array to keep track of the number of times we've seen someone modify their appearance.
-     * During low to high resolution transition, if our counter of their changes does not align
-     * with their own counter of their appearance changes, their appearance will be re-transmitted
-     * to our client, in order to synchronize it. If the values align, the client will utilize its
-     * previously cached variant.
+     * An int array to track the last cycle during which we recorded other players' appearances.
+     * If the values align, the client will utilize its previously cached variant.
      */
-    private val otherAppearanceChangesCounter: IntArray = IntArray(PlayerInfoProtocol.PROTOCOL_CAPACITY)
+    private val otherAppearanceChangeCycles: IntArray =
+        IntArray(PlayerInfoProtocol.PROTOCOL_CAPACITY) {
+            -1
+        }
 
     /**
-     * The number of times our appearance has changed.
+     * The last player info cycle on which our appearance changed.
      */
-    private var appearanceChangesCounter: Int = 0
+    private var lastAppearanceChangeCycle: Int = 0
 
     /**
      * Sets the movement speed for this avatar. This move speed will be used whenever
@@ -1266,7 +1266,7 @@ public class PlayerAvatarExtendedInfo(
      */
     private fun flagAppearance() {
         flags = flags or APPEARANCE
-        appearanceChangesCounter++
+        lastAppearanceChangeCycle = PlayerInfoProtocol.cycleCount
     }
 
     /**
@@ -1284,8 +1284,8 @@ public class PlayerAvatarExtendedInfo(
      */
     internal fun reset() {
         flags = 0
-        this.appearanceChangesCounter = 0
-        this.otherAppearanceChangesCounter.fill(0)
+        this.lastAppearanceChangeCycle = 0
+        this.otherAppearanceChangeCycles.fill(-1)
         blocks.appearance.clear()
         blocks.moveSpeed.clear()
         blocks.temporaryMoveSpeed.clear()
@@ -1338,7 +1338,7 @@ public class PlayerAvatarExtendedInfo(
      * variant is still up-to-date.
      */
     private fun checkOutOfDate(observer: PlayerAvatarExtendedInfo): Boolean =
-        observer.otherAppearanceChangesCounter[localIndex] != appearanceChangesCounter
+        observer.otherAppearanceChangeCycles[localIndex] < lastAppearanceChangeCycle
 
     /**
      * Silently synchronizes the angle of the avatar, meaning any new observers will see them
@@ -1413,7 +1413,7 @@ public class PlayerAvatarExtendedInfo(
                 buffer.writableBytes(),
                 flag,
                 remainingAvatars,
-                observer.otherAppearanceChangesCounter[localIndex] != 0,
+                observer.otherAppearanceChangeCycles[localIndex] != -1,
             )
         ) {
             buffer.p1(0)
@@ -1426,7 +1426,7 @@ public class PlayerAvatarExtendedInfo(
 
         // If appearance is flagged, ensure we synchronize the changes counter
         if (flag and APPEARANCE != 0) {
-            observer.otherAppearanceChangesCounter[localIndex] = appearanceChangesCounter
+            observer.otherAppearanceChangeCycles[localIndex] = lastAppearanceChangeCycle
         }
         writer.pExtendedInfo(
             buffer,
@@ -1473,7 +1473,7 @@ public class PlayerAvatarExtendedInfo(
      */
     public fun onOtherAvatarDeallocated(idx: Int) {
         checkCommunicationThread()
-        otherAppearanceChangesCounter[idx] = -1
+        otherAppearanceChangeCycles[idx] = -1
     }
 
     public companion object {
