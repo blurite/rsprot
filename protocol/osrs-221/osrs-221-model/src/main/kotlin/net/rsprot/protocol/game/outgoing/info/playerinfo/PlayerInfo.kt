@@ -84,6 +84,15 @@ public class PlayerInfo internal constructor(
     private val highResolutionIndices: ShortArray = ShortArray(PROTOCOL_CAPACITY)
 
     /**
+     * A bitset of high resolution players for whom we have written extended info.
+     * In the case of someone being added to high resolution, but due to our buffer being too
+     * full to actually write their extended info, we need to try again the next tick (and so on)
+     * until we finally succeed in synchronizing them. Without this, one could end up with invisible
+     * players.
+     */
+    private val highResolutionExtendedInfoTrackedPlayers: LongArray = LongArray(PROTOCOL_CAPACITY ushr 6)
+
+    /**
      * The number of players in high resolution according to the protocol.
      */
     private var highResolutionCount: Int = 0
@@ -236,12 +245,20 @@ public class PlayerInfo internal constructor(
         this.avatar.updateCoord(level, x, z)
     }
 
+    /**
+     * Checks whether the player at [index] is currently among high resolution players.
+     * @param index the index of the player to check.
+     */
     private fun isHighResolution(index: Int): Boolean {
         val longIndex = index ushr 6
         val bit = 1L shl (index and 0x3F)
         return this.highResolutionPlayers[longIndex] and bit != 0L
     }
 
+    /**
+     * Marks the player at index [index] as being in high resolution.
+     * @param index the index of the player to mark as high resolution.
+     */
     private fun setHighResolution(index: Int) {
         val longIndex = index ushr 6
         val bit = 1L shl (index and 0x3F)
@@ -249,11 +266,47 @@ public class PlayerInfo internal constructor(
         this.highResolutionPlayers[longIndex] = cur or bit
     }
 
+    /**
+     * Marks the player at index [index] as being in low resolution.
+     * @param index the index of the player to mark as low resolution.
+     */
     private fun unsetHighResolution(index: Int) {
         val longIndex = index ushr 6
         val bit = 1L shl (index and 0x3F)
         val cur = this.highResolutionPlayers[longIndex]
         this.highResolutionPlayers[longIndex] = cur and bit.inv()
+    }
+
+    /**
+     * Checks whether the player at [index] is currently among high resolution extended info players.
+     * @param index the index of the player to check.
+     */
+    private fun isHighResolutionExtendedInfoTracked(index: Int): Boolean {
+        val longIndex = index ushr 6
+        val bit = 1L shl (index and 0x3F)
+        return this.highResolutionExtendedInfoTrackedPlayers[longIndex] and bit != 0L
+    }
+
+    /**
+     * Marks the player at index [index] as being in high resolution extended info.
+     * @param index the index of the player to mark as high resolution.
+     */
+    private fun setHighResolutionExtendedInfoTracked(index: Int) {
+        val longIndex = index ushr 6
+        val bit = 1L shl (index and 0x3F)
+        val cur = this.highResolutionExtendedInfoTrackedPlayers[longIndex]
+        this.highResolutionExtendedInfoTrackedPlayers[longIndex] = cur or bit
+    }
+
+    /**
+     * Marks the player at index [index] as being in low resolution extended info.
+     * @param index the index of the player to mark as low resolution.
+     */
+    private fun unsetHighResolutionExtendedInfoTracked(index: Int) {
+        val longIndex = index ushr 6
+        val bit = 1L shl (index and 0x3F)
+        val cur = this.highResolutionExtendedInfoTrackedPlayers[longIndex]
+        this.highResolutionExtendedInfoTrackedPlayers[longIndex] = cur and bit.inv()
     }
 
     /**
@@ -297,6 +350,7 @@ public class PlayerInfo internal constructor(
         highResolutionIndices.fill(0)
         highResolutionCount = 0
         highResolutionPlayers.fill(0L)
+        highResolutionExtendedInfoTrackedPlayers.fill(0L)
         extendedInfoCount = 0
         extendedInfoIndices.fill(0)
         stationary.fill(0)
@@ -339,13 +393,17 @@ public class PlayerInfo internal constructor(
             val index = extendedInfoIndices[i].toInt()
             val other = checkNotNull(protocol.getPlayerInfo(index))
             val observerFlag = observerExtendedInfoFlags.getFlag(index)
-            other.avatar.extendedInfo.pExtendedInfo(
-                oldSchoolClientType,
-                jagBuffer,
-                observerFlag,
-                avatar.extendedInfo,
-                extendedInfoCount - i,
-            )
+            val tracked =
+                other.avatar.extendedInfo.pExtendedInfo(
+                    oldSchoolClientType,
+                    jagBuffer,
+                    observerFlag,
+                    avatar.extendedInfo,
+                    extendedInfoCount - i,
+                )
+            if (tracked) {
+                setHighResolutionExtendedInfoTracked(index)
+            }
         }
     }
 
@@ -446,6 +504,7 @@ public class PlayerInfo internal constructor(
             extendedInfoIndices[extendedInfoCount++] = index.toShort()
             buffer.pBits(1, 1)
         } else {
+            setHighResolutionExtendedInfoTracked(index)
             buffer.pBits(1, 0)
         }
     }
@@ -477,8 +536,16 @@ public class PlayerInfo internal constructor(
                 continue
             }
 
+            // If we still haven't tracked extended info for them, re-try
+            if (!isHighResolutionExtendedInfoTracked(index)) {
+                val extraFlags = other.avatar.extendedInfo.getLowToHighResChangeExtendedInfoFlags(avatar.extendedInfo)
+                observerExtendedInfoFlags.addFlag(index, extraFlags)
+            }
             val flag = other.avatar.extendedInfo.flags or observerExtendedInfoFlags.getFlag(index)
             val hasExtendedInfoBlock = flag != 0
+            if (!hasExtendedInfoBlock) {
+                setHighResolutionExtendedInfoTracked(index)
+            }
             val highResBuf = other.highResMovementBuffer
             val skipped = !hasExtendedInfoBlock && highResBuf == null
             if (!skipped) {
@@ -578,6 +645,7 @@ public class PlayerInfo internal constructor(
         other: PlayerInfo?,
     ) {
         unsetHighResolution(index)
+        unsetHighResolutionExtendedInfoTracked(index)
         // The one-liner pBits is equal to the below comment:
         // buffer.pBits(1, 1)
         // buffer.pBits(1, 0)
@@ -718,6 +786,7 @@ public class PlayerInfo internal constructor(
         highResolutionIndices.fill(0)
         highResolutionCount = 0
         highResolutionPlayers.fill(0L)
+        highResolutionExtendedInfoTrackedPlayers.fill(0L)
         extendedInfoCount = 0
         extendedInfoIndices.fill(0)
         stationary.fill(0)

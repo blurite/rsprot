@@ -1370,7 +1370,7 @@ public class PlayerAvatarExtendedInfo(
         observerFlag: Int,
         observer: PlayerAvatarExtendedInfo,
         remainingAvatars: Int,
-    ) {
+    ): Boolean {
         val flag = this.flags or observerFlag
         if (!filter.accept(
                 buffer.writableBytes(),
@@ -1380,7 +1380,7 @@ public class PlayerAvatarExtendedInfo(
             )
         ) {
             buffer.p1(0)
-            return
+            return false
         }
         val writer =
             requireNotNull(writers[oldSchoolClientType.id]) {
@@ -1398,6 +1398,7 @@ public class PlayerAvatarExtendedInfo(
             flag,
             blocks,
         )
+        return true
     }
 
     /**

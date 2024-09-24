@@ -351,6 +351,50 @@ public class PlayerInfo internal constructor(
     }
 
     /**
+     * Checks whether the player at [index] is currently among high resolution extended info players.
+     * @param highResolutionExtendedInfoTrackedPlayers a bitpacked long array containing boolean-type information.
+     * @param index the index of the player to check.
+     */
+    private fun isHighResolutionExtendedInfoTracked(
+        highResolutionExtendedInfoTrackedPlayers: LongArray,
+        index: Int,
+    ): Boolean {
+        val longIndex = index ushr 6
+        val bit = 1L shl (index and 0x3F)
+        return highResolutionExtendedInfoTrackedPlayers[longIndex] and bit != 0L
+    }
+
+    /**
+     * Marks the player at index [index] as being in high resolution extended info.
+     * @param highResolutionExtendedInfoTrackedPlayers a bitpacked long array containing boolean-type information.
+     * @param index the index of the player to mark as high resolution.
+     */
+    private fun setHighResolutionExtendedInfoTracked(
+        highResolutionExtendedInfoTrackedPlayers: LongArray,
+        index: Int,
+    ) {
+        val longIndex = index ushr 6
+        val bit = 1L shl (index and 0x3F)
+        val cur = highResolutionExtendedInfoTrackedPlayers[longIndex]
+        highResolutionExtendedInfoTrackedPlayers[longIndex] = cur or bit
+    }
+
+    /**
+     * Marks the player at index [index] as being in low resolution extended info.
+     * @param highResolutionExtendedInfoTrackedPlayers a bitpacked long array containing boolean-type information.
+     * @param index the index of the player to mark as low resolution.
+     */
+    private fun unsetHighResolutionExtendedInfoTracked(
+        highResolutionExtendedInfoTrackedPlayers: LongArray,
+        index: Int,
+    ) {
+        val longIndex = index ushr 6
+        val bit = 1L shl (index and 0x3F)
+        val cur = highResolutionExtendedInfoTrackedPlayers[longIndex]
+        highResolutionExtendedInfoTrackedPlayers[longIndex] = cur and bit.inv()
+    }
+
+    /**
      * Handles initializing absolute player positions.
      * @param byteBuf the buffer into which the information will be written.
      */
@@ -426,13 +470,20 @@ public class PlayerInfo internal constructor(
             val index = details.extendedInfoIndices[i].toInt()
             val other = checkNotNull(protocol.getPlayerInfo(index))
             val observerFlag = observerExtendedInfoFlags.getFlag(index)
-            other.avatar.extendedInfo.pExtendedInfo(
-                oldSchoolClientType,
-                jagBuffer,
-                observerFlag,
-                avatar.extendedInfo,
-                details.extendedInfoCount - i,
-            )
+            val tracked =
+                other.avatar.extendedInfo.pExtendedInfo(
+                    oldSchoolClientType,
+                    jagBuffer,
+                    observerFlag,
+                    avatar.extendedInfo,
+                    details.extendedInfoCount - i,
+                )
+            if (tracked) {
+                setHighResolutionExtendedInfoTracked(
+                    details.highResolutionExtendedInfoTrackedPlayers,
+                    index,
+                )
+            }
         }
     }
 
@@ -535,6 +586,10 @@ public class PlayerInfo internal constructor(
             details.extendedInfoIndices[details.extendedInfoCount++] = index.toShort()
             buffer.pBits(1, 1)
         } else {
+            setHighResolutionExtendedInfoTracked(
+                details.highResolutionExtendedInfoTrackedPlayers,
+                index,
+            )
             buffer.pBits(1, 0)
         }
     }
@@ -567,10 +622,18 @@ public class PlayerInfo internal constructor(
                 continue
             }
 
+            // If we still haven't tracked extended info for them, re-try
+            if (!isHighResolutionExtendedInfoTracked(details.highResolutionExtendedInfoTrackedPlayers, index)) {
+                val extraFlags = other.avatar.extendedInfo.getLowToHighResChangeExtendedInfoFlags(avatar.extendedInfo)
+                observerExtendedInfoFlags.addFlag(index, extraFlags)
+            }
             val flag = other.avatar.extendedInfo.flags or observerExtendedInfoFlags.getFlag(index)
             val hasExtendedInfoBlock =
                 flag != 0 &&
                     (details.worldId == activeWorldId || index != localIndex)
+            if (!hasExtendedInfoBlock) {
+                setHighResolutionExtendedInfoTracked(details.highResolutionExtendedInfoTrackedPlayers, index)
+            }
             val highResBuf = other.highResMovementBuffer
             val skipped = !hasExtendedInfoBlock && (!details.initialized || highResBuf == null)
             if (!skipped) {
@@ -672,6 +735,7 @@ public class PlayerInfo internal constructor(
         other: PlayerInfo?,
     ) {
         unsetHighResolution(details.highResolutionPlayers, index)
+        unsetHighResolutionExtendedInfoTracked(details.highResolutionExtendedInfoTrackedPlayers, index)
         // The one-liner pBits is equal to the below comment:
         // buffer.pBits(1, 1)
         // buffer.pBits(1, 0)
@@ -839,6 +903,7 @@ public class PlayerInfo internal constructor(
         rootDetails.highResolutionIndices.fill(0)
         rootDetails.highResolutionCount = 0
         rootDetails.highResolutionPlayers.fill(0L)
+        rootDetails.highResolutionExtendedInfoTrackedPlayers.fill(0L)
         rootDetails.extendedInfoCount = 0
         rootDetails.extendedInfoIndices.fill(0)
         rootDetails.stationary.fill(0)

@@ -2,6 +2,7 @@ package net.rsprot.protocol.game.outgoing.info.playerinfo
 
 import io.netty.buffer.ByteBuf
 import net.rsprot.protocol.common.game.outgoing.info.CoordGrid
+import net.rsprot.protocol.game.outgoing.info.playerinfo.PlayerInfoProtocol.Companion.PROTOCOL_CAPACITY
 import net.rsprot.protocol.game.outgoing.info.util.BuildArea
 
 /**
@@ -25,7 +26,7 @@ internal class PlayerInfoWorldDetails(
      * with each skip block, as players are far more likely to be in the same state
      * as they were in the last cycle.
      */
-    internal val stationary = ByteArray(PlayerInfoProtocol.PROTOCOL_CAPACITY)
+    internal val stationary = ByteArray(PROTOCOL_CAPACITY)
 
     /**
      * Low resolution indices are tracked together with [lowResolutionCount].
@@ -34,7 +35,7 @@ internal class PlayerInfoWorldDetails(
      * is incremented by one.
      * At the end of each cycle, the [lowResolutionIndices] are rebuilt to sort the indices.
      */
-    internal val lowResolutionIndices: ShortArray = ShortArray(PlayerInfoProtocol.PROTOCOL_CAPACITY)
+    internal val lowResolutionIndices: ShortArray = ShortArray(PROTOCOL_CAPACITY)
 
     /**
      * The number of players in low resolution according to the protocol.
@@ -47,7 +48,7 @@ internal class PlayerInfoWorldDetails(
      * We do not need to use references to players as we can then refer to the [PlayerInfoRepository]
      * to find the actual [PlayerInfo] implementation.
      */
-    internal val highResolutionPlayers: LongArray = LongArray(PlayerInfoProtocol.PROTOCOL_CAPACITY ushr 6)
+    internal val highResolutionPlayers: LongArray = LongArray(PROTOCOL_CAPACITY ushr 6)
 
     /**
      * High resolution indices are tracked together with [highResolutionCount].
@@ -56,7 +57,16 @@ internal class PlayerInfoWorldDetails(
      * is incremented by one.
      * At the end of each cycle, the [highResolutionIndices] are rebuilt to sort the indices.
      */
-    internal val highResolutionIndices: ShortArray = ShortArray(PlayerInfoProtocol.PROTOCOL_CAPACITY)
+    internal val highResolutionIndices: ShortArray = ShortArray(PROTOCOL_CAPACITY)
+
+    /**
+     * A bitset of high resolution players for whom we have written extended info.
+     * In the case of someone being added to high resolution, but due to our buffer being too
+     * full to actually write their extended info, we need to try again the next tick (and so on)
+     * until we finally succeed in synchronizing them. Without this, one could end up with invisible
+     * players.
+     */
+    internal val highResolutionExtendedInfoTrackedPlayers: LongArray = LongArray(PROTOCOL_CAPACITY ushr 6)
 
     /**
      * The number of players in high resolution according to the protocol.
@@ -68,7 +78,7 @@ internal class PlayerInfoWorldDetails(
      * write an extended info block. We do this rather than directly writing them as this
      * improves CPU cache locality and allows us to batch extended info blocks together.
      */
-    internal val extendedInfoIndices: ShortArray = ShortArray(PlayerInfoProtocol.PROTOCOL_CAPACITY)
+    internal val extendedInfoIndices: ShortArray = ShortArray(PROTOCOL_CAPACITY)
 
     /**
      * The number of players for whom we need to write extended info blocks this cycle.
@@ -106,6 +116,7 @@ internal class PlayerInfoWorldDetails(
         highResolutionCount = 0
         highResolutionIndices.fill(0)
         highResolutionPlayers.fill(0)
+        highResolutionExtendedInfoTrackedPlayers.fill(0L)
         extendedInfoCount = 0
         extendedInfoIndices.fill(0)
         this.buffer = null
