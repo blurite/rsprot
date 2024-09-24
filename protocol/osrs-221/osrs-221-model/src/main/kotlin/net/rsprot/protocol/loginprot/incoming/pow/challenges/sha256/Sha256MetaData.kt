@@ -11,8 +11,7 @@ import net.rsprot.protocol.loginprot.incoming.pow.challenges.ChallengeMetaData
  * that the hash must have for it to be considered successful.
  * @property epochTimeMillis the epoch time milliseconds when the request was made.
  * This value is the very first section of the hash input.
- * @property unknown an unknown byte value - this value is always one in OldSchool RuneScape; it is
- * unclear what it is meant to represent.
+ * @property version the version of hashcash to use, only `1` is supported.
  */
 public class Sha256MetaData
     @JvmOverloads
@@ -20,7 +19,7 @@ public class Sha256MetaData
         public val world: Int,
         public val difficulty: Int = 18,
         public val epochTimeMillis: Long = System.currentTimeMillis(),
-        public val unknown: Int = 1,
+        public val version: Int = 1,
     ) : ChallengeMetaData {
         override fun equals(other: Any?): Boolean {
             if (this === other) return true
@@ -29,7 +28,7 @@ public class Sha256MetaData
             if (world != other.world) return false
             if (difficulty != other.difficulty) return false
             if (epochTimeMillis != other.epochTimeMillis) return false
-            if (unknown != other.unknown) return false
+            if (version != other.version) return false
 
             return true
         }
@@ -38,7 +37,7 @@ public class Sha256MetaData
             var result = world
             result = 31 * result + difficulty
             result = 31 * result + epochTimeMillis.hashCode()
-            result = 31 * result + unknown
+            result = 31 * result + version
             return result
         }
 
@@ -47,6 +46,6 @@ public class Sha256MetaData
                 "world=$world, " +
                 "difficulty=$difficulty, " +
                 "epochTimeMillis=$epochTimeMillis, " +
-                "unknown=$unknown" +
+                "version=$version" +
                 ")"
     }

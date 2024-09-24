@@ -13,9 +13,7 @@ import net.rsprot.protocol.loginprot.incoming.pow.challenges.ChallengeType
  * Since the requirement is that there are at least [difficulty] amount of leading
  * zero bits, these challenges aren't constrained to only having a single successful
  * answer.
- * @property unknown an unknown byte value that is appended to the start of each
- * base string that needs hashing. The value of this byte is **always** one in OldSchool
- * RuneScape.
+ * @property version the version of hashcash to use, only `1` is supported.
  * @property difficulty the difficulty of the challenge, as explained above, is the number
  * of leading zero bits the hash must have for it to be considered successful.
  * The default difficulty in OldSchool RuneScape is 18 as of writing this.
@@ -26,7 +24,7 @@ import net.rsprot.protocol.loginprot.incoming.pow.challenges.ChallengeType
  * @property id the id of the challenge as identified by the client.
  */
 public class Sha256Challenge(
-    public val unknown: Int,
+    public val version: Int,
     public val difficulty: Int,
     public val salt: String,
 ) : ChallengeType<Sha256MetaData> {
@@ -34,7 +32,7 @@ public class Sha256Challenge(
         get() = 0
 
     override fun encode(buffer: JagByteBuf) {
-        buffer.p1(unknown)
+        buffer.p1(version)
         buffer.p1(difficulty)
         buffer.pjstr(salt, Charsets.UTF_8)
     }
@@ -47,13 +45,13 @@ public class Sha256Challenge(
      * @return the base string used for the hashing input.
      */
     public fun getBaseString(): String =
-        Integer.toHexString(this.unknown) + Integer.toHexString(this.difficulty) + this.salt
+        Integer.toHexString(this.version) + Integer.toHexString(this.difficulty) + this.salt
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (other !is Sha256Challenge) return false
 
-        if (unknown != other.unknown) return false
+        if (version != other.version) return false
         if (difficulty != other.difficulty) return false
         if (salt != other.salt) return false
 
@@ -61,7 +59,7 @@ public class Sha256Challenge(
     }
 
     override fun hashCode(): Int {
-        var result = unknown
+        var result = version
         result = 31 * result + difficulty
         result = 31 * result + salt.hashCode()
         return result
@@ -69,7 +67,7 @@ public class Sha256Challenge(
 
     override fun toString(): String =
         "Sha256Challenge(" +
-            "unknown=$unknown, " +
+            "version=$version, " +
             "difficulty=$difficulty, " +
             "salt='$salt'" +
             ")"

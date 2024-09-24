@@ -19,7 +19,7 @@ public class DefaultSha256ChallengeGenerator : ChallengeGenerator<Sha256MetaData
                 Integer.toHexString(input.world) +
                 hexSalt
         return Sha256Challenge(
-            input.unknown,
+            input.version,
             input.difficulty,
             salt,
         )
