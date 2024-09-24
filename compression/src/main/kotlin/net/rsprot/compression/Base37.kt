@@ -65,7 +65,7 @@ public data object Base37 {
         }
         val indexOfInvalidCharacter =
             charSequence.indexOfFirst {
-                it.lowercaseChar() !in ALPHABET
+                it != ' ' && it.lowercaseChar() !in ALPHABET
             }
         require(indexOfInvalidCharacter == -1) {
             "Invalid character in charSequence at index $indexOfInvalidCharacter: " +
@@ -139,7 +139,7 @@ public data object Base37 {
 
     /**
      * Decodes a base-37 encoded long into the respective string,
-     * replacing all underscores with spaces, as well as all first
+     * replacing all underscores with nbsp spaces, as well as all first
      * letters of each individual word to begin with an uppercase
      * letter.
      * If the input long is within the correct range, but isn't v
