@@ -413,6 +413,7 @@ public class NpcInfo internal constructor(
                 oldSchoolClientType,
                 jagBuffer,
                 localPlayerIndex,
+                i,
                 details.extendedInfoCount - i,
                 observerFlag,
             )

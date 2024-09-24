@@ -1079,11 +1079,20 @@ public class NpcAvatarExtendedInfo(
         oldSchoolClientType: OldSchoolClientType,
         buffer: JagByteBuf,
         observerIndex: Int,
+        extendedIndex: Int,
         remainingAvatars: Int,
         extraFlag: Int,
     ) {
         val flag = this.flags or extraFlag
-        if (!filter.accept(
+        // We _cannot_ skip the very first avatar that is meant to have extended info.
+        // If our NPC info only has a single byte for extended info written as a whole,
+        // the protocol will fail the `16 + 12` check (due to terminator being 16 bits,
+        // plus the single byte extended info - falling below the required 28 bits threshold)
+        // By ensuring the flag isn't written as zero (it can never be zero if this function
+        // is executed), we ensure that at least two bytes are being written for extended
+        // info as a whole - since there are no extended info blocks which write no information.
+        if (extendedIndex > 0 &&
+            !filter.accept(
                 buffer.writableBytes(),
                 flag,
                 remainingAvatars,
