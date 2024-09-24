@@ -61,7 +61,7 @@ class PlayerInfoTest {
 
     private fun tick() {
         protocol.update()
-        val buffer = localPlayerInfo.backingBuffer(PlayerInfo.ROOT_WORLD)
+        val buffer = localPlayerInfo.toPacket(PlayerInfo.ROOT_WORLD).content()
         client.decode(buffer)
         assertFalse(buffer.isReadable)
     }

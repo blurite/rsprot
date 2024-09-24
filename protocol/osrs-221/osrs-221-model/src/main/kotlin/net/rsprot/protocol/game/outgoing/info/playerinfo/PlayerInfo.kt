@@ -175,7 +175,7 @@ public class PlayerInfo internal constructor(
      * @throws IllegalStateException if the buffer has not been allocated yet.
      */
     @Throws(IllegalStateException::class)
-    public fun backingBuffer(): ByteBuf = checkNotNull(buffer)
+    private fun backingBuffer(): ByteBuf = checkNotNull(buffer)
 
     override fun isDestroyed(): Boolean = this.exception != null
 

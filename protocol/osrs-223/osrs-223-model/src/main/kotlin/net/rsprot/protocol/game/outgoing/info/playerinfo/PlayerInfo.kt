@@ -255,13 +255,6 @@ public class PlayerInfo internal constructor(
     }
 
     /**
-     * Returns the backing buffer for this cycle, for the specified [worldId].
-     * @throws IllegalStateException if the buffer has not been allocated yet.
-     */
-    @Throws(IllegalStateException::class)
-    public fun backingBuffer(worldId: Int): ByteBuf = checkNotNull(getDetails(worldId).buffer)
-
-    /**
      * Returns the backing buffer for this cycle, for the specified world details.
      * @throws IllegalStateException if the buffer has not been allocated yet.
      */
