@@ -6,6 +6,7 @@ import com.github.michaelbull.logging.InlineLogger
 import io.netty.channel.ChannelFutureListener
 import io.netty.channel.ChannelHandlerContext
 import io.netty.channel.ChannelPipeline
+import io.netty.handler.timeout.IdleStateHandler
 import net.rsprot.buffer.extensions.toJagByteBuf
 import net.rsprot.crypto.cipher.StreamCipher
 import net.rsprot.crypto.cipher.StreamCipherPair
@@ -21,6 +22,7 @@ import net.rsprot.protocol.common.client.OldSchoolClientType
 import net.rsprot.protocol.loginprot.incoming.util.LoginBlock
 import net.rsprot.protocol.loginprot.incoming.util.LoginClientType
 import net.rsprot.protocol.loginprot.outgoing.LoginResponse
+import java.util.concurrent.TimeUnit
 
 /**
  * A response handler for login requests, allowing the server to write either
@@ -200,6 +202,15 @@ public class GameLoginResponseHandler<R>(
             GameMessageEncoder(networkService, encodingCipher, oldSchoolClientType),
         )
         pipeline.replace<LoginConnectionHandler<R>>(GameMessageHandler(networkService, session))
+        pipeline.replace<IdleStateHandler>(
+            IdleStateHandler(
+                true,
+                NetworkService.GAME_TIMEOUT_SECONDS,
+                NetworkService.GAME_TIMEOUT_SECONDS,
+                NetworkService.GAME_TIMEOUT_SECONDS,
+                TimeUnit.SECONDS,
+            ),
+        )
         return session
     }
 

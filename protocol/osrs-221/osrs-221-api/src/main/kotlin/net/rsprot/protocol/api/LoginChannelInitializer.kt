@@ -26,9 +26,9 @@ public class LoginChannelInitializer<R>(
         ch.pipeline().addLast(
             IdleStateHandler(
                 true,
-                NetworkService.LOGIN_TIMEOUT_SECONDS,
-                NetworkService.LOGIN_TIMEOUT_SECONDS,
-                NetworkService.LOGIN_TIMEOUT_SECONDS,
+                NetworkService.INITIAL_TIMEOUT_SECONDS,
+                NetworkService.INITIAL_TIMEOUT_SECONDS,
+                NetworkService.INITIAL_TIMEOUT_SECONDS,
                 TimeUnit.SECONDS,
             ),
             LoginMessageDecoder(networkService),

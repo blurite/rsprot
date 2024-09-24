@@ -107,10 +107,17 @@ public class LoginChannelHandler(
                             .gameInetAddressTracker
                             .register(address)
                     }
-                    future
-                        .channel()
-                        .pipeline()
-                        .replace<LoginChannelHandler>(LoginConnectionHandler(networkService, sessionId))
+                    val pipeline = future.channel().pipeline()
+                    pipeline.replace<LoginChannelHandler>(LoginConnectionHandler(networkService, sessionId))
+                    pipeline.replace<IdleStateHandler>(
+                        IdleStateHandler(
+                            true,
+                            NetworkService.LOGIN_TIMEOUT_SECONDS,
+                            NetworkService.LOGIN_TIMEOUT_SECONDS,
+                            NetworkService.LOGIN_TIMEOUT_SECONDS,
+                            TimeUnit.SECONDS,
+                        ),
+                    )
                 },
             )
     }

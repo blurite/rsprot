@@ -312,7 +312,9 @@ public class NetworkService<R>
 
         public companion object {
             public const val REVISION: Int = 223
-            public const val LOGIN_TIMEOUT_SECONDS: Long = 60
+            public const val INITIAL_TIMEOUT_SECONDS: Long = 30
+            public const val LOGIN_TIMEOUT_SECONDS: Long = 40
+            public const val GAME_TIMEOUT_SECONDS: Long = 15
             public const val JS5_TIMEOUT_SECONDS: Long = 30
             private val logger = InlineLogger()
         }
