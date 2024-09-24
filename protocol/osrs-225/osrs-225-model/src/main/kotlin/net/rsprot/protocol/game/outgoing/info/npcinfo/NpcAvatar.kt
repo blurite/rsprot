@@ -400,6 +400,19 @@ public class NpcAvatar internal constructor(
         details.inaccessible = inaccessible
     }
 
+    /**
+     * Checks whether a npc is actively observed by at least one player.
+     * @return true if the NPC has at least one player currently observing it via
+     * NPC info, false otherwise.
+     */
+    public fun isActive(): Boolean = observerCount.get() > 0
+
+    /**
+     * Checks the number of players that are currently observing this NPC avatar.
+     * @return the number of players that are observing this avatar.
+     */
+    public fun getObserverCount(): Int = observerCount.get()
+
     override fun postUpdate() {
         details.stepCount = 0
         details.firstStep = -1
