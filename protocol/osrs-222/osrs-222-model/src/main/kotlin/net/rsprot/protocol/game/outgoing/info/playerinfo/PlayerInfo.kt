@@ -255,11 +255,97 @@ public class PlayerInfo internal constructor(
     }
 
     /**
+     * Gets the world details implementation of the specified [worldId], or null if the
+     * world has not been allocated.
+     */
+    private fun getDetailsOrNull(worldId: Int): PlayerInfoWorldDetails? =
+        if (worldId == ROOT_WORLD) {
+            details[PROTOCOL_CAPACITY]
+        } else {
+            details.getOrNull(worldId)
+        }
+
+    /**
      * Returns the backing buffer for this cycle, for the specified world details.
      * @throws IllegalStateException if the buffer has not been allocated yet.
      */
     @Throws(IllegalStateException::class)
     private fun backingBuffer(details: PlayerInfoWorldDetails): ByteBuf = checkNotNull(details.buffer)
+
+    /**
+     * Gets the high resolution indices of the given [worldId] in a new arraylist of integers.
+     * The list is initialized to an initial capacity equal to the high resolution player index count.
+     * @param worldId the worldId to collect the indices from. For root world, use [ROOT_WORLD].
+     * @throws IllegalArgumentException if the world id is not in range of 0..<2048, or [ROOT_WORLD].
+     * @throws IllegalStateException if the provided world has not been allocated. It is up to the
+     * caller to ensure the world they're accessible is available. Root world will always be available
+     * as long as the given info object is allocated.
+     * @return the newly created arraylist of indices
+     */
+    public fun getHighResolutionIndices(worldId: Int): ArrayList<Int> {
+        val details = getDetails(worldId)
+        val collection = ArrayList<Int>(details.highResolutionCount)
+        for (i in 0..<details.highResolutionCount) {
+            val index = details.highResolutionIndices[i].toInt()
+            collection.add(index)
+        }
+        return collection
+    }
+
+    /**
+     * Gets the high resolution indices of the given [worldId] in a new arraylist of integers, or null
+     * if the provided world does not exist.
+     * The list is initialized to an initial capacity equal to the high resolution player index count.
+     * @param worldId the worldId to collect the indices from. For root world, use [ROOT_WORLD].
+     * @throws IllegalArgumentException if the world id is not in range of 0..<2048, or [ROOT_WORLD].
+     * @throws IllegalStateException if the provided world has not been allocated. It is up to the
+     * caller to ensure the world they're accessible is available. Root world will always be available
+     * as long as the given info object is allocated.
+     * @return the newly created arraylist of indices, or null if the world does not exist.
+     */
+    public fun getHighResolutionIndicesOrNull(worldId: Int): ArrayList<Int>? {
+        val details = getDetailsOrNull(worldId) ?: return null
+        val collection = ArrayList<Int>(details.highResolutionCount)
+        for (i in 0..<details.highResolutionCount) {
+            val index = details.highResolutionIndices[i].toInt()
+            collection.add(index)
+        }
+        return collection
+    }
+
+    /**
+     * Appends the high resolution indices of the given [worldId] to the provided
+     * [collection]. This can be used to determine which players the player is currently
+     * seeing in the client.
+     * @param worldId the worldId to collect the indices from. For root world, use [ROOT_WORLD].
+     * @param collection the mutable collection of integer indices to append the indices into.
+     * @param throwExceptionIfNoWorld whether to throw an exception if the world does not exist.
+     * @throws IllegalArgumentException if the world id is not in range of 0..<2048, or [ROOT_WORLD],
+     * as long as [throwExceptionIfNoWorld] is true.
+     * @throws IllegalStateException if the provided world has not been allocated. It is up to the
+     * caller to ensure the world they're accessible is available. Root world will always be available
+     * as long as the given info object is allocated. This will only be thrown if [throwExceptionIfNoWorld]
+     * is true.
+     * @return the provided [collection] to chaining.
+     */
+    @JvmOverloads
+    public fun <T> appendHighResolutionIndices(
+        worldId: Int,
+        collection: T,
+        throwExceptionIfNoWorld: Boolean = true,
+    ): T where T : MutableCollection<Int> {
+        val details =
+            if (throwExceptionIfNoWorld) {
+                getDetails(worldId)
+            } else {
+                getDetailsOrNull(worldId) ?: return collection
+            }
+        for (i in 0..<details.highResolutionCount) {
+            val index = details.highResolutionIndices[i].toInt()
+            collection.add(index)
+        }
+        return collection
+    }
 
     /**
      * Turns the player info object into a wrapped packet.

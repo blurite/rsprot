@@ -209,6 +209,34 @@ public class PlayerInfo internal constructor(
     }
 
     /**
+     * Gets the high resolution indices in a new arraylist of integers.
+     * The list is initialized to an initial capacity equal to the high resolution player index count.
+     * @return the newly created arraylist of indices
+     */
+    public fun getHighResolutionIndices(): ArrayList<Int> {
+        val collection = ArrayList<Int>(highResolutionCount)
+        for (i in 0..<highResolutionCount) {
+            val index = highResolutionIndices[i].toInt()
+            collection.add(index)
+        }
+        return collection
+    }
+
+    /**
+     * Appends the high resolution indices to the provided [collection]. This can be used to determine which players the
+     * player is currently seeing in the client.
+     * @param collection the mutable collection of integer indices to append the indices into.
+     * @return the provided [collection] to chaining.
+     */
+    public fun <T> appendHighResolutionIndices(collection: T): T where T : MutableCollection<Int> {
+        for (i in 0..<highResolutionCount) {
+            val index = highResolutionIndices[i].toInt()
+            collection.add(index)
+        }
+        return collection
+    }
+
+    /**
      * Turns the player info object into a wrapped packet.
      * This is necessary because the encoder itself is only triggered in Netty, and it is possible
      * that the buffer has already been replaced with a new variant before it gets to that stage.
