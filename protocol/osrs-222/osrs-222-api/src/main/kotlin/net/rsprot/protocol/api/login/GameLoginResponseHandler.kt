@@ -56,6 +56,12 @@ public class GameLoginResponseHandler<R>(
                 .addListener(ChannelFutureListener.CLOSE)
             return null
         }
+        if (!ctx.channel().isActive) {
+            networkLog(logger) {
+                "Channel '${ctx.channel()}' has gone inactive; login block: $loginBlock"
+            }
+            return null
+        }
         val address = ctx.inetAddress()
         val count =
             networkService
@@ -115,6 +121,12 @@ public class GameLoginResponseHandler<R>(
                     "'${ctx.channel()}': $oldSchoolClientType, login block: $loginBlock"
             }
             ctx.writeAndFlush(LoginResponse.InvalidLoginPacket)
+            return null
+        }
+        if (!ctx.channel().isActive) {
+            networkLog(logger) {
+                "Channel '${ctx.channel()}' has gone inactive; login block: $loginBlock"
+            }
             return null
         }
         val (encodingCipher, decodingCipher) = createStreamCipherPair(loginBlock)
@@ -229,6 +241,12 @@ public class GameLoginResponseHandler<R>(
         }
         if (response is LoginResponse.Successful) {
             throw IllegalStateException("Successful login response is handled at the engine level.")
+        }
+        if (!ctx.channel().isActive) {
+            networkLog(logger) {
+                "Channel '${ctx.channel()}' has gone inactive, skipping failed response."
+            }
+            return
         }
         networkLog(logger) {
             "Writing failed login response to channel '${ctx.channel()}': $response"
