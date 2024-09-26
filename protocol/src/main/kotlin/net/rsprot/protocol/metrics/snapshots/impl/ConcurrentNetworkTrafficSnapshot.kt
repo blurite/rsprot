@@ -8,7 +8,7 @@ import java.time.temporal.ChronoUnit
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
 
-public class GenericNetworkTrafficSnapshot<LoginBlock>(
+public class ConcurrentNetworkTrafficSnapshot<LoginBlock>(
     public val startDateTime: LocalDateTime,
     public val endDateTime: LocalDateTime,
     public val connectionRequests: Int,
@@ -26,7 +26,7 @@ public class GenericNetworkTrafficSnapshot<LoginBlock>(
         if (this === other) return true
         if (javaClass != other?.javaClass) return false
 
-        other as GenericNetworkTrafficSnapshot<*>
+        other as ConcurrentNetworkTrafficSnapshot<*>
 
         if (startDateTime != other.startDateTime) return false
         if (endDateTime != other.endDateTime) return false
@@ -51,7 +51,7 @@ public class GenericNetworkTrafficSnapshot<LoginBlock>(
     }
 
     override fun toString(): String =
-        "GenericNetworkTrafficSnapshot(" +
+        "ConcurrentNetworkTrafficSnapshot(" +
             "startDateTime=$startDateTime, " +
             "endDateTime=$endDateTime, " +
             "connectionRequests=$connectionRequests, " +

@@ -6,7 +6,7 @@ import net.rsprot.protocol.metrics.channel.impl.Js5ChannelTrafficHandler
 import net.rsprot.protocol.metrics.channel.impl.LoginChannelTrafficHandler
 import net.rsprot.protocol.metrics.lock.TrafficHandlerLock
 import net.rsprot.protocol.metrics.snapshots.NetworkTrafficSnapshot
-import net.rsprot.protocol.metrics.snapshots.impl.GenericNetworkTrafficSnapshot
+import net.rsprot.protocol.metrics.snapshots.impl.ConcurrentNetworkTrafficSnapshot
 import java.net.InetAddress
 import java.time.LocalDateTime
 import java.util.Queue
@@ -14,7 +14,7 @@ import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.ConcurrentLinkedQueue
 import java.util.concurrent.atomic.AtomicInteger
 
-public class GenericNetworkTrafficHandler<LoginBlock>(
+public class ConcurrentNetworkTrafficHandler<LoginBlock>(
     private val lock: TrafficHandlerLock,
     override var loginChannelTrafficHandler: LoginChannelTrafficHandler,
     override var js5ChannelTrafficHandler: Js5ChannelTrafficHandler,
@@ -43,13 +43,13 @@ public class GenericNetworkTrafficHandler<LoginBlock>(
         queue.add(block)
     }
 
-    override fun snapshot(): GenericNetworkTrafficSnapshot<LoginBlock> {
+    override fun snapshot(): ConcurrentNetworkTrafficSnapshot<LoginBlock> {
         val newStart = LocalDateTime.now()
         val loginBlocks =
             this.loginBlocks.entries.associate {
                 it.key to it.value.toList()
             }
-        return GenericNetworkTrafficSnapshot(
+        return ConcurrentNetworkTrafficSnapshot(
             this.startDateTime,
             newStart,
             connections.get(),
@@ -76,7 +76,7 @@ public class GenericNetworkTrafficHandler<LoginBlock>(
             oldLoginBlocks.entries.associate {
                 it.key to it.value.toList()
             }
-        return GenericNetworkTrafficSnapshot(
+        return ConcurrentNetworkTrafficSnapshot(
             oldStart,
             this.startDateTime,
             oldConnections.get(),

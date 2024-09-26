@@ -3,7 +3,7 @@ package net.rsprot.protocol.metrics.channel.impl
 import net.rsprot.protocol.ClientProt
 import net.rsprot.protocol.ServerProt
 import net.rsprot.protocol.metrics.channel.ChannelTrafficHandler
-import net.rsprot.protocol.metrics.channel.snapshots.impl.GenericChannelTrafficSnapshot
+import net.rsprot.protocol.metrics.channel.snapshots.impl.ConcurrentChannelTrafficSnapshot
 import net.rsprot.protocol.metrics.channel.snapshots.util.InetAddressTrafficCounter
 import net.rsprot.protocol.metrics.lock.TrafficHandlerLock
 import java.net.InetAddress
@@ -14,7 +14,7 @@ import java.util.concurrent.atomic.AtomicInteger
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
 
-public class GenericChannelTrafficHandler<CP, SP, DC>(
+public class ConcurrentChannelTrafficHandler<CP, SP, DC>(
     private val lock: TrafficHandlerLock,
     private val clientProts: Array<out CP>,
     private val serverProts: Array<out SP>,
@@ -134,7 +134,7 @@ public class GenericChannelTrafficHandler<CP, SP, DC>(
             ChronoUnit.MILLIS.between(LocalDateTime.now(), startDateTime)
         }
 
-    override fun snapshot(): GenericChannelTrafficSnapshot<CP, SP, DC> {
+    override fun snapshot(): ConcurrentChannelTrafficSnapshot<CP, SP, DC> {
         lock.use {
             val now = LocalDateTime.now()
             val activeConnectionsByAddress: Map<InetAddress, Int> = this.activeConnectionsByAddress.toMap()
@@ -147,7 +147,7 @@ public class GenericChannelTrafficHandler<CP, SP, DC>(
                 inetAddressTrafficCounters.mapValues { entry ->
                     entry.value.snapshot()
                 }
-            return GenericChannelTrafficSnapshot(
+            return ConcurrentChannelTrafficSnapshot(
                 this.startDateTime,
                 now,
                 activeConnectionsByAddress,
@@ -157,7 +157,7 @@ public class GenericChannelTrafficHandler<CP, SP, DC>(
         }
     }
 
-    override fun resetTransient(): GenericChannelTrafficSnapshot<CP, SP, DC> {
+    override fun resetTransient(): ConcurrentChannelTrafficSnapshot<CP, SP, DC> {
         var oldStart: LocalDateTime
         var newStart: LocalDateTime
         var activeConnectionsByAddress: Map<InetAddress, Int>
@@ -180,7 +180,7 @@ public class GenericChannelTrafficHandler<CP, SP, DC>(
             inetAddressTrafficCounters.mapValues { entry ->
                 entry.value.snapshot()
             }
-        return GenericChannelTrafficSnapshot(
+        return ConcurrentChannelTrafficSnapshot(
             oldStart,
             newStart,
             activeConnectionsByAddress,

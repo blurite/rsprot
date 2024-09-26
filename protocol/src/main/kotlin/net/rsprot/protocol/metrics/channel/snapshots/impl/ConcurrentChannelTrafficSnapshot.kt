@@ -10,7 +10,7 @@ import java.time.temporal.ChronoUnit
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
 
-public class GenericChannelTrafficSnapshot<CP, SP, DC>(
+public class ConcurrentChannelTrafficSnapshot<CP, SP, DC>(
     public val startDateTime: LocalDateTime,
     public val endDateTime: LocalDateTime,
     public val activeConnectionsByAddress: Map<InetAddress, Int>,
@@ -26,7 +26,7 @@ public class GenericChannelTrafficSnapshot<CP, SP, DC>(
         if (this === other) return true
         if (javaClass != other?.javaClass) return false
 
-        other as GenericChannelTrafficSnapshot<*, *, *>
+        other as ConcurrentChannelTrafficSnapshot<*, *, *>
 
         if (startDateTime != other.startDateTime) return false
         if (endDateTime != other.endDateTime) return false
@@ -47,7 +47,7 @@ public class GenericChannelTrafficSnapshot<CP, SP, DC>(
     }
 
     override fun toString(): String =
-        "GenericChannelTrafficSnapshot(" +
+        "ConcurrentChannelTrafficSnapshot(" +
             "startDateTime=$startDateTime, " +
             "endDateTime=$endDateTime, " +
             "activeConnectionsByAddress=$activeConnectionsByAddress, " +

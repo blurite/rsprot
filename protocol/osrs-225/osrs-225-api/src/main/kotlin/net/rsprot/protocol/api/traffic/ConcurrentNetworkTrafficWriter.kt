@@ -2,9 +2,9 @@ package net.rsprot.protocol.api.traffic
 
 import net.rsprot.protocol.loginprot.incoming.util.HostPlatformStats
 import net.rsprot.protocol.loginprot.incoming.util.LoginBlock
-import net.rsprot.protocol.metrics.channel.snapshots.impl.GenericChannelTrafficSnapshot
+import net.rsprot.protocol.metrics.channel.snapshots.impl.ConcurrentChannelTrafficSnapshot
 import net.rsprot.protocol.metrics.channel.snapshots.util.PacketSnapshot
-import net.rsprot.protocol.metrics.snapshots.impl.GenericNetworkTrafficSnapshot
+import net.rsprot.protocol.metrics.snapshots.impl.ConcurrentNetworkTrafficSnapshot
 import net.rsprot.protocol.metrics.writer.NetworkTrafficWriter
 import java.net.InetAddress
 import java.text.NumberFormat
@@ -13,14 +13,14 @@ import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
 import kotlin.collections.iterator
 
-public data object GenericNetworkTrafficWriter : NetworkTrafficWriter<GenericNetworkTrafficSnapshot<*>, String> {
+public data object ConcurrentNetworkTrafficWriter : NetworkTrafficWriter<ConcurrentNetworkTrafficSnapshot<*>, String> {
     private const val INDENT: String = "  "
     private val dateTimeFormatter =
         DateTimeFormatter
             .ofLocalizedDateTime(FormatStyle.FULL)
             .withZone(ZoneId.systemDefault())
 
-    override fun write(snapshot: GenericNetworkTrafficSnapshot<*>): String =
+    override fun write(snapshot: ConcurrentNetworkTrafficSnapshot<*>): String =
         buildString {
             val start = dateTimeFormatter.format(snapshot.startDateTime)
             val end = dateTimeFormatter.format(snapshot.endDateTime)
@@ -33,17 +33,17 @@ public data object GenericNetworkTrafficWriter : NetworkTrafficWriter<GenericNet
                 .appendLine(format(snapshot.connectionRequests))
             appendLine()
             appendChannelMetrics(
-                snapshot.loginSnapshot as GenericChannelTrafficSnapshot<*, *, *>,
+                snapshot.loginSnapshot as ConcurrentChannelTrafficSnapshot<*, *, *>,
                 "Login",
             )
             appendLine()
             appendChannelMetrics(
-                snapshot.js5Snapshot as GenericChannelTrafficSnapshot<*, *, *>,
+                snapshot.js5Snapshot as ConcurrentChannelTrafficSnapshot<*, *, *>,
                 "JS5",
             )
             appendLine()
             appendChannelMetrics(
-                snapshot.gameSnapshot as GenericChannelTrafficSnapshot<*, *, *>,
+                snapshot.gameSnapshot as ConcurrentChannelTrafficSnapshot<*, *, *>,
                 "Game",
             )
             appendLine()
@@ -123,7 +123,7 @@ public data object GenericNetworkTrafficWriter : NetworkTrafficWriter<GenericNet
     }
 
     private fun StringBuilder.appendChannelMetrics(
-        snapshot: GenericChannelTrafficSnapshot<*, *, *>,
+        snapshot: ConcurrentChannelTrafficSnapshot<*, *, *>,
         title: String,
     ) {
         append(title).appendLine(" Channel Snapshot")
@@ -136,7 +136,7 @@ public data object GenericNetworkTrafficWriter : NetworkTrafficWriter<GenericNet
     }
 
     private fun StringBuilder.appendInetAddressMetrics(
-        channelSnapshot: GenericChannelTrafficSnapshot<*, *, *>,
+        channelSnapshot: ConcurrentChannelTrafficSnapshot<*, *, *>,
         title: String,
     ) {
         indent().append(title).appendLine(" INet Address Metrics")

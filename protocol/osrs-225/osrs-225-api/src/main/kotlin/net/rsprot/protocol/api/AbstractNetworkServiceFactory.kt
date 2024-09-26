@@ -28,11 +28,11 @@ import net.rsprot.protocol.game.outgoing.prot.GameServerProt
 import net.rsprot.protocol.loginprot.incoming.util.LoginBlock
 import net.rsprot.protocol.message.codec.incoming.provider.GameMessageConsumerRepositoryProvider
 import net.rsprot.protocol.metrics.NetworkTrafficHandler
+import net.rsprot.protocol.metrics.channel.impl.ConcurrentChannelTrafficHandler
 import net.rsprot.protocol.metrics.channel.impl.GameChannelTrafficHandler
-import net.rsprot.protocol.metrics.channel.impl.GenericChannelTrafficHandler
 import net.rsprot.protocol.metrics.channel.impl.Js5ChannelTrafficHandler
 import net.rsprot.protocol.metrics.channel.impl.LoginChannelTrafficHandler
-import net.rsprot.protocol.metrics.impl.GenericNetworkTrafficHandler
+import net.rsprot.protocol.metrics.impl.ConcurrentNetworkTrafficHandler
 import net.rsprot.protocol.metrics.impl.NoopNetworkTrafficHandler
 import net.rsprot.protocol.metrics.lock.TrafficHandlerLock
 
@@ -269,7 +269,7 @@ public abstract class AbstractNetworkServiceFactory<R> {
      * Gets the network traffic handler which is responsible for tracking any incoming
      * and outgoing packets, connections and more.
      * The default is a [NoopNetworkTrafficHandler] which does not store or track anything,
-     * but a [net.rsprot.protocol.metrics.impl.GenericNetworkTrafficHandler] can be used
+     * but a [net.rsprot.protocol.metrics.impl.ConcurrentNetworkTrafficHandler] can be used
      * to enable tracking. Custom implementations are additionally also possible.
      */
     public open fun getNetworkTrafficHandler(): NetworkTrafficHandler<*> = NoopNetworkTrafficHandler
@@ -313,7 +313,7 @@ public abstract class AbstractNetworkServiceFactory<R> {
         )
     }
 
-    public fun buildNetworkTrafficHandler(): GenericNetworkTrafficHandler<LoginBlock<*>> {
+    public fun buildNetworkTrafficHandler(): ConcurrentNetworkTrafficHandler<LoginBlock<*>> {
         val loginClientProts = enumValues<LoginClientProt>()
         val loginServerProts = enumValues<LoginServerProt>()
         val loginDisconnectionReasons = enumValues<LoginDisconnectionReason>()
@@ -327,7 +327,7 @@ public abstract class AbstractNetworkServiceFactory<R> {
         val lock = TrafficHandlerLock()
         val loginChannelTrafficHandler =
             LoginChannelTrafficHandler(
-                GenericChannelTrafficHandler(
+                ConcurrentChannelTrafficHandler(
                     lock,
                     loginClientProts,
                     loginServerProts,
@@ -336,7 +336,7 @@ public abstract class AbstractNetworkServiceFactory<R> {
             )
         val js5ChannelTrafficHandler =
             Js5ChannelTrafficHandler(
-                GenericChannelTrafficHandler(
+                ConcurrentChannelTrafficHandler(
                     lock,
                     js5ClientProts,
                     js5ServerProts,
@@ -345,7 +345,7 @@ public abstract class AbstractNetworkServiceFactory<R> {
             )
         val gameChannelTrafficHandler =
             GameChannelTrafficHandler(
-                GenericChannelTrafficHandler(
+                ConcurrentChannelTrafficHandler(
                     lock,
                     gameClientProts,
                     gameServerProts,
@@ -353,7 +353,7 @@ public abstract class AbstractNetworkServiceFactory<R> {
                 ),
             )
 
-        return GenericNetworkTrafficHandler<LoginBlock<*>>(
+        return ConcurrentNetworkTrafficHandler<LoginBlock<*>>(
             lock,
             loginChannelTrafficHandler,
             js5ChannelTrafficHandler,
