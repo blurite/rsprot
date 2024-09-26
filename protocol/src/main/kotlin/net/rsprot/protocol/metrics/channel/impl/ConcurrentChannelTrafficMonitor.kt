@@ -4,7 +4,7 @@ import net.rsprot.protocol.ClientProt
 import net.rsprot.protocol.ServerProt
 import net.rsprot.protocol.metrics.channel.ChannelTrafficMonitor
 import net.rsprot.protocol.metrics.channel.snapshots.impl.ConcurrentChannelTrafficSnapshot
-import net.rsprot.protocol.metrics.channel.snapshots.util.InetAddressTrafficCounter
+import net.rsprot.protocol.metrics.channel.snapshots.util.InetAddressTrafficMonitor
 import net.rsprot.protocol.metrics.lock.TrafficMonitorLock
 import java.net.InetAddress
 import java.time.LocalDateTime
@@ -23,7 +23,7 @@ import kotlin.time.Duration.Companion.milliseconds
  * @property startDateTime the local datetime when this traffic monitor began tracking,
  * or was last reset.
  * @property activeConnectionsByAddress the active connections established per [InetAddress] basis.
- * @property inetAddressTrafficCounters the traffic counters per [InetAddress], tracking various
+ * @property inetAddressTrafficMonitors the traffic monitors per [InetAddress], tracking various
  * packets and disconnection reasons at a finer level.
  * @property frozen whether the transient properties are frozen, meaning any changes to them
  * are discarded. Anything stateful will continue to be modified.
@@ -36,7 +36,7 @@ public class ConcurrentChannelTrafficMonitor<CP, SP, DC>(
     private var startDateTime: LocalDateTime = LocalDateTime.now(),
 ) : ChannelTrafficMonitor where CP : ClientProt, CP : Enum<CP>, SP : ServerProt, SP : Enum<SP>, DC : Enum<DC> {
     private val activeConnectionsByAddress: MutableMap<InetAddress, Int> = ConcurrentHashMap()
-    private var inetAddressTrafficCounters: MutableMap<InetAddress, InetAddressTrafficCounter<CP, SP, DC>> =
+    private var inetAddressTrafficMonitors: MutableMap<InetAddress, InetAddressTrafficMonitor<CP, SP, DC>> =
         ConcurrentHashMap()
 
     @Volatile
@@ -59,9 +59,9 @@ public class ConcurrentChannelTrafficMonitor<CP, SP, DC>(
         }
     }
 
-    private fun getTrafficCounter(inetAddress: InetAddress): InetAddressTrafficCounter<CP, SP, DC> =
-        inetAddressTrafficCounters.computeIfAbsent(inetAddress) {
-            InetAddressTrafficCounter(
+    private fun getTrafficCounter(inetAddress: InetAddress): InetAddressTrafficMonitor<CP, SP, DC> =
+        inetAddressTrafficMonitors.computeIfAbsent(inetAddress) {
+            InetAddressTrafficMonitor(
                 clientProts,
                 serverProts,
                 disconnectionReasons,
@@ -149,12 +149,12 @@ public class ConcurrentChannelTrafficMonitor<CP, SP, DC>(
         lock.use {
             val now = LocalDateTime.now()
             val activeConnectionsByAddress: Map<InetAddress, Int> = this.activeConnectionsByAddress.toMap()
-            val inetAddressTrafficCounters: Map<InetAddress, InetAddressTrafficCounter<CP, SP, DC>> =
+            val inetAddressTrafficMonitors: Map<InetAddress, InetAddressTrafficMonitor<CP, SP, DC>> =
                 this
-                    .inetAddressTrafficCounters
+                    .inetAddressTrafficMonitors
                     .toMap()
             val inetAddressSnapshots =
-                inetAddressTrafficCounters.mapValues { entry ->
+                inetAddressTrafficMonitors.mapValues { entry ->
                     entry.value.snapshot()
                 }
             return ConcurrentChannelTrafficSnapshot(
@@ -170,7 +170,7 @@ public class ConcurrentChannelTrafficMonitor<CP, SP, DC>(
         var oldStart: LocalDateTime
         var newStart: LocalDateTime
         var activeConnectionsByAddress: Map<InetAddress, Int>
-        var inetAddressTrafficCounters: Map<InetAddress, InetAddressTrafficCounter<CP, SP, DC>>
+        var inetAddressTrafficMonitors: Map<InetAddress, InetAddressTrafficMonitor<CP, SP, DC>>
         // Synchronize during the reallocation to ensure _some_ kind of consistency
         // This won't be perfect, but it should avoid most cases of inconsistency
         // where mutations are performed while we are clearing the transient data
@@ -178,13 +178,13 @@ public class ConcurrentChannelTrafficMonitor<CP, SP, DC>(
         lock.transfer {
             oldStart = this.startDateTime
             activeConnectionsByAddress = this.activeConnectionsByAddress.toMap()
-            inetAddressTrafficCounters = this.inetAddressTrafficCounters.toMap()
+            inetAddressTrafficMonitors = this.inetAddressTrafficMonitors.toMap()
             newStart = LocalDateTime.now()
             this.startDateTime = newStart
-            this.inetAddressTrafficCounters = ConcurrentHashMap()
+            this.inetAddressTrafficMonitors = ConcurrentHashMap()
         }
         val inetAddressSnapshots =
-            inetAddressTrafficCounters.mapValues { entry ->
+            inetAddressTrafficMonitors.mapValues { entry ->
                 entry.value.snapshot()
             }
         return ConcurrentChannelTrafficSnapshot(

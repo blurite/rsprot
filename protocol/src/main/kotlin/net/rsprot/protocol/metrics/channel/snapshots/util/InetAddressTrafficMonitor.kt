@@ -7,7 +7,7 @@ import java.util.concurrent.atomic.AtomicIntegerArray
 import java.util.concurrent.atomic.AtomicLongArray
 
 /**
- * A traffic counter for a specific [java.net.InetAddress].
+ * A traffic monitor for a specific [java.net.InetAddress].
  * @property clientProts an array of client prots for a specific channel type (login, JS5, game).
  * @property serverProts an array of server prots for a specific channel type (login, JS5, game).
  * @property disconnectionReasons an array of enum constants that represent possible disconnection reasons
@@ -25,7 +25,7 @@ import java.util.concurrent.atomic.AtomicLongArray
  * of each of the outgoing packets. Note that this metric only tracks the payload size, and not the 1-2 bytes
  *  * for the opcode, nor for the size marker.
  */
-public class InetAddressTrafficCounter<CP, SP, DC>(
+public class InetAddressTrafficMonitor<CP, SP, DC>(
     private val clientProts: Array<out CP>,
     private val serverProts: Array<out SP>,
     private val disconnectionReasons: Array<out DC>,
