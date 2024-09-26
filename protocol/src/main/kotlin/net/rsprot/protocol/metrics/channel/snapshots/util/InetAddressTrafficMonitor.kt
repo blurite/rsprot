@@ -3,6 +3,7 @@ package net.rsprot.protocol.metrics.channel.snapshots.util
 import net.rsprot.protocol.ClientProt
 import net.rsprot.protocol.ServerProt
 import net.rsprot.protocol.metrics.channel.snapshots.InetAddressSnapshot
+import java.util.EnumMap
 import java.util.concurrent.atomic.AtomicIntegerArray
 import java.util.concurrent.atomic.AtomicLongArray
 
@@ -140,41 +141,35 @@ public class InetAddressTrafficMonitor<CP, SP, DC>(
         val oldTrafficByIncomingPackets: AtomicLongArray = this.trafficByIncomingPackets
         val oldOutgoingPackets: AtomicLongArray = this.outgoingPackets
         val oldTrafficByOutgoingPackets: AtomicLongArray = this.trafficByOutgoingPackets
-        disconnectionsByReason = AtomicIntegerArray(oldDisconnectionsByReason.length())
+        this@InetAddressTrafficMonitor.disconnectionsByReason = AtomicIntegerArray(oldDisconnectionsByReason.length())
         incomingPackets = AtomicLongArray(oldIncomingPackets.length())
         trafficByIncomingPackets = AtomicLongArray(oldTrafficByIncomingPackets.length())
         outgoingPackets = AtomicLongArray(oldOutgoingPackets.length())
         trafficByOutgoingPackets = AtomicLongArray(oldTrafficByOutgoingPackets.length())
-        val disconnectionsByReason =
-            buildMap {
-                for (i in disconnectionReasons.indices) {
-                    put(disconnectionReasons[i], oldDisconnectionsByReason.get(i))
-                }
-            }
-        val incomingPackets =
-            buildMap {
-                for (prot in clientProts) {
-                    put(
-                        prot,
-                        PacketSnapshot(
-                            oldIncomingPackets.get(prot.opcode),
-                            oldTrafficByIncomingPackets.get(prot.opcode),
-                        ),
-                    )
-                }
-            }
-        val outgoingPackets =
-            buildMap {
-                for (prot in serverProts) {
-                    put(
-                        prot,
-                        PacketSnapshot(
-                            oldOutgoingPackets.get(prot.opcode),
-                            oldTrafficByOutgoingPackets.get(prot.opcode),
-                        ),
-                    )
-                }
-            }
+        val disconnectionsByReason = EnumMap<DC, Int>(disconnectionReasons[0].javaClass)
+        for (i in disconnectionReasons.indices) {
+            disconnectionsByReason.put(disconnectionReasons[i], oldDisconnectionsByReason.get(i))
+        }
+        val incomingPackets = EnumMap<CP, PacketSnapshot>(clientProts[0].javaClass)
+        for (prot in clientProts) {
+            incomingPackets.put(
+                prot,
+                PacketSnapshot(
+                    oldIncomingPackets.get(prot.opcode),
+                    oldTrafficByIncomingPackets.get(prot.opcode),
+                ),
+            )
+        }
+        val outgoingPackets = EnumMap<SP, PacketSnapshot>(serverProts[0].javaClass)
+        for (prot in serverProts) {
+            outgoingPackets.put(
+                prot,
+                PacketSnapshot(
+                    oldOutgoingPackets.get(prot.opcode),
+                    oldTrafficByOutgoingPackets.get(prot.opcode),
+                ),
+            )
+        }
         return InetAddressSnapshot(
             disconnectionsByReason,
             incomingPackets,
