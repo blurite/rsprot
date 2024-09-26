@@ -23,7 +23,7 @@ public class LoginChannelInitializer<R>(
         networkLog(logger) {
             "Channel initialized: $ch"
         }
-        networkService.trafficHandler.incrementConnections()
+        networkService.trafficMonitor.incrementConnections()
         ch.pipeline().addLast(
             IdleStateHandler(
                 true,

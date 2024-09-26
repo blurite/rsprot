@@ -55,7 +55,7 @@ public class GameLoginResponseHandler<R>(
             ctx
                 .writeAndFlush(LoginResponse.InvalidLoginPacket)
                 .addListener(ChannelFutureListener.CLOSE)
-            networkService.trafficHandler.loginChannelTrafficHandler.addDisconnectionReason(
+            networkService.trafficMonitor.loginChannelTrafficMonitor.addDisconnectionReason(
                 ctx.inetAddress(),
                 LoginDisconnectionReason.GAME_INVALID_LOGIN_PACKET,
             )
@@ -65,7 +65,7 @@ public class GameLoginResponseHandler<R>(
             networkLog(logger) {
                 "Channel '${ctx.channel()}' has gone inactive; login block: $loginBlock"
             }
-            networkService.trafficHandler.loginChannelTrafficHandler.addDisconnectionReason(
+            networkService.trafficMonitor.loginChannelTrafficMonitor.addDisconnectionReason(
                 ctx.inetAddress(),
                 LoginDisconnectionReason.GAME_CHANNEL_INACTIVE,
             )
@@ -90,7 +90,7 @@ public class GameLoginResponseHandler<R>(
             ctx
                 .writeAndFlush(LoginResponse.TooManyAttempts)
                 .addListener(ChannelFutureListener.CLOSE)
-            networkService.trafficHandler.loginChannelTrafficHandler.addDisconnectionReason(
+            networkService.trafficMonitor.loginChannelTrafficMonitor.addDisconnectionReason(
                 ctx.inetAddress(),
                 LoginDisconnectionReason.GAME_TOO_MANY_ATTEMPTS,
             )
@@ -134,7 +134,7 @@ public class GameLoginResponseHandler<R>(
                     "'${ctx.channel()}': $oldSchoolClientType, login block: $loginBlock"
             }
             ctx.writeAndFlush(LoginResponse.InvalidLoginPacket)
-            networkService.trafficHandler.loginChannelTrafficHandler.addDisconnectionReason(
+            networkService.trafficMonitor.loginChannelTrafficMonitor.addDisconnectionReason(
                 ctx.inetAddress(),
                 LoginDisconnectionReason.GAME_INVALID_LOGIN_PACKET,
             )
@@ -144,7 +144,7 @@ public class GameLoginResponseHandler<R>(
             networkLog(logger) {
                 "Channel '${ctx.channel()}' has gone inactive; login block: $loginBlock"
             }
-            networkService.trafficHandler.loginChannelTrafficHandler.addDisconnectionReason(
+            networkService.trafficMonitor.loginChannelTrafficMonitor.addDisconnectionReason(
                 ctx.inetAddress(),
                 LoginDisconnectionReason.GAME_CHANNEL_INACTIVE,
             )
@@ -202,7 +202,7 @@ public class GameLoginResponseHandler<R>(
                 .provide()
         val session =
             Session(
-                networkService.trafficHandler,
+                networkService.trafficMonitor,
                 ctx,
                 networkService
                     .gameMessageHandlers
@@ -267,7 +267,7 @@ public class GameLoginResponseHandler<R>(
             networkLog(logger) {
                 "Channel '${ctx.channel()}' has gone inactive, skipping failed response."
             }
-            networkService.trafficHandler.loginChannelTrafficHandler.addDisconnectionReason(
+            networkService.trafficMonitor.loginChannelTrafficMonitor.addDisconnectionReason(
                 ctx.inetAddress(),
                 LoginDisconnectionReason.GAME_CHANNEL_INACTIVE,
             )
@@ -279,7 +279,7 @@ public class GameLoginResponseHandler<R>(
         ctx.writeAndFlush(response).addListener(ChannelFutureListener.CLOSE)
         val disconnectReason = LoginDisconnectionReason.responseToReasonMap[response]
         if (disconnectReason != null) {
-            networkService.trafficHandler.loginChannelTrafficHandler.addDisconnectionReason(
+            networkService.trafficMonitor.loginChannelTrafficMonitor.addDisconnectionReason(
                 ctx.inetAddress(),
                 disconnectReason,
             )

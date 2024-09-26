@@ -39,8 +39,8 @@ public class Js5MessageDecoder(
             )
         }
         networkService
-            .trafficHandler
-            .js5ChannelTrafficHandler
+            .trafficMonitor
+            .js5ChannelTrafficMonitor
             .incrementIncomingPackets(ctx.inetAddress(), opcode, length)
     }
 }

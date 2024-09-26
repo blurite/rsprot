@@ -10,9 +10,9 @@ import kotlin.time.Duration.Companion.milliseconds
 
 /**
  * The concurrent network traffic snapshot is a result of calling the
- * [net.rsprot.protocol.metrics.impl.ConcurrentNetworkTrafficHandler.snapshot] function.
+ * [net.rsprot.protocol.metrics.impl.ConcurrentNetworkTrafficMonitor.snapshot] function.
  * This data structure tracks any network traffic that occurred during a specific time period.
- * Note that the [net.rsprot.protocol.metrics.NetworkTrafficHandler.freeze] is ignored when
+ * Note that the [net.rsprot.protocol.metrics.NetworkTrafficMonitor.freeze] is ignored when
  * it comes to the snapshots, no information is provided regarding the freeze periods.
  *
  * @property startDateTime the local datetime when the tracking began.

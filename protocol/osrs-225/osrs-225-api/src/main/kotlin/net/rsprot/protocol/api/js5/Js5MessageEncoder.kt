@@ -39,8 +39,8 @@ public class Js5MessageEncoder(
         )
         val writtenBytes = out.writerIndex() - writerIndex
         networkService
-            .trafficHandler
-            .js5ChannelTrafficHandler
+            .trafficMonitor
+            .js5ChannelTrafficMonitor
             .incrementOutgoingPacketPayload(ctx.inetAddress(), Js5ServerProt.JS5_GROUP_RESPONSE.opcode, writtenBytes)
     }
 }

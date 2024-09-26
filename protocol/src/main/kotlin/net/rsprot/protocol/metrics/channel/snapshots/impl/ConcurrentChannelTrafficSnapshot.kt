@@ -12,7 +12,7 @@ import kotlin.time.Duration.Companion.milliseconds
 
 /**
  * A concurrent channel traffic snapshot is the result of calling
- * [net.rsprot.protocol.metrics.channel.impl.ConcurrentChannelTrafficHandler.snapshot].
+ * [net.rsprot.protocol.metrics.channel.impl.ConcurrentChannelTrafficMonitor.snapshot].
  * This snapshot will track any metrics behind a specific channel type (login, JS5, game),
  * such as the number of active connections from each [InetAddress] at the time of capturing
  * the snapshot, as well as a general overview of the traffic that a specific channel witnessed.

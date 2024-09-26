@@ -27,14 +27,14 @@ import net.rsprot.protocol.game.incoming.prot.GameClientProt
 import net.rsprot.protocol.game.outgoing.prot.GameServerProt
 import net.rsprot.protocol.loginprot.incoming.util.LoginBlock
 import net.rsprot.protocol.message.codec.incoming.provider.GameMessageConsumerRepositoryProvider
-import net.rsprot.protocol.metrics.NetworkTrafficHandler
-import net.rsprot.protocol.metrics.channel.impl.ConcurrentChannelTrafficHandler
-import net.rsprot.protocol.metrics.channel.impl.GameChannelTrafficHandler
-import net.rsprot.protocol.metrics.channel.impl.Js5ChannelTrafficHandler
-import net.rsprot.protocol.metrics.channel.impl.LoginChannelTrafficHandler
-import net.rsprot.protocol.metrics.impl.ConcurrentNetworkTrafficHandler
-import net.rsprot.protocol.metrics.impl.NoopNetworkTrafficHandler
-import net.rsprot.protocol.metrics.lock.TrafficHandlerLock
+import net.rsprot.protocol.metrics.NetworkTrafficMonitor
+import net.rsprot.protocol.metrics.channel.impl.ConcurrentChannelTrafficMonitor
+import net.rsprot.protocol.metrics.channel.impl.GameChannelTrafficMonitor
+import net.rsprot.protocol.metrics.channel.impl.Js5ChannelTrafficMonitor
+import net.rsprot.protocol.metrics.channel.impl.LoginChannelTrafficMonitor
+import net.rsprot.protocol.metrics.impl.ConcurrentNetworkTrafficMonitor
+import net.rsprot.protocol.metrics.impl.NoopNetworkTrafficMonitor
+import net.rsprot.protocol.metrics.lock.TrafficMonitorLock
 
 /**
  * The abstract network service factory is used to build the network service that is used
@@ -266,13 +266,13 @@ public abstract class AbstractNetworkServiceFactory<R> {
     public open fun getLoginHandlers(): LoginHandlers = LoginHandlers()
 
     /**
-     * Gets the network traffic handler which is responsible for tracking any incoming
+     * Gets the network traffic monitor which is responsible for tracking any incoming
      * and outgoing packets, connections and more.
-     * The default is a [NoopNetworkTrafficHandler] which does not store or track anything,
-     * but a [net.rsprot.protocol.metrics.impl.ConcurrentNetworkTrafficHandler] can be used
+     * The default is a [NoopNetworkTrafficMonitor] which does not store or track anything,
+     * but a [net.rsprot.protocol.metrics.impl.ConcurrentNetworkTrafficMonitor] can be used
      * to enable tracking. Custom implementations are additionally also possible.
      */
-    public open fun getNetworkTrafficHandler(): NetworkTrafficHandler<*> = NoopNetworkTrafficHandler
+    public open fun getNetworkTrafficMonitor(): NetworkTrafficMonitor<*> = NoopNetworkTrafficMonitor
 
     /**
      * Builds a network service through this factoring, using all
@@ -306,14 +306,14 @@ public abstract class AbstractNetworkServiceFactory<R> {
             getLoginHandlers(),
             huffman,
             getGameMessageConsumerRepositoryProvider(),
-            getNetworkTrafficHandler(),
+            getNetworkTrafficMonitor(),
             getRsaKeyPair(),
             getJs5Configuration(),
             getJs5GroupProvider(),
         )
     }
 
-    public fun buildNetworkTrafficHandler(): ConcurrentNetworkTrafficHandler<LoginBlock<*>> {
+    public fun buildNetworkTrafficMonitor(): ConcurrentNetworkTrafficMonitor<LoginBlock<*>> {
         val loginClientProts = enumValues<LoginClientProt>()
         val loginServerProts = enumValues<LoginServerProt>()
         val loginDisconnectionReasons = enumValues<LoginDisconnectionReason>()
@@ -324,10 +324,10 @@ public abstract class AbstractNetworkServiceFactory<R> {
         val gameServerProts = enumValues<GameServerProt>()
         val gameDisconnectionReasons = enumValues<GameDisconnectionReason>()
 
-        val lock = TrafficHandlerLock()
+        val lock = TrafficMonitorLock()
         val loginChannelTrafficHandler =
-            LoginChannelTrafficHandler(
-                ConcurrentChannelTrafficHandler(
+            LoginChannelTrafficMonitor(
+                ConcurrentChannelTrafficMonitor(
                     lock,
                     loginClientProts,
                     loginServerProts,
@@ -335,8 +335,8 @@ public abstract class AbstractNetworkServiceFactory<R> {
                 ),
             )
         val js5ChannelTrafficHandler =
-            Js5ChannelTrafficHandler(
-                ConcurrentChannelTrafficHandler(
+            Js5ChannelTrafficMonitor(
+                ConcurrentChannelTrafficMonitor(
                     lock,
                     js5ClientProts,
                     js5ServerProts,
@@ -344,8 +344,8 @@ public abstract class AbstractNetworkServiceFactory<R> {
                 ),
             )
         val gameChannelTrafficHandler =
-            GameChannelTrafficHandler(
-                ConcurrentChannelTrafficHandler(
+            GameChannelTrafficMonitor(
+                ConcurrentChannelTrafficMonitor(
                     lock,
                     gameClientProts,
                     gameServerProts,
@@ -353,7 +353,7 @@ public abstract class AbstractNetworkServiceFactory<R> {
                 ),
             )
 
-        return ConcurrentNetworkTrafficHandler<LoginBlock<*>>(
+        return ConcurrentNetworkTrafficMonitor<LoginBlock<*>>(
             lock,
             loginChannelTrafficHandler,
             js5ChannelTrafficHandler,

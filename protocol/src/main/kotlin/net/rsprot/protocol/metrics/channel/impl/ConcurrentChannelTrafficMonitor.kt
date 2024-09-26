@@ -2,10 +2,10 @@ package net.rsprot.protocol.metrics.channel.impl
 
 import net.rsprot.protocol.ClientProt
 import net.rsprot.protocol.ServerProt
-import net.rsprot.protocol.metrics.channel.ChannelTrafficHandler
+import net.rsprot.protocol.metrics.channel.ChannelTrafficMonitor
 import net.rsprot.protocol.metrics.channel.snapshots.impl.ConcurrentChannelTrafficSnapshot
 import net.rsprot.protocol.metrics.channel.snapshots.util.InetAddressTrafficCounter
-import net.rsprot.protocol.metrics.lock.TrafficHandlerLock
+import net.rsprot.protocol.metrics.lock.TrafficMonitorLock
 import java.net.InetAddress
 import java.time.LocalDateTime
 import java.time.temporal.ChronoUnit
@@ -15,13 +15,13 @@ import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
 
 /**
- * A concurrent implementation of a channel's traffic handler.
- * @property lock a traffic handler lock that is used when the [resetTransient] function is invoked,
+ * A concurrent implementation of a channel's traffic monitor.
+ * @property lock a traffic monitor lock that is used when the [resetTransient] function is invoked,
  * in order to ensure consistency in the data.
  * @property clientProts an array of client prots for this channel.
  * @property serverProts an array of server prots for this channel.
  * @property disconnectionReasons an array of disconnection reasons for this channel.
- * @property startDateTime the local datetime when this traffic handler began tracking,
+ * @property startDateTime the local datetime when this traffic monitor began tracking,
  * or was last reset.
  * @property activeConnectionsByAddress the active connections established per [InetAddress] basis.
  * @property totalActiveConnections the total active connections established.
@@ -30,13 +30,13 @@ import kotlin.time.Duration.Companion.milliseconds
  * @property frozen whether the transient properties are frozen, meaning any changes to them
  * are discarded. Anything stateful will continue to be modified.
  */
-public class ConcurrentChannelTrafficHandler<CP, SP, DC>(
-    private val lock: TrafficHandlerLock,
+public class ConcurrentChannelTrafficMonitor<CP, SP, DC>(
+    private val lock: TrafficMonitorLock,
     private val clientProts: Array<out CP>,
     private val serverProts: Array<out SP>,
     private val disconnectionReasons: Array<out DC>,
     private var startDateTime: LocalDateTime = LocalDateTime.now(),
-) : ChannelTrafficHandler where CP : ClientProt, CP : Enum<CP>, SP : ServerProt, SP : Enum<SP>, DC : Enum<DC> {
+) : ChannelTrafficMonitor where CP : ClientProt, CP : Enum<CP>, SP : ServerProt, SP : Enum<SP>, DC : Enum<DC> {
     private val activeConnectionsByAddress: MutableMap<InetAddress, Int> = ConcurrentHashMap()
     private val totalActiveConnections: AtomicInteger = AtomicInteger(0)
     private var inetAddressTrafficCounters: MutableMap<InetAddress, InetAddressTrafficCounter<CP, SP, DC>> =

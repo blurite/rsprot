@@ -6,7 +6,7 @@ import java.time.LocalDateTime
 import kotlin.time.Duration
 
 /**
- * The channel traffic handler is used to track various metrics related to Netty,
+ * The channel traffic monitor is used to track various metrics related to Netty,
  * such as connection requests, active connections, packet traffic, disconnection
  * reasons and more.
  * Any implementation of this interface should first and foremost be performant,
@@ -14,11 +14,11 @@ import kotlin.time.Duration
  * blocked.
  *
  * Currently, two implementations of this interface are provided as of Revision 225 onwards,
- * the [net.rsprot.protocol.metrics.channel.impl.ConcurrentChannelTrafficHandler] and the
- * [net.rsprot.protocol.metrics.channel.impl.NoopChannelTrafficHandler], the latter of
+ * the [net.rsprot.protocol.metrics.channel.impl.ConcurrentChannelTrafficMonitor] and the
+ * [net.rsprot.protocol.metrics.channel.impl.NoopChannelTrafficMonitor], the latter of
  * which is the default.
  */
-public interface ChannelTrafficHandler {
+public interface ChannelTrafficMonitor {
     /**
      * Increments connections from the provided [inetAddress]. This function is called
      * when a channel handler is registered in Netty.
@@ -46,7 +46,7 @@ public interface ChannelTrafficHandler {
      * @param inetAddress the address which was disconnected.
      * @param reason the numeric reason behind the disconnection. These values
      * are backed by an enum provided in the corresponding
-     * [net.rsprot.protocol.metrics.NetworkTrafficHandler], from which the
+     * [net.rsprot.protocol.metrics.NetworkTrafficMonitor], from which the
      * [Enum.ordinal] value is used for the numeric representation.
      */
     public fun addDisconnectionReason(
@@ -172,7 +172,7 @@ public interface ChannelTrafficHandler {
     public fun resetTransient(): ChannelTrafficSnapshot
 
     /**
-     * Freezes tracking of any transient metrics in this channel's traffic handler. While frozen,
+     * Freezes tracking of any transient metrics in this channel's traffic monitor. While frozen,
      * metrics such as incoming packets, outgoing packets and disconnections will not be updated.
      * Active connections, however, are not impacted by the freezes, and will continue to monitor
      * any connected channels.
@@ -180,9 +180,9 @@ public interface ChannelTrafficHandler {
     public fun freeze()
 
     /**
-     * Un-freezes tracking of any transient metrics in this channel's traffic handler. Once unfrozen,
+     * Un-freezes tracking of any transient metrics in this channel's traffic monitor. Once unfrozen,
      * the transient information such as incoming packets, outgoing packets and disconnections
-     * will continue to be added to the traffic handler.
+     * will continue to be added to the traffic monitor.
      */
     public fun unfreeze()
 }

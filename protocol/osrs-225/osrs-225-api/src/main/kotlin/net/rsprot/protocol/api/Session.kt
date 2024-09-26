@@ -14,7 +14,7 @@ import net.rsprot.protocol.loginprot.incoming.util.LoginBlock
 import net.rsprot.protocol.message.IncomingGameMessage
 import net.rsprot.protocol.message.OutgoingGameMessage
 import net.rsprot.protocol.message.codec.incoming.MessageConsumer
-import net.rsprot.protocol.metrics.NetworkTrafficHandler
+import net.rsprot.protocol.metrics.NetworkTrafficMonitor
 import java.net.InetAddress
 import java.util.Queue
 
@@ -44,7 +44,7 @@ import java.util.Queue
  */
 @Suppress("MemberVisibilityCanBePrivate")
 public class Session<R>(
-    private val trafficHandler: NetworkTrafficHandler<*>,
+    private val trafficMonitor: NetworkTrafficMonitor<*>,
     public val ctx: ChannelHandlerContext,
     private val incomingMessageQueue: Queue<IncomingGameMessage>,
     outgoingMessageQueueProvider: MessageQueueProvider<OutgoingGameMessage>,
@@ -244,8 +244,8 @@ public class Session<R>(
         channel.flush()
         if (this.channelStatus == ChannelStatus.CLOSING) {
             this.channelStatus = ChannelStatus.CLOSED
-            trafficHandler
-                .gameChannelTrafficHandler
+            trafficMonitor
+                .gameChannelTrafficMonitor
                 .addDisconnectionReason(
                     ctx.inetAddress(),
                     GameDisconnectionReason.LOGOUT,

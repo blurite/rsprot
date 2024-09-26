@@ -50,16 +50,16 @@ public class Js5ChannelHandler(
         client = Js5Client(ctx.read())
         service.onClientConnected(client)
         networkService
-            .trafficHandler
-            .loginChannelTrafficHandler
+            .trafficMonitor
+            .loginChannelTrafficMonitor
             .incrementConnections(ctx.inetAddress())
     }
 
     override fun handlerRemoved(ctx: ChannelHandlerContext) {
         service.onClientDisconnected(client)
         networkService
-            .trafficHandler
-            .loginChannelTrafficHandler
+            .trafficMonitor
+            .loginChannelTrafficMonitor
             .decrementConnections(ctx.inetAddress())
     }
 
@@ -130,8 +130,8 @@ public class Js5ChannelHandler(
             .channelExceptionHandler
             .exceptionCaught(ctx, cause)
         networkService
-            .trafficHandler
-            .js5ChannelTrafficHandler
+            .trafficMonitor
+            .js5ChannelTrafficMonitor
             .addDisconnectionReason(
                 ctx.inetAddress(),
                 Js5DisconnectionReason.EXCEPTION,
@@ -148,8 +148,8 @@ public class Js5ChannelHandler(
                 "JS5 channel has gone idle, closing channel ${ctx.channel()}"
             }
             networkService
-                .trafficHandler
-                .js5ChannelTrafficHandler
+                .trafficMonitor
+                .js5ChannelTrafficMonitor
                 .addDisconnectionReason(
                     ctx.inetAddress(),
                     Js5DisconnectionReason.IDLE,

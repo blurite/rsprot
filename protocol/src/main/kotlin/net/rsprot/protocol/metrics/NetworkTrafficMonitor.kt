@@ -1,22 +1,22 @@
 package net.rsprot.protocol.metrics
 
-import net.rsprot.protocol.metrics.channel.impl.GameChannelTrafficHandler
-import net.rsprot.protocol.metrics.channel.impl.Js5ChannelTrafficHandler
-import net.rsprot.protocol.metrics.channel.impl.LoginChannelTrafficHandler
+import net.rsprot.protocol.metrics.channel.impl.GameChannelTrafficMonitor
+import net.rsprot.protocol.metrics.channel.impl.Js5ChannelTrafficMonitor
+import net.rsprot.protocol.metrics.channel.impl.LoginChannelTrafficMonitor
 import net.rsprot.protocol.metrics.snapshots.NetworkTrafficSnapshot
 import java.net.InetAddress
 
 /**
- * A complete network traffic handler that covers all channel types.
- * @property loginChannelTrafficHandler the traffic handler for the login channel,
+ * A complete network traffic monitor that covers all channel types.
+ * @property loginChannelTrafficMonitor the traffic monitor for the login channel,
  * including the "handshake" phase as it is commonly referred to.
- * @property js5ChannelTrafficHandler the JS5 channel traffic handler.
- * @property gameChannelTrafficHandler the game channel traffic handler.
+ * @property js5ChannelTrafficMonitor the JS5 channel traffic monitor.
+ * @property gameChannelTrafficMonitor the game channel traffic monitor.
  */
-public interface NetworkTrafficHandler<in LoginBlock> {
-    public val loginChannelTrafficHandler: LoginChannelTrafficHandler
-    public val js5ChannelTrafficHandler: Js5ChannelTrafficHandler
-    public val gameChannelTrafficHandler: GameChannelTrafficHandler
+public interface NetworkTrafficMonitor<in LoginBlock> {
+    public val loginChannelTrafficMonitor: LoginChannelTrafficMonitor
+    public val js5ChannelTrafficMonitor: Js5ChannelTrafficMonitor
+    public val gameChannelTrafficMonitor: GameChannelTrafficMonitor
 
     /**
      * Increments connections established in total.
@@ -35,7 +35,7 @@ public interface NetworkTrafficHandler<in LoginBlock> {
 
     /**
      * Creates a full network traffic snapshot covering all three of the channel traffic
-     * handlers. This snapshot function will not use synchronization during creation,
+     * monitors. This snapshot function will not use synchronization during creation,
      * so it is possible for slight inconsistencies to occur due to the data being cloned
      * at slightly different moments.
      * @return a full network traffic snapshot, covering any activity in all three channels
@@ -53,8 +53,8 @@ public interface NetworkTrafficHandler<in LoginBlock> {
     public fun resetTransient(): NetworkTrafficSnapshot
 
     /**
-     * Freezes any transient traffic monitoring for this handler, across all three of the
-     * channel handlers. The freeze function does not stop active connection tracking,
+     * Freezes any transient traffic monitoring for this monitor, across all three of the
+     * channel monitors. The freeze function does not stop active connection tracking,
      * however, as that could cause bad data in the future (number of connections going
      * negative). This will block majority of the monitoring that goes on, though.
      * This function has no effect if the traffic was already frozen.

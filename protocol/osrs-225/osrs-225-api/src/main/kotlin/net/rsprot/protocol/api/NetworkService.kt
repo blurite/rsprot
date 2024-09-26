@@ -24,7 +24,7 @@ import net.rsprot.protocol.game.outgoing.info.playerinfo.PlayerInfoProtocol
 import net.rsprot.protocol.game.outgoing.info.worldentityinfo.WorldEntityAvatarFactory
 import net.rsprot.protocol.game.outgoing.info.worldentityinfo.WorldEntityProtocol
 import net.rsprot.protocol.message.codec.incoming.provider.GameMessageConsumerRepositoryProvider
-import net.rsprot.protocol.metrics.NetworkTrafficHandler
+import net.rsprot.protocol.metrics.NetworkTrafficMonitor
 import net.rsprot.protocol.threads.IllegalThreadAccessException
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.ScheduledFuture
@@ -68,7 +68,7 @@ import net.rsprot.protocol.common.setCommunicationThread as setInternalCommunica
  * necessary to represent a NPC to the client
  * @property npcInfoProtocol the protocol responsible for tracking and computing everything related
  * to the NPC info packet for every player
- * @property trafficHandler a handler for tracking network traffic, by default a no-op
+ * @property trafficMonitor a monitor for tracking network traffic, by default a no-op
  * implementation that tracks nothing.
  */
 @Suppress("MemberVisibilityCanBePrivate")
@@ -87,7 +87,7 @@ public class NetworkService<R>
         internal val loginHandlers: LoginHandlers,
         public val huffmanCodecProvider: HuffmanCodecProvider,
         public val gameMessageConsumerRepositoryProvider: GameMessageConsumerRepositoryProvider<R>,
-        public val trafficHandler: NetworkTrafficHandler<*>,
+        public val trafficMonitor: NetworkTrafficMonitor<*>,
         rsaKeyPair: RsaKeyPair,
         js5Configuration: Js5Configuration,
         js5GroupProvider: Js5GroupProvider,

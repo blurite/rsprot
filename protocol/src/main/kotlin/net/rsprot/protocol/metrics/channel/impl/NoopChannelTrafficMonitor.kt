@@ -1,6 +1,6 @@
 package net.rsprot.protocol.metrics.channel.impl
 
-import net.rsprot.protocol.metrics.channel.ChannelTrafficHandler
+import net.rsprot.protocol.metrics.channel.ChannelTrafficMonitor
 import net.rsprot.protocol.metrics.channel.snapshots.ChannelTrafficSnapshot
 import net.rsprot.protocol.metrics.channel.snapshots.impl.NoopChannelTrafficSnapshot
 import java.net.InetAddress
@@ -8,9 +8,9 @@ import java.time.LocalDateTime
 import kotlin.time.Duration
 
 /**
- * A no-op channel traffic handler. All function calls here do nothing.
+ * A no-op channel traffic monitor. All function calls here do nothing.
  */
-public data object NoopChannelTrafficHandler : ChannelTrafficHandler {
+public data object NoopChannelTrafficMonitor : ChannelTrafficMonitor {
     override fun incrementConnections(inetAddress: InetAddress) {
     }
 

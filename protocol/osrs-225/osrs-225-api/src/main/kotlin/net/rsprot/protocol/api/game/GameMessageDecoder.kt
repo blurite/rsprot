@@ -46,8 +46,8 @@ public class GameMessageDecoder<R>(
             )
         }
         networkService
-            .trafficHandler
-            .gameChannelTrafficHandler
+            .trafficMonitor
+            .gameChannelTrafficMonitor
             .incrementIncomingPackets(ctx.inetAddress(), opcode, length)
         val messageClass = decoders.getMessageClass(this.decoder.javaClass)
         val consumerRepository = networkService.gameMessageConsumerRepositoryProvider.provide()

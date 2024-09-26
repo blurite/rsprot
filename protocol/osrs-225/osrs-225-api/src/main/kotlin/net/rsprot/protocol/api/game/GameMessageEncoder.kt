@@ -26,8 +26,8 @@ public class GameMessageEncoder(
         payloadSize: Int,
     ) {
         networkService
-            .trafficHandler
-            .gameChannelTrafficHandler
+            .trafficMonitor
+            .gameChannelTrafficMonitor
             .incrementOutgoingPackets(ctx.inetAddress(), opcode, payloadSize)
     }
 }

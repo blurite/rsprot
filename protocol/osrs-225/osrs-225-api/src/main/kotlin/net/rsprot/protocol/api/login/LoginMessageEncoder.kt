@@ -25,8 +25,8 @@ public class LoginMessageEncoder(
         payloadSize: Int,
     ) {
         networkService
-            .trafficHandler
-            .loginChannelTrafficHandler
+            .trafficMonitor
+            .loginChannelTrafficMonitor
             .incrementOutgoingPackets(ctx.inetAddress(), opcode, payloadSize)
     }
 }

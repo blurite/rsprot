@@ -1,10 +1,10 @@
 package net.rsprot.protocol.metrics.impl
 
-import net.rsprot.protocol.metrics.NetworkTrafficHandler
-import net.rsprot.protocol.metrics.channel.impl.GameChannelTrafficHandler
-import net.rsprot.protocol.metrics.channel.impl.Js5ChannelTrafficHandler
-import net.rsprot.protocol.metrics.channel.impl.LoginChannelTrafficHandler
-import net.rsprot.protocol.metrics.lock.TrafficHandlerLock
+import net.rsprot.protocol.metrics.NetworkTrafficMonitor
+import net.rsprot.protocol.metrics.channel.impl.GameChannelTrafficMonitor
+import net.rsprot.protocol.metrics.channel.impl.Js5ChannelTrafficMonitor
+import net.rsprot.protocol.metrics.channel.impl.LoginChannelTrafficMonitor
+import net.rsprot.protocol.metrics.lock.TrafficMonitorLock
 import net.rsprot.protocol.metrics.snapshots.NetworkTrafficSnapshot
 import net.rsprot.protocol.metrics.snapshots.impl.ConcurrentNetworkTrafficSnapshot
 import java.net.InetAddress
@@ -15,8 +15,8 @@ import java.util.concurrent.ConcurrentLinkedQueue
 import java.util.concurrent.atomic.AtomicInteger
 
 /**
- * A concurrent network traffic handler, responsible for tracking all the data sent via
- * the [loginChannelTrafficHandler], the [js5ChannelTrafficHandler] and the [gameChannelTrafficHandler].
+ * A concurrent network traffic monitor, responsible for tracking all the data sent via
+ * the [loginChannelTrafficMonitor], the [js5ChannelTrafficMonitor] and the [gameChannelTrafficMonitor].
  * In addition to those, it will track the number of connections established, as well as any
  * login complete login blocks that reach the server, based on the respective [InetAddress]
  * behind the login blocks. Latter can be used to link any abnormalities to specific individuals.
@@ -26,14 +26,14 @@ import java.util.concurrent.atomic.AtomicInteger
  * This is only done to ensure consistency between the properties. As the blocking is extremely
  * short-lived, it should not cause any issues.
  *
- * @property lock the traffic handler lock used to freeze any modifications temporarily while
+ * @property lock the traffic monitor lock used to freeze any modifications temporarily while
  * new instances of the properties in this class are constructed, in order to ensure consistency
  * between the data. Any other operations in this class are based on Atomic properties,
  * or data structured found in the [java.util.concurrent] package.
- * @property loginChannelTrafficHandler the channel traffic handler for logins (and "handshakes",
+ * @property loginChannelTrafficMonitor the channel traffic monitor for logins (and "handshakes",
  * as they are commonly referred to).
- * @property js5ChannelTrafficHandler the channel traffic handler for JS5.
- * @property gameChannelTrafficHandler the channel traffic handler for game connections,
+ * @property js5ChannelTrafficMonitor the channel traffic monitor for JS5.
+ * @property gameChannelTrafficMonitor the channel traffic monitor for game connections,
  * essentially after a login request is accepted.
  * @property startDateTime the date time when the tracking was started. Note that this property
  * is reset to [LocalDateTime.now] whenever the [resetTransient] function is called.
@@ -42,13 +42,13 @@ import java.util.concurrent.atomic.AtomicInteger
  * @property loginBlocks the complete login blocks received per [InetAddress].
  * @property frozen whether the tracking of [loginBlocks] is temporarily frozen.
  */
-public class ConcurrentNetworkTrafficHandler<LoginBlock>(
-    private val lock: TrafficHandlerLock,
-    override val loginChannelTrafficHandler: LoginChannelTrafficHandler,
-    override val js5ChannelTrafficHandler: Js5ChannelTrafficHandler,
-    override val gameChannelTrafficHandler: GameChannelTrafficHandler,
+public class ConcurrentNetworkTrafficMonitor<LoginBlock>(
+    private val lock: TrafficMonitorLock,
+    override val loginChannelTrafficMonitor: LoginChannelTrafficMonitor,
+    override val js5ChannelTrafficMonitor: Js5ChannelTrafficMonitor,
+    override val gameChannelTrafficMonitor: GameChannelTrafficMonitor,
     private var startDateTime: LocalDateTime = LocalDateTime.now(),
-) : NetworkTrafficHandler<LoginBlock> {
+) : NetworkTrafficMonitor<LoginBlock> {
     private var connections: AtomicInteger = AtomicInteger(0)
     private var loginBlocks: MutableMap<InetAddress, Queue<LoginBlock>> = ConcurrentHashMap()
 
@@ -82,9 +82,9 @@ public class ConcurrentNetworkTrafficHandler<LoginBlock>(
             newStart,
             connections.get(),
             loginBlocks,
-            loginChannelTrafficHandler.snapshot(),
-            js5ChannelTrafficHandler.snapshot(),
-            gameChannelTrafficHandler.snapshot(),
+            loginChannelTrafficMonitor.snapshot(),
+            js5ChannelTrafficMonitor.snapshot(),
+            gameChannelTrafficMonitor.snapshot(),
         )
     }
 
@@ -109,23 +109,23 @@ public class ConcurrentNetworkTrafficHandler<LoginBlock>(
             this.startDateTime,
             oldConnections.get(),
             loginBlocks,
-            loginChannelTrafficHandler.resetTransient(),
-            js5ChannelTrafficHandler.resetTransient(),
-            gameChannelTrafficHandler.resetTransient(),
+            loginChannelTrafficMonitor.resetTransient(),
+            js5ChannelTrafficMonitor.resetTransient(),
+            gameChannelTrafficMonitor.resetTransient(),
         )
     }
 
     override fun freeze() {
         this.frozen = true
-        this.loginChannelTrafficHandler.freeze()
-        this.js5ChannelTrafficHandler.freeze()
-        this.gameChannelTrafficHandler.freeze()
+        this.loginChannelTrafficMonitor.freeze()
+        this.js5ChannelTrafficMonitor.freeze()
+        this.gameChannelTrafficMonitor.freeze()
     }
 
     override fun unfreeze() {
         this.frozen = false
-        this.loginChannelTrafficHandler.unfreeze()
-        this.js5ChannelTrafficHandler.unfreeze()
-        this.gameChannelTrafficHandler.unfreeze()
+        this.loginChannelTrafficMonitor.unfreeze()
+        this.js5ChannelTrafficMonitor.unfreeze()
+        this.gameChannelTrafficMonitor.unfreeze()
     }
 }

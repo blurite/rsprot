@@ -31,15 +31,15 @@ public class LoginChannelHandler(
 ) : SimpleChannelInboundHandler<IncomingLoginMessage>(IncomingLoginMessage::class.java) {
     override fun handlerAdded(ctx: ChannelHandlerContext) {
         networkService
-            .trafficHandler
-            .loginChannelTrafficHandler
+            .trafficMonitor
+            .loginChannelTrafficMonitor
             .incrementConnections(ctx.inetAddress())
     }
 
     override fun handlerRemoved(ctx: ChannelHandlerContext) {
         networkService
-            .trafficHandler
-            .loginChannelTrafficHandler
+            .trafficMonitor
+            .loginChannelTrafficMonitor
             .decrementConnections(ctx.inetAddress())
     }
 
@@ -67,8 +67,8 @@ public class LoginChannelHandler(
             // TODO: Unknown, SSL web
             else -> {
                 networkService
-                    .trafficHandler
-                    .loginChannelTrafficHandler
+                    .trafficMonitor
+                    .loginChannelTrafficMonitor
                     .addDisconnectionReason(
                         ctx.inetAddress(),
                         LoginDisconnectionReason.CHANNEL_UNKNOWN_PACKET,
@@ -98,8 +98,8 @@ public class LoginChannelHandler(
                 .write(LoginResponse.TooManyAttempts)
                 .addListener(ChannelFutureListener.CLOSE)
             networkService
-                .trafficHandler
-                .loginChannelTrafficHandler
+                .trafficMonitor
+                .loginChannelTrafficMonitor
                 .addDisconnectionReason(
                     ctx.inetAddress(),
                     LoginDisconnectionReason.CHANNEL_IP_LIMIT,
@@ -161,8 +161,8 @@ public class LoginChannelHandler(
                 "Invalid JS5 revision received from channel '${ctx.channel()}': $revision"
             }
             networkService
-                .trafficHandler
-                .loginChannelTrafficHandler
+                .trafficMonitor
+                .loginChannelTrafficMonitor
                 .addDisconnectionReason(
                     ctx.inetAddress(),
                     LoginDisconnectionReason.CHANNEL_OUT_OF_DATE,
@@ -191,8 +191,8 @@ public class LoginChannelHandler(
                 .write(LoginResponse.IPLimit)
                 .addListener(ChannelFutureListener.CLOSE)
             networkService
-                .trafficHandler
-                .loginChannelTrafficHandler
+                .trafficMonitor
+                .loginChannelTrafficMonitor
                 .addDisconnectionReason(
                     ctx.inetAddress(),
                     LoginDisconnectionReason.CHANNEL_IP_LIMIT,
@@ -252,8 +252,8 @@ public class LoginChannelHandler(
             .channelExceptionHandler
             .exceptionCaught(ctx, cause)
         networkService
-            .trafficHandler
-            .loginChannelTrafficHandler
+            .trafficMonitor
+            .loginChannelTrafficMonitor
             .addDisconnectionReason(
                 ctx.inetAddress(),
                 LoginDisconnectionReason.CHANNEL_EXCEPTION,
@@ -269,8 +269,8 @@ public class LoginChannelHandler(
                 "Login channel has gone idle, closing channel ${ctx.channel()}"
             }
             networkService
-                .trafficHandler
-                .loginChannelTrafficHandler
+                .trafficMonitor
+                .loginChannelTrafficMonitor
                 .addDisconnectionReason(
                     ctx.inetAddress(),
                     LoginDisconnectionReason.CHANNEL_IDLE,

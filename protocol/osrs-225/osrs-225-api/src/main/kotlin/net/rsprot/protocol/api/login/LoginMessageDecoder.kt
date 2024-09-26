@@ -68,8 +68,8 @@ public class LoginMessageDecoder(
             )
         }
         networkService
-            .trafficHandler
-            .loginChannelTrafficHandler
+            .trafficMonitor
+            .loginChannelTrafficMonitor
             .incrementIncomingPackets(ctx.inetAddress(), opcode, length)
     }
 

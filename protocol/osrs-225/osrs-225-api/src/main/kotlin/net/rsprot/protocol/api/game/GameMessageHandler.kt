@@ -23,15 +23,15 @@ public class GameMessageHandler<R>(
         // has been added post-login
         ctx.read()
         networkService
-            .trafficHandler
-            .gameChannelTrafficHandler
+            .trafficMonitor
+            .gameChannelTrafficMonitor
             .incrementConnections(ctx.inetAddress())
     }
 
     override fun handlerRemoved(ctx: ChannelHandlerContext) {
         networkService
-            .trafficHandler
-            .gameChannelTrafficHandler
+            .trafficMonitor
+            .gameChannelTrafficMonitor
             .decrementConnections(ctx.inetAddress())
     }
 
@@ -92,8 +92,8 @@ public class GameMessageHandler<R>(
             .channelExceptionHandler
             .exceptionCaught(ctx, cause)
         networkService
-            .trafficHandler
-            .gameChannelTrafficHandler
+            .trafficMonitor
+            .gameChannelTrafficMonitor
             .addDisconnectionReason(
                 ctx.inetAddress(),
                 GameDisconnectionReason.EXCEPTION,
@@ -111,8 +111,8 @@ public class GameMessageHandler<R>(
                 "Login connection has gone idle, closing channel ${ctx.channel()}"
             }
             networkService
-                .trafficHandler
-                .gameChannelTrafficHandler
+                .trafficMonitor
+                .gameChannelTrafficMonitor
                 .addDisconnectionReason(
                     ctx.inetAddress(),
                     GameDisconnectionReason.IDLE,

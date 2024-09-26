@@ -75,8 +75,8 @@ public class Js5Client(
             }
             currentRequest.set(block)
             networkService
-                .trafficHandler
-                .js5ChannelTrafficHandler
+                .trafficMonitor
+                .js5ChannelTrafficMonitor
                 .incrementOutgoingPacketOpcode(ctx.inetAddress(), Js5ServerProt.JS5_GROUP_RESPONSE.opcode)
         }
         val progress = currentRequest.progress

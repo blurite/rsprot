@@ -21,7 +21,7 @@ import net.rsprot.protocol.loginprot.incoming.util.LoginBlock
 import net.rsprot.protocol.loginprot.incoming.util.LoginBlockDecodingFunction
 import net.rsprot.protocol.loginprot.outgoing.LoginResponse
 import net.rsprot.protocol.message.IncomingLoginMessage
-import net.rsprot.protocol.metrics.NetworkTrafficHandler
+import net.rsprot.protocol.metrics.NetworkTrafficMonitor
 import java.text.NumberFormat
 import java.util.concurrent.CompletableFuture
 
@@ -42,15 +42,15 @@ public class LoginConnectionHandler<R>(
     override fun handlerAdded(ctx: ChannelHandlerContext) {
         ctx.read()
         networkService
-            .trafficHandler
-            .loginChannelTrafficHandler
+            .trafficMonitor
+            .loginChannelTrafficMonitor
             .incrementConnections(ctx.inetAddress())
     }
 
     override fun handlerRemoved(ctx: ChannelHandlerContext) {
         networkService
-            .trafficHandler
-            .loginChannelTrafficHandler
+            .trafficMonitor
+            .loginChannelTrafficMonitor
             .decrementConnections(ctx.inetAddress())
     }
 
@@ -115,8 +115,8 @@ public class LoginConnectionHandler<R>(
                 if (this.loginState != LoginState.AWAITING_BETA_RESPONSE) {
                     ctx.close()
                     networkService
-                        .trafficHandler
-                        .loginChannelTrafficHandler
+                        .trafficMonitor
+                        .loginChannelTrafficMonitor
                         .addDisconnectionReason(
                             ctx.inetAddress(),
                             LoginDisconnectionReason.CONNECTION_INVALID_STEP_AWAITING_BETA_RESPONSE,
@@ -130,8 +130,8 @@ public class LoginConnectionHandler<R>(
                 if (this.loginState != LoginState.UNINITIALIZED) {
                     ctx.close()
                     networkService
-                        .trafficHandler
-                        .loginChannelTrafficHandler
+                        .trafficMonitor
+                        .loginChannelTrafficMonitor
                         .addDisconnectionReason(
                             ctx.inetAddress(),
                             LoginDisconnectionReason.CONNECTION_INVALID_STEP_UNINITIALIZED,
@@ -151,8 +151,8 @@ public class LoginConnectionHandler<R>(
                 if (loginState != LoginState.REQUESTED_PROOF_OF_WORK) {
                     ctx.close()
                     networkService
-                        .trafficHandler
-                        .loginChannelTrafficHandler
+                        .trafficMonitor
+                        .loginChannelTrafficMonitor
                         .addDisconnectionReason(
                             ctx.inetAddress(),
                             LoginDisconnectionReason.CONNECTION_INVALID_STEP_REQUESTED_PROOF_OF_WORK,
@@ -168,8 +168,8 @@ public class LoginConnectionHandler<R>(
                         }
                         ctx.writeAndFlush(LoginResponse.LoginFail1).addListener(ChannelFutureListener.CLOSE)
                         networkService
-                            .trafficHandler
-                            .loginChannelTrafficHandler
+                            .trafficMonitor
+                            .loginChannelTrafficMonitor
                             .addDisconnectionReason(
                                 ctx.inetAddress(),
                                 LoginDisconnectionReason.CONNECTION_PROOF_OF_WORK_FAILED,
@@ -183,8 +183,8 @@ public class LoginConnectionHandler<R>(
                         }
                         ctx.writeAndFlush(LoginResponse.LoginFail1).addListener(ChannelFutureListener.CLOSE)
                         networkService
-                            .trafficHandler
-                            .loginChannelTrafficHandler
+                            .trafficMonitor
+                            .loginChannelTrafficMonitor
                             .addDisconnectionReason(
                                 ctx.inetAddress(),
                                 LoginDisconnectionReason.CONNECTION_PROOF_OF_WORK_EXCEPTION,
@@ -219,8 +219,8 @@ public class LoginConnectionHandler<R>(
                         "Failed to write a successful proof of work request to channel ${ctx.channel()}"
                     }
                     networkService
-                        .trafficHandler
-                        .loginChannelTrafficHandler
+                        .trafficMonitor
+                        .loginChannelTrafficMonitor
                         .addDisconnectionReason(
                             ctx.inetAddress(),
                             LoginDisconnectionReason.CONNECTION_PROOF_OF_WORK_EXCEPTION,
@@ -273,8 +273,8 @@ public class LoginConnectionHandler<R>(
             .channelExceptionHandler
             .exceptionCaught(ctx, cause)
         networkService
-            .trafficHandler
-            .loginChannelTrafficHandler
+            .trafficMonitor
+            .loginChannelTrafficMonitor
             .addDisconnectionReason(
                 ctx.inetAddress(),
                 LoginDisconnectionReason.CONNECTION_EXCEPTION,
@@ -290,8 +290,8 @@ public class LoginConnectionHandler<R>(
                 "Login connection has gone idle, closing channel ${ctx.channel()}"
             }
             networkService
-                .trafficHandler
-                .loginChannelTrafficHandler
+                .trafficMonitor
+                .loginChannelTrafficMonitor
                 .addDisconnectionReason(
                     ctx.inetAddress(),
                     LoginDisconnectionReason.CONNECTION_IDLE,
@@ -358,7 +358,7 @@ public class LoginConnectionHandler<R>(
             networkService.gameConnectionHandler.onLogin(responseHandler, block)
             try {
                 @Suppress("UNCHECKED_CAST")
-                val trafficHandler = networkService.trafficHandler as NetworkTrafficHandler<LoginBlock<*>>
+                val trafficHandler = networkService.trafficMonitor as NetworkTrafficMonitor<LoginBlock<*>>
                 trafficHandler.addLoginBlock(ctx.inetAddress(), block)
             } catch (e: Exception) {
                 logger.error(e) {
@@ -408,7 +408,7 @@ public class LoginConnectionHandler<R>(
             networkService.gameConnectionHandler.onReconnect(responseHandler, block)
             try {
                 @Suppress("UNCHECKED_CAST")
-                val trafficHandler = networkService.trafficHandler as NetworkTrafficHandler<LoginBlock<*>>
+                val trafficHandler = networkService.trafficMonitor as NetworkTrafficMonitor<LoginBlock<*>>
                 trafficHandler.addLoginBlock(ctx.inetAddress(), block)
             } catch (e: Exception) {
                 logger.error(e) {

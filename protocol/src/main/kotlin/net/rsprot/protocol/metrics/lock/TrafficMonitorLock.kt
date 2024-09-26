@@ -5,20 +5,20 @@ import kotlin.contracts.InvocationKind
 import kotlin.contracts.contract
 
 /**
- * A traffic handler lock, responsible for conditionally synchronizing.
+ * A traffic monitor lock, responsible for conditionally synchronizing.
  * We use this implementation to skip the synchronization overhead most of the time.
- * The only time we do use synchronization is when [net.rsprot.protocol.metrics.NetworkTrafficHandler.resetTransient]
+ * The only time we do use synchronization is when [net.rsprot.protocol.metrics.NetworkTrafficMonitor.resetTransient]
  * function is called, during which we shortly lock the modifications down in order to ensure consistency
  * in the measurements.
  */
-public class TrafficHandlerLock {
+public class TrafficMonitorLock {
     @PublishedApi
     @Volatile
     internal var lock: Any? = null
 
     /**
      * Synchronizes around a newly created [lock] to temporarily prevent
-     * any modifications to a [net.rsprot.protocol.metrics.NetworkTrafficHandler].
+     * any modifications to a [net.rsprot.protocol.metrics.NetworkTrafficMonitor].
      * While the [block] executes, the [use] function will not be able to execute.
      * @param block the higher order function to execute with synchronized access.
      */
