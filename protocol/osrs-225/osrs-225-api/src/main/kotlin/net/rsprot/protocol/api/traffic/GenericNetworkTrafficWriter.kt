@@ -53,7 +53,7 @@ public data object GenericNetworkTrafficWriter : NetworkTrafficWriter<GenericNet
         }
 
     private fun StringBuilder.appendLoginBlocks(loginBlocks: Map<InetAddress, List<LoginBlock<*>>>) {
-        append("Login Blocks")
+        appendLine("Login Blocks")
         for ((k, v) in loginBlocks) {
             indent().append("Inet Address: ").appendLine(k)
             for (block in v) {
@@ -185,7 +185,8 @@ public data object GenericNetworkTrafficWriter : NetworkTrafficWriter<GenericNet
                 .append(", count: ")
                 .append(format(v.count))
                 .append(", payload sum: ")
-                .appendLine(format(v.cumulativePayloadSize))
+                .append(format(v.cumulativePayloadSize))
+                .appendLine(if (v.cumulativePayloadSize == 1L) " byte" else " bytes")
         }
     }
 
