@@ -18,6 +18,7 @@ import net.rsprot.protocol.api.game.GameMessageDecoder
 import net.rsprot.protocol.api.game.GameMessageEncoder
 import net.rsprot.protocol.api.game.GameMessageHandler
 import net.rsprot.protocol.api.logging.networkLog
+import net.rsprot.protocol.api.metrics.addDisconnectionReason
 import net.rsprot.protocol.common.client.OldSchoolClientType
 import net.rsprot.protocol.loginprot.incoming.util.LoginBlock
 import net.rsprot.protocol.loginprot.incoming.util.LoginClientType
@@ -54,12 +55,20 @@ public class GameLoginResponseHandler<R>(
             ctx
                 .writeAndFlush(LoginResponse.InvalidLoginPacket)
                 .addListener(ChannelFutureListener.CLOSE)
+            networkService.trafficHandler.loginChannelTrafficHandler.addDisconnectionReason(
+                ctx.inetAddress(),
+                LoginDisconnectionReason.GAME_INVALID_LOGIN_PACKET,
+            )
             return null
         }
         if (!ctx.channel().isActive) {
             networkLog(logger) {
                 "Channel '${ctx.channel()}' has gone inactive; login block: $loginBlock"
             }
+            networkService.trafficHandler.loginChannelTrafficHandler.addDisconnectionReason(
+                ctx.inetAddress(),
+                LoginDisconnectionReason.GAME_CHANNEL_INACTIVE,
+            )
             return null
         }
         val address = ctx.inetAddress()
@@ -81,6 +90,10 @@ public class GameLoginResponseHandler<R>(
             ctx
                 .writeAndFlush(LoginResponse.TooManyAttempts)
                 .addListener(ChannelFutureListener.CLOSE)
+            networkService.trafficHandler.loginChannelTrafficHandler.addDisconnectionReason(
+                ctx.inetAddress(),
+                LoginDisconnectionReason.GAME_TOO_MANY_ATTEMPTS,
+            )
             return null
         }
         val cipher = createStreamCipherPair(loginBlock)
@@ -121,12 +134,20 @@ public class GameLoginResponseHandler<R>(
                     "'${ctx.channel()}': $oldSchoolClientType, login block: $loginBlock"
             }
             ctx.writeAndFlush(LoginResponse.InvalidLoginPacket)
+            networkService.trafficHandler.loginChannelTrafficHandler.addDisconnectionReason(
+                ctx.inetAddress(),
+                LoginDisconnectionReason.GAME_INVALID_LOGIN_PACKET,
+            )
             return null
         }
         if (!ctx.channel().isActive) {
             networkLog(logger) {
                 "Channel '${ctx.channel()}' has gone inactive; login block: $loginBlock"
             }
+            networkService.trafficHandler.loginChannelTrafficHandler.addDisconnectionReason(
+                ctx.inetAddress(),
+                LoginDisconnectionReason.GAME_CHANNEL_INACTIVE,
+            )
             return null
         }
         val (encodingCipher, decodingCipher) = createStreamCipherPair(loginBlock)
@@ -245,12 +266,23 @@ public class GameLoginResponseHandler<R>(
             networkLog(logger) {
                 "Channel '${ctx.channel()}' has gone inactive, skipping failed response."
             }
+            networkService.trafficHandler.loginChannelTrafficHandler.addDisconnectionReason(
+                ctx.inetAddress(),
+                LoginDisconnectionReason.GAME_CHANNEL_INACTIVE,
+            )
             return
         }
         networkLog(logger) {
             "Writing failed login response to channel '${ctx.channel()}': $response"
         }
         ctx.writeAndFlush(response).addListener(ChannelFutureListener.CLOSE)
+        val disconnectReason = LoginDisconnectionReason.responseToReasonMap[response]
+        if (disconnectReason != null) {
+            networkService.trafficHandler.loginChannelTrafficHandler.addDisconnectionReason(
+                ctx.inetAddress(),
+                disconnectReason,
+            )
+        }
     }
 
     private companion object {

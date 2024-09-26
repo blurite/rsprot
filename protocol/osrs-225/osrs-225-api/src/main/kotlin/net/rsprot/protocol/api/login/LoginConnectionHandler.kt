@@ -9,6 +9,7 @@ import net.rsprot.buffer.JagByteBuf
 import net.rsprot.protocol.api.NetworkService
 import net.rsprot.protocol.api.channel.inetAddress
 import net.rsprot.protocol.api.logging.networkLog
+import net.rsprot.protocol.api.metrics.addDisconnectionReason
 import net.rsprot.protocol.loginprot.incoming.GameLogin
 import net.rsprot.protocol.loginprot.incoming.GameReconnect
 import net.rsprot.protocol.loginprot.incoming.ProofOfWorkReply
@@ -39,6 +40,17 @@ public class LoginConnectionHandler<R>(
 
     override fun handlerAdded(ctx: ChannelHandlerContext) {
         ctx.read()
+        networkService
+            .trafficHandler
+            .loginChannelTrafficHandler
+            .incrementConnections(ctx.inetAddress())
+    }
+
+    override fun handlerRemoved(ctx: ChannelHandlerContext) {
+        networkService
+            .trafficHandler
+            .loginChannelTrafficHandler
+            .decrementConnections(ctx.inetAddress())
     }
 
     override fun channelActive(ctx: ChannelHandlerContext) {
@@ -101,13 +113,28 @@ public class LoginConnectionHandler<R>(
             is RemainingBetaArchives -> {
                 if (this.loginState != LoginState.AWAITING_BETA_RESPONSE) {
                     ctx.close()
+                    networkService
+                        .trafficHandler
+                        .loginChannelTrafficHandler
+                        .addDisconnectionReason(
+                            ctx.inetAddress(),
+                            LoginDisconnectionReason.CONNECTION_INVALID_STEP_AWAITING_BETA_RESPONSE,
+                        )
                     return
                 }
                 decodeLoginPacket(ctx, msg)
             }
+
             is GameLogin -> {
                 if (this.loginState != LoginState.UNINITIALIZED) {
                     ctx.close()
+                    networkService
+                        .trafficHandler
+                        .loginChannelTrafficHandler
+                        .addDisconnectionReason(
+                            ctx.inetAddress(),
+                            LoginDisconnectionReason.CONNECTION_INVALID_STEP_UNINITIALIZED,
+                        )
                     return
                 }
                 this.loginPacket = msg
@@ -122,6 +149,13 @@ public class LoginConnectionHandler<R>(
             is ProofOfWorkReply -> {
                 if (loginState != LoginState.REQUESTED_PROOF_OF_WORK) {
                     ctx.close()
+                    networkService
+                        .trafficHandler
+                        .loginChannelTrafficHandler
+                        .addDisconnectionReason(
+                            ctx.inetAddress(),
+                            LoginDisconnectionReason.CONNECTION_INVALID_STEP_REQUESTED_PROOF_OF_WORK,
+                        )
                     return
                 }
                 val pow = this.proofOfWork
@@ -132,6 +166,13 @@ public class LoginConnectionHandler<R>(
                                 "channel '${ctx.channel()}': ${msg.result}, challenge was: $pow"
                         }
                         ctx.writeAndFlush(LoginResponse.LoginFail1).addListener(ChannelFutureListener.CLOSE)
+                        networkService
+                            .trafficHandler
+                            .loginChannelTrafficHandler
+                            .addDisconnectionReason(
+                                ctx.inetAddress(),
+                                LoginDisconnectionReason.CONNECTION_PROOF_OF_WORK_FAILED,
+                            )
                         return@handle
                     }
                     if (exception != null) {
@@ -140,6 +181,13 @@ public class LoginConnectionHandler<R>(
                                 "from channel '${ctx.channel()}': $exception"
                         }
                         ctx.writeAndFlush(LoginResponse.LoginFail1).addListener(ChannelFutureListener.CLOSE)
+                        networkService
+                            .trafficHandler
+                            .loginChannelTrafficHandler
+                            .addDisconnectionReason(
+                                ctx.inetAddress(),
+                                LoginDisconnectionReason.CONNECTION_PROOF_OF_WORK_EXCEPTION,
+                            )
                     }
                     networkLog(logger) {
                         "Correct proof of work response received from channel '${ctx.channel()}': ${msg.result}"
@@ -147,6 +195,7 @@ public class LoginConnectionHandler<R>(
                     continueLogin(ctx)
                 }
             }
+
             else -> {
                 throw IllegalStateException("Unknown login connection handler")
             }
@@ -168,6 +217,13 @@ public class LoginConnectionHandler<R>(
                     networkLog(logger) {
                         "Failed to write a successful proof of work request to channel ${ctx.channel()}"
                     }
+                    networkService
+                        .trafficHandler
+                        .loginChannelTrafficHandler
+                        .addDisconnectionReason(
+                            ctx.inetAddress(),
+                            LoginDisconnectionReason.CONNECTION_PROOF_OF_WORK_EXCEPTION,
+                        )
                     future.channel().pipeline().fireExceptionCaught(future.cause())
                     future.channel().close()
                     return@ChannelFutureListener
@@ -215,6 +271,13 @@ public class LoginConnectionHandler<R>(
             .exceptionHandlers
             .channelExceptionHandler
             .exceptionCaught(ctx, cause)
+        networkService
+            .trafficHandler
+            .loginChannelTrafficHandler
+            .addDisconnectionReason(
+                ctx.inetAddress(),
+                LoginDisconnectionReason.CONNECTION_EXCEPTION,
+            )
     }
 
     override fun userEventTriggered(
@@ -225,6 +288,13 @@ public class LoginConnectionHandler<R>(
             networkLog(logger) {
                 "Login connection has gone idle, closing channel ${ctx.channel()}"
             }
+            networkService
+                .trafficHandler
+                .loginChannelTrafficHandler
+                .addDisconnectionReason(
+                    ctx.inetAddress(),
+                    LoginDisconnectionReason.CONNECTION_IDLE,
+                )
             ctx.close()
         }
     }
