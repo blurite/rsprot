@@ -25,6 +25,7 @@ import net.rsprot.protocol.common.loginprot.incoming.prot.LoginClientProt
 import net.rsprot.protocol.common.loginprot.outgoing.prot.LoginServerProt
 import net.rsprot.protocol.game.incoming.prot.GameClientProt
 import net.rsprot.protocol.game.outgoing.prot.GameServerProt
+import net.rsprot.protocol.loginprot.incoming.util.LoginBlock
 import net.rsprot.protocol.message.codec.incoming.provider.GameMessageConsumerRepositoryProvider
 import net.rsprot.protocol.metrics.NetworkTrafficHandler
 import net.rsprot.protocol.metrics.channel.impl.GameChannelTrafficHandler
@@ -271,7 +272,7 @@ public abstract class AbstractNetworkServiceFactory<R> {
      * but a [net.rsprot.protocol.metrics.impl.GenericNetworkTrafficHandler] can be used
      * to enable tracking. Custom implementations are additionally also possible.
      */
-    public open fun getNetworkTrafficHandler(): NetworkTrafficHandler = NoopNetworkTrafficHandler
+    public open fun getNetworkTrafficHandler(): NetworkTrafficHandler<*> = NoopNetworkTrafficHandler
 
     /**
      * Builds a network service through this factoring, using all
@@ -312,7 +313,7 @@ public abstract class AbstractNetworkServiceFactory<R> {
         )
     }
 
-    public fun buildNetworkTrafficHandler(): GenericNetworkTrafficHandler {
+    public fun buildNetworkTrafficHandler(): GenericNetworkTrafficHandler<LoginBlock<*>> {
         val loginClientProts = enumValues<LoginClientProt>()
         val loginServerProts = enumValues<LoginServerProt>()
         val loginDisconnectionReasons = enumValues<LoginDisconnectionReason>()
@@ -352,7 +353,7 @@ public abstract class AbstractNetworkServiceFactory<R> {
                 ),
             )
 
-        return GenericNetworkTrafficHandler(
+        return GenericNetworkTrafficHandler<LoginBlock<*>>(
             lock,
             loginChannelTrafficHandler,
             js5ChannelTrafficHandler,

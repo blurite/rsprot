@@ -7,8 +7,9 @@ import net.rsprot.protocol.metrics.channel.impl.LoginChannelTrafficHandler
 import net.rsprot.protocol.metrics.channel.impl.NoopChannelTrafficHandler
 import net.rsprot.protocol.metrics.snapshots.NetworkTrafficSnapshot
 import net.rsprot.protocol.metrics.snapshots.impl.NoopNetworkTrafficSnapshot
+import java.net.InetAddress
 
-public data object NoopNetworkTrafficHandler : NetworkTrafficHandler {
+public data object NoopNetworkTrafficHandler : NetworkTrafficHandler<Any?> {
     override val loginChannelTrafficHandler: LoginChannelTrafficHandler =
         LoginChannelTrafficHandler(NoopChannelTrafficHandler)
     override val js5ChannelTrafficHandler: Js5ChannelTrafficHandler =
@@ -17,6 +18,12 @@ public data object NoopNetworkTrafficHandler : NetworkTrafficHandler {
         GameChannelTrafficHandler(NoopChannelTrafficHandler)
 
     override fun incrementConnections() {
+    }
+
+    override fun addLoginBlock(
+        inetAddress: InetAddress,
+        block: Any?,
+    ) {
     }
 
     override fun snapshot(): NetworkTrafficSnapshot = NoopNetworkTrafficSnapshot

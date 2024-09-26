@@ -87,7 +87,7 @@ public class NetworkService<R>
         internal val loginHandlers: LoginHandlers,
         public val huffmanCodecProvider: HuffmanCodecProvider,
         public val gameMessageConsumerRepositoryProvider: GameMessageConsumerRepositoryProvider<R>,
-        public val trafficHandler: NetworkTrafficHandler,
+        public val trafficHandler: NetworkTrafficHandler<*>,
         rsaKeyPair: RsaKeyPair,
         js5Configuration: Js5Configuration,
         js5GroupProvider: Js5GroupProvider,

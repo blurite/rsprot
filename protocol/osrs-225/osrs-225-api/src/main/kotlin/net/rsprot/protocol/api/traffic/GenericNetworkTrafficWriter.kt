@@ -1,23 +1,26 @@
-package net.rsprot.protocol.metrics.writer.impl
+package net.rsprot.protocol.api.traffic
 
+import net.rsprot.protocol.loginprot.incoming.util.HostPlatformStats
+import net.rsprot.protocol.loginprot.incoming.util.LoginBlock
 import net.rsprot.protocol.metrics.channel.snapshots.impl.GenericChannelTrafficSnapshot
 import net.rsprot.protocol.metrics.channel.snapshots.util.PacketSnapshot
 import net.rsprot.protocol.metrics.snapshots.impl.GenericNetworkTrafficSnapshot
 import net.rsprot.protocol.metrics.writer.NetworkTrafficWriter
+import java.net.InetAddress
 import java.text.NumberFormat
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
-import kotlin.collections.Map
+import kotlin.collections.iterator
 
-public data object GenericNetworkTrafficWriter : NetworkTrafficWriter<GenericNetworkTrafficSnapshot, String> {
+public data object GenericNetworkTrafficWriter : NetworkTrafficWriter<GenericNetworkTrafficSnapshot<*>, String> {
     private const val INDENT: String = "  "
     private val dateTimeFormatter =
         DateTimeFormatter
             .ofLocalizedDateTime(FormatStyle.FULL)
             .withZone(ZoneId.systemDefault())
 
-    override fun write(snapshot: GenericNetworkTrafficSnapshot): String =
+    override fun write(snapshot: GenericNetworkTrafficSnapshot<*>): String =
         buildString {
             val start = dateTimeFormatter.format(snapshot.startDateTime)
             val end = dateTimeFormatter.format(snapshot.endDateTime)
@@ -43,7 +46,81 @@ public data object GenericNetworkTrafficWriter : NetworkTrafficWriter<GenericNet
                 snapshot.gameSnapshot as GenericChannelTrafficSnapshot<*, *, *>,
                 "Game",
             )
+            appendLine()
+            @Suppress("UNCHECKED_CAST")
+            val loginBlocks = snapshot.loginBlocks as Map<InetAddress, List<LoginBlock<*>>>
+            appendLoginBlocks(loginBlocks)
         }
+
+    private fun StringBuilder.appendLoginBlocks(loginBlocks: Map<InetAddress, List<LoginBlock<*>>>) {
+        append("Login Blocks")
+        for ((k, v) in loginBlocks) {
+            indent().append("Inet Address: ").appendLine(k)
+            for (block in v) {
+                indent(2).appendLine("Login Block")
+                indent(3).append("Version: ").appendLine(block.version)
+                indent(3).append("Sub Version: ").appendLine(block.subVersion)
+                indent(3).append("Client Type: ").appendLine(block.clientType)
+                indent(3).append("Platform Type: ").appendLine(block.platformType)
+                indent(3).append("Seed: ").appendLine(block.seed.contentToString())
+                indent(3).append("Session Id: ").appendLine(format(block.sessionId))
+                indent(3).append("Username: ").appendLine(block.username)
+                indent(3).append("Low Detail: ").appendLine(block.lowDetail)
+                indent(3).append("Resizable: ").appendLine(block.resizable)
+                indent(3).append("Width: ").appendLine(block.width)
+                indent(3).append("Height: ").appendLine(block.height)
+                indent(3).append("UUID: ").appendLine(block.uuid.contentToString())
+                indent(3).append("Site Settings: ").appendLine(block.siteSettings)
+                indent(3).append("Affiliate: ").appendLine(block.affiliate)
+                indent(3).append("CRC Header: ").appendLine(block.crcBlockHeader)
+                indent(3).append("CRC: ").appendLine(block.crc.toIntArray().contentToString())
+                appendHostPlatformStats(block.hostPlatformStats)
+            }
+        }
+    }
+
+    private fun StringBuilder.appendHostPlatformStats(stats: HostPlatformStats) {
+        indent(3).appendLine("Host Platform Stats")
+        indent(4).append("Version: ").appendLine(stats.version)
+        indent(4).append("OS Type: ").appendLine(stats.osType)
+        indent(4).append("OS 64 Bit: ").appendLine(stats.os64Bit)
+        indent(4).append("OS Version: ").appendLine(stats.osVersion)
+        indent(4).append("Java Vendor: ").appendLine(stats.javaVendor)
+        indent(4)
+            .append("Java: ")
+            .append(stats.javaVendor)
+            .append(" ")
+            .append(stats.javaVersionMajor)
+            .append(".")
+            .append(stats.javaVersionMinor)
+            .append(".")
+            .appendLine(stats.javaVersionPatch)
+
+        indent(4).append("Applet: ").appendLine(stats.applet)
+        indent(4).append("Java Max Memory (MB): ").appendLine(stats.javaMaxMemoryMb)
+        indent(4).append("Java Available Processors: ").appendLine(stats.javaAvailableProcessors)
+        indent(4).append("System Memory: ").appendLine(stats.systemMemory)
+        indent(4).append("System Speed: ").appendLine(stats.systemSpeed)
+        indent(4).append("GPU DX Name: ").appendLine(stats.gpuDxName)
+        indent(4).append("GPU GL Name: ").appendLine(stats.gpuGlName)
+        indent(4).append("GPU GL Version: ").appendLine(stats.gpuGlVersion)
+        indent(4)
+            .append("GPU Driver Date: ")
+            .append(stats.gpuDriverMonth)
+            .append(".")
+            .appendLine(stats.gpuDriverYear)
+        indent(4).append("CPU Manufacturer: ").appendLine(stats.cpuManufacturer)
+        indent(4).append("CPU Brand: ").appendLine(stats.cpuBrand)
+        indent(4)
+            .append("CPU Counts: ")
+            .append(stats.cpuCount1)
+            .append(", ")
+            .appendLine(stats.cpuCount2)
+        indent(4).append("CPU Features: ").appendLine(stats.cpuFeatures.contentToString())
+        indent(4).append("CPU Signature: ").appendLine(stats.cpuSignature)
+        indent(4).append("Client Name: ").appendLine(stats.clientName)
+        indent(4).append("Device Name: ").appendLine(stats.deviceName)
+    }
 
     private fun StringBuilder.appendChannelMetrics(
         snapshot: GenericChannelTrafficSnapshot<*, *, *>,

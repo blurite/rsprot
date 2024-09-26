@@ -28,6 +28,8 @@ public abstract class CyclicRedundancyCheckBlock(
         this.clientCrc[index] = value
     }
 
+    public fun toIntArray(): IntArray = clientCrc.copyOf()
+
     override fun hashCode(): Int = clientCrc.contentHashCode()
 
     override fun toString(): String = "CyclicRedundancyCheckBlock(clientCrc=${clientCrc.contentToString()})"

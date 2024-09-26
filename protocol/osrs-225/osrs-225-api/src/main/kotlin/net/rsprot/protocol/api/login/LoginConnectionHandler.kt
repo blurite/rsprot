@@ -21,6 +21,7 @@ import net.rsprot.protocol.loginprot.incoming.util.LoginBlock
 import net.rsprot.protocol.loginprot.incoming.util.LoginBlockDecodingFunction
 import net.rsprot.protocol.loginprot.outgoing.LoginResponse
 import net.rsprot.protocol.message.IncomingLoginMessage
+import net.rsprot.protocol.metrics.NetworkTrafficHandler
 import java.text.NumberFormat
 import java.util.concurrent.CompletableFuture
 
@@ -355,6 +356,15 @@ public class LoginConnectionHandler<R>(
                 "Successful game login from channel '${ctx.channel()}': $block"
             }
             networkService.gameConnectionHandler.onLogin(responseHandler, block)
+            try {
+                @Suppress("UNCHECKED_CAST")
+                val trafficHandler = networkService.trafficHandler as NetworkTrafficHandler<LoginBlock<*>>
+                trafficHandler.addLoginBlock(ctx.inetAddress(), block)
+            } catch (e: Exception) {
+                logger.error(e) {
+                    "Unexpected traffic handler error."
+                }
+            }
         }
     }
 
@@ -396,6 +406,15 @@ public class LoginConnectionHandler<R>(
                 "Successful game reconnection from channel '${ctx.channel()}': $block"
             }
             networkService.gameConnectionHandler.onReconnect(responseHandler, block)
+            try {
+                @Suppress("UNCHECKED_CAST")
+                val trafficHandler = networkService.trafficHandler as NetworkTrafficHandler<LoginBlock<*>>
+                trafficHandler.addLoginBlock(ctx.inetAddress(), block)
+            } catch (e: Exception) {
+                logger.error(e) {
+                    "Unexpected traffic handler error."
+                }
+            }
         }
     }
 
