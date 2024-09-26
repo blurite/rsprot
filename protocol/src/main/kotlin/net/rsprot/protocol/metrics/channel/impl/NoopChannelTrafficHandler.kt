@@ -56,4 +56,10 @@ public data object NoopChannelTrafficHandler : ChannelTrafficHandler {
     override fun snapshot(): ChannelTrafficSnapshot = NoopChannelTrafficSnapshot
 
     override fun resetTransient(): ChannelTrafficSnapshot = NoopChannelTrafficSnapshot
+
+    override fun freeze() {
+    }
+
+    override fun unfreeze() {
+    }
 }

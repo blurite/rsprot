@@ -48,4 +48,8 @@ public interface ChannelTrafficHandler {
     public fun snapshot(): ChannelTrafficSnapshot
 
     public fun resetTransient(): ChannelTrafficSnapshot
+
+    public fun freeze()
+
+    public fun unfreeze()
 }

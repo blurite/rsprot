@@ -26,6 +26,9 @@ public class GenericChannelTrafficHandler<CP, SP, DC>(
     private var inetAddressTrafficCounters: MutableMap<InetAddress, InetAddressTrafficCounter<CP, SP, DC>> =
         ConcurrentHashMap()
 
+    @Volatile
+    private var frozen: Boolean = false
+
     override fun incrementConnections(inetAddress: InetAddress) {
         lock.use {
             totalActiveConnections.incrementAndGet()
@@ -58,6 +61,7 @@ public class GenericChannelTrafficHandler<CP, SP, DC>(
         inetAddress: InetAddress,
         reason: Int,
     ) {
+        if (frozen) return
         lock.use {
             if (reason in disconnectionReasons.indices) {
                 val trafficCounter = getTrafficCounter(inetAddress)
@@ -71,6 +75,7 @@ public class GenericChannelTrafficHandler<CP, SP, DC>(
         opcode: Int,
         payloadSize: Int,
     ) {
+        if (frozen) return
         lock.use {
             if (opcode in clientProts.indices) {
                 val trafficCounter = getTrafficCounter(inetAddress)
@@ -84,6 +89,7 @@ public class GenericChannelTrafficHandler<CP, SP, DC>(
         opcode: Int,
         payloadSize: Int,
     ) {
+        if (frozen) return
         lock.use {
             if (opcode in serverProts.indices) {
                 val trafficCounter = getTrafficCounter(inetAddress)
@@ -97,6 +103,7 @@ public class GenericChannelTrafficHandler<CP, SP, DC>(
         opcode: Int,
         payloadSize: Int,
     ) {
+        if (frozen) return
         lock.use {
             if (opcode in serverProts.indices) {
                 val trafficCounter = getTrafficCounter(inetAddress)
@@ -109,6 +116,7 @@ public class GenericChannelTrafficHandler<CP, SP, DC>(
         inetAddress: InetAddress,
         opcode: Int,
     ) {
+        if (frozen) return
         lock.use {
             if (opcode in serverProts.indices) {
                 val trafficCounter = getTrafficCounter(inetAddress)
@@ -179,5 +187,13 @@ public class GenericChannelTrafficHandler<CP, SP, DC>(
             totalActiveConnections,
             inetAddressSnapshots,
         )
+    }
+
+    override fun freeze() {
+        this.frozen = true
+    }
+
+    override fun unfreeze() {
+        this.frozen = false
     }
 }

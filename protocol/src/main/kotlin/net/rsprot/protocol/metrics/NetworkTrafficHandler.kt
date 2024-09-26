@@ -21,4 +21,8 @@ public interface NetworkTrafficHandler<in LoginBlock> {
     public fun snapshot(): NetworkTrafficSnapshot
 
     public fun resetTransient(): NetworkTrafficSnapshot
+
+    public fun freeze()
+
+    public fun unfreeze()
 }

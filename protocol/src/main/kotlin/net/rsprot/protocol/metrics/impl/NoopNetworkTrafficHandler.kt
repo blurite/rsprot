@@ -29,4 +29,10 @@ public data object NoopNetworkTrafficHandler : NetworkTrafficHandler<Any?> {
     override fun snapshot(): NetworkTrafficSnapshot = NoopNetworkTrafficSnapshot
 
     override fun resetTransient(): NetworkTrafficSnapshot = NoopNetworkTrafficSnapshot
+
+    override fun freeze() {
+    }
+
+    override fun unfreeze() {
+    }
 }

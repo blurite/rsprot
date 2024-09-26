@@ -24,6 +24,9 @@ public class GenericNetworkTrafficHandler<LoginBlock>(
     private var connections: AtomicInteger = AtomicInteger(0)
     private var loginBlocks: MutableMap<InetAddress, Queue<LoginBlock>> = ConcurrentHashMap()
 
+    @Volatile
+    private var frozen: Boolean = false
+
     override fun incrementConnections() {
         connections.incrementAndGet()
     }
@@ -32,6 +35,7 @@ public class GenericNetworkTrafficHandler<LoginBlock>(
         inetAddress: InetAddress,
         block: LoginBlock,
     ) {
+        if (frozen) return
         val queue =
             loginBlocks.computeIfAbsent(inetAddress) {
                 ConcurrentLinkedQueue()
@@ -81,5 +85,19 @@ public class GenericNetworkTrafficHandler<LoginBlock>(
             js5ChannelTrafficHandler.resetTransient(),
             gameChannelTrafficHandler.resetTransient(),
         )
+    }
+
+    override fun freeze() {
+        this.frozen = true
+        this.loginChannelTrafficHandler.freeze()
+        this.js5ChannelTrafficHandler.freeze()
+        this.gameChannelTrafficHandler.freeze()
+    }
+
+    override fun unfreeze() {
+        this.frozen = false
+        this.loginChannelTrafficHandler.unfreeze()
+        this.js5ChannelTrafficHandler.unfreeze()
+        this.gameChannelTrafficHandler.unfreeze()
     }
 }
