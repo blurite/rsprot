@@ -1,17 +1,20 @@
 package net.rsprot.protocol.api
 
 import com.github.michaelbull.logging.InlineLogger
-import io.netty.buffer.ByteBufHolder
 import io.netty.channel.ChannelHandlerContext
+import io.netty.util.ReferenceCountUtil
 import net.rsprot.protocol.ServerProtCategory
 import net.rsprot.protocol.api.channel.inetAddress
+import net.rsprot.protocol.api.game.GameDisconnectionReason
 import net.rsprot.protocol.api.game.GameMessageDecoder
 import net.rsprot.protocol.api.logging.networkLog
+import net.rsprot.protocol.api.metrics.addDisconnectionReason
 import net.rsprot.protocol.game.outgoing.GameServerProtCategory
 import net.rsprot.protocol.loginprot.incoming.util.LoginBlock
 import net.rsprot.protocol.message.IncomingGameMessage
 import net.rsprot.protocol.message.OutgoingGameMessage
 import net.rsprot.protocol.message.codec.incoming.MessageConsumer
+import net.rsprot.protocol.metrics.NetworkTrafficMonitor
 import java.net.InetAddress
 import java.util.Queue
 
@@ -41,6 +44,7 @@ import java.util.Queue
  */
 @Suppress("MemberVisibilityCanBePrivate")
 public class Session<R>(
+    private val trafficMonitor: NetworkTrafficMonitor<*>,
     public val ctx: ChannelHandlerContext,
     private val incomingMessageQueue: Queue<IncomingGameMessage>,
     outgoingMessageQueueProvider: MessageQueueProvider<OutgoingGameMessage>,
@@ -57,6 +61,9 @@ public class Session<R>(
     public val inetAddress: InetAddress = ctx.inetAddress()
     internal var disconnectionHook: Runnable? = null
         private set
+
+    @Volatile
+    private var channelStatus: ChannelStatus = ChannelStatus.OPEN
 
     /**
      * Queues a game message to be written to the client based on the message's defined
@@ -77,6 +84,7 @@ public class Session<R>(
         message: OutgoingGameMessage,
         category: ServerProtCategory,
     ) {
+        if (this.channelStatus != ChannelStatus.OPEN) return
         val categoryId = category.id
         val queue = outgoingMessageQueues[categoryId]
         queue += message
@@ -96,6 +104,7 @@ public class Session<R>(
      * log the player out earlier if no packets are received over a number of cycles.
      */
     public fun processIncomingPackets(receiver: R): Int {
+        if (this.channelStatus != ChannelStatus.OPEN) return 0
         var count = 0
         while (true) {
             val packet = pollIncomingMessage() ?: break
@@ -141,6 +150,17 @@ public class Session<R>(
     }
 
     /**
+     * Requests the channel to be closed once there's nothing more to write out, and the
+     * channel has been flushed.
+     */
+    public fun requestClose() {
+        if (this.channelStatus != ChannelStatus.OPEN) {
+            return
+        }
+        this.channelStatus = ChannelStatus.CLOSING
+    }
+
+    /**
      * Polls one incoming game message from the queue, or null if none exists.
      */
     private fun pollIncomingMessage(): IncomingGameMessage? = incomingMessageQueue.poll()
@@ -163,7 +183,8 @@ public class Session<R>(
      * from the netty event loop, thus the check inside it.
      */
     public fun flush() {
-        if (!ctx.channel().isActive ||
+        if (this.channelStatus == ChannelStatus.CLOSED ||
+            !ctx.channel().isActive ||
             outgoingMessageQueues.all(Queue<OutgoingGameMessage>::isEmpty)
         ) {
             return
@@ -179,7 +200,7 @@ public class Session<R>(
     }
 
     /**
-     * Clears all the remaining outgoing messages, releasing any buffers that were wrapped
+     * Clears all the remaining incoming and outgoing messages, releasing any buffers that were wrapped
      * in a byte buffer holder.
      * This function should be called on logout and whenever a reconnection happens, in order
      * to get rid of any messages that got written to the session, but couldn't be flushed
@@ -188,12 +209,14 @@ public class Session<R>(
     public fun clear() {
         for (queue in outgoingMessageQueues) {
             for (message in queue) {
-                if (message is ByteBufHolder) {
-                    message.release()
-                }
+                ReferenceCountUtil.safeRelease(message)
             }
             queue.clear()
         }
+        for (message in incomingMessageQueue) {
+            ReferenceCountUtil.safeRelease(message)
+        }
+        incomingMessageQueue.clear()
     }
 
     /**
@@ -219,6 +242,21 @@ public class Session<R>(
             }
         }
         channel.flush()
+        if (this.channelStatus == ChannelStatus.CLOSING) {
+            this.channelStatus = ChannelStatus.CLOSED
+            trafficMonitor
+                .gameChannelTrafficMonitor
+                .addDisconnectionReason(
+                    ctx.inetAddress(),
+                    GameDisconnectionReason.LOGOUT,
+                )
+            channel.close()
+            clear()
+            networkLog(logger) {
+                "Flushed outgoing game packets to channel '${ctx.channel()}', closing channel."
+            }
+            return
+        }
         networkLog(logger) {
             val leftoverPackets = outgoingMessageQueues.sumOf(Queue<OutgoingGameMessage>::size)
             if (leftoverPackets > 0) {
@@ -270,6 +308,7 @@ public class Session<R>(
      * Adds an incoming message to the incoming message queue
      */
     internal fun addIncomingMessage(incomingGameMessage: IncomingGameMessage) {
+        if (this.channelStatus != ChannelStatus.OPEN) return
         incomingMessageQueue += incomingGameMessage
     }
 
@@ -278,6 +317,7 @@ public class Session<R>(
      * based on the message's category.
      */
     internal fun incrementCounter(incomingGameMessage: IncomingGameMessage) {
+        if (this.channelStatus != ChannelStatus.OPEN) return
         counter.increment(incomingGameMessage.category)
     }
 
@@ -286,6 +326,12 @@ public class Session<R>(
      * no more packets should be decoded.
      */
     internal fun isFull(): Boolean = counter.isFull()
+
+    private enum class ChannelStatus {
+        OPEN,
+        CLOSING,
+        CLOSED,
+    }
 
     private companion object {
         private val logger: InlineLogger = InlineLogger()

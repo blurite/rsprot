@@ -125,9 +125,17 @@ public abstract class OutgoingMessageEncoder : MessageToByteEncoder<OutgoingMess
                 return
             }
         }
+        onMessageWritten(ctx, opcode, endMarker - payloadMarker)
         out.writerIndex(startMarker)
         pSmart1Or2Enc(out, opcode)
         out.writerIndex(endMarker)
+    }
+
+    public open fun onMessageWritten(
+        ctx: ChannelHandlerContext,
+        opcode: Int,
+        payloadSize: Int,
+    ) {
     }
 
     /**

@@ -3,10 +3,8 @@ package net.rsprot.protocol.api.decoder
 import io.netty.buffer.ByteBuf
 import io.netty.channel.ChannelHandlerContext
 import io.netty.handler.codec.ByteToMessageDecoder
-import io.netty.handler.codec.DecoderException
 import net.rsprot.buffer.extensions.g1
 import net.rsprot.buffer.extensions.g2
-import net.rsprot.buffer.extensions.toJagByteBuf
 import net.rsprot.crypto.cipher.StreamCipher
 import net.rsprot.protocol.ClientProt
 import net.rsprot.protocol.Prot
@@ -104,18 +102,9 @@ public abstract class IncomingMessageDecoder : ByteToMessageDecoder() {
      * Open implementation as game messages have further count tracking and
      * more complex logic to deal with pausing the decoding.
      */
-    protected open fun decodePayload(
+    public abstract fun decodePayload(
         ctx: ChannelHandlerContext,
         input: ByteBuf,
         out: MutableList<Any>,
-    ) {
-        val payload = input.readSlice(length)
-        out += decoder.decode(payload.toJagByteBuf())
-        if (payload.isReadable) {
-            throw DecoderException(
-                "Decoder ${decoder.javaClass} did not read entire payload " +
-                    "of opcode $opcode: ${payload.readableBytes()}",
-            )
-        }
-    }
+    )
 }

@@ -8,6 +8,7 @@ import net.rsprot.protocol.api.NetworkService
 import net.rsprot.protocol.api.Session
 import net.rsprot.protocol.api.channel.inetAddress
 import net.rsprot.protocol.api.logging.networkLog
+import net.rsprot.protocol.api.metrics.addDisconnectionReason
 import net.rsprot.protocol.message.IncomingGameMessage
 
 /**
@@ -21,6 +22,17 @@ public class GameMessageHandler<R>(
         // As auto-read is false, immediately begin reading once this handler
         // has been added post-login
         ctx.read()
+        networkService
+            .trafficMonitor
+            .gameChannelTrafficMonitor
+            .incrementConnections(ctx.inetAddress())
+    }
+
+    override fun handlerRemoved(ctx: ChannelHandlerContext) {
+        networkService
+            .trafficMonitor
+            .gameChannelTrafficMonitor
+            .decrementConnections(ctx.inetAddress())
     }
 
     override fun channelActive(ctx: ChannelHandlerContext) {
@@ -79,6 +91,13 @@ public class GameMessageHandler<R>(
             .exceptionHandlers
             .channelExceptionHandler
             .exceptionCaught(ctx, cause)
+        networkService
+            .trafficMonitor
+            .gameChannelTrafficMonitor
+            .addDisconnectionReason(
+                ctx.inetAddress(),
+                GameDisconnectionReason.EXCEPTION,
+            )
     }
 
     override fun userEventTriggered(
@@ -91,6 +110,13 @@ public class GameMessageHandler<R>(
             networkLog(logger) {
                 "Login connection has gone idle, closing channel ${ctx.channel()}"
             }
+            networkService
+                .trafficMonitor
+                .gameChannelTrafficMonitor
+                .addDisconnectionReason(
+                    ctx.inetAddress(),
+                    GameDisconnectionReason.IDLE,
+                )
             ctx.close()
         }
     }

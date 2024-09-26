@@ -9,6 +9,7 @@ import net.rsprot.buffer.JagByteBuf
 import net.rsprot.protocol.api.NetworkService
 import net.rsprot.protocol.api.channel.inetAddress
 import net.rsprot.protocol.api.logging.networkLog
+import net.rsprot.protocol.api.metrics.addDisconnectionReason
 import net.rsprot.protocol.loginprot.incoming.GameLogin
 import net.rsprot.protocol.loginprot.incoming.GameReconnect
 import net.rsprot.protocol.loginprot.incoming.ProofOfWorkReply
@@ -20,6 +21,7 @@ import net.rsprot.protocol.loginprot.incoming.util.LoginBlock
 import net.rsprot.protocol.loginprot.incoming.util.LoginBlockDecodingFunction
 import net.rsprot.protocol.loginprot.outgoing.LoginResponse
 import net.rsprot.protocol.message.IncomingLoginMessage
+import net.rsprot.protocol.metrics.NetworkTrafficMonitor
 import java.text.NumberFormat
 import java.util.concurrent.CompletableFuture
 
@@ -39,6 +41,17 @@ public class LoginConnectionHandler<R>(
 
     override fun handlerAdded(ctx: ChannelHandlerContext) {
         ctx.read()
+        networkService
+            .trafficMonitor
+            .loginChannelTrafficMonitor
+            .incrementConnections(ctx.inetAddress())
+    }
+
+    override fun handlerRemoved(ctx: ChannelHandlerContext) {
+        networkService
+            .trafficMonitor
+            .loginChannelTrafficMonitor
+            .decrementConnections(ctx.inetAddress())
     }
 
     override fun channelActive(ctx: ChannelHandlerContext) {
@@ -101,13 +114,28 @@ public class LoginConnectionHandler<R>(
             is RemainingBetaArchives -> {
                 if (this.loginState != LoginState.AWAITING_BETA_RESPONSE) {
                     ctx.close()
+                    networkService
+                        .trafficMonitor
+                        .loginChannelTrafficMonitor
+                        .addDisconnectionReason(
+                            ctx.inetAddress(),
+                            LoginDisconnectionReason.CONNECTION_INVALID_STEP_AWAITING_BETA_RESPONSE,
+                        )
                     return
                 }
                 decodeLoginPacket(ctx, msg)
             }
+
             is GameLogin -> {
                 if (this.loginState != LoginState.UNINITIALIZED) {
                     ctx.close()
+                    networkService
+                        .trafficMonitor
+                        .loginChannelTrafficMonitor
+                        .addDisconnectionReason(
+                            ctx.inetAddress(),
+                            LoginDisconnectionReason.CONNECTION_INVALID_STEP_UNINITIALIZED,
+                        )
                     return
                 }
                 this.loginPacket = msg
@@ -122,6 +150,13 @@ public class LoginConnectionHandler<R>(
             is ProofOfWorkReply -> {
                 if (loginState != LoginState.REQUESTED_PROOF_OF_WORK) {
                     ctx.close()
+                    networkService
+                        .trafficMonitor
+                        .loginChannelTrafficMonitor
+                        .addDisconnectionReason(
+                            ctx.inetAddress(),
+                            LoginDisconnectionReason.CONNECTION_INVALID_STEP_REQUESTED_PROOF_OF_WORK,
+                        )
                     return
                 }
                 val pow = this.proofOfWork
@@ -132,6 +167,13 @@ public class LoginConnectionHandler<R>(
                                 "channel '${ctx.channel()}': ${msg.result}, challenge was: $pow"
                         }
                         ctx.writeAndFlush(LoginResponse.LoginFail1).addListener(ChannelFutureListener.CLOSE)
+                        networkService
+                            .trafficMonitor
+                            .loginChannelTrafficMonitor
+                            .addDisconnectionReason(
+                                ctx.inetAddress(),
+                                LoginDisconnectionReason.CONNECTION_PROOF_OF_WORK_FAILED,
+                            )
                         return@handle
                     }
                     if (exception != null) {
@@ -140,6 +182,13 @@ public class LoginConnectionHandler<R>(
                                 "from channel '${ctx.channel()}': $exception"
                         }
                         ctx.writeAndFlush(LoginResponse.LoginFail1).addListener(ChannelFutureListener.CLOSE)
+                        networkService
+                            .trafficMonitor
+                            .loginChannelTrafficMonitor
+                            .addDisconnectionReason(
+                                ctx.inetAddress(),
+                                LoginDisconnectionReason.CONNECTION_PROOF_OF_WORK_EXCEPTION,
+                            )
                     }
                     networkLog(logger) {
                         "Correct proof of work response received from channel '${ctx.channel()}': ${msg.result}"
@@ -147,6 +196,7 @@ public class LoginConnectionHandler<R>(
                     continueLogin(ctx)
                 }
             }
+
             else -> {
                 throw IllegalStateException("Unknown login connection handler")
             }
@@ -168,6 +218,13 @@ public class LoginConnectionHandler<R>(
                     networkLog(logger) {
                         "Failed to write a successful proof of work request to channel ${ctx.channel()}"
                     }
+                    networkService
+                        .trafficMonitor
+                        .loginChannelTrafficMonitor
+                        .addDisconnectionReason(
+                            ctx.inetAddress(),
+                            LoginDisconnectionReason.CONNECTION_PROOF_OF_WORK_EXCEPTION,
+                        )
                     future.channel().pipeline().fireExceptionCaught(future.cause())
                     future.channel().close()
                     return@ChannelFutureListener
@@ -215,6 +272,13 @@ public class LoginConnectionHandler<R>(
             .exceptionHandlers
             .channelExceptionHandler
             .exceptionCaught(ctx, cause)
+        networkService
+            .trafficMonitor
+            .loginChannelTrafficMonitor
+            .addDisconnectionReason(
+                ctx.inetAddress(),
+                LoginDisconnectionReason.CONNECTION_EXCEPTION,
+            )
     }
 
     override fun userEventTriggered(
@@ -225,6 +289,13 @@ public class LoginConnectionHandler<R>(
             networkLog(logger) {
                 "Login connection has gone idle, closing channel ${ctx.channel()}"
             }
+            networkService
+                .trafficMonitor
+                .loginChannelTrafficMonitor
+                .addDisconnectionReason(
+                    ctx.inetAddress(),
+                    LoginDisconnectionReason.CONNECTION_IDLE,
+                )
             ctx.close()
         }
     }
@@ -285,6 +356,15 @@ public class LoginConnectionHandler<R>(
                 "Successful game login from channel '${ctx.channel()}': $block"
             }
             networkService.gameConnectionHandler.onLogin(responseHandler, block)
+            try {
+                @Suppress("UNCHECKED_CAST")
+                val trafficHandler = networkService.trafficMonitor as NetworkTrafficMonitor<LoginBlock<*>>
+                trafficHandler.addLoginBlock(ctx.inetAddress(), block)
+            } catch (e: Exception) {
+                logger.error(e) {
+                    "Unexpected traffic handler error."
+                }
+            }
         }
     }
 
@@ -326,6 +406,15 @@ public class LoginConnectionHandler<R>(
                 "Successful game reconnection from channel '${ctx.channel()}': $block"
             }
             networkService.gameConnectionHandler.onReconnect(responseHandler, block)
+            try {
+                @Suppress("UNCHECKED_CAST")
+                val trafficHandler = networkService.trafficMonitor as NetworkTrafficMonitor<LoginBlock<*>>
+                trafficHandler.addLoginBlock(ctx.inetAddress(), block)
+            } catch (e: Exception) {
+                logger.error(e) {
+                    "Unexpected traffic handler error."
+                }
+            }
         }
     }
 

@@ -3,8 +3,11 @@ package net.rsprot.protocol.api.js5
 import com.github.michaelbull.logging.InlineLogger
 import io.netty.buffer.ByteBuf
 import io.netty.channel.ChannelHandlerContext
+import net.rsprot.protocol.api.NetworkService
+import net.rsprot.protocol.api.channel.inetAddress
 import net.rsprot.protocol.api.js5.util.IntArrayDeque
 import net.rsprot.protocol.api.logging.js5Log
+import net.rsprot.protocol.common.js5.outgoing.prot.Js5ServerProt
 import net.rsprot.protocol.js5.incoming.Js5GroupRequest
 import net.rsprot.protocol.js5.incoming.UrgentRequest
 import net.rsprot.protocol.js5.outgoing.Js5GroupResponse
@@ -50,6 +53,7 @@ public class Js5Client(
      * @return a group response to write to the client, or null if none exists
      */
     public fun getNextBlock(
+        networkService: NetworkService<*>,
         provider: Js5GroupProvider,
         blockLength: Int,
     ): Js5GroupResponse? {
@@ -70,6 +74,10 @@ public class Js5Client(
                 throw RuntimeException("Failed to respond to request $archiveId:$groupId", t)
             }
             currentRequest.set(block)
+            networkService
+                .trafficMonitor
+                .js5ChannelTrafficMonitor
+                .incrementOutgoingPacketOpcode(ctx.inetAddress(), Js5ServerProt.JS5_GROUP_RESPONSE.opcode)
         }
         val progress = currentRequest.progress
         val length = currentRequest.getNextBlockLengthAndIncrementProgress(blockLength)

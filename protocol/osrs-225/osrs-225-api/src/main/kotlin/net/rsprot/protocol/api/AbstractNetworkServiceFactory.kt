@@ -6,17 +6,35 @@ import io.netty.buffer.PooledByteBufAllocator
 import net.rsprot.compression.provider.HuffmanCodecProvider
 import net.rsprot.crypto.rsa.RsaKeyPair
 import net.rsprot.protocol.api.bootstrap.BootstrapBuilder
+import net.rsprot.protocol.api.game.GameDisconnectionReason
 import net.rsprot.protocol.api.handlers.ExceptionHandlers
 import net.rsprot.protocol.api.handlers.GameMessageHandlers
 import net.rsprot.protocol.api.handlers.INetAddressHandlers
 import net.rsprot.protocol.api.handlers.LoginHandlers
 import net.rsprot.protocol.api.js5.Js5Configuration
+import net.rsprot.protocol.api.js5.Js5DisconnectionReason
 import net.rsprot.protocol.api.js5.Js5GroupProvider
+import net.rsprot.protocol.api.login.LoginDisconnectionReason
 import net.rsprot.protocol.api.suppliers.NpcInfoSupplier
 import net.rsprot.protocol.api.suppliers.PlayerInfoSupplier
 import net.rsprot.protocol.api.suppliers.WorldEntityInfoSupplier
 import net.rsprot.protocol.common.client.OldSchoolClientType
+import net.rsprot.protocol.common.js5.incoming.prot.Js5ClientProt
+import net.rsprot.protocol.common.js5.outgoing.prot.Js5ServerProt
+import net.rsprot.protocol.common.loginprot.incoming.prot.LoginClientProt
+import net.rsprot.protocol.common.loginprot.outgoing.prot.LoginServerProt
+import net.rsprot.protocol.game.incoming.prot.GameClientProt
+import net.rsprot.protocol.game.outgoing.prot.GameServerProt
+import net.rsprot.protocol.loginprot.incoming.util.LoginBlock
 import net.rsprot.protocol.message.codec.incoming.provider.GameMessageConsumerRepositoryProvider
+import net.rsprot.protocol.metrics.NetworkTrafficMonitor
+import net.rsprot.protocol.metrics.channel.impl.ConcurrentChannelTrafficMonitor
+import net.rsprot.protocol.metrics.channel.impl.GameChannelTrafficMonitor
+import net.rsprot.protocol.metrics.channel.impl.Js5ChannelTrafficMonitor
+import net.rsprot.protocol.metrics.channel.impl.LoginChannelTrafficMonitor
+import net.rsprot.protocol.metrics.impl.ConcurrentNetworkTrafficMonitor
+import net.rsprot.protocol.metrics.impl.NoopNetworkTrafficMonitor
+import net.rsprot.protocol.metrics.lock.TrafficMonitorLock
 
 /**
  * The abstract network service factory is used to build the network service that is used
@@ -248,6 +266,15 @@ public abstract class AbstractNetworkServiceFactory<R> {
     public open fun getLoginHandlers(): LoginHandlers = LoginHandlers()
 
     /**
+     * Gets the network traffic monitor which is responsible for tracking any incoming
+     * and outgoing packets, connections and more.
+     * The default is a [NoopNetworkTrafficMonitor] which does not store or track anything,
+     * but a [net.rsprot.protocol.metrics.impl.ConcurrentNetworkTrafficMonitor] can be used
+     * to enable tracking. Custom implementations are additionally also possible.
+     */
+    public open fun getNetworkTrafficMonitor(): NetworkTrafficMonitor<*> = NoopNetworkTrafficMonitor
+
+    /**
      * Builds a network service through this factoring, using all
      * the information provided in here.
      */
@@ -279,9 +306,58 @@ public abstract class AbstractNetworkServiceFactory<R> {
             getLoginHandlers(),
             huffman,
             getGameMessageConsumerRepositoryProvider(),
+            getNetworkTrafficMonitor(),
             getRsaKeyPair(),
             getJs5Configuration(),
             getJs5GroupProvider(),
+        )
+    }
+
+    public fun buildNetworkTrafficMonitor(): ConcurrentNetworkTrafficMonitor<LoginBlock<*>> {
+        val loginClientProts = enumValues<LoginClientProt>()
+        val loginServerProts = enumValues<LoginServerProt>()
+        val loginDisconnectionReasons = enumValues<LoginDisconnectionReason>()
+        val js5ClientProts = enumValues<Js5ClientProt>()
+        val js5ServerProts = enumValues<Js5ServerProt>()
+        val js5DisconnectionReasons = enumValues<Js5DisconnectionReason>()
+        val gameClientProts = enumValues<GameClientProt>()
+        val gameServerProts = enumValues<GameServerProt>()
+        val gameDisconnectionReasons = enumValues<GameDisconnectionReason>()
+
+        val lock = TrafficMonitorLock()
+        val loginChannelTrafficHandler =
+            LoginChannelTrafficMonitor(
+                ConcurrentChannelTrafficMonitor(
+                    lock,
+                    loginClientProts,
+                    loginServerProts,
+                    loginDisconnectionReasons,
+                ),
+            )
+        val js5ChannelTrafficHandler =
+            Js5ChannelTrafficMonitor(
+                ConcurrentChannelTrafficMonitor(
+                    lock,
+                    js5ClientProts,
+                    js5ServerProts,
+                    js5DisconnectionReasons,
+                ),
+            )
+        val gameChannelTrafficHandler =
+            GameChannelTrafficMonitor(
+                ConcurrentChannelTrafficMonitor(
+                    lock,
+                    gameClientProts,
+                    gameServerProts,
+                    gameDisconnectionReasons,
+                ),
+            )
+
+        return ConcurrentNetworkTrafficMonitor<LoginBlock<*>>(
+            lock,
+            loginChannelTrafficHandler,
+            js5ChannelTrafficHandler,
+            gameChannelTrafficHandler,
         )
     }
 

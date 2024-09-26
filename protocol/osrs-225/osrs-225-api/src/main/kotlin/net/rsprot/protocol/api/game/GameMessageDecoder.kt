@@ -9,6 +9,7 @@ import net.rsprot.crypto.cipher.StreamCipher
 import net.rsprot.protocol.ClientProt
 import net.rsprot.protocol.api.NetworkService
 import net.rsprot.protocol.api.Session
+import net.rsprot.protocol.api.channel.inetAddress
 import net.rsprot.protocol.api.decoder.IncomingMessageDecoder
 import net.rsprot.protocol.api.logging.networkLog
 import net.rsprot.protocol.common.client.OldSchoolClientType
@@ -44,6 +45,10 @@ public class GameMessageDecoder<R>(
                     "$length > $SINGLE_PACKET_MAX_ACCEPTED_LENGTH",
             )
         }
+        networkService
+            .trafficMonitor
+            .gameChannelTrafficMonitor
+            .incrementIncomingPackets(ctx.inetAddress(), opcode, length)
         val messageClass = decoders.getMessageClass(this.decoder.javaClass)
         val consumerRepository = networkService.gameMessageConsumerRepositoryProvider.provide()
         val consumer = consumerRepository.consumers[messageClass]

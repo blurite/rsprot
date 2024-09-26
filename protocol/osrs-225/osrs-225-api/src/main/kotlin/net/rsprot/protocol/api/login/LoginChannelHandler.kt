@@ -13,6 +13,7 @@ import net.rsprot.protocol.api.js5.Js5ChannelHandler
 import net.rsprot.protocol.api.js5.Js5MessageDecoder
 import net.rsprot.protocol.api.js5.Js5MessageEncoder
 import net.rsprot.protocol.api.logging.networkLog
+import net.rsprot.protocol.api.metrics.addDisconnectionReason
 import net.rsprot.protocol.loginprot.incoming.InitGameConnection
 import net.rsprot.protocol.loginprot.incoming.InitJs5RemoteConnection
 import net.rsprot.protocol.loginprot.outgoing.LoginResponse
@@ -28,6 +29,20 @@ import java.util.concurrent.TimeUnit
 public class LoginChannelHandler(
     public val networkService: NetworkService<*>,
 ) : SimpleChannelInboundHandler<IncomingLoginMessage>(IncomingLoginMessage::class.java) {
+    override fun handlerAdded(ctx: ChannelHandlerContext) {
+        networkService
+            .trafficMonitor
+            .loginChannelTrafficMonitor
+            .incrementConnections(ctx.inetAddress())
+    }
+
+    override fun handlerRemoved(ctx: ChannelHandlerContext) {
+        networkService
+            .trafficMonitor
+            .loginChannelTrafficMonitor
+            .decrementConnections(ctx.inetAddress())
+    }
+
     override fun channelActive(ctx: ChannelHandlerContext) {
         ctx.read()
         networkLog(logger) {
@@ -51,6 +66,13 @@ public class LoginChannelHandler(
             }
             // TODO: Unknown, SSL web
             else -> {
+                networkService
+                    .trafficMonitor
+                    .loginChannelTrafficMonitor
+                    .addDisconnectionReason(
+                        ctx.inetAddress(),
+                        LoginDisconnectionReason.CHANNEL_UNKNOWN_PACKET,
+                    )
                 throw IllegalStateException("Unknown login channel message: $msg")
             }
         }
@@ -75,6 +97,13 @@ public class LoginChannelHandler(
             ctx
                 .write(LoginResponse.TooManyAttempts)
                 .addListener(ChannelFutureListener.CLOSE)
+            networkService
+                .trafficMonitor
+                .loginChannelTrafficMonitor
+                .addDisconnectionReason(
+                    ctx.inetAddress(),
+                    LoginDisconnectionReason.CHANNEL_IP_LIMIT,
+                )
             return
         }
         val sessionId =
@@ -131,6 +160,13 @@ public class LoginChannelHandler(
             networkLog(logger) {
                 "Invalid JS5 revision received from channel '${ctx.channel()}': $revision"
             }
+            networkService
+                .trafficMonitor
+                .loginChannelTrafficMonitor
+                .addDisconnectionReason(
+                    ctx.inetAddress(),
+                    LoginDisconnectionReason.CHANNEL_OUT_OF_DATE,
+                )
             ctx
                 .write(LoginResponse.ClientOutOfDate)
                 .addListener(ChannelFutureListener.CLOSE)
@@ -154,6 +190,13 @@ public class LoginChannelHandler(
             ctx
                 .write(LoginResponse.IPLimit)
                 .addListener(ChannelFutureListener.CLOSE)
+            networkService
+                .trafficMonitor
+                .loginChannelTrafficMonitor
+                .addDisconnectionReason(
+                    ctx.inetAddress(),
+                    LoginDisconnectionReason.CHANNEL_IP_LIMIT,
+                )
             return
         }
         ctx
@@ -208,6 +251,13 @@ public class LoginChannelHandler(
             .exceptionHandlers
             .channelExceptionHandler
             .exceptionCaught(ctx, cause)
+        networkService
+            .trafficMonitor
+            .loginChannelTrafficMonitor
+            .addDisconnectionReason(
+                ctx.inetAddress(),
+                LoginDisconnectionReason.CHANNEL_EXCEPTION,
+            )
     }
 
     override fun userEventTriggered(
@@ -218,6 +268,13 @@ public class LoginChannelHandler(
             networkLog(logger) {
                 "Login channel has gone idle, closing channel ${ctx.channel()}"
             }
+            networkService
+                .trafficMonitor
+                .loginChannelTrafficMonitor
+                .addDisconnectionReason(
+                    ctx.inetAddress(),
+                    LoginDisconnectionReason.CHANNEL_IDLE,
+                )
             ctx.close()
         }
     }

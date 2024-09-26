@@ -6,7 +6,9 @@ import net.rsprot.buffer.extensions.toJagByteBuf
 import net.rsprot.crypto.cipher.NopStreamCipher
 import net.rsprot.crypto.cipher.StreamCipher
 import net.rsprot.protocol.api.NetworkService
+import net.rsprot.protocol.api.channel.inetAddress
 import net.rsprot.protocol.api.encoder.OutgoingMessageEncoder
+import net.rsprot.protocol.common.js5.outgoing.prot.Js5ServerProt
 import net.rsprot.protocol.message.OutgoingMessage
 import net.rsprot.protocol.message.codec.outgoing.MessageEncoderRepository
 
@@ -28,11 +30,17 @@ public class Js5MessageEncoder(
     ) {
         // Unlike all the other encoders, JS5 does not use any opcode system
         // It simply just writes the request ids followed by the payload itself.
+        val writerIndex = out.writerIndex()
         val encoder = repository.getEncoder(msg::class.java)
         encoder.encode(
             cipher,
             out.toJagByteBuf(),
             msg,
         )
+        val writtenBytes = out.writerIndex() - writerIndex
+        networkService
+            .trafficMonitor
+            .js5ChannelTrafficMonitor
+            .incrementOutgoingPacketPayload(ctx.inetAddress(), Js5ServerProt.JS5_GROUP_RESPONSE.opcode, writtenBytes)
     }
 }

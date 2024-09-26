@@ -8,6 +8,7 @@ import net.rsprot.protocol.api.NetworkService
 import net.rsprot.protocol.api.channel.inetAddress
 import net.rsprot.protocol.api.logging.js5Log
 import net.rsprot.protocol.api.logging.networkLog
+import net.rsprot.protocol.api.metrics.addDisconnectionReason
 import net.rsprot.protocol.js5.incoming.Js5GroupRequest
 import net.rsprot.protocol.js5.incoming.PriorityChangeHigh
 import net.rsprot.protocol.js5.incoming.PriorityChangeLow
@@ -48,17 +49,25 @@ public class Js5ChannelHandler(
         // Instantiate the client when the handler is added, additionally read from the ctx
         client = Js5Client(ctx.read())
         service.onClientConnected(client)
+        networkService
+            .trafficMonitor
+            .loginChannelTrafficMonitor
+            .incrementConnections(ctx.inetAddress())
     }
 
     override fun handlerRemoved(ctx: ChannelHandlerContext) {
         service.onClientDisconnected(client)
+        networkService
+            .trafficMonitor
+            .loginChannelTrafficMonitor
+            .decrementConnections(ctx.inetAddress())
     }
 
     override fun channelRead0(
         ctx: ChannelHandlerContext,
         msg: IncomingJs5Message,
     ) {
-        // Directly handle all the possible message types in a descending order of
+        // Directly handle all the possible message types in descending order of
         // probability of being sent
         when (msg) {
             is Js5GroupRequest -> {
@@ -92,7 +101,9 @@ public class Js5ChannelHandler(
                     service.readIfNotFull(client)
                 }
             }
-            else -> throw IllegalStateException("Unknown JS5 message: $msg")
+            else -> {
+                throw IllegalStateException("Unknown JS5 message: $msg")
+            }
         }
     }
 
@@ -118,6 +129,13 @@ public class Js5ChannelHandler(
             .exceptionHandlers
             .channelExceptionHandler
             .exceptionCaught(ctx, cause)
+        networkService
+            .trafficMonitor
+            .js5ChannelTrafficMonitor
+            .addDisconnectionReason(
+                ctx.inetAddress(),
+                Js5DisconnectionReason.EXCEPTION,
+            )
     }
 
     override fun userEventTriggered(
@@ -129,6 +147,13 @@ public class Js5ChannelHandler(
             networkLog(logger) {
                 "JS5 channel has gone idle, closing channel ${ctx.channel()}"
             }
+            networkService
+                .trafficMonitor
+                .js5ChannelTrafficMonitor
+                .addDisconnectionReason(
+                    ctx.inetAddress(),
+                    Js5DisconnectionReason.IDLE,
+                )
             ctx.close()
         }
     }
