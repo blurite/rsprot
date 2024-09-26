@@ -21,7 +21,6 @@ import kotlin.time.Duration.Companion.milliseconds
  * @property endDateTime the local datetime when the snapshot was captured.
  * @property activeConnectionsByAddress the active connections at the time of capturing the snapshot,
  * organized per [InetAddress].
- * @property totalActiveConnections the number of total active connections.
  * @property inetAddressSnapshots the snapshots per [InetAddress], containing any
  * packet traffic, disconnection reasons and more.
  * @property elapsedMillis the number of milliseconds that this snapshot covers.
@@ -31,7 +30,6 @@ public class ConcurrentChannelTrafficSnapshot<CP, SP, DC>(
     public val startDateTime: LocalDateTime,
     public val endDateTime: LocalDateTime,
     public val activeConnectionsByAddress: Map<InetAddress, Int>,
-    public val totalActiveConnections: Int,
     public val inetAddressSnapshots: Map<InetAddress, InetAddressSnapshot<CP, SP, DC>>,
 ) : ChannelTrafficSnapshot where CP : ClientProt, CP : Enum<CP>, SP : ServerProt, SP : Enum<SP>, DC : Enum<DC> {
     public val elapsedMillis: Long
@@ -48,7 +46,6 @@ public class ConcurrentChannelTrafficSnapshot<CP, SP, DC>(
         if (startDateTime != other.startDateTime) return false
         if (endDateTime != other.endDateTime) return false
         if (activeConnectionsByAddress != other.activeConnectionsByAddress) return false
-        if (totalActiveConnections != other.totalActiveConnections) return false
         if (inetAddressSnapshots != other.inetAddressSnapshots) return false
 
         return true
@@ -58,7 +55,6 @@ public class ConcurrentChannelTrafficSnapshot<CP, SP, DC>(
         var result = startDateTime.hashCode()
         result = 31 * result + endDateTime.hashCode()
         result = 31 * result + activeConnectionsByAddress.hashCode()
-        result = 31 * result + totalActiveConnections
         result = 31 * result + inetAddressSnapshots.hashCode()
         return result
     }
@@ -68,7 +64,6 @@ public class ConcurrentChannelTrafficSnapshot<CP, SP, DC>(
             "startDateTime=$startDateTime, " +
             "endDateTime=$endDateTime, " +
             "activeConnectionsByAddress=$activeConnectionsByAddress, " +
-            "totalActiveConnections=$totalActiveConnections, " +
             "inetAddressSnapshots=$inetAddressSnapshots" +
             ")"
 }

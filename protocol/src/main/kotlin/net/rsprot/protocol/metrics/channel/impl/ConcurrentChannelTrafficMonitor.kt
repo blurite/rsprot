@@ -10,7 +10,6 @@ import java.net.InetAddress
 import java.time.LocalDateTime
 import java.time.temporal.ChronoUnit
 import java.util.concurrent.ConcurrentHashMap
-import java.util.concurrent.atomic.AtomicInteger
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
 
@@ -24,7 +23,6 @@ import kotlin.time.Duration.Companion.milliseconds
  * @property startDateTime the local datetime when this traffic monitor began tracking,
  * or was last reset.
  * @property activeConnectionsByAddress the active connections established per [InetAddress] basis.
- * @property totalActiveConnections the total active connections established.
  * @property inetAddressTrafficCounters the traffic counters per [InetAddress], tracking various
  * packets and disconnection reasons at a finer level.
  * @property frozen whether the transient properties are frozen, meaning any changes to them
@@ -38,7 +36,6 @@ public class ConcurrentChannelTrafficMonitor<CP, SP, DC>(
     private var startDateTime: LocalDateTime = LocalDateTime.now(),
 ) : ChannelTrafficMonitor where CP : ClientProt, CP : Enum<CP>, SP : ServerProt, SP : Enum<SP>, DC : Enum<DC> {
     private val activeConnectionsByAddress: MutableMap<InetAddress, Int> = ConcurrentHashMap()
-    private val totalActiveConnections: AtomicInteger = AtomicInteger(0)
     private var inetAddressTrafficCounters: MutableMap<InetAddress, InetAddressTrafficCounter<CP, SP, DC>> =
         ConcurrentHashMap()
 
@@ -47,7 +44,6 @@ public class ConcurrentChannelTrafficMonitor<CP, SP, DC>(
 
     override fun incrementConnections(inetAddress: InetAddress) {
         lock.use {
-            totalActiveConnections.incrementAndGet()
             activeConnectionsByAddress.compute(inetAddress) { _, v ->
                 (v ?: 0) + 1
             }
@@ -56,7 +52,6 @@ public class ConcurrentChannelTrafficMonitor<CP, SP, DC>(
 
     override fun decrementConnections(inetAddress: InetAddress) {
         lock.use {
-            totalActiveConnections.decrementAndGet()
             activeConnectionsByAddress.compute(inetAddress) { _, v ->
                 val result = (v ?: 0) - 1
                 return@compute if (result <= 0) null else result
@@ -154,7 +149,6 @@ public class ConcurrentChannelTrafficMonitor<CP, SP, DC>(
         lock.use {
             val now = LocalDateTime.now()
             val activeConnectionsByAddress: Map<InetAddress, Int> = this.activeConnectionsByAddress.toMap()
-            val totalActiveConnections: Int = this.totalActiveConnections.get()
             val inetAddressTrafficCounters: Map<InetAddress, InetAddressTrafficCounter<CP, SP, DC>> =
                 this
                     .inetAddressTrafficCounters
@@ -167,7 +161,6 @@ public class ConcurrentChannelTrafficMonitor<CP, SP, DC>(
                 this.startDateTime,
                 now,
                 activeConnectionsByAddress,
-                totalActiveConnections,
                 inetAddressSnapshots,
             )
         }
@@ -177,7 +170,6 @@ public class ConcurrentChannelTrafficMonitor<CP, SP, DC>(
         var oldStart: LocalDateTime
         var newStart: LocalDateTime
         var activeConnectionsByAddress: Map<InetAddress, Int>
-        var totalActiveConnections: Int
         var inetAddressTrafficCounters: Map<InetAddress, InetAddressTrafficCounter<CP, SP, DC>>
         // Synchronize during the reallocation to ensure _some_ kind of consistency
         // This won't be perfect, but it should avoid most cases of inconsistency
@@ -186,7 +178,6 @@ public class ConcurrentChannelTrafficMonitor<CP, SP, DC>(
         lock.transfer {
             oldStart = this.startDateTime
             activeConnectionsByAddress = this.activeConnectionsByAddress.toMap()
-            totalActiveConnections = this.totalActiveConnections.get()
             inetAddressTrafficCounters = this.inetAddressTrafficCounters.toMap()
             newStart = LocalDateTime.now()
             this.startDateTime = newStart
@@ -200,7 +191,6 @@ public class ConcurrentChannelTrafficMonitor<CP, SP, DC>(
             oldStart,
             newStart,
             activeConnectionsByAddress,
-            totalActiveConnections,
             inetAddressSnapshots,
         )
     }
