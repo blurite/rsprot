@@ -202,6 +202,7 @@ public class GameLoginResponseHandler<R>(
                 .provide()
         val session =
             Session(
+                networkService.trafficHandler,
                 ctx,
                 networkService
                     .gameMessageHandlers
