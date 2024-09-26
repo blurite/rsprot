@@ -8,6 +8,24 @@ import java.time.temporal.ChronoUnit
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
 
+/**
+ * The concurrent network traffic snapshot is a result of calling the
+ * [net.rsprot.protocol.metrics.impl.ConcurrentNetworkTrafficHandler.snapshot] function.
+ * This data structure tracks any network traffic that occurred during a specific time period.
+ * Note that the [net.rsprot.protocol.metrics.NetworkTrafficHandler.freeze] is ignored when
+ * it comes to the snapshots, no information is provided regarding the freeze periods.
+ *
+ * @property startDateTime the local datetime when the tracking began.
+ * @property endDateTime the local datetime when the snapshot was captured.
+ * @property connectionRequests the number of connection requests that were received.
+ * @property loginBlocks the complete login blocks that were received from each [InetAddress],
+ * in the order that they were received.
+ * @property loginSnapshot a snapshot of the login channel's traffic.
+ * @property js5Snapshot a snapshot of the JS5 channel's traffic.
+ * @property gameSnapshot a snapshot of the game channel's traffic.
+ * @property elapsedMillis the number of milliseconds that this snapshot covers.
+ * @property elapsed the duration that this snapshot covers.
+ */
 public class ConcurrentNetworkTrafficSnapshot<LoginBlock>(
     public val startDateTime: LocalDateTime,
     public val endDateTime: LocalDateTime,

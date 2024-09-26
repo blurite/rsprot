@@ -14,6 +14,22 @@ import java.util.concurrent.atomic.AtomicInteger
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
 
+/**
+ * A concurrent implementation of a channel's traffic handler.
+ * @property lock a traffic handler lock that is used when the [resetTransient] function is invoked,
+ * in order to ensure consistency in the data.
+ * @property clientProts an array of client prots for this channel.
+ * @property serverProts an array of server prots for this channel.
+ * @property disconnectionReasons an array of disconnection reasons for this channel.
+ * @property startDateTime the local datetime when this traffic handler began tracking,
+ * or was last reset.
+ * @property activeConnectionsByAddress the active connections established per [InetAddress] basis.
+ * @property totalActiveConnections the total active connections established.
+ * @property inetAddressTrafficCounters the traffic counters per [InetAddress], tracking various
+ * packets and disconnection reasons at a finer level.
+ * @property frozen whether the transient properties are frozen, meaning any changes to them
+ * are discarded. Anything stateful will continue to be modified.
+ */
 public class ConcurrentChannelTrafficHandler<CP, SP, DC>(
     private val lock: TrafficHandlerLock,
     private val clientProts: Array<out CP>,

@@ -14,11 +14,39 @@ import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.ConcurrentLinkedQueue
 import java.util.concurrent.atomic.AtomicInteger
 
+/**
+ * A concurrent network traffic handler, responsible for tracking all the data sent via
+ * the [loginChannelTrafficHandler], the [js5ChannelTrafficHandler] and the [gameChannelTrafficHandler].
+ * In addition to those, it will track the number of connections established, as well as any
+ * login complete login blocks that reach the server, based on the respective [InetAddress]
+ * behind the login blocks. Latter can be used to link any abnormalities to specific individuals.
+ *
+ * While this implementation is _mostly_ atomic, it will shortly block during the [resetTransient]
+ * function call, while it assigns new instances to all the properties behind this implementation.
+ * This is only done to ensure consistency between the properties. As the blocking is extremely
+ * short-lived, it should not cause any issues.
+ *
+ * @property lock the traffic handler lock used to freeze any modifications temporarily while
+ * new instances of the properties in this class are constructed, in order to ensure consistency
+ * between the data. Any other operations in this class are based on Atomic properties,
+ * or data structured found in the [java.util.concurrent] package.
+ * @property loginChannelTrafficHandler the channel traffic handler for logins (and "handshakes",
+ * as they are commonly referred to).
+ * @property js5ChannelTrafficHandler the channel traffic handler for JS5.
+ * @property gameChannelTrafficHandler the channel traffic handler for game connections,
+ * essentially after a login request is accepted.
+ * @property startDateTime the date time when the tracking was started. Note that this property
+ * is reset to [LocalDateTime.now] whenever the [resetTransient] function is called.
+ * @property connections the number of connections that were established in total since the traffic
+ * began.
+ * @property loginBlocks the complete login blocks received per [InetAddress].
+ * @property frozen whether the tracking of [loginBlocks] is temporarily frozen.
+ */
 public class ConcurrentNetworkTrafficHandler<LoginBlock>(
     private val lock: TrafficHandlerLock,
-    override var loginChannelTrafficHandler: LoginChannelTrafficHandler,
-    override var js5ChannelTrafficHandler: Js5ChannelTrafficHandler,
-    override var gameChannelTrafficHandler: GameChannelTrafficHandler,
+    override val loginChannelTrafficHandler: LoginChannelTrafficHandler,
+    override val js5ChannelTrafficHandler: Js5ChannelTrafficHandler,
+    override val gameChannelTrafficHandler: GameChannelTrafficHandler,
     private var startDateTime: LocalDateTime = LocalDateTime.now(),
 ) : NetworkTrafficHandler<LoginBlock> {
     private var connections: AtomicInteger = AtomicInteger(0)

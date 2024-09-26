@@ -9,6 +9,10 @@ import net.rsprot.protocol.metrics.snapshots.NetworkTrafficSnapshot
 import net.rsprot.protocol.metrics.snapshots.impl.NoopNetworkTrafficSnapshot
 import java.net.InetAddress
 
+/**
+ * A no-operation implementation of a [NetworkTrafficHandler].
+ * All functions in this traffic handler lead to no operation taking place.
+ */
 public data object NoopNetworkTrafficHandler : NetworkTrafficHandler<Any?> {
     override val loginChannelTrafficHandler: LoginChannelTrafficHandler =
         LoginChannelTrafficHandler(NoopChannelTrafficHandler)

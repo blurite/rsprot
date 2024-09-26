@@ -7,6 +7,9 @@ import java.net.InetAddress
 import java.time.LocalDateTime
 import kotlin.time.Duration
 
+/**
+ * A no-op channel traffic handler. All function calls here do nothing.
+ */
 public data object NoopChannelTrafficHandler : ChannelTrafficHandler {
     override fun incrementConnections(inetAddress: InetAddress) {
     }
