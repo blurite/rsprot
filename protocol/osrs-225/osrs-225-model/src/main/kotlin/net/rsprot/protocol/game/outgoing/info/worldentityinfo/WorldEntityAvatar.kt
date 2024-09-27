@@ -6,6 +6,7 @@ import net.rsprot.buffer.extensions.p1
 import net.rsprot.buffer.extensions.p2
 import net.rsprot.protocol.common.checkCommunicationThread
 import net.rsprot.protocol.common.game.outgoing.info.CoordGrid
+import net.rsprot.protocol.common.game.outgoing.info.util.ZoneIndexStorage
 import net.rsprot.protocol.game.outgoing.info.util.Avatar
 
 /**
@@ -28,6 +29,8 @@ import net.rsprot.protocol.game.outgoing.info.util.Avatar
  *
  * @property allocator the byte buffer allocator to be used for the high resolution
  * movement buffer of this world entity.
+ * @property zoneIndexStorage the storage responsible for tracking world entities across
+ * zones.
  * @property index the index of this world entity.
  * @property sizeX the width of the world entity in zones.
  * @property sizeZ the height of the world entity in zones.
@@ -41,6 +44,7 @@ import net.rsprot.protocol.game.outgoing.info.util.Avatar
  */
 public class WorldEntityAvatar(
     internal val allocator: ByteBufAllocator,
+    internal val zoneIndexStorage: ZoneIndexStorage,
     internal var index: Int,
     internal var sizeX: Int,
     internal var sizeZ: Int,
@@ -93,7 +97,9 @@ public class WorldEntityAvatar(
         moveSpeed: Int,
     ) {
         checkCommunicationThread()
+        this.zoneIndexStorage.remove(this.index, this.currentCoord)
         this.currentCoord = CoordGrid(level, x, z)
+        this.zoneIndexStorage.add(this.index, this.currentCoord)
         this.moveSpeed = moveSpeed
     }
 

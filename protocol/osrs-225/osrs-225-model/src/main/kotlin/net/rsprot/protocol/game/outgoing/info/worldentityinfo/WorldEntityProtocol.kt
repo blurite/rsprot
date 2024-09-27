@@ -4,6 +4,7 @@ import com.github.michaelbull.logging.InlineLogger
 import io.netty.buffer.ByteBufAllocator
 import net.rsprot.protocol.common.checkCommunicationThread
 import net.rsprot.protocol.common.client.OldSchoolClientType
+import net.rsprot.protocol.common.game.outgoing.info.util.ZoneIndexStorage
 import net.rsprot.protocol.game.outgoing.info.ByteBufRecycler
 import net.rsprot.protocol.game.outgoing.info.worker.DefaultProtocolWorker
 import net.rsprot.protocol.game.outgoing.info.worker.ProtocolWorker
@@ -12,23 +13,23 @@ import java.util.concurrent.Callable
 /**
  * The world entity protocol class will track everything related to world entities.
  * @property allocator the byte buffer allocator used for world entity buffers.
- * @property indexSupplier the index supplier implementation that yields indices of
- * the world entities which are near a specific coordinate.
  * @property exceptionHandler the exception handler which will be notified whenever
  * there is an exception caught in world entity avatar pre-computation.
  * @param factory the avatar factory used to provide instances of world entity avatars.
  * @property worker the protocol worker that will be executing the computation
  * of avatar and info buffers on the thread(s) specified by the implementation.
+ * @property zoneIndexStorage the index storage responsible for tracking world entity
+ * indexes across zones.
  * @property avatarRepository the repository containing all the world entity avatars.
  * @property worldEntityInfoRepository the repository containing all the currently
  * in-use world entity info instances.
  */
 public class WorldEntityProtocol(
     private val allocator: ByteBufAllocator,
-    private val indexSupplier: WorldEntityIndexSupplier,
     private val exceptionHandler: WorldEntityAvatarExceptionHandler,
     factory: WorldEntityAvatarFactory,
     private val worker: ProtocolWorker = DefaultProtocolWorker(),
+    private val zoneIndexStorage: ZoneIndexStorage,
 ) {
     private val recycler: ByteBufRecycler = ByteBufRecycler()
     private val avatarRepository = factory.avatarRepository
@@ -39,7 +40,7 @@ public class WorldEntityProtocol(
                 allocator,
                 clientType,
                 factory.avatarRepository,
-                indexSupplier,
+                zoneIndexStorage,
                 recycler,
             )
         }
