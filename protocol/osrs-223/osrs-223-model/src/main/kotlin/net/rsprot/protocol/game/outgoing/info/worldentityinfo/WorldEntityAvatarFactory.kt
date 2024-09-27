@@ -1,6 +1,7 @@
 package net.rsprot.protocol.game.outgoing.info.worldentityinfo
 
 import io.netty.buffer.ByteBufAllocator
+import net.rsprot.protocol.common.game.outgoing.info.util.ZoneIndexStorage
 
 /**
  * An avatar factory for world entities.
@@ -11,10 +12,12 @@ import io.netty.buffer.ByteBufAllocator
  */
 public class WorldEntityAvatarFactory(
     allocator: ByteBufAllocator,
+    zoneIndexStorage: ZoneIndexStorage,
 ) {
-    public val avatarRepository: WorldEntityAvatarRepository =
+    internal val avatarRepository: WorldEntityAvatarRepository =
         WorldEntityAvatarRepository(
             allocator,
+            zoneIndexStorage,
         )
 
     /**

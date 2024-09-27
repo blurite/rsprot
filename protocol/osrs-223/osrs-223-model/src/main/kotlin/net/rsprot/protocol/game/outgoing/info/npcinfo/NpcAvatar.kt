@@ -3,6 +3,7 @@ package net.rsprot.protocol.game.outgoing.info.npcinfo
 import net.rsprot.buffer.bitbuffer.UnsafeLongBackedBitBuf
 import net.rsprot.protocol.common.game.outgoing.info.CoordGrid
 import net.rsprot.protocol.common.game.outgoing.info.npcinfo.NpcAvatarDetails
+import net.rsprot.protocol.common.game.outgoing.info.util.ZoneIndexStorage
 import net.rsprot.protocol.game.outgoing.info.npcinfo.util.NpcCellOpcodes
 import net.rsprot.protocol.game.outgoing.info.util.Avatar
 import java.util.concurrent.atomic.AtomicInteger
@@ -33,6 +34,11 @@ import java.util.concurrent.atomic.AtomicInteger
  * @param spawnCycle the game cycle on which the npc spawned into the world;
  * for static NPCs, this would always be zero. This is only used by the C++ clients.
  * @param direction the direction that the npc will face on spawn (see table above)
+ * @property extendedInfo the extended info, commonly referred to as "masks", will track everything relevant
+ * inside itself. Setting properties such as a spotanim would be done through this.
+ * The [extendedInfo] is also responsible for caching the non-temporary blocks,
+ * such as appearance and move speed.
+ * @property zoneIndexStorage the storage tracking all the allocated game NPCs based on the zones.
  */
 public class NpcAvatar internal constructor(
     index: Int,
@@ -43,13 +49,8 @@ public class NpcAvatar internal constructor(
     spawnCycle: Int = 0,
     direction: Int = 0,
     allocateCycle: Int,
-    /**
-     * Extended info repository, commonly referred to as "masks", will track everything relevant
-     * inside itself. Setting properties such as a spotanim would be done through this.
-     * The [extendedInfo] is also responsible for caching the non-temporary blocks,
-     * such as appearance and move speed.
-     */
     public val extendedInfo: NpcAvatarExtendedInfo,
+    public val zoneIndexStorage: ZoneIndexStorage,
 ) : Avatar {
     /**
      * Npc avatar details class wraps all the client properties of a NPC in its own
@@ -189,7 +190,9 @@ public class NpcAvatar internal constructor(
         z: Int,
         jump: Boolean,
     ) {
+        zoneIndexStorage.remove(details.index, details.currentCoord)
         details.currentCoord = CoordGrid(level, x, z)
+        zoneIndexStorage.add(details.index, details.currentCoord)
         details.movementType = details.movementType or (if (jump) NpcAvatarDetails.TELEJUMP else NpcAvatarDetails.TELE)
     }
 
@@ -255,7 +258,9 @@ public class NpcAvatar internal constructor(
     ) {
         val opcode = NpcCellOpcodes.singleCellMovementOpcode(deltaX, deltaZ)
         val (level, x, z) = details.currentCoord
+        zoneIndexStorage.remove(details.index, details.currentCoord)
         details.currentCoord = CoordGrid(level, x + deltaX, z + deltaZ)
+        zoneIndexStorage.add(details.index, details.currentCoord)
         when (++details.stepCount) {
             1 -> {
                 details.firstStep = opcode
