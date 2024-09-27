@@ -6,6 +6,7 @@ import net.rsprot.buffer.JagByteBuf
 import net.rsprot.buffer.extensions.toJagByteBuf
 import net.rsprot.protocol.common.client.OldSchoolClientType
 import net.rsprot.protocol.common.game.outgoing.info.CoordGrid
+import net.rsprot.protocol.common.game.outgoing.info.util.ZoneIndexStorage
 import net.rsprot.protocol.game.outgoing.info.ByteBufRecycler
 import net.rsprot.protocol.game.outgoing.info.exceptions.InfoProcessException
 import net.rsprot.protocol.game.outgoing.info.util.BuildArea
@@ -19,8 +20,8 @@ import net.rsprot.protocol.game.outgoing.info.util.ReferencePooledObject
  * @property oldSchoolClientType the client type on which the player has logged in.
  * @property avatarRepository the avatar repository keeping track of every known
  * world entity in the root world.
- * @property indexSupplier the implementation returning all the indices of the world
- * entities near the local player.
+ * @property zoneIndexStorage the storage responsible for tracking the zones in which
+ * the world entities currently lie.
  * @property renderDistance the render distance in tiles, effectively how far to render
  * world entities from the local player (or the camera pov)
  * @property currentWorldEntityId the id of the world entity on which the local player
@@ -54,13 +55,13 @@ import net.rsprot.protocol.game.outgoing.info.util.ReferencePooledObject
  * at which the world entity is being rendered on the root world. This allows the protocol
  * to still see other world entities nearby despite the player being in an instance.
  */
-@Suppress("MemberVisibilityCanBePrivate")
+@Suppress("MemberVisibilityCanBePrivate", "DuplicatedCode")
 public class WorldEntityInfo internal constructor(
     internal var localIndex: Int,
     internal val allocator: ByteBufAllocator,
     private var oldSchoolClientType: OldSchoolClientType,
     private val avatarRepository: WorldEntityAvatarRepository,
-    private val indexSupplier: WorldEntityIndexSupplier,
+    private val zoneIndexStorage: ZoneIndexStorage,
     private val recycler: ByteBufRecycler = ByteBufRecycler(),
 ) : ReferencePooledObject {
     private var renderDistance: Int = DEFAULT_RENDER_DISTANCE
@@ -314,7 +315,7 @@ public class WorldEntityInfo internal constructor(
             return
         }
         val currentWorld = this.currentWorldEntityId
-        val (level, x, z) =
+        val (level, centerX, centerZ) =
             if (currentWorld == ROOT_WORLD) {
                 this.currentCoord
             } else {
@@ -322,40 +323,44 @@ public class WorldEntityInfo internal constructor(
                 // Perhaps center coord instead?
                 worldEntity.currentCoord
             }
-        val entities =
-            indexSupplier.supply(
-                this.localIndex,
-                level,
-                x,
-                z,
-                this.renderDistance,
-            )
-        while (entities.hasNext()) {
-            val index = entities.next() and 0xFFFF
-            if (index == 0xFFFF || isHighResolution(index)) {
-                continue
+        val startX = ((centerX - renderDistance) shr 3).coerceAtLeast(0)
+        val startZ = ((centerZ - renderDistance) shr 3).coerceAtLeast(0)
+        val endX = ((centerX + renderDistance) shr 3).coerceAtMost(0x7FF)
+        val endZ = ((centerZ + renderDistance) shr 3).coerceAtMost(0x7FF)
+        for (x in startX..endX) {
+            for (z in startZ..endZ) {
+                val npcs = this.zoneIndexStorage.get(level, x, z) ?: continue
+                for (k in 0..<npcs.size) {
+                    val index = npcs[k].toInt() and WORLDENTITY_LOOKUP_TERMINATOR
+                    if (index == WORLDENTITY_LOOKUP_TERMINATOR) {
+                        break
+                    }
+                    if (isHighResolution(index)) {
+                        continue
+                    }
+                    if (this.highResolutionIndicesCount >= MAX_HIGH_RES_COUNT) {
+                        break
+                    }
+                    val avatar = avatarRepository.getOrNull(index) ?: continue
+                    // Secondary build-area distance check
+                    if (!inRange(avatar)) {
+                        continue
+                    }
+                    addedWorldEntities += index
+                    allWorldEntities += index
+                    val i = highResolutionIndicesCount++
+                    highResolutionIndices[i] = index.toShort()
+                    buffer.p2(avatar.index)
+                    buffer.p1(avatar.sizeX)
+                    buffer.p1(avatar.sizeZ)
+                    val buildAreaCoord = buildArea.localize(avatar.currentCoord)
+                    buffer.p1(buildAreaCoord.xInBuildArea)
+                    buffer.p1(buildAreaCoord.zInBuildArea)
+                    buffer.p2(avatar.angle)
+                    // The zero is a currently unassigned property on all clients
+                    buffer.p2(0)
+                }
             }
-            if (this.highResolutionIndicesCount >= MAX_HIGH_RES_COUNT) {
-                break
-            }
-            val avatar = avatarRepository.getOrNull(index) ?: continue
-            // Secondary build-area distance check
-            if (!inRange(avatar)) {
-                continue
-            }
-            addedWorldEntities += index
-            allWorldEntities += index
-            val i = highResolutionIndicesCount++
-            highResolutionIndices[i] = index.toShort()
-            buffer.p2(avatar.index)
-            buffer.p1(avatar.sizeX)
-            buffer.p1(avatar.sizeZ)
-            val buildAreaCoord = buildArea.localize(avatar.currentCoord)
-            buffer.p1(buildAreaCoord.xInBuildArea)
-            buffer.p1(buildAreaCoord.zInBuildArea)
-            buffer.p2(avatar.angle)
-            // The zero is a currently unassigned property on all clients
-            buffer.p2(0)
         }
     }
 
@@ -454,6 +459,12 @@ public class WorldEntityInfo internal constructor(
          * The index value that marks a termination for high resolution indices.
          */
         private const val INDEX_TERMINATOR: Short = -1
+
+        /**
+         * The terminator value that indicates that there are no more world entities in the
+         * corresponding zone.
+         */
+        private const val WORLDENTITY_LOOKUP_TERMINATOR: Int = 0xFFFF
 
         /**
          * The maximum number of high resolution world entities that could be sent.

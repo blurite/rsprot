@@ -2,6 +2,7 @@ package net.rsprot.protocol.game.outgoing.info.worldentityinfo
 
 import io.netty.buffer.ByteBufAllocator
 import net.rsprot.protocol.common.game.outgoing.info.CoordGrid
+import net.rsprot.protocol.common.game.outgoing.info.util.ZoneIndexStorage
 import java.lang.ref.ReferenceQueue
 import java.lang.ref.SoftReference
 
@@ -10,6 +11,8 @@ import java.lang.ref.SoftReference
  * as well as any avatars that were previously used but now released.
  * @property allocator an allocator for the world entity avatars, to be used for
  * precomputed high resolution blocks.
+ * @property zoneIndexStorage the zone index storage is responsible for tracking
+ * world entities across zones.
  * @property elements the array of existing world entity avatars, currently in use.
  * @property queue the soft reference queue of world avatars that were previously in use.
  * As a soft reference queue, it will hold on-to the unused references until the JVM
@@ -18,6 +21,7 @@ import java.lang.ref.SoftReference
  */
 public class WorldEntityAvatarRepository internal constructor(
     private val allocator: ByteBufAllocator,
+    private val zoneIndexStorage: ZoneIndexStorage,
 ) {
     private val elements: Array<WorldEntityAvatar?> = arrayOfNulls(AVATAR_CAPACITY)
     private val queue: ReferenceQueue<WorldEntityAvatar> = ReferenceQueue<WorldEntityAvatar>()
@@ -61,18 +65,21 @@ public class WorldEntityAvatarRepository internal constructor(
             existing.lastCoord = existing.currentCoord
             existing.angle = angle
             existing.allocateCycle = WorldEntityProtocol.cycleCount
+            zoneIndexStorage.add(index, existing.currentCoord)
             elements[index] = existing
             return existing
         }
         val avatar =
             WorldEntityAvatar(
                 allocator,
+                zoneIndexStorage,
                 index,
                 sizeX,
                 sizeZ,
                 CoordGrid(level, x, z),
                 angle,
             )
+        zoneIndexStorage.add(index, avatar.currentCoord)
         elements[index] = avatar
         return avatar
     }
@@ -82,6 +89,7 @@ public class WorldEntityAvatarRepository internal constructor(
      * @param avatar the avatar to release.
      */
     public fun release(avatar: WorldEntityAvatar) {
+        zoneIndexStorage.remove(avatar.index, avatar.currentCoord)
         this.elements[avatar.index] = null
         val reference = SoftReference(avatar, queue)
         reference.enqueue()

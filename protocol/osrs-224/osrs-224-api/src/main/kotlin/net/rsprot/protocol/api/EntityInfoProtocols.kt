@@ -88,12 +88,18 @@ public class EntityInfoProtocols
                     npcWriters += NpcAvatarExtendedInfoDesktopWriter()
                     npcResolutionChangeEncoders += DesktopLowResolutionChangeEncoder()
                 }
-                val worldEntityAvatarFactory = buildWorldEntityAvatarFactory(allocator)
+                val zoneIndexStorage = ZoneIndexStorage(ZoneIndexStorage.WORLDENTITY_CAPACITY)
+                val worldEntityAvatarFactory =
+                    buildWorldEntityAvatarFactory(
+                        allocator,
+                        zoneIndexStorage,
+                    )
                 val worldEntityProtocol =
                     buildWorldEntityInfoProtocol(
                         allocator,
                         worldEntityInfoSupplier,
                         worldEntityAvatarFactory,
+                        zoneIndexStorage,
                     )
                 val playerAvatarFactory =
                     buildPlayerAvatarFactory(allocator, playerInfoSupplier, playerWriters, huffmanCodecProvider)
@@ -166,20 +172,26 @@ public class EntityInfoProtocols
                     zoneIndexStorage,
                 )
 
-            private fun buildWorldEntityAvatarFactory(allocator: ByteBufAllocator): WorldEntityAvatarFactory =
+            private fun buildWorldEntityAvatarFactory(
+                allocator: ByteBufAllocator,
+                zoneIndexStorage: ZoneIndexStorage,
+            ): WorldEntityAvatarFactory =
                 WorldEntityAvatarFactory(
                     allocator,
+                    zoneIndexStorage,
                 )
 
             private fun buildWorldEntityInfoProtocol(
                 allocator: ByteBufAllocator,
                 worldEntityInfoSupplier: WorldEntityInfoSupplier,
                 worldEntityAvatarFactory: WorldEntityAvatarFactory,
+                zoneIndexStorage: ZoneIndexStorage,
             ) = WorldEntityProtocol(
                 allocator,
-                worldEntityInfoSupplier.worldEntityIndexSupplier,
                 worldEntityInfoSupplier.worldEntityAvatarExceptionHandler,
                 worldEntityAvatarFactory,
+                worldEntityInfoSupplier.worldEntityInfoProtocolWorker,
+                zoneIndexStorage,
             )
 
             private fun buildPlayerInfoProtocol(
