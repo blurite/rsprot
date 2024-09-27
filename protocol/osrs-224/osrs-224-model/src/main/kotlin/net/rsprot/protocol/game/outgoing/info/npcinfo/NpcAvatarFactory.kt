@@ -2,6 +2,7 @@ package net.rsprot.protocol.game.outgoing.info.npcinfo
 
 import io.netty.buffer.ByteBufAllocator
 import net.rsprot.compression.provider.HuffmanCodecProvider
+import net.rsprot.protocol.common.game.outgoing.info.util.ZoneIndexStorage
 import net.rsprot.protocol.game.outgoing.info.filter.ExtendedInfoFilter
 
 /**
@@ -17,12 +18,14 @@ import net.rsprot.protocol.game.outgoing.info.filter.ExtendedInfoFilter
  * @param huffmanCodec the huffman codec is used to compress chat extended info.
  * While NPCs do not currently have any such extended info blocks, the interface requires
  * it be passed in, so we must still provide it.
+ * @param zoneIndexStorage the collection that keeps track of npc indices in various zones.
  */
 public class NpcAvatarFactory(
     allocator: ByteBufAllocator,
     extendedInfoFilter: ExtendedInfoFilter,
     extendedInfoWriter: List<NpcAvatarExtendedInfoWriter>,
     huffmanCodec: HuffmanCodecProvider,
+    zoneIndexStorage: ZoneIndexStorage,
 ) {
     /**
      * The avatar repository is responsible for keeping track of all avatars, including ones
@@ -34,6 +37,7 @@ public class NpcAvatarFactory(
             extendedInfoFilter,
             extendedInfoWriter,
             huffmanCodec,
+            zoneIndexStorage,
         )
 
     /**

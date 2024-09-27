@@ -7,13 +7,13 @@ import net.rsprot.compression.provider.DefaultHuffmanCodecProvider
 import net.rsprot.protocol.common.client.ClientTypeMap
 import net.rsprot.protocol.common.client.OldSchoolClientType
 import net.rsprot.protocol.common.game.outgoing.info.CoordGrid
+import net.rsprot.protocol.common.game.outgoing.info.util.ZoneIndexStorage
 import net.rsprot.protocol.game.outgoing.codec.npcinfo.DesktopLowResolutionChangeEncoder
 import net.rsprot.protocol.game.outgoing.codec.npcinfo.extendedinfo.writer.NpcAvatarExtendedInfoDesktopWriter
 import net.rsprot.protocol.game.outgoing.info.filter.DefaultExtendedInfoFilter
 import net.rsprot.protocol.game.outgoing.info.npcinfo.NpcAvatar
 import net.rsprot.protocol.game.outgoing.info.npcinfo.NpcAvatarExceptionHandler
 import net.rsprot.protocol.game.outgoing.info.npcinfo.NpcAvatarFactory
-import net.rsprot.protocol.game.outgoing.info.npcinfo.NpcIndexSupplier
 import net.rsprot.protocol.game.outgoing.info.npcinfo.NpcInfo
 import net.rsprot.protocol.game.outgoing.info.npcinfo.NpcInfoProtocol
 import net.rsprot.protocol.game.outgoing.info.util.BuildArea
@@ -27,22 +27,22 @@ class NpcInfoTest {
     private lateinit var client: NpcInfoClient
     private val random: Random = Random(0)
     private lateinit var serverNpcs: List<Npc>
-    private lateinit var supplier: NpcIndexSupplier
     private lateinit var localNpcInfo: NpcInfo
     private var localPlayerCoord = CoordGrid(0, 3207, 3207)
+    private lateinit var factory: NpcAvatarFactory
 
     @BeforeEach
     fun initialize() {
         val allocator = PooledByteBufAllocator.DEFAULT
-        val factory =
+        val storage = ZoneIndexStorage(ZoneIndexStorage.NPC_CAPACITY)
+        this.factory =
             NpcAvatarFactory(
                 allocator,
                 DefaultExtendedInfoFilter(),
                 listOf(NpcAvatarExtendedInfoDesktopWriter()),
                 DefaultHuffmanCodecProvider(createHuffmanCodec()),
+                storage,
             )
-        this.serverNpcs = createPhantomNpcs(factory)
-        this.supplier = createNpcIndexSupplier()
 
         val encoders =
             ClientTypeMap.of(
@@ -51,14 +51,21 @@ class NpcInfoTest {
             ) {
                 it.clientType
             }
-        protocol = NpcInfoProtocol(allocator, supplier, encoders, factory, npcExceptionHandler())
+        protocol =
+            NpcInfoProtocol(
+                allocator,
+                encoders,
+                factory,
+                npcExceptionHandler(),
+                zoneIndexStorage = storage,
+            )
         this.client = NpcInfoClient()
         this.localNpcInfo = protocol.alloc(500, OldSchoolClientType.DESKTOP)
     }
 
     private fun npcExceptionHandler(): NpcAvatarExceptionHandler =
-        NpcAvatarExceptionHandler { _, _ ->
-            // No-op
+        NpcAvatarExceptionHandler { _, e ->
+            e.printStackTrace()
         }
 
     private fun tick() {
@@ -74,6 +81,7 @@ class NpcInfoTest {
 
     @Test
     fun `adding npcs to high resolution`() {
+        this.serverNpcs = createPhantomNpcs(factory)
         tick()
         val buffer = this.localNpcInfo.backingBuffer()
         client.decode(buffer, false, localPlayerCoord)
@@ -88,6 +96,7 @@ class NpcInfoTest {
 
     @Test
     fun `removing npcs from high resolution`() {
+        this.serverNpcs = createPhantomNpcs(factory)
         tick()
         client.decode(this.localNpcInfo.backingBuffer(), false, localPlayerCoord)
 
@@ -100,9 +109,9 @@ class NpcInfoTest {
 
     @Test
     fun `single npc walking`() {
-        val npc = serverNpcs.first()
+        serverNpcs = createSingleNpc(factory)
         // Skip everyone but the first entry
-        serverNpcs = listOf(npc)
+        val npc = serverNpcs.first()
         tick()
         client.decode(this.localNpcInfo.backingBuffer(), false, localPlayerCoord)
         assertEquals(1, client.npcSlotCount)
@@ -121,9 +130,9 @@ class NpcInfoTest {
 
     @Test
     fun `single npc crawling`() {
-        val npc = serverNpcs.first()
+        serverNpcs = createSingleNpc(factory)
         // Skip everyone but the first entry
-        serverNpcs = listOf(npc)
+        val npc = serverNpcs.first()
         tick()
         client.decode(this.localNpcInfo.backingBuffer(), false, localPlayerCoord)
         assertEquals(1, client.npcSlotCount)
@@ -142,9 +151,9 @@ class NpcInfoTest {
 
     @Test
     fun `single npc running`() {
-        val npc = serverNpcs.first()
+        serverNpcs = createSingleNpc(factory)
         // Skip everyone but the first entry
-        serverNpcs = listOf(npc)
+        val npc = serverNpcs.first()
         tick()
         client.decode(this.localNpcInfo.backingBuffer(), false, localPlayerCoord)
         assertEquals(1, client.npcSlotCount)
@@ -164,9 +173,9 @@ class NpcInfoTest {
 
     @Test
     fun `single npc telejumping`() {
-        val npc = serverNpcs.first()
+        serverNpcs = createSingleNpc(factory)
         // Skip everyone but the first entry
-        serverNpcs = listOf(npc)
+        val npc = serverNpcs.first()
         tick()
         client.decode(this.localNpcInfo.backingBuffer(), false, localPlayerCoord)
         assertEquals(1, client.npcSlotCount)
@@ -192,9 +201,9 @@ class NpcInfoTest {
 
     @Test
     fun `single npc teleporting`() {
-        val npc = serverNpcs.first()
+        serverNpcs = createSingleNpc(factory)
         // Skip everyone but the first entry
-        serverNpcs = listOf(npc)
+        val npc = serverNpcs.first()
         tick()
         client.decode(this.localNpcInfo.backingBuffer(), false, localPlayerCoord)
         assertEquals(1, client.npcSlotCount)
@@ -220,9 +229,9 @@ class NpcInfoTest {
 
     @Test
     fun `single npc overhead chat`() {
-        val npc = serverNpcs.first()
+        serverNpcs = createSingleNpc(factory)
         // Skip everyone but the first entry
-        serverNpcs = listOf(npc)
+        val npc = serverNpcs.first()
         tick()
         client.decode(this.localNpcInfo.backingBuffer(), false, localPlayerCoord)
         assertEquals(1, client.npcSlotCount)
@@ -239,14 +248,6 @@ class NpcInfoTest {
         assertEquals(npc.coordGrid, clientNpc.coord)
         assertEquals("Hello world", clientNpc.overheadChat)
     }
-
-    private fun createNpcIndexSupplier(): NpcIndexSupplier =
-        NpcIndexSupplier { _, level, x, z, viewDistance ->
-            serverNpcs
-                .filter { it.coordGrid.inDistance(CoordGrid(level, x, z), viewDistance) }
-                .map { it.index }
-                .iterator()
-        }
 
     private fun createPhantomNpcs(factory: NpcAvatarFactory): List<Npc> {
         val npcs = ArrayList<Npc>(500)
@@ -268,6 +269,26 @@ class NpcInfoTest {
                     ),
                 )
         }
+        return npcs
+    }
+
+    private fun createSingleNpc(factory: NpcAvatarFactory): List<Npc> {
+        val npcs = ArrayList<Npc>(1)
+        val x = random.nextInt(3200, 3213)
+        val z = random.nextInt(3200, 3213)
+        val coord = CoordGrid(0, x, z)
+        npcs +=
+            Npc(
+                0,
+                0,
+                factory.alloc(
+                    0,
+                    0,
+                    coord.level,
+                    coord.x,
+                    coord.z,
+                ),
+            )
         return npcs
     }
 

@@ -4,17 +4,12 @@ import com.github.michaelbull.logging.InlineLogger
 import net.rsprot.protocol.game.outgoing.info.filter.DefaultExtendedInfoFilter
 import net.rsprot.protocol.game.outgoing.info.filter.ExtendedInfoFilter
 import net.rsprot.protocol.game.outgoing.info.npcinfo.NpcAvatarExceptionHandler
-import net.rsprot.protocol.game.outgoing.info.npcinfo.NpcIndexSupplier
 import net.rsprot.protocol.game.outgoing.info.worker.DefaultProtocolWorker
 import net.rsprot.protocol.game.outgoing.info.worker.ProtocolWorker
 
 /**
  * The supplier for NPC info protocol, allowing the construction of the protocol and its
  * correct use.
- * @property npcIndexSupplier the supplier for NPC indices, allowing the protocol
- * to determine what NPCs need to be added to the high resolution view.
- * The server is expected to return all NPCs, even ones that are already tracked as
- * the server has no way of determining what is already tracked.
  * @property npcAvatarExceptionHandler the exception handler for NPC avatars,
  * catching any exceptions that happen during pre-computations of NPC avatar blocks.
  * @property npcExtendedInfoFilter the filter for NPC extended info blocks, responsible
@@ -25,10 +20,6 @@ import net.rsprot.protocol.game.outgoing.info.worker.ProtocolWorker
 public class NpcInfoSupplier
     @JvmOverloads
     public constructor(
-        public val npcIndexSupplier: NpcIndexSupplier =
-            NpcIndexSupplier { _, _, _, _, _ ->
-                emptySequence<Int>().iterator()
-            },
         public val npcAvatarExceptionHandler: NpcAvatarExceptionHandler =
             NpcAvatarExceptionHandler { index, exception ->
                 logger.error(exception) {
@@ -44,7 +35,6 @@ public class NpcInfoSupplier
 
             other as NpcInfoSupplier
 
-            if (npcIndexSupplier != other.npcIndexSupplier) return false
             if (npcExtendedInfoFilter != other.npcExtendedInfoFilter) return false
             if (npcInfoProtocolWorker != other.npcInfoProtocolWorker) return false
             if (npcAvatarExceptionHandler != other.npcAvatarExceptionHandler) return false
@@ -53,8 +43,7 @@ public class NpcInfoSupplier
         }
 
         override fun hashCode(): Int {
-            var result = npcIndexSupplier.hashCode()
-            result = 31 * result + npcExtendedInfoFilter.hashCode()
+            var result = npcExtendedInfoFilter.hashCode()
             result = 31 * result + npcInfoProtocolWorker.hashCode()
             result = 31 * result + npcAvatarExceptionHandler.hashCode()
             return result
@@ -62,7 +51,6 @@ public class NpcInfoSupplier
 
         override fun toString(): String =
             "NpcInfoSupplier(" +
-                "npcIndexSupplier=$npcIndexSupplier, " +
                 "npcAvatarExceptionHandler=$npcAvatarExceptionHandler, " +
                 "npcExtendedInfoFilter=$npcExtendedInfoFilter, " +
                 "npcInfoProtocolWorker=$npcInfoProtocolWorker" +
