@@ -4,6 +4,7 @@ import io.netty.buffer.ByteBufAllocator
 import net.rsprot.compression.provider.HuffmanCodecProvider
 import net.rsprot.protocol.common.game.outgoing.info.CoordGrid
 import net.rsprot.protocol.common.game.outgoing.info.npcinfo.NpcAvatarDetails
+import net.rsprot.protocol.common.game.outgoing.info.util.ZoneIndexStorage
 import net.rsprot.protocol.game.outgoing.info.filter.ExtendedInfoFilter
 import java.lang.ref.ReferenceQueue
 import java.lang.ref.SoftReference
@@ -11,21 +12,24 @@ import java.lang.ref.SoftReference
 /**
  * The NPC avatar repository is a class responsible for keeping track of all the avatars
  * in the game, as well as allocating/re-using new instances if needed.
- * @param allocator the byte buffer allocator used to pre-compute bitcodes for an avatar.
- * @param extendedInfoFilter the filter used to determine whether the given NPC can still
+ * @property allocator the byte buffer allocator used to pre-compute bitcodes for an avatar.
+ * @property extendedInfoFilter the filter used to determine whether the given NPC can still
  * have extended info blocks written to it, or if we have to utilize a fall-back and tell
  * the client that despite extended info having been flagged, we cannot write it (by writing
  * the flag itself as a zero, so the client reads no further information).
- * @param extendedInfoWriter the client-specific extended info writers for NPC information.
- * @param huffmanCodec the huffman codec is used to compress chat extended info.
+ * @property extendedInfoWriter the client-specific extended info writers for NPC information.
+ * @property huffmanCodec the huffman codec is used to compress chat extended info.
  * While NPCs do not currently have any such extended info blocks, the interface requires
  * it be passed in, so we must still provide it.
+ * @property zoneIndexStorage the zone index storage responsible for tracking all the NPCs
+ * based on the zones in which they lie.
  */
 internal class NpcAvatarRepository(
     private val allocator: ByteBufAllocator,
     private val extendedInfoFilter: ExtendedInfoFilter,
     private val extendedInfoWriter: List<NpcAvatarExtendedInfoWriter>,
     private val huffmanCodec: HuffmanCodecProvider,
+    private val zoneIndexStorage: ZoneIndexStorage,
 ) {
     /**
      * The array of npc avatars that currently exist in the game.
@@ -98,6 +102,7 @@ internal class NpcAvatarRepository(
             details.spawnCycle = spawnCycle
             details.direction = direction
             details.allocateCycle = NpcInfoProtocol.cycleCount
+            zoneIndexStorage.add(index, details.currentCoord)
             elements[index] = existing
             return existing
         }
@@ -120,7 +125,9 @@ internal class NpcAvatarRepository(
                 direction,
                 NpcInfoProtocol.cycleCount,
                 extendedInfo,
+                zoneIndexStorage,
             )
+        zoneIndexStorage.add(index, avatar.details.currentCoord)
         elements[index] = avatar
         return avatar
     }
@@ -130,6 +137,7 @@ internal class NpcAvatarRepository(
      * @param avatar the avatar to release.
      */
     fun release(avatar: NpcAvatar) {
+        zoneIndexStorage.remove(avatar.details.index, avatar.details.currentCoord)
         this.elements[avatar.details.index] = null
         avatar.extendedInfo.reset()
         val reference = SoftReference(avatar, queue)

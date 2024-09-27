@@ -8,6 +8,7 @@ import net.rsprot.protocol.api.suppliers.WorldEntityInfoSupplier
 import net.rsprot.protocol.common.client.ClientTypeMap
 import net.rsprot.protocol.common.client.OldSchoolClientType
 import net.rsprot.protocol.common.game.outgoing.info.npcinfo.encoder.NpcResolutionChangeEncoder
+import net.rsprot.protocol.common.game.outgoing.info.util.ZoneIndexStorage
 import net.rsprot.protocol.game.outgoing.codec.npcinfo.DesktopLowResolutionChangeEncoder
 import net.rsprot.protocol.game.outgoing.codec.npcinfo.extendedinfo.writer.NpcAvatarExtendedInfoDesktopWriter
 import net.rsprot.protocol.game.outgoing.codec.playerinfo.extendedinfo.writer.PlayerAvatarExtendedInfoDesktopWriter
@@ -102,14 +103,22 @@ public class EntityInfoProtocols
                         playerInfoSupplier,
                         playerAvatarFactory,
                     )
+                val storage = ZoneIndexStorage(ZoneIndexStorage.NPC_CAPACITY)
                 val npcAvatarFactory =
-                    buildNpcAvatarFactory(allocator, npcInfoSupplier, npcWriters, huffmanCodecProvider)
+                    buildNpcAvatarFactory(
+                        allocator,
+                        npcInfoSupplier,
+                        npcWriters,
+                        huffmanCodecProvider,
+                        storage,
+                    )
                 val npcInfoProtocol =
                     buildNpcInfoProtocol(
                         allocator,
                         npcInfoSupplier,
                         npcResolutionChangeEncoders,
                         npcAvatarFactory,
+                        storage,
                     )
 
                 return EntityInfoProtocols(
@@ -127,9 +136,9 @@ public class EntityInfoProtocols
                 npcInfoSupplier: NpcInfoSupplier,
                 npcResolutionChangeEncoders: MutableList<NpcResolutionChangeEncoder>,
                 npcAvatarFactory: NpcAvatarFactory,
+                zoneIndexStorage: ZoneIndexStorage,
             ) = NpcInfoProtocol(
                 allocator,
-                npcInfoSupplier.npcIndexSupplier,
                 ClientTypeMap.of(
                     npcResolutionChangeEncoders,
                     OldSchoolClientType.COUNT,
@@ -139,6 +148,7 @@ public class EntityInfoProtocols
                 npcAvatarFactory,
                 npcInfoSupplier.npcAvatarExceptionHandler,
                 npcInfoSupplier.npcInfoProtocolWorker,
+                zoneIndexStorage,
             )
 
             private fun buildNpcAvatarFactory(
@@ -146,12 +156,14 @@ public class EntityInfoProtocols
                 npcInfoSupplier: NpcInfoSupplier,
                 npcWriters: MutableList<NpcAvatarExtendedInfoWriter>,
                 huffmanCodecProvider: HuffmanCodecProvider,
+                zoneIndexStorage: ZoneIndexStorage,
             ): NpcAvatarFactory =
                 NpcAvatarFactory(
                     allocator,
                     npcInfoSupplier.npcExtendedInfoFilter,
                     npcWriters,
                     huffmanCodecProvider,
+                    zoneIndexStorage,
                 )
 
             private fun buildWorldEntityAvatarFactory(allocator: ByteBufAllocator): WorldEntityAvatarFactory =

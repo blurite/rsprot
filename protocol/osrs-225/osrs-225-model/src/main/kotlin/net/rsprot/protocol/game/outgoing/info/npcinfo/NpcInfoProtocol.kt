@@ -6,6 +6,7 @@ import net.rsprot.protocol.common.checkCommunicationThread
 import net.rsprot.protocol.common.client.ClientTypeMap
 import net.rsprot.protocol.common.client.OldSchoolClientType
 import net.rsprot.protocol.common.game.outgoing.info.npcinfo.encoder.NpcResolutionChangeEncoder
+import net.rsprot.protocol.common.game.outgoing.info.util.ZoneIndexStorage
 import net.rsprot.protocol.game.outgoing.info.ByteBufRecycler
 import net.rsprot.protocol.game.outgoing.info.worker.DefaultProtocolWorker
 import net.rsprot.protocol.game.outgoing.info.worker.ProtocolWorker
@@ -15,23 +16,23 @@ import java.util.concurrent.Callable
  * NPC info protocol is the root class bringing everything together about NPC info.
  * @property allocator the byte buffer allocator used for pre-computing bit codes and
  * extended info blocks.
- * @property npcIndexSupplier the interface that supplies indices of NPCs near the player
- * that need to be added to the high resolution view.
  * @property resolutionChangeEncoders a client-specific map of resolution change encoders,
  * as the low to high resolution change is scrambled between clients and revision,
  * it needs to be supplied by the respective client module.
  * @param avatarFactory the factory responsible for allocating new npc avatars.
  * @property worker the protocol worker used to execute the jobs involved with
  * npc info computations.
+ * @property zoneIndexStorage the zone index storage is responsible for tracking all the NPCs
+ * currently spawned into the game.
  */
 @Suppress("DuplicatedCode")
 public class NpcInfoProtocol(
     private val allocator: ByteBufAllocator,
-    private val npcIndexSupplier: NpcIndexSupplier,
     private val resolutionChangeEncoders: ClientTypeMap<NpcResolutionChangeEncoder>,
     avatarFactory: NpcAvatarFactory,
     private val exceptionHandler: NpcAvatarExceptionHandler,
     private val worker: ProtocolWorker = DefaultProtocolWorker(),
+    private val zoneIndexStorage: ZoneIndexStorage,
 ) {
     private val detailsStorage: NpcInfoWorldDetailsStorage = NpcInfoWorldDetailsStorage()
     private val recycler: ByteBufRecycler = ByteBufRecycler()
@@ -52,7 +53,7 @@ public class NpcInfoProtocol(
                 avatarRepository,
                 clientType,
                 localIndex,
-                npcIndexSupplier,
+                zoneIndexStorage,
                 resolutionChangeEncoders,
                 detailsStorage,
                 recycler,
