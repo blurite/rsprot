@@ -69,6 +69,13 @@ public class NpcInfo internal constructor(
      */
     internal val details: Array<NpcInfoWorldDetails?> = arrayOfNulls(WORLD_ENTITY_CAPACITY + 1)
 
+    /**
+     * An array of NPCs which are marked as specific-visible. Any NPC avatar that was explicitly marked
+     * as visible-to-specific-only will only render to players that mark that avatar's index as specific
+     * visible. Anyone else will be unable to see such NPCs.
+     */
+    internal val specificVisible: LongArray = LongArray((NPC_INFO_CAPACITY + 1) ushr 6)
+
     override fun isDestroyed(): Boolean = this.exception != null
 
     /**
@@ -354,6 +361,65 @@ public class NpcInfo internal constructor(
     }
 
     /**
+     * Marks the specified NPC's [avatar] as specific-visible, meaning the NPC will render
+     * to this player if other conditions are met. Anyone that hasn't marked it as specific
+     * will be unable to see that NPC.
+     * @param avatar the NPC avatar whom to mark as specific-visible.
+     * @throws IllegalArgumentException if the [avatar] was not allocated as specific-only.
+     */
+    public fun setSpecific(avatar: NpcAvatar) {
+        require(avatar.details.specific) {
+            "Only avatars that are marked as specific-only can be marked as specific."
+        }
+        setSpecific(avatar.details.index)
+    }
+
+    /**
+     * Clears the specified NPC's [avatar] as specific-visible.
+     * @param avatar the NPC avatar whom to unmark as specific-visible.
+     * @throws IllegalArgumentException if the [avatar] was not allocated as specific-only.
+     */
+    public fun clearSpecific(avatar: NpcAvatar) {
+        require(avatar.details.specific) {
+            "Only avatars that are marked as specific-only can be unmarked as specific."
+        }
+        unsetSpecific(avatar.details.index)
+    }
+
+    /**
+     * Checks whether the NPC at the specified [index] is specific-visible.
+     * @param index the absolute index of the NPC to check.
+     * @return whether the NPC has been marked as specific-visible.
+     */
+    private fun isSpecific(index: Int): Boolean {
+        val longIndex = index ushr 6
+        val bit = 1L shl (index and 0x3F)
+        return this.specificVisible[longIndex] and bit != 0L
+    }
+
+    /**
+     * Sets the NPC at index [index] as specific-visible.
+     * @param index the absolute index of the NPC to set as specific.
+     */
+    private fun setSpecific(index: Int) {
+        val longIndex = index ushr 6
+        val bit = 1L shl (index and 0x3F)
+        val cur = this.specificVisible[longIndex]
+        this.specificVisible[longIndex] = cur or bit
+    }
+
+    /**
+     * Clears the specific [index] flag from the specific visible NPCs bit array.
+     * @param index the absolute index of the NPC to clear.
+     */
+    internal fun unsetSpecific(index: Int) {
+        val longIndex = index ushr 6
+        val bit = 1L shl (index and 0x3F)
+        val cur = this.specificVisible[longIndex]
+        this.specificVisible[longIndex] = cur and bit.inv()
+    }
+
+    /**
      * Turns this npc info structure into a respective npc info packet, depending
      * on the current known view distance.
      */
@@ -586,6 +652,11 @@ public class NpcInfo internal constructor(
         ) {
             return true
         }
+        if (avatar.details.specific) {
+            if (!isSpecific(avatar.details.index)) {
+                return true
+            }
+        }
         val coord = avatar.details.currentCoord
         if (!withinDistance(details.localPlayerCurrentCoord, coord, viewDistance)) {
             return true
@@ -697,6 +768,11 @@ public class NpcInfo internal constructor(
                     }
                     if (!isInBuildArea(details, avatar)) {
                         continue
+                    }
+                    if (avatar.details.specific) {
+                        if (!isSpecific(index)) {
+                            continue
+                        }
                     }
                     avatar.addObserver()
                     val i = details.highResolutionNpcIndexCount++

@@ -12,6 +12,7 @@ import net.rsprot.protocol.common.game.outgoing.info.util.ZoneIndexStorage
 import net.rsprot.protocol.game.outgoing.codec.npcinfo.DesktopLowResolutionChangeEncoder
 import net.rsprot.protocol.game.outgoing.codec.npcinfo.extendedinfo.writer.NpcAvatarExtendedInfoDesktopWriter
 import net.rsprot.protocol.game.outgoing.codec.playerinfo.extendedinfo.writer.PlayerAvatarExtendedInfoDesktopWriter
+import net.rsprot.protocol.game.outgoing.info.npcinfo.DeferredNpcInfoProtocolSupplier
 import net.rsprot.protocol.game.outgoing.info.npcinfo.NpcAvatarExtendedInfoWriter
 import net.rsprot.protocol.game.outgoing.info.npcinfo.NpcAvatarFactory
 import net.rsprot.protocol.game.outgoing.info.npcinfo.NpcInfoProtocol
@@ -110,6 +111,7 @@ public class EntityInfoProtocols
                         playerAvatarFactory,
                     )
                 val storage = ZoneIndexStorage(ZoneIndexStorage.NPC_CAPACITY)
+                val supplier = DeferredNpcInfoProtocolSupplier()
                 val npcAvatarFactory =
                     buildNpcAvatarFactory(
                         allocator,
@@ -117,6 +119,7 @@ public class EntityInfoProtocols
                         npcWriters,
                         huffmanCodecProvider,
                         storage,
+                        supplier,
                     )
                 val npcInfoProtocol =
                     buildNpcInfoProtocol(
@@ -126,6 +129,7 @@ public class EntityInfoProtocols
                         npcAvatarFactory,
                         storage,
                     )
+                supplier.supply(npcInfoProtocol)
 
                 return EntityInfoProtocols(
                     playerAvatarFactory,
@@ -163,6 +167,7 @@ public class EntityInfoProtocols
                 npcWriters: MutableList<NpcAvatarExtendedInfoWriter>,
                 huffmanCodecProvider: HuffmanCodecProvider,
                 zoneIndexStorage: ZoneIndexStorage,
+                npcInfoProtocolSupplier: DeferredNpcInfoProtocolSupplier,
             ): NpcAvatarFactory =
                 NpcAvatarFactory(
                     allocator,
@@ -170,6 +175,7 @@ public class EntityInfoProtocols
                     npcWriters,
                     huffmanCodecProvider,
                     zoneIndexStorage,
+                    npcInfoProtocolSupplier,
                 )
 
             private fun buildWorldEntityAvatarFactory(

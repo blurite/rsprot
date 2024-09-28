@@ -11,6 +11,7 @@ import net.rsprot.protocol.common.game.outgoing.info.util.ZoneIndexStorage
 import net.rsprot.protocol.game.outgoing.codec.npcinfo.DesktopLowResolutionChangeEncoder
 import net.rsprot.protocol.game.outgoing.codec.npcinfo.extendedinfo.writer.NpcAvatarExtendedInfoDesktopWriter
 import net.rsprot.protocol.game.outgoing.info.filter.DefaultExtendedInfoFilter
+import net.rsprot.protocol.game.outgoing.info.npcinfo.DeferredNpcInfoProtocolSupplier
 import net.rsprot.protocol.game.outgoing.info.npcinfo.NpcAvatar
 import net.rsprot.protocol.game.outgoing.info.npcinfo.NpcAvatarExceptionHandler
 import net.rsprot.protocol.game.outgoing.info.npcinfo.NpcAvatarFactory
@@ -53,6 +54,7 @@ class NpcInfoBenchmark {
     fun setup() {
         val allocator = PooledByteBufAllocator.DEFAULT
         val storage = ZoneIndexStorage(ZoneIndexStorage.NPC_CAPACITY)
+        val protocolSupplier = DeferredNpcInfoProtocolSupplier()
         this.factory =
             NpcAvatarFactory(
                 allocator,
@@ -60,6 +62,7 @@ class NpcInfoBenchmark {
                 listOf(NpcAvatarExtendedInfoDesktopWriter()),
                 DefaultHuffmanCodecProvider(createHuffmanCodec()),
                 storage,
+                protocolSupplier,
             )
         this.serverNpcs = createPhantomNpcs(factory)
 
@@ -79,6 +82,7 @@ class NpcInfoBenchmark {
                 DefaultProtocolWorker(1, ForkJoinPool.commonPool()),
                 storage,
             )
+        protocolSupplier.supply(protocol)
         this.localNpcInfo = protocol.alloc(1, OldSchoolClientType.DESKTOP)
         otherNpcInfos = (2..2046).map { protocol.alloc(it, OldSchoolClientType.DESKTOP) }
         val infos = otherNpcInfos + localNpcInfo

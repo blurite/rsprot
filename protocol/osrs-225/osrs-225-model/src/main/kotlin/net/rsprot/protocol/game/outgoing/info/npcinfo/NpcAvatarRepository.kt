@@ -24,6 +24,8 @@ import java.lang.ref.SoftReference
  * it be passed in, so we must still provide it.
  * @property zoneIndexStorage the zone index storage responsible for tracking all the NPCs
  * based on the zones in which they lie.
+ * @property npcInfoProtocolSupplier a supplier for the npc info protocol. This is a cheap hack
+ * to get around a circular dependency issue without rewriting a great deal of code.
  */
 internal class NpcAvatarRepository(
     private val allocator: ByteBufAllocator,
@@ -31,6 +33,7 @@ internal class NpcAvatarRepository(
     private val extendedInfoWriter: List<NpcAvatarExtendedInfoWriter>,
     private val huffmanCodec: HuffmanCodecProvider,
     private val zoneIndexStorage: ZoneIndexStorage,
+    private val npcInfoProtocolSupplier: DeferredNpcInfoProtocolSupplier,
 ) {
     /**
      * The array of npc avatars that currently exist in the game.
@@ -83,6 +86,9 @@ internal class NpcAvatarRepository(
      * @param direction the direction that the npc will face on spawn (see table above)
      * @param priority the priority group a NPC belongs into. See [NpcInfo.setPriorityCaps] for greater
      * documentation.
+     * @param specific if true, the NPC will only render to players that have explicitly marked this
+     * NPC's index as specific-visible, anyone else will be unable to see it. If it's false, anyone can
+     * see the NPC regardless.
      * @return a npc avatar with the above provided details.
      */
     fun getOrAlloc(
@@ -94,6 +100,7 @@ internal class NpcAvatarRepository(
         spawnCycle: Int = 0,
         direction: Int = 0,
         priority: AvatarPriority = AvatarPriority.NORMAL,
+        specific: Boolean = false,
     ): NpcAvatar {
         val existing = queue.poll()?.get()
         if (existing != null) {
@@ -107,6 +114,7 @@ internal class NpcAvatarRepository(
             details.direction = direction
             details.allocateCycle = NpcInfoProtocol.cycleCount
             details.priorityBitcode = priority.bitcode
+            details.specific = specific
             zoneIndexStorage.add(index, details.currentCoord)
             elements[index] = existing
             return existing
@@ -129,6 +137,7 @@ internal class NpcAvatarRepository(
                 spawnCycle,
                 direction,
                 priority,
+                specific,
                 NpcInfoProtocol.cycleCount,
                 extendedInfo,
                 zoneIndexStorage,
@@ -143,6 +152,14 @@ internal class NpcAvatarRepository(
      * @param avatar the avatar to release.
      */
     fun release(avatar: NpcAvatar) {
+        if (avatar.details.specific) {
+            val index = avatar.details.index
+            val protocol = npcInfoProtocolSupplier.get()
+            for (i in 0..<NpcInfoProtocol.PROTOCOL_CAPACITY) {
+                val info = protocol.getOrNull(i) ?: continue
+                info.unsetSpecific(index)
+            }
+        }
         zoneIndexStorage.remove(avatar.details.index, avatar.details.currentCoord)
         this.elements[avatar.details.index] = null
         avatar.extendedInfo.reset()

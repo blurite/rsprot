@@ -21,6 +21,9 @@ import net.rsprot.protocol.common.game.outgoing.info.CoordGrid
  * which furthermore requires cleanup and micromanaging.
  * @property priorityBitcode the bitcode indicating whether the NPC belongs in normal or low priority
  * group.
+ * @property specific if true, the NPC will only render to players that have explicitly marked this
+ * NPC's index as specific-visible, anyone else will be unable to see it. If it's false, anyone can
+ * see the NPC regardless.
  */
 public class NpcAvatarDetails internal constructor(
     public var index: Int,
@@ -34,6 +37,7 @@ public class NpcAvatarDetails internal constructor(
     public var direction: Int = 0,
     public var inaccessible: Boolean = false,
     public var priorityBitcode: Int = 0,
+    public var specific: Boolean = false,
     public var allocateCycle: Int,
 ) {
     public constructor(
@@ -45,6 +49,7 @@ public class NpcAvatarDetails internal constructor(
         spawnCycle: Int = 0,
         direction: Int = 0,
         priorityBitcode: Int = 0,
+        specific: Boolean = false,
         allocateCycle: Int,
     ) : this(
         index,
@@ -53,6 +58,7 @@ public class NpcAvatarDetails internal constructor(
         spawnCycle = spawnCycle,
         direction = direction,
         priorityBitcode = priorityBitcode,
+        specific = specific,
         allocateCycle = allocateCycle,
     )
 
@@ -94,6 +100,8 @@ public class NpcAvatarDetails internal constructor(
             "spawnCycle=$spawnCycle, " +
             "direction=$direction, " +
             "inaccessible=$inaccessible, " +
+            "priorityBitcode=$priorityBitcode, " +
+            "specific=$specific, " +
             "allocateCycle=$allocateCycle" +
             ")"
 

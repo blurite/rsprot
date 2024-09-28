@@ -107,6 +107,16 @@ public class NpcInfoProtocol(
     }
 
     /**
+     * Gets the npc info at the provided index, or null if it doesn't exist.
+     * @param idx the index of the npc info
+     * @return npc info object at that index
+     */
+    public fun getOrNull(idx: Int): NpcInfo? {
+        checkCommunicationThread()
+        return npcInfoRepository.getOrNull(idx)
+    }
+
+    /**
      * Updates the npc info protocol for this cycle.
      * The jobs here will be executed according to the [worker] specified,
      * allowing multithreaded execution if selected.

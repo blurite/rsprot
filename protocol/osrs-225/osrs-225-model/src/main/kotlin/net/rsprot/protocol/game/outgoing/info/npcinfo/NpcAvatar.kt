@@ -48,6 +48,9 @@ import java.util.concurrent.atomic.AtomicInteger
  * threshold in a local area, which could result in important NPCs, such as shopkeepers and whatnot
  * from not rendering. Limiting the low priority count ensures that those arguably more important NPCs will
  * still be able to render with hundreds of pets around.
+ * @param specific if true, the NPC will only render to players that have explicitly marked this
+ * NPC's index as specific-visible, anyone else will be unable to see it. If it's false, anyone can
+ * see the NPC regardless.
  * @property extendedInfo the extended info, commonly referred to as "masks", will track everything relevant
  * inside itself. Setting properties such as a spotanim would be done through this.
  * The [extendedInfo] is also responsible for caching the non-temporary blocks,
@@ -63,6 +66,7 @@ public class NpcAvatar internal constructor(
     spawnCycle: Int = 0,
     direction: Int = 0,
     priority: AvatarPriority = AvatarPriority.NORMAL,
+    specific: Boolean,
     allocateCycle: Int,
     public val extendedInfo: NpcAvatarExtendedInfo,
     public val zoneIndexStorage: ZoneIndexStorage,
@@ -81,6 +85,7 @@ public class NpcAvatar internal constructor(
             spawnCycle,
             direction,
             priority.bitcode,
+            specific,
             allocateCycle,
         )
 

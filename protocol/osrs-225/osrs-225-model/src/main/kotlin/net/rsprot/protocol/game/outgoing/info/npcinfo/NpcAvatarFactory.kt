@@ -21,6 +21,8 @@ import net.rsprot.protocol.game.outgoing.info.filter.ExtendedInfoFilter
  * While NPCs do not currently have any such extended info blocks, the interface requires
  * it be passed in, so we must still provide it.
  * @param zoneIndexStorage the collection that keeps track of npc indices in various zones.
+ * @param npcInfoProtocolSupplier a supplier for the npc info protocol. This is a cheap hack
+ * to get around a circular dependency issue without rewriting a great deal of code.
  */
 public class NpcAvatarFactory(
     allocator: ByteBufAllocator,
@@ -28,6 +30,7 @@ public class NpcAvatarFactory(
     extendedInfoWriter: List<NpcAvatarExtendedInfoWriter>,
     huffmanCodec: HuffmanCodecProvider,
     zoneIndexStorage: ZoneIndexStorage,
+    npcInfoProtocolSupplier: DeferredNpcInfoProtocolSupplier,
 ) {
     /**
      * The avatar repository is responsible for keeping track of all avatars, including ones
@@ -40,6 +43,7 @@ public class NpcAvatarFactory(
             extendedInfoWriter,
             huffmanCodec,
             zoneIndexStorage,
+            npcInfoProtocolSupplier,
         )
 
     /**
@@ -69,6 +73,9 @@ public class NpcAvatarFactory(
      * @param direction the direction that the npc will face on spawn (see table above)
      * @param priority the priority group a NPC belongs into. See [NpcInfo.setPriorityCaps] for greater
      * documentation.
+     * @param specific if true, the NPC will only render to players that have explicitly marked this
+     * NPC's index as specific-visible, anyone else will be unable to see it. If it's false, anyone can
+     * see the NPC regardless.
      * @return a npc avatar with the above provided details.
      */
     public fun alloc(
@@ -80,6 +87,7 @@ public class NpcAvatarFactory(
         spawnCycle: Int = 0,
         direction: Int = 0,
         priority: AvatarPriority = AvatarPriority.NORMAL,
+        specific: Boolean = false,
     ): NpcAvatar {
         checkCommunicationThread()
         return avatarRepository.getOrAlloc(
@@ -91,6 +99,7 @@ public class NpcAvatarFactory(
             spawnCycle,
             direction,
             priority,
+            specific,
         )
     }
 
