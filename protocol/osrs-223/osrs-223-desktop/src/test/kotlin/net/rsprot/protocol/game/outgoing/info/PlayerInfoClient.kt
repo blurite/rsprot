@@ -26,35 +26,43 @@ class PlayerInfoClient {
         bytebuf: ByteBuf,
     ) {
         this.localIndex = localIndex
-        bytebuf.toBitBuf().use { buffer ->
-            val localPlayer = Player(localIndex)
-            cachedPlayers[localIndex] = localPlayer
-            val coord = CoordGrid(buffer.gBits(30))
-            localPlayer.coord = coord
-            highResolutionCount = 0
-            highResolutionIndices[highResolutionCount++] = localIndex
-            unmodifiedFlags[localIndex] = 0
-            lowResolutionCount = 0
-            for (idx in 1..<2048) {
-                if (idx != localIndex) {
-                    val lowResolutionPositionBitpacked = buffer.gBits(18)
-                    val level = lowResolutionPositionBitpacked shr 16
-                    // Note: In osrs, the 0xFF is actually 0x255, a mixture between hexadecimal and decimal numbering.
-                    // This is likely just an oversight, but due to only the first bit being utilized,
-                    // this never causes problems in OSRS
-                    val x = lowResolutionPositionBitpacked shr 8 and 0xFF
-                    val z = lowResolutionPositionBitpacked and 0xFF
-                    lowResolutionPositions[idx] = (x shl 14) + z + (level shl 28)
-                    lowResolutionIndices[lowResolutionCount++] = idx
-                    unmodifiedFlags[idx] = 0
+        try {
+            bytebuf.toBitBuf().use { buffer ->
+                val localPlayer = Player(localIndex)
+                cachedPlayers[localIndex] = localPlayer
+                val coord = CoordGrid(buffer.gBits(30))
+                localPlayer.coord = coord
+                highResolutionCount = 0
+                highResolutionIndices[highResolutionCount++] = localIndex
+                unmodifiedFlags[localIndex] = 0
+                lowResolutionCount = 0
+                for (idx in 1..<2048) {
+                    if (idx != localIndex) {
+                        val lowResolutionPositionBitpacked = buffer.gBits(18)
+                        val level = lowResolutionPositionBitpacked shr 16
+                        // Note: In osrs, the 0xFF is actually 0x255, a mixture between hexadecimal and decimal numbering.
+                        // This is likely just an oversight, but due to only the first bit being utilized,
+                        // this never causes problems in OSRS
+                        val x = lowResolutionPositionBitpacked shr 8 and 0xFF
+                        val z = lowResolutionPositionBitpacked and 0xFF
+                        lowResolutionPositions[idx] = (x shl 14) + z + (level shl 28)
+                        lowResolutionIndices[lowResolutionCount++] = idx
+                        unmodifiedFlags[idx] = 0
+                    }
                 }
             }
+        } finally {
+            bytebuf.release()
         }
     }
 
     fun decode(buffer: ByteBuf) {
         extendedInfoCount = 0
-        decodeBitCodes(buffer)
+        try {
+            decodeBitCodes(buffer)
+        } finally {
+            buffer.release()
+        }
     }
 
     private fun decodeBitCodes(byteBuf: ByteBuf) {
@@ -176,13 +184,12 @@ class PlayerInfoClient {
             if (flag and 0x1000 != 0) {
                 flag += buffer.g1() shl 16
             }
-            decodeExtendedInfoBlocks(buffer, index, player, flag)
+            decodeExtendedInfoBlocks(buffer, player, flag)
         }
     }
 
     private fun decodeExtendedInfoBlocks(
         buffer: JagByteBuf,
-        @Suppress("UNUSED_PARAMETER") index: Int,
         player: Player,
         flag: Int,
     ) {
