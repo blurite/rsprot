@@ -477,7 +477,8 @@ public class NpcInfo internal constructor(
         if (!withinDistance(localPlayerCurrentCoord, coord, viewDistance)) {
             return true
         }
-        return coord !in buildArea
+        val buildArea = this.buildArea
+        return buildArea != BuildArea.INVALID && coord !in buildArea
     }
 
     /**
@@ -485,7 +486,10 @@ public class NpcInfo internal constructor(
      * before adding it to our high resolution view.
      * @param avatar the npc avatar to check
      */
-    private fun isInBuildArea(avatar: NpcAvatar): Boolean = avatar.details.currentCoord in buildArea
+    private fun isInBuildArea(avatar: NpcAvatar): Boolean {
+        val buildArea = this.buildArea
+        return buildArea == BuildArea.INVALID || avatar.details.currentCoord in buildArea
+    }
 
     /**
      * Checks if the player has moved a greater distance from their previous coordinate
