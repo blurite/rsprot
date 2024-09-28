@@ -454,7 +454,7 @@ public class NpcInfo internal constructor(
             for (i in 0..<details.highResolutionNpcIndexCount) {
                 val npcIndex = details.highResolutionNpcIndices[i].toInt()
                 val avatar = repository.getOrNull(npcIndex) ?: continue
-                avatar.removeObserver()
+                avatar.removeObserver(localPlayerIndex)
             }
             details.highResolutionNpcIndexCount = 0
             return false
@@ -468,7 +468,7 @@ public class NpcInfo internal constructor(
             if (!removeHighResolutionNpc(details, avatar, viewDistance)) {
                 break
             }
-            avatar?.removeObserver()
+            avatar?.removeObserver(localPlayerIndex)
             details.highResolutionNpcIndexCount--
         }
         val processedCount = details.highResolutionNpcIndexCount
@@ -479,7 +479,7 @@ public class NpcInfo internal constructor(
             if (removeHighResolutionNpc(details, avatar, viewDistance)) {
                 buffer.pBits(1, 1)
                 buffer.pBits(2, 3)
-                avatar?.removeObserver()
+                avatar?.removeObserver(localPlayerIndex)
                 details.highResolutionNpcIndices[i] = NPC_INDEX_TERMINATOR
                 details.highResolutionNpcIndexCount--
                 continue
@@ -617,7 +617,7 @@ public class NpcInfo internal constructor(
                     if (!isInBuildArea(details, avatar)) {
                         continue
                     }
-                    avatar.addObserver()
+                    avatar.addObserver(localPlayerIndex)
                     val i = details.highResolutionNpcIndexCount++
                     details.highResolutionNpcIndices[i] = index.toUShort()
                     val observerFlags = avatar.extendedInfo.getLowToHighResChangeExtendedInfoFlags()
@@ -713,7 +713,7 @@ public class NpcInfo internal constructor(
         for (i in 0..<details.highResolutionNpcIndexCount) {
             val npcIndex = details.highResolutionNpcIndices[i].toInt()
             val avatar = repository.getOrNull(npcIndex) ?: continue
-            avatar.removeObserver()
+            avatar.removeObserver(localPlayerIndex)
         }
     }
 

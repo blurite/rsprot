@@ -139,7 +139,7 @@ public class NpcInfoProtocol(
     private fun prepareBitcodes() {
         for (i in 0..<NpcAvatarRepository.AVATAR_CAPACITY) {
             val avatar = avatarRepository.getOrNull(i) ?: continue
-            if (!avatar.hasObservers()) continue
+            if (!avatar.isActive()) continue
             try {
                 avatar.prepareBitcodes()
             } catch (e: Exception) {
@@ -165,7 +165,7 @@ public class NpcInfoProtocol(
                 // If there are no observers, only pre-compute the extended info blocks
                 // which get cached and could be transmitted in the future via
                 // low -> high resolution changes
-                if (!avatar.hasObservers()) {
+                if (!avatar.isActive()) {
                     avatar.extendedInfo.precomputeCached()
                 } else {
                     avatar.extendedInfo.precompute()

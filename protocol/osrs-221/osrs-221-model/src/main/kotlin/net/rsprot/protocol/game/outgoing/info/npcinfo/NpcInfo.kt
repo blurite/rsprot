@@ -419,7 +419,7 @@ public class NpcInfo internal constructor(
             for (i in 0..<highResolutionNpcIndexCount) {
                 val npcIndex = highResolutionNpcIndices[i].toInt()
                 val avatar = repository.getOrNull(npcIndex) ?: continue
-                avatar.removeObserver()
+                avatar.removeObserver(localPlayerIndex)
             }
             highResolutionNpcIndexCount = 0
             return false
@@ -433,7 +433,7 @@ public class NpcInfo internal constructor(
             if (!removeHighResolutionNpc(avatar, viewDistance)) {
                 break
             }
-            avatar?.removeObserver()
+            avatar?.removeObserver(localPlayerIndex)
             highResolutionNpcIndexCount--
         }
         val processedCount = this.highResolutionNpcIndexCount
@@ -444,7 +444,7 @@ public class NpcInfo internal constructor(
             if (removeHighResolutionNpc(avatar, viewDistance)) {
                 buffer.pBits(1, 1)
                 buffer.pBits(2, 3)
-                avatar?.removeObserver()
+                avatar?.removeObserver(localPlayerIndex)
                 highResolutionNpcIndices[i] = NPC_INDEX_TERMINATOR
                 highResolutionNpcIndexCount--
                 continue
@@ -573,7 +573,7 @@ public class NpcInfo internal constructor(
                     if (!isInBuildArea(avatar)) {
                         continue
                     }
-                    avatar.addObserver()
+                    avatar.addObserver(localPlayerIndex)
                     val i = highResolutionNpcIndexCount++
                     highResolutionNpcIndices[i] = index.toUShort()
                     val observerFlags = avatar.extendedInfo.getLowToHighResChangeExtendedInfoFlags()
@@ -660,7 +660,7 @@ public class NpcInfo internal constructor(
         for (i in 0..<highResolutionNpcIndexCount) {
             val npcIndex = highResolutionNpcIndices[i].toInt()
             val avatar = repository.getOrNull(npcIndex) ?: continue
-            avatar.removeObserver()
+            avatar.removeObserver(localPlayerIndex)
         }
     }
 

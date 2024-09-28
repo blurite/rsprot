@@ -584,7 +584,7 @@ public class NpcInfo internal constructor(
             for (i in 0..<details.highResolutionNpcIndexCount) {
                 val npcIndex = details.highResolutionNpcIndices[i].toInt()
                 val avatar = repository.getOrNull(npcIndex) ?: continue
-                avatar.removeObserver()
+                avatar.removeObserver(localPlayerIndex)
             }
             details.highResolutionNpcIndexCount = 0
             details.clearPriorities()
@@ -600,7 +600,7 @@ public class NpcInfo internal constructor(
                 break
             }
             details.highResolutionNpcIndexCount--
-            avatar?.removeObserver()
+            avatar?.removeObserver(localPlayerIndex)
             details.decrementPriority(i)
         }
         val processedCount = details.highResolutionNpcIndexCount
@@ -613,7 +613,7 @@ public class NpcInfo internal constructor(
                 buffer.pBits(2, 3)
                 details.highResolutionNpcIndices[i] = NPC_INDEX_TERMINATOR
                 details.highResolutionNpcIndexCount--
-                avatar?.removeObserver()
+                avatar?.removeObserver(localPlayerIndex)
                 details.decrementPriority(i)
                 continue
             }
@@ -774,7 +774,7 @@ public class NpcInfo internal constructor(
                             continue
                         }
                     }
-                    avatar.addObserver()
+                    avatar.addObserver(localPlayerIndex)
                     val i = details.highResolutionNpcIndexCount++
                     details.incrementPriority(
                         i,
@@ -877,7 +877,7 @@ public class NpcInfo internal constructor(
         for (i in 0..<details.highResolutionNpcIndexCount) {
             val npcIndex = details.highResolutionNpcIndices[i].toInt()
             val avatar = repository.getOrNull(npcIndex) ?: continue
-            avatar.removeObserver()
+            avatar.removeObserver(localPlayerIndex)
         }
     }
 
