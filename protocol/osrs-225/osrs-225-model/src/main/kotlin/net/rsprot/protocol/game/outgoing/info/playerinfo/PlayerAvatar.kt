@@ -24,6 +24,11 @@ public class PlayerAvatar internal constructor(
     huffmanCodec: HuffmanCodecProvider,
 ) : Avatar {
     /**
+     * The index of our local player.
+     */
+    internal var localPlayerIndex: Int = localIndex
+
+    /**
      * The preferred resize range. The player information protocol will attempt to
      * add everyone within [preferredResizeRange] tiles to high resolution.
      * If [preferredResizeRange] is equal to [Int.MAX_VALUE], resizing will be disabled

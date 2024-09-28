@@ -115,7 +115,15 @@ public class PlayerInfoProtocol(
         if (info.isDestroyed()) {
             return
         }
-        playerInfoRepository.dealloc(info.localIndex)
+        val index = info.localIndex
+        // Reset the high priority property on everyone that might be observing us
+        // Including ourselves (not that this matters, but since we allow it, we must do
+        // this step before the dealloc call).
+        for (i in 0..<PROTOCOL_CAPACITY) {
+            val otherInfo = playerInfoRepository.getOrNull(i) ?: continue
+            otherInfo.unsetHighPriority(index)
+        }
+        playerInfoRepository.dealloc(index)
     }
 
     /**

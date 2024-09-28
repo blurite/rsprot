@@ -112,6 +112,13 @@ public class PlayerInfo internal constructor(
     private var extendedInfoCount: Int = 0
 
     /**
+     * A bitset of high priority players. These players will be rendered above typical crowd
+     * when our resize range begins to decrement, as long as the given player is still within
+     * the preferred resize range threshold.
+     */
+    private val highPriorityPlayers: LongArray = LongArray(PROTOCOL_CAPACITY ushr 6)
+
+    /**
      * The flags indicating the status of the players in the previous and current cycles.
      * This is used to categorize players who are 'stationary', which implies they did not
      * move, nor did they have any extended info blocks written for them. By batching
@@ -180,6 +187,61 @@ public class PlayerInfo internal constructor(
     private fun backingBuffer(): ByteBuf = checkNotNull(buffer)
 
     override fun isDestroyed(): Boolean = this.exception != null
+
+    /**
+     * Sets the [otherPlayerAvatar] as high priority for us specifically.
+     * This means that when our local player count gets to >= 250 players,
+     * we will still keep that player rendered even if they are no longer within
+     * the range that we can still see to. It does not, however, extend past the
+     * preferred view range.
+     * @param otherPlayerAvatar the avatar to mark as high priority in relation to us.
+     */
+    public fun setHighPriority(otherPlayerAvatar: PlayerAvatar) {
+        this.setHighPriority(otherPlayerAvatar.localPlayerIndex)
+    }
+
+    /**
+     * Sets the [otherPlayerAvatar] back down to normal priority level, meaning
+     * they will not get preferential treatment in relation to everyone else
+     * at high populations, as described in [setHighPriority].
+     * @param otherPlayerAvatar the avatar to mark back down to normal priority.
+     */
+    public fun setNormalPriority(otherPlayerAvatar: PlayerAvatar) {
+        this.unsetHighPriority(otherPlayerAvatar.localPlayerIndex)
+    }
+
+    /**
+     * Checks whether the player avatar at the specified [index] is high priority.
+     * @param index the index of the player to check.
+     * @return whether the checked player is high priority.
+     */
+    private fun isHighPriority(index: Int): Boolean {
+        val longIndex = index ushr 6
+        val bit = 1L shl (index and 0x3F)
+        return this.highPriorityPlayers[longIndex] and bit != 0L
+    }
+
+    /**
+     * Sets the player at the specified [index] as high priority.
+     * @param index the index of the player to mark as high priority.
+     */
+    private fun setHighPriority(index: Int) {
+        val longIndex = index ushr 6
+        val bit = 1L shl (index and 0x3F)
+        val cur = this.highPriorityPlayers[longIndex]
+        this.highPriorityPlayers[longIndex] = cur or bit
+    }
+
+    /**
+     * Sets the player at the specified [index] as normal priority.
+     * @param index the index of the player to mark as normal priority.
+     */
+    internal fun unsetHighPriority(index: Int) {
+        val longIndex = index ushr 6
+        val bit = 1L shl (index and 0x3F)
+        val cur = this.highPriorityPlayers[longIndex]
+        this.highPriorityPlayers[longIndex] = cur and bit.inv()
+    }
 
     /**
      * Updates the render coordinate for the provided world id.
@@ -842,7 +904,9 @@ public class PlayerInfo internal constructor(
         val details = getDetailsOrNull(worldId) ?: return false
         val coord = other.avatar.currentCoord
         val rangeToCheck =
-            if (other.avatar.priority == AvatarPriority.NORMAL) {
+            if (other.avatar.priority == AvatarPriority.NORMAL ||
+                isHighPriority(other.avatar.localPlayerIndex)
+            ) {
                 this.avatar.preferredResizeRange
             } else {
                 this.avatar.resizeRange
@@ -877,7 +941,9 @@ public class PlayerInfo internal constructor(
         val details = getDetailsOrNull(worldId) ?: return false
         val coord = other.avatar.currentCoord
         val rangeToCheck =
-            if (other.avatar.priority == AvatarPriority.NORMAL) {
+            if (other.avatar.priority == AvatarPriority.NORMAL ||
+                isHighPriority(other.avatar.localPlayerIndex)
+            ) {
                 this.avatar.preferredResizeRange
             } else {
                 this.avatar.resizeRange
@@ -938,6 +1004,7 @@ public class PlayerInfo internal constructor(
         newInstance: Boolean,
     ) {
         this.localIndex = index
+        avatar.localPlayerIndex = index
         avatar.extendedInfo.localIndex = index
         this.oldSchoolClientType = oldSchoolClientType
         avatar.reset()
@@ -948,6 +1015,7 @@ public class PlayerInfo internal constructor(
         highResolutionCount = 0
         highResolutionPlayers.fill(0L)
         highResolutionExtendedInfoTrackedPlayers.fill(0L)
+        highPriorityPlayers.fill(0L)
         extendedInfoCount = 0
         extendedInfoIndices.fill(0)
         stationary.fill(0)
