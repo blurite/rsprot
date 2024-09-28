@@ -5,6 +5,7 @@ import net.rsprot.compression.provider.HuffmanCodecProvider
 import net.rsprot.protocol.common.game.outgoing.info.CoordGrid
 import net.rsprot.protocol.common.game.outgoing.info.npcinfo.NpcAvatarDetails
 import net.rsprot.protocol.common.game.outgoing.info.util.ZoneIndexStorage
+import net.rsprot.protocol.game.outgoing.info.AvatarPriority
 import net.rsprot.protocol.game.outgoing.info.filter.ExtendedInfoFilter
 import java.lang.ref.ReferenceQueue
 import java.lang.ref.SoftReference
@@ -80,6 +81,8 @@ internal class NpcAvatarRepository(
      * @param spawnCycle the game cycle on which the npc spawned into the world;
      * for static NPCs, this would always be zero. This is only used by the C++ clients.
      * @param direction the direction that the npc will face on spawn (see table above)
+     * @param priority the priority group a NPC belongs into. See [NpcInfo.setPriorityCaps] for greater
+     * documentation.
      * @return a npc avatar with the above provided details.
      */
     fun getOrAlloc(
@@ -90,6 +93,7 @@ internal class NpcAvatarRepository(
         z: Int,
         spawnCycle: Int = 0,
         direction: Int = 0,
+        priority: AvatarPriority = AvatarPriority.NORMAL,
     ): NpcAvatar {
         val existing = queue.poll()?.get()
         if (existing != null) {
@@ -102,6 +106,7 @@ internal class NpcAvatarRepository(
             details.spawnCycle = spawnCycle
             details.direction = direction
             details.allocateCycle = NpcInfoProtocol.cycleCount
+            details.priorityBitcode = priority.bitcode
             zoneIndexStorage.add(index, details.currentCoord)
             elements[index] = existing
             return existing
@@ -123,6 +128,7 @@ internal class NpcAvatarRepository(
                 z,
                 spawnCycle,
                 direction,
+                priority,
                 NpcInfoProtocol.cycleCount,
                 extendedInfo,
                 zoneIndexStorage,

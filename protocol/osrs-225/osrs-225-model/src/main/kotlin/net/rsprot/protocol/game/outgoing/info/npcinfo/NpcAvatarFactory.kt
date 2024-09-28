@@ -4,6 +4,7 @@ import io.netty.buffer.ByteBufAllocator
 import net.rsprot.compression.provider.HuffmanCodecProvider
 import net.rsprot.protocol.common.checkCommunicationThread
 import net.rsprot.protocol.common.game.outgoing.info.util.ZoneIndexStorage
+import net.rsprot.protocol.game.outgoing.info.AvatarPriority
 import net.rsprot.protocol.game.outgoing.info.filter.ExtendedInfoFilter
 
 /**
@@ -66,6 +67,8 @@ public class NpcAvatarFactory(
      * @param spawnCycle the game cycle on which the npc spawned into the world;
      * for static NPCs, this would always be zero. This is only used by the C++ clients.
      * @param direction the direction that the npc will face on spawn (see table above)
+     * @param priority the priority group a NPC belongs into. See [NpcInfo.setPriorityCaps] for greater
+     * documentation.
      * @return a npc avatar with the above provided details.
      */
     public fun alloc(
@@ -76,6 +79,7 @@ public class NpcAvatarFactory(
         z: Int,
         spawnCycle: Int = 0,
         direction: Int = 0,
+        priority: AvatarPriority = AvatarPriority.NORMAL,
     ): NpcAvatar {
         checkCommunicationThread()
         return avatarRepository.getOrAlloc(
@@ -86,6 +90,7 @@ public class NpcAvatarFactory(
             z,
             spawnCycle,
             direction,
+            priority,
         )
     }
 

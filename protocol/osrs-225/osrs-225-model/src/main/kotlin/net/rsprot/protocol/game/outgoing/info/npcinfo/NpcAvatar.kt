@@ -5,6 +5,7 @@ import net.rsprot.protocol.common.checkCommunicationThread
 import net.rsprot.protocol.common.game.outgoing.info.CoordGrid
 import net.rsprot.protocol.common.game.outgoing.info.npcinfo.NpcAvatarDetails
 import net.rsprot.protocol.common.game.outgoing.info.util.ZoneIndexStorage
+import net.rsprot.protocol.game.outgoing.info.AvatarPriority
 import net.rsprot.protocol.game.outgoing.info.npcinfo.util.NpcCellOpcodes
 import net.rsprot.protocol.game.outgoing.info.util.Avatar
 import java.util.concurrent.atomic.AtomicInteger
@@ -35,6 +36,18 @@ import java.util.concurrent.atomic.AtomicInteger
  * @param spawnCycle the game cycle on which the npc spawned into the world;
  * for static NPCs, this would always be zero. This is only used by the C++ clients.
  * @param direction the direction that the npc will face on spawn (see table above)
+ * @param priority the priority that the avatar will have. The default is [AvatarPriority.NORMAL].
+ * If the priority is set to [AvatarPriority.LOW], the NPC will only render if there are enough
+ * slots leftover for the low priority group. As an example, if the low priority cap is set to 50 elements
+ * and there are already 50 other low priority avatars rendering to a player, this avatar will simply
+ * not render at all, even if there are slots leftover in the [AvatarPriority.NORMAL] group.
+ * For [AvatarPriority.NORMAL], both groups are accessible, although they will prefer the normal group.
+ * Low priority group will be used if normal group has no more free slots leftover.
+ * The priorities are especially useful to limit how many pets a player can see at a time. It is very common
+ * for servers to give everyone pets. During high population events, it is very easy to hit the 250 pet
+ * threshold in a local area, which could result in important NPCs, such as shopkeepers and whatnot
+ * from not rendering. Limiting the low priority count ensures that those arguably more important NPCs will
+ * still be able to render with hundreds of pets around.
  * @property extendedInfo the extended info, commonly referred to as "masks", will track everything relevant
  * inside itself. Setting properties such as a spotanim would be done through this.
  * The [extendedInfo] is also responsible for caching the non-temporary blocks,
@@ -49,6 +62,7 @@ public class NpcAvatar internal constructor(
     z: Int,
     spawnCycle: Int = 0,
     direction: Int = 0,
+    priority: AvatarPriority = AvatarPriority.NORMAL,
     allocateCycle: Int,
     public val extendedInfo: NpcAvatarExtendedInfo,
     public val zoneIndexStorage: ZoneIndexStorage,
@@ -66,6 +80,7 @@ public class NpcAvatar internal constructor(
             z,
             spawnCycle,
             direction,
+            priority.bitcode,
             allocateCycle,
         )
 

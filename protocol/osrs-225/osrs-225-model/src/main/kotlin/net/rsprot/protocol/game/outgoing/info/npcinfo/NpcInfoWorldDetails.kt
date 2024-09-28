@@ -35,6 +35,36 @@ internal class NpcInfoWorldDetails(
     internal var buildArea: BuildArea = BuildArea.INVALID
 
     /**
+     * The maximum number of NPCs that can render at once in the
+     * [net.rsprot.protocol.game.outgoing.info.AvatarPriority.LOW] priority group.
+     */
+    internal var lowPriorityCap: Int = MAX_HIGH_RESOLUTION_NPCS
+
+    /**
+     * The current number of NPCs occupying the low priority group.
+     */
+    internal var lowPriorityCount: Int = 0
+
+    /**
+     * The maximum number of NPCs that can render at once in the
+     * [net.rsprot.protocol.game.outgoing.info.AvatarPriority.NORMAL] priority group.
+     * Note that any normal priority NPC will be able to make use of [lowPriorityCap] if the
+     * normal priority soft cap has no more free slots.
+     */
+    internal var normalPrioritySoftCap: Int = 0
+
+    /**
+     * The current number of NPCs occupying the normal priority group.
+     */
+    internal var normalPriorityCount: Int = 0
+
+    /**
+     * Priority flags for currently tracked NPCs, one bit per possible high resolution slot.
+     * A flag of 0x1 implies low priority; if the flag isn't set, that NPC is in normal priority.
+     */
+    private var highResolutionPriorityFlags = LongArray(4)
+
+    /**
      * The indices of the high resolution NPCs, in the order as they came in.
      * This is a replica of how the client keeps track of NPCs.
      */
@@ -133,6 +163,83 @@ internal class NpcInfoWorldDetails(
     }
 
     /**
+     * Decrements the priority counters for the given high resolution slot [index].
+     * @param index the high resolution (not absolute) index of the NPC, a value from 0 to 250.
+     */
+    internal fun decrementPriority(index: Int) {
+        if (isLowPriority(index)) {
+            unsetLowPriority(index)
+            if (lowPriorityCount > 0) {
+                --lowPriorityCount
+            }
+        } else {
+            if (normalPriorityCount > 0) {
+                --normalPriorityCount
+            }
+        }
+    }
+
+    /**
+     * Increments the priority for a given slot [index].
+     * If the NPC is not low priority, but our normal priority group is full, we instead
+     * assign that NPC to the low priority group.
+     * @param index the high resolution (not absolute) index of the NPC, a value from 0 to 250.
+     * @param isLowPriority whether the NPC belongs in the low priority category.
+     */
+    internal fun incrementPriority(
+        index: Int,
+        isLowPriority: Boolean,
+    ) {
+        if (isLowPriority || (normalPriorityCount >= normalPrioritySoftCap)) {
+            setLowPriority(index)
+            lowPriorityCount++
+        } else {
+            normalPriorityCount++
+        }
+    }
+
+    /**
+     * Checks whether the npc at high resolution slot [index] is in the low priority group.
+     * @param index the high resolution (not absolute) index of the NPC, a value from 0 to 250.
+     */
+    private fun isLowPriority(index: Int): Boolean {
+        val longIndex = index ushr 6
+        val bit = 1L shl (index and 0x3F)
+        return this.highResolutionPriorityFlags[longIndex] and bit != 0L
+    }
+
+    /**
+     * Marks the npc at high resolution slot [index] as low priority.
+     * @param index the high resolution (not absolute) index of the NPC, a value from 0 to 250.
+     */
+    internal fun setLowPriority(index: Int) {
+        val longIndex = index ushr 6
+        val bit = 1L shl (index and 0x3F)
+        val cur = this.highResolutionPriorityFlags[longIndex]
+        this.highResolutionPriorityFlags[longIndex] = cur or bit
+    }
+
+    /**
+     * Unmarks the npc at high resolution slot [index] as low priority.
+     * @param index the high resolution (not absolute) index of the NPC, a value from 0 to 250.
+     */
+    internal fun unsetLowPriority(index: Int) {
+        val longIndex = index ushr 6
+        val bit = 1L shl (index and 0x3F)
+        val cur = this.highResolutionPriorityFlags[longIndex]
+        this.highResolutionPriorityFlags[longIndex] = cur and bit.inv()
+    }
+
+    /**
+     * Clears any priority flags currently set and resets the priority counts to zero.
+     */
+    internal fun clearPriorities() {
+        this.highResolutionPriorityFlags.fill(0L)
+        this.lowPriorityCount = 0
+        this.normalPriorityCount = 0
+    }
+
+    /**
      * Resets all the properties of this world details implementation, allowing
      * it to be re-used for another player.
      * @param worldId the new world id to be used for these details.
@@ -148,6 +255,11 @@ internal class NpcInfoWorldDetails(
         this.extendedInfoCount = 0
         this.extendedInfoIndices.fill(0u)
         this.observerExtendedInfoFlags.reset()
+        this.highResolutionPriorityFlags.fill(0L)
+        this.lowPriorityCap = MAX_HIGH_RESOLUTION_NPCS
+        this.normalPrioritySoftCap = 0
+        this.lowPriorityCount = 0
+        this.normalPriorityCount = 0
         this.buffer = null
     }
 

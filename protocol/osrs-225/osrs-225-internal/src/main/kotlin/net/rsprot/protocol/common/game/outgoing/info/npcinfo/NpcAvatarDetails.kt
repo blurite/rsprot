@@ -19,6 +19,8 @@ import net.rsprot.protocol.common.game.outgoing.info.CoordGrid
  * to be used with static npcs that respawn. After death, inaccessible should be set to true, and
  * when the npc respawns, it should be set back to false. This allows us to not re-allocate avatars
  * which furthermore requires cleanup and micromanaging.
+ * @property priorityBitcode the bitcode indicating whether the NPC belongs in normal or low priority
+ * group.
  */
 public class NpcAvatarDetails internal constructor(
     public var index: Int,
@@ -31,6 +33,7 @@ public class NpcAvatarDetails internal constructor(
     public var spawnCycle: Int = 0,
     public var direction: Int = 0,
     public var inaccessible: Boolean = false,
+    public var priorityBitcode: Int = 0,
     public var allocateCycle: Int,
 ) {
     public constructor(
@@ -41,6 +44,7 @@ public class NpcAvatarDetails internal constructor(
         z: Int,
         spawnCycle: Int = 0,
         direction: Int = 0,
+        priorityBitcode: Int = 0,
         allocateCycle: Int,
     ) : this(
         index,
@@ -48,6 +52,7 @@ public class NpcAvatarDetails internal constructor(
         CoordGrid(level, x, z),
         spawnCycle = spawnCycle,
         direction = direction,
+        priorityBitcode = priorityBitcode,
         allocateCycle = allocateCycle,
     )
 
@@ -65,7 +70,7 @@ public class NpcAvatarDetails internal constructor(
     /**
      * Whether the npc is teleporting. This means the npc will render as jumping
      * if the destination is > 2 tiles away, and normal walk/run/in-between if the
-     * distance is 2 tiles or less.
+     * distance is 2 tiles or fewer.
      */
     public fun isTeleporting(): Boolean = movementType and (TELE or TELEJUMP) != 0
 
