@@ -729,10 +729,8 @@ public class PlayerInfo internal constructor(
         if (!coord.inDistance(this.avatar.currentCoord, this.avatar.resizeRange)) {
             return false
         }
-        if (coord !in buildArea) {
-            return false
-        }
-        return true
+        val buildArea = this.buildArea
+        return buildArea == BuildArea.INVALID || coord in buildArea
     }
 
     /**
@@ -758,10 +756,8 @@ public class PlayerInfo internal constructor(
         if (!coord.inDistance(this.avatar.currentCoord, this.avatar.resizeRange)) {
             return false
         }
-        if (coord !in buildArea) {
-            return false
-        }
-        return true
+        val buildArea = this.buildArea
+        return buildArea == BuildArea.INVALID || coord in buildArea
     }
 
     /**
