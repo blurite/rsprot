@@ -116,7 +116,7 @@ class NpcInfoBenchmark {
         protocol.update()
         for (i in 1..2046) {
             val info = protocol[i]
-            when (val packet = info.toNpcInfoPacket()) {
+            when (val packet = info.toPacket()) {
                 is NpcInfoSmall -> packet.release()
                 is NpcInfoLarge -> packet.release()
                 else -> throw IllegalStateException("Unknown packet type: $packet")

@@ -237,7 +237,7 @@ public class NpcInfoProtocol(
 
     /**
      * Submits an exception to a specific player's npc info packet, which will be propagated further
-     * whenever the server tries to call the [NpcInfo.toNpcInfoPacket] function, allowing the server to properly
+     * whenever the server tries to call the [NpcInfo.toPacket] function, allowing the server to properly
      * handle exceptions for a given player despite it being calculated for the entire server in one go.
      * @param index the index of the player who caught an exception during their npc info processing
      * @param exception the exception caught during processing

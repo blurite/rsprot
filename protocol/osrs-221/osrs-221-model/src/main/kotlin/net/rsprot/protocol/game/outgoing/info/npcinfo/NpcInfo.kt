@@ -133,7 +133,7 @@ public class NpcInfo internal constructor(
 
     /**
      * The exception that was caught during the processing of this player's npc info packet.
-     * This exception will be propagated further during the [toNpcInfoPacket] function call,
+     * This exception will be propagated further during the [toPacket] function call,
      * allowing the server to handle it properly at a per-player basis.
      */
     @Volatile
@@ -197,7 +197,17 @@ public class NpcInfo internal constructor(
      * Turns this npc info structure into a respective npc info packet, depending
      * on the current known view distance.
      */
-    public fun toNpcInfoPacket(): OutgoingGameMessage {
+    @Deprecated(
+        message = "Deprecated. Prefer toPacket() function instead for consistency.",
+        replaceWith = ReplaceWith("toPacket()"),
+    )
+    public fun toNpcInfoPacket(): OutgoingGameMessage = toPacket()
+
+    /**
+     * Turns this npc info structure into a respective npc info packet, depending
+     * on the current known view distance.
+     */
+    public fun toPacket(): OutgoingGameMessage {
         val exception = this.exception
         if (exception != null) {
             throw InfoProcessException(
