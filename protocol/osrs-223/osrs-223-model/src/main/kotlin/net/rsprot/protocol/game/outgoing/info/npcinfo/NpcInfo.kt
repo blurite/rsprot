@@ -589,7 +589,7 @@ public class NpcInfo internal constructor(
         val startZ = ((centerZ - viewDistance) shr 3).coerceAtLeast(0)
         val endX = ((centerX + viewDistance) shr 3).coerceAtMost(0x7FF)
         val endZ = ((centerZ + viewDistance) shr 3).coerceAtMost(0x7FF)
-        for (x in startX..endX) {
+        loop@for (x in startX..endX) {
             for (z in startZ..endZ) {
                 val npcs = this.zoneIndexStorage.get(level, x, z) ?: continue
                 for (k in 0..<npcs.size) {
@@ -601,7 +601,7 @@ public class NpcInfo internal constructor(
                         continue
                     }
                     if (details.highResolutionNpcIndexCount >= MAX_HIGH_RESOLUTION_NPCS) {
-                        break
+                        break@loop
                     }
                     val avatar = repository.getOrNull(index) ?: continue
                     if (avatar.details.inaccessible) {
