@@ -9,6 +9,7 @@ import net.rsprot.buffer.extensions.toJagByteBuf
 import net.rsprot.protocol.common.checkCommunicationThread
 import net.rsprot.protocol.common.client.OldSchoolClientType
 import net.rsprot.protocol.common.game.outgoing.info.CoordGrid
+import net.rsprot.protocol.game.outgoing.info.AvatarPriority
 import net.rsprot.protocol.game.outgoing.info.ByteBufRecycler
 import net.rsprot.protocol.game.outgoing.info.ObserverExtendedInfoFlags
 import net.rsprot.protocol.game.outgoing.info.exceptions.InfoProcessException
@@ -840,7 +841,13 @@ public class PlayerInfo internal constructor(
         val worldId = other.avatar.worldId
         val details = getDetailsOrNull(worldId) ?: return false
         val coord = other.avatar.currentCoord
-        if (!coord.inDistance(details.renderCoord, this.avatar.resizeRange)) {
+        val rangeToCheck =
+            if (other.avatar.priority == AvatarPriority.NORMAL) {
+                this.avatar.preferredResizeRange
+            } else {
+                this.avatar.resizeRange
+            }
+        if (!coord.inDistance(details.renderCoord, rangeToCheck)) {
             return false
         }
         val buildArea = details.buildArea
@@ -869,7 +876,13 @@ public class PlayerInfo internal constructor(
         val worldId = other.avatar.worldId
         val details = getDetailsOrNull(worldId) ?: return false
         val coord = other.avatar.currentCoord
-        if (!coord.inDistance(details.renderCoord, this.avatar.resizeRange)) {
+        val rangeToCheck =
+            if (other.avatar.priority == AvatarPriority.NORMAL) {
+                this.avatar.preferredResizeRange
+            } else {
+                this.avatar.resizeRange
+            }
+        if (!coord.inDistance(details.renderCoord, rangeToCheck)) {
             return false
         }
         val buildArea = details.buildArea

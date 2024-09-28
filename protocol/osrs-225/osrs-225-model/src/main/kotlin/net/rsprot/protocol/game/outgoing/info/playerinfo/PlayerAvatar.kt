@@ -6,6 +6,7 @@ import net.rsprot.protocol.common.checkCommunicationThread
 import net.rsprot.protocol.common.game.outgoing.info.CoordGrid
 import net.rsprot.protocol.common.game.outgoing.info.playerinfo.encoder.PlayerExtendedInfoEncoders
 import net.rsprot.protocol.game.outgoing.info.AvatarExtendedInfoWriter
+import net.rsprot.protocol.game.outgoing.info.AvatarPriority
 import net.rsprot.protocol.game.outgoing.info.filter.ExtendedInfoFilter
 import net.rsprot.protocol.game.outgoing.info.util.Avatar
 
@@ -29,7 +30,7 @@ public class PlayerAvatar internal constructor(
      * and everyone will be put to high resolution. The extended information may be
      * disabled for these players as a result, to avoid buffer overflows.
      */
-    private var preferredResizeRange: Int = DEFAULT_RESIZE_RANGE
+    internal var preferredResizeRange: Int = DEFAULT_RESIZE_RANGE
 
     /**
      * The current range at which other players can be observed.
@@ -65,6 +66,17 @@ public class PlayerAvatar internal constructor(
      */
     public var worldId: Int = PlayerInfo.ROOT_WORLD
         private set
+
+    /**
+     * The default priority for player avatars, defaulting to [AvatarPriority.LOW].
+     * If set to [AvatarPriority.NORMAL], this avatar will be rendered to everyone
+     * within the [preferredResizeRange], regardless of if [resizeRange] itself
+     * has decreased. This is noticeable particularly in highly populated areas.
+     * Developers can use this feature to give higher priority to staff members and
+     * other important individuals, ensuring that even when there are >= 250 players
+     * around, these important individuals will render to everyone.
+     */
+    internal var priority: AvatarPriority = AvatarPriority.LOW
 
     /**
      * The last known coordinate of this player. This property will be used in conjunction
@@ -203,6 +215,25 @@ public class PlayerAvatar internal constructor(
      * resizing is disabled and [getResizeRange] is what is used as a constant.
      */
     public fun getPreferredResizeRange(): Int = this.preferredResizeRange
+
+    /**
+     * Sets this avatar as high priority, meaning they will be rendered in large crowds
+     * if the size of the crowd causes the view range to decrease below the preferred
+     * range. As an example, a typical preferred range is 15 tiles, but if there's
+     * a large crowd of people around, it might drop down to say 5 tiles. If there's
+     * a player that has been marked as high priority 10 tiles away from us,
+     * they will still render to us if marked as high priority.
+     */
+    public fun setHighPriority() {
+        this.priority = AvatarPriority.NORMAL
+    }
+
+    /**
+     * Sets the avatar as normal priority. This reverses the effects of [setHighPriority].
+     */
+    public fun setNormalPriority() {
+        this.priority = AvatarPriority.LOW
+    }
 
     /**
      * Resizes the view range according to the number of high resolution players currently observed.
