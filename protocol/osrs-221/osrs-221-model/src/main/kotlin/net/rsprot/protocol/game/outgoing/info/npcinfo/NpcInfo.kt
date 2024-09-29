@@ -315,7 +315,7 @@ public class NpcInfo internal constructor(
      * in high resolution more efficient, as we can avoid distance checks against every
      * NPC, and only do so against the player's last coordinate.
      */
-    public fun afterUpdate() {
+    internal fun afterUpdate() {
         this.localPlayerLastCoord = localPlayerCurrentCoord
         extendedInfoCount = 0
         observerExtendedInfoFlags.reset()
