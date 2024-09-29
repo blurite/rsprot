@@ -31,14 +31,18 @@ import net.rsprot.protocol.message.OutgoingGameMessage
  * and set the value of this property to 128 - ensuring that the projectile
  * will appear to fly completely vertically, with no horizontal movement whatsoever.
  * In the event inspector, this property is called 'distanceOffset'.
- * @property sourceIndex the index of the pathing entity from whom the projectile is shot.
+ * @property sourceIndex the index of the pathing entity from whom the projectile comes.
  * If the value is 0, the projectile will not be locked to any source entity.
- * If the source avatar is a player, add 0x10000 to the real index value (0-2048).
- * If the source avatar is a NPC, set the index as it is.
+ *
+ * If the source avatar is a player, set the value as `-(index + 1)`
+ *
+ * If the source avatar is a NPC, set the value as `(index + 1)`
  * @property targetIndex the index of the pathing entity at whom the projectile is shot.
  * If the value is 0, the projectile will not be locked to any target entity.
- * If the target avatar is a player, add 0x10000 to the real index value (0-2048).
- * If the target avatar is a NPC, set the index as it is.
+ *
+ * If the target avatar is a player, set the value as `-(index + 1)`
+ *
+ * If the target avatar is a NPC, set the value as `(index + 1)`
  * @property zoneX the x coordinate of the zone's south-western corner in the
  * build area.
  * @property xInZone the start x coordinate of the projectile within the zone it is in,
