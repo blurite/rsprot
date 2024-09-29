@@ -284,7 +284,18 @@ public class LoginConnectionHandler<R>(
             networkLog(logger) {
                 "Successful game login from channel '${ctx.channel()}': $block"
             }
-            networkService.gameConnectionHandler.onLogin(responseHandler, block)
+            val executor = networkService.loginHandlers.loginFlowExecutor
+            if (executor != null) {
+                executor.submit {
+                    try {
+                        networkService.gameConnectionHandler.onLogin(responseHandler, block)
+                    } catch (t: Throwable) {
+                        exceptionCaught(ctx, t)
+                    }
+                }
+            } else {
+                networkService.gameConnectionHandler.onLogin(responseHandler, block)
+            }
         }
     }
 
@@ -325,7 +336,18 @@ public class LoginConnectionHandler<R>(
             networkLog(logger) {
                 "Successful game reconnection from channel '${ctx.channel()}': $block"
             }
-            networkService.gameConnectionHandler.onReconnect(responseHandler, block)
+            val executor = networkService.loginHandlers.loginFlowExecutor
+            if (executor != null) {
+                executor.submit {
+                    try {
+                        networkService.gameConnectionHandler.onReconnect(responseHandler, block)
+                    } catch (t: Throwable) {
+                        exceptionCaught(ctx, t)
+                    }
+                }
+            } else {
+                networkService.gameConnectionHandler.onReconnect(responseHandler, block)
+            }
         }
     }
 

@@ -10,6 +10,8 @@ import net.rsprot.protocol.loginprot.incoming.pow.ProofOfWorkProvider
 import net.rsprot.protocol.loginprot.incoming.pow.challenges.ChallengeWorker
 import net.rsprot.protocol.loginprot.incoming.pow.challenges.DefaultChallengeWorker
 import net.rsprot.protocol.loginprot.incoming.pow.challenges.sha256.DefaultSha256ProofOfWorkProvider
+import java.util.concurrent.ExecutorService
+import java.util.concurrent.ForkJoinPool
 
 /**
  * The handlers for anything to do with the login procedure.
@@ -25,6 +27,11 @@ import net.rsprot.protocol.loginprot.incoming.pow.challenges.sha256.DefaultSha25
  * @property proofOfWorkChallengeWorker the worker used to verify the validity of the challenge,
  * allowing servers to execute this off of another thread. By default, this will be
  * executed via the calling thread, as this is extremely fast to check.
+ * @property loginFlowExecutor the executor used to call [net.rsprot.protocol.api.GameConnectionHandler.onLogin]
+ * and [net.rsprot.protocol.api.GameConnectionHandler.onReconnect] functions. If the value is set to
+ * null, the function will be called directly from Netty's own threads. The default implementation
+ * is a ForkJoinPool to ensure that servers don't end up blocking Netty's threads.
+ * Servers which already ensure that can simply disable this.
  * @property suppressInvalidLoginProts whether to suppress and kill the channel whenever an invalid
  * login prot is received. This can be useful if the server is susceptible to web crawlers and
  * anything of such nature which could lead into a lot of useless errors being thrown.
@@ -38,6 +45,7 @@ public class LoginHandlers
         public val loginDecoderService: LoginDecoderService = DefaultLoginDecoderService(),
         public val proofOfWorkProvider: ProofOfWorkProvider<*, *> = DefaultSha256ProofOfWorkProvider(1),
         public val proofOfWorkChallengeWorker: ChallengeWorker = DefaultChallengeWorker,
+        public val loginFlowExecutor: ExecutorService? = ForkJoinPool.commonPool(),
         public val suppressInvalidLoginProts: Boolean = false,
     ) {
         override fun equals(other: Any?): Boolean {
@@ -51,6 +59,7 @@ public class LoginHandlers
             if (loginDecoderService != other.loginDecoderService) return false
             if (proofOfWorkProvider != other.proofOfWorkProvider) return false
             if (proofOfWorkChallengeWorker != other.proofOfWorkChallengeWorker) return false
+            if (loginFlowExecutor != other.loginFlowExecutor) return false
             if (suppressInvalidLoginProts != other.suppressInvalidLoginProts) return false
 
             return true
@@ -62,6 +71,7 @@ public class LoginHandlers
             result = 31 * result + loginDecoderService.hashCode()
             result = 31 * result + proofOfWorkProvider.hashCode()
             result = 31 * result + proofOfWorkChallengeWorker.hashCode()
+            result = 31 * result + loginFlowExecutor.hashCode()
             result = 31 * result + suppressInvalidLoginProts.hashCode()
             return result
         }
@@ -73,6 +83,7 @@ public class LoginHandlers
                 "loginDecoderService=$loginDecoderService, " +
                 "proofOfWorkProvider=$proofOfWorkProvider, " +
                 "proofOfWorkChallengeWorker=$proofOfWorkChallengeWorker, " +
+                "loginFlowExecutor=$loginFlowExecutor, " +
                 "suppressInvalidLoginProts=$suppressInvalidLoginProts" +
                 ")"
     }
