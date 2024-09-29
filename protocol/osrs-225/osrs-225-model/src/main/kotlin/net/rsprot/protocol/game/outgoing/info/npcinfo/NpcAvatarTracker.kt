@@ -1,5 +1,6 @@
 package net.rsprot.protocol.game.outgoing.info.npcinfo
 
+import net.rsprot.protocol.common.RSProtFlags
 import net.rsprot.protocol.game.outgoing.info.playerinfo.PlayerInfoProtocol.Companion.PROTOCOL_CAPACITY
 import java.util.concurrent.atomic.AtomicInteger
 import java.util.concurrent.atomic.AtomicLongArray
@@ -34,7 +35,10 @@ public class NpcAvatarTracker {
      * Each bit that is set to true here corresponds to the index of the player that
      * is observing that NPC.
      */
-    private val observingPlayers: AtomicLongArray = AtomicLongArray(LONGS_IN_USE)
+    private val observingPlayers: AtomicLongArray =
+        AtomicLongArray(
+            if (!trackIndices) 0 else LONGS_IN_USE,
+        )
 
     /**
      * A cached read-only Int set providing easy view over all the players observing
@@ -47,6 +51,10 @@ public class NpcAvatarTracker {
      * @param index the index of the player to add to this set.
      */
     public fun add(index: Int) {
+        if (!trackIndices) {
+            counter.incrementAndGet()
+            return
+        }
         if (setObservingPlayer(index)) {
             counter.incrementAndGet()
         }
@@ -57,6 +65,10 @@ public class NpcAvatarTracker {
      * @param index the index of the player to remove from this set.
      */
     public fun remove(index: Int) {
+        if (!trackIndices) {
+            counter.decrementAndGet()
+            return
+        }
         if (unsetObservingPlayer(index)) {
             counter.decrementAndGet()
         }
@@ -67,13 +79,19 @@ public class NpcAvatarTracker {
      * NPC avatar is being observed by.
      * @return a set of all the player indices observing this NPC.
      */
-    public fun getCachedSet(): AvatarSet = cachedSet
+    public fun getCachedSet(): AvatarSet {
+        if (!trackIndices) {
+            throw IllegalAccessException("Player avatar index tracking has been disabled.")
+        }
+        return cachedSet
+    }
 
     /**
      * Resets all the tracking metrics for this avatar tracker.
      */
     public fun reset() {
         counter.set(0)
+        if (!trackIndices) return
         for (i in 0..<LONGS_IN_USE) {
             observingPlayers.set(i, 0)
         }
@@ -297,5 +315,14 @@ public class NpcAvatarTracker {
          * The number of longs in use to match our 2048 player indices threshold.
          */
         private const val LONGS_IN_USE: Int = PROTOCOL_CAPACITY ushr 6
+
+        /**
+         * Whether to track player indices from the NPC's perspective.
+         * If this is set to false, we will not be flagging player indices that
+         * are tracking each NPC. That tracking appears to cause ~13% performance hit
+         * in our multithreaded benchmark. If servers don't make use of this, they can
+         * opt out of it and gain that performance back.
+         */
+        private val trackIndices = RSProtFlags.npcPlayerAvatarTracking
     }
 }

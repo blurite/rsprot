@@ -75,6 +75,13 @@ public object RSProtFlags {
         )
 
     @JvmStatic
+    public val npcPlayerAvatarTracking: Boolean =
+        getBoolean(
+            "npcPlayerAvatarTracking",
+            true,
+        )
+
+    @JvmStatic
     public val networkLogging: LogLevel =
         when (networkLoggingString) {
             "off" -> LogLevel.OFF
@@ -117,6 +124,7 @@ public object RSProtFlags {
         log("clientscriptVerification", clientscriptVerification)
         log("networkLogging", networkLoggingString)
         log("js5Logging", js5LoggingString)
+        log("npcPlayerAvatarTracking", npcPlayerAvatarTracking)
     }
 
     private fun getBoolean(

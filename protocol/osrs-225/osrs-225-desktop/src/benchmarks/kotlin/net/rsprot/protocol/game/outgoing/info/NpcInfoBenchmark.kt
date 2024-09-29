@@ -42,6 +42,10 @@ import kotlin.random.Random
 @Measurement(iterations = 3, time = 10, timeUnit = TimeUnit.SECONDS)
 @Fork(3)
 class NpcInfoBenchmark {
+    init {
+        System.setProperty("net.rsprot.protocol.internal.npcPlayerAvatarTracking", "true")
+    }
+
     private lateinit var protocol: NpcInfoProtocol
     private val random: Random = Random(0)
     private lateinit var serverNpcs: List<Npc>

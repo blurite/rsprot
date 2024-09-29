@@ -76,6 +76,13 @@ public object RSProtFlags {
             50,
         )
 
+    @JvmStatic
+    public val npcPlayerAvatarTracking: Boolean =
+        getBoolean(
+            "npcPlayerAvatarTracking",
+            true,
+        )
+
     init {
         log("development", development)
         log("inventoryObjCheck", inventoryObjCheck)
@@ -83,6 +90,7 @@ public object RSProtFlags {
         log("clientscriptVerification", clientscriptVerification)
         log("networkLogging", networkLogging)
         log("js5Logging", js5Logging)
+        log("npcPlayerAvatarTracking", npcPlayerAvatarTracking)
     }
 
     private fun getBoolean(
