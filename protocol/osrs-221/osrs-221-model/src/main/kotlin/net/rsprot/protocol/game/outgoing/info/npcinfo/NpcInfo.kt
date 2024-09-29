@@ -147,7 +147,7 @@ public class NpcInfo internal constructor(
      * initialized for this cycle.
      */
     @Throws(IllegalStateException::class)
-    public fun backingBuffer(): ByteBuf = checkNotNull(buffer)
+    private fun backingBuffer(): ByteBuf = checkNotNull(buffer)
 
     /**
      * Sets the view distance, meaning how far the player can see NPCs.

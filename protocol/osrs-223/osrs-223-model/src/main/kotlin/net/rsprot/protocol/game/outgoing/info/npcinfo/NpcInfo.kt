@@ -265,7 +265,7 @@ public class NpcInfo internal constructor(
      * initialized for this cycle.
      */
     @Throws(IllegalStateException::class)
-    public fun backingBuffer(worldId: Int): ByteBuf = checkNotNull(getDetails(worldId).buffer)
+    private fun backingBuffer(worldId: Int): ByteBuf = checkNotNull(getDetails(worldId).buffer)
 
     /**
      * Returns the backing byte buffer holding all the computed information.
