@@ -83,6 +83,13 @@ public object RSProtFlags {
             true,
         )
 
+    @JvmStatic
+    public val filterMissingPacketsInClient: Boolean =
+        getBoolean(
+            "filterMissingPacketsInClient",
+            true,
+        )
+
     init {
         log("development", development)
         log("inventoryObjCheck", inventoryObjCheck)
@@ -91,6 +98,7 @@ public object RSProtFlags {
         log("networkLogging", networkLogging)
         log("js5Logging", js5Logging)
         log("npcPlayerAvatarTracking", npcPlayerAvatarTracking)
+        log("filterMissingPacketsInClient", filterMissingPacketsInClient)
     }
 
     private fun getBoolean(
