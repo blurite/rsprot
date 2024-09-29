@@ -108,10 +108,11 @@ public class NpcAvatarTracker {
     private fun setObservingPlayer(index: Int): Boolean {
         val longIndex = index ushr 6
         val bit = 1L shl (index and 0x3F)
+        val players = this.observingPlayers
         while (true) {
-            val cur = this.observingPlayers[longIndex]
+            val cur = players[longIndex]
             val assigned =
-                this.observingPlayers.weakCompareAndSetVolatile(
+                players.weakCompareAndSetVolatile(
                     longIndex,
                     cur,
                     cur or bit,
@@ -129,10 +130,11 @@ public class NpcAvatarTracker {
     private fun unsetObservingPlayer(index: Int): Boolean {
         val longIndex = index ushr 6
         val bit = 1L shl (index and 0x3F)
+        val players = this.observingPlayers
         while (true) {
-            val cur = this.observingPlayers[longIndex]
+            val cur = players[longIndex]
             val assigned =
-                this.observingPlayers.weakCompareAndSetVolatile(
+                players.weakCompareAndSetVolatile(
                     longIndex,
                     cur,
                     cur and bit.inv(),
