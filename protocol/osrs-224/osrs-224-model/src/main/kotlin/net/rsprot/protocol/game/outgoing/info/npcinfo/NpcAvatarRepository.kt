@@ -140,8 +140,13 @@ internal class NpcAvatarRepository(
      * @param avatar the avatar to release.
      */
     fun release(avatar: NpcAvatar) {
-        zoneIndexStorage.remove(avatar.details.index, avatar.details.currentCoord)
-        this.elements[avatar.details.index] = null
+        val index = avatar.details.index
+        // Ensure the avatars share the same reference!
+        require(this.elements[index] === avatar) {
+            "Attempting to release an invalid NPC avatar: $avatar, ${this.elements[index]}"
+        }
+        zoneIndexStorage.remove(index, avatar.details.currentCoord)
+        this.elements[index] = null
         avatar.extendedInfo.reset()
         val reference = SoftReference(avatar, queue)
         reference.enqueue()
