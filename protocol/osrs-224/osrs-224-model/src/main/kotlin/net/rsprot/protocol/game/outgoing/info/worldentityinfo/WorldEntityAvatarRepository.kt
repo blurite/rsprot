@@ -92,8 +92,13 @@ public class WorldEntityAvatarRepository internal constructor(
      * @param avatar the avatar to release.
      */
     public fun release(avatar: WorldEntityAvatar) {
-        zoneIndexStorage.remove(avatar.index, avatar.currentCoord)
-        this.elements[avatar.index] = null
+        val index = avatar.index
+        // Ensure the avatars share the same reference!
+        require(this.elements[index] === avatar) {
+            "Attempting to release an invalid WorldEntity avatar: $avatar, ${this.elements[index]}"
+        }
+        zoneIndexStorage.remove(index, avatar.currentCoord)
+        this.elements[index] = null
         val reference = SoftReference(avatar, queue)
         reference.enqueue()
     }
