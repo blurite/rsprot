@@ -15,5 +15,5 @@ public fun interface Js5GroupProvider {
     public fun provide(
         archive: Int,
         group: Int,
-    ): ByteBuf
+    ): ByteBuf?
 }

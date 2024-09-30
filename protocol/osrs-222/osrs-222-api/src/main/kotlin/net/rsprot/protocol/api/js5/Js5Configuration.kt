@@ -36,6 +36,18 @@ package net.rsprot.protocol.api.js5
  * however this would mean the users will experience small loading screens even days into the gameplay.
  * Sweet spot is having as small delays as possible when the client requires urgent responses, but
  * still downloading the entire thing as soon as possible. 8,192 bytes appears to be that sweet spot.
+ * @property missingGroupBehaviour the behaviour type of what to do when the server returns a null
+ * response for a group request. By default, we warn about it (up to 100 times before disabling warnings)
+ * and drop that request. It should be noted that the client should never normally request for invalid
+ * groups - if that happens, it was either someone spoofing it, or the server sent something to the client,
+ * like opening an interface that does not exist, which led to the client making the request.
+ * In the case of latter, it should be noted that the client may begin to misbehave if it doesn't get
+ * a reply, particularly if the request it made was for an urgent group. A common side effect of this
+ * is seeing the "Please wait - loading..." screen indefinitely.
+ * The default behaviour is to warn the developers about it, with an upper cap of 100 warning messages
+ * before the warnings get turned off (to avoid flooding and causing performance degradation with logging
+ * if it is someone spoofing). These warning messages should help developers detect faulty code and
+ * fix it on the server's end, rather than needing to debug in the client.
  */
 public class Js5Configuration public constructor(
     public val blockSizeInBytes: Int = 512,
@@ -43,6 +55,7 @@ public class Js5Configuration public constructor(
     public val flushThresholdInRequests: Int = 10,
     public val priorityRatio: Int = 3,
     public val prefetchTransferThresholdInBytes: Int = 8192,
+    public val missingGroupBehaviour: Js5MissingGroupBehaviour = Js5MissingGroupBehaviour.DROP_REQUEST,
 ) {
     init {
         require(blockSizeInBytes >= 8) {
@@ -64,6 +77,7 @@ public class Js5Configuration public constructor(
         if (flushThresholdInRequests != other.flushThresholdInRequests) return false
         if (priorityRatio != other.priorityRatio) return false
         if (prefetchTransferThresholdInBytes != other.prefetchTransferThresholdInBytes) return false
+        if (missingGroupBehaviour != other.missingGroupBehaviour) return false
 
         return true
     }
@@ -74,6 +88,7 @@ public class Js5Configuration public constructor(
         result = 31 * result + flushThresholdInRequests
         result = 31 * result + priorityRatio
         result = 31 * result + prefetchTransferThresholdInBytes
+        result = 31 * result + missingGroupBehaviour.hashCode()
         return result
     }
 
@@ -83,6 +98,12 @@ public class Js5Configuration public constructor(
             "flushThresholdInBytes=$flushThresholdInBytes, " +
             "flushThresholdInRequests=$flushThresholdInRequests, " +
             "priorityRatio=$priorityRatio, " +
-            "prefetchTransferThresholdInBytes=$prefetchTransferThresholdInBytes" +
+            "prefetchTransferThresholdInBytes=$prefetchTransferThresholdInBytes, " +
+            "missingGroupBehaviour=$missingGroupBehaviour" +
             ")"
+
+    public enum class Js5MissingGroupBehaviour {
+        DROP_REQUEST,
+        DROP_CONNECTION,
+    }
 }

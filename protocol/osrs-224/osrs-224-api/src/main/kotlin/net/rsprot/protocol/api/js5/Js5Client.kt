@@ -43,6 +43,8 @@ public class Js5Client(
 
     /**
      * Gets the next block response for this channel, typically a section of a cache group.
+     * @param behaviour the behaviour for missing JS5 groups, dictating what should be done when
+     * the client makes a request that simply does not exist.
      * @param provider the provider for JS5 groups
      * @param blockLength the maximum size of a block to write in a single call.
      * If the number of bytes left in this group to write is less than the block,
@@ -50,6 +52,7 @@ public class Js5Client(
      * @return a group response to write to the client, or null if none exists
      */
     public fun getNextBlock(
+        behaviour: Js5Configuration.Js5MissingGroupBehaviour,
         provider: Js5GroupProvider,
         blockLength: Int,
     ): Js5GroupResponse? {
@@ -68,6 +71,31 @@ public class Js5Client(
                 block = provider.provide(archiveId, groupId)
             } catch (t: Throwable) {
                 throw RuntimeException("Failed to respond to request $archiveId:$groupId", t)
+            }
+            if (block == null) {
+                when (behaviour) {
+                    Js5Configuration.Js5MissingGroupBehaviour.DROP_REQUEST -> {
+                        if (remainingInvalidGroupLogs > 0) {
+                            --remainingInvalidGroupLogs
+                            logger.warn { "Invalid JS5 group request received: $archiveId:$groupId" }
+                        }
+                        // If there's no response for the previous group, we drop the request and
+                        // try to handle the next one in the pipeline.
+                        return getNextBlock(
+                            behaviour,
+                            provider,
+                            blockLength,
+                        )
+                    }
+                    Js5Configuration.Js5MissingGroupBehaviour.DROP_CONNECTION -> {
+                        if (remainingInvalidGroupLogs > 0) {
+                            --remainingInvalidGroupLogs
+                            logger.warn { "Invalid JS5 group request received: $archiveId:$groupId" }
+                        }
+                        // Propagate it forward as an exception, upstream will close the channel.
+                        throw NullPointerException("Group $archiveId:$groupId does not exist.")
+                    }
+                }
             }
             currentRequest.set(block)
         }
@@ -153,7 +181,7 @@ public class Js5Client(
             }
             val archiveId = next ushr 16
             val groupId = next and 0xFFFF
-            val size = groupProvider.provide(archiveId, groupId).readableBytes()
+            val size = groupProvider.provide(archiveId, groupId)?.readableBytes() ?: 0
             prefetch.addLast(next)
             transferredBytes += size
             // Do not clog the pipeline with more than threshold of prefetch data at a time, as this results
@@ -335,5 +363,12 @@ public class Js5Client(
          * The maximum number of requests the client can send out per each group at a time.
          */
         private const val MAX_QUEUE_SIZE: Int = 200
+
+        /**
+         * The number of invalid group logs that will still be warned about.
+         * We only log up to 100 of the first invalid JS5 group requests that get made,
+         * in order to avoid a scenario where the logging becomes an attack vector of its own.
+         */
+        private var remainingInvalidGroupLogs: Int = 100
     }
 }

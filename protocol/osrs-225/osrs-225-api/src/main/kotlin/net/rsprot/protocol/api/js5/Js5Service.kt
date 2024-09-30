@@ -66,6 +66,7 @@ public class Js5Service(
                         try {
                             response = client.getNextBlock(
                                 networkService,
+                                configuration.missingGroupBehaviour,
                                 provider,
                                 configuration.blockSizeInBytes * ratio,
                             ) ?: continue
