@@ -56,6 +56,9 @@ public class WorldEntityAvatarRepository internal constructor(
         level: Int,
         angle: Int,
     ): WorldEntityAvatar {
+        require(this.elements[index] == null) {
+            "WorldEntity avatar with index $index is already allocated!"
+        }
         val existing = queue.poll()?.get()
         if (existing != null) {
             existing.index = index
