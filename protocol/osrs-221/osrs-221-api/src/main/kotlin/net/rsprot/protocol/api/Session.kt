@@ -3,6 +3,7 @@ package net.rsprot.protocol.api
 import com.github.michaelbull.logging.InlineLogger
 import io.netty.channel.ChannelHandlerContext
 import io.netty.util.ReferenceCountUtil
+import io.netty.util.ReferenceCounted
 import net.rsprot.protocol.ServerProtCategory
 import net.rsprot.protocol.api.channel.inetAddress
 import net.rsprot.protocol.api.game.GameMessageDecoder
@@ -216,12 +217,20 @@ public class Session<R>(
     public fun clear() {
         for (queue in outgoingMessageQueues) {
             for (message in queue) {
-                ReferenceCountUtil.safeRelease(message)
+                if (message is ReferenceCounted) {
+                    if (message.refCnt() > 0) {
+                        ReferenceCountUtil.safeRelease(message)
+                    }
+                }
             }
             queue.clear()
         }
         for (message in incomingMessageQueue) {
-            ReferenceCountUtil.safeRelease(message)
+            if (message is ReferenceCounted) {
+                if (message.refCnt() > 0) {
+                    ReferenceCountUtil.safeRelease(message)
+                }
+            }
         }
         incomingMessageQueue.clear()
     }
