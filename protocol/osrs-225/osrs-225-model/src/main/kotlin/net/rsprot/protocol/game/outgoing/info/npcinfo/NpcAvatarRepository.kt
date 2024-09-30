@@ -102,6 +102,9 @@ internal class NpcAvatarRepository(
         priority: AvatarPriority = AvatarPriority.NORMAL,
         specific: Boolean = false,
     ): NpcAvatar {
+        require(this.elements[index] == null) {
+            "NPC Avatar with index $index is already allocated!"
+        }
         val existing = queue.poll()?.get()
         if (existing != null) {
             existing.resetObservers()
