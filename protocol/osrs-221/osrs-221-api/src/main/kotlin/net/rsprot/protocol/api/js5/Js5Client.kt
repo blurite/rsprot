@@ -97,6 +97,16 @@ public class Js5Client(
                     }
                 }
             }
+            if (!bufferSlicingValidated && block.readableBytes() > Js5Service.BLOCK_LENGTH) {
+                bufferSlicingValidated = true
+                val isValid = Js5Service.ensureCorrectlySliced(block)
+                if (!isValid) {
+                    logger.warn {
+                        "JS5 buffer for $archiveId:$groupId has not been correctly sliced up! " +
+                            "Byte buffers given to RSProt must be prepared via Js5Service.prepareJs5Buffer()."
+                    }
+                }
+            }
             currentRequest.set(block)
         }
         val progress = currentRequest.progress
@@ -370,5 +380,12 @@ public class Js5Client(
          * in order to avoid a scenario where the logging becomes an attack vector of its own.
          */
         private var remainingInvalidGroupLogs: Int = 100
+
+        /**
+         * A boolean to run a one-time check to ensure that the buffer the server gives has
+         * been correctly sliced up with terminators. This offers an easier way of debugging
+         * problems with the JS5 system.
+         */
+        private var bufferSlicingValidated: Boolean = false
     }
 }
