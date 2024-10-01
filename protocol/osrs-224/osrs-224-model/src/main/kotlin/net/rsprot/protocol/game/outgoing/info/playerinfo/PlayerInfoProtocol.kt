@@ -64,6 +64,7 @@ public class PlayerInfoProtocol(
                 clientType,
                 avatarFactory.alloc(localIndex),
                 recycler,
+                lowResolutionPositionRepository,
             )
         }
 
@@ -156,10 +157,11 @@ public class PlayerInfoProtocol(
                 info.checkAppearanceInvalidation()
                 lowResolutionPositionRepository.update(i, info.avatar.currentCoord)
             }
+            lowResolutionPositionRepository.prepareLowResBuffer(i)
         }
         for (i in 1..<PROTOCOL_CAPACITY) {
             try {
-                playerInfoRepository.getOrNull(i)?.prepareBitcodes(lowResolutionPositionRepository)
+                playerInfoRepository.getOrNull(i)?.prepareBitcodes()
             } catch (e: Exception) {
                 catchException(i, e)
             } catch (t: Throwable) {
