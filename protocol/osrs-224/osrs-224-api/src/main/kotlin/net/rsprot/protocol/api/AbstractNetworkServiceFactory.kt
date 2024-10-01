@@ -6,6 +6,7 @@ import io.netty.buffer.PooledByteBufAllocator
 import net.rsprot.compression.provider.HuffmanCodecProvider
 import net.rsprot.crypto.rsa.RsaKeyPair
 import net.rsprot.protocol.api.bootstrap.BootstrapFactory
+import net.rsprot.protocol.api.config.NetworkConfiguration
 import net.rsprot.protocol.api.handlers.ExceptionHandlers
 import net.rsprot.protocol.api.handlers.GameMessageHandlers
 import net.rsprot.protocol.api.handlers.INetAddressHandlers
@@ -248,6 +249,22 @@ public abstract class AbstractNetworkServiceFactory<R> {
     public open fun getLoginHandlers(): LoginHandlers = LoginHandlers()
 
     /**
+     * Gets the network configuration builder, allowing one to modify various criteria regarding
+     * their network preferences.
+     */
+    public open fun getNetworkConfiguration(): NetworkConfiguration.Builder = NetworkConfiguration.Builder()
+
+    /**
+     * A Kotlin-only helper function to build a network configuration builder.
+     */
+    @JvmSynthetic
+    public fun configure(block: (NetworkConfiguration.Builder).() -> Unit): NetworkConfiguration.Builder {
+        val builder = NetworkConfiguration.Builder()
+        block(builder)
+        return builder
+    }
+
+    /**
      * Builds a network service through this factoring, using all
      * the information provided in here.
      */
@@ -277,6 +294,7 @@ public abstract class AbstractNetworkServiceFactory<R> {
             getINetAddressHandlers(),
             getGameMessageHandlers(),
             getLoginHandlers(),
+            getNetworkConfiguration().build(),
             huffman,
             getGameMessageConsumerRepositoryProvider(),
             getRsaKeyPair(),

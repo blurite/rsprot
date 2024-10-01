@@ -45,6 +45,28 @@ public class GameMessageDecoder<R>(
     private var opcode: Int = -1
     private var length: Int = 0
 
+    private val previousPackets: IntArray =
+        IntArray(networkService.configuration.incomingGamePacketBacklog) {
+            -1
+        }
+    private var previousPacketIndex: Int = 0
+
+    private fun invalidOpcodeException(): Nothing =
+        throw IllegalStateException("Invalid opcode received! Previous packets: ${buildPreviousPacketLog()}")
+
+    private fun buildPreviousPacketLog(): String =
+        buildString {
+            val previousPackets = this@GameMessageDecoder.previousPackets
+            val previousPacketIndex = (this@GameMessageDecoder.previousPacketIndex - 1) % previousPackets.size
+            for (i in previousPacketIndex downTo 0) {
+                append(previousPackets[i]).append(", ")
+            }
+            for (i in previousPackets.size - 1 downTo (previousPacketIndex + 1)) {
+                append(previousPackets[i]).append(", ")
+            }
+            delete(length - 2, length)
+        }
+
     override fun decode(
         ctx: ChannelHandlerContext,
         input: ByteBuf,
@@ -55,7 +77,12 @@ public class GameMessageDecoder<R>(
                 return
             }
             this.opcode = (input.g1() - streamCipher.nextInt()) and 0xFF
-            this.decoder = decoders.getDecoder(opcode)
+            this.previousPackets[this.previousPacketIndex++ % this.previousPackets.size] = this.opcode
+            val decoderOrNull = decoders.getDecoderOrNull(opcode)
+            if (decoderOrNull == null) {
+                invalidOpcodeException()
+            }
+            this.decoder = decoderOrNull
             this.length = this.decoder.prot.size
             state =
                 if (this.length >= 0) {
@@ -82,7 +109,10 @@ public class GameMessageDecoder<R>(
                 }
 
                 else -> {
-                    throw IllegalStateException("Invalid length: $length of opcode $opcode")
+                    throw IllegalStateException(
+                        "Invalid length: $length of opcode $opcode, " +
+                            "previous packets: ${buildPreviousPacketLog()}",
+                    )
                 }
             }
             state = DecoderState.READ_PAYLOAD
@@ -95,7 +125,7 @@ public class GameMessageDecoder<R>(
             if (length > SINGLE_PACKET_MAX_ACCEPTED_LENGTH) {
                 throw DecoderException(
                     "Opcode $opcode exceeds the natural maximum allowed length in OldSchool: " +
-                        "$length > $SINGLE_PACKET_MAX_ACCEPTED_LENGTH",
+                        "$length > $SINGLE_PACKET_MAX_ACCEPTED_LENGTH, previous packets: ${buildPreviousPacketLog()}",
                 )
             }
             networkService
@@ -117,7 +147,8 @@ public class GameMessageDecoder<R>(
             val message = decoder.decode(payload.toJagByteBuf())
             if (payload.isReadable) {
                 throw DecoderException(
-                    "Decoder ${decoder.javaClass} did not read entire payload: ${payload.readableBytes()}",
+                    "Decoder ${decoder.javaClass} did not read entire payload: ${payload.readableBytes()}, " +
+                        "previous packets: ${buildPreviousPacketLog()}",
                 )
             }
             out += message

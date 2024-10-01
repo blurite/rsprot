@@ -7,6 +7,7 @@ import io.netty.channel.ChannelFuture
 import net.rsprot.compression.provider.HuffmanCodecProvider
 import net.rsprot.crypto.rsa.RsaKeyPair
 import net.rsprot.protocol.api.bootstrap.BootstrapFactory
+import net.rsprot.protocol.api.config.NetworkConfiguration
 import net.rsprot.protocol.api.handlers.ExceptionHandlers
 import net.rsprot.protocol.api.handlers.GameMessageHandlers
 import net.rsprot.protocol.api.handlers.INetAddressHandlers
@@ -91,6 +92,7 @@ public class NetworkService<R>
         internal val iNetAddressHandlers: INetAddressHandlers,
         internal val gameMessageHandlers: GameMessageHandlers,
         internal val loginHandlers: LoginHandlers,
+        internal val configuration: NetworkConfiguration,
         public val huffmanCodecProvider: HuffmanCodecProvider,
         public val gameMessageConsumerRepositoryProvider: GameMessageConsumerRepositoryProvider<R>,
         rsaKeyPair: RsaKeyPair,
