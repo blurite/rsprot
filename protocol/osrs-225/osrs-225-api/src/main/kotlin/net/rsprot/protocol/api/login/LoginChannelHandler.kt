@@ -14,6 +14,7 @@ import net.rsprot.protocol.api.js5.Js5MessageDecoder
 import net.rsprot.protocol.api.js5.Js5MessageEncoder
 import net.rsprot.protocol.api.logging.networkLog
 import net.rsprot.protocol.api.metrics.addDisconnectionReason
+import net.rsprot.protocol.common.RSProtConstants
 import net.rsprot.protocol.loginprot.incoming.InitGameConnection
 import net.rsprot.protocol.loginprot.incoming.InitJs5RemoteConnection
 import net.rsprot.protocol.loginprot.outgoing.LoginResponse
@@ -156,7 +157,7 @@ public class LoginChannelHandler(
         revision: Int,
         seed: IntArray,
     ) {
-        if (revision != NetworkService.REVISION) {
+        if (revision != RSProtConstants.REVISION) {
             networkLog(logger) {
                 "Invalid JS5 revision received from channel '${ctx.channel()}': $revision"
             }

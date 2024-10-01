@@ -4,6 +4,8 @@ import net.rsprot.buffer.JagByteBuf
 import net.rsprot.buffer.extensions.toJagByteBuf
 import net.rsprot.crypto.rsa.decipherRsa
 import net.rsprot.crypto.xtea.xteaDecrypt
+import net.rsprot.protocol.common.RSProtConstants
+import net.rsprot.protocol.common.loginprot.incoming.codec.shared.exceptions.InvalidVersionException
 import net.rsprot.protocol.loginprot.incoming.util.CyclicRedundancyCheckBlock
 import net.rsprot.protocol.loginprot.incoming.util.HostPlatformStats
 import net.rsprot.protocol.loginprot.incoming.util.LoginBlock
@@ -22,6 +24,9 @@ public abstract class LoginBlockDecoder<T>(
     ): LoginBlock<T> {
         try {
             val version = buffer.g4()
+            if (version != RSProtConstants.REVISION) {
+                throw InvalidVersionException
+            }
             val subVersion = buffer.g4()
             val firstClientType = buffer.g1()
             val platformType = buffer.g1()

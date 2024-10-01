@@ -10,6 +10,7 @@ import net.rsprot.protocol.api.NetworkService
 import net.rsprot.protocol.api.channel.inetAddress
 import net.rsprot.protocol.api.logging.networkLog
 import net.rsprot.protocol.api.metrics.addDisconnectionReason
+import net.rsprot.protocol.common.loginprot.incoming.codec.shared.exceptions.InvalidVersionException
 import net.rsprot.protocol.loginprot.incoming.GameLogin
 import net.rsprot.protocol.loginprot.incoming.GameReconnect
 import net.rsprot.protocol.loginprot.incoming.ProofOfWorkReply
@@ -24,6 +25,7 @@ import net.rsprot.protocol.message.IncomingLoginMessage
 import net.rsprot.protocol.metrics.NetworkTrafficMonitor
 import java.text.NumberFormat
 import java.util.concurrent.CompletableFuture
+import java.util.concurrent.CompletionException
 
 /**
  * The login connection handler, responsible for handling any game connections.
@@ -332,6 +334,21 @@ public class LoginConnectionHandler<R>(
             packet.decoder,
         ).handle { block, exception ->
             if (block == null || exception != null) {
+                if (exception is CompletionException && exception.cause == InvalidVersionException) {
+                    // Write a message indicating client is outdated
+                    ctx
+                        .writeAndFlush(LoginResponse.ClientOutOfDate)
+                        .addListener(ChannelFutureListener.CLOSE)
+
+                    networkService
+                        .trafficMonitor
+                        .loginChannelTrafficMonitor
+                        .addDisconnectionReason(
+                            ctx.inetAddress(),
+                            LoginDisconnectionReason.GAME_CLIENT_OUT_OF_DATE,
+                        )
+                    return@handle
+                }
                 networkService
                     .exceptionHandlers
                     .channelExceptionHandler
@@ -391,6 +408,21 @@ public class LoginConnectionHandler<R>(
             packet.decoder,
         ).handle { block, exception ->
             if (block == null || exception != null) {
+                if (exception is CompletionException && exception.cause == InvalidVersionException) {
+                    // Write a message indicating client is outdated
+                    ctx
+                        .writeAndFlush(LoginResponse.ClientOutOfDate)
+                        .addListener(ChannelFutureListener.CLOSE)
+
+                    networkService
+                        .trafficMonitor
+                        .loginChannelTrafficMonitor
+                        .addDisconnectionReason(
+                            ctx.inetAddress(),
+                            LoginDisconnectionReason.GAME_CLIENT_OUT_OF_DATE,
+                        )
+                    return@handle
+                }
                 logger.error(exception) {
                     "Failed to decode game reconnect block for channel ${ctx.channel()}"
                 }

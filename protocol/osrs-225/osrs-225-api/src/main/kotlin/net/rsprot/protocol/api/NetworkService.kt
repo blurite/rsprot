@@ -17,6 +17,7 @@ import net.rsprot.protocol.api.js5.Js5Service
 import net.rsprot.protocol.api.repositories.MessageDecoderRepositories
 import net.rsprot.protocol.api.repositories.MessageEncoderRepositories
 import net.rsprot.protocol.api.util.asCompletableFuture
+import net.rsprot.protocol.common.RSProtConstants
 import net.rsprot.protocol.common.client.OldSchoolClientType
 import net.rsprot.protocol.game.outgoing.info.npcinfo.NpcAvatarFactory
 import net.rsprot.protocol.game.outgoing.info.npcinfo.NpcInfoProtocol
@@ -163,7 +164,7 @@ public class NetworkService<R>
                 }
             logger.info { "Started in: $time" }
             logger.info { "Bound to ports: ${ports.joinToString(", ")}" }
-            logger.info { "Revision: $REVISION" }
+            logger.info { "Revision: ${RSProtConstants.REVISION}" }
             val clientTypeNames =
                 clientTypes.joinToString(", ") {
                     it.name.lowercase().replaceFirstChar(Char::uppercase)

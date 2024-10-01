@@ -19,6 +19,7 @@ import net.rsprot.protocol.api.repositories.MessageDecoderRepositories
 import net.rsprot.protocol.api.repositories.MessageEncoderRepositories
 import net.rsprot.protocol.api.util.asCompletableFuture
 import net.rsprot.protocol.client.ClientType
+import net.rsprot.protocol.common.RSProtConstants
 import net.rsprot.protocol.common.client.ClientTypeMap
 import net.rsprot.protocol.common.client.OldSchoolClientType
 import net.rsprot.protocol.game.outgoing.codec.zone.header.DesktopUpdateZonePartialEnclosedEncoder
@@ -167,7 +168,7 @@ public class NetworkService<R>
                 }
             logger.info { "Started in: $time" }
             logger.info { "Bound to ports: ${ports.joinToString(", ")}" }
-            logger.info { "Revision: $REVISION" }
+            logger.info { "Revision: ${RSProtConstants.REVISION}" }
             val clientTypeNames =
                 clientTypes.joinToString(", ") {
                     it.name.lowercase().replaceFirstChar(Char::uppercase)
@@ -311,7 +312,6 @@ public class NetworkService<R>
         public fun isSupported(clientType: OldSchoolClientType): Boolean = clientType in clientTypes
 
         public companion object {
-            public const val REVISION: Int = 223
             public const val INITIAL_TIMEOUT_SECONDS: Long = 30
             public const val LOGIN_TIMEOUT_SECONDS: Long = 40
             public const val GAME_TIMEOUT_SECONDS: Long = 15

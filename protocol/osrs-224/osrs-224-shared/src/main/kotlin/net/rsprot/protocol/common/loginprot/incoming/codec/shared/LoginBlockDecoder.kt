@@ -4,6 +4,8 @@ import net.rsprot.buffer.JagByteBuf
 import net.rsprot.buffer.extensions.toJagByteBuf
 import net.rsprot.crypto.rsa.decipherRsa
 import net.rsprot.crypto.xtea.xteaDecrypt
+import net.rsprot.protocol.common.RSProtConstants
+import net.rsprot.protocol.common.loginprot.incoming.codec.shared.exceptions.InvalidVersionException
 import net.rsprot.protocol.loginprot.incoming.util.CyclicRedundancyCheckBlock
 import net.rsprot.protocol.loginprot.incoming.util.HostPlatformStats
 import net.rsprot.protocol.loginprot.incoming.util.LoginBlock
@@ -22,6 +24,9 @@ public abstract class LoginBlockDecoder<T>(
     ): LoginBlock<T> {
         try {
             val version = buffer.g4()
+            if (version != RSProtConstants.REVISION) {
+                throw InvalidVersionException
+            }
             val subVersion = buffer.g4()
             val firstClientType = buffer.g1()
             val platformType = buffer.g1()
@@ -109,27 +114,27 @@ public abstract class LoginBlockDecoder<T>(
 
     private fun decodeCrc(buffer: JagByteBuf): CyclicRedundancyCheckBlock {
         val crc = IntArray(TRANSMITTED_CRC_COUNT)
-        crc[10] = buffer.g4()
-        crc[20] = buffer.g4()
-        crc[6] = buffer.g4Alt1()
-        crc[7] = buffer.g4Alt1()
-        crc[16] = buffer.g4Alt2()
-        crc[1] = buffer.g4Alt3()
-        crc[14] = buffer.g4Alt2()
-        crc[8] = buffer.g4Alt2()
-        crc[15] = buffer.g4Alt1()
-        crc[5] = buffer.g4Alt1()
-        crc[17] = buffer.g4Alt1()
-        crc[12] = buffer.g4Alt1()
-        crc[18] = buffer.g4Alt3()
-        crc[11] = buffer.g4Alt3()
-        crc[3] = buffer.g4()
-        crc[2] = buffer.g4Alt2()
-        crc[13] = buffer.g4Alt1()
-        crc[4] = buffer.g4()
-        crc[19] = buffer.g4Alt2()
+        crc[19] = buffer.g4Alt3()
+        crc[6] = buffer.g4()
+        crc[14] = buffer.g4Alt3()
+        crc[2] = buffer.g4()
+        crc[16] = buffer.g4()
         crc[0] = buffer.g4Alt3()
-        crc[9] = buffer.g4Alt3()
+        crc[15] = buffer.g4Alt3()
+        crc[10] = buffer.g4Alt1()
+        crc[20] = buffer.g4Alt1()
+        crc[1] = buffer.g4Alt2()
+        crc[12] = buffer.g4()
+        crc[17] = buffer.g4Alt2()
+        crc[3] = buffer.g4Alt1()
+        crc[18] = buffer.g4Alt3()
+        crc[8] = buffer.g4Alt1()
+        crc[5] = buffer.g4Alt3()
+        crc[7] = buffer.g4Alt2()
+        crc[11] = buffer.g4Alt3()
+        crc[4] = buffer.g4Alt2()
+        crc[13] = buffer.g4Alt1()
+        crc[9] = buffer.g4()
 
         return object : CyclicRedundancyCheckBlock(crc) {
             override fun validate(serverCrc: IntArray): Boolean {
@@ -148,13 +153,13 @@ public abstract class LoginBlockDecoder<T>(
 
     private fun decodeBetaCrc(buffer: JagByteBuf): CyclicRedundancyCheckBlock {
         val crc = IntArray(TRANSMITTED_CRC_COUNT)
-        crc[10] = buffer.g4Alt1()
-        crc[8] = buffer.g4Alt1()
-        crc[14] = buffer.g4Alt2()
         crc[6] = buffer.g4()
-        crc[15] = buffer.g4Alt1()
-        crc[4] = buffer.g4Alt3()
+        crc[8] = buffer.g4Alt1()
+        crc[14] = buffer.g4Alt1()
         crc[13] = buffer.g4Alt2()
+        crc[10] = buffer.g4Alt3()
+        crc[4] = buffer.g4Alt3()
+        crc[15] = buffer.g4Alt1()
         return object : CyclicRedundancyCheckBlock(crc) {
             override fun validate(serverCrc: IntArray): Boolean {
                 require(serverCrc.size >= TRANSMITTED_CRC_COUNT) {
