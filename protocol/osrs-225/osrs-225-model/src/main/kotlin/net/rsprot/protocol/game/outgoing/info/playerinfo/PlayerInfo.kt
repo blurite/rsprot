@@ -167,6 +167,13 @@ public class PlayerInfo internal constructor(
     internal var exception: Exception? = null
 
     /**
+     * The previous player info packet that was created.
+     * We ensure that a server hasn't accidentally left a packet unwritten, which would
+     * de-synchronize the client and cause errors.
+     */
+    internal var previousPacket: PlayerInfoPacket? = null
+
+    /**
      * An array of world details, containing all the player info properties specific to a single world.
      * The root world is placed at the end of this array, however id -1 will be treated as the root.
      */
@@ -417,7 +424,9 @@ public class PlayerInfo internal constructor(
                 exception,
             )
         }
-        return PlayerInfoPacket(backingBuffer())
+        return checkNotNull(this.previousPacket) {
+            "Previous packet not available."
+        }
     }
 
     /**
@@ -539,6 +548,7 @@ public class PlayerInfo internal constructor(
         checkCommunicationThread()
         buffer = null
         highResMovementBuffer = null
+        previousPacket = null
 
         for (i in this.details.indices) {
             // Skip the root world, as that still needs to remain
@@ -1052,6 +1062,13 @@ public class PlayerInfo internal constructor(
         }
         observerExtendedInfoFlags.reset()
         avatar.extendedInfo.postUpdate()
+        if (this.previousPacket?.isConsumed() == false) {
+            throw IllegalStateException(
+                "Previous player info packet was calculated but not sent out to the client!",
+            )
+        }
+        val packet = PlayerInfoPacket(backingBuffer())
+        this.previousPacket = packet
     }
 
     /**
@@ -1087,6 +1104,7 @@ public class PlayerInfo internal constructor(
         observerExtendedInfoFlags.reset()
         details[PROTOCOL_CAPACITY] = PlayerInfoWorldDetails(PROTOCOL_CAPACITY)
         buffer = null
+        previousPacket = null
     }
 
     /**
@@ -1095,6 +1113,7 @@ public class PlayerInfo internal constructor(
      */
     override fun onDealloc() {
         this.buffer = null
+        this.previousPacket = null
         avatar.extendedInfo.reset()
         highResMovementBuffer = null
         for (i in this.details.indices) {

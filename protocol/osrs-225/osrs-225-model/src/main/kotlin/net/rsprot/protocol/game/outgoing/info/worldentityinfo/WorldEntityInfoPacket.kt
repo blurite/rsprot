@@ -4,6 +4,7 @@ import io.netty.buffer.ByteBuf
 import io.netty.buffer.DefaultByteBufHolder
 import net.rsprot.protocol.ServerProtCategory
 import net.rsprot.protocol.game.outgoing.GameServerProtCategory
+import net.rsprot.protocol.message.ConsumableMessage
 import net.rsprot.protocol.message.OutgoingGameMessage
 
 /**
@@ -13,9 +14,18 @@ import net.rsprot.protocol.message.OutgoingGameMessage
 public class WorldEntityInfoPacket(
     buffer: ByteBuf,
 ) : DefaultByteBufHolder(buffer),
-    OutgoingGameMessage {
+    OutgoingGameMessage,
+    ConsumableMessage {
     override val category: ServerProtCategory
         get() = GameServerProtCategory.HIGH_PRIORITY_PROT
+
+    private var consumed: Boolean = false
+
+    override fun consume() {
+        this.consumed = true
+    }
+
+    override fun isConsumed(): Boolean = this.consumed
 
     override fun toString(): String = "WorldEntityInfoPacket()"
 }

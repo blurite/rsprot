@@ -21,6 +21,7 @@ import net.rsprot.protocol.game.outgoing.info.npcinfo.NpcInfoProtocol
 import net.rsprot.protocol.game.outgoing.info.npcinfo.NpcInfoSmall
 import net.rsprot.protocol.game.outgoing.info.util.BuildArea
 import net.rsprot.protocol.game.outgoing.info.worker.DefaultProtocolWorker
+import net.rsprot.protocol.message.ConsumableMessage
 import org.openjdk.jmh.annotations.Benchmark
 import org.openjdk.jmh.annotations.BenchmarkMode
 import org.openjdk.jmh.annotations.Fork
@@ -125,7 +126,11 @@ class NpcInfoBenchmark {
         protocol.update()
         for (i in 1..2046) {
             val info = protocol[i]
-            when (val packet = info.toPacket(NpcInfo.ROOT_WORLD)) {
+            val packet = info.toPacket(NpcInfo.ROOT_WORLD)
+            if (packet is ConsumableMessage) {
+                packet.consume()
+            }
+            when (packet) {
                 is NpcInfoSmall -> packet.release()
                 is NpcInfoLarge -> packet.release()
                 else -> throw IllegalStateException("Unknown packet type: $packet")

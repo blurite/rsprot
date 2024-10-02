@@ -125,7 +125,20 @@ public class WorldEntityProtocol(
     private fun postUpdate() {
         for (i in 0..<CAPACITY) {
             val avatar = avatarRepository.getOrNull(i) ?: continue
-            avatar.postUpdate()
+            try {
+                avatar.postUpdate()
+            } catch (e: Exception) {
+                exceptionHandler.exceptionCaught(i, e)
+            } catch (t: Throwable) {
+                logger.error(t) {
+                    "Error during worldentity avatar computation"
+                }
+                throw t
+            }
+        }
+
+        execute {
+            postUpdate()
         }
     }
 

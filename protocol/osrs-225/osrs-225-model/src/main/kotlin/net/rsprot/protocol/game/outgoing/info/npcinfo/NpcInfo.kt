@@ -15,6 +15,7 @@ import net.rsprot.protocol.game.outgoing.info.ByteBufRecycler
 import net.rsprot.protocol.game.outgoing.info.exceptions.InfoProcessException
 import net.rsprot.protocol.game.outgoing.info.util.BuildArea
 import net.rsprot.protocol.game.outgoing.info.util.ReferencePooledObject
+import net.rsprot.protocol.message.ConsumableMessage
 import net.rsprot.protocol.message.OutgoingGameMessage
 import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.contract
@@ -442,10 +443,9 @@ public class NpcInfo internal constructor(
                 exception,
             )
         }
-        return if (this.viewDistance > MAX_SMALL_PACKET_DISTANCE) {
-            NpcInfoLarge(backingBuffer(worldId))
-        } else {
-            NpcInfoSmall(backingBuffer(worldId))
+        val details = getDetails(worldId)
+        return checkNotNull(details.previousPacket) {
+            "Previous packet has not been calculated."
         }
     }
 
@@ -525,6 +525,22 @@ public class NpcInfo internal constructor(
             details.localPlayerLastCoord = details.localPlayerCurrentCoord
             details.extendedInfoCount = 0
             details.observerExtendedInfoFlags.reset()
+
+            val previousPacket = details.previousPacket
+            if (previousPacket is ConsumableMessage) {
+                if (!previousPacket.isConsumed()) {
+                    throw IllegalStateException(
+                        "Previous npc info packet was calculated but " +
+                            "not sent out to the client for world ${details.worldId}.",
+                    )
+                }
+            }
+            details.previousPacket =
+                if (this.viewDistance > MAX_SMALL_PACKET_DISTANCE) {
+                    NpcInfoLarge(backingBuffer(details.worldId))
+                } else {
+                    NpcInfoSmall(backingBuffer(details.worldId))
+                }
         }
     }
 

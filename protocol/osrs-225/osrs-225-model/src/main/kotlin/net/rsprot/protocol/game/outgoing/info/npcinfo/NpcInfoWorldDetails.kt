@@ -4,6 +4,7 @@ import io.netty.buffer.ByteBuf
 import net.rsprot.protocol.common.game.outgoing.info.CoordGrid
 import net.rsprot.protocol.game.outgoing.info.ObserverExtendedInfoFlags
 import net.rsprot.protocol.game.outgoing.info.util.BuildArea
+import net.rsprot.protocol.message.OutgoingGameMessage
 
 /**
  * A world detail implementation for NPC info, tracking local NPCs in a specific world.
@@ -119,6 +120,13 @@ internal class NpcInfoWorldDetails(
      * The primary npc info buffer, holding all the bitcodes and extended info blocks.
      */
     internal var buffer: ByteBuf? = null
+
+    /**
+     * The previous npc info packet that was created.
+     * We ensure that a server hasn't accidentally left a packet unwritten, which would
+     * de-synchronize the client and cause errors.
+     */
+    internal var previousPacket: OutgoingGameMessage? = null
 
     /**
      * Performs an index defragmentation on the [highResolutionNpcIndices] array.
@@ -261,10 +269,12 @@ internal class NpcInfoWorldDetails(
         this.lowPriorityCount = 0
         this.normalPriorityCount = 0
         this.buffer = null
+        this.previousPacket = null
     }
 
     internal fun onDealloc() {
         this.buffer = null
+        this.previousPacket = null
     }
 
     private companion object {

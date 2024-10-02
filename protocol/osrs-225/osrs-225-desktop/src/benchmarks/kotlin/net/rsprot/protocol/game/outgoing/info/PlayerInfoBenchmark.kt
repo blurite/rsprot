@@ -126,6 +126,7 @@ class PlayerInfoBenchmark {
         for (i in 1..<MAX_IDX) {
             val player = checkNotNull(players[i])
             val packet = player.toPacket()
+            packet.consume()
             packet.release()
         }
     }

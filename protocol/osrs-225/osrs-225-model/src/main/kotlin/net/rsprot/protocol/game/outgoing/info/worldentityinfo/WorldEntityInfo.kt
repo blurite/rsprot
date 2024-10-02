@@ -83,6 +83,13 @@ public class WorldEntityInfo internal constructor(
     private val removedWorldEntities = ArrayList<Int>()
     private var buffer: ByteBuf? = null
 
+    /**
+     * The previous world entity info packet that was created.
+     * We ensure that a server hasn't accidentally left a packet unwritten, which would
+     * de-synchronize the client and cause errors.
+     */
+    internal var previousPacket: WorldEntityInfoPacket? = null
+
     @Volatile
     internal var exception: Exception? = null
     private var renderCoord: CoordGrid = CoordGrid.INVALID
@@ -229,7 +236,9 @@ public class WorldEntityInfo internal constructor(
                 exception,
             )
         }
-        return WorldEntityInfoPacket(backingBuffer())
+        return checkNotNull(previousPacket) {
+            "Previous world entity info packet not calculated."
+        }
     }
 
     /**
@@ -278,6 +287,19 @@ public class WorldEntityInfo internal constructor(
             defragmentIndices()
         }
         processLowResolution(buffer)
+    }
+
+    /**
+     * Sets up the packet to be consumed with the next call.
+     */
+    internal fun postUpdate() {
+        if (this.previousPacket?.isConsumed() == false) {
+            throw IllegalStateException(
+                "Previous world entity info packet was calculated but not sent out to the client!",
+            )
+        }
+        val packet = WorldEntityInfoPacket(backingBuffer())
+        this.previousPacket = packet
     }
 
     /**
@@ -442,6 +464,7 @@ public class WorldEntityInfo internal constructor(
         this.removedWorldEntities.clear()
         this.buffer = null
         this.exception = null
+        this.previousPacket = null
     }
 
     /**
@@ -451,6 +474,7 @@ public class WorldEntityInfo internal constructor(
         checkCommunicationThread()
         this.buffer = null
         this.exception = null
+        this.previousPacket = null
         this.highResolutionIndicesCount = 0
         this.highResolutionIndices.fill(0)
         this.temporaryHighResolutionIndices.fill(0)
@@ -462,6 +486,7 @@ public class WorldEntityInfo internal constructor(
     override fun onDealloc() {
         checkCommunicationThread()
         this.buffer = null
+        this.previousPacket = null
     }
 
     /**

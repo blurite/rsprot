@@ -16,6 +16,7 @@ import net.rsprot.protocol.game.outgoing.zone.payload.MapProjAnim
 import net.rsprot.protocol.game.outgoing.zone.payload.SoundArea
 import net.rsprot.protocol.loginprot.incoming.util.LoginBlock
 import net.rsprot.protocol.loginprot.incoming.util.LoginClientType
+import net.rsprot.protocol.message.ConsumableMessage
 import net.rsprot.protocol.message.IncomingGameMessage
 import net.rsprot.protocol.message.OutgoingGameMessage
 import net.rsprot.protocol.message.codec.incoming.MessageConsumer
@@ -103,6 +104,9 @@ public class Session<R>(
                         "partial enclosed as of revision 225 on C++ clients. Packet: $message",
                 )
             }
+        }
+        if (message is ConsumableMessage) {
+            message.consume()
         }
         val categoryId = category.id
         val queue = outgoingMessageQueues[categoryId]
