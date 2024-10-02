@@ -536,6 +536,34 @@ public class PlayerInfo internal constructor(
     }
 
     /**
+     * Clears all the entities for the provided [worldId]. This function is __only__ intended to be used
+     * together with the [net.rsprot.protocol.game.outgoing.worldentity.ClearEntities] packet.
+     * This packet should only be called before [PlayerInfoProtocol.update] has been called, otherwise
+     * problems may arise.
+     * @param worldId the world to clear, either [ROOT_WORLD] or a value from 0..<2048
+     * If the world is [ROOT_WORLD], all worlds will be cleared.
+     * If the world is in range of 0..<2048, only that specific world will be cleared.
+     */
+    public fun clearEntities(worldId: Int) {
+        require(worldId == ROOT_WORLD || worldId in 0..<2048) {
+            "World id must be -1 or in range of 0..<2048"
+        }
+        // Only clear the details if calling for the root world
+        if (worldId == ROOT_WORLD) {
+            for (i in this.details.indices) {
+                // Skip the root world, as that still needs to remain
+                if (i == PROTOCOL_CAPACITY) {
+                    continue
+                }
+                val world = this.details[i]
+                if (world != null) {
+                    this.details[i] = null
+                }
+            }
+        }
+    }
+
+    /**
      * Precalculates all the bitcodes for this player, for high-resolution updates.
      * This function will be thread-safe relative to other players and can be calculated concurrently for all players.
      */

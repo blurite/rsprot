@@ -454,6 +454,27 @@ public class WorldEntityInfo internal constructor(
         this.buffer = null
     }
 
+    /**
+     * Clears all the entities for the provided [worldId]. This function is __only__ intended to be used
+     * together with the [net.rsprot.protocol.game.outgoing.worldentity.ClearEntities] packet.
+     * This packet should only be called before [WorldEntityProtocol.update] has been called, otherwise
+     * problems may arise.
+     * @param worldId the world to clear, either [ROOT_WORLD] or a value from 0..<2048
+     * If the world is [ROOT_WORLD], all worlds will be cleared.
+     * If the world is in range of 0..<2048, only that specific world will be cleared.
+     */
+    public fun clearEntities(worldId: Int) {
+        require(worldId == ROOT_WORLD || worldId in 0..<2048) {
+            "World id must be -1 or in range of 0..<2048"
+        }
+        // Only the root world has effect here. Nested world entities are not permitted, so
+        // we simply do nothing if this is called on a non-root world entity.
+        if (worldId == ROOT_WORLD) {
+            // Reconnect does exactly what this feature is supposed to do, so we just direct the call.
+            onReconnect()
+        }
+    }
+
     public companion object {
         /**
          * The index value that marks a termination for high resolution indices.

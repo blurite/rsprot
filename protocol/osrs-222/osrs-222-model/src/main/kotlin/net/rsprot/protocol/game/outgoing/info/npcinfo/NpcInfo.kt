@@ -710,6 +710,29 @@ public class NpcInfo internal constructor(
         }
     }
 
+    /**
+     * Clears all the entities for the provided [worldId]. This function is __only__ intended to be used
+     * together with the [net.rsprot.protocol.game.outgoing.worldentity.ClearEntities] packet.
+     * This packet should only be called before [NpcInfoProtocol.update] has been called, otherwise
+     * problems may arise.
+     * @param worldId the world to clear, either [ROOT_WORLD] or a value from 0..<2048
+     * If the world is [ROOT_WORLD], all worlds will be cleared.
+     * If the world is in range of 0..<2048, only that specific world will be cleared.
+     */
+    public fun clearEntities(worldId: Int) {
+        require(worldId == ROOT_WORLD || worldId in 0..<2048) {
+            "World id must be -1 or in range of 0..<2048"
+        }
+        if (worldId == ROOT_WORLD) {
+            // If requesting clear entities for the root world, we essentially reset everything
+            // which is exactly what onReconnect ends up doing as well.
+            onReconnect()
+        } else {
+            destroyWorld(worldId)
+            allocateWorld(worldId)
+        }
+    }
+
     private fun releaseObservers(details: NpcInfoWorldDetails) {
         for (i in 0..<details.highResolutionNpcIndexCount) {
             val npcIndex = details.highResolutionNpcIndices[i].toInt()
