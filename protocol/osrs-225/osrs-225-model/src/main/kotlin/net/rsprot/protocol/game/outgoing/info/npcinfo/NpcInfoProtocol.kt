@@ -215,11 +215,10 @@ public class NpcInfoProtocol(
      * Cleans up any single-cycle temporary information for npc info protocol.
      */
     private fun postUpdate() {
-        for (i in 1..<PROTOCOL_CAPACITY) {
-            val info = npcInfoRepository.getOrNull(i) ?: continue
-            info.afterUpdate()
+        execute {
+            afterUpdate()
         }
-        for (i in 0..<65536) {
+        for (i in 0..<NpcAvatarRepository.AVATAR_CAPACITY) {
             val avatar = avatarRepository.getOrNull(i) ?: continue
             avatar.postUpdate()
         }
