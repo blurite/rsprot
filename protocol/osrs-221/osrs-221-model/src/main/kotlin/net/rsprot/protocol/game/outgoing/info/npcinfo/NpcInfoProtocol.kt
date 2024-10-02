@@ -188,7 +188,16 @@ public class NpcInfoProtocol(
         }
         for (i in 0..<NpcAvatarRepository.AVATAR_CAPACITY) {
             val avatar = avatarRepository.getOrNull(i) ?: continue
-            avatar.postUpdate()
+            try {
+                avatar.postUpdate()
+            } catch (e: Exception) {
+                exceptionHandler.exceptionCaught(i, e)
+            } catch (t: Throwable) {
+                logger.error(t) {
+                    "Error during npc avatar post update"
+                }
+                throw t
+            }
         }
     }
 
