@@ -33,13 +33,17 @@ public abstract class OutgoingMessageEncoder : MessageToByteEncoder<OutgoingMess
         val encoder = repository.getEncoder(msg::class.java)
         val prot = encoder.prot
         val opcode = prot.opcode
-        // Write a temporary value for the opcode first
-        // We cannot immediately write the real stream-cipher modified opcode
-        // as that alters the stream cipher's own state
-        if (opcode < 0x80) {
-            out.p1(0)
+        if (encoder.encryptedPayload) {
+            pSmart1Or2Enc(out, opcode)
         } else {
-            out.p2(0)
+            // Write a temporary value for the opcode first
+            // We cannot immediately write the real stream-cipher modified opcode
+            // as that alters the stream cipher's own state
+            if (opcode < 0x80) {
+                out.p1(0)
+            } else {
+                out.p2(0)
+            }
         }
 
         val sizeMarker =
@@ -126,9 +130,11 @@ public abstract class OutgoingMessageEncoder : MessageToByteEncoder<OutgoingMess
             }
         }
         onMessageWritten(ctx, opcode, endMarker - payloadMarker)
-        out.writerIndex(startMarker)
-        pSmart1Or2Enc(out, opcode)
-        out.writerIndex(endMarker)
+        if (!encoder.encryptedPayload) {
+            out.writerIndex(startMarker)
+            pSmart1Or2Enc(out, opcode)
+            out.writerIndex(endMarker)
+        }
     }
 
     public open fun onMessageWritten(

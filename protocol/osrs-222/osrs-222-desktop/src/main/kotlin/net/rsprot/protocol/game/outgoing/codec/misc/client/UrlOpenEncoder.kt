@@ -12,6 +12,9 @@ import net.rsprot.protocol.metadata.Consistent
 public class UrlOpenEncoder : MessageEncoder<UrlOpen> {
     override val prot: ServerProt = GameServerProt.URL_OPEN
 
+    override val encryptedPayload: Boolean
+        get() = true
+
     override fun encode(
         streamCipher: StreamCipher,
         buffer: JagByteBuf,

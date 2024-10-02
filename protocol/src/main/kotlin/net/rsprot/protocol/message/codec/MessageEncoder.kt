@@ -12,6 +12,12 @@ public interface MessageEncoder<in T : OutgoingMessage> {
     public val prot: ServerProt
 
     /**
+     * A boolean indicating whether this packet has a fully encrypted payload.
+     */
+    public val encryptedPayload: Boolean
+        get() = false
+
+    /**
      * Encodes the [message] into the [buffer] where the [buffer] is the `out` property in Netty.
      * Rather than allocating new byte buf instances, we can directly encode to the `out` property
      * with most packets. This does not however hold true with pre-computed ones, such as player info,
