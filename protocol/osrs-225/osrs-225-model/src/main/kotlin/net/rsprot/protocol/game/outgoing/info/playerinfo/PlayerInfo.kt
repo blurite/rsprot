@@ -540,6 +540,16 @@ public class PlayerInfo internal constructor(
         buffer = null
         highResMovementBuffer = null
 
+        for (i in this.details.indices) {
+            // Skip the root world, as that still needs to remain
+            if (i == PROTOCOL_CAPACITY) {
+                continue
+            }
+            val world = this.details[i]
+            if (world != null) {
+                this.details[i] = null
+            }
+        }
         lowResolutionIndices.fill(0)
         lowResolutionCount = 0
         highResolutionIndices.fill(0)
