@@ -143,6 +143,7 @@ public class NpcInfo internal constructor(
         require(existing != null) {
             "World $worldId does not exist."
         }
+        releaseObservers(existing)
         detailsStorage.push(existing)
         details[worldId] = null
     }
