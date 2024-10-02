@@ -67,6 +67,7 @@ public class NpcAvatarFactory(
      * @param direction the direction that the npc will face on spawn (see table above)
      * @return a npc avatar with the above provided details.
      */
+    @JvmOverloads
     public fun alloc(
         index: Int,
         id: Int,

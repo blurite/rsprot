@@ -78,6 +78,7 @@ public class NpcAvatarFactory(
      * see the NPC regardless.
      * @return a npc avatar with the above provided details.
      */
+    @JvmOverloads
     public fun alloc(
         index: Int,
         id: Int,
