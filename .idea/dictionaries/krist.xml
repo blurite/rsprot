@@ -207,6 +207,7 @@
       <w>nodelay</w>
       <w>noncompliant</w>
       <w>nostra</w>
+      <w>npcinfo</w>
       <w>npcs</w>
       <w>nulla</w>
       <w>nullam</w>
@@ -378,6 +379,7 @@
       <w>withreason</w>
       <w>withsecondary</w>
       <w>worldentity</w>
+      <w>worldentityinfo</w>
       <w>writability</w>
       <w>xtea</w>
       <w>zero'd</w>
