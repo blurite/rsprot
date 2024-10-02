@@ -75,8 +75,26 @@ public class NpcAvatarFactory(
         z: Int,
         spawnCycle: Int = 0,
         direction: Int = 0,
-    ): NpcAvatar =
-        avatarRepository.getOrAlloc(
+    ): NpcAvatar {
+        require(index in 0..65534) {
+            "Npc avatar index out of bounds: $index"
+        }
+        require(id in 0..16383) {
+            "Npc id cannot be outside of 0..16383 range"
+        }
+        require(level in 0..3) {
+            "Level cannot be outside of 0..3 range"
+        }
+        require(x in 0..16383) {
+            "X coordinate cannot be outside of 0..16383 range"
+        }
+        require(z in 0..16383) {
+            "Z coordinate cannot be outside of 0..16383 range"
+        }
+        require(direction in 0..7) {
+            "Direction must be in range of 0..7"
+        }
+        return avatarRepository.getOrAlloc(
             index,
             id,
             level,
@@ -85,6 +103,7 @@ public class NpcAvatarFactory(
             spawnCycle,
             direction,
         )
+    }
 
     /**
      * Releases the avatar back into the repository to be used by other NPCs.
