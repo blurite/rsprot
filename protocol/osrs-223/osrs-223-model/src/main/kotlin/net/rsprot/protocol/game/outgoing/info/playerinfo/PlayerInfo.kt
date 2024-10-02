@@ -508,6 +508,34 @@ public class PlayerInfo internal constructor(
     }
 
     /**
+     * Ensures that the state has been correctly reset and a reconnect packet can continue.
+     * @throws IllegalStateException if the state has not fully been cleaned up.
+     */
+    internal fun ensureReconnectCalled() {
+        if (!isCleanState()) {
+            throw IllegalStateException(
+                "In order to use LoginResponse.ReconnectOk packet, " +
+                    "playerinfo#onReconnect, npcInfo#onReconnect " +
+                    "and worldEntityInfo#onReconnect must be called!",
+            )
+        }
+    }
+
+    /**
+     * Checks whether all the info has been reset for this packet, ensuring that
+     * a reconnect packet can successfully be initialized.
+     * @return whether all the state has been reset.
+     */
+    private fun isCleanState(): Boolean {
+        val root = getDetailsOrNull(ROOT_WORLD) ?: return true
+        return root.buffer == null &&
+            highResMovementBuffer == null &&
+            root.lowResolutionCount == 0 &&
+            root.highResolutionCount == 0 &&
+            root.extendedInfoCount == 0
+    }
+
+    /**
      * Precalculates all the bitcodes for this player, for high-resolution updates.
      * This function will be thread-safe relative to other players and can be calculated concurrently for all players.
      */

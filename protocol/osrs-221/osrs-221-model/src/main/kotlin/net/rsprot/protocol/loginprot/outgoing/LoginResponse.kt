@@ -101,6 +101,7 @@ public sealed interface LoginResponse : OutgoingLoginMessage {
              * @return a buffer containing the initialization block of the player info protocol
              */
             private fun initializePlayerInfo(playerInfo: PlayerInfo): ByteBuf {
+                playerInfo.ensureReconnectCalled()
                 val allocator = playerInfo.allocator
                 val buffer = allocator.buffer(PLAYER_INFO_BLOCK_SIZE)
                 playerInfo.handleAbsolutePlayerPositions(buffer)

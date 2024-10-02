@@ -104,6 +104,7 @@ public sealed interface LoginResponse : OutgoingLoginMessage {
                 worldId: Int,
                 playerInfo: PlayerInfo,
             ): ByteBuf {
+                playerInfo.ensureReconnectCalled()
                 val allocator = playerInfo.allocator
                 val buffer = allocator.buffer(PLAYER_INFO_BLOCK_SIZE)
                 playerInfo.handleAbsolutePlayerPositions(worldId, buffer)
