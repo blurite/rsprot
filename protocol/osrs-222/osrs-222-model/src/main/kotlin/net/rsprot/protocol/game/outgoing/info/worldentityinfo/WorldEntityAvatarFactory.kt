@@ -41,8 +41,29 @@ public class WorldEntityAvatarFactory(
         z: Int,
         level: Int,
         angle: Int,
-    ): WorldEntityAvatar =
-        avatarRepository.getOrAlloc(
+    ): WorldEntityAvatar {
+        require(index in 0..2047) {
+            "World entity index cannot be outside of 0..2047"
+        }
+        require(sizeX in 0..255) {
+            "Size x cannot be outside of 0..255 range"
+        }
+        require(sizeZ in 0..255) {
+            "Size z cannot be outside of 0..255 range"
+        }
+        require(level in 0..3) {
+            "Level cannot be outside of 0..3 range"
+        }
+        require(x in 0..16383) {
+            "X coordinate cannot be outside of 0..16383 range"
+        }
+        require(z in 0..16383) {
+            "Z coordinate cannot be outside of 0..16383 range"
+        }
+        require(angle in 0..2047) {
+            "Angle must be in range of 0..2047"
+        }
+        return avatarRepository.getOrAlloc(
             index,
             sizeX,
             sizeZ,
@@ -51,6 +72,7 @@ public class WorldEntityAvatarFactory(
             level,
             angle,
         )
+    }
 
     /**
      * Releases a world entity avatar back into the pool, allowing it to be re-used in the future.

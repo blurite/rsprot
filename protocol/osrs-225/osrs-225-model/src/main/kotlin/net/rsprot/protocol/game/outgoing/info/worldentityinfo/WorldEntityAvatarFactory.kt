@@ -11,6 +11,7 @@ import net.rsprot.protocol.common.game.outgoing.info.util.ZoneIndexStorage
  * @property avatarRepository the repository keeping track of existing and past world
  * entity avatars.
  */
+@Suppress("DuplicatedCode")
 public class WorldEntityAvatarFactory(
     allocator: ByteBufAllocator,
     zoneIndexStorage: ZoneIndexStorage,
@@ -44,6 +45,27 @@ public class WorldEntityAvatarFactory(
         angle: Int,
     ): WorldEntityAvatar {
         checkCommunicationThread()
+        require(index in 0..2047) {
+            "World entity index cannot be outside of 0..2047"
+        }
+        require(sizeX in 0..255) {
+            "Size x cannot be outside of 0..255 range"
+        }
+        require(sizeZ in 0..255) {
+            "Size z cannot be outside of 0..255 range"
+        }
+        require(level in 0..3) {
+            "Level cannot be outside of 0..3 range"
+        }
+        require(x in 0..16383) {
+            "X coordinate cannot be outside of 0..16383 range"
+        }
+        require(z in 0..16383) {
+            "Z coordinate cannot be outside of 0..16383 range"
+        }
+        require(angle in 0..2047) {
+            "Angle must be in range of 0..2047"
+        }
         return avatarRepository.getOrAlloc(
             index,
             sizeX,
