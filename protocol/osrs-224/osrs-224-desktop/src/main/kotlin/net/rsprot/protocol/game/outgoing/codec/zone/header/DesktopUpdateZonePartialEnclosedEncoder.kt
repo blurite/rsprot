@@ -2,6 +2,7 @@ package net.rsprot.protocol.game.outgoing.codec.zone.header
 
 import io.netty.buffer.ByteBuf
 import io.netty.buffer.ByteBufAllocator
+import io.netty.util.ReferenceCountUtil
 import net.rsprot.buffer.JagByteBuf
 import net.rsprot.buffer.extensions.toJagByteBuf
 import net.rsprot.crypto.cipher.StreamCipher
@@ -70,14 +71,19 @@ public class DesktopUpdateZonePartialEnclosedEncoder : MessageEncoder<UpdateZone
                         min(IndexedZoneProtEncoder.maxZoneProtSize * messages.size, MAX_PARTIAL_ENCLOSED_SIZE),
                         MAX_PARTIAL_ENCLOSED_SIZE,
                     ).toJagByteBuf()
-            for (message in messages) {
-                val indexedEncoder = IndexedZoneProtEncoder.indexedEncoders[message.protId]
-                buffer.p1(indexedEncoder.ordinal)
-                encodeMessage(
-                    buffer,
-                    message,
-                    indexedEncoder.encoder,
-                )
+            try {
+                for (message in messages) {
+                    val indexedEncoder = IndexedZoneProtEncoder.indexedEncoders[message.protId]
+                    buffer.p1(indexedEncoder.ordinal)
+                    encodeMessage(
+                        buffer,
+                        message,
+                        indexedEncoder.encoder,
+                    )
+                }
+            } catch (t: Throwable) {
+                ReferenceCountUtil.safeRelease(buffer.buffer)
+                throw t
             }
             return buffer.buffer
         }
