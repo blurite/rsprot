@@ -66,6 +66,13 @@ internal class NpcInfoWorldDetails(
     private var highResolutionPriorityFlags = LongArray(4)
 
     /**
+     * A secondary array of high resolution priority flags.
+     * This does the same as [highResolutionPriorityFlags], but because a defragmentation process
+     * can take place, we need to re-sort the values.
+     */
+    private var temporaryHighResolutionPriorityFlags = LongArray(4)
+
+    /**
      * The indices of the high resolution NPCs, in the order as they came in.
      * This is a replica of how the client keeps track of NPCs.
      */
@@ -162,12 +169,21 @@ internal class NpcInfoWorldDetails(
             }
             val index = highResolutionNpcIndices[i]
             if (index != NPC_INDEX_TERMINATOR) {
-                temporaryHighResolutionNpcIndices[count++] = index
+                temporaryHighResolutionNpcIndices[count] = index
+                if (isLowPriority(i)) {
+                    setLowPriority(count, temporaryHighResolutionPriorityFlags)
+                }
+                count++
             }
         }
         val uncompressed = this.highResolutionNpcIndices
         this.highResolutionNpcIndices = this.temporaryHighResolutionNpcIndices
         this.temporaryHighResolutionNpcIndices = uncompressed
+
+        val priorities = this.highResolutionPriorityFlags
+        this.highResolutionPriorityFlags = this.temporaryHighResolutionPriorityFlags
+        this.temporaryHighResolutionPriorityFlags = priorities
+        this.temporaryHighResolutionPriorityFlags.fill(0L)
     }
 
     /**
@@ -209,33 +225,45 @@ internal class NpcInfoWorldDetails(
     /**
      * Checks whether the npc at high resolution slot [index] is in the low priority group.
      * @param index the high resolution (not absolute) index of the NPC, a value from 0 to 250.
+     * @param array the array from which to check whether a bit is set.
      */
-    private fun isLowPriority(index: Int): Boolean {
+    private fun isLowPriority(
+        index: Int,
+        array: LongArray = this.highResolutionPriorityFlags,
+    ): Boolean {
         val longIndex = index ushr 6
         val bit = 1L shl (index and 0x3F)
-        return this.highResolutionPriorityFlags[longIndex] and bit != 0L
+        return array[longIndex] and bit != 0L
     }
 
     /**
      * Marks the npc at high resolution slot [index] as low priority.
      * @param index the high resolution (not absolute) index of the NPC, a value from 0 to 250.
+     * @param array the array in which to modify the corresponding bit.
      */
-    internal fun setLowPriority(index: Int) {
+    internal fun setLowPriority(
+        index: Int,
+        array: LongArray = this.highResolutionPriorityFlags,
+    ) {
         val longIndex = index ushr 6
         val bit = 1L shl (index and 0x3F)
-        val cur = this.highResolutionPriorityFlags[longIndex]
-        this.highResolutionPriorityFlags[longIndex] = cur or bit
+        val cur = array[longIndex]
+        array[longIndex] = cur or bit
     }
 
     /**
      * Unmarks the npc at high resolution slot [index] as low priority.
      * @param index the high resolution (not absolute) index of the NPC, a value from 0 to 250.
+     * @param array the array in which to modify the corresponding bit.
      */
-    internal fun unsetLowPriority(index: Int) {
+    internal fun unsetLowPriority(
+        index: Int,
+        array: LongArray = this.highResolutionPriorityFlags,
+    ) {
         val longIndex = index ushr 6
         val bit = 1L shl (index and 0x3F)
-        val cur = this.highResolutionPriorityFlags[longIndex]
-        this.highResolutionPriorityFlags[longIndex] = cur and bit.inv()
+        val cur = array[longIndex]
+        array[longIndex] = cur and bit.inv()
     }
 
     /**
@@ -243,6 +271,7 @@ internal class NpcInfoWorldDetails(
      */
     internal fun clearPriorities() {
         this.highResolutionPriorityFlags.fill(0L)
+        this.temporaryHighResolutionPriorityFlags.fill(0L)
         this.lowPriorityCount = 0
         this.normalPriorityCount = 0
     }
@@ -264,6 +293,7 @@ internal class NpcInfoWorldDetails(
         this.extendedInfoIndices.fill(0u)
         this.observerExtendedInfoFlags.reset()
         this.highResolutionPriorityFlags.fill(0L)
+        this.temporaryHighResolutionPriorityFlags.fill(0L)
         this.lowPriorityCap = MAX_HIGH_RESOLUTION_NPCS
         this.normalPrioritySoftCap = 0
         this.lowPriorityCount = 0
