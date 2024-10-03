@@ -1,5 +1,6 @@
 package net.rsprot.protocol.game.outgoing.info.npcinfo
 
+import com.github.michaelbull.logging.InlineLogger
 import io.netty.buffer.ByteBuf
 import io.netty.buffer.ByteBufAllocator
 import net.rsprot.buffer.bitbuffer.BitBuf
@@ -529,10 +530,10 @@ public class NpcInfo internal constructor(
             val previousPacket = details.previousPacket
             if (previousPacket is ConsumableMessage) {
                 if (!previousPacket.isConsumed()) {
-                    throw IllegalStateException(
+                    logger.warn {
                         "Previous npc info packet was calculated but " +
-                            "not sent out to the client for world ${details.worldId}.",
-                    )
+                            "not sent out to the client for world ${details.worldId} for player $localPlayerIndex!"
+                    }
                 }
             }
             details.previousPacket =
@@ -963,5 +964,7 @@ public class NpcInfo internal constructor(
          * The priority flag for normal priority NPCs.
          */
         private const val AVATAR_NORMAL_PRIORITY_FLAG: Int = 0x1
+
+        private val logger = InlineLogger()
     }
 }

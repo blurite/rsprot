@@ -1,5 +1,6 @@
 package net.rsprot.protocol.game.outgoing.info.playerinfo
 
+import com.github.michaelbull.logging.InlineLogger
 import io.netty.buffer.ByteBuf
 import io.netty.buffer.ByteBufAllocator
 import net.rsprot.buffer.bitbuffer.BitBuf
@@ -1063,9 +1064,9 @@ public class PlayerInfo internal constructor(
         observerExtendedInfoFlags.reset()
         avatar.extendedInfo.postUpdate()
         if (this.previousPacket?.isConsumed() == false) {
-            throw IllegalStateException(
-                "Previous player info packet was calculated but not sent out to the client!",
-            )
+            logger.warn {
+                "Previous player info packet was calculated but not sent out to the client for index $localIndex!"
+            }
         }
         val packet = PlayerInfoPacket(backingBuffer())
         this.previousPacket = packet
@@ -1254,5 +1255,7 @@ public class PlayerInfo internal constructor(
          * The constant id for the root world.
          */
         public const val ROOT_WORLD: Int = -1
+
+        private val logger = InlineLogger()
     }
 }

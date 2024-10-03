@@ -1,5 +1,6 @@
 package net.rsprot.protocol.game.outgoing.info.worldentityinfo
 
+import com.github.michaelbull.logging.InlineLogger
 import io.netty.buffer.ByteBuf
 import io.netty.buffer.ByteBufAllocator
 import net.rsprot.buffer.JagByteBuf
@@ -294,9 +295,10 @@ public class WorldEntityInfo internal constructor(
      */
     internal fun postUpdate() {
         if (this.previousPacket?.isConsumed() == false) {
-            throw IllegalStateException(
-                "Previous world entity info packet was calculated but not sent out to the client!",
-            )
+            logger.warn {
+                "Previous world entity info packet was calculated but " +
+                    "not sent out to the client for player index $localIndex!"
+            }
         }
         val packet = WorldEntityInfoPacket(backingBuffer())
         this.previousPacket = packet
@@ -545,5 +547,7 @@ public class WorldEntityInfo internal constructor(
          * If the packet ever changes, this MUST be adjusted accordingly.
          */
         private const val BUF_CAPACITY: Int = 1 + (MAX_HIGH_RES_COUNT * 1) + (MAX_HIGH_RES_COUNT * 10)
+
+        private val logger = InlineLogger()
     }
 }
