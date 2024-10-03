@@ -90,6 +90,9 @@ public class Session<R>(
         message: OutgoingGameMessage,
         category: ServerProtCategory,
     ) {
+        if (message is ConsumableMessage) {
+            message.consume()
+        }
         if (this.channelStatus != ChannelStatus.OPEN) return
         if (RSProtFlags.filterMissingPacketsInClient) {
             if (loginBlock.clientType == LoginClientType.DESKTOP && message is SoundArea) {
@@ -104,9 +107,6 @@ public class Session<R>(
                         "partial enclosed as of revision 225 on C++ clients. Packet: $message",
                 )
             }
-        }
-        if (message is ConsumableMessage) {
-            message.consume()
         }
         val categoryId = category.id
         val queue = outgoingMessageQueues[categoryId]
