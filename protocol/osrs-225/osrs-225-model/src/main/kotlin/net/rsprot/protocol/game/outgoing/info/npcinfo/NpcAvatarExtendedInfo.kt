@@ -481,7 +481,38 @@ public class NpcAvatarExtendedInfo(
      * @param lightness the lightness of the tint.
      * @param weight the weight (or opacity) of the tint.
      */
+    @Deprecated(
+        message = "Deprecated. Use setTinting(startTime, endTime, hue, saturation, lightness, weight) for consistency.",
+        replaceWith = ReplaceWith("setTinting(startTime, endTime, hue, saturation, lightness, weight)"),
+    )
     public fun tinting(
+        startTime: Int,
+        endTime: Int,
+        hue: Int,
+        saturation: Int,
+        lightness: Int,
+        weight: Int,
+    ) {
+        setTinting(
+            startTime,
+            endTime,
+            hue,
+            saturation,
+            lightness,
+            weight,
+        )
+    }
+
+    /**
+     * Applies a tint over the non-textured parts of the character.
+     * @param startTime the delay in client cycles (20ms/cc) until the tinting is applied.
+     * @param endTime the timestamp in client cycles (20ms/cc) until the tinting finishes.
+     * @param hue the hue of the tint.
+     * @param saturation the saturation of the tint.
+     * @param lightness the lightness of the tint.
+     * @param weight the weight (or opacity) of the tint.
+     */
+    public fun setTinting(
         startTime: Int,
         endTime: Int,
         hue: Int,
@@ -534,7 +565,30 @@ public class NpcAvatarExtendedInfo(
      * more precise control over it.
      */
     @JvmOverloads
+    @Deprecated(
+        message = "Deprecated. Use setFaceCoord(x, z, instant) for consistency.",
+        replaceWith = ReplaceWith("setFaceCoord(x, z, instant)"),
+    )
     public fun faceCoord(
+        x: Int,
+        z: Int,
+        instant: Boolean = false,
+    ) {
+        setFaceCoord(x, z, instant)
+    }
+
+    /**
+     * Faces the center of the absolute coordinate provided.
+     * @param x the absolute x coordinate to turn towards
+     * @param z the absolute z coordinate to turn towards
+     * @param instant whether to turn towards the coord instantly without any turn anim,
+     * or gradually. The instant property is typically used when spawning in NPCs;
+     * While the low to high resolution change does support a direction, it only supports
+     * in increments of 45 degrees - so utilizing this extended info blocks allows for
+     * more precise control over it.
+     */
+    @JvmOverloads
+    public fun setFaceCoord(
         x: Int,
         z: Int,
         instant: Boolean = false,
@@ -562,7 +616,22 @@ public class NpcAvatarExtendedInfo(
      * any new observers will get the old variant.
      * @param id the new id of the npc to transform to.
      */
+    @Deprecated(
+        message = "Deprecated. Use setTransmogrification(id) for consistency.",
+        replaceWith = ReplaceWith("setTransmogrification(id)"),
+    )
     public fun transformation(id: Int) {
+        setTransmogrification(id)
+    }
+
+    /**
+     * Transforms this NPC into the [id] provided.
+     * It should be noted that this extended info block is transient and only applies to one cycle.
+     * The server is expected to additionally change the id of the avatar itself, otherwise
+     * any new observers will get the old variant.
+     * @param id the new id of the npc to transform to.
+     */
+    public fun setTransmogrification(id: Int) {
         checkCommunicationThread()
         verify {
             require(id in UNSIGNED_SHORT_RANGE) {
@@ -577,7 +646,19 @@ public class NpcAvatarExtendedInfo(
      * Overrides the combat level of this NPC with the provided level.
      * @param level the combat leve to render, or -1 to remove the combat level override.
      */
+    @Deprecated(
+        message = "Deprecated. Use setCombatLevelChange(id) for consistency.",
+        replaceWith = ReplaceWith("setCombatLevelChange(id)"),
+    )
     public fun combatLevelChange(level: Int) {
+        setCombatLevelChange(level)
+    }
+
+    /**
+     * Overrides the combat level of this NPC with the provided level.
+     * @param level the combat leve to render, or -1 to remove the combat level override.
+     */
+    public fun setCombatLevelChange(level: Int) {
         checkCommunicationThread()
         blocks.combatLevelChange.level = level
         flags = flags or LEVEL_CHANGE
@@ -587,7 +668,19 @@ public class NpcAvatarExtendedInfo(
      * Overrides the name of this NPC with the provided [name].
      * @param name the name to override with, or null to reset an existing override.
      */
+    @Deprecated(
+        message = "Deprecated. Use setNameChange(id) for consistency.",
+        replaceWith = ReplaceWith("setNameChange(id)"),
+    )
     public fun nameChange(name: String?) {
+        setNameChange(name)
+    }
+
+    /**
+     * Overrides the name of this NPC with the provided [name].
+     * @param name the name to override with, or null to reset an existing override.
+     */
+    public fun setNameChange(name: String?) {
         checkCommunicationThread()
         blocks.nameChange.name = name
         flags = flags or NAME_CHANGE
@@ -601,7 +694,23 @@ public class NpcAvatarExtendedInfo(
      * future players as well.
      */
     @Suppress("MemberVisibilityCanBePrivate")
+    @Deprecated(
+        message = "Deprecated. Use setVisibleOps(id) for consistency.",
+        replaceWith = ReplaceWith("setVisibleOps(id)"),
+    )
     public fun visibleOps(flag: Int) {
+        setVisibleOps(flag)
+    }
+
+    /**
+     * Sets the visible ops flag of this NPC to the provided value.
+     * @param flag the bit flag to set. Only the 5 lowest bits are used,
+     * and an enabled bit implies the option at that index should render.
+     * Note that this extended info block is not transient and will be transmitted to
+     * future players as well.
+     */
+    @Suppress("MemberVisibilityCanBePrivate")
+    public fun setVisibleOps(flag: Int) {
         checkCommunicationThread()
         blocks.visibleOps.ops = flag.toUByte()
         flags = flags or OPS
@@ -615,7 +724,29 @@ public class NpcAvatarExtendedInfo(
      * @param op4 whether to render op4
      * @param op5 whether to render op5
      */
+    @Deprecated(
+        message = "Deprecated. Use setVisibleOps(op1, op2, op3, op4, op5) for consistency.",
+        replaceWith = ReplaceWith("setVisibleOps(op1, op2, op3, op4, op5)"),
+    )
     public fun visibleOps(
+        op1: Boolean,
+        op2: Boolean,
+        op3: Boolean,
+        op4: Boolean,
+        op5: Boolean,
+    ) {
+        setVisibleOps(op1, op2, op3, op4, op5)
+    }
+
+    /**
+     * Marks the provided right-click options as visible or invisible.
+     * @param op1 whether to render op1
+     * @param op2 whether to render op2
+     * @param op3 whether to render op3
+     * @param op4 whether to render op4
+     * @param op5 whether to render op5
+     */
+    public fun setVisibleOps(
         op1: Boolean,
         op2: Boolean,
         op3: Boolean,
@@ -628,21 +759,43 @@ public class NpcAvatarExtendedInfo(
         if (op3) flag = flag or 0x4
         if (op4) flag = flag or 0x8
         if (op5) flag = flag or 0x10
-        visibleOps(flag)
+        setVisibleOps(flag)
     }
 
     /**
      * Sets all the right-click options invisible on this NPC.
      */
+    @Deprecated(
+        message = "Deprecated. Use setAllOpsInvisible() for consistency.",
+        replaceWith = ReplaceWith("setAllOpsInvisible()"),
+    )
     public fun allOpsInvisible() {
-        visibleOps(0)
+        setAllOpsInvisible()
+    }
+
+    /**
+     * Sets all the right-click options invisible on this NPC.
+     */
+    public fun setAllOpsInvisible() {
+        setVisibleOps(0)
     }
 
     /**
      * Sets all the right-click options as visible on this NPC.
      */
+    @Deprecated(
+        message = "Deprecated. Use setAllOpsVisible() for consistency.",
+        replaceWith = ReplaceWith("setAllOpsVisible()"),
+    )
     public fun allOpsVisible() {
-        visibleOps(0b11111)
+        setAllOpsVisible()
+    }
+
+    /**
+     * Sets all the right-click options as visible on this NPC.
+     */
+    public fun setAllOpsVisible() {
+        setVisibleOps(0b11111)
     }
 
     /**
@@ -666,7 +819,78 @@ public class NpcAvatarExtendedInfo(
      * @param readyAnim the default stance animation of this NPC when it is not moving
      */
     @JvmSynthetic
+    @Deprecated(
+        message =
+            "Deprecated. Use setBaseAnimationSet(turnLeftAnim, turnRightAnim, " +
+                "walkAnim, walkAnimBack, walkAnimLeft, walkAnimRight, " +
+                "runAnim, runAnimBack, runAnimLeft, runAnimRight, " +
+                "crawlAnim, crawlAnimBack, crawlAnimLeft, crawlAnimRight, readyAnim) for consistency.",
+        replaceWith =
+            ReplaceWith(
+                "setBaseAnimationSet(turnLeftAnim, turnRightAnim, " +
+                    "walkAnim, walkAnimBack, walkAnimLeft, walkAnimRight, " +
+                    "runAnim, runAnimBack, runAnimLeft, runAnimRight, " +
+                    "crawlAnim, crawlAnimBack, crawlAnimLeft, crawlAnimRight, readyAnim)",
+            ),
+    )
     public fun baseAnimationSet(
+        turnLeftAnim: Int = Int.MIN_VALUE,
+        turnRightAnim: Int = Int.MIN_VALUE,
+        walkAnim: Int = Int.MIN_VALUE,
+        walkAnimBack: Int = Int.MIN_VALUE,
+        walkAnimLeft: Int = Int.MIN_VALUE,
+        walkAnimRight: Int = Int.MIN_VALUE,
+        runAnim: Int = Int.MIN_VALUE,
+        runAnimBack: Int = Int.MIN_VALUE,
+        runAnimLeft: Int = Int.MIN_VALUE,
+        runAnimRight: Int = Int.MIN_VALUE,
+        crawlAnim: Int = Int.MIN_VALUE,
+        crawlAnimBack: Int = Int.MIN_VALUE,
+        crawlAnimLeft: Int = Int.MIN_VALUE,
+        crawlAnimRight: Int = Int.MIN_VALUE,
+        readyAnim: Int = Int.MIN_VALUE,
+    ) {
+        setBaseAnimationSet(
+            turnLeftAnim,
+            turnRightAnim,
+            walkAnim,
+            walkAnimBack,
+            walkAnimLeft,
+            walkAnimRight,
+            runAnim,
+            runAnimBack,
+            runAnimLeft,
+            runAnimRight,
+            crawlAnim,
+            crawlAnimBack,
+            crawlAnimLeft,
+            crawlAnimRight,
+            readyAnim,
+        )
+    }
+
+    /**
+     * Sets the base animation set of this NPC with the provided values.
+     * If the value is equal to [Int.MIN_VALUE], the animation will not be overwritten.
+     * Only the 16 lowest bits of the animation ids are used.
+     * @param turnLeftAnim the animation used when the NPC turns to the left
+     * @param turnRightAnim the animation used when the NPC turns to the right
+     * @param walkAnim the animation used when the NPC walks forward
+     * @param walkAnimLeft the animation used when the NPC walks to the left
+     * @param walkAnimRight the animation used when the NPC walks to the right
+     * @param walkAnimBack the animation used when the NPC walks backwards
+     * @param runAnim the animation used when the NPC runs forward
+     * @param runAnimLeft the animation used when the NPC runs to the left
+     * @param runAnimRight the animation used when the NPC runs to the right
+     * @param runAnimBack the animation used when the NPC runs backwards
+     * @param crawlAnim the animation used when the NPC crawls forward
+     * @param crawlAnimLeft the animation used when the NPC crawls to the left
+     * @param crawlAnimRight the animation used when the NPC crawls to the right
+     * @param crawlAnimBack the animation used when the NPC crawls backwards
+     * @param readyAnim the default stance animation of this NPC when it is not moving
+     */
+    @JvmSynthetic
+    public fun setBaseAnimationSet(
         turnLeftAnim: Int = Int.MIN_VALUE,
         turnRightAnim: Int = Int.MIN_VALUE,
         walkAnim: Int = Int.MIN_VALUE,
@@ -755,7 +979,7 @@ public class NpcAvatarExtendedInfo(
      * @param id the ready animation id
      */
     public fun setReadyAnim(id: Int) {
-        baseAnimationSet(readyAnim = id)
+        setBaseAnimationSet(readyAnim = id)
     }
 
     /**
@@ -769,7 +993,7 @@ public class NpcAvatarExtendedInfo(
         turnLeftAnim: Int?,
         turnRightAnim: Int?,
     ) {
-        baseAnimationSet(
+        setBaseAnimationSet(
             turnLeftAnim = turnLeftAnim ?: Int.MIN_VALUE,
             turnRightAnim = turnRightAnim ?: Int.MIN_VALUE,
         )
@@ -790,7 +1014,7 @@ public class NpcAvatarExtendedInfo(
         walkAnimLeft: Int?,
         walkAnimRight: Int?,
     ) {
-        baseAnimationSet(
+        setBaseAnimationSet(
             walkAnim = walkAnim ?: Int.MIN_VALUE,
             walkAnimBack = walkAnimBack ?: Int.MIN_VALUE,
             walkAnimLeft = walkAnimLeft ?: Int.MIN_VALUE,
@@ -813,7 +1037,7 @@ public class NpcAvatarExtendedInfo(
         runAnimLeft: Int?,
         runAnimRight: Int?,
     ) {
-        baseAnimationSet(
+        setBaseAnimationSet(
             runAnim = runAnim ?: Int.MIN_VALUE,
             runAnimBack = runAnimBack ?: Int.MIN_VALUE,
             runAnimLeft = runAnimLeft ?: Int.MIN_VALUE,
@@ -836,7 +1060,7 @@ public class NpcAvatarExtendedInfo(
         crawlAnimLeft: Int?,
         crawlAnimRight: Int?,
     ) {
-        baseAnimationSet(
+        setBaseAnimationSet(
             crawlAnim = crawlAnim ?: Int.MIN_VALUE,
             crawlAnimBack = crawlAnimBack ?: Int.MIN_VALUE,
             crawlAnimLeft = crawlAnimLeft ?: Int.MIN_VALUE,
@@ -851,7 +1075,26 @@ public class NpcAvatarExtendedInfo(
      * @param index the index of the sprite in that sprite file, as sprite files contain
      * multiple sprites together.
      */
+    @Deprecated(
+        message = "Deprecated. Use setHeadIconChange(slot, group, index) for consistency.",
+        replaceWith = ReplaceWith("setHeadIconChange(slot, group, index)"),
+    )
     public fun headIconChange(
+        slot: Int,
+        group: Int,
+        index: Int,
+    ) {
+        setHeadIconChange(slot, group, index)
+    }
+
+    /**
+     * Changes the head icon of a NPC to the sprite at the provided group and sprite index.
+     * @param slot the slot of the headicon, a value of 0-8 (exclusive)
+     * @param group the sprite group id in the cache.
+     * @param index the index of the sprite in that sprite file, as sprite files contain
+     * multiple sprites together.
+     */
+    public fun setHeadIconChange(
         slot: Int,
         group: Int,
         index: Int,
