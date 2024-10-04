@@ -150,7 +150,34 @@ public class NpcAvatar internal constructor(
      *
      * @param direction the direction for the NPC to face.
      */
+    @Deprecated(
+        message = "Deprecated. Use setDirection(direction) for consistency.",
+        replaceWith = ReplaceWith("setDirection(direction)"),
+    )
     public fun updateDirection(direction: Int) {
+        setDirection(direction)
+    }
+
+    /**
+     * Updates the spawn direction of the NPC.
+     *
+     * Table of possible direction values:
+     * ```
+     * | Id |  Direction | Angle |
+     * |:--:|:----------:|:-----:|
+     * |  0 | North-West |  768  |
+     * |  1 |    North   |  1024 |
+     * |  2 | North-East |  1280 |
+     * |  3 |    West    |  512  |
+     * |  4 |    East    |  1536 |
+     * |  5 | South-West |  256  |
+     * |  6 |    South   |   0   |
+     * |  7 | South-East |  1792 |
+     * ```
+     *
+     * @param direction the direction for the NPC to face.
+     */
+    public fun setDirection(direction: Int) {
         checkCommunicationThread()
         require(direction in 0..7) {
             "Direction must be a value in range of 0..7. " +
