@@ -18,6 +18,9 @@ import net.rsprot.protocol.message.OutgoingGameMessage
 import net.rsprot.protocol.message.codec.incoming.MessageConsumer
 import java.net.InetAddress
 import java.util.Queue
+import kotlin.time.Duration
+import kotlin.time.Duration.Companion.seconds
+import kotlin.time.TimeSource
 
 /**
  * The session objects are used to link the player instances together with the respective
@@ -65,6 +68,28 @@ public class Session<R>(
     @Volatile
     private var channelStatus: ChannelStatus = ChannelStatus.OPEN
 
+    private var lastFlush: TimeSource.Monotonic.ValueTimeMark = TimeSource.Monotonic.markNow()
+    private var lastWarning: TimeSource.Monotonic.ValueTimeMark = lastFlush
+
+    private fun updateLastFlush() {
+        lastFlush = TimeSource.Monotonic.markNow()
+    }
+
+    private fun checkFlushWarnings() {
+        val elapsed = lastFlush.elapsedNow()
+        if (elapsed >= warnDuration) {
+            if (lastWarning.elapsedNow() >= warnDuration) {
+                lastWarning = TimeSource.Monotonic.markNow()
+                // This is an extreme edge case warning system, but it is helpful in case there is
+                // a sort of zombie session that just keeps on queueing but never flushing.
+                logger.warn {
+                    "$elapsed has elapsed since the last flush " +
+                        "whilst messages are still being queued for '${loginBlock.username}' at ${ctx.inetAddress()}."
+                }
+            }
+        }
+    }
+
     /**
      * Queues a game message to be written to the client based on the message's defined
      * category
@@ -96,6 +121,7 @@ public class Session<R>(
         val categoryId = category.id
         val queue = outgoingMessageQueues[categoryId]
         queue += message
+        checkFlushWarnings()
     }
 
     /**
@@ -203,6 +229,7 @@ public class Session<R>(
         ) {
             return
         }
+        updateLastFlush()
         val eventLoop = ctx.channel().eventLoop()
         if (eventLoop.inEventLoop()) {
             writeAndFlush()
@@ -351,5 +378,6 @@ public class Session<R>(
 
     private companion object {
         private val logger: InlineLogger = InlineLogger()
+        private val warnDuration: Duration = 60.seconds
     }
 }
