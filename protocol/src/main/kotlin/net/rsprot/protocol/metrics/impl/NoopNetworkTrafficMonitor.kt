@@ -5,7 +5,6 @@ import net.rsprot.protocol.metrics.channel.impl.GameChannelTrafficMonitor
 import net.rsprot.protocol.metrics.channel.impl.Js5ChannelTrafficMonitor
 import net.rsprot.protocol.metrics.channel.impl.LoginChannelTrafficMonitor
 import net.rsprot.protocol.metrics.channel.impl.NoopChannelTrafficMonitor
-import net.rsprot.protocol.metrics.snapshots.NetworkTrafficSnapshot
 import net.rsprot.protocol.metrics.snapshots.impl.NoopNetworkTrafficSnapshot
 import java.net.InetAddress
 
@@ -30,9 +29,9 @@ public data object NoopNetworkTrafficMonitor : NetworkTrafficMonitor<Any?> {
     ) {
     }
 
-    override fun snapshot(): NetworkTrafficSnapshot = NoopNetworkTrafficSnapshot
+    override fun snapshot(): NoopNetworkTrafficSnapshot = NoopNetworkTrafficSnapshot
 
-    override fun resetTransient(): NetworkTrafficSnapshot = NoopNetworkTrafficSnapshot
+    override fun resetTransient(): NoopNetworkTrafficSnapshot = NoopNetworkTrafficSnapshot
 
     override fun freeze() {
     }

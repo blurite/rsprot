@@ -5,7 +5,6 @@ import net.rsprot.protocol.metrics.channel.impl.GameChannelTrafficMonitor
 import net.rsprot.protocol.metrics.channel.impl.Js5ChannelTrafficMonitor
 import net.rsprot.protocol.metrics.channel.impl.LoginChannelTrafficMonitor
 import net.rsprot.protocol.metrics.lock.TrafficMonitorLock
-import net.rsprot.protocol.metrics.snapshots.NetworkTrafficSnapshot
 import net.rsprot.protocol.metrics.snapshots.impl.ConcurrentNetworkTrafficSnapshot
 import java.net.InetAddress
 import java.time.LocalDateTime
@@ -88,7 +87,7 @@ public class ConcurrentNetworkTrafficMonitor<LoginBlock>(
         )
     }
 
-    override fun resetTransient(): NetworkTrafficSnapshot {
+    override fun resetTransient(): ConcurrentNetworkTrafficSnapshot<LoginBlock> {
         var oldStart: LocalDateTime
         var oldConnections: AtomicInteger
         var oldLoginBlocks: Map<InetAddress, Queue<LoginBlock>>
