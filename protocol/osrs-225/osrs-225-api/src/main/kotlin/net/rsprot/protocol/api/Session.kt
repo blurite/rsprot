@@ -160,7 +160,8 @@ public class Session<R>(
 
     /**
      * Sets a disconnection hook to be triggered if the connection to this channel is lost,
-     * allowing one to safely log the player out in such case.
+     * allowing one to safely log the player out in such case. If the channel has already disconnected
+     * by the time this function is invoked, the [hook] will be executed __immediately__.
      * @param hook the hook runnable to invoke if the connection is lost
      * @throws IllegalStateException if a hook was already registered
      */
@@ -170,6 +171,11 @@ public class Session<R>(
             throw IllegalStateException("A disconnection hook has already been registered!")
         }
         this.disconnectionHook = hook
+        // Immediately trigger the disconnection hook if the channel already went inactive before
+        // the hook could be triggered
+        if (!ctx.channel().isActive) {
+            hook.run()
+        }
     }
 
     /**
