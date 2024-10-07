@@ -9,6 +9,7 @@ import net.rsprot.buffer.extensions.p2
 import net.rsprot.buffer.extensions.toJagByteBuf
 import net.rsprot.crypto.cipher.StreamCipher
 import net.rsprot.protocol.Prot
+import net.rsprot.protocol.api.handlers.OutgoingMessageSizeEstimator
 import net.rsprot.protocol.loginprot.outgoing.LoginResponse
 import net.rsprot.protocol.message.OutgoingMessage
 import net.rsprot.protocol.message.codec.outgoing.MessageEncoderRepository
@@ -23,6 +24,7 @@ public abstract class OutgoingMessageEncoder : MessageToByteEncoder<OutgoingMess
     protected abstract val cipher: StreamCipher
     protected abstract val repository: MessageEncoderRepository<*>
     protected abstract val validate: Boolean
+    protected abstract val estimator: OutgoingMessageSizeEstimator
 
     override fun encode(
         ctx: ChannelHandlerContext,
@@ -158,6 +160,19 @@ public abstract class OutgoingMessageEncoder : MessageToByteEncoder<OutgoingMess
         } else {
             out.p1((opcode ushr 8 or 0x80) + cipher.nextInt())
             out.p1((opcode and 0xFF) + cipher.nextInt())
+        }
+    }
+
+    override fun allocateBuffer(
+        ctx: ChannelHandlerContext,
+        msg: OutgoingMessage,
+        preferDirect: Boolean,
+    ): ByteBuf? {
+        val size = estimator.newHandle().size(msg)
+        return if (preferDirect) {
+            ctx.alloc().ioBuffer(size)
+        } else {
+            ctx.alloc().heapBuffer(size)
         }
     }
 

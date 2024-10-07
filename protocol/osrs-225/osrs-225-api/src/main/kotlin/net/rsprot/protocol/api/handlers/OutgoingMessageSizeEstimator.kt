@@ -7,7 +7,7 @@ import io.netty.channel.FileRegion
 import io.netty.channel.MessageSizeEstimator
 import net.rsprot.protocol.Prot
 import net.rsprot.protocol.ServerProt
-import net.rsprot.protocol.api.NetworkService
+import net.rsprot.protocol.api.repositories.MessageEncoderRepositories
 import net.rsprot.protocol.common.client.OldSchoolClientType
 import net.rsprot.protocol.message.OutgoingGameMessage
 import net.rsprot.protocol.message.OutgoingJs5Message
@@ -15,20 +15,17 @@ import net.rsprot.protocol.message.OutgoingLoginMessage
 import net.rsprot.protocol.message.OutgoingMessage
 
 public class OutgoingMessageSizeEstimator(
-    networkService: NetworkService<*>,
+    repositories: MessageEncoderRepositories,
 ) : MessageSizeEstimator {
     private val supportsMultiplePlatforms =
-        networkService
-            .encoderRepositories
+        repositories
             .gameMessageDecoderRepositories
             .notNullSize > 1
     private val gameEncoder =
-        networkService
-            .encoderRepositories
+        repositories
             .gameMessageDecoderRepositories[ESTIMATOR_CLIENT_TYPE]
     private val loginEncoder =
-        networkService
-            .encoderRepositories
+        repositories
             .loginMessageDecoderRepository
 
     private val singleton = OutgoingMessageSizeEstimatorHandle()

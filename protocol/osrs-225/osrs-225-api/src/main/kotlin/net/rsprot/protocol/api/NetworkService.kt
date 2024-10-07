@@ -12,6 +12,7 @@ import net.rsprot.protocol.api.handlers.ExceptionHandlers
 import net.rsprot.protocol.api.handlers.GameMessageHandlers
 import net.rsprot.protocol.api.handlers.INetAddressHandlers
 import net.rsprot.protocol.api.handlers.LoginHandlers
+import net.rsprot.protocol.api.handlers.OutgoingMessageSizeEstimator
 import net.rsprot.protocol.api.js5.Js5Configuration
 import net.rsprot.protocol.api.js5.Js5GroupProvider
 import net.rsprot.protocol.api.js5.Js5Service
@@ -119,6 +120,8 @@ public class NetworkService<R>
             get() = entityInfoProtocols.worldEntityAvatarFactory
         public val worldEntityInfoProtocol: WorldEntityProtocol
             get() = entityInfoProtocols.worldEntityInfoProtocol
+        public val messageSizeEstimator: OutgoingMessageSizeEstimator =
+            OutgoingMessageSizeEstimator(encoderRepositories)
 
         private lateinit var bossGroup: EventLoopGroup
         private lateinit var childGroup: EventLoopGroup
@@ -133,7 +136,7 @@ public class NetworkService<R>
         public fun start() {
             val time =
                 measureTime {
-                    val bootstrap = bootstrapBuilder.build(this)
+                    val bootstrap = bootstrapBuilder.build(messageSizeEstimator)
                     val initializer =
                         bootstrap.childHandler(
                             LoginChannelInitializer(this),

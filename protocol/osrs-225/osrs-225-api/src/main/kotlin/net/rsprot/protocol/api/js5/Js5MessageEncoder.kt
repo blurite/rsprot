@@ -8,6 +8,7 @@ import net.rsprot.crypto.cipher.StreamCipher
 import net.rsprot.protocol.api.NetworkService
 import net.rsprot.protocol.api.channel.inetAddress
 import net.rsprot.protocol.api.encoder.OutgoingMessageEncoder
+import net.rsprot.protocol.api.handlers.OutgoingMessageSizeEstimator
 import net.rsprot.protocol.common.js5.outgoing.prot.Js5ServerProt
 import net.rsprot.protocol.message.OutgoingMessage
 import net.rsprot.protocol.message.codec.outgoing.MessageEncoderRepository
@@ -22,6 +23,7 @@ public class Js5MessageEncoder(
     override val repository: MessageEncoderRepository<*> =
         networkService.encoderRepositories.js5MessageDecoderRepository
     override val validate: Boolean = false
+    override val estimator: OutgoingMessageSizeEstimator = networkService.messageSizeEstimator
 
     override fun encode(
         ctx: ChannelHandlerContext,
