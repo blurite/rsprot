@@ -17,6 +17,24 @@ public class UpdateFriendChatChannelFullV2(
     override val category: ServerProtCategory
         get() = GameServerProtCategory.LOW_PRIORITY_PROT
 
+    override fun estimateSize(): Int {
+        return when (val update = updateType) {
+            is JoinUpdate -> {
+                val sizePerEntry =
+                    13 +
+                        Short.SIZE_BYTES +
+                        Byte.SIZE_BYTES +
+                        Byte.SIZE_BYTES
+                13 +
+                    Long.SIZE_BYTES +
+                    Byte.SIZE_BYTES +
+                    (if (update.entries.size >= 0x80) Short.SIZE_BYTES else Byte.SIZE_BYTES) +
+                    (update.entries.size * sizePerEntry)
+            }
+            LeaveUpdate -> 0
+        }
+    }
+
     override fun toString(): String = "UpdateFriendChatChannelFullV2(updateType=$updateType)"
 
     public sealed interface UpdateType

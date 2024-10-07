@@ -4,6 +4,8 @@ import net.rsprot.compression.Base37
 import net.rsprot.protocol.ServerProtCategory
 import net.rsprot.protocol.game.outgoing.GameServerProtCategory
 import net.rsprot.protocol.message.OutgoingGameMessage
+import net.rsprot.protocol.message.util.estimateHuffmanEncodedTextSize
+import net.rsprot.protocol.message.util.estimateTextSize
 
 /**
  * Message friendchannel is used to transmit messages within a friend
@@ -67,6 +69,15 @@ public class MessageFriendChannel private constructor(
         get() = _chatCrownType.toInt()
     override val category: ServerProtCategory
         get() = GameServerProtCategory.LOW_PRIORITY_PROT
+
+    override fun estimateSize(): Int {
+        return estimateTextSize(sender) +
+            Long.SIZE_BYTES +
+            Short.SIZE_BYTES +
+            3 +
+            Byte.SIZE_BYTES +
+            estimateHuffmanEncodedTextSize(message)
+    }
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

@@ -3,6 +3,7 @@ package net.rsprot.protocol.game.outgoing.misc.client
 import net.rsprot.protocol.ServerProtCategory
 import net.rsprot.protocol.game.outgoing.GameServerProtCategory
 import net.rsprot.protocol.message.OutgoingGameMessage
+import net.rsprot.protocol.message.util.estimateTextSize
 
 /**
  * Reflection checker packet will attempt to use [java.lang.reflect] to
@@ -30,6 +31,58 @@ public class ReflectionChecker(
 ) : OutgoingGameMessage {
     override val category: ServerProtCategory
         get() = GameServerProtCategory.LOW_PRIORITY_PROT
+
+    override fun estimateSize(): Int {
+        var size = Byte.SIZE_BYTES + Int.SIZE_BYTES
+        for (check in checks) {
+            when (check) {
+                is GetFieldValue -> {
+                    size += Byte.SIZE_BYTES +
+                        estimateTextSize(check.className) +
+                        estimateTextSize(check.fieldName)
+                }
+                is SetFieldValue -> {
+                    size += Byte.SIZE_BYTES +
+                        estimateTextSize(check.className) +
+                        estimateTextSize(check.fieldName) +
+                        Int.SIZE_BYTES
+                }
+                is GetFieldModifiers -> {
+                    size += Byte.SIZE_BYTES +
+                        estimateTextSize(check.className) +
+                        estimateTextSize(check.fieldName)
+                }
+                is InvokeMethod -> {
+                    size += Byte.SIZE_BYTES +
+                        estimateTextSize(check.className) +
+                        estimateTextSize(check.methodName)
+
+                    val parameterClasses = check.parameterClasses
+                    val parameterValues = check.parameterValues
+                    size++
+                    for (parameterClass in parameterClasses) {
+                        size += estimateTextSize(parameterClass)
+                    }
+                    size += estimateTextSize(check.returnClass)
+                    for (parameterValue in parameterValues) {
+                        size += Int.SIZE_BYTES + parameterValue.size
+                    }
+                }
+                is GetMethodModifiers -> {
+                    size += Int.SIZE_BYTES +
+                        estimateTextSize(check.className) +
+                        estimateTextSize(check.methodName) +
+                        Byte.SIZE_BYTES +
+                        estimateTextSize(check.returnClass)
+                    val parameterClasses = check.parameterClasses
+                    for (parameterClass in parameterClasses) {
+                        size += estimateTextSize(parameterClass)
+                    }
+                }
+            }
+        }
+        return size
+    }
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

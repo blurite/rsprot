@@ -3,6 +3,7 @@ package net.rsprot.protocol.game.outgoing.misc.client
 import net.rsprot.protocol.ServerProtCategory
 import net.rsprot.protocol.game.outgoing.GameServerProtCategory
 import net.rsprot.protocol.message.OutgoingGameMessage
+import net.rsprot.protocol.message.util.estimateTextSize
 
 /**
  * URL open packets are used to open a site on the target's default
@@ -14,6 +15,10 @@ public class UrlOpen(
 ) : OutgoingGameMessage {
     override val category: ServerProtCategory
         get() = GameServerProtCategory.LOW_PRIORITY_PROT
+
+    override fun estimateSize(): Int {
+        return estimateTextSize(url)
+    }
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

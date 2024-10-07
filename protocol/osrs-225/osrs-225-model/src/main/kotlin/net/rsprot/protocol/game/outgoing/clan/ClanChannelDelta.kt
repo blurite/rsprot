@@ -39,6 +39,15 @@ public class ClanChannelDelta private constructor(
     override val category: ServerProtCategory
         get() = GameServerProtCategory.HIGH_PRIORITY_PROT
 
+    override fun estimateSize(): Int {
+        // Always assume the biggest event size, which is 29 bytes
+        return Byte.SIZE_BYTES +
+            Long.SIZE_BYTES +
+            Long.SIZE_BYTES +
+            Byte.SIZE_BYTES +
+            (29 * events.size)
+    }
+
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (javaClass != other?.javaClass) return false

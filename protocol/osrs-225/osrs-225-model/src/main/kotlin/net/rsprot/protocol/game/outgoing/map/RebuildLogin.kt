@@ -51,6 +51,14 @@ public class RebuildLogin private constructor(
     override val category: ServerProtCategory
         get() = GameServerProtCategory.HIGH_PRIORITY_PROT
 
+    override fun estimateSize(): Int =
+        Short.SIZE_BYTES +
+            Short.SIZE_BYTES +
+            Short.SIZE_BYTES +
+            Short.SIZE_BYTES +
+            (keys.size * (4 * Int.SIZE_BYTES)) +
+            gpiInitBlock.readableBytes()
+
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (javaClass != other?.javaClass) return false

@@ -16,6 +16,16 @@ public class UpdateIgnoreList(
     override val category: ServerProtCategory
         get() = GameServerProtCategory.LOW_PRIORITY_PROT
 
+    override fun estimateSize(): Int {
+        // Assume max name/previous name length, and no notes.
+        val sizePerIgnore =
+            Byte.SIZE_BYTES +
+                13 +
+                13 +
+                Byte.SIZE_BYTES
+        return ignores.size * sizePerIgnore
+    }
+
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (javaClass != other?.javaClass) return false

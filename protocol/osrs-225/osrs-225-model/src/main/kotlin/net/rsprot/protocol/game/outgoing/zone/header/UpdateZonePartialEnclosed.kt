@@ -51,6 +51,12 @@ public class UpdateZonePartialEnclosed private constructor(
     override val category: ServerProtCategory
         get() = GameServerProtCategory.HIGH_PRIORITY_PROT
 
+    override fun estimateSize(): Int =
+        Byte.SIZE_BYTES +
+            Byte.SIZE_BYTES +
+            Byte.SIZE_BYTES +
+            payload.readableBytes()
+
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (javaClass != other?.javaClass) return false
