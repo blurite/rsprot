@@ -140,6 +140,7 @@ public abstract class OutgoingMessageEncoder : ChannelOutboundHandlerAdapter() {
             Prot.VAR_BYTE -> headerSize += Byte.SIZE_BYTES
             Prot.VAR_SHORT -> headerSize += Short.SIZE_BYTES
         }
+        val excludedLoggingSize = headerSize
         if (msg is ByteBufHolderWrapperHeaderMessage) {
             headerSize += msg.nonByteBufHolderSize()
         }
@@ -161,8 +162,10 @@ public abstract class OutgoingMessageEncoder : ChannelOutboundHandlerAdapter() {
             if (msg is ByteBufHolderWrapperHeaderMessage) {
                 encodePayload(msg, buf)
             }
+            val size = headerSize - excludedLoggingSize
             ctx.write(buf, ctx.voidPromise())
             buf = null
+            onMessageWritten(ctx, opcode, size)
         } finally {
             buf?.release()
         }
