@@ -43,5 +43,5 @@ internal class ObserverExtendedInfoFlags(
      * @param index the index of the recipient player or npc
      * @return the observer-dependent flag value
      */
-    fun getFlag(index: Int): Int = flags[index].toInt()
+    fun getFlag(index: Int): Int = flags[index].toInt() and 0xFF
 }

@@ -330,7 +330,7 @@ public class NpcInfo internal constructor(
         for (i in 0 until extendedInfoCount) {
             val index = extendedInfoIndices[i].toInt()
             val other = checkNotNull(repository.getOrNull(index))
-            val observerFlag = observerExtendedInfoFlags.getFlag(i) and 0xFF
+            val observerFlag = observerExtendedInfoFlags.getFlag(i)
             other.extendedInfo.pExtendedInfo(
                 oldSchoolClientType,
                 jagBuffer,
