@@ -695,8 +695,8 @@ public class NpcAvatarExtendedInfo(
      */
     @Suppress("MemberVisibilityCanBePrivate")
     @Deprecated(
-        message = "Deprecated. Use setVisibleOps(id) for consistency.",
-        replaceWith = ReplaceWith("setVisibleOps(id)"),
+        message = "Deprecated. Use setVisibleOps(flag) for consistency.",
+        replaceWith = ReplaceWith("setVisibleOps(flag)"),
     )
     public fun visibleOps(flag: Int) {
         setVisibleOps(flag)
