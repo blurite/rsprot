@@ -20,6 +20,8 @@ import io.netty.channel.socket.nio.NioServerSocketChannel
 import io.netty.incubator.channel.uring.IOUring
 import io.netty.incubator.channel.uring.IOUringEventLoopGroup
 import io.netty.incubator.channel.uring.IOUringServerSocketChannel
+import net.rsprot.protocol.api.NetworkService
+import net.rsprot.protocol.api.handlers.OutgoingMessageSizeEstimator
 import java.text.NumberFormat
 import kotlin.math.max
 
@@ -281,7 +283,7 @@ public class BootstrapBuilder {
     /**
      * Builds the server bootstrap based on the criteria given through the builder.
      */
-    internal fun build(): ServerBootstrap {
+    internal fun build(service: NetworkService<*>): ServerBootstrap {
         val bootstrap = ServerBootstrap()
         val groupTypes = getEventLoopGroupTypes()
         val bossThreadCount = determineBossThreadCount()
@@ -328,6 +330,10 @@ public class BootstrapBuilder {
         val tcpNoDelay = this.tcpNoDelay != false
         bootstrap.childOption(ChannelOption.TCP_NODELAY, tcpNoDelay)
         log { "Nagle's algorithm (TCP no delay): ${if (tcpNoDelay) "disabled" else "enabled"}" }
+        bootstrap.childOption(
+            ChannelOption.MESSAGE_SIZE_ESTIMATOR,
+            OutgoingMessageSizeEstimator(service),
+        )
         if (bossGroup is EpollEventLoopGroup) {
             bootstrap.childOption(EpollChannelOption.EPOLL_MODE, EpollMode.LEVEL_TRIGGERED)
             log { "Using level-triggered Epoll mode." }

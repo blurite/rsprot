@@ -133,7 +133,7 @@ public class NetworkService<R>
         public fun start() {
             val time =
                 measureTime {
-                    val bootstrap = bootstrapBuilder.build()
+                    val bootstrap = bootstrapBuilder.build(this)
                     val initializer =
                         bootstrap.childHandler(
                             LoginChannelInitializer(this),
