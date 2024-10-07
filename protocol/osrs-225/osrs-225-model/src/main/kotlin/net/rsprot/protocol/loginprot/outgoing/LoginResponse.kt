@@ -5,6 +5,7 @@ import io.netty.buffer.DefaultByteBufHolder
 import net.rsprot.protocol.game.outgoing.info.playerinfo.PlayerInfo
 import net.rsprot.protocol.loginprot.outgoing.util.AuthenticatorResponse
 import net.rsprot.protocol.message.OutgoingLoginMessage
+import net.rsprot.protocol.message.util.estimateTextSize
 
 public sealed interface LoginResponse : OutgoingLoginMessage {
     public data class Successful(
@@ -46,6 +47,18 @@ public sealed interface LoginResponse : OutgoingLoginMessage {
             get() = _staffModLevel.toInt()
         public val index: Int
             get() = _index.toInt()
+
+        override fun estimateSize(): Int {
+            return Byte.SIZE_BYTES +
+                Int.SIZE_BYTES +
+                Byte.SIZE_BYTES +
+                Byte.SIZE_BYTES +
+                Short.SIZE_BYTES +
+                Byte.SIZE_BYTES +
+                Long.SIZE_BYTES +
+                Long.SIZE_BYTES +
+                Long.SIZE_BYTES
+        }
 
         override fun toString(): String =
             "Ok(" +
@@ -149,7 +162,13 @@ public sealed interface LoginResponse : OutgoingLoginMessage {
         public val line1: String,
         public val line2: String,
         public val line3: String,
-    ) : LoginResponse
+    ) : LoginResponse {
+        override fun estimateSize(): Int {
+            return estimateTextSize(line1) +
+                estimateTextSize(line2) +
+                estimateTextSize(line3)
+        }
+    }
 
     public data object DisplayNameRequired : LoginResponse
 
@@ -203,7 +222,13 @@ public sealed interface LoginResponse : OutgoingLoginMessage {
 
     public class ProofOfWork(
         public val proofOfWork: net.rsprot.protocol.loginprot.incoming.pow.ProofOfWork<*, *>,
-    ) : LoginResponse
+    ) : LoginResponse {
+        override fun estimateSize(): Int {
+            return proofOfWork
+                .challengeType
+                .estimateMessageSize()
+        }
+    }
 
     public data object DobError : LoginResponse
 

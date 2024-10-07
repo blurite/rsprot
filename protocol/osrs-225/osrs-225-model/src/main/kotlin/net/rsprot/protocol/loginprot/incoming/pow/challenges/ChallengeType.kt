@@ -20,4 +20,11 @@ public interface ChallengeType<in MetaData : ChallengeMetaData> {
      * @param buffer the buffer into which to encode the challenge
      */
     public fun encode(buffer: JagByteBuf)
+
+    /**
+     * Estimates the size of the message, allowing Netty to accurately track the number of bytes
+     * writing it would require.
+     * @return the number of bytes to initialize with.
+     */
+    public fun estimateMessageSize(): Int
 }

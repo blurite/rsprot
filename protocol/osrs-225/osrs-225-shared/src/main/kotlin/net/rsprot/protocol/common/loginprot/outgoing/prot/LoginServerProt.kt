@@ -1,5 +1,6 @@
 package net.rsprot.protocol.common.loginprot.outgoing.prot
 
+import net.rsprot.protocol.Prot
 import net.rsprot.protocol.ServerProt
 
 public enum class LoginServerProt(
@@ -7,7 +8,7 @@ public enum class LoginServerProt(
     override val size: Int,
 ) : ServerProt {
     SUCCESSFUL(LoginServerProtId.SUCCESSFUL, 0),
-    OK(LoginServerProtId.OK, -1),
+    OK(LoginServerProtId.OK, Prot.VAR_BYTE),
     INVALID_USERNAME_OR_PASSWORD(LoginServerProtId.INVALID_USERNAME_OR_PASSWORD, 0),
     BANNED(LoginServerProtId.BANNED, 0),
     DUPLICATE(LoginServerProtId.DUPLICATE, 0),
@@ -20,7 +21,7 @@ public enum class LoginServerProt(
     NEED_MEMBERS_ACCOUNT(LoginServerProtId.NEED_MEMBERS_ACCOUNT, 0),
     INVALID_SAVE(LoginServerProtId.INVALID_SAVE, 0),
     UPDATE_IN_PROGRESS(LoginServerProtId.UPDATE_IN_PROGRESS, 0),
-    RECONNECT_OK(LoginServerProtId.RECONNECT_OK, -2),
+    RECONNECT_OK(LoginServerProtId.RECONNECT_OK, Prot.VAR_SHORT),
     TOO_MANY_ATTEMPTS(LoginServerProtId.TOO_MANY_ATTEMPTS, 0),
     IN_MEMBERS_AREA(LoginServerProtId.IN_MEMBERS_AREA, 0),
     LOCKED(LoginServerProtId.LOCKED, 0),
@@ -33,7 +34,7 @@ public enum class LoginServerProt(
     UNKNOWN_REPLY_FROM_LOGINSERVER(LoginServerProtId.UNKNOWN_REPLY_FROM_LOGINSERVER, 0),
     IP_BLOCKED(LoginServerProtId.IP_BLOCKED, 0),
     SERVICE_UNAVAILABLE(LoginServerProtId.SERVICE_UNAVAILABLE, 0),
-    DISALLOWED_BY_SCRIPT(LoginServerProtId.DISALLOWED_BY_SCRIPT, -2),
+    DISALLOWED_BY_SCRIPT(LoginServerProtId.DISALLOWED_BY_SCRIPT, Prot.VAR_SHORT),
     DISPLAYNAME_REQUIRED(LoginServerProtId.DISPLAYNAME_REQUIRED, 0),
     NEGATIVE_CREDIT(LoginServerProtId.NEGATIVE_CREDIT, 0),
     INVALID_SINGLE_SIGNON(LoginServerProtId.INVALID_SINGLE_SIGNON, 0),
@@ -59,7 +60,7 @@ public enum class LoginServerProt(
     LOGIN_FAIL_1(LoginServerProtId.LOGIN_FAIL_1, 0),
     LOGIN_FAIL_2(LoginServerProtId.LOGIN_FAIL_2, 0),
     OUT_OF_DATE_RELOAD(LoginServerProtId.OUT_OF_DATE_RELOAD, 0),
-    PROOF_OF_WORK(LoginServerProtId.PROOF_OF_WORK, -2),
+    PROOF_OF_WORK(LoginServerProtId.PROOF_OF_WORK, Prot.VAR_SHORT),
     DOB_ERROR(LoginServerProtId.DOB_ERROR, 0),
     WEBSITE_DOB(LoginServerProtId.WEBSITE_DOB, 0),
     DOB_REVIEW(LoginServerProtId.DOB_REVIEW, 0),
