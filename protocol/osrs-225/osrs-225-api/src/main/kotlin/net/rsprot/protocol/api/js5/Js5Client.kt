@@ -126,9 +126,7 @@ public class Js5Client(
             writtenGroupCount++
         }
         return Js5GroupResponse(
-            block,
-            progress,
-            length,
+            block.slice(progress, length),
             xorKey,
         )
     }

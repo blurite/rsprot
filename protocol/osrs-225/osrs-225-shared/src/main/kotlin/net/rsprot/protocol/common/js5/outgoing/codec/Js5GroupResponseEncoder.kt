@@ -16,8 +16,6 @@ public class Js5GroupResponseEncoder : MessageEncoder<Js5GroupResponse> {
         buffer: JagByteBuf,
         message: Js5GroupResponse,
     ) {
-        val offset = message.offset
-        val length = message.length
         val messageBuf = message.content()
         // Perform a quick one-time validation to ensure the server is yielding the same
         // type bytebuffers that the Netty pipeline is expecting, to avoid very expensive
@@ -37,17 +35,12 @@ public class Js5GroupResponseEncoder : MessageEncoder<Js5GroupResponse> {
                 logger.debug { "Using compatible JS5 buffer types (direct: $isPipelineDirect)" }
             }
         }
+        // Only write the bytes to the `out` variable if XOR is used
         if (message.key != 0) {
             val out = buffer.buffer
-            for (i in 0..<length) {
-                out.writeByte(messageBuf.getByte(offset + i).toInt() xor message.key)
+            for (i in 0..<messageBuf.readableBytes()) {
+                out.writeByte(messageBuf.getByte(i).toInt() xor message.key)
             }
-        } else {
-            buffer.buffer.writeBytes(
-                messageBuf,
-                offset,
-                length,
-            )
         }
     }
 

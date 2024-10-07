@@ -3,7 +3,6 @@ package net.rsprot.protocol.game.outgoing.codec.map
 import net.rsprot.buffer.JagByteBuf
 import net.rsprot.crypto.cipher.StreamCipher
 import net.rsprot.protocol.ServerProt
-import net.rsprot.protocol.game.outgoing.map.RebuildLogin
 import net.rsprot.protocol.game.outgoing.map.StaticRebuildMessage
 import net.rsprot.protocol.game.outgoing.prot.GameServerProt
 import net.rsprot.protocol.message.codec.MessageEncoder
@@ -18,14 +17,14 @@ public class RebuildNormalEncoder : MessageEncoder<StaticRebuildMessage> {
     ) {
         // We have to use the same encoder as it relies on the prot
         // under the hood to map the encoders down
-        if (message is RebuildLogin) {
-            val gpiInitBlock = message.gpiInitBlock
-            buffer.buffer.writeBytes(
-                gpiInitBlock,
-                gpiInitBlock.readerIndex(),
-                gpiInitBlock.readableBytes(),
-            )
-        }
+        // if (message is RebuildLogin) {
+        //     val gpiInitBlock = message.gpiInitBlock
+        //     buffer.buffer.writeBytes(
+        //         gpiInitBlock,
+        //         gpiInitBlock.readerIndex(),
+        //         gpiInitBlock.readableBytes(),
+        //     )
+        // }
         buffer.p2(message.zoneX)
         buffer.p2Alt3(message.worldArea)
         buffer.p2Alt1(message.zoneZ)
