@@ -669,8 +669,8 @@ public class NpcAvatarExtendedInfo(
      * @param name the name to override with, or null to reset an existing override.
      */
     @Deprecated(
-        message = "Deprecated. Use setNameChange(id) for consistency.",
-        replaceWith = ReplaceWith("setNameChange(id)"),
+        message = "Deprecated. Use setNameChange(name) for consistency.",
+        replaceWith = ReplaceWith("setNameChange(name)"),
     )
     public fun nameChange(name: String?) {
         setNameChange(name)
