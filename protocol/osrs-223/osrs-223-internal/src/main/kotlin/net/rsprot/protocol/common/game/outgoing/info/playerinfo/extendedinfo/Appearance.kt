@@ -41,14 +41,14 @@ public class Appearance(
     public var hidden: Boolean = false
 
     /**
-     * Whether this avatar is using the male ident kit.
+     * The type of body the avatar is using.
      */
-    public var male: Boolean = true
+    public var bodyType: UByte = 0u
 
     /**
      * The type of pronoun to utilize within clientscripts.
      */
-    public var textGender: UByte = MAX_UNSIGNED_BYTE
+    public var pronoun: UByte = MAX_UNSIGNED_BYTE
 
     /**
      * The skull icon that appears over-head, mostly in PvP scenarios.
@@ -162,8 +162,8 @@ public class Appearance(
         combatLevel = 0u
         skillLevel = 0u
         hidden = false
-        male = true
-        textGender = MAX_UNSIGNED_BYTE
+        bodyType = 0u
+        pronoun = MAX_UNSIGNED_BYTE
         skullIcon = MAX_UNSIGNED_BYTE
         overheadIcon = MAX_UNSIGNED_BYTE
         transformedNpcId = MAX_UNSIGNED_SHORT

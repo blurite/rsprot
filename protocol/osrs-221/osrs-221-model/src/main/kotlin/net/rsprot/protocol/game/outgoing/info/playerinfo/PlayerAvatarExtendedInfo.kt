@@ -802,30 +802,55 @@ public class PlayerAvatarExtendedInfo(
      * Sets the character male or female.
      * @param isMale whether to set the character male (or female, if false)
      */
+    @Deprecated(
+        message = "Deprecated. Use setBodyType(type) for consistency.",
+        replaceWith = ReplaceWith("setBodyType(type)"),
+    )
     public fun setMale(isMale: Boolean) {
-        if (blocks.appearance.male == isMale) {
+        setBodyType(if (isMale) 0 else 1)
+    }
+
+    /**
+     * Sets the body type of the character.
+     * @param type the body type of the character.
+     */
+    public fun setBodyType(type: Int) {
+        if (blocks.appearance.bodyType == type.toUByte()) {
             return
         }
-        blocks.appearance.male = isMale
+        blocks.appearance.bodyType = type.toUByte()
         flagAppearance()
     }
 
     /**
-     * Sets the text gender of this avatar.
+     * Sets the pronoun of this avatar.
      * @param num the number to set, with the value 0 being male, 1 being female,
      * and 2 being 'other'.
      */
+    @Deprecated(
+        message = "Deprecated. Use setPronoun(num) for consistency.",
+        replaceWith = ReplaceWith("setPronoun(num)"),
+    )
     public fun setTextGender(num: Int) {
+        setPronoun(num)
+    }
+
+    /**
+     * Sets the pronoun of this avatar.
+     * @param num the number to set, with the value 0 being male, 1 being female,
+     * and 2 being 'other'.
+     */
+    public fun setPronoun(num: Int) {
         verify {
             require(num in UNSIGNED_BYTE_RANGE) {
                 "Unexpected textGender $num, expected range $UNSIGNED_BYTE_RANGE"
             }
         }
-        val textGender = num.toUByte()
-        if (blocks.appearance.textGender == textGender) {
+        val pronoun = num.toUByte()
+        if (blocks.appearance.pronoun == pronoun) {
             return
         }
-        blocks.appearance.textGender = textGender
+        blocks.appearance.pronoun = pronoun
         flagAppearance()
     }
 
