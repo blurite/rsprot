@@ -17,7 +17,7 @@ public class Js5GroupResponseEncoder : MessageEncoder<Js5GroupResponse> {
         message: Js5GroupResponse,
     ) {
         val offset = message.offset
-        val limit = message.limit
+        val length = message.length
         val messageBuf = message.content()
         // Perform a quick one-time validation to ensure the server is yielding the same
         // type bytebuffers that the Netty pipeline is expecting, to avoid very expensive
@@ -39,14 +39,14 @@ public class Js5GroupResponseEncoder : MessageEncoder<Js5GroupResponse> {
         }
         if (message.key != 0) {
             val out = buffer.buffer
-            for (i in offset..<limit) {
-                out.writeByte(messageBuf.getByte(i).toInt() xor message.key)
+            for (i in 0..<length) {
+                out.writeByte(messageBuf.getByte(offset + i).toInt() xor message.key)
             }
         } else {
             buffer.buffer.writeBytes(
                 messageBuf,
                 offset,
-                limit,
+                length,
             )
         }
     }
