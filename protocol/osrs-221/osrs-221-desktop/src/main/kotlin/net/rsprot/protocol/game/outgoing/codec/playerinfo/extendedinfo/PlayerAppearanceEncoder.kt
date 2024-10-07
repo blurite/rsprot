@@ -16,7 +16,7 @@ public class PlayerAppearanceEncoder : PrecomputedExtendedInfoEncoder<Appearance
         extendedInfo: Appearance,
     ): JagByteBuf {
         val intermediate = alloc.buffer(100).toJagByteBuf()
-        intermediate.p1(if (extendedInfo.male) 0 else 1)
+        intermediate.p1(extendedInfo.bodyType.toInt())
         intermediate.p1(extendedInfo.skullIcon.toInt())
         intermediate.p1(extendedInfo.overheadIcon.toInt())
         if (extendedInfo.transformedNpcId != UShort.MAX_VALUE) {
@@ -35,7 +35,7 @@ public class PlayerAppearanceEncoder : PrecomputedExtendedInfoEncoder<Appearance
         intermediate.pjstr(extendedInfo.beforeName)
         intermediate.pjstr(extendedInfo.afterName)
         intermediate.pjstr(extendedInfo.afterCombatLevel)
-        intermediate.p1(extendedInfo.textGender.toInt())
+        intermediate.p1(extendedInfo.pronoun.toInt())
         val capacity = intermediate.readableBytes() + 1
         val buffer = alloc.buffer(capacity, capacity).toJagByteBuf()
         buffer.p1Alt2(capacity - 1)

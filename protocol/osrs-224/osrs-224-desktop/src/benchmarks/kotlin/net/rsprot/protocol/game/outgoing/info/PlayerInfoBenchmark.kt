@@ -83,8 +83,8 @@ class PlayerInfoBenchmark {
         player.avatar.extendedInfo.setCombatLevel(126)
         player.avatar.extendedInfo.setSkillLevel(0)
         player.avatar.extendedInfo.setHidden(false)
-        player.avatar.extendedInfo.setMale(true)
-        player.avatar.extendedInfo.setTextGender(0)
+        player.avatar.extendedInfo.setBodyType(0)
+        player.avatar.extendedInfo.setPronoun(0)
         player.avatar.extendedInfo.setSkullIcon(-1)
         player.avatar.extendedInfo.setOverheadIcon(-1)
 

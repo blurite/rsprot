@@ -70,7 +70,7 @@ public class ClanChannelFull private constructor(
         public val members: List<ClanMember>,
     ) : Update {
         public constructor(
-            key: Long,
+            clanHash: Long,
             updateNum: Long,
             clanName: String,
             discardedBoolean: Boolean,
@@ -86,7 +86,7 @@ public class ClanChannelFull private constructor(
                     .or(if (version != DEFAULT_OLDSCHOOL_VERSION) FLAG_HAS_VERSION else 0)
             ).toUByte(),
             version.toUByte(),
-            key,
+            clanHash,
             updateNum,
             clanName,
             discardedBoolean,

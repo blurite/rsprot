@@ -650,7 +650,31 @@ public class PlayerAvatarExtendedInfo(
      * @param lightness the lightness of the tint.
      * @param weight the weight (or opacity) of the tint.
      */
+    @Deprecated(
+        message = "Deprecated. Use setTinting(startTime, endTime, hue, saturation, lightness, weight) for consistency.",
+        replaceWith = ReplaceWith("setTinting(startTime, endTime, hue, saturation, lightness, weight)"),
+    )
     public fun tinting(
+        startTime: Int,
+        endTime: Int,
+        hue: Int,
+        saturation: Int,
+        lightness: Int,
+        weight: Int,
+    ) {
+        setTinting(startTime, endTime, hue, saturation, lightness, weight)
+    }
+
+    /**
+     * Applies a tint over the non-textured parts of the character.
+     * @param startTime the delay in client cycles (20ms/cc) until the tinting is applied.
+     * @param endTime the timestamp in client cycles (20ms/cc) until the tinting finishes.
+     * @param hue the hue of the tint.
+     * @param saturation the saturation of the tint.
+     * @param lightness the lightness of the tint.
+     * @param weight the weight (or opacity) of the tint.
+     */
+    public fun setTinting(
         startTime: Int,
         endTime: Int,
         hue: Int,
@@ -703,7 +727,40 @@ public class PlayerAvatarExtendedInfo(
      * @param visibleTo the player who will see the tint applied.
      * Note that this only accepts player indices, and not NPC ones like many other extended info blocks.
      */
+    @Deprecated(
+        message =
+            "Deprecated. Use setSpecificTinting(startTime, endTime, hue, saturation, " +
+                "lightness, weight, visibleTo) for consistency.",
+        replaceWith =
+            ReplaceWith(
+                "setSpecificTinting(startTime, endTime, hue, saturation, " +
+                    "lightness, weight, visibleTo)",
+            ),
+    )
     public fun specificTinting(
+        startTime: Int,
+        endTime: Int,
+        hue: Int,
+        saturation: Int,
+        lightness: Int,
+        weight: Int,
+        visibleTo: PlayerInfo,
+    ) {
+        setSpecificTinting(startTime, endTime, hue, saturation, lightness, weight, visibleTo)
+    }
+
+    /**
+     * Applies a tint over the non-textured parts of the character.
+     * @param startTime the delay in client cycles (20ms/cc) until the tinting is applied.
+     * @param endTime the timestamp in client cycles (20ms/cc) until the tinting finishes.
+     * @param hue the hue of the tint.
+     * @param saturation the saturation of the tint.
+     * @param lightness the lightness of the tint.
+     * @param weight the weight (or opacity) of the tint.
+     * @param visibleTo the player who will see the tint applied.
+     * Note that this only accepts player indices, and not NPC ones like many other extended info blocks.
+     */
+    public fun setSpecificTinting(
         startTime: Int,
         endTime: Int,
         hue: Int,
@@ -822,32 +879,58 @@ public class PlayerAvatarExtendedInfo(
      * Sets the character male or female.
      * @param isMale whether to set the character male (or female, if false)
      */
+    @Deprecated(
+        message = "Deprecated. Use setBodyType(type) for consistency.",
+        replaceWith = ReplaceWith("setBodyType(type)"),
+    )
     public fun setMale(isMale: Boolean) {
         checkCommunicationThread()
-        if (blocks.appearance.male == isMale) {
+        setBodyType(if (isMale) 0 else 1)
+    }
+
+    /**
+     * Sets the body type of the character.
+     * @param type the body type of the character.
+     */
+    public fun setBodyType(type: Int) {
+        checkCommunicationThread()
+        if (blocks.appearance.bodyType == type.toUByte()) {
             return
         }
-        blocks.appearance.male = isMale
+        blocks.appearance.bodyType = type.toUByte()
         flagAppearance()
     }
 
     /**
-     * Sets the text gender of this avatar.
+     * Sets the pronoun of this avatar.
      * @param num the number to set, with the value 0 being male, 1 being female,
      * and 2 being 'other'.
      */
+    @Deprecated(
+        message = "Deprecated. Use setPronoun(num) for consistency.",
+        replaceWith = ReplaceWith("setPronoun(num)"),
+    )
     public fun setTextGender(num: Int) {
+        setPronoun(num)
+    }
+
+    /**
+     * Sets the pronoun of this avatar.
+     * @param num the number to set, with the value 0 being male, 1 being female,
+     * and 2 being 'other'.
+     */
+    public fun setPronoun(num: Int) {
         checkCommunicationThread()
         verify {
             require(num in UNSIGNED_BYTE_RANGE) {
                 "Unexpected textGender $num, expected range $UNSIGNED_BYTE_RANGE"
             }
         }
-        val textGender = num.toUByte()
-        if (blocks.appearance.textGender == textGender) {
+        val pronoun = num.toUByte()
+        if (blocks.appearance.pronoun == pronoun) {
             return
         }
-        blocks.appearance.textGender = textGender
+        blocks.appearance.pronoun = pronoun
         flagAppearance()
     }
 
@@ -893,7 +976,19 @@ public class PlayerAvatarExtendedInfo(
      * Transforms this avatar to the respective NPC, or back to player if the [id] is -1.
      * @param id the id of the NPC to transform to, or -1 if resetting.
      */
+    @Deprecated(
+        message = "Deprecated. Use setTransmogrification(id) for consistency.",
+        replaceWith = ReplaceWith("setTransmogrification(id)"),
+    )
     public fun transformToNpc(id: Int) {
+        setTransmogrification(id)
+    }
+
+    /**
+     * Transforms this avatar to the respective NPC, or back to player if the [id] is -1.
+     * @param id the id of the NPC to transform to, or -1 if resetting.
+     */
+    public fun setTransmogrification(id: Int) {
         checkCommunicationThread()
         verify {
             require(id == -1 || id in UNSIGNED_SHORT_RANGE) {
@@ -1080,7 +1175,25 @@ public class PlayerAvatarExtendedInfo(
      * @param afterName the text to render after this avatar's name, but before the combat level.
      * @param afterCombatLevel the text to render after this avatar's combat level.
      */
+    @Deprecated(
+        message = "Deprecated. Use setNameExtras(beforeName, afterName, afterCombatLevel) for consistency.",
+        replaceWith = ReplaceWith("setNameExtras(beforeName, afterName, afterCombatLevel)"),
+    )
     public fun nameExtras(
+        beforeName: String,
+        afterName: String,
+        afterCombatLevel: String,
+    ) {
+        setNameExtras(beforeName, afterName, afterCombatLevel)
+    }
+
+    /**
+     * Sets the name extras of this avatar, rendered when right-clicking users.
+     * @param beforeName the text to render before this avatar's name.
+     * @param afterName the text to render after this avatar's name, but before the combat level.
+     * @param afterCombatLevel the text to render after this avatar's combat level.
+     */
+    public fun setNameExtras(
         beforeName: String,
         afterName: String,
         afterCombatLevel: String,
@@ -1108,7 +1221,20 @@ public class PlayerAvatarExtendedInfo(
      * This is particularly important to enable when setting or clearing any obj type customisations,
      * as those are not considered when calculating the hash code.
      */
+    @Deprecated(
+        message = "Deprecated. Use setForceModelRefresh(enabled) for consistency.",
+        replaceWith = ReplaceWith("setForceModelRefresh(enabled)"),
+    )
     public fun forceModelRefresh(enabled: Boolean) {
+        setForceModelRefresh(enabled)
+    }
+
+    /**
+     * Forces a model refresh client-side even if the worn objects + base colour + gender have not changed.
+     * This is particularly important to enable when setting or clearing any obj type customisations,
+     * as those are not considered when calculating the hash code.
+     */
+    public fun setForceModelRefresh(enabled: Boolean) {
         checkCommunicationThread()
         blocks.appearance.forceModelRefresh = enabled
     }
@@ -1117,7 +1243,19 @@ public class PlayerAvatarExtendedInfo(
      * Clears any obj type customisations applied to [wearpos].
      * @param wearpos the worn item slot.
      */
+    @Deprecated(
+        message = "Deprecated. Use resetObjTypeCustomisation(wearpos) for consistency.",
+        replaceWith = ReplaceWith("resetObjTypeCustomisation(wearpos)"),
+    )
     public fun clearObjTypeCustomisation(wearpos: Int) {
+        resetObjTypeCustomisation(wearpos)
+    }
+
+    /**
+     * Clears any obj type customisations applied to [wearpos].
+     * @param wearpos the worn item slot.
+     */
+    public fun resetObjTypeCustomisation(wearpos: Int) {
         checkCommunicationThread()
         verify {
             require(wearpos in 0..11) {
@@ -1151,7 +1289,25 @@ public class PlayerAvatarExtendedInfo(
      * @param index the source index of the colour to override.
      * @param value the 16 bit HSL colour to override with.
      */
+    @Deprecated(
+        message = "Deprecated. Use setObjRecol1(wearpos, index, value) for consistency.",
+        replaceWith = ReplaceWith("setObjRecol1(wearpos, index, value)"),
+    )
     public fun objRecol1(
+        wearpos: Int,
+        index: Int,
+        value: Int,
+    ) {
+        setObjRecol1(wearpos, index, value)
+    }
+
+    /**
+     * Recolours part of an obj in the first slot (out of two).
+     * @param wearpos the position in which the obj is worn.
+     * @param index the source index of the colour to override.
+     * @param value the 16 bit HSL colour to override with.
+     */
+    public fun setObjRecol1(
         wearpos: Int,
         index: Int,
         value: Int,
@@ -1180,7 +1336,25 @@ public class PlayerAvatarExtendedInfo(
      * @param index the source index of the colour to override.
      * @param value the 16 bit HSL colour to override with.
      */
+    @Deprecated(
+        message = "Deprecated. Use setObjRecol2(wearpos, index, value) for consistency.",
+        replaceWith = ReplaceWith("setObjRecol2(wearpos, index, value)"),
+    )
     public fun objRecol2(
+        wearpos: Int,
+        index: Int,
+        value: Int,
+    ) {
+        setObjRecol2(wearpos, index, value)
+    }
+
+    /**
+     * Recolours part of an obj in the second slot (out of two).
+     * @param wearpos the position in which the obj is worn.
+     * @param index the source index of the colour to override.
+     * @param value the 16 bit HSL colour to override with.
+     */
+    public fun setObjRecol2(
         wearpos: Int,
         index: Int,
         value: Int,
@@ -1209,7 +1383,25 @@ public class PlayerAvatarExtendedInfo(
      * @param index the source index of the texture to override.
      * @param value the id of the texture to override with.
      */
+    @Deprecated(
+        message = "Deprecated. Use setObjRetex1(wearpos, index, value) for consistency.",
+        replaceWith = ReplaceWith("setObjRetex1(wearpos, index, value)"),
+    )
     public fun objRetex1(
+        wearpos: Int,
+        index: Int,
+        value: Int,
+    ) {
+        setObjRetex1(wearpos, index, value)
+    }
+
+    /**
+     * Retextures part of an obj in the first slot (out of two).
+     * @param wearpos the position in which the obj is worn.
+     * @param index the source index of the texture to override.
+     * @param value the id of the texture to override with.
+     */
+    public fun setObjRetex1(
         wearpos: Int,
         index: Int,
         value: Int,
@@ -1238,7 +1430,25 @@ public class PlayerAvatarExtendedInfo(
      * @param index the source index of the texture to override.
      * @param value the id of the texture to override with.
      */
+    @Deprecated(
+        message = "Deprecated. Use setObjRetex2(wearpos, index, value) for consistency.",
+        replaceWith = ReplaceWith("setObjRetex2(wearpos, index, value)"),
+    )
     public fun objRetex2(
+        wearpos: Int,
+        index: Int,
+        value: Int,
+    ) {
+        setObjRetex2(wearpos, index, value)
+    }
+
+    /**
+     * Retextures part of an obj in the second slot (out of two).
+     * @param wearpos the position in which the obj is worn.
+     * @param index the source index of the texture to override.
+     * @param value the id of the texture to override with.
+     */
+    public fun setObjRetex2(
         wearpos: Int,
         index: Int,
         value: Int,
@@ -1479,7 +1689,7 @@ public class PlayerAvatarExtendedInfo(
      * Resets our tracked version of the target's appearance,
      * so it will be updated whenever someone else takes their index.
      */
-    public fun onOtherAvatarDeallocated(idx: Int) {
+    internal fun onOtherAvatarDeallocated(idx: Int) {
         checkCommunicationThread()
         otherAppearanceChangeCycles[idx] = -1
     }
