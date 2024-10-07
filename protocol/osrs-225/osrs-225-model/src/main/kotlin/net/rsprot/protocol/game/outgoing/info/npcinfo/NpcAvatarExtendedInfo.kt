@@ -1334,6 +1334,9 @@ public class NpcAvatarExtendedInfo(
         if (flags and BAS_CHANGE != 0) {
             blocks.baseAnimationSet.precompute(allocator, huffmanCodec)
         }
+        if (flags and TRANSFORMATION != 0) {
+            blocks.transformation.precompute(allocator, huffmanCodec)
+        }
     }
 
     /**
@@ -1432,6 +1435,10 @@ public class NpcAvatarExtendedInfo(
         ) {
             flag = flag or BAS_CHANGE
         }
+        if (this.flags and TRANSFORMATION == 0 &&
+            blocks.transformation.id.toInt() in EXTENDED_NPC_ID_RANGE) {
+            flag = flag or TRANSFORMATION
+        }
         return flag
     }
 
@@ -1460,9 +1467,6 @@ public class NpcAvatarExtendedInfo(
         if (flags and FACE_COORD != 0) {
             blocks.faceCoord.clear()
         }
-        if (flags and TRANSFORMATION != 0) {
-            blocks.transformation.clear()
-        }
     }
 
     override fun toString(): String =
@@ -1476,6 +1480,7 @@ public class NpcAvatarExtendedInfo(
         private val UNSIGNED_BYTE_RANGE: IntRange = UByte.MIN_VALUE.toInt()..UByte.MAX_VALUE.toInt()
         private val UNSIGNED_SHORT_RANGE: IntRange = UShort.MIN_VALUE.toInt()..UShort.MAX_VALUE.toInt()
         private val UNSIGNED_SMART_1_OR_2_RANGE: IntRange = 0..0x7FFF
+        private val EXTENDED_NPC_ID_RANGE: IntRange = 16384..65534
 
         // Observer-dependent flags, utilizing the lowest bits as we store observer flags in a byte array
         // IMPORTANT: As we store it in a byte array, we currently only support 8 blocks

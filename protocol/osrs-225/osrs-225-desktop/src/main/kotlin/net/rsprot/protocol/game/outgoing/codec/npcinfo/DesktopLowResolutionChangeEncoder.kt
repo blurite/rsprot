@@ -5,6 +5,7 @@ import net.rsprot.protocol.common.client.OldSchoolClientType
 import net.rsprot.protocol.common.game.outgoing.info.CoordGrid
 import net.rsprot.protocol.common.game.outgoing.info.npcinfo.NpcAvatarDetails
 import net.rsprot.protocol.common.game.outgoing.info.npcinfo.encoder.NpcResolutionChangeEncoder
+import kotlin.math.min
 
 public class DesktopLowResolutionChangeEncoder : NpcResolutionChangeEncoder {
     override val clientType: OldSchoolClientType = OldSchoolClientType.DESKTOP
@@ -34,7 +35,7 @@ public class DesktopLowResolutionChangeEncoder : NpcResolutionChangeEncoder {
         } else {
             bitBuffer.pBits(1, 0)
         }
-        bitBuffer.pBits(14, details.id)
+        bitBuffer.pBits(14, min(16383, details.id))
         bitBuffer.pBits(3, details.direction)
         bitBuffer.pBits(numOfBitsUsed, deltaX and maximumDistanceTransmittableByBits)
     }

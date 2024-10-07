@@ -17,7 +17,7 @@ internal class ObserverExtendedInfoFlags(
     /**
      * The observer-dependent flags. This array will not include "static" flags.
      */
-    private val flags: ByteArray = ByteArray(capacity)
+    private val flags: ShortArray = ShortArray(capacity)
 
     /**
      * Resets the observer-dependent flags by filling the array with zeros.
@@ -35,7 +35,7 @@ internal class ObserverExtendedInfoFlags(
         index: Int,
         flag: Int,
     ) {
-        flags[index] = (flags[index].toInt() or flag).toByte()
+        flags[index] = (flags[index].toInt() or flag).toShort()
     }
 
     /**
@@ -43,5 +43,5 @@ internal class ObserverExtendedInfoFlags(
      * @param index the index of the recipient player or npc
      * @return the observer-dependent flag value
      */
-    fun getFlag(index: Int): Int = flags[index].toInt()
+    fun getFlag(index: Int): Int = flags[index].toInt() and 0xFFFF
 }

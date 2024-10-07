@@ -89,6 +89,13 @@ public object RSProtFlags {
         )
 
     @JvmStatic
+    public val npcAvatarMaxId: Int =
+        getInt(
+            "npcAvatarMaxId",
+            16383,
+        )
+
+    @JvmStatic
     public val networkLogging: LogLevel =
         when (networkLoggingString) {
             "off" -> LogLevel.OFF
@@ -133,6 +140,8 @@ public object RSProtFlags {
         log("js5Logging", js5LoggingString)
         log("npcPlayerAvatarTracking", npcPlayerAvatarTracking)
         log("filterMissingPacketsInClient", filterMissingPacketsInClient)
+        log("npcAvatarMaxId", npcAvatarMaxId)
+        require(npcAvatarMaxId == -1 || npcAvatarMaxId <= 65534)
     }
 
     private fun getBoolean(
