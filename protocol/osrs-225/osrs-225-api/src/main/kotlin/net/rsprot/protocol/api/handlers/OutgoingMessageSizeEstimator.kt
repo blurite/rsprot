@@ -130,7 +130,7 @@ public class OutgoingMessageSizeEstimator(
 
             // If all else fails, just assume the payload size is 8 bytes.
             // We should try to avoid reaching this stage as it could be off quite a lot
-            return headerSize + UNKNOWN_GAME_MESSAGE_PAYLOAD_SIZE
+            return headerSize + UNKNOWN_MESSAGE_SIZE
         }
     }
 
@@ -139,7 +139,6 @@ public class OutgoingMessageSizeEstimator(
         private const val TWO_BYTE_OPCODE_THRESHOLD: Int = 0x80
         private const val FILE_REGION_SIZE: Int = 0
         private const val UNKNOWN_MESSAGE_SIZE: Int = 8
-        private const val UNKNOWN_GAME_MESSAGE_PAYLOAD_SIZE: Int = 8
         private const val UNKNOWN_JS5_MESSAGE_PAYLOAD_SIZE: Int = 512
         private val logger = InlineLogger()
     }
