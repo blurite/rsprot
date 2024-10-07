@@ -647,8 +647,8 @@ public class NpcAvatarExtendedInfo(
      * @param level the combat leve to render, or -1 to remove the combat level override.
      */
     @Deprecated(
-        message = "Deprecated. Use setCombatLevelChange(id) for consistency.",
-        replaceWith = ReplaceWith("setCombatLevelChange(id)"),
+        message = "Deprecated. Use setCombatLevelChange(level) for consistency.",
+        replaceWith = ReplaceWith("setCombatLevelChange(level)"),
     )
     public fun combatLevelChange(level: Int) {
         setCombatLevelChange(level)
