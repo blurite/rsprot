@@ -207,8 +207,8 @@ public class NpcAvatarExtendedInfo(
     ) {
         checkCommunicationThread()
         verify {
-            require(slot in UNSIGNED_BYTE_RANGE) {
-                "Unexpected slot: $slot, expected range: $UNSIGNED_BYTE_RANGE"
+            require(slot < 0 || slot >= RSProtFlags.spotanimListCapacity) {
+                "Unexpected slot: $slot, expected range: 0..${RSProtFlags.spotanimListCapacity}"
             }
             require(id == -1 || id in UNSIGNED_SHORT_RANGE) {
                 "Unexpected id: $id, expected value -1 or in range: $UNSIGNED_SHORT_RANGE"
@@ -1436,7 +1436,8 @@ public class NpcAvatarExtendedInfo(
             flag = flag or BAS_CHANGE
         }
         if (this.flags and TRANSFORMATION == 0 &&
-            blocks.transformation.id.toInt() in EXTENDED_NPC_ID_RANGE) {
+            blocks.transformation.id.toInt() in EXTENDED_NPC_ID_RANGE
+        ) {
             flag = flag or TRANSFORMATION
         }
         return flag

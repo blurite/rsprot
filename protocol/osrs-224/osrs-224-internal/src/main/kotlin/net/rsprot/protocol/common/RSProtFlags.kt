@@ -89,6 +89,13 @@ public object RSProtFlags {
         )
 
     @JvmStatic
+    public val spotanimListCapacity: Int =
+        getInt(
+            "spotanimListCapacity",
+            256,
+        )
+
+    @JvmStatic
     public val networkLogging: LogLevel =
         when (networkLoggingString) {
             "off" -> LogLevel.OFF
@@ -133,6 +140,8 @@ public object RSProtFlags {
         log("js5Logging", js5LoggingString)
         log("npcPlayerAvatarTracking", npcPlayerAvatarTracking)
         log("filterMissingPacketsInClient", filterMissingPacketsInClient)
+        log("spotanimListCapacity", spotanimListCapacity)
+        require(spotanimListCapacity in 0..256)
     }
 
     private fun getBoolean(

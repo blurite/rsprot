@@ -1,5 +1,6 @@
 package net.rsprot.protocol.common.game.outgoing.info.shared.extendedinfo
 
+import net.rsprot.protocol.common.RSProtFlags
 import net.rsprot.protocol.common.client.ClientTypeMap
 import net.rsprot.protocol.common.game.outgoing.info.TransientExtendedInfo
 import net.rsprot.protocol.common.game.outgoing.info.encoder.PrecomputedExtendedInfoEncoder
@@ -21,14 +22,14 @@ public class SpotAnimList(
     /**
      * The changelist that tracks all the slots which have been flagged for a spotanim update.
      */
-    public val changelist: BitSet = BitSet(MAX_SPOTANIM_COUNT)
+    public val changelist: BitSet = BitSet(RSProtFlags.spotanimListCapacity)
 
     /**
      * The array of spotanims on this avatar.
      * This array utilizes the bitpacked representation of a [SpotAnim].
      */
     public val spotanims: LongArray =
-        LongArray(MAX_SPOTANIM_COUNT) {
+        LongArray(RSProtFlags.spotanimListCapacity) {
             UNINITIALIZED_SPOTANIM
         }
 
@@ -64,6 +65,5 @@ public class SpotAnimList(
 
     public companion object {
         private const val UNINITIALIZED_SPOTANIM = -1L
-        private const val MAX_SPOTANIM_COUNT = 256
     }
 }

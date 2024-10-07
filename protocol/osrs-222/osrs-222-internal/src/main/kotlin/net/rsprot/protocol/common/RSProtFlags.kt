@@ -90,6 +90,13 @@ public object RSProtFlags {
             true,
         )
 
+    @JvmStatic
+    public val spotanimListCapacity: Int =
+        getInt(
+            "spotanimListCapacity",
+            256,
+        )
+
     init {
         log("development", development)
         log("inventoryObjCheck", inventoryObjCheck)
@@ -99,6 +106,8 @@ public object RSProtFlags {
         log("js5Logging", js5Logging)
         log("npcPlayerAvatarTracking", npcPlayerAvatarTracking)
         log("filterMissingPacketsInClient", filterMissingPacketsInClient)
+        log("spotanimListCapacity", spotanimListCapacity)
+        require(spotanimListCapacity in 0..256)
     }
 
     private fun getBoolean(
@@ -123,7 +132,7 @@ public object RSProtFlags {
 
     private fun log(
         name: String,
-        value: Boolean,
+        value: Any,
     ) {
         logger.debug {
             "-D${PREFIX}$name: $value"
