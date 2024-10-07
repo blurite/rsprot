@@ -19,6 +19,8 @@ ktlint_custom-rule-set = enabled
 # as disabling at call sites doesn't seem to get recognized properly
 # noinspection EditorConfigKeyCorrectness
 ktlint_standard_backing-property-naming = disabled
+# noinspection EditorConfigKeyCorrectness
+ktlint_standard_function-expression-body = disabled
 
 [*.md]
 max_line_length = 80
