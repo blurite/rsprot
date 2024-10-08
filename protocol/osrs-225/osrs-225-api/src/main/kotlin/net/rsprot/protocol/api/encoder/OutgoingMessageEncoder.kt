@@ -91,7 +91,7 @@ public abstract class OutgoingMessageEncoder : ChannelOutboundHandlerAdapter() {
     ) where T : OutgoingMessage, T : ByteBufHolder {
         writePacketHeader(ctx, msg)
 
-        val bufHolderContent = msg.content()
+        val bufHolderContent = msg.content().slice()
         // If there are trailing bytes, we need to encode and write those as well
         if (msg is ByteBufHolderWrapperFooterMessage) {
             // If the byte buf holder wrapper is a footer, use void promise as we don't
