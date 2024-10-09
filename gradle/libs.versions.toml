@@ -20,6 +20,7 @@ netty-transport = { module = "io.netty:netty-transport" }
 netty-handler = { module = "io.netty:netty-handler" }
 netty-native-epoll = { module = "io.netty:netty-transport-native-epoll" }
 netty-native-kqueue = { module = "io.netty:netty-transport-native-kqueue" }
+netty-native-macos-dns-resolver = { module = "io.netty:netty-resolver-dns-native-macos" }
 netty-incubator-iouring = { module = "io.netty.incubator:netty-incubator-transport-native-io_uring", version.ref = "netty-iouring" }
 junit-bom = { module = "org.junit:junit-bom", version.ref = "junit" }
 junit-api = { module = "org.junit.jupiter:junit-jupiter-api" }
