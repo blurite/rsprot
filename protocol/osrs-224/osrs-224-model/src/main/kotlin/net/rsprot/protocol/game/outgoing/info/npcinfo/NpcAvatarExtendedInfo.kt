@@ -202,7 +202,7 @@ public class NpcAvatarExtendedInfo(
     ) {
         verify {
             require(slot in 0..<RSProtFlags.spotanimListCapacity) {
-                "Unexpected slot: $slot, expected range: 0..${RSProtFlags.spotanimListCapacity}"
+                "Unexpected slot: $slot, expected range: 0..<${RSProtFlags.spotanimListCapacity}"
             }
             require(id == -1 || id in UNSIGNED_SHORT_RANGE) {
                 "Unexpected id: $id, expected value -1 or in range: $UNSIGNED_SHORT_RANGE"
