@@ -16,6 +16,28 @@ public class UpdateTradingPost(
     override val category: ServerProtCategory
         get() = GameServerProtCategory.LOW_PRIORITY_PROT
 
+    override fun estimateSize(): Int {
+        return when (updateType) {
+            ResetTradingPost -> Byte.SIZE_BYTES
+            is SetTradingPostOfferList -> {
+                val sizePerOffer =
+                    13 +
+                        13 +
+                        Short.SIZE_BYTES +
+                        Long.SIZE_BYTES +
+                        Int.SIZE_BYTES +
+                        Int.SIZE_BYTES
+
+                Byte.SIZE_BYTES +
+                    Long.SIZE_BYTES +
+                    Short.SIZE_BYTES +
+                    Byte.SIZE_BYTES +
+                    Short.SIZE_BYTES +
+                    (updateType.offers.size * sizePerOffer)
+            }
+        }
+    }
+
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (javaClass != other?.javaClass) return false

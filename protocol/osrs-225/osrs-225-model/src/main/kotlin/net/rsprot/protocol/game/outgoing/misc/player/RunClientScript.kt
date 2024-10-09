@@ -4,6 +4,7 @@ import net.rsprot.protocol.ServerProtCategory
 import net.rsprot.protocol.common.RSProtFlags
 import net.rsprot.protocol.game.outgoing.GameServerProtCategory
 import net.rsprot.protocol.message.OutgoingGameMessage
+import net.rsprot.protocol.message.util.estimateTextSize
 
 /**
  * Run clientscript packet is used to execute a clientscript in the client
@@ -82,6 +83,24 @@ public class RunClientScript : OutgoingGameMessage {
 
     override val category: ServerProtCategory
         get() = GameServerProtCategory.LOW_PRIORITY_PROT
+
+    override fun estimateSize(): Int {
+        var payloadSize = 0
+        // For clientscripts, as they can be so volatile in length,
+        // we calculate an accurate length of the message
+        for (i in (types.size - 1) downTo 0) {
+            val type = types[i]
+            if (type == 's') {
+                estimateTextSize(values[i] as String)
+            } else {
+                payloadSize += Int.SIZE_BYTES
+            }
+        }
+        return types.size +
+            Byte.SIZE_BYTES +
+            payloadSize +
+            Int.SIZE_BYTES
+    }
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

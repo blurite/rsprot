@@ -48,6 +48,28 @@ public class RebuildRegion private constructor(
     override val category: ServerProtCategory
         get() = GameServerProtCategory.HIGH_PRIORITY_PROT
 
+    @Suppress("DuplicatedCode")
+    override fun estimateSize(): Int {
+        val header =
+            Short.SIZE_BYTES +
+                Short.SIZE_BYTES +
+                Byte.SIZE_BYTES
+        val notNullCount = zones.count { zone -> zone != null }
+        val bitCount = (27 * notNullCount) + (zones.size - notNullCount)
+        val bitBufByteCount = (bitCount + 7) ushr 3
+        // While a little wasteful, it is expensive to determine the true
+        // number of bytes necessary since we only transmit xteas for
+        // each referenced mapsquare at most one time
+        // In here, we just assume each zone belongs in a unique mapsquare
+        // The buffers are pooled anyway so it isn't like we're typically
+        // allocating a ton here, just picking a larger buffer out of the pool.
+        val xteaSize = notNullCount * (4 * Int.SIZE_BYTES)
+        return header +
+            Short.SIZE_BYTES +
+            bitBufByteCount +
+            xteaSize
+    }
+
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (javaClass != other?.javaClass) return false

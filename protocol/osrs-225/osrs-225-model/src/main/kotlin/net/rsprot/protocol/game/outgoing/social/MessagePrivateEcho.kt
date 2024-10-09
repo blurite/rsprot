@@ -3,6 +3,8 @@ package net.rsprot.protocol.game.outgoing.social
 import net.rsprot.protocol.ServerProtCategory
 import net.rsprot.protocol.game.outgoing.GameServerProtCategory
 import net.rsprot.protocol.message.OutgoingGameMessage
+import net.rsprot.protocol.message.util.estimateHuffmanEncodedTextSize
+import net.rsprot.protocol.message.util.estimateTextSize
 
 /**
  * Message private echo is used to show the messages
@@ -18,6 +20,11 @@ public class MessagePrivateEcho(
 ) : OutgoingGameMessage {
     override val category: ServerProtCategory
         get() = GameServerProtCategory.LOW_PRIORITY_PROT
+
+    override fun estimateSize(): Int {
+        return estimateTextSize(recipient) +
+            estimateHuffmanEncodedTextSize(message)
+    }
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

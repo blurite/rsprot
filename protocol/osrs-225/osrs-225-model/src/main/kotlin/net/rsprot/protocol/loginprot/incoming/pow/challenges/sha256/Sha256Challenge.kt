@@ -37,6 +37,13 @@ public class Sha256Challenge(
         buffer.pjstr(salt, Charsets.UTF_8)
     }
 
+    override fun estimateMessageSize(): Int {
+        return Byte.SIZE_BYTES +
+            Byte.SIZE_BYTES +
+            salt.length +
+            Byte.SIZE_BYTES
+    }
+
     /**
      * Gets the base string that is part of the input for the hash.
      * A long will be appended to this base string at the end, which will additionally

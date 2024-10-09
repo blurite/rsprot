@@ -3,6 +3,7 @@ package net.rsprot.protocol.game.outgoing.misc.client
 import net.rsprot.protocol.ServerProtCategory
 import net.rsprot.protocol.game.outgoing.GameServerProtCategory
 import net.rsprot.protocol.message.OutgoingGameMessage
+import net.rsprot.protocol.message.util.estimateTextSize
 
 /**
  * Hiscore reply is a packet used in the enhanced clients to do
@@ -28,6 +29,23 @@ public class HiscoreReply private constructor(
         get() = _requestId.toInt()
     override val category: ServerProtCategory
         get() = GameServerProtCategory.LOW_PRIORITY_PROT
+
+    override fun estimateSize(): Int {
+        return when (response) {
+            is FailedHiscoreReply -> {
+                Byte.SIZE_BYTES + estimateTextSize(response.reason)
+            }
+            is SuccessfulHiscoreReply -> {
+                Byte.SIZE_BYTES +
+                    Byte.SIZE_BYTES +
+                    (response.statResults.size * (Short.SIZE_BYTES + Int.SIZE_BYTES + Int.SIZE_BYTES)) +
+                    Int.SIZE_BYTES +
+                    Long.SIZE_BYTES +
+                    Short.SIZE_BYTES +
+                    (response.activityResults.size * (Short.SIZE_BYTES + Int.SIZE_BYTES + Int.SIZE_BYTES))
+            }
+        }
+    }
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

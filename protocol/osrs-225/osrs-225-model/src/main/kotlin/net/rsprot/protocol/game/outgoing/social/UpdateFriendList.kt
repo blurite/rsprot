@@ -18,6 +18,26 @@ public class UpdateFriendList(
     override val category: ServerProtCategory
         get() = GameServerProtCategory.LOW_PRIORITY_PROT
 
+    override fun estimateSize(): Int {
+        // In here we assume max len names (and previous names)
+        // but 0 length world name/notes
+        // Even if the world name or notes are used, it would probably
+        // still fall below the allocated size due to the excess allocated
+        // through the name strings
+        val sizePerFriend =
+            Byte.SIZE_BYTES +
+                13 +
+                13 +
+                Short.SIZE_BYTES +
+                Byte.SIZE_BYTES +
+                Byte.SIZE_BYTES +
+                Byte.SIZE_BYTES +
+                Byte.SIZE_BYTES +
+                Int.SIZE_BYTES +
+                Byte.SIZE_BYTES
+        return friends.size * sizePerFriend
+    }
+
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (javaClass != other?.javaClass) return false

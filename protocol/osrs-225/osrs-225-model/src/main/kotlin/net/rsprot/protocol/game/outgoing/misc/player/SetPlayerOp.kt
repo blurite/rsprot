@@ -3,6 +3,7 @@ package net.rsprot.protocol.game.outgoing.misc.player
 import net.rsprot.protocol.ServerProtCategory
 import net.rsprot.protocol.game.outgoing.GameServerProtCategory
 import net.rsprot.protocol.message.OutgoingGameMessage
+import net.rsprot.protocol.message.util.estimateTextSize
 
 /**
  * Set player op packet is used to set the right-click
@@ -32,6 +33,12 @@ public class SetPlayerOp private constructor(
         get() = _id.toInt()
     override val category: ServerProtCategory
         get() = GameServerProtCategory.LOW_PRIORITY_PROT
+
+    override fun estimateSize(): Int {
+        return Byte.SIZE_BYTES +
+            Byte.SIZE_BYTES +
+            estimateTextSize(op ?: "null")
+    }
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

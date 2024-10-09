@@ -3,6 +3,7 @@ package net.rsprot.protocol.game.outgoing.clan
 import net.rsprot.protocol.ServerProtCategory
 import net.rsprot.protocol.game.outgoing.GameServerProtCategory
 import net.rsprot.protocol.message.OutgoingGameMessage
+import net.rsprot.protocol.message.util.estimateTextSize
 
 /**
  * Clan settings full packet is used to update the clan's primary settings.
@@ -25,6 +26,48 @@ public class ClanSettingsFull private constructor(
         get() = _clanType.toInt()
     override val category: ServerProtCategory
         get() = GameServerProtCategory.HIGH_PRIORITY_PROT
+
+    override fun estimateSize(): Int {
+        return when (update) {
+            is JoinUpdate -> {
+                val sizePerAffinedMember =
+                    13 +
+                        Byte.SIZE_BYTES +
+                        Int.SIZE_BYTES +
+                        Short.SIZE_BYTES +
+                        Byte.SIZE_BYTES
+                val settingsSize =
+                    update
+                        .settings
+                        .sumOf { setting ->
+                            when (setting) {
+                                is IntClanSetting -> Int.SIZE_BYTES + Int.SIZE_BYTES
+                                is LongClanSetting -> Int.SIZE_BYTES + Long.SIZE_BYTES
+                                is StringClanSetting -> Int.SIZE_BYTES + estimateTextSize(setting.value)
+                            }
+                        }
+                Byte.SIZE_BYTES +
+                    Byte.SIZE_BYTES +
+                    Byte.SIZE_BYTES +
+                    Int.SIZE_BYTES +
+                    Int.SIZE_BYTES +
+                    Short.SIZE_BYTES +
+                    Byte.SIZE_BYTES +
+                    13 +
+                    Int.SIZE_BYTES +
+                    Byte.SIZE_BYTES +
+                    Byte.SIZE_BYTES +
+                    Byte.SIZE_BYTES +
+                    Byte.SIZE_BYTES +
+                    Byte.SIZE_BYTES +
+                    (update.affinedMembers.size * sizePerAffinedMember) +
+                    (update.bannedMembers.size * 13) +
+                    Short.SIZE_BYTES +
+                    settingsSize
+            }
+            LeaveUpdate -> Byte.SIZE_BYTES
+        }
+    }
 
     override fun toString(): String =
         "ClanSettingsFull(" +

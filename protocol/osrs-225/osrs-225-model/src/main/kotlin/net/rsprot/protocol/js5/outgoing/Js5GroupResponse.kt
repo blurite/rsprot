@@ -7,39 +7,35 @@ import net.rsprot.protocol.message.OutgoingJs5Message
 /**
  * Js5 group responses are used to feed the cache to the client through the server.
  * @param buffer the byte buffer that is used for the response
- * @property offset the starting index from which the response is written
- * @property limit the ending index until which the response is written
  */
 public class Js5GroupResponse(
     buffer: ByteBuf,
-    public val offset: Int,
-    public val limit: Int,
     public val key: Int,
 ) : DefaultByteBufHolder(buffer),
     OutgoingJs5Message {
-    override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        if (javaClass != other?.javaClass) return false
-        if (!super.equals(other)) return false
+    override fun estimateSize(): Int {
+        return content().readableBytes()
+    }
 
-        other as Js5GroupResponse
+    override fun equals(o: Any?): Boolean {
+        if (this === o) return true
+        if (o !is Js5GroupResponse) return false
+        if (!super.equals(o)) return false
 
-        if (offset != other.offset) return false
-        if (limit != other.limit) return false
+        if (key != o.key) return false
 
         return true
     }
 
     override fun hashCode(): Int {
         var result = super.hashCode()
-        result = 31 * result + offset
-        result = 31 * result + limit
+        result = 31 * result + key
         return result
     }
 
-    override fun toString(): String =
-        "Js5GroupResponse(" +
-            "offset=$offset, " +
-            "limit=$limit" +
+    override fun toString(): String {
+        return "Js5GroupResponse(" +
+            "key=$key" +
             ")"
+    }
 }

@@ -10,7 +10,7 @@ import net.rsprot.protocol.message.OutgoingGameMessage
  * @property owner the hash of the owner.
  * As the value of this property is never assigned in the client, but it is compared,
  * this property should always be assigned the value 0.
- * @property updateNum the number of updates this clans settings has had.
+ * @property updateNum the number of updates this clan's settings has had.
  * If the value does not match up, the client will throw an exception!
  */
 public class ClanSettingsDelta private constructor(
@@ -35,6 +35,14 @@ public class ClanSettingsDelta private constructor(
         get() = _clanType.toInt()
     override val category: ServerProtCategory
         get() = GameServerProtCategory.HIGH_PRIORITY_PROT
+
+    override fun estimateSize(): Int {
+        // Assume worst case update which is 24 bytes each
+        return Byte.SIZE_BYTES +
+            Long.SIZE_BYTES +
+            Int.SIZE_BYTES +
+            (updates.size * 24)
+    }
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

@@ -4,6 +4,7 @@ import io.netty.buffer.ByteBuf
 import io.netty.buffer.DefaultByteBufHolder
 import net.rsprot.protocol.ServerProtCategory
 import net.rsprot.protocol.game.outgoing.GameServerProtCategory
+import net.rsprot.protocol.message.ByteBufHolderWrapperHeaderMessage
 import net.rsprot.protocol.message.OutgoingGameMessage
 
 /**
@@ -29,7 +30,8 @@ public class UpdateZonePartialEnclosed private constructor(
     private val _level: UByte,
     public val payload: ByteBuf,
 ) : DefaultByteBufHolder(payload),
-    OutgoingGameMessage {
+    OutgoingGameMessage,
+    ByteBufHolderWrapperHeaderMessage {
     public constructor(
         zoneX: Int,
         zoneZ: Int,
@@ -50,6 +52,18 @@ public class UpdateZonePartialEnclosed private constructor(
         get() = _level.toInt()
     override val category: ServerProtCategory
         get() = GameServerProtCategory.HIGH_PRIORITY_PROT
+
+    override fun estimateSize(): Int =
+        Byte.SIZE_BYTES +
+            Byte.SIZE_BYTES +
+            Byte.SIZE_BYTES +
+            payload.readableBytes()
+
+    override fun nonByteBufHolderSize(): Int {
+        return Byte.SIZE_BYTES +
+            Byte.SIZE_BYTES +
+            Byte.SIZE_BYTES
+    }
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

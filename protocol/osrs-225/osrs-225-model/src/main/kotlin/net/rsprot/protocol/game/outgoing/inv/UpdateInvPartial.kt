@@ -105,6 +105,14 @@ public class UpdateInvPartial private constructor(
     override val category: ServerProtCategory
         get() = GameServerProtCategory.HIGH_PRIORITY_PROT
 
+    override fun estimateSize(): Int {
+        // We always assume the worst case here, which would be
+        // 9 bytes per obj added
+        return Int.SIZE_BYTES +
+            Short.SIZE_BYTES +
+            (count * 9)
+    }
+
     /**
      * Gets the bitpacked obj in the [slot] provided.
      * @param slot the slot in the inventory.

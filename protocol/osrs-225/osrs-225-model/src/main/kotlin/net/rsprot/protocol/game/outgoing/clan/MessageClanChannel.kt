@@ -3,6 +3,8 @@ package net.rsprot.protocol.game.outgoing.clan
 import net.rsprot.protocol.ServerProtCategory
 import net.rsprot.protocol.game.outgoing.GameServerProtCategory
 import net.rsprot.protocol.message.OutgoingGameMessage
+import net.rsprot.protocol.message.util.estimateHuffmanEncodedTextSize
+import net.rsprot.protocol.message.util.estimateTextSize
 
 /**
  * Message clan channel is used to send messages within a clan channel
@@ -65,6 +67,15 @@ public class MessageClanChannel private constructor(
         get() = _chatCrownType.toInt()
     override val category: ServerProtCategory
         get() = GameServerProtCategory.HIGH_PRIORITY_PROT
+
+    override fun estimateSize(): Int {
+        return Byte.SIZE_BYTES +
+            estimateTextSize(name) +
+            Short.SIZE_BYTES +
+            3 +
+            Byte.SIZE_BYTES +
+            estimateHuffmanEncodedTextSize(message)
+    }
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

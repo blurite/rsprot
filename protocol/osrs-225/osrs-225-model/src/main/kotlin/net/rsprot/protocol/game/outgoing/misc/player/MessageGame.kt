@@ -3,6 +3,7 @@ package net.rsprot.protocol.game.outgoing.misc.player
 import net.rsprot.protocol.ServerProtCategory
 import net.rsprot.protocol.game.outgoing.GameServerProtCategory
 import net.rsprot.protocol.message.OutgoingGameMessage
+import net.rsprot.protocol.message.util.estimateTextSize
 
 /**
  * Message game packet is used to send a normal game message in
@@ -89,6 +90,13 @@ public class MessageGame private constructor(
         get() = _type.toInt()
     override val category: ServerProtCategory
         get() = GameServerProtCategory.HIGH_PRIORITY_PROT
+
+    override fun estimateSize(): Int {
+        return (if (type >= 0x80) Short.SIZE_BYTES else Byte.SIZE_BYTES) +
+            Byte.SIZE_BYTES +
+            (if (name != null) estimateTextSize(name) else 0) +
+            estimateTextSize(message)
+    }
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

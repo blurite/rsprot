@@ -33,6 +33,12 @@ public class IfResync private constructor(
     override val category: ServerProtCategory
         get() = GameServerProtCategory.LOW_PRIORITY_PROT
 
+    override fun estimateSize(): Int =
+        Short.SIZE_BYTES +
+            Short.SIZE_BYTES +
+            (subInterfaces.size * (Int.SIZE_BYTES + Short.SIZE_BYTES + Byte.SIZE_BYTES)) +
+            (events.size * (Int.SIZE_BYTES + Short.SIZE_BYTES + Short.SIZE_BYTES + Int.SIZE_BYTES))
+
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (javaClass != other?.javaClass) return false

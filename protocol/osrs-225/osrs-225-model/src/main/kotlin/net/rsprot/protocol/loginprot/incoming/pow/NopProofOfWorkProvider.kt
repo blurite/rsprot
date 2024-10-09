@@ -18,6 +18,10 @@ public object NopProofOfWorkProvider :
         override fun encode(buffer: JagByteBuf) {
             // nop
         }
+
+        override fun estimateMessageSize(): Int {
+            return 0
+        }
     }
 
     public object NopChallengeMetaData : ChallengeMetaData

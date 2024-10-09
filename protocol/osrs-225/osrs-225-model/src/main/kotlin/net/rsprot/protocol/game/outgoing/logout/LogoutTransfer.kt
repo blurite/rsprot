@@ -3,6 +3,7 @@ package net.rsprot.protocol.game.outgoing.logout
 import net.rsprot.protocol.ServerProtCategory
 import net.rsprot.protocol.game.outgoing.GameServerProtCategory
 import net.rsprot.protocol.message.OutgoingGameMessage
+import net.rsprot.protocol.message.util.estimateTextSize
 
 /**
  * Logout transfer packet is used for world-hopping purposes,
@@ -69,6 +70,12 @@ public class LogoutTransfer private constructor(
         get() = _id.toInt()
     override val category: ServerProtCategory
         get() = GameServerProtCategory.HIGH_PRIORITY_PROT
+
+    override fun estimateSize(): Int {
+        return Short.SIZE_BYTES +
+            Int.SIZE_BYTES +
+            estimateTextSize(host)
+    }
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

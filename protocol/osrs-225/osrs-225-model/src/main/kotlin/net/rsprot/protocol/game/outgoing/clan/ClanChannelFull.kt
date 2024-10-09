@@ -3,6 +3,7 @@ package net.rsprot.protocol.game.outgoing.clan
 import net.rsprot.protocol.ServerProtCategory
 import net.rsprot.protocol.game.outgoing.GameServerProtCategory
 import net.rsprot.protocol.message.OutgoingGameMessage
+import net.rsprot.protocol.message.util.estimateTextSize
 
 /**
  * Clan channel full packets are used to update
@@ -28,6 +29,28 @@ public class ClanChannelFull private constructor(
         get() = _clanType.toInt()
     override val category: ServerProtCategory
         get() = GameServerProtCategory.HIGH_PRIORITY_PROT
+
+    override fun estimateSize(): Int {
+        return when (update) {
+            is JoinUpdate -> {
+                val memberPayloadSize =
+                    update.members.size *
+                        (13 + Byte.SIZE_BYTES + Short.SIZE_BYTES + Byte.SIZE_BYTES)
+                Byte.SIZE_BYTES +
+                    Byte.SIZE_BYTES +
+                    Byte.SIZE_BYTES +
+                    Long.SIZE_BYTES +
+                    Long.SIZE_BYTES +
+                    estimateTextSize(update.clanName) +
+                    Byte.SIZE_BYTES +
+                    Byte.SIZE_BYTES +
+                    Byte.SIZE_BYTES +
+                    Short.SIZE_BYTES +
+                    memberPayloadSize
+            }
+            LeaveUpdate -> Byte.SIZE_BYTES
+        }
+    }
 
     override fun toString(): String =
         "ClanChannelFull(" +

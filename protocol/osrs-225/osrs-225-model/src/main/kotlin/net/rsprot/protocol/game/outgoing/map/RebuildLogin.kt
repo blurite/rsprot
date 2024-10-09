@@ -8,6 +8,7 @@ import net.rsprot.protocol.game.outgoing.GameServerProtCategory
 import net.rsprot.protocol.game.outgoing.info.playerinfo.PlayerInfo
 import net.rsprot.protocol.game.outgoing.map.util.XteaProvider
 import net.rsprot.protocol.game.outgoing.map.util.buildXteaKeyList
+import net.rsprot.protocol.message.ByteBufHolderWrapperFooterMessage
 
 /**
  * Rebuild login is sent as part of the login procedure as the very first packet,
@@ -27,7 +28,8 @@ public class RebuildLogin private constructor(
     override val keys: List<XteaKey>,
     public val gpiInitBlock: ByteBuf,
 ) : DefaultByteBufHolder(gpiInitBlock),
-    StaticRebuildMessage {
+    StaticRebuildMessage,
+    ByteBufHolderWrapperFooterMessage {
     public constructor(
         zoneX: Int,
         zoneZ: Int,
@@ -50,6 +52,22 @@ public class RebuildLogin private constructor(
         get() = _worldArea.toInt()
     override val category: ServerProtCategory
         get() = GameServerProtCategory.HIGH_PRIORITY_PROT
+
+    override fun estimateSize(): Int =
+        Short.SIZE_BYTES +
+            Short.SIZE_BYTES +
+            Short.SIZE_BYTES +
+            Short.SIZE_BYTES +
+            (keys.size * (4 * Int.SIZE_BYTES)) +
+            gpiInitBlock.readableBytes()
+
+    override fun nonByteBufHolderSize(): Int {
+        return Short.SIZE_BYTES +
+            Short.SIZE_BYTES +
+            Short.SIZE_BYTES +
+            Short.SIZE_BYTES +
+            (keys.size * (4 * Int.SIZE_BYTES))
+    }
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

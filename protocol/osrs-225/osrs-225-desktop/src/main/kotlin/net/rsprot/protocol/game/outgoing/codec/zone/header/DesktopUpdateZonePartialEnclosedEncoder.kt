@@ -38,11 +38,11 @@ public class DesktopUpdateZonePartialEnclosedEncoder : MessageEncoder<UpdateZone
         buffer.p1(message.zoneZ)
         buffer.p1Alt2(message.zoneX)
         buffer.p1Alt1(message.level)
-        buffer.buffer.writeBytes(
-            message.payload,
-            message.payload.readerIndex(),
-            message.payload.readableBytes(),
-        )
+        // buffer.buffer.writeBytes(
+        //     message.payload,
+        //     message.payload.readerIndex(),
+        //     message.payload.readableBytes(),
+        // )
     }
 
     public companion object : UpdateZonePartialEnclosedCache {
