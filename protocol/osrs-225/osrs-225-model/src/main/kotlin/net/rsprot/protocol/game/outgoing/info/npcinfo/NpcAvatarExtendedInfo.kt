@@ -207,7 +207,7 @@ public class NpcAvatarExtendedInfo(
     ) {
         checkCommunicationThread()
         verify {
-            require(slot < 0 || slot >= RSProtFlags.spotanimListCapacity) {
+            require(slot in 0..<RSProtFlags.spotanimListCapacity) {
                 "Unexpected slot: $slot, expected range: 0..${RSProtFlags.spotanimListCapacity}"
             }
             require(id == -1 || id in UNSIGNED_SHORT_RANGE) {
