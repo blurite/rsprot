@@ -1472,6 +1472,62 @@ public class PlayerAvatarExtendedInfo(
     }
 
     /**
+     * Sets the worn models of an obj at wearpos [wearpos].
+     * @param manWear the male wear model to use
+     * @param womanWear the female wear model to use
+     */
+    public fun setObjWearModels(
+        wearpos: Int,
+        manWear: Int,
+        womanWear: Int,
+    ) {
+        checkCommunicationThread()
+        verify {
+            require(wearpos in 0..11) {
+                "Unexpected wearpos $wearpos, expected range 0..11"
+            }
+            require(manWear == -1 || manWear in UNSIGNED_SHORT_RANGE) {
+                "Invalid man wear model $manWear, expected value -1 or in range $UNSIGNED_SHORT_RANGE"
+            }
+            require(womanWear == -1 || womanWear in UNSIGNED_SHORT_RANGE) {
+                "Invalid man wear model $womanWear, expected value -1 or in range $UNSIGNED_SHORT_RANGE"
+            }
+        }
+        val customisation = allocObjCustomisation(wearpos)
+        customisation.manWear = manWear.toUShort()
+        customisation.womanWear = womanWear.toUShort()
+        flagAppearance()
+    }
+
+    /**
+     * Sets the head models of an obj at wearpos [wearpos].
+     * @param manHead the male head model to use
+     * @param womanHead the female head model to use
+     */
+    public fun setObjHeadModels(
+        wearpos: Int,
+        manHead: Int,
+        womanHead: Int,
+    ) {
+        checkCommunicationThread()
+        verify {
+            require(wearpos in 0..11) {
+                "Unexpected wearpos $wearpos, expected range 0..11"
+            }
+            require(manHead == -1 || manHead in UNSIGNED_SHORT_RANGE) {
+                "Invalid man wear model $manHead, expected value -1 or in range $UNSIGNED_SHORT_RANGE"
+            }
+            require(womanHead == -1 || womanHead in UNSIGNED_SHORT_RANGE) {
+                "Invalid man wear model $womanHead, expected value -1 or in range $UNSIGNED_SHORT_RANGE"
+            }
+        }
+        val customisation = allocObjCustomisation(wearpos)
+        customisation.manHead = manHead.toUShort()
+        customisation.womanHead = womanHead.toUShort()
+        flagAppearance()
+    }
+
+    /**
      * Flags appearance to have changed, in order for it to be synchronized to all observers.
      */
     private fun flagAppearance() {

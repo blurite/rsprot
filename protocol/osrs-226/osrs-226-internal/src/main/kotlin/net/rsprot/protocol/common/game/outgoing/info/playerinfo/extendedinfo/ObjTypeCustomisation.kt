@@ -8,6 +8,10 @@ package net.rsprot.protocol.common.game.outgoing.info.playerinfo.extendedinfo
  * @param retexIndices the bitpacked indices of the source texture to overwrite.
  * @param retex1 the texture id to overwrite the source texture at the first index with.
  * @param retex2 the texture id to overwrite the source texture at the second index with.
+ * @param manWear the male body type wear model
+ * @param womanWear the female body type wear model
+ * @param manHead the male chathead model
+ * @param womanHead the female chathead model
  */
 public class ObjTypeCustomisation(
     public var recolIndices: UByte,
@@ -16,6 +20,10 @@ public class ObjTypeCustomisation(
     public var retexIndices: UByte,
     public var retex1: UShort,
     public var retex2: UShort,
+    public var manWear: UShort,
+    public var womanWear: UShort,
+    public var manHead: UShort,
+    public var womanHead: UShort,
 ) {
     public constructor() : this(
         recolIndices = 0xFFu,
@@ -24,5 +32,13 @@ public class ObjTypeCustomisation(
         retexIndices = 0xFFu,
         retex1 = 0u,
         retex2 = 0u,
+        manWear = DEFAULT_MODEL,
+        womanWear = DEFAULT_MODEL,
+        manHead = DEFAULT_MODEL,
+        womanHead = DEFAULT_MODEL,
     )
+
+    public companion object {
+        public const val DEFAULT_MODEL: UShort = 0xFFFFU
+    }
 }

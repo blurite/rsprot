@@ -178,19 +178,39 @@ public class PlayerAppearanceEncoder : PrecomputedExtendedInfoEncoder<Appearance
         if (retexIndices != 0xFF) {
             flag = flag or 0x2
         }
+        if (customisation.manWear != ObjTypeCustomisation.DEFAULT_MODEL ||
+            customisation.womanWear != ObjTypeCustomisation.DEFAULT_MODEL
+        ) {
+            flag = flag or 0x4
+        }
+        if (customisation.manHead != ObjTypeCustomisation.DEFAULT_MODEL ||
+            customisation.womanHead != ObjTypeCustomisation.DEFAULT_MODEL
+        ) {
+            flag = flag or 0x8
+        }
         intermediate.p1(flag)
-        pObjTypeCustomisation(
-            intermediate,
-            recolIndices,
-            customisation.recol1.toInt(),
-            customisation.recol2.toInt(),
-        )
-        pObjTypeCustomisation(
-            intermediate,
-            retexIndices,
-            customisation.retex1.toInt(),
-            customisation.retex2.toInt(),
-        )
+        if (flag and 0x1 != 0) {
+            pObjTypeCustomisation(
+                intermediate,
+                recolIndices,
+                customisation.recol1.toInt(),
+                customisation.recol2.toInt(),
+            )
+        }
+        if (flag and 0x2 != 0) {
+            pObjTypeCustomisation(
+                intermediate,
+                retexIndices,
+                customisation.retex1.toInt(),
+                customisation.retex2.toInt(),
+            )
+        }
+        if (flag and 0x4 != 0) {
+            pObjTypeWearModels(intermediate, customisation)
+        }
+        if (flag and 0x8 != 0) {
+            pObjTypeHeadModels(intermediate, customisation)
+        }
     }
 
     private fun pObjTypeCustomisation(
@@ -206,5 +226,21 @@ public class PlayerAppearanceEncoder : PrecomputedExtendedInfoEncoder<Appearance
         if (flag and 0xF0 != 0xF0) {
             intermediate.p2(value2)
         }
+    }
+
+    private fun pObjTypeWearModels(
+        intermediate: JagByteBuf,
+        customisation: ObjTypeCustomisation,
+    ) {
+        intermediate.p2(customisation.manWear.toInt())
+        intermediate.p2(customisation.womanWear.toInt())
+    }
+
+    private fun pObjTypeHeadModels(
+        intermediate: JagByteBuf,
+        customisation: ObjTypeCustomisation,
+    ) {
+        intermediate.p2(customisation.manHead.toInt())
+        intermediate.p2(customisation.womanHead.toInt())
     }
 }
