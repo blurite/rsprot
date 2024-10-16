@@ -53,7 +53,7 @@ public class NpcHeadCustomisationEncoder : PrecomputedExtendedInfoEncoder<HeadCu
         }
         if (flag and FLAG_RECOLOUR != 0) {
             for (recol in customisation.recolours) {
-                buffer.p2(recol)
+                buffer.p2Alt3(recol)
             }
         }
         if (flag and FLAG_RETEXTURE != 0) {
@@ -68,7 +68,7 @@ public class NpcHeadCustomisationEncoder : PrecomputedExtendedInfoEncoder<HeadCu
     }
 
     private fun JagByteBuf.pFlag(value: Int) {
-        p1Alt2(value)
+        p1Alt3(value)
     }
 
     private companion object {
