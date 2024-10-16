@@ -27,11 +27,13 @@ public class WorldEntityAvatarFactory(
      * @param index the index of the world entity
      * @param sizeX the width of the world entity in zones (8 tiles/zone)
      * @param sizeZ the height of the world entity in zones (8 tiles/zone)
-     * @param x the absolute x coordinate of the world entity where
-     * it is being portrayed in the root world.
-     * @param z the absolute z coordinate of the world entity where
-     * it is being portrayed in the root world.
+     * @param fineX the absolute fine x coordinate of the avatar. This can be calculated
+     * by doing x * 128 with absolute coord grid values.
+     * @param fineY the fine y coordinate (height) of the avatar.
+     * @param fineZ the absolute fine x coordinate of the avatar. This can be calculated
+     * by doing z * 128 with absolute coord grid values.
      * @param level the height level of the world entity.
+     * @param angle the angle to face
      * @return either a new world entity avatar, or a pooled one that has been
      * updated to contain the provided params.
      */
@@ -39,8 +41,9 @@ public class WorldEntityAvatarFactory(
         index: Int,
         sizeX: Int,
         sizeZ: Int,
-        x: Int,
-        z: Int,
+        fineX: Int,
+        fineY: Int,
+        fineZ: Int,
         level: Int,
         angle: Int,
     ): WorldEntityAvatar {
@@ -57,11 +60,14 @@ public class WorldEntityAvatarFactory(
         require(level in 0..3) {
             "Level cannot be outside of 0..3 range"
         }
-        require(x in 0..16383) {
-            "X coordinate cannot be outside of 0..16383 range"
+        require(fineX in 0..2_097_151) {
+            "Fine X coordinate cannot be outside of 0..2_097_151 range"
         }
-        require(z in 0..16383) {
-            "Z coordinate cannot be outside of 0..16383 range"
+        require(fineY in 0..1023) {
+            "Fine Y coordinate cannot be outside of 0..1023 range"
+        }
+        require(fineX in 0..2_097_151) {
+            "Fine Z coordinate cannot be outside of 0..2_097_151 range"
         }
         require(angle in 0..2047) {
             "Angle must be in range of 0..2047"
@@ -70,8 +76,9 @@ public class WorldEntityAvatarFactory(
             index,
             sizeX,
             sizeZ,
-            x,
-            z,
+            fineX,
+            fineY,
+            fineZ,
             level,
             angle,
         )

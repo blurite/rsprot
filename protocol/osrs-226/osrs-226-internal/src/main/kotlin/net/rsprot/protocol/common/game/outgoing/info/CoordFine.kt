@@ -26,10 +26,10 @@ public value class CoordFine(
         require(y in 0..<1_024) {
             "Y coordinate must be in range of 0..<1_024: $y"
         }
-        require(x in 0..<2_097_151) {
+        require(x in 0..2_097_151) {
             "X coordinate must be in range of 0..<2_097_151: $x"
         }
-        require(z >= 0 && z <= 2_097_151) {
+        require(z in 0..2_097_151) {
             "Z coordinate must be in range of 0..<2_097_151, $z"
         }
     }
