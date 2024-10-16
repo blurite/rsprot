@@ -324,7 +324,6 @@ public class WorldEntityInfo internal constructor(
                 buffer.p1(0)
                 continue
             }
-            buffer.p1(1)
             val precomputedBuffer = checkNotNull(avatar.highResolutionBuffer)
             buffer.buffer.writeBytes(
                 precomputedBuffer,
