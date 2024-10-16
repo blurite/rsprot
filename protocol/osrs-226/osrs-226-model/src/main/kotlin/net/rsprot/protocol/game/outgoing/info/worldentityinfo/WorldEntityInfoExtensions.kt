@@ -10,7 +10,7 @@ import net.rsprot.protocol.game.outgoing.info.util.BuildArea
 internal operator fun BuildArea.contains(avatar: WorldEntityAvatar): Boolean {
     val minBuildAreaZoneX = this.zoneX
     val minBuildAreaZoneZ = this.zoneZ
-    val coord = avatar.currentCoordFine
+    val coord = avatar.currentCoordGrid
     val minAvatarZoneX = coord.x ushr 3
     val minAvatarZoneZ = coord.z ushr 3
     if (minAvatarZoneX < minBuildAreaZoneX || minAvatarZoneZ < minBuildAreaZoneZ) {
