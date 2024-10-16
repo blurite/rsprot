@@ -55,7 +55,7 @@ public class NpcInfo internal constructor(
      * as it is almost impossible for such a scenario to happen in the first place.
      * It is confirmed that OldSchool RuneScape does not do it either.
      */
-    private var viewDistance: Int = MAX_SMALL_PACKET_DISTANCE
+    private var viewDistance: Int = DEFAULT_DISTANCE
 
     /**
      * The exception that was caught during the processing of this player's npc info packet.
@@ -307,7 +307,7 @@ public class NpcInfo internal constructor(
      */
     public fun resetViewDistance() {
         checkCommunicationThread()
-        this.viewDistance = MAX_SMALL_PACKET_DISTANCE
+        this.viewDistance = DEFAULT_DISTANCE
     }
 
     /**
@@ -876,7 +876,7 @@ public class NpcInfo internal constructor(
         checkCommunicationThread()
         this.localPlayerIndex = index
         this.oldSchoolClientType = oldSchoolClientType
-        this.viewDistance = MAX_SMALL_PACKET_DISTANCE
+        this.viewDistance = DEFAULT_DISTANCE
         // There is always a root world!
         details[WORLD_ENTITY_CAPACITY] = detailsStorage.poll(ROOT_WORLD)
     }
@@ -940,9 +940,14 @@ public class NpcInfo internal constructor(
         private const val BUF_CAPACITY: Int = 40_000
 
         /**
+         * The default view distance for npcs.
+         */
+        private const val DEFAULT_DISTANCE: Int = 15
+
+        /**
          * The maximum view distance that can be transmitted using the smaller npc info packet.
          */
-        private const val MAX_SMALL_PACKET_DISTANCE: Int = 15
+        private const val MAX_SMALL_PACKET_DISTANCE: Int = 31
 
         /**
          * The maximum number of high resolution NPCs that the client supports, limited by the
