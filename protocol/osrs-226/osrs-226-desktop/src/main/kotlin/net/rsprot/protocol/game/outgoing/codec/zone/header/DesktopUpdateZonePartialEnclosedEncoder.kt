@@ -17,6 +17,7 @@ import net.rsprot.protocol.game.outgoing.codec.zone.payload.MapAnimEncoder
 import net.rsprot.protocol.game.outgoing.codec.zone.payload.MapProjAnimEncoder
 import net.rsprot.protocol.game.outgoing.codec.zone.payload.ObjAddEncoder
 import net.rsprot.protocol.game.outgoing.codec.zone.payload.ObjCountEncoder
+import net.rsprot.protocol.game.outgoing.codec.zone.payload.ObjCustomiseEncoder
 import net.rsprot.protocol.game.outgoing.codec.zone.payload.ObjDelEncoder
 import net.rsprot.protocol.game.outgoing.codec.zone.payload.ObjEnabledOpsEncoder
 import net.rsprot.protocol.game.outgoing.codec.zone.payload.SoundAreaEncoder
@@ -136,7 +137,7 @@ public class DesktopUpdateZonePartialEnclosedEncoder : MessageEncoder<UpdateZone
             OBJ_ENABLED_OPS(OldSchoolZoneProt.OBJ_ENABLED_OPS, ObjEnabledOpsEncoder()),
             SOUND_AREA(OldSchoolZoneProt.SOUND_AREA, SoundAreaEncoder()),
             LOC_DEL(OldSchoolZoneProt.LOC_DEL, LocDelEncoder()),
-            OBJ_CUSTOMISE(OldSchoolZoneProt.OBJ_CUSTOMISE, TODO()),
+            OBJ_CUSTOMISE(OldSchoolZoneProt.OBJ_CUSTOMISE, ObjCustomiseEncoder()),
             ;
 
             companion object {

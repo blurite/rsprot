@@ -132,6 +132,7 @@ import net.rsprot.protocol.game.outgoing.codec.zone.payload.MapAnimEncoder
 import net.rsprot.protocol.game.outgoing.codec.zone.payload.MapProjAnimEncoder
 import net.rsprot.protocol.game.outgoing.codec.zone.payload.ObjAddEncoder
 import net.rsprot.protocol.game.outgoing.codec.zone.payload.ObjCountEncoder
+import net.rsprot.protocol.game.outgoing.codec.zone.payload.ObjCustomiseEncoder
 import net.rsprot.protocol.game.outgoing.codec.zone.payload.ObjDelEncoder
 import net.rsprot.protocol.game.outgoing.codec.zone.payload.ObjEnabledOpsEncoder
 import net.rsprot.protocol.game.outgoing.codec.zone.payload.SoundAreaEncoder
@@ -192,6 +193,7 @@ public object DesktopGameMessageEncoderRepository {
                 bind(ObjAddEncoder())
                 bind(ObjDelEncoder())
                 bind(ObjCountEncoder())
+                bind(ObjCustomiseEncoder())
                 bind(ObjEnabledOpsEncoder())
                 bind(MapAnimEncoder())
                 bind(MapProjAnimEncoder())
