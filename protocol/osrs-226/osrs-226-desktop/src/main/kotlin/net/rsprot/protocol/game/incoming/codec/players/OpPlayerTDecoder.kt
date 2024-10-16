@@ -12,10 +12,10 @@ public class OpPlayerTDecoder : MessageDecoder<OpPlayerT> {
 
     override fun decode(buffer: JagByteBuf): OpPlayerT {
         val combinedId = buffer.gCombinedIdAlt1()
-        val selectedSub = buffer.g2Alt2()
         val index = buffer.g2Alt2()
-        val selectedObj = buffer.g2Alt3()
-        val controlKey = buffer.g1Alt1() == 1
+        val selectedSub = buffer.g2()
+        val selectedObj = buffer.g2()
+        val controlKey = buffer.g1() == 1
         return OpPlayerT(
             index,
             controlKey,

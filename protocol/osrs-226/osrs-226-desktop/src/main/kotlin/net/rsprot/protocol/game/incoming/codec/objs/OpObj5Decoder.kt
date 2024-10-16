@@ -11,9 +11,9 @@ public class OpObj5Decoder : MessageDecoder<OpObj> {
 
     override fun decode(buffer: JagByteBuf): OpObj {
         val id = buffer.g2()
-        val x = buffer.g2()
-        val z = buffer.g2Alt3()
-        val controlKey = buffer.g1Alt3() == 1
+        val z = buffer.g2Alt1()
+        val x = buffer.g2Alt3()
+        val controlKey = buffer.g1Alt1() == 1
         return OpObj(
             id,
             x,

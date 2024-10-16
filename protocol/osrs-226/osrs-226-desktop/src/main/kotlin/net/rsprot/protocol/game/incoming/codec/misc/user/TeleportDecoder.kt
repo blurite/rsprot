@@ -10,10 +10,10 @@ public class TeleportDecoder : MessageDecoder<Teleport> {
     override val prot: ClientProt = GameClientProt.TELEPORT
 
     override fun decode(buffer: JagByteBuf): Teleport {
-        val oculusSyncValue = buffer.g4Alt1()
-        val level = buffer.g1Alt1()
-        val x = buffer.g2Alt1()
+        val level = buffer.g1Alt2()
+        val oculusSyncValue = buffer.g4Alt2()
         val z = buffer.g2Alt1()
+        val x = buffer.g2Alt1()
         return Teleport(
             oculusSyncValue,
             x,
