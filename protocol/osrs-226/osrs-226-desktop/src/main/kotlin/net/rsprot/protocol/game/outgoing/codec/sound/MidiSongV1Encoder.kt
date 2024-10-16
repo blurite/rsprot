@@ -15,6 +15,6 @@ public class MidiSongV1Encoder : MessageEncoder<MidiSongV1> {
         buffer: JagByteBuf,
         message: MidiSongV1,
     ) {
-        buffer.p2(message.id)
+        buffer.p2Alt1(message.id)
     }
 }

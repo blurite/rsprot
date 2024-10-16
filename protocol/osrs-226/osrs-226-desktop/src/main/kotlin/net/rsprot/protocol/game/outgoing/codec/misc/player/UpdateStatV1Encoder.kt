@@ -15,8 +15,8 @@ public class UpdateStatV1Encoder : MessageEncoder<UpdateStatV1> {
         buffer: JagByteBuf,
         message: UpdateStatV1,
     ) {
-        buffer.p4Alt2(message.experience)
-        buffer.p1Alt2(message.currentLevel)
-        buffer.p1(message.stat)
+        buffer.p1(message.currentLevel)
+        buffer.p4Alt3(message.experience)
+        buffer.p1Alt3(message.stat)
     }
 }

@@ -17,7 +17,7 @@ public class NpcHeadIconSpecificEncoder : MessageEncoder<NpcHeadIconSpecific> {
     ) {
         buffer.p4Alt3(message.spriteGroup)
         buffer.p2(message.index)
-        buffer.p2Alt2(message.spriteIndex)
-        buffer.p1Alt1(message.headIconSlot)
+        buffer.p1Alt2(message.headIconSlot)
+        buffer.p2Alt1(message.spriteIndex)
     }
 }

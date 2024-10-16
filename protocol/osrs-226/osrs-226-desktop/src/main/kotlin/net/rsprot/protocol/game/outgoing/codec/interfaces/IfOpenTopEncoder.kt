@@ -15,6 +15,6 @@ public class IfOpenTopEncoder : MessageEncoder<IfOpenTop> {
         buffer: JagByteBuf,
         message: IfOpenTop,
     ) {
-        buffer.p2(message.interfaceId)
+        buffer.p2Alt3(message.interfaceId)
     }
 }

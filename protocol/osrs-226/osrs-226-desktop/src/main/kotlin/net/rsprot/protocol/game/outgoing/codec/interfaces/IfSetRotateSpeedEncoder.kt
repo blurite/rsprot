@@ -16,8 +16,8 @@ public class IfSetRotateSpeedEncoder : MessageEncoder<IfSetRotateSpeed> {
         buffer: JagByteBuf,
         message: IfSetRotateSpeed,
     ) {
-        buffer.p2Alt2(message.ySpeed)
         buffer.pCombinedId(message.combinedId)
-        buffer.p2Alt1(message.xSpeed)
+        buffer.p2Alt1(message.ySpeed)
+        buffer.p2Alt2(message.xSpeed)
     }
 }
