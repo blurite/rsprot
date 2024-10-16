@@ -16,7 +16,7 @@ import kotlin.jvm.Throws
  * @property colours the colours the player can customize
  */
 @Suppress("MemberVisibilityCanBePrivate")
-public class UpdatePlayerModelOld private constructor(
+public class UpdatePlayerModelV1 private constructor(
     private val _bodyType: UByte,
     private val identKits: ByteArray,
     private val colours: ByteArray,
@@ -77,7 +77,7 @@ public class UpdatePlayerModelOld private constructor(
         if (this === other) return true
         if (javaClass != other?.javaClass) return false
 
-        other as UpdatePlayerModelOld
+        other as UpdatePlayerModelV1
 
         if (_bodyType != other._bodyType) return false
         if (!identKits.contentEquals(other.identKits)) return false
@@ -94,7 +94,7 @@ public class UpdatePlayerModelOld private constructor(
     }
 
     override fun toString(): String =
-        "UpdatePlayerModelOld(" +
+        "UpdatePlayerModelV1(" +
             "bodyType=$bodyType, " +
             "identKits=${identKits.contentToString()}, " +
             "colours=${colours.contentToString()}" +
