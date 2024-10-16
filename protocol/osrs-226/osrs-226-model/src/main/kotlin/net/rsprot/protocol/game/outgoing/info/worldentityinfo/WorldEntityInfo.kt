@@ -352,7 +352,7 @@ public class WorldEntityInfo internal constructor(
             } else {
                 val worldEntity = checkNotNull(avatarRepository.getOrNull(currentWorld))
                 // Perhaps center coord instead?
-                worldEntity.currentCoord
+                worldEntity.currentCoordGrid
             }
         val startX = ((centerX - renderDistance) shr 3).coerceAtLeast(0)
         val startZ = ((centerZ - renderDistance) shr 3).coerceAtLeast(0)
@@ -384,12 +384,15 @@ public class WorldEntityInfo internal constructor(
                     buffer.p2(avatar.index)
                     buffer.p1(avatar.sizeX)
                     buffer.p1(avatar.sizeZ)
-                    val buildAreaCoord = buildArea.localize(avatar.currentCoord)
-                    buffer.p1(buildAreaCoord.xInBuildArea)
-                    buffer.p1(buildAreaCoord.zInBuildArea)
-                    buffer.p2(avatar.angle)
-                    // The zero is a currently unassigned property on all clients
-                    buffer.p2(0)
+                    buffer.p1(avatar.level)
+                    val fineXOffset = buildArea.zoneX shl 10
+                    val fineZOffset = buildArea.zoneZ shl 10
+                    buffer.encodeAngledCoordFine(
+                        avatar.currentCoordFine.x - fineXOffset,
+                        avatar.currentCoordFine.y,
+                        avatar.currentCoordFine.z - fineZOffset,
+                        avatar.angle,
+                    )
                 }
             }
         }
@@ -423,15 +426,16 @@ public class WorldEntityInfo internal constructor(
         if (avatar !in buildArea) {
             return false
         }
+        val avatarCoordGrid = avatar.currentCoordGrid
         // Potentially make it be based on center coord?
         // Not sure how nice it looks with just the south-west tile checks
-        return avatar.currentCoord.inDistance(
+        return avatarCoordGrid.inDistance(
             this.currentCoord,
             renderDistance,
         ) ||
             (
                 renderCoord != CoordGrid.INVALID &&
-                    avatar.currentCoord.inDistance(
+                    avatarCoordGrid.inDistance(
                         this.renderCoord,
                         renderDistance,
                     )
