@@ -13,8 +13,8 @@ import net.rsprot.protocol.game.outgoing.codec.camera.CamRotateByEncoder
 import net.rsprot.protocol.game.outgoing.codec.camera.CamRotateToEncoder
 import net.rsprot.protocol.game.outgoing.codec.camera.CamShakeEncoder
 import net.rsprot.protocol.game.outgoing.codec.camera.CamSmoothResetEncoder
-import net.rsprot.protocol.game.outgoing.codec.camera.CamTargetEncoder
-import net.rsprot.protocol.game.outgoing.codec.camera.CamTargetOldEncoder
+import net.rsprot.protocol.game.outgoing.codec.camera.CamTargetV1Encoder
+import net.rsprot.protocol.game.outgoing.codec.camera.CamTargetV2Encoder
 import net.rsprot.protocol.game.outgoing.codec.camera.OculusSyncEncoder
 import net.rsprot.protocol.game.outgoing.codec.clan.ClanChannelDeltaEncoder
 import net.rsprot.protocol.game.outgoing.codec.clan.ClanChannelFullEncoder
@@ -86,12 +86,12 @@ import net.rsprot.protocol.game.outgoing.codec.misc.player.SetPlayerOpEncoder
 import net.rsprot.protocol.game.outgoing.codec.misc.player.TriggerOnDialogAbortEncoder
 import net.rsprot.protocol.game.outgoing.codec.misc.player.UpdateRunEnergyEncoder
 import net.rsprot.protocol.game.outgoing.codec.misc.player.UpdateRunWeightEncoder
-import net.rsprot.protocol.game.outgoing.codec.misc.player.UpdateStatEncoder
-import net.rsprot.protocol.game.outgoing.codec.misc.player.UpdateStatOldEncoder
+import net.rsprot.protocol.game.outgoing.codec.misc.player.UpdateStatV1Encoder
+import net.rsprot.protocol.game.outgoing.codec.misc.player.UpdateStatV2Encoder
 import net.rsprot.protocol.game.outgoing.codec.misc.player.UpdateStockMarketSlotEncoder
 import net.rsprot.protocol.game.outgoing.codec.misc.player.UpdateTradingPostEncoder
-import net.rsprot.protocol.game.outgoing.codec.npcinfo.NpcInfoLargeEncoder
-import net.rsprot.protocol.game.outgoing.codec.npcinfo.NpcInfoSmallEncoder
+import net.rsprot.protocol.game.outgoing.codec.npcinfo.NpcInfoLargeV5Encoder
+import net.rsprot.protocol.game.outgoing.codec.npcinfo.NpcInfoSmallV5Encoder
 import net.rsprot.protocol.game.outgoing.codec.npcinfo.SetNpcUpdateOriginEncoder
 import net.rsprot.protocol.game.outgoing.codec.playerinfo.PlayerInfoEncoder
 import net.rsprot.protocol.game.outgoing.codec.social.FriendListLoadedEncoder
@@ -100,9 +100,9 @@ import net.rsprot.protocol.game.outgoing.codec.social.MessagePrivateEncoder
 import net.rsprot.protocol.game.outgoing.codec.social.UpdateFriendListEncoder
 import net.rsprot.protocol.game.outgoing.codec.social.UpdateIgnoreListEncoder
 import net.rsprot.protocol.game.outgoing.codec.sound.MidiJingleEncoder
-import net.rsprot.protocol.game.outgoing.codec.sound.MidiSongEncoder
-import net.rsprot.protocol.game.outgoing.codec.sound.MidiSongOldEncoder
 import net.rsprot.protocol.game.outgoing.codec.sound.MidiSongStopEncoder
+import net.rsprot.protocol.game.outgoing.codec.sound.MidiSongV1Encoder
+import net.rsprot.protocol.game.outgoing.codec.sound.MidiSongV2Encoder
 import net.rsprot.protocol.game.outgoing.codec.sound.MidiSongWithSecondaryEncoder
 import net.rsprot.protocol.game.outgoing.codec.sound.MidiSwapEncoder
 import net.rsprot.protocol.game.outgoing.codec.sound.SynthSoundEncoder
@@ -113,14 +113,14 @@ import net.rsprot.protocol.game.outgoing.codec.specific.NpcHeadIconSpecificEncod
 import net.rsprot.protocol.game.outgoing.codec.specific.NpcSpotAnimSpecificEncoder
 import net.rsprot.protocol.game.outgoing.codec.specific.PlayerAnimSpecificEncoder
 import net.rsprot.protocol.game.outgoing.codec.specific.PlayerSpotAnimSpecificEncoder
-import net.rsprot.protocol.game.outgoing.codec.specific.ProjAnimSpecificEncoder
+import net.rsprot.protocol.game.outgoing.codec.specific.ProjAnimSpecificV3Encoder
 import net.rsprot.protocol.game.outgoing.codec.varp.VarpLargeEncoder
 import net.rsprot.protocol.game.outgoing.codec.varp.VarpResetEncoder
 import net.rsprot.protocol.game.outgoing.codec.varp.VarpSmallEncoder
 import net.rsprot.protocol.game.outgoing.codec.varp.VarpSyncEncoder
 import net.rsprot.protocol.game.outgoing.codec.worldentity.ClearEntitiesEncoder
 import net.rsprot.protocol.game.outgoing.codec.worldentity.SetActiveWorldEncoder
-import net.rsprot.protocol.game.outgoing.codec.worldentity.WorldEntityInfoEncoder
+import net.rsprot.protocol.game.outgoing.codec.worldentity.WorldEntityInfoV3Encoder
 import net.rsprot.protocol.game.outgoing.codec.zone.header.DesktopUpdateZonePartialEnclosedEncoder
 import net.rsprot.protocol.game.outgoing.codec.zone.header.UpdateZoneFullFollowsEncoder
 import net.rsprot.protocol.game.outgoing.codec.zone.header.UpdateZonePartialFollowsEncoder
@@ -173,11 +173,11 @@ public object DesktopGameMessageEncoderRepository {
                 bind(IfSetPlayerModelObjEncoder())
                 bind(IfSetPlayerModelSelfEncoder())
 
-                bind(MidiSongEncoder())
+                bind(MidiSongV2Encoder())
                 bind(MidiSongWithSecondaryEncoder())
                 bind(MidiSwapEncoder())
                 bind(MidiSongStopEncoder())
-                bind(MidiSongOldEncoder())
+                bind(MidiSongV1Encoder())
                 bind(MidiJingleEncoder())
                 bind(SynthSoundEncoder())
 
@@ -197,7 +197,7 @@ public object DesktopGameMessageEncoderRepository {
                 bind(MapProjAnimEncoder())
                 bind(SoundAreaEncoder())
 
-                bind(ProjAnimSpecificEncoder())
+                bind(ProjAnimSpecificV3Encoder())
                 bind(MapAnimSpecificEncoder())
                 bind(LocAnimSpecificEncoder())
                 bind(NpcHeadIconSpecificEncoder())
@@ -207,13 +207,13 @@ public object DesktopGameMessageEncoderRepository {
                 bind(PlayerSpotAnimSpecificEncoder())
 
                 bind(PlayerInfoEncoder())
-                bind(NpcInfoSmallEncoder())
-                bind(NpcInfoLargeEncoder())
+                bind(NpcInfoSmallV5Encoder())
+                bind(NpcInfoLargeV5Encoder())
                 bind(SetNpcUpdateOriginEncoder())
 
                 bind(ClearEntitiesEncoder())
                 bind(SetActiveWorldEncoder())
-                bind(WorldEntityInfoEncoder())
+                bind(WorldEntityInfoV3Encoder())
 
                 bindWithAlts(RebuildNormalEncoder(), RebuildLogin::class.java, RebuildNormal::class.java)
                 bind(RebuildRegionEncoder())
@@ -235,8 +235,8 @@ public object DesktopGameMessageEncoderRepository {
                 bind(CamRotateByEncoder())
                 bind(CamRotateToEncoder())
                 bind(CamModeEncoder())
-                bind(CamTargetEncoder())
-                bind(CamTargetOldEncoder())
+                bind(CamTargetV2Encoder())
+                bind(CamTargetV1Encoder())
                 bind(OculusSyncEncoder())
 
                 bind(UpdateInvFullEncoder())
@@ -272,8 +272,8 @@ public object DesktopGameMessageEncoderRepository {
                 bind(UpdateRunEnergyEncoder())
                 bind(SetMapFlagEncoder())
                 bind(SetPlayerOpEncoder())
-                bind(UpdateStatEncoder())
-                bind(UpdateStatOldEncoder())
+                bind(UpdateStatV2Encoder())
+                bind(UpdateStatV1Encoder())
 
                 bind(RunClientScriptEncoder())
                 bind(TriggerOnDialogAbortEncoder())

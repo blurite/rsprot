@@ -17,7 +17,7 @@ import net.rsprot.protocol.message.OutgoingGameMessage
  * The default value for this, based on the old midi song packet is 0.
  */
 @Suppress("DuplicatedCode")
-public class MidiSong private constructor(
+public class MidiSongV2 private constructor(
     private val _id: UShort,
     private val _fadeOutDelay: UShort,
     private val _fadeOutSpeed: UShort,
@@ -55,7 +55,7 @@ public class MidiSong private constructor(
         if (this === other) return true
         if (javaClass != other?.javaClass) return false
 
-        other as MidiSong
+        other as MidiSongV2
 
         if (_id != other._id) return false
         if (_fadeOutDelay != other._fadeOutDelay) return false
@@ -76,7 +76,7 @@ public class MidiSong private constructor(
     }
 
     override fun toString(): String =
-        "MidiSong(" +
+        "MidiSongV2(" +
             "id=$id, " +
             "fadeOutDelay=$fadeOutDelay, " +
             "fadeOutSpeed=$fadeOutSpeed, " +

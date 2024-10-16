@@ -5,11 +5,11 @@ import net.rsprot.protocol.game.outgoing.GameServerProtCategory
 import net.rsprot.protocol.message.OutgoingGameMessage
 
 /**
- * Midi song old packet is used to play a midi song, in the old format.
- * This is equal to playing [MidiSong] with the arguments of `id, 0, 60, 60, 0`.
+ * Midi song V1 packet is used to play a midi song, in the old format.
+ * This is equal to playing [MidiSongV2] with the arguments of `id, 0, 60, 60, 0`.
  * @property id the id of the song to play
  */
-public class MidiSongOld(
+public class MidiSongV1(
     public val id: Int,
 ) : OutgoingGameMessage {
     override val category: ServerProtCategory
@@ -19,12 +19,12 @@ public class MidiSongOld(
         if (this === other) return true
         if (javaClass != other?.javaClass) return false
 
-        other as MidiSongOld
+        other as MidiSongV1
 
         return id == other.id
     }
 
     override fun hashCode(): Int = id
 
-    override fun toString(): String = "MidiSongOld(id=$id)"
+    override fun toString(): String = "MidiSongV1(id=$id)"
 }

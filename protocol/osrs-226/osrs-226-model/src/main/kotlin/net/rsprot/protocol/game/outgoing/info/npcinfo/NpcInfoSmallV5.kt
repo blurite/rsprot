@@ -10,7 +10,7 @@ import net.rsprot.protocol.message.OutgoingGameMessage
 /**
  * A small npc info wrapper packet, used to wrap the pre-built buffer from the npc info class.
  */
-public class NpcInfoSmall(
+public class NpcInfoSmallV5(
     buffer: ByteBuf,
 ) : DefaultByteBufHolder(buffer),
     OutgoingGameMessage,

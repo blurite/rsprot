@@ -4,16 +4,16 @@ import net.rsprot.buffer.JagByteBuf
 import net.rsprot.crypto.cipher.StreamCipher
 import net.rsprot.protocol.ServerProt
 import net.rsprot.protocol.game.outgoing.prot.GameServerProt
-import net.rsprot.protocol.game.outgoing.sound.MidiSong
+import net.rsprot.protocol.game.outgoing.sound.MidiSongV2
 import net.rsprot.protocol.message.codec.MessageEncoder
 
-public class MidiSongEncoder : MessageEncoder<MidiSong> {
-    override val prot: ServerProt = GameServerProt.MIDI_SONG
+public class MidiSongV2Encoder : MessageEncoder<MidiSongV2> {
+    override val prot: ServerProt = GameServerProt.MIDI_SONG_V2
 
     override fun encode(
         streamCipher: StreamCipher,
         buffer: JagByteBuf,
-        message: MidiSong,
+        message: MidiSongV2,
     ) {
         // The order in the client remains the same for the function call at the end
         // of the packet, as:

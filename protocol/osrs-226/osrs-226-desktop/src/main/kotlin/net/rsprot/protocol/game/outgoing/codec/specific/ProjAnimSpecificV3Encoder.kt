@@ -4,16 +4,16 @@ import net.rsprot.buffer.JagByteBuf
 import net.rsprot.crypto.cipher.StreamCipher
 import net.rsprot.protocol.ServerProt
 import net.rsprot.protocol.game.outgoing.prot.GameServerProt
-import net.rsprot.protocol.game.outgoing.specific.ProjAnimSpecific
+import net.rsprot.protocol.game.outgoing.specific.ProjAnimSpecificV3
 import net.rsprot.protocol.message.codec.MessageEncoder
 
-public class ProjAnimSpecificEncoder : MessageEncoder<ProjAnimSpecific> {
-    override val prot: ServerProt = GameServerProt.PROJANIM_SPECIFIC
+public class ProjAnimSpecificV3Encoder : MessageEncoder<ProjAnimSpecificV3> {
+    override val prot: ServerProt = GameServerProt.PROJANIM_SPECIFIC_V3
 
     override fun encode(
         streamCipher: StreamCipher,
         buffer: JagByteBuf,
-        message: ProjAnimSpecific,
+        message: ProjAnimSpecificV3,
     ) {
         buffer.p1Alt1(message.angle)
         buffer.p1Alt1(message.deltaZ)

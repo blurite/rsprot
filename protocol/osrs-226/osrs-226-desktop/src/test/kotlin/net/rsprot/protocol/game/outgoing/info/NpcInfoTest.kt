@@ -17,9 +17,9 @@ import net.rsprot.protocol.game.outgoing.info.npcinfo.NpcAvatar
 import net.rsprot.protocol.game.outgoing.info.npcinfo.NpcAvatarExceptionHandler
 import net.rsprot.protocol.game.outgoing.info.npcinfo.NpcAvatarFactory
 import net.rsprot.protocol.game.outgoing.info.npcinfo.NpcInfo
-import net.rsprot.protocol.game.outgoing.info.npcinfo.NpcInfoLarge
+import net.rsprot.protocol.game.outgoing.info.npcinfo.NpcInfoLargeV5
 import net.rsprot.protocol.game.outgoing.info.npcinfo.NpcInfoProtocol
-import net.rsprot.protocol.game.outgoing.info.npcinfo.NpcInfoSmall
+import net.rsprot.protocol.game.outgoing.info.npcinfo.NpcInfoSmallV5
 import net.rsprot.protocol.game.outgoing.info.util.BuildArea
 import net.rsprot.protocol.message.ConsumableMessage
 import org.junit.jupiter.api.BeforeEach
@@ -94,8 +94,8 @@ class NpcInfoTest {
             packet.consume()
         }
         return when (packet) {
-            is NpcInfoSmall -> packet.content()
-            is NpcInfoLarge -> packet.content()
+            is NpcInfoSmallV5 -> packet.content()
+            is NpcInfoLargeV5 -> packet.content()
             else -> throw IllegalStateException("Unknown npc info packet!")
         }
     }

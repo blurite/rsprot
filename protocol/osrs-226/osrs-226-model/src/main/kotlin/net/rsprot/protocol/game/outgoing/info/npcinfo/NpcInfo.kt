@@ -538,9 +538,9 @@ public class NpcInfo internal constructor(
             }
             details.previousPacket =
                 if (this.viewDistance > MAX_SMALL_PACKET_DISTANCE) {
-                    NpcInfoLarge(backingBuffer(details.worldId))
+                    NpcInfoLargeV5(backingBuffer(details.worldId))
                 } else {
-                    NpcInfoSmall(backingBuffer(details.worldId))
+                    NpcInfoSmallV5(backingBuffer(details.worldId))
                 }
         }
     }

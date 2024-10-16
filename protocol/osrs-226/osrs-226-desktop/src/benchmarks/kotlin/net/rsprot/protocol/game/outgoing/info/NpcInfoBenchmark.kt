@@ -16,9 +16,9 @@ import net.rsprot.protocol.game.outgoing.info.npcinfo.NpcAvatar
 import net.rsprot.protocol.game.outgoing.info.npcinfo.NpcAvatarExceptionHandler
 import net.rsprot.protocol.game.outgoing.info.npcinfo.NpcAvatarFactory
 import net.rsprot.protocol.game.outgoing.info.npcinfo.NpcInfo
-import net.rsprot.protocol.game.outgoing.info.npcinfo.NpcInfoLarge
+import net.rsprot.protocol.game.outgoing.info.npcinfo.NpcInfoLargeV5
 import net.rsprot.protocol.game.outgoing.info.npcinfo.NpcInfoProtocol
-import net.rsprot.protocol.game.outgoing.info.npcinfo.NpcInfoSmall
+import net.rsprot.protocol.game.outgoing.info.npcinfo.NpcInfoSmallV5
 import net.rsprot.protocol.game.outgoing.info.util.BuildArea
 import net.rsprot.protocol.game.outgoing.info.worker.DefaultProtocolWorker
 import net.rsprot.protocol.message.ConsumableMessage
@@ -131,8 +131,8 @@ class NpcInfoBenchmark {
                 packet.consume()
             }
             when (packet) {
-                is NpcInfoSmall -> packet.release()
-                is NpcInfoLarge -> packet.release()
+                is NpcInfoSmallV5 -> packet.release()
+                is NpcInfoLargeV5 -> packet.release()
                 else -> throw IllegalStateException("Unknown packet type: $packet")
             }
         }

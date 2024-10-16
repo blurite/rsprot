@@ -11,7 +11,7 @@ import net.rsprot.protocol.message.OutgoingGameMessage
  * World entity info packet is used to update the coordinate, angle and move speed of all
  * the world entities near a player.
  */
-public class WorldEntityInfoPacket(
+public class WorldEntityInfoV3Packet(
     buffer: ByteBuf,
 ) : DefaultByteBufHolder(buffer),
     OutgoingGameMessage,
