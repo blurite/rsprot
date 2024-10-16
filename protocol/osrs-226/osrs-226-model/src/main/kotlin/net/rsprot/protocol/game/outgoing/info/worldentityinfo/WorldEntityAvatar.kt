@@ -60,6 +60,7 @@ public class WorldEntityAvatar(
     internal fun precompute() {
         if (this.currentCoordFine == this.lastCoordFine && this.angle == this.lastAngle) {
             val buffer = allocator.buffer(1, 1)
+            this.highResolutionBuffer = buffer
             // Opcode 1 indicates no change
             buffer.p1(1)
             return
