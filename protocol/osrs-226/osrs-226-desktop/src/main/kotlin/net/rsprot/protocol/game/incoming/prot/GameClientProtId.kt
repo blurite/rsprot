@@ -23,7 +23,7 @@ internal object GameClientProtId {
     const val FRIENDLIST_DEL = 19
     const val NO_TIMEOUT = 20
     const val OPLOCU = 21
-    const val SET_TILE_INTERACTION_MODE = 22
+    const val SET_HEADING = 22
     const val IF_BUTTON8 = 23
     const val WINDOW_STATUS = 24
     const val MOVE_GAMECLICK = 25

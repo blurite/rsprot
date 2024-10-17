@@ -53,6 +53,7 @@ import net.rsprot.protocol.game.incoming.codec.misc.user.MoveMinimapClickDecoder
 import net.rsprot.protocol.game.incoming.codec.misc.user.OculusLeaveDecoder
 import net.rsprot.protocol.game.incoming.codec.misc.user.SendSnapshotDecoder
 import net.rsprot.protocol.game.incoming.codec.misc.user.SetChatFilterSettingsDecoder
+import net.rsprot.protocol.game.incoming.codec.misc.user.SetHeadingDecoder
 import net.rsprot.protocol.game.incoming.codec.misc.user.TeleportDecoder
 import net.rsprot.protocol.game.incoming.codec.misc.user.UpdatePlayerModelDecoderV1
 import net.rsprot.protocol.game.incoming.codec.npcs.OpNpc1Decoder
@@ -184,6 +185,7 @@ public object DesktopGameMessageDecoderRepository {
                 bind(MoveMinimapClickDecoder())
                 bind(ClientCheatDecoder())
                 bind(SetChatFilterSettingsDecoder())
+                bind(SetHeadingDecoder())
                 bind(ClickWorldMapDecoder())
                 bind(OculusLeaveDecoder())
                 bind(CloseModalDecoder())
