@@ -57,18 +57,18 @@ class NpcInfoClient {
             val index = updatedNpcSlot[i]
             val npc = checkNotNull(cachedNpcs[index])
             var flag = buffer.g1()
-            if ((flag and 0x20) != 0) {
+            if ((flag and 0x80) != 0) {
                 val extra: Int = buffer.g1()
                 flag += extra shl 8
             }
-            if ((flag and 0x200) != 0) {
+            if ((flag and 0x2000) != 0) {
                 val extra: Int = buffer.g1()
                 flag += extra shl 16
             }
-            check(flag and (0x20 or 0x200 or 0x1).inv() == 0) {
+            check(flag and (0x80 or 0x2000 or 0x20).inv() == 0) {
                 "Extended info other than 'say' included!"
             }
-            if (flag and 0x1 != 0) {
+            if (flag and 0x20 != 0) {
                 val text = buffer.gjstr()
                 npc.overheadChat = text
             }
@@ -151,27 +151,27 @@ class NpcInfoClient {
                     npcSlot[npcSlotCount++] = index
                     npc.lastUpdateCycle = cycle
 
-                    val extendedInfo = buffer.gBits(1)
-                    if (extendedInfo == 1) {
-                        updatedNpcSlot[updatedNpcSlotCount++] = index
-                    }
-                    val jump = buffer.gBits(1)
+                    val deltaX = decodeDelta(large, buffer)
                     val deltaZ = decodeDelta(large, buffer)
-                    val hasSpawnCycle = buffer.gBits(1) == 1
-                    if (hasSpawnCycle) {
-                        npc.spawnCycle = buffer.gBits(32)
-                    }
-                    npc.id = buffer.gBits(14)
                     val angle = NPC_TURN_ANGLES[buffer.gBits(3)]
                     if (isNew) {
                         npc.turnAngle = angle
                         npc.angle = angle
                     }
-                    val deltaX = decodeDelta(large, buffer)
                     // reset bas
                     if (npc.turnSpeed == 0) {
                         npc.angle = 0
                     }
+                    val hasSpawnCycle = buffer.gBits(1) == 1
+                    if (hasSpawnCycle) {
+                        npc.spawnCycle = buffer.gBits(32)
+                    }
+                    val extendedInfo = buffer.gBits(1)
+                    if (extendedInfo == 1) {
+                        updatedNpcSlot[updatedNpcSlotCount++] = index
+                    }
+                    npc.id = buffer.gBits(14)
+                    val jump = buffer.gBits(1)
                     npc.addRouteWaypoint(
                         localPlayerCoord,
                         deltaX,
@@ -196,9 +196,9 @@ class NpcInfoClient {
             }
             delta
         } else {
-            var delta = buffer.gBits(5)
-            if (delta > 15) {
-                delta -= 32
+            var delta = buffer.gBits(6)
+            if (delta > 31) {
+                delta -= 64
             }
             delta
         }
