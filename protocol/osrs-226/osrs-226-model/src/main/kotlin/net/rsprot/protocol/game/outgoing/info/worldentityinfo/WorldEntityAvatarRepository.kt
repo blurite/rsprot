@@ -41,7 +41,9 @@ public class WorldEntityAvatarRepository internal constructor(
      * @param sizeZ the height of the world entity in zones (8 tiles/zone)
      * @param fineX the absolute fine x coordinate of the avatar. This can be calculated
      * by doing x * 128 with absolute coord grid values.
-     * @param fineY the fine y coordinate (height) of the avatar.
+     * @param fineY the fine y coordinate (height) of the avatar. Note that as of revision 226,
+     * this property is overwritten by the ground height and has no impact on the perceived
+     * height of the world entity.
      * @param fineZ the absolute fine x coordinate of the avatar. This can be calculated
      * by doing z * 128 with absolute coord grid values.
      * @param level the level of the world entity.

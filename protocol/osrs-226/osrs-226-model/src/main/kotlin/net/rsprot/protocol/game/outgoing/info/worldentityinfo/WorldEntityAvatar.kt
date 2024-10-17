@@ -91,7 +91,8 @@ public class WorldEntityAvatar(
      * @param fineX the absolute fine x coordinate of this world entity. This coordinate is effectively
      * absolute coordinate * 128.
      * @param fineY the fine y coordinate (or the height) of this world entity. This value
-     * should be in range of 0..1023
+     * should be in range of 0..1023. Note that as of revision 226, this property is overwritten by the
+     * ground height and has no impact on the perceived height of the world entity.
      * @param fineZ the absolute fine z coordinate of this world entity. This coordinate is effectively
      * absolute coordinate * 128.
      * @param teleport whether to jump the worldentity to the desired coordinate.
