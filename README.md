@@ -1,6 +1,6 @@
 # RSProt
 
-[![GitHub Actions][actions-badge]][actions] [![MIT license][mit-badge]][mit] [![OldSchool - 225 (Alpha)](https://img.shields.io/badge/OldSchool-225_(Alpha)-9a1abd)](https://github.com/blurite/rsprot/tree/master/protocol/osrs-225/osrs-225-api/src/main/kotlin/net/rsprot/protocol/api) [![OldSchool - 224 (Alpha)](https://img.shields.io/badge/OldSchool-224_(Alpha)-9a1abd)](https://github.com/blurite/rsprot/tree/master/protocol/osrs-224/osrs-224-api/src/main/kotlin/net/rsprot/protocol/api) [![OldSchool - 223 (Alpha)](https://img.shields.io/badge/OldSchool-223_(Alpha)-9a1abd)](https://github.com/blurite/rsprot/tree/master/protocol/osrs-223/osrs-223-api/src/main/kotlin/net/rsprot/protocol/api) [![OldSchool - 222 (Alpha)](https://img.shields.io/badge/OldSchool-222_(Alpha)-9a1abd)](https://github.com/blurite/rsprot/tree/master/protocol/osrs-222/osrs-222-api/src/main/kotlin/net/rsprot/protocol/api) [![OldSchool - 221 (Alpha)](https://img.shields.io/badge/OldSchool-221_(Alpha)-9a1abd)](https://github.com/blurite/rsprot/tree/master/protocol/osrs-221-api/src/main/kotlin/net/rsprot/protocol/api)
+[![GitHub Actions][actions-badge]][actions] [![MIT license][mit-badge]][mit] [![OldSchool - 226 (Alpha)](https://img.shields.io/badge/OldSchool-226_(Alpha)-9a1abd)](https://github.com/blurite/rsprot/tree/master/protocol/osrs-226/osrs-226-api/src/main/kotlin/net/rsprot/protocol/api) [![OldSchool - 225 (Alpha)](https://img.shields.io/badge/OldSchool-225_(Alpha)-9a1abd)](https://github.com/blurite/rsprot/tree/master/protocol/osrs-225/osrs-225-api/src/main/kotlin/net/rsprot/protocol/api) [![OldSchool - 224 (Alpha)](https://img.shields.io/badge/OldSchool-224_(Alpha)-9a1abd)](https://github.com/blurite/rsprot/tree/master/protocol/osrs-224/osrs-224-api/src/main/kotlin/net/rsprot/protocol/api) [![OldSchool - 223 (Alpha)](https://img.shields.io/badge/OldSchool-223_(Alpha)-9a1abd)](https://github.com/blurite/rsprot/tree/master/protocol/osrs-223/osrs-223-api/src/main/kotlin/net/rsprot/protocol/api) [![OldSchool - 222 (Alpha)](https://img.shields.io/badge/OldSchool-222_(Alpha)-9a1abd)](https://github.com/blurite/rsprot/tree/master/protocol/osrs-222/osrs-222-api/src/main/kotlin/net/rsprot/protocol/api) [![OldSchool - 221 (Alpha)](https://img.shields.io/badge/OldSchool-221_(Alpha)-9a1abd)](https://github.com/blurite/rsprot/tree/master/protocol/osrs-221-api/src/main/kotlin/net/rsprot/protocol/api)
 
 ## Status
 > [!NOTE]
@@ -15,7 +15,7 @@ In order to add it to your server, add the below line under dependencies
 in your build.gradle.kts.
 
 ```kts
-implementation("net.rsprot:osrs-225-api:1.0.0-ALPHA-20241003")
+implementation("net.rsprot:osrs-226-api:1.0.0-ALPHA-20241016")
 ```
 
 An in-depth tutorial on how to implement it will be added into this read-me
@@ -31,12 +31,12 @@ other revisions are welcome, but will not be provided by default.
 - Java 11
 
 ## Supported Versions
-This library currently supports revision 221, 222, 223, 224 and 225 OldSchool desktop clients.
+This library currently supports revision 221, 222, 223, 224, 225 and 226 OldSchool desktop clients.
 
 ## Quick Guide
 This section covers a quick guide for how to use the protocol after implementing
 the base API. It is not a guide for the base API itself, that will come in the
-future. This specific quick guide refers to revision 225.
+future. This specific quick guide refers to revision 226.
 
 #### Player Initialization
 When a player logs in, a new protocol instance must be allocated for
@@ -233,6 +233,37 @@ protocol. This can be done via:
 `service.worldEntityAvatarFactory.release(avatar)`
 
 ## Changes
+
+### Revision 226
+Revision 226 was a relatively large protocol change, adding many new
+server prot variants, and one extra client prot. In this revision, we also migrated
+from the `_OLD` naming scheme to `_V*` versioning scheme, to better reflect
+on what Jagex uses.
+
+#### Additions
+
+##### Client Prots
+1. SET_HEADING: used to inform the server of the direction in
+which a world entity is supposed to move, if in the heading interaction mode.
+
+#### Server Prots
+1. SET_INTERACTION_MODE: Used to change the tile and entity interaction modes
+in the client, which allows one to disable all clicks, allow walking or
+selecting a ship's heading. Additionally, allows one to disable interactions
+with any entities (or go in examine-only mode).
+2. RESET_INTERACTION_MODE: Undoes the effects of SET_INTERACTION_MODE.
+3. WORLDENTITY_INFO_V3: A new variant of worldentity info which reads the coord
+as coord fine, rather than coord grid. This allows server to define sub-tile
+precision of where a worldentity is supposed to be or go to.
+4. NPC_INFO_SMALL_V5: A new variant which uses 6 bits for small NPC info,
+rather than the previous 5 when adding new NPCs to high resolution view.
+This was intended to increase the render distance for the wilderness world
+boss that was supposed to come. A new LARGE variant of this packet exists
+also, but that is unchanged compared to the V4 variant.
+5. OBJ_CUSTOMISE zone prot, allowing the server to change the colours,
+textures and model of an item on the ground.
+6. OBJ_UNCUSTOMISE zone prot, resetting any customisations done to an item
+on the ground.
 
 ### Revision 225
 Revision 225 brought a small-scale refactoring to the player info packet,
