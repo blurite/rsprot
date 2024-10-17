@@ -42,7 +42,7 @@ public class ObjUncustomise private constructor(
         get() = coordInZone.packed.toInt()
     override val category: ServerProtCategory
         get() = GameServerProtCategory.HIGH_PRIORITY_PROT
-    override val protId: Int = OldSchoolZoneProt.OBJ_CUSTOMISE
+    override val protId: Int = OldSchoolZoneProt.OBJ_UNCUSTOMISE
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
