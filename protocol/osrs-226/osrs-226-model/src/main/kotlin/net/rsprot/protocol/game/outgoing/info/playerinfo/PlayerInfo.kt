@@ -663,6 +663,7 @@ public class PlayerInfo internal constructor(
             val index = extendedInfoIndices[i].toInt()
             val other = checkNotNull(protocol.getPlayerInfo(index))
             val observerFlag = observerExtendedInfoFlags.getFlag(index)
+            val isHighResolutionTracked = isHighResolutionExtendedInfoTracked(index)
             val tracked =
                 other.avatar.extendedInfo.pExtendedInfo(
                     oldSchoolClientType,
@@ -670,8 +671,9 @@ public class PlayerInfo internal constructor(
                     observerFlag,
                     avatar.extendedInfo,
                     extendedInfoCount - i,
+                    !isHighResolutionTracked,
                 )
-            if (tracked) {
+            if (!isHighResolutionTracked && tracked) {
                 setHighResolutionExtendedInfoTracked(index)
             }
         }

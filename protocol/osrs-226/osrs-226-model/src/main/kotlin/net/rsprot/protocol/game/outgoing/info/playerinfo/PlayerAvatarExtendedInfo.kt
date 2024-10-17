@@ -1680,8 +1680,15 @@ public class PlayerAvatarExtendedInfo(
         observerFlag: Int,
         observer: PlayerAvatarExtendedInfo,
         remainingAvatars: Int,
+        newlyAdded: Boolean,
     ): Boolean {
-        val flag = this.flags or observerFlag
+        var flag = this.flags or observerFlag
+        // If the player was just added this cycle, exclude the SAY extended info
+        // as the client will crash in revision 226 - this is because say comes before
+        // Appearance, and it assumes the player's name is not null, which it will be if new
+        if (newlyAdded) {
+            flag = flag and SAY.inv()
+        }
         if (!filter.accept(
                 buffer.writableBytes(),
                 flag,
