@@ -77,6 +77,8 @@ import net.rsprot.protocol.game.outgoing.codec.misc.client.SiteSettingsEncoder
 import net.rsprot.protocol.game.outgoing.codec.misc.client.UpdateRebootTimerEncoder
 import net.rsprot.protocol.game.outgoing.codec.misc.client.UpdateUid192Encoder
 import net.rsprot.protocol.game.outgoing.codec.misc.client.UrlOpenEncoder
+import net.rsprot.protocol.game.outgoing.codec.misc.client.WorldEntityResetInteractionModeEncoder
+import net.rsprot.protocol.game.outgoing.codec.misc.client.WorldEntitySetInteractionModeEncoder
 import net.rsprot.protocol.game.outgoing.codec.misc.player.ChatFilterSettingsEncoder
 import net.rsprot.protocol.game.outgoing.codec.misc.player.ChatFilterSettingsPrivateChatEncoder
 import net.rsprot.protocol.game.outgoing.codec.misc.player.MessageGameEncoder
@@ -296,6 +298,8 @@ public object DesktopGameMessageEncoderRepository {
                 bind(HideNpcOpsEncoder())
                 bind(HideObjOpsEncoder())
                 bind(HideLocOpsEncoder())
+                bind(WorldEntitySetInteractionModeEncoder())
+                bind(WorldEntityResetInteractionModeEncoder())
 
                 bind(UrlOpenEncoder())
                 bind(SiteSettingsEncoder())
