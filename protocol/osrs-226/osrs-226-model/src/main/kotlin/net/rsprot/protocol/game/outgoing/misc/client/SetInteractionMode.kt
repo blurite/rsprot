@@ -75,7 +75,7 @@ public class SetInteractionMode private constructor(
     }
 
     override fun toString(): String {
-        return "WorldEntitySetInteractionMode(" +
+        return "SetInteractionMode(" +
             "worldId=$worldId, " +
             "tileInteractionMode=$tileInteractionMode, " +
             "entityInteractionMode=$entityInteractionMode" +
