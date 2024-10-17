@@ -37,6 +37,16 @@ public class WorldEntitySetInteractionMode private constructor(
     private val _tileInteractionMode: UByte,
     private val _entityInteractionMode: UByte,
 ) : OutgoingGameMessage {
+    public constructor(
+        worldId: Int,
+        tileInteractionMode: Int,
+        entityInteractionMode: Int,
+    ) : this(
+        worldId.toShort(),
+        tileInteractionMode.toUByte(),
+        entityInteractionMode.toUByte(),
+    )
+
     public val worldId: Int
         get() = _worldId.toInt()
     public val tileInteractionMode: Int

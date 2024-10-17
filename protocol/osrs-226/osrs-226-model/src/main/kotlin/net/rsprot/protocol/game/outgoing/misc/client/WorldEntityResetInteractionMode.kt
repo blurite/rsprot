@@ -11,6 +11,8 @@ import net.rsprot.protocol.message.OutgoingGameMessage
 public class WorldEntityResetInteractionMode private constructor(
     private val _worldId: Short,
 ) : OutgoingGameMessage {
+    public constructor(worldId: Int) : this(worldId.toShort())
+
     public val worldId: Int
         get() = _worldId.toInt()
     override val category: ServerProtCategory
