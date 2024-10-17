@@ -332,9 +332,6 @@ public class PlayerAvatarExtendedInfo(
             require(delay2 >= 0) {
                 "Second delay cannot be negative: $delay2"
             }
-            require(delay2 > delay1) {
-                "Second delay must be greater than the first: $delay1 > $delay2"
-            }
             require(angle in 0..2047) {
                 "Unexpected angle value: $angle, expected range: 0..2047"
             }
