@@ -8,7 +8,7 @@ import net.rsprot.protocol.message.OutgoingGameMessage
  * Resets the interaction mode for a specific world.
  * @property worldId the id of the world to modify.
  */
-public class WorldEntityResetInteractionMode private constructor(
+public class ResetInteractionMode private constructor(
     private val _worldId: Short,
 ) : OutgoingGameMessage {
     public constructor(worldId: Int) : this(worldId.toShort())
@@ -20,7 +20,7 @@ public class WorldEntityResetInteractionMode private constructor(
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
-        if (other !is WorldEntityResetInteractionMode) return false
+        if (other !is ResetInteractionMode) return false
 
         if (_worldId != other._worldId) return false
 

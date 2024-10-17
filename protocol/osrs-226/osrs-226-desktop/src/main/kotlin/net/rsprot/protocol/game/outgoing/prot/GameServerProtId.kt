@@ -129,7 +129,7 @@ internal object GameServerProtId {
     const val CAM_ROTATEBY = 125
     const val CAM_TARGET_V1 = 126
     const val MESSAGE_PRIVATE = 127
-    const val WORLDENTITY_RESET_INTERACTION_MODE = 128
+    const val RESET_INTERACTION_MODE = 128
     const val SET_NPC_UPDATE_ORIGIN = 129
     const val REBUILD_WORLDENTITY = 130
     const val SET_ACTIVE_WORLD = 131
@@ -138,7 +138,7 @@ internal object GameServerProtId {
     const val WORLDENTITY_INFO_V1 = 134
     const val PROJANIM_SPECIFIC_V3 = 135
     const val UNKNOWN_STRING = 136
-    const val WORLDENTITY_SET_INTERACTION_MODE = 137
+    const val SET_INTERACTION_MODE = 137
     const val HIDELOCOPS = 138
     const val NPC_INFO_SMALL_V5 = 139
     const val WORLDENTITY_INFO_V3 = 140

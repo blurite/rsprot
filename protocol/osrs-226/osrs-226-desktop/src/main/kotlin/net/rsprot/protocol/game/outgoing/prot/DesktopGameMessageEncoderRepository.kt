@@ -70,15 +70,15 @@ import net.rsprot.protocol.game.outgoing.codec.misc.client.HiscoreReplyEncoder
 import net.rsprot.protocol.game.outgoing.codec.misc.client.MinimapToggleEncoder
 import net.rsprot.protocol.game.outgoing.codec.misc.client.ReflectionCheckerEncoder
 import net.rsprot.protocol.game.outgoing.codec.misc.client.ResetAnimsEncoder
+import net.rsprot.protocol.game.outgoing.codec.misc.client.ResetInteractionModeEncoder
 import net.rsprot.protocol.game.outgoing.codec.misc.client.SendPingEncoder
 import net.rsprot.protocol.game.outgoing.codec.misc.client.ServerTickEndEncoder
 import net.rsprot.protocol.game.outgoing.codec.misc.client.SetHeatmapEnabledEncoder
+import net.rsprot.protocol.game.outgoing.codec.misc.client.SetInteractionModeEncoder
 import net.rsprot.protocol.game.outgoing.codec.misc.client.SiteSettingsEncoder
 import net.rsprot.protocol.game.outgoing.codec.misc.client.UpdateRebootTimerEncoder
 import net.rsprot.protocol.game.outgoing.codec.misc.client.UpdateUid192Encoder
 import net.rsprot.protocol.game.outgoing.codec.misc.client.UrlOpenEncoder
-import net.rsprot.protocol.game.outgoing.codec.misc.client.WorldEntityResetInteractionModeEncoder
-import net.rsprot.protocol.game.outgoing.codec.misc.client.WorldEntitySetInteractionModeEncoder
 import net.rsprot.protocol.game.outgoing.codec.misc.player.ChatFilterSettingsEncoder
 import net.rsprot.protocol.game.outgoing.codec.misc.player.ChatFilterSettingsPrivateChatEncoder
 import net.rsprot.protocol.game.outgoing.codec.misc.player.MessageGameEncoder
@@ -298,8 +298,8 @@ public object DesktopGameMessageEncoderRepository {
                 bind(HideNpcOpsEncoder())
                 bind(HideObjOpsEncoder())
                 bind(HideLocOpsEncoder())
-                bind(WorldEntitySetInteractionModeEncoder())
-                bind(WorldEntityResetInteractionModeEncoder())
+                bind(SetInteractionModeEncoder())
+                bind(ResetInteractionModeEncoder())
 
                 bind(UrlOpenEncoder())
                 bind(SiteSettingsEncoder())

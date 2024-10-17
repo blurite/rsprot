@@ -32,7 +32,7 @@ import net.rsprot.protocol.message.OutgoingGameMessage
  * @property tileInteractionMode sets the tile interaction mode. See the table above.
  * @property entityInteractionMode sets the entity interaction mode. See the table above.
  */
-public class WorldEntitySetInteractionMode private constructor(
+public class SetInteractionMode private constructor(
     private val _worldId: Short,
     private val _tileInteractionMode: UByte,
     private val _entityInteractionMode: UByte,
@@ -58,7 +58,7 @@ public class WorldEntitySetInteractionMode private constructor(
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
-        if (other !is WorldEntitySetInteractionMode) return false
+        if (other !is SetInteractionMode) return false
 
         if (_worldId != other._worldId) return false
         if (_tileInteractionMode != other._tileInteractionMode) return false
