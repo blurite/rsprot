@@ -14,9 +14,9 @@ import net.rsprot.protocol.message.codec.outgoing.MessageEncoderRepository
  */
 @OptIn(ExperimentalStdlibApi::class)
 public class MessageEncoderRepositories private constructor(
-    public val loginMessageDecoderRepository: MessageEncoderRepository<ServerProt>,
-    public val js5MessageDecoderRepository: MessageEncoderRepository<ServerProt>,
-    public val gameMessageDecoderRepositories: ClientTypeMap<MessageEncoderRepository<ServerProt>>,
+    public val loginMessageEncoderRepository: MessageEncoderRepository<ServerProt>,
+    public val js5MessageEncoderRepository: MessageEncoderRepository<ServerProt>,
+    public val gameMessageEncoderRepositories: ClientTypeMap<MessageEncoderRepository<ServerProt>>,
 ) {
     public constructor(
         huffmanCodecProvider: HuffmanCodecProvider,

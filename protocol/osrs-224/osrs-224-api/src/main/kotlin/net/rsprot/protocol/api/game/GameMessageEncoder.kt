@@ -15,6 +15,6 @@ public class GameMessageEncoder(
     client: OldSchoolClientType,
 ) : OutgoingMessageEncoder() {
     override val repository: MessageEncoderRepository<*> =
-        networkService.encoderRepositories.gameMessageDecoderRepositories[client]
+        networkService.encoderRepositories.gameMessageEncoderRepositories[client]
     override val validate: Boolean = true
 }

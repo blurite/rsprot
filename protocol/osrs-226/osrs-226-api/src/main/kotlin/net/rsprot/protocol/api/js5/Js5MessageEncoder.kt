@@ -26,7 +26,7 @@ public class Js5MessageEncoder(
 ) : OutgoingMessageEncoder() {
     override val cipher: StreamCipher = NopStreamCipher
     override val repository: MessageEncoderRepository<*> =
-        networkService.encoderRepositories.js5MessageDecoderRepository
+        networkService.encoderRepositories.js5MessageEncoderRepository
     override val validate: Boolean = false
     override val estimator: OutgoingMessageSizeEstimator = networkService.messageSizeEstimator
 

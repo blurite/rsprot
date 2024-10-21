@@ -102,7 +102,7 @@ public class GameLoginResponseHandler<R>(
             val encoder =
                 networkService
                     .encoderRepositories
-                    .loginMessageDecoderRepository
+                    .loginMessageEncoderRepository
                     .getEncoder(response::class.java)
             val buffer = ctx.alloc().buffer(37 + 1).toJagByteBuf()
             buffer.p1(37)

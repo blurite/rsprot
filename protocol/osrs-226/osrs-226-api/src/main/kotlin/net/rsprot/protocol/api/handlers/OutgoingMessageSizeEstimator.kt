@@ -19,14 +19,14 @@ public class OutgoingMessageSizeEstimator(
 ) : MessageSizeEstimator {
     private val supportsMultiplePlatforms =
         repositories
-            .gameMessageDecoderRepositories
+            .gameMessageEncoderRepositories
             .notNullSize > 1
     private val gameEncoder =
         repositories
-            .gameMessageDecoderRepositories[ESTIMATOR_CLIENT_TYPE]
+            .gameMessageEncoderRepositories[ESTIMATOR_CLIENT_TYPE]
     private val loginEncoder =
         repositories
-            .loginMessageDecoderRepository
+            .loginMessageEncoderRepository
 
     private val singleton = OutgoingMessageSizeEstimatorHandle()
 
