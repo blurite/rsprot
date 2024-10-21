@@ -44,8 +44,21 @@ public class ReflectionCheckReply(
             for (check in request.checks) {
                 val opcode = buffer.g1s()
                 if (opcode < 0) {
-                    val exception = getExceptionClass(opcode)
-                    results += ErrorResult(check, exception)
+                    if (opcode <= -10) {
+                        val throwable = getExecutionThrowableClass(opcode)
+                        results +=
+                            ErrorResult(
+                                check,
+                                ErrorResult.ThrowableResultType.ExecutionThrowable(throwable),
+                            )
+                    } else {
+                        val throwable = getConstructionThrowableClass(opcode)
+                        results +=
+                            ErrorResult(
+                                check,
+                                ErrorResult.ThrowableResultType.ConstructionThrowable(throwable),
+                            )
+                    }
                     continue
                 }
                 when (check) {
@@ -53,13 +66,16 @@ public class ReflectionCheckReply(
                         val result = buffer.g4()
                         results += GetFieldValueResult(check, result)
                     }
+
                     is ReflectionChecker.SetFieldValue -> {
                         results += SetFieldValueResult(check)
                     }
+
                     is ReflectionChecker.GetFieldModifiers -> {
                         val modifiers = buffer.g4()
                         results += GetFieldModifiersResult(check, modifiers)
                     }
+
                     is ReflectionChecker.InvokeMethod -> {
                         results +=
                             when (opcode) {
@@ -70,6 +86,7 @@ public class ReflectionCheckReply(
                                 else -> throw IllegalStateException("Unknown opcode for method invocation: $opcode")
                             }
                     }
+
                     is ReflectionChecker.GetMethodModifiers -> {
                         val modifiers = buffer.g4()
                         results += GetMethodModifiersResult(check, modifiers)
@@ -87,11 +104,11 @@ public class ReflectionCheckReply(
     }
 
     /**
-     * Gets the exception class corresponding to each opcode.
+     * Gets the throwable class corresponding to each opcode during the reflection check execution.
      * @param opcode the opcode value
-     * @return the exception class corresponding to that opcode
+     * @return the throwable class corresponding to that opcode
      */
-    private fun getExceptionClass(opcode: Int): Class<*> =
+    private fun getExecutionThrowableClass(opcode: Int): Class<out Throwable> =
         when (opcode) {
             -10 -> ClassNotFoundException::class.java
             -11 -> InvalidClassException::class.java
@@ -105,7 +122,22 @@ public class ReflectionCheckReply(
             -19 -> NullPointerException::class.java
             -20 -> Exception::class.java
             -21 -> Throwable::class.java
-            else -> throw IllegalArgumentException("Unknown exception opcode: $opcode")
+            else -> throw IllegalArgumentException("Unknown execution throwable opcode: $opcode")
+        }
+
+    /**
+     * Gets the throwable class corresponding to each opcode during the reflection check construction.
+     * @param opcode the opcode value
+     * @return the throwable class corresponding to that opcode
+     */
+    private fun getConstructionThrowableClass(opcode: Int): Class<out Throwable> =
+        when (opcode) {
+            -1 -> ClassNotFoundException::class.java
+            -2 -> SecurityException::class.java
+            -3 -> NullPointerException::class.java
+            -4 -> Exception::class.java
+            -5 -> Throwable::class.java
+            else -> throw IllegalArgumentException("Unknown construction throwable opcode: $opcode")
         }
 
     override fun toString(): String =
@@ -122,11 +154,11 @@ public class ReflectionCheckReply(
      * Any error result will be in its own class, as there will not be any
      * return values included in this lot.
      * @property check the reflection check requested by the server
-     * @property exceptionClass the exception class that the client received
+     * @property throwable the throwable class that the client received during either construction or execution.
      */
-    public class ErrorResult<T : ReflectionChecker.ReflectionCheck, E : Class<*>>(
+    public class ErrorResult<T : ReflectionChecker.ReflectionCheck, E : Class<out Throwable>>(
         override val check: T,
-        public val exceptionClass: E,
+        public val throwable: ThrowableResultType<E>,
     ) : ReflectionCheckResult<T> {
         override fun equals(other: Any?): Boolean {
             if (this === other) return true
@@ -135,22 +167,88 @@ public class ReflectionCheckReply(
             other as ErrorResult<*, *>
 
             if (check != other.check) return false
-            if (exceptionClass != other.exceptionClass) return false
+            if (throwable != other.throwable) return false
 
             return true
         }
 
         override fun hashCode(): Int {
             var result = check.hashCode()
-            result = 31 * result + exceptionClass.hashCode()
+            result = 31 * result + throwable.hashCode()
             return result
         }
 
         override fun toString(): String =
             "ErrorResult(" +
                 "check=$check, " +
-                "exceptionClass=$exceptionClass" +
+                "throwable=$throwable" +
                 ")"
+
+        /**
+         * The throwable result types notify the user whether the throwable was caught during the
+         * construction of the reflection check where it looks up each class/field, or during
+         * the execution, where it looks up or assigns new values to properties. As the exceptions
+         * overlap, we need to distinguish the two types with a different wrapper.
+         * @property throwableClass the class that was thrown.
+         */
+        public sealed interface ThrowableResultType<E : Class<out Throwable>> {
+            public val throwableClass: E
+
+            /**
+             * A construction throwable is a throwable that was caught during the construction
+             * of a reflection check, e.g. when looking up the classes or fields on which the operations
+             * would be performed.
+             */
+            public class ConstructionThrowable<E : Class<out Throwable>>(
+                override val throwableClass: E,
+            ) : ThrowableResultType<E> {
+                override fun equals(other: Any?): Boolean {
+                    if (this === other) return true
+                    if (other !is ConstructionThrowable<*>) return false
+
+                    if (throwableClass != other.throwableClass) return false
+
+                    return true
+                }
+
+                override fun hashCode(): Int {
+                    return throwableClass.hashCode()
+                }
+
+                override fun toString(): String {
+                    return "ConstructionThrowable(" +
+                        "throwableClass=$throwableClass" +
+                        ")"
+                }
+            }
+
+            /**
+             * An execution throwable is a throwable that was caught during the execution of a specific
+             * operation that was requested, e.g. GetFieldModifiers or SetFieldValue.
+             */
+            public class ExecutionThrowable<E : Class<out Throwable>>(
+                override val throwableClass: E,
+            ) : ThrowableResultType<E> {
+                override fun equals(other: Any?): Boolean {
+                    if (this === other) return true
+                    if (other !is ExecutionThrowable<*>) return false
+
+                    if (throwableClass != other.throwableClass) return false
+
+                    return true
+                }
+
+                override fun hashCode(): Int {
+                    return throwableClass.hashCode()
+                }
+
+                override fun toString(): String {
+                    return "ExecutionThrowable(" +
+                        "throwableClass=$throwableClass" +
+                        ")"
+                }
+            }
+        }
     }
 
     /**
