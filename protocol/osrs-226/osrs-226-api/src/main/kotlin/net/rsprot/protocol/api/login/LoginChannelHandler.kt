@@ -49,6 +49,7 @@ public class LoginChannelHandler(
         networkLog(logger) {
             "Channel is now active: ${ctx.channel()}"
         }
+        ctx.fireChannelActive()
     }
 
     override fun channelRead0(
@@ -278,6 +279,7 @@ public class LoginChannelHandler(
                 )
             ctx.close()
         }
+        ctx.fireUserEventTriggered(evt)
     }
 
     private companion object {

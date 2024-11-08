@@ -49,6 +49,7 @@ public class LoginConnectionHandler<R>(
         networkLog(logger) {
             "Channel is now active: ${ctx.channel()}"
         }
+        ctx.fireChannelActive()
     }
 
     override fun channelInactive(ctx: ChannelHandlerContext) {
@@ -59,6 +60,7 @@ public class LoginConnectionHandler<R>(
         networkLog(logger) {
             "Channel is now inactive: ${ctx.channel()}"
         }
+        ctx.fireChannelInactive()
     }
 
     override fun channelUnregistered(ctx: ChannelHandlerContext) {

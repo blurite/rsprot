@@ -31,6 +31,7 @@ public class LoginChannelHandler(
 ) : SimpleChannelInboundHandler<IncomingLoginMessage>(IncomingLoginMessage::class.java) {
     override fun channelActive(ctx: ChannelHandlerContext) {
         ctx.read()
+        ctx.fireChannelActive()
         networkLog(logger) {
             "Channel is now active: ${ctx.channel()}"
         }
@@ -220,6 +221,7 @@ public class LoginChannelHandler(
             }
             ctx.close()
         }
+        ctx.fireUserEventTriggered(evt)
     }
 
     private companion object {

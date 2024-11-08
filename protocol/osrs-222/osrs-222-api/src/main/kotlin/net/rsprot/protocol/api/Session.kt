@@ -62,31 +62,38 @@ public class Session<R>(
             outgoingMessageQueueProvider.provide()
         }
     public val inetAddress: InetAddress = ctx.inetAddress()
-    internal var disconnectionHook: Runnable? = null
-        private set
+    private var disconnectionHook: Runnable? = null
 
     @Volatile
     private var channelStatus: ChannelStatus = ChannelStatus.OPEN
 
     private var lastFlush: TimeSource.Monotonic.ValueTimeMark = TimeSource.Monotonic.markNow()
-    private var lastWarning: TimeSource.Monotonic.ValueTimeMark = lastFlush
 
     private fun updateLastFlush() {
         lastFlush = TimeSource.Monotonic.markNow()
     }
 
-    private fun checkFlushWarnings() {
+    /**
+     * Checks if the channel has gone idle in a limbo state.
+     * It is unclear how or why this happens, but it rarely does occur - Netty's hook
+     * does not get triggered, leaving the connection in a limbo-open status.
+     */
+    private fun checkIdle() {
         val elapsed = lastFlush.elapsedNow()
-        if (elapsed >= warnDuration) {
-            if (lastWarning.elapsedNow() >= warnDuration) {
-                lastWarning = TimeSource.Monotonic.markNow()
-                // This is an extreme edge case warning system, but it is helpful in case there is
-                // a sort of zombie session that just keeps on queueing but never flushing.
-                logger.warn {
-                    "$elapsed has elapsed since the last flush " +
-                        "whilst messages are still being queued for '${loginBlock.username}' at ${ctx.inetAddress()}."
-                }
-            }
+        if (elapsed < limboIdleDuration) return
+        logger.warn {
+            "Connection ${ctx.channel()} has gone idle in limbo, " +
+                "requesting channel close for '${loginBlock.username}'."
+        }
+        triggerIdleClosing()
+    }
+
+    /**
+     * Triggers the channel closing due to idling, if it hasn't yet been called.
+     */
+    internal fun triggerIdleClosing() {
+        if (requestClose()) {
+            this.disconnectionHook?.run()
         }
     }
 
@@ -121,7 +128,7 @@ public class Session<R>(
         val categoryId = category.id
         val queue = outgoingMessageQueues[categoryId]
         queue += message
-        checkFlushWarnings()
+        checkIdle()
     }
 
     /**
@@ -185,19 +192,23 @@ public class Session<R>(
         // Immediately trigger the disconnection hook if the channel already went inactive before
         // the hook could be triggered
         if (!ctx.channel().isActive) {
-            hook.run()
+            if (requestClose()) {
+                hook.run()
+            }
         }
     }
 
     /**
      * Requests the channel to be closed once there's nothing more to write out, and the
      * channel has been flushed.
+     * @return whether the channel was open and will be closed in the future.
      */
-    public fun requestClose() {
+    public fun requestClose(): Boolean {
         if (this.channelStatus != ChannelStatus.OPEN) {
-            return
+            return false
         }
         this.channelStatus = ChannelStatus.CLOSING
+        return true
     }
 
     /**
@@ -223,10 +234,14 @@ public class Session<R>(
      * from the netty event loop, thus the check inside it.
      */
     public fun flush() {
-        if (this.channelStatus == ChannelStatus.CLOSED ||
-            !ctx.channel().isActive ||
-            outgoingMessageQueues.all(Queue<OutgoingGameMessage>::isEmpty)
-        ) {
+        if (this.channelStatus == ChannelStatus.CLOSED) {
+            return
+        }
+        if (!ctx.channel().isActive) {
+            triggerIdleClosing()
+            return
+        }
+        if (outgoingMessageQueues.all(Queue<OutgoingGameMessage>::isEmpty)) {
             return
         }
         updateLastFlush()
@@ -378,6 +393,6 @@ public class Session<R>(
 
     private companion object {
         private val logger: InlineLogger = InlineLogger()
-        private val warnDuration: Duration = 60.seconds
+        private val limboIdleDuration: Duration = 30.seconds
     }
 }

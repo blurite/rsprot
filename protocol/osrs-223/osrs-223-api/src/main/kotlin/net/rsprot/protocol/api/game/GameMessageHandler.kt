@@ -38,8 +38,9 @@ public class GameMessageHandler<R>(
         // Triggers the disconnection hook when the channel goes inactive.
         // This is the earliest guaranteed known point of no return
         try {
-            session.disconnectionHook?.run()
+            session.triggerIdleClosing()
         } finally {
+            ctx.fireChannelInactive()
             // Must ensure both blocks of code get invoked, even if one throws an exception
             networkService
                 .iNetAddressHandlers
