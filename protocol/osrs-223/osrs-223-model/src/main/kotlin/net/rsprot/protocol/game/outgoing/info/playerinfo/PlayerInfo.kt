@@ -505,7 +505,7 @@ public class PlayerInfo internal constructor(
         this.details[PROTOCOL_CAPACITY] = details
         details.initialized = true
         avatar.postUpdate()
-        avatar.extendedInfo.reset()
+        avatar.extendedInfo.onReconnect()
     }
 
     /**

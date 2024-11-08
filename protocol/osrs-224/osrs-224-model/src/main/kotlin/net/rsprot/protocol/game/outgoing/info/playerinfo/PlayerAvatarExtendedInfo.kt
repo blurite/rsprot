@@ -1478,6 +1478,15 @@ public class PlayerAvatarExtendedInfo(
     }
 
     /**
+     * Resets the cached state on reconnect, ensuring we inform the client of all that was
+     * previously assigned.
+     */
+    internal fun onReconnect() {
+        this.lastAppearanceChangeCycle = 0
+        this.otherAppearanceChangeCycles.fill(-1)
+    }
+
+    /**
      * Gets all the extended info flags which must be updated for the given [observer],
      * based on what is out of date with what they last saw (if they saw the player before).
      * @param observer the avatar observing us.

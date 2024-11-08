@@ -376,7 +376,7 @@ public class PlayerInfo internal constructor(
         stationary.fill(0)
         observerExtendedInfoFlags.reset()
         avatar.postUpdate()
-        avatar.extendedInfo.reset()
+        avatar.extendedInfo.onReconnect()
     }
 
     /**
