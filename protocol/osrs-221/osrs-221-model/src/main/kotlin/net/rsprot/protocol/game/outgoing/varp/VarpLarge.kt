@@ -5,10 +5,10 @@ import net.rsprot.protocol.game.outgoing.GameServerProtCategory
 import net.rsprot.protocol.message.OutgoingGameMessage
 
 /**
- * Varp small messages are used to send a varp to the client that
+ * Varp large messages are used to send a varp to the client that
  * has a value which does not fit in the range of a byte, being -128..127.
  * For values which do fit in the aforementioned range, the [VarpSmall]
- * packed is preferred as it takes up less bandwidth, although nothing
+ * message is preferred as it takes up less bandwidth, although nothing
  * prevents one from sending all varps using this variant.
  * @property id the id of the varp
  * @property value the value of the varp
