@@ -10,9 +10,9 @@ public class EventNativeMouseClickDecoder : MessageDecoder<EventNativeMouseClick
     override val prot: ClientProt = GameClientProt.EVENT_NATIVE_MOUSE_CLICK
 
     override fun decode(buffer: JagByteBuf): EventNativeMouseClick {
-        val packedCoord = buffer.g4Alt1()
-        val code = buffer.g1Alt1()
+        val packedCoord = buffer.g4Alt2()
         val lastTransmittedMouseClick = buffer.g2()
+        val code = buffer.g1Alt2()
         return EventNativeMouseClick(
             lastTransmittedMouseClick,
             code,
