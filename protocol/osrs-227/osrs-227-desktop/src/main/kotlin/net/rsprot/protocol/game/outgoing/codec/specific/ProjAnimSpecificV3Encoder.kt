@@ -21,7 +21,7 @@ public class ProjAnimSpecificV3Encoder : MessageEncoder<ProjAnimSpecificV3> {
         buffer.p2Alt1(message.progress)
         buffer.p1Alt3(message.angle)
         buffer.p1Alt2(message.endHeight)
-        buffer.p3Alt1(message.sourceIndex)
+        buffer.p3Alt2(message.sourceIndex)
         buffer.p2Alt2(message.startTime)
         buffer.p2Alt1(message.id)
         buffer.p1(message.deltaX)

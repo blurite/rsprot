@@ -23,7 +23,7 @@ public class MapProjAnimEncoder : ZoneProtEncoder<MapProjAnim> {
         buffer.p2Alt2(message.startTime)
         buffer.p1Alt2(message.coordInZonePacked)
         buffer.p2Alt2(message.progress)
-        buffer.p3Alt1(message.targetIndex)
+        buffer.p3Alt2(message.targetIndex)
         buffer.p1(message.startHeight)
         buffer.p1Alt3(message.deltaX)
         buffer.p1Alt3(message.endHeight)
