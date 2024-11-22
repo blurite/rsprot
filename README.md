@@ -1,6 +1,13 @@
 # RSProt
 
-[![GitHub Actions][actions-badge]][actions] [![MIT license][mit-badge]][mit] [![OldSchool - 226 (Alpha)](https://img.shields.io/badge/OldSchool-226_(Alpha)-9a1abd)](https://github.com/blurite/rsprot/tree/master/protocol/osrs-226/osrs-226-api/src/main/kotlin/net/rsprot/protocol/api) [![OldSchool - 225 (Alpha)](https://img.shields.io/badge/OldSchool-225_(Alpha)-9a1abd)](https://github.com/blurite/rsprot/tree/master/protocol/osrs-225/osrs-225-api/src/main/kotlin/net/rsprot/protocol/api) [![OldSchool - 224 (Alpha)](https://img.shields.io/badge/OldSchool-224_(Alpha)-9a1abd)](https://github.com/blurite/rsprot/tree/master/protocol/osrs-224/osrs-224-api/src/main/kotlin/net/rsprot/protocol/api) [![OldSchool - 223 (Alpha)](https://img.shields.io/badge/OldSchool-223_(Alpha)-9a1abd)](https://github.com/blurite/rsprot/tree/master/protocol/osrs-223/osrs-223-api/src/main/kotlin/net/rsprot/protocol/api) [![OldSchool - 222 (Alpha)](https://img.shields.io/badge/OldSchool-222_(Alpha)-9a1abd)](https://github.com/blurite/rsprot/tree/master/protocol/osrs-222/osrs-222-api/src/main/kotlin/net/rsprot/protocol/api) [![OldSchool - 221 (Alpha)](https://img.shields.io/badge/OldSchool-221_(Alpha)-9a1abd)](https://github.com/blurite/rsprot/tree/master/protocol/osrs-221-api/src/main/kotlin/net/rsprot/protocol/api)
+[![GitHub Actions][actions-badge]][actions] [![MIT license][mit-badge]][mit]
+[![OldSchool - 227 (Alpha)](https://img.shields.io/badge/OldSchool-227_(Alpha)-9a1abd)](https://github.com/blurite/rsprot/tree/master/protocol/osrs-227/osrs-227-api/src/main/kotlin/net/rsprot/protocol/api)
+[![OldSchool - 226 (Alpha)](https://img.shields.io/badge/OldSchool-226_(Alpha)-9a1abd)](https://github.com/blurite/rsprot/tree/master/protocol/osrs-226/osrs-226-api/src/main/kotlin/net/rsprot/protocol/api)
+[![OldSchool - 225 (Alpha)](https://img.shields.io/badge/OldSchool-225_(Alpha)-9a1abd)](https://github.com/blurite/rsprot/tree/master/protocol/osrs-225/osrs-225-api/src/main/kotlin/net/rsprot/protocol/api)
+[![OldSchool - 224 (Alpha)](https://img.shields.io/badge/OldSchool-224_(Alpha)-9a1abd)](https://github.com/blurite/rsprot/tree/master/protocol/osrs-224/osrs-224-api/src/main/kotlin/net/rsprot/protocol/api)
+[![OldSchool - 223 (Alpha)](https://img.shields.io/badge/OldSchool-223_(Alpha)-9a1abd)](https://github.com/blurite/rsprot/tree/master/protocol/osrs-223/osrs-223-api/src/main/kotlin/net/rsprot/protocol/api)
+[![OldSchool - 222 (Alpha)](https://img.shields.io/badge/OldSchool-222_(Alpha)-9a1abd)](https://github.com/blurite/rsprot/tree/master/protocol/osrs-222/osrs-222-api/src/main/kotlin/net/rsprot/protocol/api)
+[![OldSchool - 221 (Alpha)](https://img.shields.io/badge/OldSchool-221_(Alpha)-9a1abd)](https://github.com/blurite/rsprot/tree/master/protocol/osrs-221-api/src/main/kotlin/net/rsprot/protocol/api)
 
 ## Status
 > [!NOTE]
@@ -15,7 +22,7 @@ In order to add it to your server, add the below line under dependencies
 in your build.gradle.kts.
 
 ```kts
-implementation("net.rsprot:osrs-226-api:1.0.0-ALPHA-20241108-2")
+implementation("net.rsprot:osrs-226-api:1.0.0-ALPHA-20241122")
 ```
 
 An in-depth tutorial on how to implement it will be added into this read-me
@@ -31,12 +38,12 @@ other revisions are welcome, but will not be provided by default.
 - Java 11
 
 ## Supported Versions
-This library currently supports revision 221, 222, 223, 224, 225 and 226 OldSchool desktop clients.
+This library currently supports revision 221-227 OldSchool desktop clients.
 
 ## Quick Guide
 This section covers a quick guide for how to use the protocol after implementing
 the base API. It is not a guide for the base API itself, that will come in the
-future. This specific quick guide refers to revision 226.
+future. This specific quick guide refers to revision 227.
 
 #### Player Initialization
 When a player logs in, a new protocol instance must be allocated for
@@ -233,6 +240,34 @@ protocol. This can be done via:
 `service.worldEntityAvatarFactory.release(avatar)`
 
 ## Changes
+
+### Revision 227
+Revision 227 was mostly a clean-up revision, doing little overall changes.
+
+### Additions
+1. An unknown client packet which is not used on native desktop nor java.
+This packet might be used in mobile, we do not know. It has a size of 1 byte.
+2. PACKET_GROUP_START: A packet which lets the server tell the client to process
+a group of packets all in one client cycle after waiting for the packets to
+arrive completely. This packet has one flaw - it is limited to a maximum size of
+32767 bytes for the payload (sum of all the children, including their opcodes,
+sizes and payloads).
+3. WORLDENTITY_INFO_V4: A new variant of world entity info, adding support
+for defining the offset for the ship model/center-point in fine client units.
+
+### Removals
+1. WORLDENTITY_INFO_V1 (server)
+2. WORLDENTITY_INFO_V2 (server)
+3. NPC_INFO_SMALL_V4 (server)
+4. NPC_INFO_LARGE_V5 (server)
+5. PROJANIM_SPECIFIC_V1 (server)
+6. PROJANIM_SPECIFIC_V2 (server)
+7. UPDATE_FRIENDCHAT_CHANNEL_FULL_V1 (server)
+8. UPDATE_STAT_V1 (server)
+9. CAM_TARGET_V1 (server)
+10. UPDATE_PLAYER_MODEL_V1 (client)
+11. EXAMINE_OBJ_V1 (client)
+
 
 ### Revision 226
 Revision 226 was a relatively large protocol change, adding many new
