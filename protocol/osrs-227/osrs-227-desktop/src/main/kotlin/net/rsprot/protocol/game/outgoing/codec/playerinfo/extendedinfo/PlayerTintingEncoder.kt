@@ -12,11 +12,11 @@ public class PlayerTintingEncoder : OnDemandExtendedInfoEncoder<PlayerTintingLis
         extendedInfo: PlayerTintingList,
     ) {
         val tinting = extendedInfo[localPlayerIndex]
-        buffer.p2Alt3(tinting.start.toInt())
-        buffer.p2Alt2(tinting.end.toInt())
-        buffer.p1(tinting.hue.toInt())
+        buffer.p2(tinting.start.toInt())
+        buffer.p2(tinting.end.toInt())
+        buffer.p1Alt2(tinting.hue.toInt())
         buffer.p1Alt1(tinting.saturation.toInt())
-        buffer.p1Alt3(tinting.lightness.toInt())
-        buffer.p1Alt3(tinting.weight.toInt())
+        buffer.p1(tinting.lightness.toInt())
+        buffer.p1Alt1(tinting.weight.toInt())
     }
 }

@@ -1,3 +1,5 @@
+@file:Suppress("ktlint:standard:filename")
+
 package net.rsprot.protocol.game.outgoing.misc.player
 
 @Deprecated(
@@ -5,9 +7,3 @@ package net.rsprot.protocol.game.outgoing.misc.player
     replaceWith = ReplaceWith("UpdateStatV2"),
 )
 public typealias UpdateStat = UpdateStatV2
-
-@Deprecated(
-    message = "Deprecated. Use UpdateStatV1.",
-    replaceWith = ReplaceWith("UpdateStatV1"),
-)
-public typealias UpdateStatOld = UpdateStatV1

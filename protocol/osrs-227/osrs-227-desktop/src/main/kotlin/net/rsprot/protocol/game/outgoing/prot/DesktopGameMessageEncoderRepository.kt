@@ -13,7 +13,6 @@ import net.rsprot.protocol.game.outgoing.codec.camera.CamRotateByEncoder
 import net.rsprot.protocol.game.outgoing.codec.camera.CamRotateToEncoder
 import net.rsprot.protocol.game.outgoing.codec.camera.CamShakeEncoder
 import net.rsprot.protocol.game.outgoing.codec.camera.CamSmoothResetEncoder
-import net.rsprot.protocol.game.outgoing.codec.camera.CamTargetV1Encoder
 import net.rsprot.protocol.game.outgoing.codec.camera.CamTargetV2Encoder
 import net.rsprot.protocol.game.outgoing.codec.camera.OculusSyncEncoder
 import net.rsprot.protocol.game.outgoing.codec.clan.ClanChannelDeltaEncoder
@@ -26,7 +25,6 @@ import net.rsprot.protocol.game.outgoing.codec.clan.VarClanDisableEncoder
 import net.rsprot.protocol.game.outgoing.codec.clan.VarClanEnableEncoder
 import net.rsprot.protocol.game.outgoing.codec.clan.VarClanEncoder
 import net.rsprot.protocol.game.outgoing.codec.friendchat.MessageFriendChannelEncoder
-import net.rsprot.protocol.game.outgoing.codec.friendchat.UpdateFriendChatChannelFullV1Encoder
 import net.rsprot.protocol.game.outgoing.codec.friendchat.UpdateFriendChatChannelFullV2Encoder
 import net.rsprot.protocol.game.outgoing.codec.friendchat.UpdateFriendChatChannelSingleUserEncoder
 import net.rsprot.protocol.game.outgoing.codec.interfaces.IfClearInvEncoder
@@ -88,7 +86,6 @@ import net.rsprot.protocol.game.outgoing.codec.misc.player.SetPlayerOpEncoder
 import net.rsprot.protocol.game.outgoing.codec.misc.player.TriggerOnDialogAbortEncoder
 import net.rsprot.protocol.game.outgoing.codec.misc.player.UpdateRunEnergyEncoder
 import net.rsprot.protocol.game.outgoing.codec.misc.player.UpdateRunWeightEncoder
-import net.rsprot.protocol.game.outgoing.codec.misc.player.UpdateStatV1Encoder
 import net.rsprot.protocol.game.outgoing.codec.misc.player.UpdateStatV2Encoder
 import net.rsprot.protocol.game.outgoing.codec.misc.player.UpdateStockMarketSlotEncoder
 import net.rsprot.protocol.game.outgoing.codec.misc.player.UpdateTradingPostEncoder
@@ -103,7 +100,6 @@ import net.rsprot.protocol.game.outgoing.codec.social.UpdateFriendListEncoder
 import net.rsprot.protocol.game.outgoing.codec.social.UpdateIgnoreListEncoder
 import net.rsprot.protocol.game.outgoing.codec.sound.MidiJingleEncoder
 import net.rsprot.protocol.game.outgoing.codec.sound.MidiSongStopEncoder
-import net.rsprot.protocol.game.outgoing.codec.sound.MidiSongV1Encoder
 import net.rsprot.protocol.game.outgoing.codec.sound.MidiSongV2Encoder
 import net.rsprot.protocol.game.outgoing.codec.sound.MidiSongWithSecondaryEncoder
 import net.rsprot.protocol.game.outgoing.codec.sound.MidiSwapEncoder
@@ -181,7 +177,6 @@ public object DesktopGameMessageEncoderRepository {
                 bind(MidiSongWithSecondaryEncoder())
                 bind(MidiSwapEncoder())
                 bind(MidiSongStopEncoder())
-                bind(MidiSongV1Encoder())
                 bind(MidiJingleEncoder())
                 bind(SynthSoundEncoder())
 
@@ -242,7 +237,6 @@ public object DesktopGameMessageEncoderRepository {
                 bind(CamRotateToEncoder())
                 bind(CamModeEncoder())
                 bind(CamTargetV2Encoder())
-                bind(CamTargetV1Encoder())
                 bind(OculusSyncEncoder())
 
                 bind(UpdateInvFullEncoder())
@@ -255,7 +249,6 @@ public object DesktopGameMessageEncoderRepository {
                 bind(UpdateFriendListEncoder())
                 bind(UpdateIgnoreListEncoder())
 
-                bind(UpdateFriendChatChannelFullV1Encoder())
                 bind(UpdateFriendChatChannelFullV2Encoder())
                 bind(UpdateFriendChatChannelSingleUserEncoder())
                 bind(MessageFriendChannelEncoder(huffmanCodecProvider))
@@ -279,7 +272,6 @@ public object DesktopGameMessageEncoderRepository {
                 bind(SetMapFlagEncoder())
                 bind(SetPlayerOpEncoder())
                 bind(UpdateStatV2Encoder())
-                bind(UpdateStatV1Encoder())
 
                 bind(RunClientScriptEncoder())
                 bind(TriggerOnDialogAbortEncoder())

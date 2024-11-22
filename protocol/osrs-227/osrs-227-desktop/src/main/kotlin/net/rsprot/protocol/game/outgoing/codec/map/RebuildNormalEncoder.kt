@@ -25,9 +25,9 @@ public class RebuildNormalEncoder : MessageEncoder<StaticRebuildMessage> {
         //         gpiInitBlock.readableBytes(),
         //     )
         // }
-        buffer.p2Alt2(message.worldArea)
+        buffer.p2Alt1(message.worldArea)
         buffer.p2Alt2(message.zoneX)
-        buffer.p2(message.zoneZ)
+        buffer.p2Alt1(message.zoneZ)
         buffer.p2(message.keys.size)
         for (xteaKey in message.keys) {
             for (intKey in xteaKey.key) {

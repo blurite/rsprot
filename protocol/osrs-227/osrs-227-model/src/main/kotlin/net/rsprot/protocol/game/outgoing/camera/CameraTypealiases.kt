@@ -1,4 +1,4 @@
-@file:Suppress("DEPRECATION")
+@file:Suppress("DEPRECATION", "ktlint:standard:filename")
 
 package net.rsprot.protocol.game.outgoing.camera
 
@@ -7,9 +7,3 @@ package net.rsprot.protocol.game.outgoing.camera
     replaceWith = ReplaceWith("CamTargetV2"),
 )
 public typealias CamTarget = CamTargetV2
-
-@Deprecated(
-    message = "Deprecated. Use CamTargetV1.",
-    replaceWith = ReplaceWith("CamTargetV1"),
-)
-public typealias CamTargetOld = CamTargetV1

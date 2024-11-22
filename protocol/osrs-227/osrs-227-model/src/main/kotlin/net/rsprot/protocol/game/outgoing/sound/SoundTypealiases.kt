@@ -1,3 +1,5 @@
+@file:Suppress("ktlint:standard:filename")
+
 package net.rsprot.protocol.game.outgoing.sound
 
 @Deprecated(
@@ -5,9 +7,3 @@ package net.rsprot.protocol.game.outgoing.sound
     replaceWith = ReplaceWith("MidiSongV2"),
 )
 public typealias MidiSong = MidiSongV2
-
-@Deprecated(
-    message = "Deprecated. Use MidiSongV1.",
-    replaceWith = ReplaceWith("MidiSongV1"),
-)
-public typealias MidiSongOld = MidiSongV1

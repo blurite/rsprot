@@ -55,7 +55,6 @@ import net.rsprot.protocol.game.incoming.codec.misc.user.SendSnapshotDecoder
 import net.rsprot.protocol.game.incoming.codec.misc.user.SetChatFilterSettingsDecoder
 import net.rsprot.protocol.game.incoming.codec.misc.user.SetHeadingDecoder
 import net.rsprot.protocol.game.incoming.codec.misc.user.TeleportDecoder
-import net.rsprot.protocol.game.incoming.codec.misc.user.UpdatePlayerModelDecoderV1
 import net.rsprot.protocol.game.incoming.codec.npcs.OpNpc1Decoder
 import net.rsprot.protocol.game.incoming.codec.npcs.OpNpc2Decoder
 import net.rsprot.protocol.game.incoming.codec.npcs.OpNpc3Decoder
@@ -194,7 +193,6 @@ public object DesktopGameMessageDecoderRepository {
                 bind(SendSnapshotDecoder())
                 bind(HiscoreRequestDecoder())
                 bind(IfCrmViewClickDecoder())
-                bind(UpdatePlayerModelDecoderV1())
 
                 bind(ConnectionTelemetryDecoder())
                 bind(SendPingReplyDecoder())
