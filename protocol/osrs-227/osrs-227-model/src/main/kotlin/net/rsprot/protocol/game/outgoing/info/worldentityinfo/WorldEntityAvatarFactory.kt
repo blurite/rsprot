@@ -36,6 +36,14 @@ public class WorldEntityAvatarFactory(
      * by doing z * 128 with absolute coord grid values.
      * @param level the height level of the world entity.
      * @param angle the angle to face
+     * @param fineCenterOffsetX the offset of the world entity's model from the center of the
+     * defined world entity space on the x-axis. A positive value moves the model left, a negative
+     * value moves the model to the right. Units are in fine coord, where 128 is equal to one full
+     * game square.
+     * @param fineCenterOffsetZ the offset of the world entity's model from the center of the
+     * defined world entity space on the z-axis. A positive value moves the model down, a negative
+     * value moves the model up. Units are in fine coord, where 128 is equal to one full
+     * game square.
      * @return either a new world entity avatar, or a pooled one that has been
      * updated to contain the provided params.
      */
@@ -48,6 +56,8 @@ public class WorldEntityAvatarFactory(
         fineZ: Int,
         level: Int,
         angle: Int,
+        fineCenterOffsetX: Int,
+        fineCenterOffsetZ: Int,
     ): WorldEntityAvatar {
         checkCommunicationThread()
         require(index in 0..2047) {
@@ -83,6 +93,8 @@ public class WorldEntityAvatarFactory(
             fineZ,
             level,
             angle,
+            fineCenterOffsetX,
+            fineCenterOffsetZ,
         )
     }
 

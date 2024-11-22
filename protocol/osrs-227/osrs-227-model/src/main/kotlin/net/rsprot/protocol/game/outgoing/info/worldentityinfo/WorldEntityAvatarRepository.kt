@@ -49,6 +49,15 @@ public class WorldEntityAvatarRepository internal constructor(
      * @param level the level of the world entity.
      * @return either a new world entity avatar, or a pooled one that has been
      * updated to contain the provided params.
+     * @param angle the angle to face
+     * @param fineCenterOffsetX the offset of the world entity's model from the center of the
+     * defined world entity space on the x-axis. A positive value moves the model left, a negative
+     * value moves the model to the right. Units are in fine coord, where 128 is equal to one full
+     * game square.
+     * @param fineCenterOffsetZ the offset of the world entity's model from the center of the
+     * defined world entity space on the z-axis. A positive value moves the model down, a negative
+     * value moves the model up. Units are in fine coord, where 128 is equal to one full
+     * game square.
      */
     public fun getOrAlloc(
         index: Int,
@@ -59,6 +68,8 @@ public class WorldEntityAvatarRepository internal constructor(
         fineZ: Int,
         level: Int,
         angle: Int,
+        fineCenterOffsetX: Int,
+        fineCenterOffsetZ: Int,
     ): WorldEntityAvatar {
         require(this.elements[index] == null) {
             "WorldEntity avatar with index $index is already allocated!"
@@ -74,6 +85,8 @@ public class WorldEntityAvatarRepository internal constructor(
             existing.lastAngle = angle
             existing.teleport = false
             existing.allocateCycle = WorldEntityProtocol.cycleCount
+            existing.fineCenterOffsetX = fineCenterOffsetX
+            existing.fineCenterOffsetZ = fineCenterOffsetZ
             zoneIndexStorage.add(index, existing.currentCoordFine.toCoordGrid(level))
             elements[index] = existing
             return existing
@@ -88,6 +101,8 @@ public class WorldEntityAvatarRepository internal constructor(
                 level,
                 CoordFine(fineX, fineY, fineZ),
                 angle,
+                fineCenterOffsetX,
+                fineCenterOffsetZ,
             )
         zoneIndexStorage.add(index, avatar.currentCoordFine.toCoordGrid(level))
         elements[index] = avatar
