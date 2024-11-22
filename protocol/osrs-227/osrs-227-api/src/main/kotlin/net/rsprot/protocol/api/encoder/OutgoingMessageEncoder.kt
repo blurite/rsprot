@@ -15,6 +15,7 @@ import net.rsprot.buffer.extensions.toJagByteBuf
 import net.rsprot.crypto.cipher.StreamCipher
 import net.rsprot.protocol.Prot
 import net.rsprot.protocol.api.handlers.OutgoingMessageSizeEstimator
+import net.rsprot.protocol.game.outgoing.misc.client.PacketGroupStart
 import net.rsprot.protocol.loginprot.outgoing.LoginResponse
 import net.rsprot.protocol.message.ByteBufHolderWrapperFooterMessage
 import net.rsprot.protocol.message.ByteBufHolderWrapperHeaderMessage
@@ -293,6 +294,66 @@ public abstract class OutgoingMessageEncoder : ChannelOutboundHandlerAdapter() {
             out.writerIndex(startMarker)
             pSmart1Or2Enc(out, opcode)
             out.writerIndex(endMarker)
+        }
+        // Special exception here, as this packet essentially encodes all the children as well
+        if (msg is PacketGroupStart) {
+            for (sub in msg.messages) {
+                try {
+                    if (sub is ByteBufHolder) {
+                        writeChildByteBufHolderMessage(sub, out)
+                    } else {
+                        encode(ctx, sub, out)
+                    }
+                } finally {
+                    ReferenceCountUtil.release(sub)
+                }
+            }
+            val finalMarker = out.writerIndex()
+            val written = finalMarker - payloadMarker
+            if (written > 32767) {
+                throw IllegalStateException(
+                    "PacketGroupStart message too long: $written bytes, " +
+                        "${msg.messages.size} child messages.",
+                )
+            }
+            // Lastly, update the actual number of bytes that the packet group start contained
+            out.writerIndex(payloadMarker)
+            out.p2(written)
+            out.writerIndex(finalMarker)
+        }
+    }
+
+    private fun <T> writeChildByteBufHolderMessage(
+        message: T,
+        buf: ByteBuf,
+    ) where T : ByteBufHolder, T : OutgoingMessage {
+        val encoder = repository.getEncoder(message::class.java)
+        val prot = encoder.prot
+        val opcode = prot.opcode
+        pSmart1Or2Enc(buf, opcode)
+        var bytes = message.content().readableBytes()
+        if (message is ByteBufHolderWrapperHeaderMessage) {
+            bytes += message.nonByteBufHolderSize()
+        }
+        if (message is ByteBufHolderWrapperFooterMessage) {
+            bytes += message.nonByteBufHolderSize()
+        }
+        when (prot.size) {
+            Prot.VAR_BYTE -> buf.p1(bytes)
+            Prot.VAR_SHORT -> buf.p2(bytes)
+        }
+        if (message is ByteBufHolderWrapperHeaderMessage) {
+            encodePayload(message, buf)
+        }
+
+        val bufHolderContent = message.content().slice()
+        // If there are trailing bytes, we need to encode and write those as well
+
+        if (bufHolderContent.isReadable) {
+            buf.writeBytes(bufHolderContent)
+        }
+        if (message is ByteBufHolderWrapperFooterMessage) {
+            encodePayload(message, buf)
         }
     }
 

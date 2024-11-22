@@ -66,6 +66,7 @@ import net.rsprot.protocol.game.outgoing.codec.misc.client.HideObjOpsEncoder
 import net.rsprot.protocol.game.outgoing.codec.misc.client.HintArrowEncoder
 import net.rsprot.protocol.game.outgoing.codec.misc.client.HiscoreReplyEncoder
 import net.rsprot.protocol.game.outgoing.codec.misc.client.MinimapToggleEncoder
+import net.rsprot.protocol.game.outgoing.codec.misc.client.PacketGroupStartEncoder
 import net.rsprot.protocol.game.outgoing.codec.misc.client.ReflectionCheckerEncoder
 import net.rsprot.protocol.game.outgoing.codec.misc.client.ResetAnimsEncoder
 import net.rsprot.protocol.game.outgoing.codec.misc.client.ResetInteractionModeEncoder
@@ -292,6 +293,7 @@ public object DesktopGameMessageEncoderRepository {
                 bind(HideLocOpsEncoder())
                 bind(SetInteractionModeEncoder())
                 bind(ResetInteractionModeEncoder())
+                bind(PacketGroupStartEncoder())
 
                 bind(UrlOpenEncoder())
                 bind(SiteSettingsEncoder())
