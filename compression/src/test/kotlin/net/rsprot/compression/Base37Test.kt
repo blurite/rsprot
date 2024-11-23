@@ -13,9 +13,8 @@ class Base37Test {
 
     @Test
     fun `length out of bounds encoding`() {
-        assertThrows<IllegalArgumentException>("Length is within bounds") {
-            Base37.encode("1234567890abc")
-        }
+        val value = Base37.encode("1234567890abc")
+        assertEquals(5125153220596123482, value)
     }
 
     @Test

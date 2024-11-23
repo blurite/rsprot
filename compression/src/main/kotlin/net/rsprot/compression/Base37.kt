@@ -8,6 +8,7 @@ package net.rsprot.compression
 public data object Base37 {
     private const val BASE_37: Long = 37
     private const val MAXIMUM_POSSIBLE_12_CHARACTER_VALUE: Long = 6582952005840035280L
+    private const val MINIMUM_POSSIBLE_12_CHARACTER_VALUE: Long = 177917621779460413L
     private const val NBSP: Int = 160
     private val ALPHABET: CharArray =
         charArrayOf(
@@ -60,17 +61,6 @@ public data object Base37 {
      * characters list.
      */
     public fun encode(charSequence: CharSequence): Long {
-        require(charSequence.length <= 12) {
-            "Char sequence length must be 12 characters or less."
-        }
-        val indexOfInvalidCharacter =
-            charSequence.indexOfFirst {
-                it != ' ' && it.lowercaseChar() !in ALPHABET
-            }
-        require(indexOfInvalidCharacter == -1) {
-            "Invalid character in charSequence at index $indexOfInvalidCharacter: " +
-                "${charSequence[indexOfInvalidCharacter]}"
-        }
         var encoded = 0L
         for (element in charSequence) {
             encoded *= BASE_37
@@ -86,6 +76,9 @@ public data object Base37 {
                 in '0'..'9' -> {
                     encoded += (element.code + 27 - '0'.code).toLong()
                 }
+            }
+            if (encoded >= MINIMUM_POSSIBLE_12_CHARACTER_VALUE) {
+                break
             }
         }
 
