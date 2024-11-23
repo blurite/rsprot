@@ -61,6 +61,22 @@ public class MessageFriendChannel private constructor(
         message,
     )
 
+    public constructor(
+        sender: String,
+        channelNameBase37: Long,
+        worldId: Int,
+        worldMessageCounter: Int,
+        chatCrownType: Int,
+        message: String,
+    ) : this(
+        sender,
+        channelNameBase37,
+        worldId.toUShort(),
+        worldMessageCounter,
+        chatCrownType.toUByte(),
+        message,
+    )
+
     public val channelName: String
         get() = Base37.decodeWithCase(channelNameBase37)
     public val worldId: Int
