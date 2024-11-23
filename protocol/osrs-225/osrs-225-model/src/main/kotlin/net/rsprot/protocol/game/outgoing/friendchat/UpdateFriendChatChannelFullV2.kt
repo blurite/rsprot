@@ -49,7 +49,7 @@ public class UpdateFriendChatChannelFullV2(
      * the friend chat.
      * @property entries the list of friend chat entries to be added.
      */
-    public class JoinUpdate(
+    public class JoinUpdate private constructor(
         override val channelOwner: String,
         public val channelNameBase37: Long,
         private val _kickRank: Byte,
@@ -64,6 +64,18 @@ public class UpdateFriendChatChannelFullV2(
         ) : this(
             channelOwner,
             Base37.encode(channelName),
+            kickRank.toByte(),
+            entries,
+        )
+
+        public constructor(
+            channelOwner: String,
+            channelNameBase37: Long,
+            kickRank: Int,
+            entries: List<FriendChatEntry>,
+        ) : this(
+            channelOwner,
+            channelNameBase37,
             kickRank.toByte(),
             entries,
         )
