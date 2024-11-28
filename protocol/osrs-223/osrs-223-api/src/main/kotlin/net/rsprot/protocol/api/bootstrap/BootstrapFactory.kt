@@ -5,20 +5,20 @@ import io.netty.bootstrap.ServerBootstrap
 import io.netty.buffer.ByteBufAllocator
 import io.netty.channel.ChannelOption
 import io.netty.channel.EventLoopGroup
+import io.netty.channel.IoHandlerFactory
+import io.netty.channel.MultiThreadIoEventLoopGroup
 import io.netty.channel.WriteBufferWaterMark
 import io.netty.channel.epoll.Epoll
-import io.netty.channel.epoll.EpollChannelOption
-import io.netty.channel.epoll.EpollEventLoopGroup
-import io.netty.channel.epoll.EpollMode
+import io.netty.channel.epoll.EpollIoHandler
 import io.netty.channel.epoll.EpollServerSocketChannel
 import io.netty.channel.kqueue.KQueue
-import io.netty.channel.kqueue.KQueueEventLoopGroup
+import io.netty.channel.kqueue.KQueueIoHandler
 import io.netty.channel.kqueue.KQueueServerSocketChannel
-import io.netty.channel.nio.NioEventLoopGroup
+import io.netty.channel.nio.NioIoHandler
 import io.netty.channel.socket.nio.NioServerSocketChannel
-import io.netty.incubator.channel.uring.IOUring
-import io.netty.incubator.channel.uring.IOUringEventLoopGroup
-import io.netty.incubator.channel.uring.IOUringServerSocketChannel
+import io.netty.channel.uring.IoUring
+import io.netty.channel.uring.IoUringIoHandler
+import io.netty.channel.uring.IoUringServerSocketChannel
 import net.rsprot.protocol.api.logging.networkLog
 
 /**
@@ -28,28 +28,29 @@ public class BootstrapFactory(
     private val alloc: ByteBufAllocator,
 ) {
     /**
+     * Creates an IO handler factory based on the best available event loop group.
+     */
+    public fun createIoHandlerFactory(): IoHandlerFactory =
+        when {
+            IoUring.isAvailable() -> IoUringIoHandler.newFactory()
+            Epoll.isAvailable() -> EpollIoHandler.newFactory()
+            KQueue.isAvailable() -> KQueueIoHandler.newFactory()
+            else -> NioIoHandler.newFactory()
+        }
+
+    /**
      * Creates a parent loop group with a single thread behind it, based on the best
      * available event loop group.
      */
-    public fun createParentLoopGroup(): EventLoopGroup =
-        when {
-            IOUring.isAvailable() -> IOUringEventLoopGroup(1)
-            Epoll.isAvailable() -> EpollEventLoopGroup(1)
-            KQueue.isAvailable() -> KQueueEventLoopGroup(1)
-            else -> NioEventLoopGroup(1)
-        }
+    public fun createParentLoopGroup(nThreads: Int = 1): EventLoopGroup =
+        MultiThreadIoEventLoopGroup(nThreads, createIoHandlerFactory())
 
     /**
      * Creates a child loop group with a number of threads based on availableProcessors * 2,
      * which is done at Netty level.
      */
-    public fun createChildLoopGroup(): EventLoopGroup =
-        when {
-            IOUring.isAvailable() -> IOUringEventLoopGroup()
-            Epoll.isAvailable() -> EpollEventLoopGroup()
-            KQueue.isAvailable() -> KQueueEventLoopGroup()
-            else -> NioEventLoopGroup()
-        }
+    public fun createChildLoopGroup(nThreads: Int = 0): EventLoopGroup =
+        MultiThreadIoEventLoopGroup(nThreads, createIoHandlerFactory())
 
     /**
      * Creates a server bootstrap using the parent and child event loop groups with
@@ -60,12 +61,11 @@ public class BootstrapFactory(
         childGroup: EventLoopGroup,
     ): ServerBootstrap {
         val channel =
-            when (parentGroup) {
-                is IOUringEventLoopGroup -> IOUringServerSocketChannel::class.java
-                is EpollEventLoopGroup -> EpollServerSocketChannel::class.java
-                is KQueueEventLoopGroup -> KQueueServerSocketChannel::class.java
-                is NioEventLoopGroup -> NioServerSocketChannel::class.java
-                else -> throw IllegalArgumentException("Unknown EventLoopGroup type")
+            when {
+                IoUring.isAvailable() -> IoUringServerSocketChannel::class.java
+                Epoll.isAvailable() -> EpollServerSocketChannel::class.java
+                KQueue.isAvailable() -> KQueueServerSocketChannel::class.java
+                else -> NioServerSocketChannel::class.java
             }
         networkLog(logger) {
             "Bootstrap event loop group: ${parentGroup.javaClass.simpleName}"
@@ -81,11 +81,6 @@ public class BootstrapFactory(
             .childOption(ChannelOption.SO_SNDBUF, 65536)
             .childOption(ChannelOption.CONNECT_TIMEOUT_MILLIS, 30_000)
             .childOption(ChannelOption.WRITE_BUFFER_WATER_MARK, WriteBufferWaterMark(524_288, 2_097_152))
-            .also {
-                if (parentGroup is EpollEventLoopGroup) {
-                    it.childOption(EpollChannelOption.EPOLL_MODE, EpollMode.LEVEL_TRIGGERED)
-                }
-            }
     }
 
     private companion object {
