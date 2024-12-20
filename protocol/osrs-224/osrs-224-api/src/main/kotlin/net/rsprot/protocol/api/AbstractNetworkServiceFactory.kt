@@ -41,6 +41,12 @@ public abstract class AbstractNetworkServiceFactory<R> {
         get() = PooledByteBufAllocator.DEFAULT
 
     /**
+     * The host to which to bind to, defaulting to null.
+     */
+    public open val host: String?
+        get() = null
+
+    /**
      * The list of ports to listen to. Typically, the server should listen to ports
      * 43594 and 443 in this section, with the 43594 port being the primary one,
      * and 443 being the fallback. 443 is additionally used for HTTP requests, should
@@ -270,6 +276,7 @@ public abstract class AbstractNetworkServiceFactory<R> {
      */
     public fun build(): NetworkService<R> {
         val allocator = this.allocator
+        val host = this.host
         val ports = this.ports
         val supportedClientTypes = this.supportedClientTypes
         val huffman = getHuffmanCodecProvider()
@@ -284,6 +291,7 @@ public abstract class AbstractNetworkServiceFactory<R> {
             )
         return NetworkService(
             allocator,
+            host,
             ports,
             betaWorld,
             getBootstrapFactory(),

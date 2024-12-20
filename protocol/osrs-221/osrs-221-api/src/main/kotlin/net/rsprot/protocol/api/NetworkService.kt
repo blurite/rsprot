@@ -40,6 +40,7 @@ import kotlin.time.measureTime
  * in a single "god" object.
  * @param R the receiver type for the incoming game message consumers, typically a player
  * @property allocator the byte buffer allocator used throughout the library
+ * @property host the host to which to bind to, defaulting to null.
  * @property ports the list of ports that the service will connect to
  * @property betaWorld whether this world is a beta world
  * @property bootstrapFactory the bootstrap factory used to configure the socket and Netty
@@ -81,6 +82,7 @@ import kotlin.time.measureTime
 public class NetworkService<R>
     internal constructor(
         internal val allocator: ByteBufAllocator,
+        internal val host: String?,
         internal val ports: List<Int>,
         internal val betaWorld: Boolean,
         internal val bootstrapFactory: BootstrapFactory,
@@ -133,9 +135,10 @@ public class NetworkService<R>
                             .childHandler(
                                 LoginChannelInitializer(this),
                             )
+                    val host = this.host
                     val futures =
                         ports
-                            .map(initializer::bind)
+                            .map { if (host != null) initializer.bind(host, it) else initializer.bind(it) }
                             .map<ChannelFuture, CompletableFuture<Void>>(ChannelFuture::asCompletableFuture)
                     val future =
                         CompletableFuture
