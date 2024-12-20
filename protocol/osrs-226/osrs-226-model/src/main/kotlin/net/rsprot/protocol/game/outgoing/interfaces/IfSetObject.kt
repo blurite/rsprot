@@ -17,7 +17,7 @@ import net.rsprot.protocol.util.CombinedId
 public class IfSetObject private constructor(
     public val combinedId: Int,
     private val _obj: UShort,
-    private val _count: UShort,
+    public val count: Int,
 ) : OutgoingGameMessage {
     public constructor(
         interfaceId: Int,
@@ -27,7 +27,7 @@ public class IfSetObject private constructor(
     ) : this(
         CombinedId(interfaceId, componentId).combinedId,
         obj.toUShort(),
-        count.toUShort(),
+        count,
     )
 
     public constructor(
@@ -37,7 +37,7 @@ public class IfSetObject private constructor(
     ) : this(
         combinedId,
         obj.toUShort(),
-        count.toUShort(),
+        count,
     )
 
     private val _combinedId: CombinedId
@@ -48,8 +48,6 @@ public class IfSetObject private constructor(
         get() = _combinedId.componentId
     public val obj: Int
         get() = _obj.toInt()
-    public val count: Int
-        get() = _count.toInt()
     override val category: ServerProtCategory
         get() = GameServerProtCategory.LOW_PRIORITY_PROT
 
@@ -61,7 +59,7 @@ public class IfSetObject private constructor(
 
         if (combinedId != other.combinedId) return false
         if (_obj != other._obj) return false
-        if (_count != other._count) return false
+        if (count != other.count) return false
 
         return true
     }
@@ -69,7 +67,7 @@ public class IfSetObject private constructor(
     override fun hashCode(): Int {
         var result = combinedId.hashCode()
         result = 31 * result + _obj.hashCode()
-        result = 31 * result + _count.hashCode()
+        result = 31 * result + count.hashCode()
         return result
     }
 
