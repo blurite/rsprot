@@ -134,7 +134,9 @@ subprojects {
             // Enable GPG signing for all publications.
             // Signing can be skipped for localhost and GitHub packages,
             // it is only required for Maven Central.
-            signAllPublications()
+            if ("publishAllPublicationsToMavenCentralRepository" in gradle.startParameter.taskNames) {
+                signAllPublications()
+            }
         }
     }
 }
