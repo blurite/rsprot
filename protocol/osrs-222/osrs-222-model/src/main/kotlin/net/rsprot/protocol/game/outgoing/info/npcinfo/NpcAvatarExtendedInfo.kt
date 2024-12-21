@@ -887,67 +887,67 @@ public class NpcAvatarExtendedInfo(
         crawlAnimRight: Int = Int.MIN_VALUE,
         readyAnim: Int = Int.MIN_VALUE,
     ) {
-        var flag = 0
         val bas = blocks.baseAnimationSet
+        var flag = bas.overrides
         if (turnLeftAnim != Int.MIN_VALUE) {
             bas.turnLeftAnim = turnLeftAnim.toUShort()
-            flag = BaseAnimationSet.TURN_LEFT_ANIM_FLAG
+            flag = flag or BaseAnimationSet.TURN_LEFT_ANIM_FLAG
         }
         if (turnRightAnim != Int.MIN_VALUE) {
             bas.turnRightAnim = turnRightAnim.toUShort()
-            flag = BaseAnimationSet.TURN_RIGHT_ANIM_FLAG
+            flag = flag or BaseAnimationSet.TURN_RIGHT_ANIM_FLAG
         }
         if (walkAnim != Int.MIN_VALUE) {
             bas.walkAnim = walkAnim.toUShort()
-            flag = BaseAnimationSet.WALK_ANIM_FLAG
+            flag = flag or BaseAnimationSet.WALK_ANIM_FLAG
         }
         if (walkAnimBack != Int.MIN_VALUE) {
             bas.walkAnimBack = walkAnimBack.toUShort()
-            flag = BaseAnimationSet.WALK_ANIM_BACK_FLAG
+            flag = flag or BaseAnimationSet.WALK_ANIM_BACK_FLAG
         }
         if (walkAnimLeft != Int.MIN_VALUE) {
             bas.walkAnimLeft = walkAnimLeft.toUShort()
-            flag = BaseAnimationSet.WALK_ANIM_LEFT_FLAG
+            flag = flag or BaseAnimationSet.WALK_ANIM_LEFT_FLAG
         }
         if (walkAnimRight != Int.MIN_VALUE) {
             bas.walkAnimRight = walkAnimRight.toUShort()
-            flag = BaseAnimationSet.WALK_ANIM_RIGHT_FLAG
+            flag = flag or BaseAnimationSet.WALK_ANIM_RIGHT_FLAG
         }
         if (runAnim != Int.MIN_VALUE) {
             bas.runAnim = runAnim.toUShort()
-            flag = BaseAnimationSet.RUN_ANIM_FLAG
+            flag = flag or BaseAnimationSet.RUN_ANIM_FLAG
         }
         if (runAnimBack != Int.MIN_VALUE) {
             bas.runAnimBack = runAnimBack.toUShort()
-            flag = BaseAnimationSet.RUN_ANIM_BACK_FLAG
+            flag = flag or BaseAnimationSet.RUN_ANIM_BACK_FLAG
         }
         if (runAnimLeft != Int.MIN_VALUE) {
             bas.runAnimLeft = runAnimLeft.toUShort()
-            flag = BaseAnimationSet.RUN_ANIM_LEFT_FLAG
+            flag = flag or BaseAnimationSet.RUN_ANIM_LEFT_FLAG
         }
         if (runAnimRight != Int.MIN_VALUE) {
             bas.runAnimRight = runAnimRight.toUShort()
-            flag = BaseAnimationSet.RUN_ANIM_RIGHT_FLAG
+            flag = flag or BaseAnimationSet.RUN_ANIM_RIGHT_FLAG
         }
         if (crawlAnim != Int.MIN_VALUE) {
             bas.crawlAnim = crawlAnim.toUShort()
-            flag = BaseAnimationSet.CRAWL_ANIM_FLAG
+            flag = flag or BaseAnimationSet.CRAWL_ANIM_FLAG
         }
         if (crawlAnimBack != Int.MIN_VALUE) {
             bas.crawlAnimBack = crawlAnimBack.toUShort()
-            flag = BaseAnimationSet.CRAWL_ANIM_BACK_FLAG
+            flag = flag or BaseAnimationSet.CRAWL_ANIM_BACK_FLAG
         }
         if (crawlAnimLeft != Int.MIN_VALUE) {
             bas.crawlAnimLeft = crawlAnimLeft.toUShort()
-            flag = BaseAnimationSet.CRAWL_ANIM_LEFT_FLAG
+            flag = flag or BaseAnimationSet.CRAWL_ANIM_LEFT_FLAG
         }
         if (crawlAnimRight != Int.MIN_VALUE) {
             bas.crawlAnimRight = crawlAnimRight.toUShort()
-            flag = BaseAnimationSet.CRAWL_ANIM_RIGHT_FLAG
+            flag = flag or BaseAnimationSet.CRAWL_ANIM_RIGHT_FLAG
         }
         if (readyAnim != Int.MIN_VALUE) {
             bas.readyAnim = readyAnim.toUShort()
-            flag = BaseAnimationSet.READY_ANIM_FLAG
+            flag = flag or BaseAnimationSet.READY_ANIM_FLAG
         }
         bas.overrides = flag
         flags = flags or BAS_CHANGE
