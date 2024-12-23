@@ -18,6 +18,7 @@ import net.rsprot.protocol.message.OutgoingGameMessage
 import net.rsprot.protocol.message.codec.incoming.MessageConsumer
 import java.net.InetAddress
 import java.util.Queue
+import java.util.concurrent.atomic.AtomicReference
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds
 import kotlin.time.TimeSource
@@ -62,7 +63,7 @@ public class Session<R>(
             outgoingMessageQueueProvider.provide()
         }
     public val inetAddress: InetAddress = ctx.inetAddress()
-    private var disconnectionHook: Runnable? = null
+    private var disconnectionHook: AtomicReference<Runnable?> = AtomicReference(null)
 
     @Volatile
     private var channelStatus: ChannelStatus = ChannelStatus.OPEN
@@ -93,7 +94,7 @@ public class Session<R>(
      */
     internal fun triggerIdleClosing() {
         if (requestClose()) {
-            this.disconnectionHook?.run()
+            invokeDisconnectionHook()
         }
     }
 
@@ -185,15 +186,15 @@ public class Session<R>(
      */
     public fun setDisconnectionHook(hook: Runnable) {
         val currentHook = this.disconnectionHook
-        if (currentHook != null) {
+        val assigned = currentHook.compareAndSet(null, hook)
+        if (!assigned) {
             throw IllegalStateException("A disconnection hook has already been registered!")
         }
-        this.disconnectionHook = hook
         // Immediately trigger the disconnection hook if the channel already went inactive before
         // the hook could be triggered
         if (!ctx.channel().isActive) {
             if (requestClose()) {
-                hook.run()
+                invokeDisconnectionHook()
             }
         }
     }
@@ -384,6 +385,15 @@ public class Session<R>(
      * no more packets should be decoded.
      */
     internal fun isFull(): Boolean = counter.isFull()
+
+    /**
+     * Invokes the disconnection hook if it isn't null, while also nulling out the property,
+     * so that it will never get invoked more than once, even if it ends up getting called from
+     * different threads simultaneously.
+     */
+    private fun invokeDisconnectionHook() {
+        this.disconnectionHook.getAndSet(null)?.run()
+    }
 
     private enum class ChannelStatus {
         OPEN,
