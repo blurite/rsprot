@@ -84,8 +84,12 @@ public class PlayerAvatar internal constructor(
      * Whether this avatar is completed hidden from everyone else. Note that this completely skips
      * sending any information to the client about this given avatar, it is not the same as soft
      * hiding via the appearance extended info.
+     * The benefit to this function is that no plugins or RuneLite implementations can snoop on other
+     * players that are meant to be hidden. The downside, however, is that because the client has no
+     * knowledge of that specific avatar whatsoever, un-hiding while the player is moving is not as
+     * smooth as with the appearance variant, since it first appears as if the player teleported in.
      */
-    internal var hidden: Boolean = false
+    public var hidden: Boolean = false
 
     /**
      * The [PlayerInfoProtocol.cycleCount] when this avatar was allocated.
@@ -95,20 +99,6 @@ public class PlayerAvatar internal constructor(
      * this possibility exists, and it could result in some rather odd bugs.
      */
     internal var allocateCycle: Int = PlayerInfoProtocol.cycleCount
-
-    /**
-     * Sets the avatar as hidden (or unhidden, depending on [hidden]). When hidden via this function,
-     * no information is transmitted to the clients about this avatar. It is a hard-hiding function,
-     * unlike the one via appearance extended info, which strictly only hides client-side, but all
-     * clients still receive information about the client existing.
-     * The benefit to this function is that no plugins or RuneLite implementations can snoop on other
-     * players that are meant to be hidden. The downside, however, is that because the client has no
-     * knowledge of that specific avatar whatsoever, un-hiding while the player is moving is not as
-     * smooth as with the appearance variant, since it first appears as if the player teleported in.
-     */
-    public fun setHidden(hidden: Boolean) {
-        this.hidden = hidden
-    }
 
     /**
      * Resets all the properties of the given avatar to their default values.
