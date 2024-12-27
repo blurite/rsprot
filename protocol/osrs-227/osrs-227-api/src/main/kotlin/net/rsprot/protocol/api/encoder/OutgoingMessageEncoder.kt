@@ -69,8 +69,6 @@ public abstract class OutgoingMessageEncoder : ChannelOutboundHandlerAdapter() {
             } finally {
                 ReferenceCountUtil.release(msg)
             }
-            // IntelliJ and gradle seem to disagree about this being nullable...
-            @Suppress("SENSELESS_COMPARISON")
             if (buf != null) {
                 if (buf.isReadable) {
                     ctx.write(buf, promise)
@@ -141,7 +139,6 @@ public abstract class OutgoingMessageEncoder : ChannelOutboundHandlerAdapter() {
             Prot.VAR_BYTE -> headerSize += Byte.SIZE_BYTES
             Prot.VAR_SHORT -> headerSize += Short.SIZE_BYTES
         }
-        val excludedLoggingSize = headerSize
         if (msg is ByteBufHolderWrapperHeaderMessage) {
             headerSize += msg.nonByteBufHolderSize()
         }
@@ -163,10 +160,9 @@ public abstract class OutgoingMessageEncoder : ChannelOutboundHandlerAdapter() {
             if (msg is ByteBufHolderWrapperHeaderMessage) {
                 encodePayload(msg, buf)
             }
-            val size = headerSize - excludedLoggingSize
             ctx.write(buf, ctx.voidPromise())
             buf = null
-            onMessageWritten(ctx, opcode, size)
+            onMessageWritten(ctx, opcode, bytes)
         } finally {
             buf?.release()
         }
