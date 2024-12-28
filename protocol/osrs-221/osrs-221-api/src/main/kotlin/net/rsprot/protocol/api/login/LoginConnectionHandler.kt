@@ -34,7 +34,7 @@ public class LoginConnectionHandler<R>(
     private val sessionId: Long,
 ) : SimpleChannelInboundHandler<IncomingLoginMessage>(IncomingLoginMessage::class.java) {
     private var loginState: LoginState = LoginState.UNINITIALIZED
-    private lateinit var loginPacket: IncomingLoginMessage
+    private var loginPacket: IncomingLoginMessage? = null
     private lateinit var proofOfWork: ProofOfWork<*, *>
 
     override fun handlerAdded(ctx: ChannelHandlerContext) {
@@ -75,12 +75,11 @@ public class LoginConnectionHandler<R>(
      * proof of work response.
      */
     private fun releaseLoginBlock() {
-        // If login block isn't initialized yet, do nothing
-        if (!this::loginPacket.isInitialized) {
-            return
-        }
+        // If login block isn't initialized yet, or has already been decoded, do nothing
+        val loginPacket = this.loginPacket ?: return
+        this.loginPacket = null
         val jagBuffer =
-            when (val packet = this.loginPacket) {
+            when (val packet = loginPacket) {
                 is GameLogin -> packet.buffer
                 is GameReconnect -> packet.buffer
                 else -> return
@@ -235,6 +234,8 @@ public class LoginConnectionHandler<R>(
         ctx: ChannelHandlerContext,
         remainingBetaArchives: RemainingBetaArchives?,
     ) {
+        val loginPacket = this.loginPacket ?: return
+        this.loginPacket = null
         val responseHandler = GameLoginResponseHandler(networkService, ctx)
         when (val packet = loginPacket) {
             is GameLogin -> {
