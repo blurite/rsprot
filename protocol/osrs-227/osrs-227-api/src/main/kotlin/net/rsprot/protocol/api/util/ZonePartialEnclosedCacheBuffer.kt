@@ -77,7 +77,7 @@ public class ZonePartialEnclosedCacheBuffer
         }
 
         private fun logPossibleLeak() {
-            if (currentZoneComputationCount < DEFAULT_ZONE_COUNT_BEFORE_LEAK_WARNING) {
+            if (currentZoneComputationCount < zoneCountBeforeLeakWarning) {
                 return
             }
             logger.warn { "Update zone partial enclosed buffers have not been correctly released!" }
@@ -111,7 +111,7 @@ public class ZonePartialEnclosedCacheBuffer
          * Checks and forcibly releases retained buffers if the number of unreleased buffers exceeds a predefined threshold.
          *
          * - **Periodic Forcible Release**: If the total number of retained buffers that could not be released reaches
-         * 100 ([DEFAULT_BUF_RETENTION_COUNT_BEFORE_RELEASE]), this method will begin to forcibly release these buffers during
+         * 100 ([bufRetentionCountBeforeRelease]), this method will begin to forcibly release these buffers during
          * each [releaseBuffers] call to prevent memory leaks.
          *
          * This mechanism is a safeguard to ensure that buffers are eventually released even in cases where they were not
@@ -119,7 +119,7 @@ public class ZonePartialEnclosedCacheBuffer
          * underlying issue.
          */
         private fun releaseBuffersOnThreshold() {
-            if (retainedBufferReferences.size >= DEFAULT_BUF_RETENTION_COUNT_BEFORE_RELEASE) {
+            if (retainedBufferReferences.size >= bufRetentionCountBeforeRelease) {
                 val releaseTarget = retainedBufferReferences.removeFirst()
                 releaseBuffers(releaseTarget, true)
             }
