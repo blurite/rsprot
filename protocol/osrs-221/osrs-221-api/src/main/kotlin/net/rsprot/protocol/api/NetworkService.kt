@@ -77,7 +77,6 @@ import kotlin.time.measureTime
  * @property npcInfoProtocol the protocol responsible for tracking and computing everything related
  * to the NPC info packet for every player
  */
-@OptIn(ExperimentalUnsignedTypes::class)
 @Suppress("MemberVisibilityCanBePrivate")
 public class NetworkService<R>
     internal constructor(
@@ -94,6 +93,8 @@ public class NetworkService<R>
         internal val gameMessageHandlers: GameMessageHandlers,
         internal val loginHandlers: LoginHandlers,
         internal val configuration: NetworkConfiguration,
+        internal val zoneCountBeforeLeakWarning: Int,
+        internal val bufRetentionCountBeforeRelease: Int,
         public val huffmanCodecProvider: HuffmanCodecProvider,
         public val gameMessageConsumerRepositoryProvider: GameMessageConsumerRepositoryProvider<R>,
         rsaKeyPair: RsaKeyPair,
@@ -209,7 +210,7 @@ public class NetworkService<R>
             // In normal circumstances, it should never hit this scenario, as
             // it requires 25,000 unique zones to have a partial enclosed buffer
             // which is basically an eight of the entire game map as a whole, excluding instances.
-            if (++currentZoneCallCount >= 25_000) {
+            if (++currentZoneCallCount >= zoneCountBeforeLeakWarning) {
                 logger.warn {
                     "Update zone partial enclosed buffers have not been correctly released!"
                 }
@@ -230,7 +231,7 @@ public class NetworkService<R>
         public fun postUpdate() {
             currentZoneCallCount = 0
             val bufferList = this.updateZonePartialEnclosedBufferList
-            if (bufferList.size >= 100) {
+            if (bufferList.size >= bufRetentionCountBeforeRelease) {
                 val first = bufferList.removeFirst()
                 releaseBuffers(first, true)
             }

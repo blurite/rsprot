@@ -82,7 +82,7 @@ class ZonePartialEnclosedCacheBufferTest {
     fun `retain buffers that cannot be released`() {
         val cache = ZonePartialEnclosedCacheBuffer(listOf(OldSchoolClientType.DESKTOP))
 
-        val threshold = ZonePartialEnclosedCacheBuffer.BUF_RETENTION_COUNT_BEFORE_RELEASE
+        val threshold = ZonePartialEnclosedCacheBuffer.DEFAULT_BUF_RETENTION_COUNT_BEFORE_RELEASE
         val retainedBuffers = (0..<threshold).map { Unpooled.buffer().retain() }
 
         try {
@@ -105,7 +105,7 @@ class ZonePartialEnclosedCacheBufferTest {
     fun `force release retained buffers when threshold is reached`() {
         val cache = ZonePartialEnclosedCacheBuffer(listOf(OldSchoolClientType.DESKTOP))
 
-        val threshold = ZonePartialEnclosedCacheBuffer.BUF_RETENTION_COUNT_BEFORE_RELEASE
+        val threshold = ZonePartialEnclosedCacheBuffer.DEFAULT_BUF_RETENTION_COUNT_BEFORE_RELEASE
         val retainedBuffersSplit1 = (0..<threshold).map { Unpooled.buffer().retain() }
         val retainedBuffersSplit2 = (0..<threshold).map { Unpooled.buffer().retain() }
         val retainedBuffers = retainedBuffersSplit1 + retainedBuffersSplit2

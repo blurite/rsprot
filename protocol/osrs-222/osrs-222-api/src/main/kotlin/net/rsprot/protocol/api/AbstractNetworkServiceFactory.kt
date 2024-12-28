@@ -88,6 +88,24 @@ public abstract class AbstractNetworkServiceFactory<R> {
         get() = false
 
     /**
+     * The maximum number of zone buffers that can be computed in one game cycle
+     * before the computation code begins to warn the user about a potential leak.
+     */
+    public open val zoneCountBeforeLeakWarning: Int
+        get() = DEFAULT_ZONE_COUNT_BEFORE_LEAK_WARNING
+
+    /**
+     * The maximum number of game cycles a zone buffer will be kept around for
+     * before forcibly releasing it. This is secondary validation in case
+     * a buffer is written over to Netty, but something happens with the
+     * connection behind it and the packet actually never gets written over
+     * or released - so this code will ensure that once the time is up, that
+     * buffer still is released.
+     */
+    public open val bufRetentionCountBeforeRelease: Int
+        get() = DEFAULT_BUF_RETENTION_COUNT_BEFORE_RELEASE
+
+    /**
      * Gets the bootstrap factory used to register the network service.
      * The bootstrap factory offers the initial socket and Netty configurations
      * to be used within this library. These configurations are by default
@@ -290,11 +308,18 @@ public abstract class AbstractNetworkServiceFactory<R> {
             getGameMessageHandlers(),
             getLoginHandlers(),
             getNetworkConfiguration().build(),
+            zoneCountBeforeLeakWarning,
+            bufRetentionCountBeforeRelease,
             huffman,
             getGameMessageConsumerRepositoryProvider(),
             getRsaKeyPair(),
             getJs5Configuration(),
             getJs5GroupProvider(),
         )
+    }
+
+    private companion object {
+        private const val DEFAULT_ZONE_COUNT_BEFORE_LEAK_WARNING: Int = 25_000
+        private const val DEFAULT_BUF_RETENTION_COUNT_BEFORE_RELEASE: Int = 100
     }
 }
