@@ -54,7 +54,9 @@ public class ZonePartialEnclosedCacheBuffer
          * - [net.rsprot.protocol.game.outgoing.zone.payload.ObjEnabledOps]
          * - [net.rsprot.protocol.game.outgoing.zone.payload.SoundArea]
          */
-        public fun <T : ZoneProt> computeZone(pendingTickProtList: List<T>): EnumMap<OldSchoolClientType, ByteBuf> {
+        public fun <T : ZoneProt> computeZone(
+            pendingTickProtList: Collection<T>,
+        ): EnumMap<OldSchoolClientType, ByteBuf> {
             val clientBuffers = buildZoneProtBuffers(pendingTickProtList)
             activeCachedBuffers += clientBuffers.values
             incrementZoneComputationCount()
@@ -80,7 +82,9 @@ public class ZonePartialEnclosedCacheBuffer
             return buffer
         }
 
-        private fun <T : ZoneProt> buildZoneProtBuffers(protList: List<T>): EnumMap<OldSchoolClientType, ByteBuf> {
+        private fun <T : ZoneProt> buildZoneProtBuffers(
+            protList: Collection<T>,
+        ): EnumMap<OldSchoolClientType, ByteBuf> {
             val map = createClientBufferEnumMap()
             for (client in supportedClients) {
                 val encoder = supportedEncoders.getOrNull(client) ?: continue
