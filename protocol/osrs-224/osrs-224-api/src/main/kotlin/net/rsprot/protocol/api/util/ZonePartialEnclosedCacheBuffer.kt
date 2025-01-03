@@ -61,6 +61,25 @@ public class ZonePartialEnclosedCacheBuffer
             return clientBuffers
         }
 
+        /**
+         * Computes the expected zone payload **only** for a single [OldSchoolClientType] and returns the corresponding
+         * [ByteBuf].
+         *
+         * Similar to [computeZone], but for a single client rather than all [supportedClients].
+         */
+        public fun <T : ZoneProt> computeZoneForClient(
+            client: OldSchoolClientType,
+            pendingTickProtList: List<T>,
+        ): ByteBuf {
+            val encoder = supportedEncoders[client]
+
+            val buffer = encoder.buildCache(byteBufAllocator, pendingTickProtList)
+            activeCachedBuffers.add(buffer)
+            incrementZoneComputationCount()
+
+            return buffer
+        }
+
         private fun <T : ZoneProt> buildZoneProtBuffers(protList: List<T>): EnumMap<OldSchoolClientType, ByteBuf> {
             val map = createClientBufferEnumMap()
             for (client in supportedClients) {
