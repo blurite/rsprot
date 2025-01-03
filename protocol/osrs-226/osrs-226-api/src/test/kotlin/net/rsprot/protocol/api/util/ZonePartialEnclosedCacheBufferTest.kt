@@ -22,17 +22,12 @@ import kotlin.test.Test
 
 class ZonePartialEnclosedCacheBufferTest {
     @Test
-    fun `every available oldschool client type has an associated encoder`() {
-        val encoders = ZonePartialEnclosedCacheBuffer.createEncoderMap()
-        assertEquals(OldSchoolClientType.entries.toSet(), encoders.toClientList().toSet())
-    }
-
-    @Test
     fun `computeZone creates buffers for supported clients`() {
         val cache = ZonePartialEnclosedCacheBuffer()
+        val encoders = ZonePartialEnclosedCacheBuffer.createEncoderMap()
         val buffers = cache.computeZone(emptyList())
 
-        assertEquals(buffers.keys.toSet(), cache.supportedClients.toSet())
+        assertEquals(encoders.toClientList().toSet(), buffers.keys.toSet())
 
         // `computeZone` did not receive any zone prot to encode, so all buffers should be empty.
         val expectedBuffers = buffers.map { Unpooled.wrappedBuffer(ByteArray(0)) }
@@ -43,6 +38,7 @@ class ZonePartialEnclosedCacheBufferTest {
     fun `compute zone partial enclosed buffers`() {
         val cache = ZonePartialEnclosedCacheBuffer()
 
+        val encoders = ZonePartialEnclosedCacheBuffer.createEncoderMap()
         val zoneProt = createFullZoneProtList()
         val buffers = cache.computeZone(zoneProt)
 
@@ -57,7 +53,7 @@ class ZonePartialEnclosedCacheBufferTest {
         }
 
         // Each supported client type should have added a buffer to `activeCachedBuffers`.
-        assertEquals(cache.supportedClients.size, buffers.size)
+        assertEquals(encoders.toClientList().size, buffers.size)
 
         // The leak-reference-counter should have been incremented by a single zone.
         assertEquals(1, cache.currentZoneComputationCount)

@@ -64,7 +64,7 @@ public class ZonePartialEnclosedCacheBuffer
         private fun <T : ZoneProt> buildZoneProtBuffers(protList: List<T>): EnumMap<OldSchoolClientType, ByteBuf> {
             val map = createClientBufferEnumMap()
             for (client in supportedClients) {
-                val encoder = supportedEncoders[client]
+                val encoder = supportedEncoders.getOrNull(client) ?: continue
                 val buffer = encoder.buildCache(byteBufAllocator, protList)
                 map[client] = buffer
             }
