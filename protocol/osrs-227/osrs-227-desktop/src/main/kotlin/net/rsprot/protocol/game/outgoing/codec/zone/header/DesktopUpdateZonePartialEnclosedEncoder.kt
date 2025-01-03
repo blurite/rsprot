@@ -66,7 +66,7 @@ public class DesktopUpdateZonePartialEnclosedEncoder : MessageEncoder<UpdateZone
          */
         override fun <T : ZoneProt> buildCache(
             allocator: ByteBufAllocator,
-            messages: List<T>,
+            messages: Collection<T>,
         ): ByteBuf {
             val buffer =
                 allocator

@@ -184,6 +184,8 @@ public class GameLoginResponseHandler<R>(
                 LoginClientType.ENHANCED_WINDOWS -> OldSchoolClientType.DESKTOP
                 LoginClientType.ENHANCED_LINUX -> OldSchoolClientType.DESKTOP
                 LoginClientType.ENHANCED_MAC -> OldSchoolClientType.DESKTOP
+                LoginClientType.ENHANCED_ANDROID -> OldSchoolClientType.ANDROID
+                LoginClientType.ENHANCED_IOS -> OldSchoolClientType.IOS
                 else -> null
             }
         return oldSchoolClientType

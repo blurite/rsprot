@@ -54,17 +54,40 @@ public class ZonePartialEnclosedCacheBuffer
          * - [net.rsprot.protocol.game.outgoing.zone.payload.ObjEnabledOps]
          * - [net.rsprot.protocol.game.outgoing.zone.payload.SoundArea]
          */
-        public fun <T : ZoneProt> computeZone(pendingTickProtList: List<T>): EnumMap<OldSchoolClientType, ByteBuf> {
+        public fun <T : ZoneProt> computeZone(
+            pendingTickProtList: Collection<T>,
+        ): EnumMap<OldSchoolClientType, ByteBuf> {
             val clientBuffers = buildZoneProtBuffers(pendingTickProtList)
             activeCachedBuffers += clientBuffers.values
             incrementZoneComputationCount()
             return clientBuffers
         }
 
-        private fun <T : ZoneProt> buildZoneProtBuffers(protList: List<T>): EnumMap<OldSchoolClientType, ByteBuf> {
+        /**
+         * Computes the expected zone payload **only** for a single [OldSchoolClientType] and returns the corresponding
+         * [ByteBuf].
+         *
+         * Similar to [computeZone], but for a single client rather than all [supportedClients].
+         */
+        public fun <T : ZoneProt> computeZoneForClient(
+            client: OldSchoolClientType,
+            pendingTickProtList: Collection<T>,
+        ): ByteBuf {
+            val encoder = supportedEncoders[client]
+
+            val buffer = encoder.buildCache(byteBufAllocator, pendingTickProtList)
+            activeCachedBuffers.add(buffer)
+            incrementZoneComputationCount()
+
+            return buffer
+        }
+
+        private fun <T : ZoneProt> buildZoneProtBuffers(
+            protList: Collection<T>,
+        ): EnumMap<OldSchoolClientType, ByteBuf> {
             val map = createClientBufferEnumMap()
             for (client in supportedClients) {
-                val encoder = supportedEncoders[client]
+                val encoder = supportedEncoders.getOrNull(client) ?: continue
                 val buffer = encoder.buildCache(byteBufAllocator, protList)
                 map[client] = buffer
             }
