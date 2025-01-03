@@ -35,6 +35,31 @@ class ZonePartialEnclosedCacheBufferTest {
     }
 
     @Test
+    fun `computeZoneForClient generates a single buffer for the specified client`() {
+        val cache = ZonePartialEnclosedCacheBuffer()
+        val zoneProt = createFullZoneProtList()
+        val client = OldSchoolClientType.DESKTOP
+
+        val buffer = cache.computeZoneForClient(client, zoneProt)
+
+        // Each zone prot should _at minimum_ write their `indexedEncoder` id. (written as a byte)
+        // Ensuring every zone prot opcode/payload is written correctly falls out of scope for this test.
+        val expectedMinReadableBytes = zoneProt.size * Byte.SIZE_BYTES
+        assertTrue(
+            buffer.readableBytes() >= expectedMinReadableBytes,
+            "Expected `$expectedMinReadableBytes` readable bytes from buffer for client: $client. " +
+                "(bytes=${buffer.readableBytes()})",
+        )
+
+        assertEquals(
+            1,
+            cache.currentZoneComputationCount,
+            "Zone computation should increment by 1 for a single client's buffer.",
+        )
+        assertEquals(1, cache.activeCachedBuffers.size)
+    }
+
+    @Test
     fun `releaseBuffers resets computation count and releases buffers correctly`() {
         val cache = ZonePartialEnclosedCacheBuffer(listOf(OldSchoolClientType.DESKTOP))
 
