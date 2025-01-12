@@ -12,8 +12,8 @@ public class HiscoreRequestDecoder : MessageDecoder<HiscoreRequest> {
     override val prot: ClientProt = GameClientProt.HISCORE_REQUEST
 
     override fun decode(buffer: JagByteBuf): HiscoreRequest {
-        val type = buffer.g1()
         val requestId = buffer.g1()
+        val type = buffer.g1()
         val name = buffer.gjstr()
         return HiscoreRequest(
             type,
