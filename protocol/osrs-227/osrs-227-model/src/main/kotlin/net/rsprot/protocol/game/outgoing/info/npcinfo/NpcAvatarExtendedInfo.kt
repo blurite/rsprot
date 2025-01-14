@@ -972,6 +972,18 @@ public class NpcAvatarExtendedInfo(
     }
 
     /**
+     * Resets any cached base animation set values, making the NPC identical to that
+     * from the cache as far as base animations go.
+     */
+    public fun resetBaseAnimationSet() {
+        checkCommunicationThread()
+        val bas = blocks.baseAnimationSet
+        if (bas.overrides == 0) return
+        bas.overrides = 0
+        flags = flags or BAS_CHANGE
+    }
+
+    /**
      * Sets the ready animation of this NPC to the provided [id].
      * @param id the ready animation id
      */
