@@ -10,8 +10,8 @@ public class OpPlayer6Decoder : MessageDecoder<OpPlayer> {
     override val prot: ClientProt = GameClientProt.OPPLAYER6
 
     override fun decode(buffer: JagByteBuf): OpPlayer {
-        val index = buffer.g2Alt3()
         val controlKey = buffer.g1Alt2() == 1
+        val index = buffer.g2Alt2()
         return OpPlayer(
             index,
             controlKey,

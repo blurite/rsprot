@@ -11,9 +11,9 @@ public class MoveMinimapClickDecoder : MessageDecoder<MoveMinimapClick> {
 
     override fun decode(buffer: JagByteBuf): MoveMinimapClick {
         // The x, z and keyCombination get scrambled between revisions
-        val z = buffer.g2Alt2()
-        val x = buffer.g2Alt3()
         val keyCombination = buffer.g1()
+        val z = buffer.g2()
+        val x = buffer.g2Alt2()
 
         // The arguments below are consistent across revisions
         val minimapWidth = buffer.g1()

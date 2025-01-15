@@ -12,12 +12,12 @@ public class IfButtonTDecoder : MessageDecoder<IfButtonT> {
     override val prot: ClientProt = GameClientProt.IF_BUTTONT
 
     override fun decode(buffer: JagByteBuf): IfButtonT {
-        val targetSub = buffer.g2Alt2()
-        val selectedObj = buffer.g2Alt2()
-        val targetCombinedId = buffer.gCombinedIdAlt1()
+        val selectedCombinedId = buffer.gCombinedIdAlt1()
+        val targetSub = buffer.g2()
+        val targetCombinedId = buffer.gCombinedIdAlt2()
         val selectedSub = buffer.g2Alt3()
-        val selectedCombinedId = buffer.gCombinedIdAlt2()
         val targetObj = buffer.g2Alt3()
+        val selectedObj = buffer.g2()
         return IfButtonT(
             selectedCombinedId,
             selectedSub,
