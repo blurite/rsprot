@@ -85,7 +85,7 @@ public class LocAddChangeV2 private constructor(
     override val category: ServerProtCategory
         get() = GameServerProtCategory.HIGH_PRIORITY_PROT
 
-    override val protId: Int = OldSchoolZoneProt.LOC_ADD_CHANGE_V1
+    override val protId: Int = OldSchoolZoneProt.LOC_ADD_CHANGE_V2
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
