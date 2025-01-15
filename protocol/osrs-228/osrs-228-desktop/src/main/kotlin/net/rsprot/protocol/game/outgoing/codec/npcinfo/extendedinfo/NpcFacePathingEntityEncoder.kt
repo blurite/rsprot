@@ -18,7 +18,7 @@ public class NpcFacePathingEntityEncoder : PrecomputedExtendedInfoEncoder<FacePa
                 .buffer(3, 3)
                 .toJagByteBuf()
         buffer.p2Alt3(extendedInfo.index)
-        buffer.p1Alt2(extendedInfo.index shr 16)
+        buffer.p1Alt1(extendedInfo.index shr 16)
         return buffer
     }
 }

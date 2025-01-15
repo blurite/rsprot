@@ -48,17 +48,17 @@ public class NpcBodyCustomisationEncoder : PrecomputedExtendedInfoEncoder<BodyCu
         if (flag and FLAG_REMODEL != 0) {
             buffer.p1(customisation.models.size)
             for (model in customisation.models) {
-                buffer.p2Alt2(model)
+                buffer.p2Alt3(model)
             }
         }
         if (flag and FLAG_RECOLOUR != 0) {
             for (recol in customisation.recolours) {
-                buffer.p2Alt2(recol)
+                buffer.p2Alt3(recol)
             }
         }
         if (flag and FLAG_RETEXTURE != 0) {
             for (retex in customisation.retexture) {
-                buffer.p2Alt3(retex)
+                buffer.p2(retex)
             }
         }
         if (flag and FLAG_MIRROR_LOCAL_PLAYER != 0) {
@@ -68,7 +68,7 @@ public class NpcBodyCustomisationEncoder : PrecomputedExtendedInfoEncoder<BodyCu
     }
 
     private fun JagByteBuf.pFlag(value: Int) {
-        p1Alt3(value)
+        p1(value)
     }
 
     private companion object {

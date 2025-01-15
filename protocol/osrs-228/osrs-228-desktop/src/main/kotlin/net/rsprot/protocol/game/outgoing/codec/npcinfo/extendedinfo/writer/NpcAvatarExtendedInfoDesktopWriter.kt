@@ -118,77 +118,79 @@ public class NpcAvatarExtendedInfoDesktopWriter :
             buffer.p1(clientFlag shr 16)
         }
 
-        // old spotanim
-        if (clientFlag and HEADICON_CUSTOMISATION != 0) {
-            pCachedData(buffer, blocks.headIconCustomisation)
-        }
-        if (clientFlag and TRANSFORMATION != 0) {
-            pCachedData(buffer, blocks.transformation)
-        }
-        if (clientFlag and FACE_COORD != 0) {
-            pCachedData(buffer, blocks.faceCoord)
-        }
+        // ---
         if (clientFlag and FACE_PATHINGENTITY != 0) {
             pCachedData(buffer, blocks.facePathingEntity)
-        }
-        if (clientFlag and LEVEL_CHANGE != 0) {
-            pCachedData(buffer, blocks.combatLevelChange)
-        }
-        if (clientFlag and NAME_CHANGE != 0) {
-            pCachedData(buffer, blocks.nameChange)
-        }
-        if (clientFlag and EXACT_MOVE != 0) {
-            pCachedData(buffer, blocks.exactMove)
-        }
-        if (clientFlag and HEAD_CUSTOMISATION != 0) {
-            pCachedData(buffer, blocks.headCustomisation)
-        }
-        if (clientFlag and BODY_CUSTOMISATION != 0) {
-            pCachedData(buffer, blocks.bodyCustomisation)
-        }
-        if (clientFlag and TINTING != 0) {
-            pCachedData(buffer, blocks.tinting)
-        }
-        if (clientFlag and SPOTANIM != 0) {
-            pCachedData(buffer, blocks.spotAnims)
         }
         if (clientFlag and SAY != 0) {
             pCachedData(buffer, blocks.say)
         }
-        if (clientFlag and OPS != 0) {
-            pCachedData(buffer, blocks.visibleOps)
+        if (clientFlag and BAS_CHANGE != 0) {
+            pCachedData(buffer, blocks.baseAnimationSet)
+        }
+        if (clientFlag and SPOTANIM != 0) {
+            pCachedData(buffer, blocks.spotAnims)
+        }
+        if (clientFlag and TRANSFORMATION != 0) {
+            pCachedData(buffer, blocks.transformation)
+        }
+        if (clientFlag and NAME_CHANGE != 0) {
+            pCachedData(buffer, blocks.nameChange)
+        }
+        if (clientFlag and HITS != 0) {
+            pOnDemandData(buffer, localIndex, blocks.hit, observerIndex)
+        }
+        if (clientFlag and TINTING != 0) {
+            pCachedData(buffer, blocks.tinting)
         }
         if (clientFlag and SEQUENCE != 0) {
             pCachedData(buffer, blocks.sequence)
         }
-        if (clientFlag and BAS_CHANGE != 0) {
-            pCachedData(buffer, blocks.baseAnimationSet)
+        if (clientFlag and EXACT_MOVE != 0) {
+            pCachedData(buffer, blocks.exactMove)
         }
-        if (clientFlag and HITS != 0) {
-            pOnDemandData(buffer, localIndex, blocks.hit, observerIndex)
+        if (clientFlag and LEVEL_CHANGE != 0) {
+            pCachedData(buffer, blocks.combatLevelChange)
+        }
+        if (clientFlag and HEAD_CUSTOMISATION != 0) {
+            pCachedData(buffer, blocks.headCustomisation)
+        }
+        if (clientFlag and FACE_COORD != 0) {
+            pCachedData(buffer, blocks.faceCoord)
+        }
+        if (clientFlag and BODY_CUSTOMISATION != 0) {
+            pCachedData(buffer, blocks.bodyCustomisation)
+        }
+        // old spotanim
+        if (clientFlag and HEADICON_CUSTOMISATION != 0) {
+            pCachedData(buffer, blocks.headIconCustomisation)
+        }
+        if (clientFlag and OPS != 0) {
+            pCachedData(buffer, blocks.visibleOps)
         }
     }
 
     @Suppress("unused")
     private companion object {
-        private const val SEQUENCE: Int = 0x1
-        private const val EXTENDED_SHORT: Int = 0x2
-        private const val HITS: Int = 0x4
-        private const val OLD_SPOTANIM_UNUSED: Int = 0x8
-        private const val FACE_COORD: Int = 0x10
+        private const val EXTENDED_SHORT: Int = 0x10
+        private const val EXTENDED_MEDIUM: Int = 0x800
+
         private const val FACE_PATHINGENTITY: Int = 0x20
-        private const val SAY: Int = 0x40
-        private const val TRANSFORMATION: Int = 0x80
-        private const val EXTENDED_MEDIUM: Int = 0x100
-        private const val BODY_CUSTOMISATION: Int = 0x200
-        private const val TINTING: Int = 0x400
-        private const val LEVEL_CHANGE: Int = 0x800
-        private const val HEAD_CUSTOMISATION: Int = 0x1000
-        private const val NAME_CHANGE: Int = 0x2000
-        private const val EXACT_MOVE: Int = 0x4000
-        private const val OPS: Int = 0x8000
+        private const val SAY: Int = 0x4
+        private const val BAS_CHANGE: Int = 0x40000
         private const val SPOTANIM: Int = 0x10000
-        private const val BAS_CHANGE: Int = 0x20000
-        private const val HEADICON_CUSTOMISATION: Int = 0x40000
+        private const val TRANSFORMATION: Int = 0x2
+        private const val NAME_CHANGE: Int = 0x1000
+        private const val HITS: Int = 0x8
+        private const val TINTING: Int = 0x100
+        private const val SEQUENCE: Int = 0x40
+        private const val EXACT_MOVE: Int = 0x2000
+        private const val LEVEL_CHANGE: Int = 0x200
+        private const val HEAD_CUSTOMISATION: Int = 0x4000
+        private const val FACE_COORD: Int = 0x1
+        private const val BODY_CUSTOMISATION: Int = 0x8000
+        private const val OLD_SPOTANIM_UNUSED: Int = 0x80
+        private const val HEADICON_CUSTOMISATION: Int = 0x20000
+        private const val OPS: Int = 0x400
     }
 }
