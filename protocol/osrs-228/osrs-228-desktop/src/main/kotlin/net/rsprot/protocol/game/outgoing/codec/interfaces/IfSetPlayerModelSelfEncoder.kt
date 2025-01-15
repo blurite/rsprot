@@ -17,7 +17,7 @@ public class IfSetPlayerModelSelfEncoder : MessageEncoder<IfSetPlayerModelSelf> 
         message: IfSetPlayerModelSelf,
     ) {
         // The boolean is inverted client-sided, it's more of a "skip copying"
+        buffer.p1Alt3(if (message.copyObjs) 0 else 1)
         buffer.pCombinedIdAlt2(message.combinedId)
-        buffer.p1(if (message.copyObjs) 0 else 1)
     }
 }

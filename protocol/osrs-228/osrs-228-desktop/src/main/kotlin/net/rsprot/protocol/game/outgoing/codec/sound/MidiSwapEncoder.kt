@@ -18,9 +18,9 @@ public class MidiSwapEncoder : MessageEncoder<MidiSwap> {
         // The order in the client remains the same for the function call at the end
         // of the packet, as:
         // swap(fadeOutDelay, fadeOutSpeed, fadeInDelay, fadeInSpeed)
-        buffer.p2Alt3(message.fadeInSpeed)
-        buffer.p2Alt3(message.fadeOutDelay)
-        buffer.p2Alt2(message.fadeInDelay)
-        buffer.p2Alt1(message.fadeOutSpeed)
+        buffer.p2Alt2(message.fadeOutSpeed)
+        buffer.p2Alt2(message.fadeInSpeed)
+        buffer.p2(message.fadeInDelay)
+        buffer.p2(message.fadeOutDelay)
     }
 }

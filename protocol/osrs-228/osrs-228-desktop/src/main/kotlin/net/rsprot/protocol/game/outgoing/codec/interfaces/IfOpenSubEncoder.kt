@@ -6,7 +6,7 @@ import net.rsprot.protocol.ServerProt
 import net.rsprot.protocol.game.outgoing.interfaces.IfOpenSub
 import net.rsprot.protocol.game.outgoing.prot.GameServerProt
 import net.rsprot.protocol.message.codec.MessageEncoder
-import net.rsprot.protocol.util.pCombinedIdAlt2
+import net.rsprot.protocol.util.pCombinedIdAlt1
 
 public class IfOpenSubEncoder : MessageEncoder<IfOpenSub> {
     override val prot: ServerProt = GameServerProt.IF_OPENSUB
@@ -16,8 +16,8 @@ public class IfOpenSubEncoder : MessageEncoder<IfOpenSub> {
         buffer: JagByteBuf,
         message: IfOpenSub,
     ) {
-        buffer.p2Alt2(message.interfaceId)
-        buffer.pCombinedIdAlt2(message.destinationCombinedId)
-        buffer.p1Alt1(message.type)
+        buffer.pCombinedIdAlt1(message.destinationCombinedId)
+        buffer.p1Alt3(message.type)
+        buffer.p2Alt1(message.interfaceId)
     }
 }

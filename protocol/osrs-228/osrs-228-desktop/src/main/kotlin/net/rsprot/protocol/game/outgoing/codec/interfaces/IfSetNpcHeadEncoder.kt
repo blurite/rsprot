@@ -16,7 +16,7 @@ public class IfSetNpcHeadEncoder : MessageEncoder<IfSetNpcHead> {
         buffer: JagByteBuf,
         message: IfSetNpcHead,
     ) {
-        buffer.p2(message.npc)
+        buffer.p2Alt3(message.npc)
         buffer.pCombinedIdAlt3(message.combinedId)
     }
 }

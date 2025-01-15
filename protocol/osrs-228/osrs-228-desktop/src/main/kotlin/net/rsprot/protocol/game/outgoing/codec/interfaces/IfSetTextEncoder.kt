@@ -16,7 +16,7 @@ public class IfSetTextEncoder : MessageEncoder<IfSetText> {
         buffer: JagByteBuf,
         message: IfSetText,
     ) {
-        buffer.pjstr(message.text)
         buffer.pCombinedIdAlt3(message.combinedId)
+        buffer.pjstr(message.text)
     }
 }

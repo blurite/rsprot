@@ -17,17 +17,17 @@ public class MapProjAnimEncoder : ZoneProtEncoder<MapProjAnim> {
         // making it easy to identify all the properties of this packet:
         // map_projanim(level, startX, startZ, endX, endZ, targetIndex, id,
         // startHeight, endHeight, startTime, endTime, angle, progress, sourceIndex)
-        buffer.p3Alt3(message.sourceIndex)
-        buffer.p2Alt2(message.endTime)
-        buffer.p2(message.id)
-        buffer.p2Alt2(message.startTime)
-        buffer.p1Alt2(message.coordInZonePacked)
-        buffer.p2Alt2(message.progress)
+        buffer.p1Alt2(message.endHeight)
+        buffer.p1(message.angle)
+        buffer.p2(message.progress)
         buffer.p3Alt2(message.targetIndex)
         buffer.p1(message.startHeight)
-        buffer.p1Alt3(message.deltaX)
-        buffer.p1Alt3(message.endHeight)
-        buffer.p1Alt3(message.deltaZ)
-        buffer.p1Alt3(message.angle)
+        buffer.p1(message.coordInZonePacked)
+        buffer.p1Alt2(message.deltaX)
+        buffer.p2Alt2(message.id)
+        buffer.p2Alt1(message.endTime)
+        buffer.p2Alt1(message.startTime)
+        buffer.p1(message.deltaZ)
+        buffer.p3Alt2(message.sourceIndex)
     }
 }

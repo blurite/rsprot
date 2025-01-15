@@ -18,7 +18,7 @@ public class IfSetRotateSpeedEncoder : MessageEncoder<IfSetRotateSpeed> {
     ) {
         // Note: xSpeed is shifted left by 16 bits (xSpeed << 16) in the client
         buffer.pCombinedId(message.combinedId)
-        buffer.p2(message.ySpeed)
-        buffer.p2Alt1(message.xSpeed)
+        buffer.p2Alt2(message.xSpeed)
+        buffer.p2Alt2(message.ySpeed)
     }
 }

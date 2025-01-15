@@ -8,7 +8,7 @@ import net.rsprot.protocol.game.outgoing.zone.payload.util.LocProperties
 import net.rsprot.protocol.message.ZoneProt
 
 /**
- * Loc add-change v1 packet is used to either add or change a loc in the world.
+ * Loc add-change v2 packet is used to either add or change a loc in the world.
  * The client will add a new loc if none exists by this description,
  * or overwrites an old one with the same layer (layer is obtained through the [shape]
  * property of the loc).
@@ -22,13 +22,36 @@ import net.rsprot.protocol.message.ZoneProt
  * @property opFlags the right-click options enabled on this loc.
  * Use the [net.rsprot.protocol.game.outgoing.util.OpFlags] helper object to create these
  * bitpacked values which can be passed into it.
+ * @property ops a map of mini menu ops to override the defaults with.
+ * If the map is null or empty, the ops will not be overridden and the ones provided in the
+ * respective cache config will be used. If the map has entries, **all** the cache ops are
+ * ignored and the provided map is used. Note that only ops 1-5 will actually be used, any
+ * other values get ignored by the client. As such, if a map is provided that has no keys
+ * of value 1-5, all the ops will simply be hidden.
  */
-public class LocAddChangeV1 private constructor(
+public class LocAddChangeV2 private constructor(
     private val _id: UShort,
     private val coordInZone: CoordInZone,
     private val locProperties: LocProperties,
     public val opFlags: Byte,
+    public val ops: Map<Byte, String>?,
 ) : ZoneProt {
+    public constructor(
+        id: Int,
+        xInZone: Int,
+        zInZone: Int,
+        shape: Int,
+        rotation: Int,
+        opFlags: Byte,
+        ops: Map<Byte, String>?,
+    ) : this(
+        id.toUShort(),
+        CoordInZone(xInZone, zInZone),
+        LocProperties(shape, rotation),
+        opFlags,
+        ops,
+    )
+
     public constructor(
         id: Int,
         xInZone: Int,
@@ -41,6 +64,7 @@ public class LocAddChangeV1 private constructor(
         CoordInZone(xInZone, zInZone),
         LocProperties(shape, rotation),
         opFlags,
+        null,
     )
 
     public val id: Int
@@ -67,12 +91,14 @@ public class LocAddChangeV1 private constructor(
         if (this === other) return true
         if (javaClass != other?.javaClass) return false
 
-        other as LocAddChangeV1
+        other as LocAddChangeV2
 
         if (_id != other._id) return false
         if (coordInZone != other.coordInZone) return false
         if (locProperties != other.locProperties) return false
         if (opFlags != other.opFlags) return false
+        if (ops != other.ops) return false
+        if (protId != other.protId) return false
 
         return true
     }
@@ -81,17 +107,21 @@ public class LocAddChangeV1 private constructor(
         var result = _id.hashCode()
         result = 31 * result + coordInZone.hashCode()
         result = 31 * result + locProperties.hashCode()
-        result = 31 * result + opFlags.hashCode()
+        result = 31 * result + opFlags
+        result = 31 * result + (ops?.hashCode() ?: 0)
+        result = 31 * result + protId
         return result
     }
 
-    override fun toString(): String =
-        "LocAddChangeV1(" +
+    override fun toString(): String {
+        return "LocAddChangeV2(" +
             "id=$id, " +
             "xInZone=$xInZone, " +
             "zInZone=$zInZone, " +
             "shape=$shape, " +
-            "rotation=$rotation, " +
-            "opFlags=$opFlags" +
+            "rotation=$rotation" +
+            "opFlags=$opFlags, " +
+            "ops=$ops, " +
             ")"
+    }
 }

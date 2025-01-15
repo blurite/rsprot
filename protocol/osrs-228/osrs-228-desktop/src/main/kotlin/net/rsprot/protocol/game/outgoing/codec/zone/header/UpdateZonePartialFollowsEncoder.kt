@@ -15,8 +15,8 @@ public class UpdateZonePartialFollowsEncoder : MessageEncoder<UpdateZonePartialF
         buffer: JagByteBuf,
         message: UpdateZonePartialFollows,
     ) {
-        buffer.p1Alt3(message.level)
-        buffer.p1Alt1(message.zoneX)
-        buffer.p1(message.zoneZ)
+        buffer.p1Alt3(message.zoneX)
+        buffer.p1Alt2(message.zoneZ)
+        buffer.p1(message.level)
     }
 }

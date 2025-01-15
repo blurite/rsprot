@@ -16,8 +16,8 @@ public class IfSetObjectEncoder : MessageEncoder<IfSetObject> {
         buffer: JagByteBuf,
         message: IfSetObject,
     ) {
-        buffer.pCombinedIdAlt3(message.combinedId)
-        buffer.p4Alt3(message.count)
+        buffer.p4Alt1(message.count)
         buffer.p2Alt2(message.obj)
+        buffer.pCombinedIdAlt3(message.combinedId)
     }
 }
