@@ -1,6 +1,7 @@
 # RSProt
 
 [![GitHub Actions][actions-badge]][actions] [![MIT license][mit-badge]][mit]
+[![OldSchool - 228 (Alpha)](https://img.shields.io/badge/OldSchool-228_(Alpha)-9a1abd)](https://github.com/blurite/rsprot/tree/master/protocol/osrs-228/osrs-228-api/src/main/kotlin/net/rsprot/protocol/api)
 [![OldSchool - 227 (Alpha)](https://img.shields.io/badge/OldSchool-227_(Alpha)-9a1abd)](https://github.com/blurite/rsprot/tree/master/protocol/osrs-227/osrs-227-api/src/main/kotlin/net/rsprot/protocol/api)
 [![OldSchool - 226 (Alpha)](https://img.shields.io/badge/OldSchool-226_(Alpha)-9a1abd)](https://github.com/blurite/rsprot/tree/master/protocol/osrs-226/osrs-226-api/src/main/kotlin/net/rsprot/protocol/api)
 [![OldSchool - 225 (Alpha)](https://img.shields.io/badge/OldSchool-225_(Alpha)-9a1abd)](https://github.com/blurite/rsprot/tree/master/protocol/osrs-225/osrs-225-api/src/main/kotlin/net/rsprot/protocol/api)
@@ -22,7 +23,7 @@ In order to add it to your server, add the below line under dependencies
 in your build.gradle.kts.
 
 ```kts
-implementation("net.rsprot:osrs-227-api:1.0.0-ALPHA-20250103")
+implementation("net.rsprot:osrs-228-api:1.0.0-ALPHA-20250115")
 ```
 
 An in-depth tutorial on how to implement it will be added into this read-me
@@ -38,12 +39,12 @@ other revisions are welcome, but will not be provided by default.
 - Java 11
 
 ## Supported Versions
-This library currently supports revision 221-227 OldSchool desktop clients.
+This library currently supports revision 221-228 OldSchool desktop clients.
 
 ## Quick Guide
 This section covers a quick guide for how to use the protocol after implementing
 the base API. It is not a guide for the base API itself, that will come in the
-future. This specific quick guide refers to revision 227.
+future. This specific quick guide refers to revision 228.
 
 #### Player Initialization
 When a player logs in, a new protocol instance must be allocated for
@@ -241,10 +242,22 @@ protocol. This can be done via:
 
 ## Changes
 
+### Revision 228
+Revision 228 comes with very little changes, only introducing a single
+new server packet. This revision does not delete any other packets, or
+change almost anything else in the client, even outside of networking.
+
+#### Additions
+1. LOC_ADD_CHANGE_V2: A new variant of LOC_ADD_CHANGE that has support for
+server-provided minimenu ops. An example of this would be "Cut-down" on trees,
+allowing the server to change that to something completely dynamic.
+OldSchool RuneScape is no longer using the older packet, even if no option
+overrides are used.
+
 ### Revision 227
 Revision 227 was mostly a clean-up revision, doing little overall changes.
 
-### Additions
+#### Additions
 1. An unknown client packet which is not used on native desktop nor java.
 This packet might be used in mobile, we do not know. It has a size of 1 byte.
 2. PACKET_GROUP_START: A packet which lets the server tell the client to process
@@ -255,7 +268,7 @@ sizes and payloads).
 3. WORLDENTITY_INFO_V4: A new variant of world entity info, adding support
 for defining the offset for the ship model/center-point in fine client units.
 
-### Removals
+#### Removals
 1. WORLDENTITY_INFO_V1 (server)
 2. WORLDENTITY_INFO_V2 (server)
 3. NPC_INFO_SMALL_V4 (server)
