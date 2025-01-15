@@ -23,7 +23,7 @@ import net.rsprot.protocol.message.ZoneProt
  * Use the [net.rsprot.protocol.game.outgoing.util.OpFlags] helper object to create these
  * bitpacked values which can be passed into it.
  */
-public class LocAddChange private constructor(
+public class LocAddChangeV1 private constructor(
     private val _id: UShort,
     private val coordInZone: CoordInZone,
     private val locProperties: LocProperties,
@@ -67,7 +67,7 @@ public class LocAddChange private constructor(
         if (this === other) return true
         if (javaClass != other?.javaClass) return false
 
-        other as LocAddChange
+        other as LocAddChangeV1
 
         if (_id != other._id) return false
         if (coordInZone != other.coordInZone) return false
@@ -86,7 +86,7 @@ public class LocAddChange private constructor(
     }
 
     override fun toString(): String =
-        "LocAddChange(" +
+        "LocAddChangeV1(" +
             "id=$id, " +
             "xInZone=$xInZone, " +
             "zInZone=$zInZone, " +

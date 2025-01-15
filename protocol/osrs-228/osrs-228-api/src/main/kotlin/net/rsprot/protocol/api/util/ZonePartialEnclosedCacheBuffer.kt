@@ -43,7 +43,7 @@ public class ZonePartialEnclosedCacheBuffer
          * spawned locs or objs, respectively.
          *
          * Zone partial enclosed can include the following, when applicable:
-         * - [net.rsprot.protocol.game.outgoing.zone.payload.LocAddChange]
+         * - [net.rsprot.protocol.game.outgoing.zone.payload.LocAddChangeV1]
          * - [net.rsprot.protocol.game.outgoing.zone.payload.LocAnim]
          * - [net.rsprot.protocol.game.outgoing.zone.payload.LocDel]
          * - [net.rsprot.protocol.game.outgoing.zone.payload.LocMerge]

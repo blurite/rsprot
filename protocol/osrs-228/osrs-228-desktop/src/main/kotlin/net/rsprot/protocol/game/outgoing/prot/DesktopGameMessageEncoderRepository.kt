@@ -123,7 +123,7 @@ import net.rsprot.protocol.game.outgoing.codec.worldentity.WorldEntityInfoV4Enco
 import net.rsprot.protocol.game.outgoing.codec.zone.header.DesktopUpdateZonePartialEnclosedEncoder
 import net.rsprot.protocol.game.outgoing.codec.zone.header.UpdateZoneFullFollowsEncoder
 import net.rsprot.protocol.game.outgoing.codec.zone.header.UpdateZonePartialFollowsEncoder
-import net.rsprot.protocol.game.outgoing.codec.zone.payload.LocAddChangeEncoder
+import net.rsprot.protocol.game.outgoing.codec.zone.payload.LocAddChangeV1Encoder
 import net.rsprot.protocol.game.outgoing.codec.zone.payload.LocAnimEncoder
 import net.rsprot.protocol.game.outgoing.codec.zone.payload.LocDelEncoder
 import net.rsprot.protocol.game.outgoing.codec.zone.payload.LocMergeEncoder
@@ -185,7 +185,7 @@ public object DesktopGameMessageEncoderRepository {
                 bind(UpdateZonePartialFollowsEncoder())
                 bind(DesktopUpdateZonePartialEnclosedEncoder())
 
-                bind(LocAddChangeEncoder())
+                bind(LocAddChangeV1Encoder())
                 bind(LocDelEncoder())
                 bind(LocAnimEncoder())
                 bind(LocMergeEncoder())
