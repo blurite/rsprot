@@ -118,7 +118,6 @@ public class NpcAvatarExtendedInfoDesktopWriter :
             buffer.p1(clientFlag shr 16)
         }
 
-        // ---
         if (clientFlag and FACE_PATHINGENTITY != 0) {
             pCachedData(buffer, blocks.facePathingEntity)
         }
