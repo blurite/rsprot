@@ -17,12 +17,12 @@ public class Js5GroupResponse(
         return content().readableBytes()
     }
 
-    override fun equals(o: Any?): Boolean {
-        if (this === o) return true
-        if (o !is Js5GroupResponse) return false
-        if (!super.equals(o)) return false
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other !is Js5GroupResponse) return false
+        if (!super.equals(other)) return false
 
-        if (key != o.key) return false
+        if (key != other.key) return false
 
         return true
     }
