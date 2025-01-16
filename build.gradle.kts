@@ -1,5 +1,3 @@
-import com.vanniktech.maven.publish.JavadocJar
-import com.vanniktech.maven.publish.KotlinJvm
 import com.vanniktech.maven.publish.SonatypeHost
 import org.jetbrains.kotlin.gradle.plugin.KotlinPluginWrapper
 
@@ -10,7 +8,6 @@ plugins {
     alias(libs.plugins.jmh)
     alias(libs.plugins.ktlint)
     alias(libs.plugins.vanniktech.publish)
-    alias(libs.plugins.dokka)
     `jvm-test-suite`
     `maven-publish`
 }
@@ -53,7 +50,6 @@ private val exclusionRegex = Regex("""osrs-\d+""")
 subprojects {
     apply(plugin = "org.jlleitschuh.gradle.ktlint")
     apply(plugin = "signing")
-    apply(plugin = "org.jetbrains.dokka")
     apply(plugin = "org.jetbrains.kotlin.jvm")
     apply(plugin = "jvm-test-suite")
 
@@ -90,13 +86,6 @@ subprojects {
             groupId = project.group.toString(),
             artifactId = project.name,
             version = project.version.toString(),
-        )
-
-        configure(
-            KotlinJvm(
-                javadocJar = JavadocJar.Dokka("dokkaHtml"),
-                sourcesJar = true,
-            ),
         )
 
         pom {
@@ -143,7 +132,6 @@ subprojects {
 
 afterEvaluate {
     tasks.getByName("generateMetadataFileForMavenPublication") {
-        dependsOn(tasks.getByName("dokkaJavadocJar"))
         dependsOn(tasks.kotlinSourcesJar)
     }
 }
