@@ -24,6 +24,8 @@ public class LoginChannelInitializer<R>(
             "Channel initialized: $ch"
         }
         ch.pipeline().addLast(
+            LoginMessageDecoder(networkService),
+            LoginMessageEncoder(networkService),
             IdleStateHandler(
                 true,
                 NetworkService.INITIAL_TIMEOUT_SECONDS,
@@ -31,8 +33,6 @@ public class LoginChannelInitializer<R>(
                 NetworkService.INITIAL_TIMEOUT_SECONDS,
                 TimeUnit.SECONDS,
             ),
-            LoginMessageDecoder(networkService),
-            LoginMessageEncoder(networkService),
             LoginChannelHandler(networkService),
         )
     }
