@@ -103,6 +103,20 @@ public object RSProtFlags {
         )
 
     @JvmStatic
+    public val captureChat: Boolean =
+        getBoolean(
+            "captureChat",
+            false,
+        )
+
+    @JvmStatic
+    public val captureSay: Boolean =
+        getBoolean(
+            "captureSay",
+            false,
+        )
+
+    @JvmStatic
     public val networkLogging: LogLevel =
         when (networkLoggingString) {
             "off" -> LogLevel.OFF
@@ -149,6 +163,8 @@ public object RSProtFlags {
         log("filterMissingPacketsInClient", filterMissingPacketsInClient)
         log("npcAvatarMaxId", npcAvatarMaxId)
         log("spotanimListCapacity", spotanimListCapacity)
+        log("captureChat", captureChat)
+        log("captureSay", captureSay)
         require(npcAvatarMaxId == -1 || npcAvatarMaxId <= 65534)
         require(spotanimListCapacity in 0..256)
     }

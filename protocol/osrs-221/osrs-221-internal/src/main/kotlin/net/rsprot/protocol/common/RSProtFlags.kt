@@ -97,6 +97,20 @@ public object RSProtFlags {
             256,
         )
 
+    @JvmStatic
+    public val captureChat: Boolean =
+        getBoolean(
+            "captureChat",
+            false,
+        )
+
+    @JvmStatic
+    public val captureSay: Boolean =
+        getBoolean(
+            "captureSay",
+            false,
+        )
+
     init {
         log("development", development)
         log("inventoryObjCheck", inventoryObjCheck)
@@ -107,6 +121,8 @@ public object RSProtFlags {
         log("npcPlayerAvatarTracking", npcPlayerAvatarTracking)
         log("filterMissingPacketsInClient", filterMissingPacketsInClient)
         log("spotanimListCapacity", spotanimListCapacity)
+        log("captureChat", captureChat)
+        log("captureSay", captureSay)
         require(spotanimListCapacity in 0..256)
     }
 

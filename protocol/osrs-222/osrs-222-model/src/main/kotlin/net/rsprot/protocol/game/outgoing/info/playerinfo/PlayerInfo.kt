@@ -569,6 +569,8 @@ public class PlayerInfo internal constructor(
      * This function will be thread-safe relative to other players and can be calculated concurrently for all players.
      */
     internal fun prepareBitcodes() {
+        this.avatar.extendedInfo.observedChatStorage
+            .reset()
         this.highResMovementBuffer = prepareHighResMovement()
     }
 

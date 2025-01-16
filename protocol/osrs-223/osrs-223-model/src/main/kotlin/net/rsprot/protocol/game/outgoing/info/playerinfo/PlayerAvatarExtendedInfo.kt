@@ -82,6 +82,15 @@ public class PlayerAvatarExtendedInfo(
     private var lastAppearanceChangeCycle: Int = 0
 
     /**
+     * A storage of all the observed chat messages that a player saw in a tick.
+     */
+    public val observedChatStorage: ObservedChatStorage =
+        ObservedChatStorage(
+            RSProtFlags.captureChat,
+            RSProtFlags.captureSay,
+        )
+
+    /**
      * Invalidates the appearance cache.
      */
     internal fun invalidateAppearanceCache() {
@@ -1475,6 +1484,7 @@ public class PlayerAvatarExtendedInfo(
         blocks.spotAnims.clear()
         blocks.hit.clear()
         blocks.tinting.clear()
+        observedChatStorage.reset()
     }
 
     /**
@@ -1619,6 +1629,18 @@ public class PlayerAvatarExtendedInfo(
         // If appearance is flagged, ensure we synchronize the changes counter
         if (flag and APPEARANCE != 0) {
             observer.otherAppearanceChangeCycles[localIndex] = lastAppearanceChangeCycle
+        }
+        // Note: The order must be as client expects it, in 223 say is before chat
+        if (flag and SAY != 0) {
+            val appendToChatbox =
+                this.blocks.say.text
+                    ?.get(0) == '~'
+            if (localIndex == observer.localIndex || appendToChatbox) {
+                observer.observedChatStorage.trackSay(this.localIndex, this.blocks.say)
+            }
+        }
+        if (flag and CHAT != 0) {
+            observer.observedChatStorage.trackChat(this.localIndex, this.blocks.chat)
         }
         writer.pExtendedInfo(
             buffer,
