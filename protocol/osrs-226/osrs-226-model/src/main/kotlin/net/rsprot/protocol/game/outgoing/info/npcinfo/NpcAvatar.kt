@@ -69,7 +69,7 @@ public class NpcAvatar internal constructor(
     specific: Boolean,
     allocateCycle: Int,
     public val extendedInfo: NpcAvatarExtendedInfo,
-    public val zoneIndexStorage: ZoneIndexStorage,
+    internal val zoneIndexStorage: ZoneIndexStorage,
 ) : Avatar {
     /**
      * Npc avatar details class wraps all the client properties of a NPC in its own
