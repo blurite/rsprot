@@ -23,7 +23,7 @@ public class LocAddChangeV2Encoder : ZoneProtEncoder<LocAddChangeV2> {
         buffer.p1Alt2(opCount)
         if (!ops.isNullOrEmpty()) {
             for ((key, value) in ops) {
-                buffer.p1Alt1(key.toInt())
+                buffer.p1Alt1(key.toInt() + 1)
                 buffer.pjstr(value)
             }
         }
