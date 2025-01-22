@@ -75,7 +75,7 @@ public class LoginChannelHandler(
                 "INetAddressValidator rejected game connection for channel ${ctx.channel()}"
             }
             ctx
-                .write(LoginResponse.TooManyAttempts)
+                .writeAndFlush(LoginResponse.TooManyAttempts)
                 .addListener(ChannelFutureListener.CLOSE)
             return
         }
@@ -88,7 +88,7 @@ public class LoginChannelHandler(
             "Game connection accepted with session id: ${NumberFormat.getNumberInstance().format(sessionId)}"
         }
         ctx
-            .write(LoginResponse.Successful(sessionId))
+            .writeAndFlush(LoginResponse.Successful(sessionId))
             .addListener(
                 ChannelFutureListener { future ->
                     if (!future.isSuccess) {
@@ -133,7 +133,7 @@ public class LoginChannelHandler(
                 "Invalid JS5 revision received from channel '${ctx.channel()}': $revision"
             }
             ctx
-                .write(LoginResponse.ClientOutOfDate)
+                .writeAndFlush(LoginResponse.ClientOutOfDate)
                 .addListener(ChannelFutureListener.CLOSE)
             return
         }
@@ -153,12 +153,12 @@ public class LoginChannelHandler(
                 "INetAddressValidator rejected JS5 connection for channel ${ctx.channel()}"
             }
             ctx
-                .write(LoginResponse.IPLimit)
+                .writeAndFlush(LoginResponse.IPLimit)
                 .addListener(ChannelFutureListener.CLOSE)
             return
         }
         ctx
-            .write(LoginResponse.Successful(null))
+            .writeAndFlush(LoginResponse.Successful(null))
             .addListener(
                 ChannelFutureListener { future ->
                     if (!future.isSuccess) {
