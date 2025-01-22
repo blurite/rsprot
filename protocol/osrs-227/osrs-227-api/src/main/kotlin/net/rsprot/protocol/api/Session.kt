@@ -385,9 +385,11 @@ public class Session<R>(
     }
 
     /**
-     * Adds an incoming message to the incoming message queue
+     * Adds an incoming message to the incoming message queue.
+     * Function is public to assist with testing, and should not be invoked
+     * by servers outside of that.
      */
-    internal fun addIncomingMessage(incomingGameMessage: IncomingGameMessage) {
+    public fun addIncomingMessage(incomingGameMessage: IncomingGameMessage) {
         if (this.channelStatus != ChannelStatus.OPEN) return
         incomingMessageQueue += incomingGameMessage
     }
