@@ -13,6 +13,7 @@ import net.rsprot.protocol.game.outgoing.GameServerProtCategory
 import net.rsprot.protocol.game.outgoing.zone.payload.SoundArea
 import net.rsprot.protocol.loginprot.incoming.util.LoginBlock
 import net.rsprot.protocol.loginprot.incoming.util.LoginClientType
+import net.rsprot.protocol.message.ConsumableMessage
 import net.rsprot.protocol.message.IncomingGameMessage
 import net.rsprot.protocol.message.OutgoingGameMessage
 import net.rsprot.protocol.message.codec.incoming.MessageConsumer
@@ -117,6 +118,9 @@ public class Session<R>(
         message: OutgoingGameMessage,
         category: ServerProtCategory,
     ) {
+        if (message is ConsumableMessage) {
+            message.consume()
+        }
         if (this.channelStatus != ChannelStatus.OPEN) return
         if (RSProtFlags.filterMissingPacketsInClient) {
             if (loginBlock.clientType == LoginClientType.DESKTOP && message is SoundArea) {
