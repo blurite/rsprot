@@ -212,6 +212,15 @@ public class PlayerInfo internal constructor(
     }
 
     /**
+     * Gets all high priority players. This only applies to players marked as high
+     * priority via [setHighPriority], and not avatars which have a global high
+     * priority status.
+     */
+    public fun clearAllHighPriority() {
+        this.highPriorityPlayers.fill(0L)
+    }
+
+    /**
      * Checks whether the player avatar at the specified [index] is high priority.
      * @param index the index of the player to check.
      * @return whether the checked player is high priority.
@@ -242,6 +251,48 @@ public class PlayerInfo internal constructor(
         val bit = 1L shl (index and 0x3F)
         val cur = this.highPriorityPlayers[longIndex]
         this.highPriorityPlayers[longIndex] = cur and bit.inv()
+    }
+
+    /**
+     * Gets the avatars of all the players that have been marked as high priority
+     * for us specifically. This does not include avatars which have a global high
+     * priority.
+     * @return an arraylist of all the avatars that are marked high priority to us.
+     */
+    public fun getHighPriorityAvatars(): List<PlayerAvatar> {
+        val players = highPriorityPlayers
+        val count = players.sumOf(Long::countOneBits)
+        if (count == 0) return emptyList()
+        val list = ArrayList<PlayerAvatar>(count)
+        loop@ for (i in players.indices) {
+            val bitpacked = players[i]
+            if (bitpacked == 0L) continue
+            val offset = i * Long.SIZE_BITS
+            var index = -1
+            while (true) {
+                index = nextSetBit(index + 1, bitpacked)
+                if (index == -1) continue@loop
+                val avatar = protocol.getPlayerInfo(offset + index)?.avatar ?: continue
+                list.add(avatar)
+            }
+        }
+        return list
+    }
+
+    /**
+     * Gets the index of the next set bit in the specified [long], starting from [index].
+     * @param index the starting index to count the bits from, ignoring anything before that.
+     * @param long the value to find the next set bit in
+     * @return the index of the next set bit (value 0-63), or -1 if there are no more bits set
+     * after [index].
+     */
+    private fun nextSetBit(
+        index: Int,
+        long: Long,
+    ): Int {
+        val remaining = long and (-1L shl index)
+        if (remaining == 0L) return -1
+        return remaining.countTrailingZeroBits()
     }
 
     /**

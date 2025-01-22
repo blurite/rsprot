@@ -26,7 +26,8 @@ public class PlayerAvatar internal constructor(
     /**
      * The index of our local player.
      */
-    internal var localPlayerIndex: Int = localIndex
+    public var localPlayerIndex: Int = localIndex
+        internal set
 
     /**
      * The preferred resize range. The player information protocol will attempt to
@@ -275,6 +276,22 @@ public class PlayerAvatar internal constructor(
                 resizeCounter = 0
             }
         }
+    }
+
+    override fun toString(): String {
+        return "PlayerAvatar(" +
+            "localPlayerIndex=$localPlayerIndex, " +
+            "preferredResizeRange=$preferredResizeRange, " +
+            "resizeRange=$resizeRange, " +
+            "resizeCounter=$resizeCounter, " +
+            "currentCoord=$currentCoord, " +
+            "worldId=$worldId, " +
+            "priority=$priority, " +
+            "lastCoord=$lastCoord, " +
+            "extendedInfo=$extendedInfo, " +
+            "hidden=$hidden, " +
+            "allocateCycle=$allocateCycle" +
+            ")"
     }
 
     private companion object {
