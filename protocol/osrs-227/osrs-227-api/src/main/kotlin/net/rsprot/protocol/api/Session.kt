@@ -126,7 +126,14 @@ public class Session<R>(
         if (message is ConsumableMessage) {
             message.consume()
         }
-        if (this.channelStatus != ChannelStatus.OPEN) return
+        if (this.channelStatus != ChannelStatus.OPEN) {
+            if (message is ReferenceCounted) {
+                if (message.refCnt() > 0) {
+                    ReferenceCountUtil.safeRelease(message)
+                }
+            }
+            return
+        }
         if (RSProtFlags.filterMissingPacketsInClient) {
             if (loginBlock.clientType == LoginClientType.DESKTOP && message is SoundArea) {
                 throw IllegalArgumentException(
