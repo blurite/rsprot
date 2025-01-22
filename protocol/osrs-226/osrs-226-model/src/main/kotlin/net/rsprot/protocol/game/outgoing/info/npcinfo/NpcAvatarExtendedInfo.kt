@@ -624,8 +624,8 @@ public class NpcAvatarExtendedInfo(
     /**
      * Transforms this NPC into the [id] provided.
      * It should be noted that this extended info block is transient and only applies to one cycle.
-     * The server is expected to additionally change the id of the avatar itself, otherwise
-     * any new observers will get the old variant.
+     * The server is expected to additionally change the id of the avatar itself via [NpcAvatar.setId],
+     * otherwise any new observers will get the old variant.
      * @param id the new id of the npc to transform to.
      */
     public fun setTransmogrification(id: Int) {
