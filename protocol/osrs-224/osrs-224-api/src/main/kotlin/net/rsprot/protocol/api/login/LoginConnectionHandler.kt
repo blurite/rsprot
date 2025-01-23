@@ -129,25 +129,36 @@ public class LoginConnectionHandler<R>(
                 }
                 val pow = this.proofOfWork
                 verifyProofOfWork(pow, msg.result).handle { success, exception ->
-                    if (success != true) {
+                    try {
+                        if (success != true) {
+                            networkLog(logger) {
+                                "Incorrect proof of work response received from " +
+                                    "channel '${ctx.channel()}': ${msg.result}, challenge was: $pow"
+                            }
+                            ctx.writeAndFlush(LoginResponse.LoginFail1).addListener(ChannelFutureListener.CLOSE)
+                            return@handle
+                        }
+                        if (exception != null) {
+                            logger.error(exception) {
+                                "Exception during proof of work verification " +
+                                    "from channel '${ctx.channel()}': $exception"
+                            }
+                            ctx.writeAndFlush(LoginResponse.LoginFail1).addListener(ChannelFutureListener.CLOSE)
+                        }
                         networkLog(logger) {
-                            "Incorrect proof of work response received from " +
-                                "channel '${ctx.channel()}': ${msg.result}, challenge was: $pow"
+                            "Correct proof of work response received from channel '${ctx.channel()}': ${msg.result}"
                         }
-                        ctx.writeAndFlush(LoginResponse.LoginFail1).addListener(ChannelFutureListener.CLOSE)
-                        return@handle
-                    }
-                    if (exception != null) {
-                        logger.error(exception) {
-                            "Exception during proof of work verification " +
-                                "from channel '${ctx.channel()}': $exception"
+                        continueLogin(ctx)
+                    } catch (e: Exception) {
+                        logger.error(e) {
+                            "Error in handling processed proof of work."
                         }
-                        ctx.writeAndFlush(LoginResponse.LoginFail1).addListener(ChannelFutureListener.CLOSE)
+                    } catch (t: Throwable) {
+                        logger.error(t) {
+                            "Fatal error in handling processed proof of work."
+                        }
+                        throw t
                     }
-                    networkLog(logger) {
-                        "Correct proof of work response received from channel '${ctx.channel()}': ${msg.result}"
-                    }
-                    continueLogin(ctx)
                 }
             }
 
@@ -266,48 +277,59 @@ public class LoginConnectionHandler<R>(
             networkService.betaWorld,
             packet.decoder,
         ).handle { block, exception ->
-            if (block == null || exception != null) {
-                if (exception is CompletionException && exception.cause == InvalidVersionException) {
-                    // Write a message indicating client is outdated
+            try {
+                if (block == null || exception != null) {
+                    if (exception is CompletionException && exception.cause == InvalidVersionException) {
+                        // Write a message indicating client is outdated
+                        ctx
+                            .writeAndFlush(LoginResponse.ClientOutOfDate)
+                            .addListener(ChannelFutureListener.CLOSE)
+                        return@handle
+                    }
+                    networkService
+                        .exceptionHandlers
+                        .channelExceptionHandler
+                        .exceptionCaught(ctx, exception)
+                    return@handle
+                }
+                if (sessionId != block.sessionId) {
+                    networkLog(logger) {
+                        "Mismatching game login session id received from channel " +
+                            "'${ctx.channel()}': ${NumberFormat.getNumberInstance().format(block.sessionId)}, " +
+                            "expected value: ${NumberFormat.getNumberInstance().format(sessionId)}"
+                    }
                     ctx
-                        .writeAndFlush(LoginResponse.ClientOutOfDate)
+                        .writeAndFlush(LoginResponse.InvalidLoginPacket)
                         .addListener(ChannelFutureListener.CLOSE)
                     return@handle
                 }
-                networkService
-                    .exceptionHandlers
-                    .channelExceptionHandler
-                    .exceptionCaught(ctx, exception)
-                return@handle
-            }
-            if (sessionId != block.sessionId) {
+                if (remainingBetaArchives != null) {
+                    block.mergeBetaCrcs(remainingBetaArchives)
+                }
                 networkLog(logger) {
-                    "Mismatching game login session id received from channel " +
-                        "'${ctx.channel()}': ${NumberFormat.getNumberInstance().format(block.sessionId)}, " +
-                        "expected value: ${NumberFormat.getNumberInstance().format(sessionId)}"
+                    "Successful game login from channel '${ctx.channel()}': $block"
                 }
-                ctx
-                    .writeAndFlush(LoginResponse.InvalidLoginPacket)
-                    .addListener(ChannelFutureListener.CLOSE)
-                return@handle
-            }
-            if (remainingBetaArchives != null) {
-                block.mergeBetaCrcs(remainingBetaArchives)
-            }
-            networkLog(logger) {
-                "Successful game login from channel '${ctx.channel()}': $block"
-            }
-            val executor = networkService.loginHandlers.loginFlowExecutor
-            if (executor != null) {
-                executor.submit {
-                    try {
-                        networkService.gameConnectionHandler.onLogin(responseHandler, block)
-                    } catch (t: Throwable) {
-                        exceptionCaught(ctx, t)
+                val executor = networkService.loginHandlers.loginFlowExecutor
+                if (executor != null) {
+                    executor.submit {
+                        try {
+                            networkService.gameConnectionHandler.onLogin(responseHandler, block)
+                        } catch (t: Throwable) {
+                            exceptionCaught(ctx, t)
+                        }
                     }
+                } else {
+                    networkService.gameConnectionHandler.onLogin(responseHandler, block)
                 }
-            } else {
-                networkService.gameConnectionHandler.onLogin(responseHandler, block)
+            } catch (e: Exception) {
+                logger.error(e) {
+                    "Error in handling decoded login block."
+                }
+            } catch (t: Throwable) {
+                logger.error(t) {
+                    "Fatal error in handling decoded login block."
+                }
+                throw t
             }
         }
     }
@@ -323,50 +345,61 @@ public class LoginConnectionHandler<R>(
             networkService.betaWorld,
             packet.decoder,
         ).handle { block, exception ->
-            if (block == null || exception != null) {
-                if (exception is CompletionException && exception.cause == InvalidVersionException) {
-                    // Write a message indicating client is outdated
+            try {
+                if (block == null || exception != null) {
+                    if (exception is CompletionException && exception.cause == InvalidVersionException) {
+                        // Write a message indicating client is outdated
+                        ctx
+                            .writeAndFlush(LoginResponse.ClientOutOfDate)
+                            .addListener(ChannelFutureListener.CLOSE)
+                        return@handle
+                    }
+                    logger.error(exception) {
+                        "Failed to decode game reconnect block for channel ${ctx.channel()}"
+                    }
                     ctx
-                        .writeAndFlush(LoginResponse.ClientOutOfDate)
+                        .writeAndFlush(LoginResponse.LoginFail2)
                         .addListener(ChannelFutureListener.CLOSE)
                     return@handle
                 }
-                logger.error(exception) {
-                    "Failed to decode game reconnect block for channel ${ctx.channel()}"
-                }
-                ctx
-                    .writeAndFlush(LoginResponse.LoginFail2)
-                    .addListener(ChannelFutureListener.CLOSE)
-                return@handle
-            }
-            if (sessionId != block.sessionId) {
-                networkLog(logger) {
-                    "Mismatching reconnect session id received from channel " +
-                        "'${ctx.channel()}': ${NumberFormat.getNumberInstance().format(block.sessionId)}, " +
-                        "expected value: ${NumberFormat.getNumberInstance().format(sessionId)}"
-                }
-                ctx
-                    .writeAndFlush(LoginResponse.InvalidLoginPacket)
-                    .addListener(ChannelFutureListener.CLOSE)
-                return@handle
-            }
-            if (remainingBetaArchives != null) {
-                block.mergeBetaCrcs(remainingBetaArchives)
-            }
-            networkLog(logger) {
-                "Successful game reconnection from channel '${ctx.channel()}': $block"
-            }
-            val executor = networkService.loginHandlers.loginFlowExecutor
-            if (executor != null) {
-                executor.submit {
-                    try {
-                        networkService.gameConnectionHandler.onReconnect(responseHandler, block)
-                    } catch (t: Throwable) {
-                        exceptionCaught(ctx, t)
+                if (sessionId != block.sessionId) {
+                    networkLog(logger) {
+                        "Mismatching reconnect session id received from channel " +
+                            "'${ctx.channel()}': ${NumberFormat.getNumberInstance().format(block.sessionId)}, " +
+                            "expected value: ${NumberFormat.getNumberInstance().format(sessionId)}"
                     }
+                    ctx
+                        .writeAndFlush(LoginResponse.InvalidLoginPacket)
+                        .addListener(ChannelFutureListener.CLOSE)
+                    return@handle
                 }
-            } else {
-                networkService.gameConnectionHandler.onReconnect(responseHandler, block)
+                if (remainingBetaArchives != null) {
+                    block.mergeBetaCrcs(remainingBetaArchives)
+                }
+                networkLog(logger) {
+                    "Successful game reconnection from channel '${ctx.channel()}': $block"
+                }
+                val executor = networkService.loginHandlers.loginFlowExecutor
+                if (executor != null) {
+                    executor.submit {
+                        try {
+                            networkService.gameConnectionHandler.onReconnect(responseHandler, block)
+                        } catch (t: Throwable) {
+                            exceptionCaught(ctx, t)
+                        }
+                    }
+                } else {
+                    networkService.gameConnectionHandler.onReconnect(responseHandler, block)
+                }
+            } catch (e: Exception) {
+                logger.error(e) {
+                    "Error in handling decoded login block."
+                }
+            } catch (t: Throwable) {
+                logger.error(t) {
+                    "Fatal error in handling decoded login block."
+                }
+                throw t
             }
         }
     }
