@@ -21,7 +21,6 @@ import net.rsprot.protocol.api.logging.networkLog
 import net.rsprot.protocol.api.metrics.addDisconnectionReason
 import net.rsprot.protocol.common.client.OldSchoolClientType
 import net.rsprot.protocol.loginprot.incoming.util.LoginBlock
-import net.rsprot.protocol.loginprot.incoming.util.LoginClientType
 import net.rsprot.protocol.loginprot.outgoing.LoginResponse
 import java.util.concurrent.TimeUnit
 
@@ -45,22 +44,12 @@ public class GameLoginResponseHandler<R>(
         response: LoginResponse.Ok,
         loginBlock: LoginBlock<*>,
     ): Session<R>? {
+        // Ensure it isn't null - our decoder pre-validates it long before hitting this function,
+        // so this exception should never be hit.
         val oldSchoolClientType =
-            getOldSchoolClientType(loginBlock)
-        if (oldSchoolClientType == null || !networkService.isSupported(oldSchoolClientType)) {
-            networkLog(logger) {
-                "Unsupported client type received from channel " +
-                    "'${ctx.channel()}': $oldSchoolClientType, login block: $loginBlock"
+            checkNotNull(loginBlock.clientType.toOldSchoolClientType()) {
+                "Login client type cannot be null"
             }
-            ctx
-                .writeAndFlush(LoginResponse.InvalidLoginPacket)
-                .addListener(ChannelFutureListener.CLOSE)
-            networkService.trafficMonitor.loginChannelTrafficMonitor.addDisconnectionReason(
-                ctx.inetAddress(),
-                LoginDisconnectionReason.GAME_INVALID_LOGIN_PACKET,
-            )
-            return null
-        }
         if (!ctx.channel().isActive) {
             networkLog(logger) {
                 "Channel '${ctx.channel()}' has gone inactive; login block: $loginBlock"
@@ -126,20 +115,12 @@ public class GameLoginResponseHandler<R>(
         response: LoginResponse.ReconnectOk,
         loginBlock: LoginBlock<*>,
     ): Session<R>? {
+        // Ensure it isn't null - our decoder pre-validates it long before hitting this function,
+        // so this exception should never be hit.
         val oldSchoolClientType =
-            getOldSchoolClientType(loginBlock)
-        if (oldSchoolClientType == null || !networkService.isSupported(oldSchoolClientType)) {
-            networkLog(logger) {
-                "Unsupported client type received from channel " +
-                    "'${ctx.channel()}': $oldSchoolClientType, login block: $loginBlock"
+            checkNotNull(loginBlock.clientType.toOldSchoolClientType()) {
+                "Login client type cannot be null"
             }
-            ctx.writeAndFlush(LoginResponse.InvalidLoginPacket)
-            networkService.trafficMonitor.loginChannelTrafficMonitor.addDisconnectionReason(
-                ctx.inetAddress(),
-                LoginDisconnectionReason.GAME_INVALID_LOGIN_PACKET,
-            )
-            return null
-        }
         if (!ctx.channel().isActive) {
             networkLog(logger) {
                 "Channel '${ctx.channel()}' has gone inactive; login block: $loginBlock"
@@ -175,20 +156,6 @@ public class GameLoginResponseHandler<R>(
         val encodingCipher = provider.provide(decodeSeed)
         val decodingCipher = provider.provide(encodeSeed)
         return StreamCipherPair(encodingCipher, decodingCipher)
-    }
-
-    private fun getOldSchoolClientType(loginBlock: LoginBlock<*>): OldSchoolClientType? {
-        val oldSchoolClientType =
-            when (loginBlock.clientType) {
-                LoginClientType.DESKTOP -> OldSchoolClientType.DESKTOP
-                LoginClientType.ENHANCED_WINDOWS -> OldSchoolClientType.DESKTOP
-                LoginClientType.ENHANCED_LINUX -> OldSchoolClientType.DESKTOP
-                LoginClientType.ENHANCED_MAC -> OldSchoolClientType.DESKTOP
-                LoginClientType.ENHANCED_ANDROID -> OldSchoolClientType.ANDROID
-                LoginClientType.ENHANCED_IOS -> OldSchoolClientType.IOS
-                else -> null
-            }
-        return oldSchoolClientType
     }
 
     private fun createSession(
