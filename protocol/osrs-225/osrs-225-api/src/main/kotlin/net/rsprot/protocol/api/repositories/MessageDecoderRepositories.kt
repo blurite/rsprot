@@ -22,11 +22,12 @@ public class MessageDecoderRepositories private constructor(
     public val gameMessageDecoderRepositories: ClientTypeMap<MessageDecoderRepository<ClientProt>>,
 ) {
     public constructor(
+        clientTypes: List<OldSchoolClientType>,
         exp: BigInteger,
         mod: BigInteger,
         gameMessageDecoderRepositories: ClientTypeMap<MessageDecoderRepository<ClientProt>>,
     ) : this(
-        LoginMessageDecoderRepository.build(exp, mod),
+        LoginMessageDecoderRepository.build(clientTypes, exp, mod),
         Js5MessageDecoderRepository.build(),
         gameMessageDecoderRepositories,
     )
@@ -49,6 +50,7 @@ public class MessageDecoderRepositories private constructor(
                     repositories,
                 )
             return MessageDecoderRepositories(
+                clientTypes,
                 rsaKeyPair.exponent,
                 rsaKeyPair.modulus,
                 clientTypeMap,

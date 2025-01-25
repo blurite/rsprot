@@ -21,7 +21,6 @@ import net.rsprot.protocol.api.logging.networkLog
 import net.rsprot.protocol.api.metrics.addDisconnectionReason
 import net.rsprot.protocol.common.client.OldSchoolClientType
 import net.rsprot.protocol.loginprot.incoming.util.LoginBlock
-import net.rsprot.protocol.loginprot.incoming.util.LoginClientType
 import net.rsprot.protocol.loginprot.outgoing.LoginResponse
 import java.util.concurrent.TimeUnit
 
@@ -36,6 +35,26 @@ public class GameLoginResponseHandler<R>(
     public val ctx: ChannelHandlerContext,
 ) {
     /**
+     * Validates the new connection by ensuring the connected user hasn't reached an IP limitation due
+     * to too many connections from the same IP.
+     * This function does not write any response to the client. It simply returns whether a new connection
+     * is allowed to take place. The server is responsible for writing the [LoginResponse.TooManyAttempts]
+     * response back to the client via [writeFailedResponse], should they wish to do so.
+     */
+    public fun validateNewConnection(): Boolean {
+        val address = ctx.inetAddress()
+        val count =
+            networkService
+                .iNetAddressHandlers
+                .gameInetAddressTracker
+                .getCount(address)
+        return networkService
+            .iNetAddressHandlers
+            .inetAddressValidator
+            .acceptGameConnection(address, count)
+    }
+
+    /**
      * Writes a successful login response to the client.
      * @param response the login response to write
      * @param loginBlock the login request that the client initially made
@@ -44,58 +63,13 @@ public class GameLoginResponseHandler<R>(
     public fun writeSuccessfulResponse(
         response: LoginResponse.Ok,
         loginBlock: LoginBlock<*>,
-    ): Session<R>? {
+    ): Session<R> {
+        // Ensure it isn't null - our decoder pre-validates it long before hitting this function,
+        // so this exception should never be hit.
         val oldSchoolClientType =
-            getOldSchoolClientType(loginBlock)
-        if (oldSchoolClientType == null || !networkService.isSupported(oldSchoolClientType)) {
-            networkLog(logger) {
-                "Unsupported client type received from channel " +
-                    "'${ctx.channel()}': $oldSchoolClientType, login block: $loginBlock"
+            checkNotNull(loginBlock.clientType.toOldSchoolClientType()) {
+                "Login client type cannot be null"
             }
-            ctx
-                .writeAndFlush(LoginResponse.InvalidLoginPacket)
-                .addListener(ChannelFutureListener.CLOSE)
-            networkService.trafficMonitor.loginChannelTrafficMonitor.addDisconnectionReason(
-                ctx.inetAddress(),
-                LoginDisconnectionReason.GAME_INVALID_LOGIN_PACKET,
-            )
-            return null
-        }
-        if (!ctx.channel().isActive) {
-            networkLog(logger) {
-                "Channel '${ctx.channel()}' has gone inactive; login block: $loginBlock"
-            }
-            networkService.trafficMonitor.loginChannelTrafficMonitor.addDisconnectionReason(
-                ctx.inetAddress(),
-                LoginDisconnectionReason.GAME_CHANNEL_INACTIVE,
-            )
-            return null
-        }
-        val address = ctx.inetAddress()
-        val count =
-            networkService
-                .iNetAddressHandlers
-                .gameInetAddressTracker
-                .getCount(address)
-        val accepted =
-            networkService
-                .iNetAddressHandlers
-                .inetAddressValidator
-                .acceptGameConnection(address, count)
-        // Secondary validation just before we allow the server to log the user in
-        if (!accepted) {
-            networkLog(logger) {
-                "INetAddressValidator rejected game login for channel ${ctx.channel()}"
-            }
-            ctx
-                .writeAndFlush(LoginResponse.TooManyAttempts)
-                .addListener(ChannelFutureListener.CLOSE)
-            networkService.trafficMonitor.loginChannelTrafficMonitor.addDisconnectionReason(
-                ctx.inetAddress(),
-                LoginDisconnectionReason.GAME_TOO_MANY_ATTEMPTS,
-            )
-            return null
-        }
         val cipher = createStreamCipherPair(loginBlock)
 
         if (networkService.betaWorld) {
@@ -125,31 +99,13 @@ public class GameLoginResponseHandler<R>(
     public fun writeSuccessfulResponse(
         response: LoginResponse.ReconnectOk,
         loginBlock: LoginBlock<*>,
-    ): Session<R>? {
+    ): Session<R> {
+        // Ensure it isn't null - our decoder pre-validates it long before hitting this function,
+        // so this exception should never be hit.
         val oldSchoolClientType =
-            getOldSchoolClientType(loginBlock)
-        if (oldSchoolClientType == null || !networkService.isSupported(oldSchoolClientType)) {
-            networkLog(logger) {
-                "Unsupported client type received from channel " +
-                    "'${ctx.channel()}': $oldSchoolClientType, login block: $loginBlock"
+            checkNotNull(loginBlock.clientType.toOldSchoolClientType()) {
+                "Login client type cannot be null"
             }
-            ctx.writeAndFlush(LoginResponse.InvalidLoginPacket)
-            networkService.trafficMonitor.loginChannelTrafficMonitor.addDisconnectionReason(
-                ctx.inetAddress(),
-                LoginDisconnectionReason.GAME_INVALID_LOGIN_PACKET,
-            )
-            return null
-        }
-        if (!ctx.channel().isActive) {
-            networkLog(logger) {
-                "Channel '${ctx.channel()}' has gone inactive; login block: $loginBlock"
-            }
-            networkService.trafficMonitor.loginChannelTrafficMonitor.addDisconnectionReason(
-                ctx.inetAddress(),
-                LoginDisconnectionReason.GAME_CHANNEL_INACTIVE,
-            )
-            return null
-        }
         val (encodingCipher, decodingCipher) = createStreamCipherPair(loginBlock)
 
         // Unlike in the above case, we kind of have to assume it was successful
@@ -175,20 +131,6 @@ public class GameLoginResponseHandler<R>(
         val encodingCipher = provider.provide(decodeSeed)
         val decodingCipher = provider.provide(encodeSeed)
         return StreamCipherPair(encodingCipher, decodingCipher)
-    }
-
-    private fun getOldSchoolClientType(loginBlock: LoginBlock<*>): OldSchoolClientType? {
-        val oldSchoolClientType =
-            when (loginBlock.clientType) {
-                LoginClientType.DESKTOP -> OldSchoolClientType.DESKTOP
-                LoginClientType.ENHANCED_WINDOWS -> OldSchoolClientType.DESKTOP
-                LoginClientType.ENHANCED_LINUX -> OldSchoolClientType.DESKTOP
-                LoginClientType.ENHANCED_MAC -> OldSchoolClientType.DESKTOP
-                LoginClientType.ENHANCED_ANDROID -> OldSchoolClientType.ANDROID
-                LoginClientType.ENHANCED_IOS -> OldSchoolClientType.IOS
-                else -> null
-            }
-        return oldSchoolClientType
     }
 
     private fun createSession(

@@ -4,6 +4,7 @@ import net.rsprot.buffer.JagByteBuf
 import net.rsprot.buffer.extensions.toJagByteBuf
 import net.rsprot.crypto.xtea.XteaKey
 import net.rsprot.protocol.ClientProt
+import net.rsprot.protocol.common.client.OldSchoolClientType
 import net.rsprot.protocol.common.loginprot.incoming.codec.shared.LoginBlockDecoder
 import net.rsprot.protocol.common.loginprot.incoming.prot.LoginClientProt
 import net.rsprot.protocol.loginprot.incoming.GameReconnect
@@ -11,6 +12,7 @@ import net.rsprot.protocol.message.codec.MessageDecoder
 import java.math.BigInteger
 
 public class GameReconnectDecoder(
+    private val supportedClientTypes: List<OldSchoolClientType>,
     exp: BigInteger,
     mod: BigInteger,
 ) : LoginBlockDecoder<XteaKey>(exp, mod),
@@ -22,7 +24,7 @@ public class GameReconnectDecoder(
         // Mark the buffer as "read" as copy function doesn't do it automatically.
         buffer.buffer.readerIndex(buffer.buffer.writerIndex())
         return GameReconnect(copy.toJagByteBuf()) { jagByteBuf, betaWorld ->
-            decodeLoginBlock(jagByteBuf, betaWorld)
+            decodeLoginBlock(jagByteBuf, betaWorld, supportedClientTypes)
         }
     }
 

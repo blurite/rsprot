@@ -5,10 +5,13 @@ import net.rsprot.buffer.extensions.toJagByteBuf
 import net.rsprot.crypto.rsa.decipherRsa
 import net.rsprot.crypto.xtea.xteaDecrypt
 import net.rsprot.protocol.common.RSProtConstants
+import net.rsprot.protocol.common.client.OldSchoolClientType
 import net.rsprot.protocol.common.loginprot.incoming.codec.shared.exceptions.InvalidVersionException
+import net.rsprot.protocol.common.loginprot.incoming.codec.shared.exceptions.UnsupportedClientException
 import net.rsprot.protocol.loginprot.incoming.util.CyclicRedundancyCheckBlock
 import net.rsprot.protocol.loginprot.incoming.util.HostPlatformStats
 import net.rsprot.protocol.loginprot.incoming.util.LoginBlock
+import net.rsprot.protocol.loginprot.incoming.util.LoginClientType
 import java.math.BigInteger
 
 @Suppress("DuplicatedCode")
@@ -21,6 +24,7 @@ public abstract class LoginBlockDecoder<T>(
     protected fun decodeLoginBlock(
         buffer: JagByteBuf,
         betaWorld: Boolean,
+        supportedClientTypes: List<OldSchoolClientType>,
     ): LoginBlock<T> {
         try {
             val version = buffer.g4()
@@ -29,6 +33,11 @@ public abstract class LoginBlockDecoder<T>(
             }
             val subVersion = buffer.g4()
             val firstClientType = buffer.g1()
+            val loginClientType = LoginClientType[firstClientType]
+            val oldSchoolClientType = loginClientType.toOldSchoolClientType()
+            if (oldSchoolClientType !in supportedClientTypes) {
+                throw UnsupportedClientException
+            }
             val platformType = buffer.g1()
             val constZero1 = buffer.g1()
             val rsaSize = buffer.g2()
@@ -71,6 +80,9 @@ public abstract class LoginBlockDecoder<T>(
                     val constZero2 = xteaBuffer.g1()
                     val hostPlatformStats = decodeHostPlatformStats(xteaBuffer)
                     val secondClientType = xteaBuffer.g1()
+                    if (secondClientType != firstClientType) {
+                        throw UnsupportedClientException
+                    }
                     val crcBlockHeader = xteaBuffer.g4()
                     val crc =
                         if (betaWorld) {
