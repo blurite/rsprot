@@ -34,6 +34,26 @@ public class GameLoginResponseHandler<R>(
     public val ctx: ChannelHandlerContext,
 ) {
     /**
+     * Validates the new connection by ensuring the connected user hasn't reached an IP limitation due
+     * to too many connections from the same IP.
+     * This function does not write any response to the client. It simply returns whether a new connection
+     * is allowed to take place. The server is responsible for writing the [LoginResponse.TooManyAttempts]
+     * response back to the client via [writeFailedResponse], should they wish to do so.
+     */
+    public fun validateNewConnection(): Boolean {
+        val address = ctx.inetAddress()
+        val count =
+            networkService
+                .iNetAddressHandlers
+                .gameInetAddressTracker
+                .getCount(address)
+        return networkService
+            .iNetAddressHandlers
+            .inetAddressValidator
+            .acceptGameConnection(address, count)
+    }
+
+    /**
      * Writes a successful login response to the client.
      * @param response the login response to write
      * @param loginBlock the login request that the client initially made
@@ -42,34 +62,13 @@ public class GameLoginResponseHandler<R>(
     public fun writeSuccessfulResponse(
         response: LoginResponse.Ok,
         loginBlock: LoginBlock<*>,
-    ): Session<R>? {
+    ): Session<R> {
         // Ensure it isn't null - our decoder pre-validates it long before hitting this function,
         // so this exception should never be hit.
         val oldSchoolClientType =
             checkNotNull(loginBlock.clientType.toOldSchoolClientType()) {
                 "Login client type cannot be null"
             }
-        val address = ctx.inetAddress()
-        val count =
-            networkService
-                .iNetAddressHandlers
-                .gameInetAddressTracker
-                .getCount(address)
-        val accepted =
-            networkService
-                .iNetAddressHandlers
-                .inetAddressValidator
-                .acceptGameConnection(address, count)
-        // Secondary validation just before we allow the server to log the user in
-        if (!accepted) {
-            networkLog(logger) {
-                "INetAddressValidator rejected game login for channel ${ctx.channel()}"
-            }
-            ctx
-                .writeAndFlush(LoginResponse.TooManyAttempts)
-                .addListener(ChannelFutureListener.CLOSE)
-            return null
-        }
         val cipher = createStreamCipherPair(loginBlock)
 
         if (networkService.betaWorld) {
