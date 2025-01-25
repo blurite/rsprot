@@ -50,16 +50,6 @@ public class GameLoginResponseHandler<R>(
             checkNotNull(loginBlock.clientType.toOldSchoolClientType()) {
                 "Login client type cannot be null"
             }
-        if (!ctx.channel().isActive) {
-            networkLog(logger) {
-                "Channel '${ctx.channel()}' has gone inactive; login block: $loginBlock"
-            }
-            networkService.trafficMonitor.loginChannelTrafficMonitor.addDisconnectionReason(
-                ctx.inetAddress(),
-                LoginDisconnectionReason.GAME_CHANNEL_INACTIVE,
-            )
-            return null
-        }
         val address = ctx.inetAddress()
         val count =
             networkService
@@ -114,23 +104,13 @@ public class GameLoginResponseHandler<R>(
     public fun writeSuccessfulResponse(
         response: LoginResponse.ReconnectOk,
         loginBlock: LoginBlock<*>,
-    ): Session<R>? {
+    ): Session<R> {
         // Ensure it isn't null - our decoder pre-validates it long before hitting this function,
         // so this exception should never be hit.
         val oldSchoolClientType =
             checkNotNull(loginBlock.clientType.toOldSchoolClientType()) {
                 "Login client type cannot be null"
             }
-        if (!ctx.channel().isActive) {
-            networkLog(logger) {
-                "Channel '${ctx.channel()}' has gone inactive; login block: $loginBlock"
-            }
-            networkService.trafficMonitor.loginChannelTrafficMonitor.addDisconnectionReason(
-                ctx.inetAddress(),
-                LoginDisconnectionReason.GAME_CHANNEL_INACTIVE,
-            )
-            return null
-        }
         val (encodingCipher, decodingCipher) = createStreamCipherPair(loginBlock)
 
         // Unlike in the above case, we kind of have to assume it was successful
