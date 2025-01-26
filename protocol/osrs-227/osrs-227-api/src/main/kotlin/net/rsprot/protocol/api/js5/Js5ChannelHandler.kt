@@ -51,7 +51,7 @@ public class Js5ChannelHandler(
         service.onClientConnected(client)
         networkService
             .trafficMonitor
-            .loginChannelTrafficMonitor
+            .js5ChannelTrafficMonitor
             .incrementConnections(ctx.inetAddress())
     }
 
@@ -59,7 +59,7 @@ public class Js5ChannelHandler(
         service.onClientDisconnected(client)
         networkService
             .trafficMonitor
-            .loginChannelTrafficMonitor
+            .js5ChannelTrafficMonitor
             .decrementConnections(ctx.inetAddress())
     }
 
