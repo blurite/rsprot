@@ -1,11 +1,11 @@
 package net.rsprot.protocol.game.outgoing.info.npcinfo
 
 import net.rsprot.buffer.bitbuffer.UnsafeLongBackedBitBuf
-import net.rsprot.protocol.common.RSProtFlags
-import net.rsprot.protocol.common.checkCommunicationThread
-import net.rsprot.protocol.common.game.outgoing.info.CoordGrid
-import net.rsprot.protocol.common.game.outgoing.info.npcinfo.NpcAvatarDetails
-import net.rsprot.protocol.common.game.outgoing.info.util.ZoneIndexStorage
+import net.rsprot.protocol.internal.RSProtFlags
+import net.rsprot.protocol.internal.checkCommunicationThread
+import net.rsprot.protocol.internal.game.outgoing.info.CoordGrid
+import net.rsprot.protocol.internal.game.outgoing.info.npcinfo.NpcAvatarDetails
+import net.rsprot.protocol.internal.game.outgoing.info.util.ZoneIndexStorage
 import net.rsprot.protocol.game.outgoing.info.AvatarPriority
 import net.rsprot.protocol.game.outgoing.info.npcinfo.util.NpcCellOpcodes
 import net.rsprot.protocol.game.outgoing.info.util.Avatar
@@ -58,18 +58,18 @@ import net.rsprot.protocol.game.outgoing.info.util.Avatar
  * @property zoneIndexStorage the storage tracking all the allocated game NPCs based on the zones.
  */
 public class NpcAvatar internal constructor(
-    index: Int,
-    id: Int,
-    level: Int,
-    x: Int,
-    z: Int,
-    spawnCycle: Int = 0,
-    direction: Int = 0,
-    priority: AvatarPriority = AvatarPriority.NORMAL,
-    specific: Boolean,
-    allocateCycle: Int,
-    public val extendedInfo: NpcAvatarExtendedInfo,
-    internal val zoneIndexStorage: ZoneIndexStorage,
+	index: Int,
+	id: Int,
+	level: Int,
+	x: Int,
+	z: Int,
+	spawnCycle: Int = 0,
+	direction: Int = 0,
+	priority: AvatarPriority = AvatarPriority.NORMAL,
+	specific: Boolean,
+	allocateCycle: Int,
+	public val extendedInfo: NpcAvatarExtendedInfo,
+	internal val zoneIndexStorage: net.rsprot.protocol.internal.game.outgoing.info.util.ZoneIndexStorage,
 ) : Avatar {
     /**
      * Npc avatar details class wraps all the client properties of a NPC in its own

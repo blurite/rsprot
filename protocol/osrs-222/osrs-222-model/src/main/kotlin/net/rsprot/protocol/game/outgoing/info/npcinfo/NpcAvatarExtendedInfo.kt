@@ -3,19 +3,19 @@ package net.rsprot.protocol.game.outgoing.info.npcinfo
 import io.netty.buffer.ByteBufAllocator
 import net.rsprot.buffer.JagByteBuf
 import net.rsprot.compression.provider.HuffmanCodecProvider
-import net.rsprot.protocol.common.RSProtFlags
+import net.rsprot.protocol.internal.RSProtFlags
 import net.rsprot.protocol.common.client.OldSchoolClientType
-import net.rsprot.protocol.common.game.outgoing.info.npcinfo.encoder.NpcExtendedInfoEncoders
-import net.rsprot.protocol.common.game.outgoing.info.npcinfo.extendedinfo.BaseAnimationSet
-import net.rsprot.protocol.common.game.outgoing.info.npcinfo.extendedinfo.CombatLevelChange
-import net.rsprot.protocol.common.game.outgoing.info.npcinfo.extendedinfo.HeadIconCustomisation
-import net.rsprot.protocol.common.game.outgoing.info.npcinfo.extendedinfo.TypeCustomisation
-import net.rsprot.protocol.common.game.outgoing.info.npcinfo.extendedinfo.VisibleOps
-import net.rsprot.protocol.common.game.outgoing.info.precompute
-import net.rsprot.protocol.common.game.outgoing.info.shared.extendedinfo.FacePathingEntity
-import net.rsprot.protocol.common.game.outgoing.info.shared.extendedinfo.util.HeadBar
-import net.rsprot.protocol.common.game.outgoing.info.shared.extendedinfo.util.HitMark
-import net.rsprot.protocol.common.game.outgoing.info.shared.extendedinfo.util.SpotAnim
+import net.rsprot.protocol.internal.game.outgoing.info.npcinfo.encoder.NpcExtendedInfoEncoders
+import net.rsprot.protocol.internal.game.outgoing.info.npcinfo.extendedinfo.BaseAnimationSet
+import net.rsprot.protocol.internal.game.outgoing.info.npcinfo.extendedinfo.CombatLevelChange
+import net.rsprot.protocol.internal.game.outgoing.info.npcinfo.extendedinfo.HeadIconCustomisation
+import net.rsprot.protocol.internal.game.outgoing.info.npcinfo.extendedinfo.TypeCustomisation
+import net.rsprot.protocol.internal.game.outgoing.info.npcinfo.extendedinfo.VisibleOps
+import net.rsprot.protocol.internal.game.outgoing.info.precompute
+import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.FacePathingEntity
+import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.util.HeadBar
+import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.util.HitMark
+import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.util.SpotAnim
 import net.rsprot.protocol.game.outgoing.info.AvatarExtendedInfoWriter
 import net.rsprot.protocol.game.outgoing.info.filter.ExtendedInfoFilter
 
@@ -198,8 +198,8 @@ public class NpcAvatarExtendedInfo(
         height: Int,
     ) {
         verify {
-            require(slot in 0..<RSProtFlags.spotanimListCapacity) {
-                "Unexpected slot: $slot, expected range: 0..<${RSProtFlags.spotanimListCapacity}"
+            require(slot in 0..<net.rsprot.protocol.internal.RSProtFlags.spotanimListCapacity) {
+                "Unexpected slot: $slot, expected range: 0..<${net.rsprot.protocol.internal.RSProtFlags.spotanimListCapacity}"
             }
             require(id == -1 || id in UNSIGNED_SHORT_RANGE) {
                 "Unexpected id: $id, expected value -1 or in range: $UNSIGNED_SHORT_RANGE"
@@ -1500,7 +1500,7 @@ public class NpcAvatarExtendedInfo(
          * as there is still some overhead to running verifications.
          */
         private inline fun verify(crossinline block: () -> Unit) {
-            if (RSProtFlags.extendedInfoInputVerification) {
+            if (net.rsprot.protocol.internal.RSProtFlags.extendedInfoInputVerification) {
                 block()
             }
         }

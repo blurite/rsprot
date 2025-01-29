@@ -6,12 +6,12 @@ import io.netty.buffer.ByteBufAllocator
 import net.rsprot.buffer.bitbuffer.BitBuf
 import net.rsprot.buffer.bitbuffer.toBitBuf
 import net.rsprot.buffer.extensions.toJagByteBuf
-import net.rsprot.protocol.common.checkCommunicationThread
-import net.rsprot.protocol.common.client.ClientTypeMap
+import net.rsprot.protocol.internal.checkCommunicationThread
+import net.rsprot.protocol.internal.client.ClientTypeMap
 import net.rsprot.protocol.common.client.OldSchoolClientType
-import net.rsprot.protocol.common.game.outgoing.info.CoordGrid
-import net.rsprot.protocol.common.game.outgoing.info.npcinfo.encoder.NpcResolutionChangeEncoder
-import net.rsprot.protocol.common.game.outgoing.info.util.ZoneIndexStorage
+import net.rsprot.protocol.internal.game.outgoing.info.CoordGrid
+import net.rsprot.protocol.internal.game.outgoing.info.npcinfo.encoder.NpcResolutionChangeEncoder
+import net.rsprot.protocol.internal.game.outgoing.info.util.ZoneIndexStorage
 import net.rsprot.protocol.game.outgoing.info.ByteBufRecycler
 import net.rsprot.protocol.game.outgoing.info.exceptions.InfoProcessException
 import net.rsprot.protocol.game.outgoing.info.util.BuildArea
@@ -40,14 +40,14 @@ import kotlin.contracts.contract
 @OptIn(ExperimentalUnsignedTypes::class)
 @Suppress("ReplaceUntilWithRangeUntil")
 public class NpcInfo internal constructor(
-    private val allocator: ByteBufAllocator,
-    private val repository: NpcAvatarRepository,
-    private var oldSchoolClientType: OldSchoolClientType,
-    internal var localPlayerIndex: Int,
-    private val zoneIndexStorage: ZoneIndexStorage,
-    private val lowResolutionToHighResolutionEncoders: ClientTypeMap<NpcResolutionChangeEncoder>,
-    private val detailsStorage: NpcInfoWorldDetailsStorage,
-    private val recycler: ByteBufRecycler,
+	private val allocator: ByteBufAllocator,
+	private val repository: NpcAvatarRepository,
+	private var oldSchoolClientType: OldSchoolClientType,
+	internal var localPlayerIndex: Int,
+	private val zoneIndexStorage: net.rsprot.protocol.internal.game.outgoing.info.util.ZoneIndexStorage,
+	private val lowResolutionToHighResolutionEncoders: ClientTypeMap<NpcResolutionChangeEncoder>,
+	private val detailsStorage: NpcInfoWorldDetailsStorage,
+	private val recycler: ByteBufRecycler,
 ) : ReferencePooledObject {
     /**
      * The maximum view distance how far a player will see other NPCs.

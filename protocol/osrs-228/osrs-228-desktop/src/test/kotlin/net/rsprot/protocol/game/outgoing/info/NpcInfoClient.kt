@@ -5,7 +5,7 @@ import net.rsprot.buffer.JagByteBuf
 import net.rsprot.buffer.bitbuffer.BitBuf
 import net.rsprot.buffer.bitbuffer.toBitBuf
 import net.rsprot.buffer.extensions.toJagByteBuf
-import net.rsprot.protocol.common.game.outgoing.info.CoordGrid
+import net.rsprot.protocol.internal.game.outgoing.info.CoordGrid
 
 @Suppress("MemberVisibilityCanBePrivate")
 class NpcInfoClient {

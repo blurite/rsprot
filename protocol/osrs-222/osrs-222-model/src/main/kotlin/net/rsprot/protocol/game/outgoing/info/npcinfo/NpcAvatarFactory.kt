@@ -2,7 +2,7 @@ package net.rsprot.protocol.game.outgoing.info.npcinfo
 
 import io.netty.buffer.ByteBufAllocator
 import net.rsprot.compression.provider.HuffmanCodecProvider
-import net.rsprot.protocol.common.game.outgoing.info.util.ZoneIndexStorage
+import net.rsprot.protocol.internal.game.outgoing.info.util.ZoneIndexStorage
 import net.rsprot.protocol.game.outgoing.info.filter.ExtendedInfoFilter
 
 /**

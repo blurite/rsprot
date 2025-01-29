@@ -1,7 +1,7 @@
 package net.rsprot.protocol.game.outgoing.info.npcinfo
 
 import io.netty.buffer.ByteBuf
-import net.rsprot.protocol.common.game.outgoing.info.CoordGrid
+import net.rsprot.protocol.internal.game.outgoing.info.CoordGrid
 import net.rsprot.protocol.game.outgoing.info.ObserverExtendedInfoFlags
 import net.rsprot.protocol.game.outgoing.info.util.BuildArea
 import net.rsprot.protocol.message.OutgoingGameMessage
@@ -21,13 +21,13 @@ internal class NpcInfoWorldDetails(
      * in a simplified manner, rather than applying a coordinate check on each one. This commonly
      * occurs whenever a player teleports far away.
      */
-    internal var localPlayerLastCoord: CoordGrid = CoordGrid.INVALID
+    internal var localPlayerLastCoord: net.rsprot.protocol.internal.game.outgoing.info.CoordGrid = net.rsprot.protocol.internal.game.outgoing.info.CoordGrid.INVALID
 
     /**
      * The current coordinate of the local player used for the calculations of this npc info
      * packet. This will be cross-referenced against NPCs to ensure they are within distance.
      */
-    internal var localPlayerCurrentCoord: CoordGrid = CoordGrid.INVALID
+    internal var localPlayerCurrentCoord: net.rsprot.protocol.internal.game.outgoing.info.CoordGrid = net.rsprot.protocol.internal.game.outgoing.info.CoordGrid.INVALID
 
     /**
      * The entire build area of this world - this effectively caps what we can see
@@ -283,7 +283,7 @@ internal class NpcInfoWorldDetails(
      */
     internal fun onAlloc(worldId: Int) {
         this.worldId = worldId
-        this.localPlayerCurrentCoord = CoordGrid.INVALID
+        this.localPlayerCurrentCoord = net.rsprot.protocol.internal.game.outgoing.info.CoordGrid.INVALID
         this.localPlayerLastCoord = localPlayerCurrentCoord
         this.buildArea = BuildArea.INVALID
         this.highResolutionNpcIndexCount = 0

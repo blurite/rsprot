@@ -2,21 +2,22 @@ package net.rsprot.protocol.game.outgoing.codec.npcinfo
 
 import net.rsprot.buffer.bitbuffer.BitBuf
 import net.rsprot.protocol.common.client.OldSchoolClientType
-import net.rsprot.protocol.common.game.outgoing.info.CoordGrid
-import net.rsprot.protocol.common.game.outgoing.info.npcinfo.NpcAvatarDetails
-import net.rsprot.protocol.common.game.outgoing.info.npcinfo.encoder.NpcResolutionChangeEncoder
+import net.rsprot.protocol.internal.game.outgoing.info.CoordGrid
+import net.rsprot.protocol.internal.game.outgoing.info.npcinfo.NpcAvatarDetails
+import net.rsprot.protocol.internal.game.outgoing.info.npcinfo.encoder.NpcResolutionChangeEncoder
 import kotlin.math.min
 
-public class DesktopLowResolutionChangeEncoder : NpcResolutionChangeEncoder {
+public class DesktopLowResolutionChangeEncoder :
+	net.rsprot.protocol.internal.game.outgoing.info.npcinfo.encoder.NpcResolutionChangeEncoder {
     override val clientType: OldSchoolClientType = OldSchoolClientType.DESKTOP
 
     override fun encode(
-        bitBuffer: BitBuf,
-        details: NpcAvatarDetails,
-        extendedInfo: Boolean,
-        localPlayerCoordGrid: CoordGrid,
-        largeDistance: Boolean,
-        cycleCount: Int,
+	    bitBuffer: BitBuf,
+	    details: net.rsprot.protocol.internal.game.outgoing.info.npcinfo.NpcAvatarDetails,
+	    extendedInfo: Boolean,
+	    localPlayerCoordGrid: net.rsprot.protocol.internal.game.outgoing.info.CoordGrid,
+	    largeDistance: Boolean,
+	    cycleCount: Int,
     ) {
         val numOfBitsUsed = if (largeDistance) 8 else 5
         val maximumDistanceTransmittableByBits = if (largeDistance) 0xFF else 0x1F

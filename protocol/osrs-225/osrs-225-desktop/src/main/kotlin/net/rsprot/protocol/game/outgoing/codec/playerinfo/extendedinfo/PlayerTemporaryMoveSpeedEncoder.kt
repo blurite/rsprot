@@ -4,14 +4,14 @@ import io.netty.buffer.ByteBufAllocator
 import net.rsprot.buffer.JagByteBuf
 import net.rsprot.buffer.extensions.toJagByteBuf
 import net.rsprot.compression.provider.HuffmanCodecProvider
-import net.rsprot.protocol.common.game.outgoing.info.encoder.PrecomputedExtendedInfoEncoder
-import net.rsprot.protocol.common.game.outgoing.info.playerinfo.extendedinfo.TemporaryMoveSpeed
+import net.rsprot.protocol.internal.game.outgoing.info.encoder.PrecomputedExtendedInfoEncoder
+import net.rsprot.protocol.internal.game.outgoing.info.playerinfo.extendedinfo.TemporaryMoveSpeed
 
-public class PlayerTemporaryMoveSpeedEncoder : PrecomputedExtendedInfoEncoder<TemporaryMoveSpeed> {
+public class PlayerTemporaryMoveSpeedEncoder : PrecomputedExtendedInfoEncoder<net.rsprot.protocol.internal.game.outgoing.info.playerinfo.extendedinfo.TemporaryMoveSpeed> {
     override fun precompute(
-        alloc: ByteBufAllocator,
-        huffmanCodecProvider: HuffmanCodecProvider,
-        extendedInfo: TemporaryMoveSpeed,
+	    alloc: ByteBufAllocator,
+	    huffmanCodecProvider: HuffmanCodecProvider,
+	    extendedInfo: net.rsprot.protocol.internal.game.outgoing.info.playerinfo.extendedinfo.TemporaryMoveSpeed,
     ): JagByteBuf {
         val buffer =
             alloc

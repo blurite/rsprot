@@ -1,10 +1,10 @@
 package net.rsprot.protocol.game.outgoing.inv
 
 import net.rsprot.protocol.ServerProtCategory
-import net.rsprot.protocol.common.RSProtFlags
+import net.rsprot.protocol.internal.RSProtFlags
 import net.rsprot.protocol.common.game.outgoing.inv.InventoryObject
-import net.rsprot.protocol.common.game.outgoing.inv.internal.Inventory
-import net.rsprot.protocol.common.game.outgoing.inv.internal.InventoryPool
+import net.rsprot.protocol.internal.game.outgoing.inv.internal.Inventory
+import net.rsprot.protocol.internal.game.outgoing.inv.internal.InventoryPool
 import net.rsprot.protocol.game.outgoing.GameServerProtCategory
 import net.rsprot.protocol.message.OutgoingGameMessage
 import net.rsprot.protocol.util.CombinedId
@@ -39,9 +39,9 @@ import net.rsprot.protocol.util.CombinedId
  * update.
  */
 public class UpdateInvFull private constructor(
-    public val combinedId: Int,
-    private val _inventoryId: UShort,
-    private val inventory: Inventory,
+	public val combinedId: Int,
+	private val _inventoryId: UShort,
+	private val inventory: net.rsprot.protocol.internal.game.outgoing.inv.internal.Inventory,
 ) : OutgoingGameMessage {
     @Deprecated(message = "Interface Id/Component Id are no longer supported by the client, guaranteed crashing.")
     public constructor(
@@ -114,7 +114,7 @@ public class UpdateInvFull private constructor(
 
     public fun returnInventory() {
         inventory.clear()
-        InventoryPool.pool.returnObject(inventory)
+        net.rsprot.protocol.internal.game.outgoing.inv.internal.InventoryPool.pool.returnObject(inventory)
     }
 
     override fun equals(other: Any?): Boolean {
@@ -174,8 +174,8 @@ public class UpdateInvFull private constructor(
         private fun buildInventory(
             capacity: Int,
             provider: ObjectProvider,
-        ): Inventory {
-            val inventory = InventoryPool.pool.borrowObject()
+        ): net.rsprot.protocol.internal.game.outgoing.inv.internal.Inventory {
+            val inventory = net.rsprot.protocol.internal.game.outgoing.inv.internal.InventoryPool.pool.borrowObject()
             for (i in 0..<capacity) {
                 val obj = provider.provide(i)
                 if (RSProtFlags.inventoryObjCheck) {

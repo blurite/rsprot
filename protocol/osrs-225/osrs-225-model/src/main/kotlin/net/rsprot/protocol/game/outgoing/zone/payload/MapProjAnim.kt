@@ -1,7 +1,7 @@
 package net.rsprot.protocol.game.outgoing.zone.payload
 
 import net.rsprot.protocol.ServerProtCategory
-import net.rsprot.protocol.common.game.outgoing.codec.zone.payload.OldSchoolZoneProt
+import net.rsprot.protocol.internal.game.outgoing.codec.zone.payload.OldSchoolZoneProt
 import net.rsprot.protocol.game.outgoing.GameServerProtCategory
 import net.rsprot.protocol.game.outgoing.zone.payload.util.CoordInZone
 import net.rsprot.protocol.message.ZoneProt
@@ -123,7 +123,7 @@ public class MapProjAnim private constructor(
         get() = coordInZone.packed.toInt()
     override val category: ServerProtCategory
         get() = GameServerProtCategory.HIGH_PRIORITY_PROT
-    override val protId: Int = OldSchoolZoneProt.MAP_PROJANIM
+    override val protId: Int = net.rsprot.protocol.internal.game.outgoing.codec.zone.payload.OldSchoolZoneProt.MAP_PROJANIM
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

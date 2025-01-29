@@ -5,19 +5,19 @@ package net.rsprot.protocol.game.outgoing.info.playerinfo
 import io.netty.buffer.ByteBufAllocator
 import net.rsprot.buffer.JagByteBuf
 import net.rsprot.compression.provider.HuffmanCodecProvider
-import net.rsprot.protocol.common.RSProtFlags
-import net.rsprot.protocol.common.checkCommunicationThread
+import net.rsprot.protocol.internal.RSProtFlags
+import net.rsprot.protocol.internal.checkCommunicationThread
 import net.rsprot.protocol.common.client.OldSchoolClientType
-import net.rsprot.protocol.common.game.outgoing.info.playerinfo.encoder.PlayerExtendedInfoEncoders
-import net.rsprot.protocol.common.game.outgoing.info.playerinfo.extendedinfo.FaceAngle
-import net.rsprot.protocol.common.game.outgoing.info.playerinfo.extendedinfo.MoveSpeed
-import net.rsprot.protocol.common.game.outgoing.info.playerinfo.extendedinfo.ObjTypeCustomisation
-import net.rsprot.protocol.common.game.outgoing.info.precompute
-import net.rsprot.protocol.common.game.outgoing.info.shared.extendedinfo.FacePathingEntity
-import net.rsprot.protocol.common.game.outgoing.info.shared.extendedinfo.Tinting
-import net.rsprot.protocol.common.game.outgoing.info.shared.extendedinfo.util.HeadBar
-import net.rsprot.protocol.common.game.outgoing.info.shared.extendedinfo.util.HitMark
-import net.rsprot.protocol.common.game.outgoing.info.shared.extendedinfo.util.SpotAnim
+import net.rsprot.protocol.internal.game.outgoing.info.playerinfo.encoder.PlayerExtendedInfoEncoders
+import net.rsprot.protocol.internal.game.outgoing.info.playerinfo.extendedinfo.FaceAngle
+import net.rsprot.protocol.internal.game.outgoing.info.playerinfo.extendedinfo.MoveSpeed
+import net.rsprot.protocol.internal.game.outgoing.info.playerinfo.extendedinfo.ObjTypeCustomisation
+import net.rsprot.protocol.internal.game.outgoing.info.precompute
+import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.FacePathingEntity
+import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.Tinting
+import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.util.HeadBar
+import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.util.HitMark
+import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.util.SpotAnim
 import net.rsprot.protocol.game.outgoing.info.AvatarExtendedInfoWriter
 import net.rsprot.protocol.game.outgoing.info.filter.ExtendedInfoFilter
 
@@ -799,7 +799,7 @@ public class PlayerAvatarExtendedInfo(
                 "Unexpected weight: $weight, expected range $UNSIGNED_BYTE_RANGE"
             }
         }
-        val tint = Tinting()
+        val tint = net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.Tinting()
         blocks.tinting.observerDependent[visibleTo.avatar.extendedInfo.localIndex] = tint
         tint.start = startTime.toUShort()
         tint.end = endTime.toUShort()
@@ -1014,7 +1014,7 @@ public class PlayerAvatarExtendedInfo(
      * as those range from 0 to 11. Ident kit values only range from 0 to 6, which would
      * result in some wasted memory.
      * A list of wearpos to ident kit can also be found in
-     * [net.rsprot.protocol.common.game.outgoing.info.playerinfo.extendedinfo.Appearance.identKitSlotList]
+     * [net.rsprot.protocol.internal.game.outgoing.info.playerinfo.extendedinfo.Appearance.identKitSlotList]
      *
      * Ident kit table:
      * ```kt

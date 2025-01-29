@@ -1,22 +1,22 @@
 package net.rsprot.protocol.game.outgoing.info.playerinfo
 
-import net.rsprot.protocol.common.client.ClientTypeMap
+import net.rsprot.protocol.internal.client.ClientTypeMap
 import net.rsprot.protocol.common.client.OldSchoolClientType
-import net.rsprot.protocol.common.game.outgoing.info.ExtendedInfo
-import net.rsprot.protocol.common.game.outgoing.info.encoder.ExtendedInfoEncoder
-import net.rsprot.protocol.common.game.outgoing.info.playerinfo.encoder.PlayerExtendedInfoEncoders
-import net.rsprot.protocol.common.game.outgoing.info.playerinfo.extendedinfo.Appearance
-import net.rsprot.protocol.common.game.outgoing.info.playerinfo.extendedinfo.Chat
-import net.rsprot.protocol.common.game.outgoing.info.playerinfo.extendedinfo.FaceAngle
-import net.rsprot.protocol.common.game.outgoing.info.playerinfo.extendedinfo.MoveSpeed
-import net.rsprot.protocol.common.game.outgoing.info.playerinfo.extendedinfo.PlayerTintingList
-import net.rsprot.protocol.common.game.outgoing.info.playerinfo.extendedinfo.TemporaryMoveSpeed
-import net.rsprot.protocol.common.game.outgoing.info.shared.extendedinfo.ExactMove
-import net.rsprot.protocol.common.game.outgoing.info.shared.extendedinfo.FacePathingEntity
-import net.rsprot.protocol.common.game.outgoing.info.shared.extendedinfo.Hit
-import net.rsprot.protocol.common.game.outgoing.info.shared.extendedinfo.Say
-import net.rsprot.protocol.common.game.outgoing.info.shared.extendedinfo.Sequence
-import net.rsprot.protocol.common.game.outgoing.info.shared.extendedinfo.SpotAnimList
+import net.rsprot.protocol.internal.game.outgoing.info.ExtendedInfo
+import net.rsprot.protocol.internal.game.outgoing.info.encoder.ExtendedInfoEncoder
+import net.rsprot.protocol.internal.game.outgoing.info.playerinfo.encoder.PlayerExtendedInfoEncoders
+import net.rsprot.protocol.internal.game.outgoing.info.playerinfo.extendedinfo.Appearance
+import net.rsprot.protocol.internal.game.outgoing.info.playerinfo.extendedinfo.Chat
+import net.rsprot.protocol.internal.game.outgoing.info.playerinfo.extendedinfo.FaceAngle
+import net.rsprot.protocol.internal.game.outgoing.info.playerinfo.extendedinfo.MoveSpeed
+import net.rsprot.protocol.internal.game.outgoing.info.playerinfo.extendedinfo.PlayerTintingList
+import net.rsprot.protocol.internal.game.outgoing.info.playerinfo.extendedinfo.TemporaryMoveSpeed
+import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.ExactMove
+import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.FacePathingEntity
+import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.Hit
+import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.Say
+import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.Sequence
+import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.SpotAnimList
 import net.rsprot.protocol.game.outgoing.info.AvatarExtendedInfoWriter
 
 private typealias PEnc = PlayerExtendedInfoEncoders
@@ -36,12 +36,19 @@ public class PlayerAvatarExtendedInfoBlocks(
     public val appearance: Appearance = Appearance(encoders(writers, PEnc::appearance))
     public val moveSpeed: MoveSpeed = MoveSpeed(encoders(writers, PEnc::moveSpeed))
     public val temporaryMoveSpeed: TempMoveSpeed = TempMoveSpeed(encoders(writers, PEnc::temporaryMoveSpeed))
-    public val sequence: Sequence = Sequence(encoders(writers, PEnc::sequence))
+    public val sequence: net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.Sequence =
+	    net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.Sequence(encoders(writers, PEnc::sequence))
     public val facePathingEntity: FacePathingEntity = FacePathingEntity(encoders(writers, PEnc::facePathingEntity))
     public val faceAngle: FaceAngle = FaceAngle(encoders(writers, PEnc::faceAngle))
     public val say: Say = Say(encoders(writers, PEnc::say))
     public val chat: Chat = Chat(encoders(writers, PEnc::chat))
-    public val exactMove: ExactMove = ExactMove(encoders(writers, PEnc::exactMove))
+    public val exactMove: net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.ExactMove =
+	    net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.ExactMove(
+		    encoders(
+			    writers,
+			    PEnc::exactMove
+		    )
+	    )
     public val spotAnims: SpotAnimList = SpotAnimList(encoders(writers, PEnc::spotAnim))
     public val hit: Hit = Hit(encoders(writers, PEnc::hit))
     public val tinting: PlayerTintingList = PlayerTintingList(encoders(writers, PEnc::tinting))
@@ -57,7 +64,7 @@ public class PlayerAvatarExtendedInfoBlocks(
          * @return a map of client-specific encoders of the given extended info block,
          * keyed by [OldSchoolClientType.id].
          */
-        private inline fun <T : ExtendedInfo<T, E>, reified E : ExtendedInfoEncoder<T>> encoders(
+        private inline fun <T : net.rsprot.protocol.internal.game.outgoing.info.ExtendedInfo<T, E>, reified E : net.rsprot.protocol.internal.game.outgoing.info.encoder.ExtendedInfoEncoder<T>> encoders(
             allEncoders: List<AvatarExtendedInfoWriter<PlayerExtendedInfoEncoders, PlayerAvatarExtendedInfoBlocks>>,
             selector: (PlayerExtendedInfoEncoders) -> E,
         ): ClientTypeMap<E> =

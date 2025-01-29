@@ -8,7 +8,7 @@ import net.rsprot.protocol.ServerProtCategory
 import net.rsprot.protocol.api.channel.inetAddress
 import net.rsprot.protocol.api.game.GameMessageDecoder
 import net.rsprot.protocol.api.logging.networkLog
-import net.rsprot.protocol.common.RSProtFlags
+import net.rsprot.protocol.internal.RSProtFlags
 import net.rsprot.protocol.game.outgoing.GameServerProtCategory
 import net.rsprot.protocol.game.outgoing.zone.payload.SoundArea
 import net.rsprot.protocol.loginprot.incoming.util.LoginBlock

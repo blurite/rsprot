@@ -4,14 +4,14 @@ import io.netty.buffer.ByteBufAllocator
 import net.rsprot.buffer.JagByteBuf
 import net.rsprot.buffer.extensions.toJagByteBuf
 import net.rsprot.compression.provider.HuffmanCodecProvider
-import net.rsprot.protocol.common.game.outgoing.info.encoder.PrecomputedExtendedInfoEncoder
-import net.rsprot.protocol.common.game.outgoing.info.npcinfo.extendedinfo.NpcTinting
+import net.rsprot.protocol.internal.game.outgoing.info.encoder.PrecomputedExtendedInfoEncoder
+import net.rsprot.protocol.internal.game.outgoing.info.npcinfo.extendedinfo.NpcTinting
 
-public class NpcTintingEncoder : PrecomputedExtendedInfoEncoder<NpcTinting> {
+public class NpcTintingEncoder : PrecomputedExtendedInfoEncoder<net.rsprot.protocol.internal.game.outgoing.info.npcinfo.extendedinfo.NpcTinting> {
     override fun precompute(
-        alloc: ByteBufAllocator,
-        huffmanCodecProvider: HuffmanCodecProvider,
-        extendedInfo: NpcTinting,
+	    alloc: ByteBufAllocator,
+	    huffmanCodecProvider: HuffmanCodecProvider,
+	    extendedInfo: net.rsprot.protocol.internal.game.outgoing.info.npcinfo.extendedinfo.NpcTinting,
     ): JagByteBuf {
         val buffer =
             alloc

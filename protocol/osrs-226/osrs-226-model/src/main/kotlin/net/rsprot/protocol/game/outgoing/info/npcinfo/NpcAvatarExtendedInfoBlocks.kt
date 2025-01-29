@@ -1,26 +1,26 @@
 package net.rsprot.protocol.game.outgoing.info.npcinfo
 
-import net.rsprot.protocol.common.client.ClientTypeMap
+import net.rsprot.protocol.internal.client.ClientTypeMap
 import net.rsprot.protocol.common.client.OldSchoolClientType
-import net.rsprot.protocol.common.game.outgoing.info.ExtendedInfo
-import net.rsprot.protocol.common.game.outgoing.info.encoder.ExtendedInfoEncoder
-import net.rsprot.protocol.common.game.outgoing.info.npcinfo.encoder.NpcExtendedInfoEncoders
-import net.rsprot.protocol.common.game.outgoing.info.npcinfo.extendedinfo.BaseAnimationSet
-import net.rsprot.protocol.common.game.outgoing.info.npcinfo.extendedinfo.BodyCustomisation
-import net.rsprot.protocol.common.game.outgoing.info.npcinfo.extendedinfo.CombatLevelChange
-import net.rsprot.protocol.common.game.outgoing.info.npcinfo.extendedinfo.FaceCoord
-import net.rsprot.protocol.common.game.outgoing.info.npcinfo.extendedinfo.HeadCustomisation
-import net.rsprot.protocol.common.game.outgoing.info.npcinfo.extendedinfo.HeadIconCustomisation
-import net.rsprot.protocol.common.game.outgoing.info.npcinfo.extendedinfo.NameChange
-import net.rsprot.protocol.common.game.outgoing.info.npcinfo.extendedinfo.NpcTinting
-import net.rsprot.protocol.common.game.outgoing.info.npcinfo.extendedinfo.Transformation
-import net.rsprot.protocol.common.game.outgoing.info.npcinfo.extendedinfo.VisibleOps
-import net.rsprot.protocol.common.game.outgoing.info.shared.extendedinfo.ExactMove
-import net.rsprot.protocol.common.game.outgoing.info.shared.extendedinfo.FacePathingEntity
-import net.rsprot.protocol.common.game.outgoing.info.shared.extendedinfo.Hit
-import net.rsprot.protocol.common.game.outgoing.info.shared.extendedinfo.Say
-import net.rsprot.protocol.common.game.outgoing.info.shared.extendedinfo.Sequence
-import net.rsprot.protocol.common.game.outgoing.info.shared.extendedinfo.SpotAnimList
+import net.rsprot.protocol.internal.game.outgoing.info.ExtendedInfo
+import net.rsprot.protocol.internal.game.outgoing.info.encoder.ExtendedInfoEncoder
+import net.rsprot.protocol.internal.game.outgoing.info.npcinfo.encoder.NpcExtendedInfoEncoders
+import net.rsprot.protocol.internal.game.outgoing.info.npcinfo.extendedinfo.BaseAnimationSet
+import net.rsprot.protocol.internal.game.outgoing.info.npcinfo.extendedinfo.BodyCustomisation
+import net.rsprot.protocol.internal.game.outgoing.info.npcinfo.extendedinfo.CombatLevelChange
+import net.rsprot.protocol.internal.game.outgoing.info.npcinfo.extendedinfo.FaceCoord
+import net.rsprot.protocol.internal.game.outgoing.info.npcinfo.extendedinfo.HeadCustomisation
+import net.rsprot.protocol.internal.game.outgoing.info.npcinfo.extendedinfo.HeadIconCustomisation
+import net.rsprot.protocol.internal.game.outgoing.info.npcinfo.extendedinfo.NameChange
+import net.rsprot.protocol.internal.game.outgoing.info.npcinfo.extendedinfo.NpcTinting
+import net.rsprot.protocol.internal.game.outgoing.info.npcinfo.extendedinfo.Transformation
+import net.rsprot.protocol.internal.game.outgoing.info.npcinfo.extendedinfo.VisibleOps
+import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.ExactMove
+import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.FacePathingEntity
+import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.Hit
+import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.Say
+import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.Sequence
+import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.SpotAnimList
 import net.rsprot.protocol.game.outgoing.info.AvatarExtendedInfoWriter
 
 private typealias NEnc = NpcExtendedInfoEncoders
@@ -70,8 +70,8 @@ public class NpcAvatarExtendedInfoBlocks(
         private inline fun <T : ExtendedInfo<T, E>, reified E : ExtendedInfoEncoder<T>> encoders(
             allEncoders: NpcExtendedInfoWriters,
             selector: (NpcExtendedInfoEncoders) -> E,
-        ): ClientTypeMap<E> =
-            ClientTypeMap.ofType(allEncoders, OldSchoolClientType.COUNT) {
+        ): net.rsprot.protocol.internal.client.ClientTypeMap<E> =
+            net.rsprot.protocol.internal.client.ClientTypeMap.ofType(allEncoders, OldSchoolClientType.COUNT) {
                 it.encoders.oldSchoolClientType to selector(it.encoders)
             }
     }

@@ -4,14 +4,14 @@ import io.netty.buffer.ByteBufAllocator
 import net.rsprot.buffer.JagByteBuf
 import net.rsprot.buffer.extensions.toJagByteBuf
 import net.rsprot.compression.provider.HuffmanCodecProvider
-import net.rsprot.protocol.common.game.outgoing.info.encoder.PrecomputedExtendedInfoEncoder
-import net.rsprot.protocol.common.game.outgoing.info.shared.extendedinfo.ExactMove
+import net.rsprot.protocol.internal.game.outgoing.info.encoder.PrecomputedExtendedInfoEncoder
+import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.ExactMove
 
-public class NpcExactMoveEncoder : PrecomputedExtendedInfoEncoder<ExactMove> {
+public class NpcExactMoveEncoder : PrecomputedExtendedInfoEncoder<net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.ExactMove> {
     override fun precompute(
-        alloc: ByteBufAllocator,
-        huffmanCodecProvider: HuffmanCodecProvider,
-        extendedInfo: ExactMove,
+	    alloc: ByteBufAllocator,
+	    huffmanCodecProvider: HuffmanCodecProvider,
+	    extendedInfo: net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.ExactMove,
     ): JagByteBuf {
         val buffer =
             alloc

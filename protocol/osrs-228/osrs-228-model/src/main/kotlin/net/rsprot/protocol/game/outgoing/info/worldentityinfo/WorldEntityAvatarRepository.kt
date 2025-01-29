@@ -1,8 +1,8 @@
 package net.rsprot.protocol.game.outgoing.info.worldentityinfo
 
 import io.netty.buffer.ByteBufAllocator
-import net.rsprot.protocol.common.game.outgoing.info.CoordFine
-import net.rsprot.protocol.common.game.outgoing.info.util.ZoneIndexStorage
+import net.rsprot.protocol.internal.game.outgoing.info.CoordFine
+import net.rsprot.protocol.internal.game.outgoing.info.util.ZoneIndexStorage
 import java.lang.ref.ReferenceQueue
 import java.lang.ref.SoftReference
 
@@ -20,8 +20,8 @@ import java.lang.ref.SoftReference
  * use case for the pooling mechanism.
  */
 public class WorldEntityAvatarRepository internal constructor(
-    private val allocator: ByteBufAllocator,
-    private val zoneIndexStorage: ZoneIndexStorage,
+	private val allocator: ByteBufAllocator,
+	private val zoneIndexStorage: net.rsprot.protocol.internal.game.outgoing.info.util.ZoneIndexStorage,
 ) {
     private val elements: Array<WorldEntityAvatar?> = arrayOfNulls(AVATAR_CAPACITY)
     private val queue: ReferenceQueue<WorldEntityAvatar> = ReferenceQueue<WorldEntityAvatar>()

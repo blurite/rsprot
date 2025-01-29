@@ -3,7 +3,7 @@ package net.rsprot.protocol.api.repositories
 import net.rsprot.compression.provider.HuffmanCodecProvider
 import net.rsprot.crypto.rsa.RsaKeyPair
 import net.rsprot.protocol.ClientProt
-import net.rsprot.protocol.common.client.ClientTypeMap
+import net.rsprot.protocol.internal.client.ClientTypeMap
 import net.rsprot.protocol.common.client.OldSchoolClientType
 import net.rsprot.protocol.common.client.OldSchoolClientType.DESKTOP
 import net.rsprot.protocol.common.js5.incoming.prot.Js5MessageDecoderRepository

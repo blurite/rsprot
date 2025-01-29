@@ -1,7 +1,7 @@
 package net.rsprot.protocol.game.incoming.misc.user
 
 import net.rsprot.protocol.ClientProtCategory
-import net.rsprot.protocol.common.game.outgoing.info.CoordGrid
+import net.rsprot.protocol.internal.game.outgoing.info.CoordGrid
 import net.rsprot.protocol.game.incoming.GameClientProtCategory
 import net.rsprot.protocol.message.IncomingGameMessage
 
@@ -24,7 +24,7 @@ import net.rsprot.protocol.message.IncomingGameMessage
  * @property level the level to set the destination to
  */
 public class ClickWorldMap(
-    private val coordGrid: CoordGrid,
+	private val coordGrid: net.rsprot.protocol.internal.game.outgoing.info.CoordGrid,
 ) : IncomingGameMessage {
     public val x: Int
         get() = coordGrid.x

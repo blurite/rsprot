@@ -1,6 +1,6 @@
 package net.rsprot.protocol.game.outgoing.info.util
 
-import net.rsprot.protocol.common.game.outgoing.info.CoordGrid
+import net.rsprot.protocol.internal.game.outgoing.info.CoordGrid
 import net.rsprot.protocol.game.outgoing.zone.payload.util.CoordInBuildArea
 
 /**
@@ -58,7 +58,7 @@ public value class BuildArea private constructor(
      * @param coordGrid the coordinate to localize.
      * @return a coordinate local to the build area.
      */
-    internal fun localize(coordGrid: CoordGrid): CoordInBuildArea {
+    internal fun localize(coordGrid: net.rsprot.protocol.internal.game.outgoing.info.CoordGrid): CoordInBuildArea {
         val (_, x, z) = coordGrid
         val buildAreaX = zoneX shl 3
         val buildAreaZ = zoneZ shl 3
@@ -90,7 +90,7 @@ public value class BuildArea private constructor(
      * @param coordGrid the coord grid to test.
      * @return whether the coord grid is inside the build area.
      */
-    internal operator fun contains(coordGrid: CoordGrid): Boolean {
+    internal operator fun contains(coordGrid: net.rsprot.protocol.internal.game.outgoing.info.CoordGrid): Boolean {
         val (_, x, z) = coordGrid
         val buildAreaX = zoneX shl 3
         val dx = x - buildAreaX

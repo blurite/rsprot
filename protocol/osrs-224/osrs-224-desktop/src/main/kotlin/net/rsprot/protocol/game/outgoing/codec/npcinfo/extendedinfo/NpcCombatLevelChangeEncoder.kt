@@ -4,14 +4,14 @@ import io.netty.buffer.ByteBufAllocator
 import net.rsprot.buffer.JagByteBuf
 import net.rsprot.buffer.extensions.toJagByteBuf
 import net.rsprot.compression.provider.HuffmanCodecProvider
-import net.rsprot.protocol.common.game.outgoing.info.encoder.PrecomputedExtendedInfoEncoder
-import net.rsprot.protocol.common.game.outgoing.info.npcinfo.extendedinfo.CombatLevelChange
+import net.rsprot.protocol.internal.game.outgoing.info.encoder.PrecomputedExtendedInfoEncoder
+import net.rsprot.protocol.internal.game.outgoing.info.npcinfo.extendedinfo.CombatLevelChange
 
-public class NpcCombatLevelChangeEncoder : PrecomputedExtendedInfoEncoder<CombatLevelChange> {
+public class NpcCombatLevelChangeEncoder : PrecomputedExtendedInfoEncoder<net.rsprot.protocol.internal.game.outgoing.info.npcinfo.extendedinfo.CombatLevelChange> {
     override fun precompute(
-        alloc: ByteBufAllocator,
-        huffmanCodecProvider: HuffmanCodecProvider,
-        extendedInfo: CombatLevelChange,
+	    alloc: ByteBufAllocator,
+	    huffmanCodecProvider: HuffmanCodecProvider,
+	    extendedInfo: net.rsprot.protocol.internal.game.outgoing.info.npcinfo.extendedinfo.CombatLevelChange,
     ): JagByteBuf {
         val buffer =
             alloc

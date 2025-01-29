@@ -1,9 +1,9 @@
 package net.rsprot.protocol.game.outgoing.info.npcinfo
 
 import net.rsprot.buffer.bitbuffer.UnsafeLongBackedBitBuf
-import net.rsprot.protocol.common.game.outgoing.info.CoordGrid
-import net.rsprot.protocol.common.game.outgoing.info.npcinfo.NpcAvatarDetails
-import net.rsprot.protocol.common.game.outgoing.info.util.ZoneIndexStorage
+import net.rsprot.protocol.internal.game.outgoing.info.CoordGrid
+import net.rsprot.protocol.internal.game.outgoing.info.npcinfo.NpcAvatarDetails
+import net.rsprot.protocol.internal.game.outgoing.info.util.ZoneIndexStorage
 import net.rsprot.protocol.game.outgoing.info.npcinfo.util.NpcCellOpcodes
 import net.rsprot.protocol.game.outgoing.info.util.Avatar
 
@@ -198,7 +198,7 @@ public class NpcAvatar internal constructor(
         jump: Boolean,
     ) {
         zoneIndexStorage.remove(details.index, details.currentCoord)
-        details.currentCoord = CoordGrid(level, x, z)
+        details.currentCoord = net.rsprot.protocol.internal.game.outgoing.info.CoordGrid(level, x, z)
         zoneIndexStorage.add(details.index, details.currentCoord)
         details.movementType = details.movementType or (if (jump) NpcAvatarDetails.TELEJUMP else NpcAvatarDetails.TELE)
     }
@@ -266,7 +266,7 @@ public class NpcAvatar internal constructor(
         val opcode = NpcCellOpcodes.singleCellMovementOpcode(deltaX, deltaZ)
         val (level, x, z) = details.currentCoord
         zoneIndexStorage.remove(details.index, details.currentCoord)
-        details.currentCoord = CoordGrid(level, x + deltaX, z + deltaZ)
+        details.currentCoord = net.rsprot.protocol.internal.game.outgoing.info.CoordGrid(level, x + deltaX, z + deltaZ)
         zoneIndexStorage.add(details.index, details.currentCoord)
         when (++details.stepCount) {
             1 -> {

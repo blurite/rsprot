@@ -4,7 +4,7 @@ import com.github.michaelbull.logging.InlineLogger
 import io.netty.buffer.ByteBuf
 import io.netty.buffer.ByteBufAllocator
 import io.netty.buffer.PooledByteBufAllocator
-import net.rsprot.protocol.common.client.ClientTypeMap
+import net.rsprot.protocol.internal.client.ClientTypeMap
 import net.rsprot.protocol.common.client.OldSchoolClientType
 import net.rsprot.protocol.game.outgoing.codec.zone.header.DesktopUpdateZonePartialEnclosedEncoder
 import net.rsprot.protocol.message.ZoneProt
@@ -176,10 +176,10 @@ public class ZonePartialEnclosedCacheBuffer
             private fun createClientBufferEnumMap(): EnumMap<OldSchoolClientType, ByteBuf> =
                 EnumMap<OldSchoolClientType, ByteBuf>(OldSchoolClientType::class.java)
 
-            internal fun createEncoderMap(): ClientTypeMap<UpdateZonePartialEnclosedCache> {
+            internal fun createEncoderMap(): net.rsprot.protocol.internal.client.ClientTypeMap<UpdateZonePartialEnclosedCache> {
                 val list = mutableListOf<Pair<OldSchoolClientType, UpdateZonePartialEnclosedCache>>()
                 list += OldSchoolClientType.DESKTOP to DesktopUpdateZonePartialEnclosedEncoder
-                return ClientTypeMap.of(OldSchoolClientType.COUNT, list)
+                return net.rsprot.protocol.internal.client.ClientTypeMap.of(OldSchoolClientType.COUNT, list)
             }
 
             private fun releaseBuffers(

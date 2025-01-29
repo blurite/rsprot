@@ -2,8 +2,8 @@ package net.rsprot.protocol.game.outgoing.info
 
 import net.rsprot.buffer.JagByteBuf
 import net.rsprot.protocol.common.client.OldSchoolClientType
-import net.rsprot.protocol.common.game.outgoing.info.ExtendedInfo
-import net.rsprot.protocol.common.game.outgoing.info.encoder.OnDemandExtendedInfoEncoder
+import net.rsprot.protocol.internal.game.outgoing.info.ExtendedInfo
+import net.rsprot.protocol.internal.game.outgoing.info.encoder.OnDemandExtendedInfoEncoder
 
 /**
  * A base class for client-specific extended info writers.
@@ -45,8 +45,8 @@ public abstract class AvatarExtendedInfoWriter<E, B>(
      * for the given client type.
      */
     protected fun pCachedData(
-        buffer: JagByteBuf,
-        block: ExtendedInfo<*, *>,
+	    buffer: JagByteBuf,
+	    block: net.rsprot.protocol.internal.game.outgoing.info.ExtendedInfo<*, *>,
     ) {
         val precomputed =
             checkNotNull(block.getBuffer(oldSchoolClientType)) {
@@ -65,7 +65,7 @@ public abstract class AvatarExtendedInfoWriter<E, B>(
      * @param observerIndex the index of the avatar observing the avatar who owns this
      * extended info block.
      */
-    protected fun <T : ExtendedInfo<T, E>, E : OnDemandExtendedInfoEncoder<T>> pOnDemandData(
+    protected fun <T : net.rsprot.protocol.internal.game.outgoing.info.ExtendedInfo<T, E>, E : OnDemandExtendedInfoEncoder<T>> pOnDemandData(
         buffer: JagByteBuf,
         localIndex: Int,
         block: T,

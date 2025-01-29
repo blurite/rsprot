@@ -4,9 +4,9 @@ import io.netty.buffer.ByteBufAllocator
 import net.rsprot.buffer.JagByteBuf
 import net.rsprot.buffer.extensions.toJagByteBuf
 import net.rsprot.compression.provider.HuffmanCodecProvider
-import net.rsprot.protocol.common.game.outgoing.info.encoder.PrecomputedExtendedInfoEncoder
-import net.rsprot.protocol.common.game.outgoing.info.shared.extendedinfo.SpotAnimList
-import net.rsprot.protocol.common.game.outgoing.info.shared.extendedinfo.util.SpotAnim
+import net.rsprot.protocol.internal.game.outgoing.info.encoder.PrecomputedExtendedInfoEncoder
+import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.SpotAnimList
+import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.util.SpotAnim
 
 public class PlayerSpotAnimEncoder : PrecomputedExtendedInfoEncoder<SpotAnimList> {
     override fun precompute(
@@ -25,7 +25,8 @@ public class PlayerSpotAnimEncoder : PrecomputedExtendedInfoEncoder<SpotAnimList
         val spotanims = extendedInfo.spotanims
         var slot = changelist.nextSetBit(0)
         while (slot != -1) {
-            val spotanim = SpotAnim(spotanims[slot])
+            val spotanim =
+	            net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.util.SpotAnim(spotanims[slot])
             buffer.p1Alt2(slot)
             buffer.p2(spotanim.id)
             buffer.p4Alt2(spotanim.delay or (spotanim.height shl 16))

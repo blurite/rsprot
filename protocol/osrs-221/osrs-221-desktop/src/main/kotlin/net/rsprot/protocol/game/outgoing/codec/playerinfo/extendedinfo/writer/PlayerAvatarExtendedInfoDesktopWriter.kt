@@ -2,7 +2,7 @@ package net.rsprot.protocol.game.outgoing.codec.playerinfo.extendedinfo.writer
 
 import net.rsprot.buffer.JagByteBuf
 import net.rsprot.protocol.common.client.OldSchoolClientType
-import net.rsprot.protocol.common.game.outgoing.info.playerinfo.encoder.PlayerExtendedInfoEncoders
+import net.rsprot.protocol.internal.game.outgoing.info.playerinfo.encoder.PlayerExtendedInfoEncoders
 import net.rsprot.protocol.game.outgoing.codec.playerinfo.extendedinfo.PlayerAppearanceEncoder
 import net.rsprot.protocol.game.outgoing.codec.playerinfo.extendedinfo.PlayerChatEncoder
 import net.rsprot.protocol.game.outgoing.codec.playerinfo.extendedinfo.PlayerExactMoveEncoder
@@ -20,23 +20,23 @@ import net.rsprot.protocol.game.outgoing.info.playerinfo.PlayerAvatarExtendedInf
 import net.rsprot.protocol.game.outgoing.info.playerinfo.PlayerAvatarExtendedInfoBlocks
 
 public class PlayerAvatarExtendedInfoDesktopWriter :
-    AvatarExtendedInfoWriter<PlayerExtendedInfoEncoders, PlayerAvatarExtendedInfoBlocks>(
+    AvatarExtendedInfoWriter<net.rsprot.protocol.internal.game.outgoing.info.playerinfo.encoder.PlayerExtendedInfoEncoders, PlayerAvatarExtendedInfoBlocks>(
         OldSchoolClientType.DESKTOP,
-        PlayerExtendedInfoEncoders(
-            OldSchoolClientType.DESKTOP,
-            PlayerAppearanceEncoder(),
-            PlayerChatEncoder(),
-            PlayerExactMoveEncoder(),
-            PlayerFaceAngleEncoder(),
-            PlayerFacePathingEntityEncoder(),
-            PlayerHitEncoder(),
-            PlayerMoveSpeedEncoder(),
-            PlayerSayEncoder(),
-            PlayerSequenceEncoder(),
-            PlayerSpotAnimEncoder(),
-            PlayerTemporaryMoveSpeedEncoder(),
-            PlayerTintingEncoder(),
-        ),
+	    net.rsprot.protocol.internal.game.outgoing.info.playerinfo.encoder.PlayerExtendedInfoEncoders(
+		    OldSchoolClientType.DESKTOP,
+		    PlayerAppearanceEncoder(),
+		    PlayerChatEncoder(),
+		    PlayerExactMoveEncoder(),
+		    PlayerFaceAngleEncoder(),
+		    PlayerFacePathingEntityEncoder(),
+		    PlayerHitEncoder(),
+		    PlayerMoveSpeedEncoder(),
+		    PlayerSayEncoder(),
+		    PlayerSequenceEncoder(),
+		    PlayerSpotAnimEncoder(),
+		    PlayerTemporaryMoveSpeedEncoder(),
+		    PlayerTintingEncoder(),
+	    ),
     ) {
     private fun convertFlags(constantFlags: Int): Int {
         var clientFlags = 0

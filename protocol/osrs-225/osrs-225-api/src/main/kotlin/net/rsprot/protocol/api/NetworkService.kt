@@ -32,7 +32,7 @@ import net.rsprot.protocol.threads.IllegalThreadAccessException
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.ScheduledFuture
 import kotlin.time.measureTime
-import net.rsprot.protocol.common.setCommunicationThread as setInternalCommunicationThread
+import net.rsprot.protocol.internal.setCommunicationThread as setInternalCommunicationThread
 
 /**
  * The primary network service implementation that brings all the necessary components together

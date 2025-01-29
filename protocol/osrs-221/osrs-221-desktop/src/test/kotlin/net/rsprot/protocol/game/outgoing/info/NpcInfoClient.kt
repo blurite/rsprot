@@ -5,7 +5,7 @@ import net.rsprot.buffer.JagByteBuf
 import net.rsprot.buffer.bitbuffer.BitBuf
 import net.rsprot.buffer.bitbuffer.toBitBuf
 import net.rsprot.buffer.extensions.toJagByteBuf
-import net.rsprot.protocol.common.game.outgoing.info.CoordGrid
+import net.rsprot.protocol.internal.game.outgoing.info.CoordGrid
 
 @Suppress("MemberVisibilityCanBePrivate")
 class NpcInfoClient {
@@ -20,9 +20,9 @@ class NpcInfoClient {
     var cycle = 0
 
     fun decode(
-        buffer: ByteBuf,
-        large: Boolean,
-        localPlayerCoord: CoordGrid,
+	    buffer: ByteBuf,
+	    large: Boolean,
+	    localPlayerCoord: net.rsprot.protocol.internal.game.outgoing.info.CoordGrid,
     ) {
         deletedNpcCount = 0
         updatedNpcSlotCount = 0
@@ -132,9 +132,9 @@ class NpcInfoClient {
     }
 
     private fun processLowResolution(
-        large: Boolean,
-        buffer: BitBuf,
-        localPlayerCoord: CoordGrid,
+	    large: Boolean,
+	    buffer: BitBuf,
+	    localPlayerCoord: net.rsprot.protocol.internal.game.outgoing.info.CoordGrid,
     ) {
         while (true) {
             val indexBitCount = 16
@@ -144,7 +144,7 @@ class NpcInfoClient {
                 if (capacity - 1 != index) {
                     var isNew = false
                     if (cachedNpcs[index] == null) {
-                        cachedNpcs[index] = Npc(index, -1, CoordGrid.INVALID)
+                        cachedNpcs[index] = Npc(index, -1, net.rsprot.protocol.internal.game.outgoing.info.CoordGrid.INVALID)
                         isNew = true
                     }
                     val npc = checkNotNull(cachedNpcs[index])
@@ -203,9 +203,9 @@ class NpcInfoClient {
         }
 
     class Npc(
-        val index: Int,
-        var id: Int,
-        var coord: CoordGrid,
+	    val index: Int,
+	    var id: Int,
+	    var coord: net.rsprot.protocol.internal.game.outgoing.info.CoordGrid,
     ) {
         var lastUpdateCycle: Int = 0
         var moveSpeed: MoveSpeed = MoveSpeed.STATIONARY
@@ -217,17 +217,17 @@ class NpcInfoClient {
         var overheadChat: String? = null
 
         fun addRouteWaypoint(
-            localPlayerCoord: CoordGrid,
-            relativeX: Int,
-            relativeZ: Int,
-            jump: Boolean,
+	        localPlayerCoord: net.rsprot.protocol.internal.game.outgoing.info.CoordGrid,
+	        relativeX: Int,
+	        relativeZ: Int,
+	        jump: Boolean,
         ) {
             coord =
-                CoordGrid(
-                    localPlayerCoord.level,
-                    localPlayerCoord.x + relativeX,
-                    localPlayerCoord.z + relativeZ,
-                )
+	            net.rsprot.protocol.internal.game.outgoing.info.CoordGrid(
+		            localPlayerCoord.level,
+		            localPlayerCoord.x + relativeX,
+		            localPlayerCoord.z + relativeZ,
+	            )
             moveSpeed = MoveSpeed.STATIONARY
             this.jump = jump
         }
@@ -274,7 +274,7 @@ class NpcInfoClient {
                 --z
             }
 
-            coord = CoordGrid(coord.level, x, z)
+            coord = net.rsprot.protocol.internal.game.outgoing.info.CoordGrid(coord.level, x, z)
             moveSpeed = speed
         }
 

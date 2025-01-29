@@ -1,8 +1,8 @@
 package net.rsprot.protocol.game.outgoing.info.worldentityinfo
 
 import io.netty.buffer.ByteBufAllocator
-import net.rsprot.protocol.common.game.outgoing.info.CoordGrid
-import net.rsprot.protocol.common.game.outgoing.info.util.ZoneIndexStorage
+import net.rsprot.protocol.internal.game.outgoing.info.CoordGrid
+import net.rsprot.protocol.internal.game.outgoing.info.util.ZoneIndexStorage
 import java.lang.ref.ReferenceQueue
 import java.lang.ref.SoftReference
 
@@ -64,7 +64,7 @@ public class WorldEntityAvatarRepository internal constructor(
             existing.index = index
             existing.sizeX = sizeX
             existing.sizeZ = sizeZ
-            existing.currentCoord = CoordGrid(level, x, z)
+            existing.currentCoord = net.rsprot.protocol.internal.game.outgoing.info.CoordGrid(level, x, z)
             existing.lastCoord = existing.currentCoord
             existing.angle = angle
             existing.allocateCycle = WorldEntityProtocol.cycleCount
@@ -79,7 +79,7 @@ public class WorldEntityAvatarRepository internal constructor(
                 index,
                 sizeX,
                 sizeZ,
-                CoordGrid(level, x, z),
+	            net.rsprot.protocol.internal.game.outgoing.info.CoordGrid(level, x, z),
                 angle,
             )
         zoneIndexStorage.add(index, avatar.currentCoord)

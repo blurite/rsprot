@@ -1,7 +1,7 @@
 package net.rsprot.protocol.api.util
 
 import io.netty.buffer.Unpooled
-import net.rsprot.protocol.common.client.ClientTypeMap
+import net.rsprot.protocol.internal.client.ClientTypeMap
 import net.rsprot.protocol.common.client.OldSchoolClientType
 import net.rsprot.protocol.game.outgoing.util.OpFlags
 import net.rsprot.protocol.game.outgoing.zone.payload.LocAddChange
@@ -163,7 +163,7 @@ class ZonePartialEnclosedCacheBufferTest {
         check(retainedBuffers.all { it.refCnt() == 0 })
     }
 
-    private fun <T> ClientTypeMap<T>.toClientList(): List<OldSchoolClientType> =
+    private fun <T> net.rsprot.protocol.internal.client.ClientTypeMap<T>.toClientList(): List<OldSchoolClientType> =
         OldSchoolClientType.entries.filter { it in this }
 
     private fun createFullZoneProtList(): List<ZoneProt> =

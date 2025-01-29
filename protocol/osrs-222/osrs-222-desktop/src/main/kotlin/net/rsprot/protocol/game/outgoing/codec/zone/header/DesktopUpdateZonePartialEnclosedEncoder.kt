@@ -7,8 +7,8 @@ import net.rsprot.buffer.JagByteBuf
 import net.rsprot.buffer.extensions.toJagByteBuf
 import net.rsprot.crypto.cipher.StreamCipher
 import net.rsprot.protocol.ServerProt
-import net.rsprot.protocol.common.game.outgoing.codec.zone.payload.OldSchoolZoneProt
-import net.rsprot.protocol.common.game.outgoing.codec.zone.payload.ZoneProtEncoder
+import net.rsprot.protocol.internal.game.outgoing.codec.zone.payload.OldSchoolZoneProt
+import net.rsprot.protocol.internal.game.outgoing.codec.zone.payload.ZoneProtEncoder
 import net.rsprot.protocol.game.outgoing.codec.zone.payload.LocAddChangeEncoder
 import net.rsprot.protocol.game.outgoing.codec.zone.payload.LocAnimEncoder
 import net.rsprot.protocol.game.outgoing.codec.zone.payload.LocDelEncoder

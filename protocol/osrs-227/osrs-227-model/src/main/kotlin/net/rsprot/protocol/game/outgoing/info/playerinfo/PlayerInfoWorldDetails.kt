@@ -1,6 +1,6 @@
 package net.rsprot.protocol.game.outgoing.info.playerinfo
 
-import net.rsprot.protocol.common.game.outgoing.info.CoordGrid
+import net.rsprot.protocol.internal.game.outgoing.info.CoordGrid
 import net.rsprot.protocol.game.outgoing.info.util.BuildArea
 
 /**

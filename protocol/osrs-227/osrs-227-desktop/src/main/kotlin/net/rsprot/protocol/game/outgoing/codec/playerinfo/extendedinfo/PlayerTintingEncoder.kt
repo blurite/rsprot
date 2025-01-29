@@ -1,15 +1,15 @@
 package net.rsprot.protocol.game.outgoing.codec.playerinfo.extendedinfo
 
 import net.rsprot.buffer.JagByteBuf
-import net.rsprot.protocol.common.game.outgoing.info.encoder.OnDemandExtendedInfoEncoder
-import net.rsprot.protocol.common.game.outgoing.info.playerinfo.extendedinfo.PlayerTintingList
+import net.rsprot.protocol.internal.game.outgoing.info.encoder.OnDemandExtendedInfoEncoder
+import net.rsprot.protocol.internal.game.outgoing.info.playerinfo.extendedinfo.PlayerTintingList
 
-public class PlayerTintingEncoder : OnDemandExtendedInfoEncoder<PlayerTintingList> {
+public class PlayerTintingEncoder : OnDemandExtendedInfoEncoder<net.rsprot.protocol.internal.game.outgoing.info.playerinfo.extendedinfo.PlayerTintingList> {
     override fun encode(
-        buffer: JagByteBuf,
-        localPlayerIndex: Int,
-        updatedAvatarIndex: Int,
-        extendedInfo: PlayerTintingList,
+	    buffer: JagByteBuf,
+	    localPlayerIndex: Int,
+	    updatedAvatarIndex: Int,
+	    extendedInfo: net.rsprot.protocol.internal.game.outgoing.info.playerinfo.extendedinfo.PlayerTintingList,
     ) {
         val tinting = extendedInfo[localPlayerIndex]
         buffer.p2(tinting.start.toInt())

@@ -5,10 +5,10 @@ import io.netty.buffer.ByteBuf
 import io.netty.buffer.ByteBufAllocator
 import net.rsprot.buffer.JagByteBuf
 import net.rsprot.buffer.extensions.toJagByteBuf
-import net.rsprot.protocol.common.checkCommunicationThread
+import net.rsprot.protocol.internal.checkCommunicationThread
 import net.rsprot.protocol.common.client.OldSchoolClientType
-import net.rsprot.protocol.common.game.outgoing.info.CoordGrid
-import net.rsprot.protocol.common.game.outgoing.info.util.ZoneIndexStorage
+import net.rsprot.protocol.internal.game.outgoing.info.CoordGrid
+import net.rsprot.protocol.internal.game.outgoing.info.util.ZoneIndexStorage
 import net.rsprot.protocol.game.outgoing.info.ByteBufRecycler
 import net.rsprot.protocol.game.outgoing.info.exceptions.InfoProcessException
 import net.rsprot.protocol.game.outgoing.info.util.BuildArea
@@ -59,12 +59,12 @@ import net.rsprot.protocol.game.outgoing.info.util.ReferencePooledObject
  */
 @Suppress("MemberVisibilityCanBePrivate", "DuplicatedCode")
 public class WorldEntityInfo internal constructor(
-    internal var localIndex: Int,
-    internal val allocator: ByteBufAllocator,
-    private var oldSchoolClientType: OldSchoolClientType,
-    private val avatarRepository: WorldEntityAvatarRepository,
-    private val zoneIndexStorage: ZoneIndexStorage,
-    private val recycler: ByteBufRecycler = ByteBufRecycler(),
+	internal var localIndex: Int,
+	internal val allocator: ByteBufAllocator,
+	private var oldSchoolClientType: OldSchoolClientType,
+	private val avatarRepository: WorldEntityAvatarRepository,
+	private val zoneIndexStorage: net.rsprot.protocol.internal.game.outgoing.info.util.ZoneIndexStorage,
+	private val recycler: ByteBufRecycler = ByteBufRecycler(),
 ) : ReferencePooledObject {
     private var renderDistance: Int = DEFAULT_RENDER_DISTANCE
     private var currentWorldEntityId: Int = ROOT_WORLD

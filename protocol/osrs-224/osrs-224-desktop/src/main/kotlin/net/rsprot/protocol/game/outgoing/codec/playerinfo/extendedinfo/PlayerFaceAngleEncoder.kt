@@ -4,14 +4,14 @@ import io.netty.buffer.ByteBufAllocator
 import net.rsprot.buffer.JagByteBuf
 import net.rsprot.buffer.extensions.toJagByteBuf
 import net.rsprot.compression.provider.HuffmanCodecProvider
-import net.rsprot.protocol.common.game.outgoing.info.encoder.PrecomputedExtendedInfoEncoder
-import net.rsprot.protocol.common.game.outgoing.info.playerinfo.extendedinfo.FaceAngle
+import net.rsprot.protocol.internal.game.outgoing.info.encoder.PrecomputedExtendedInfoEncoder
+import net.rsprot.protocol.internal.game.outgoing.info.playerinfo.extendedinfo.FaceAngle
 
-public class PlayerFaceAngleEncoder : PrecomputedExtendedInfoEncoder<FaceAngle> {
+public class PlayerFaceAngleEncoder : PrecomputedExtendedInfoEncoder<net.rsprot.protocol.internal.game.outgoing.info.playerinfo.extendedinfo.FaceAngle> {
     override fun precompute(
-        alloc: ByteBufAllocator,
-        huffmanCodecProvider: HuffmanCodecProvider,
-        extendedInfo: FaceAngle,
+	    alloc: ByteBufAllocator,
+	    huffmanCodecProvider: HuffmanCodecProvider,
+	    extendedInfo: net.rsprot.protocol.internal.game.outgoing.info.playerinfo.extendedinfo.FaceAngle,
     ): JagByteBuf {
         val buffer =
             alloc

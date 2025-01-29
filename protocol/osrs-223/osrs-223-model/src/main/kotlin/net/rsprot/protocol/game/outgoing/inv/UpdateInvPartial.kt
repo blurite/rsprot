@@ -1,10 +1,10 @@
 package net.rsprot.protocol.game.outgoing.inv
 
 import net.rsprot.protocol.ServerProtCategory
-import net.rsprot.protocol.common.RSProtFlags
+import net.rsprot.protocol.internal.RSProtFlags
 import net.rsprot.protocol.common.game.outgoing.inv.InventoryObject
-import net.rsprot.protocol.common.game.outgoing.inv.internal.Inventory
-import net.rsprot.protocol.common.game.outgoing.inv.internal.InventoryPool
+import net.rsprot.protocol.internal.game.outgoing.inv.internal.Inventory
+import net.rsprot.protocol.internal.game.outgoing.inv.internal.InventoryPool
 import net.rsprot.protocol.game.outgoing.GameServerProtCategory
 import net.rsprot.protocol.message.OutgoingGameMessage
 import net.rsprot.protocol.util.CombinedId
@@ -89,7 +89,7 @@ public class UpdateInvPartial private constructor(
 
     public fun returnInventory() {
         inventory.clear()
-        InventoryPool.pool.returnObject(inventory)
+        net.rsprot.protocol.internal.game.outgoing.inv.internal.InventoryPool.pool.returnObject(inventory)
     }
 
     override fun equals(other: Any?): Boolean {
@@ -147,10 +147,10 @@ public class UpdateInvPartial private constructor(
          * of a list of [InventoryObject]s as longs, backed by a long array.
          */
         private fun buildInventory(provider: IndexedObjectProvider): Inventory {
-            val inventory = InventoryPool.pool.borrowObject()
+            val inventory = net.rsprot.protocol.internal.game.outgoing.inv.internal.InventoryPool.pool.borrowObject()
             for (index in provider.indices) {
                 val obj = provider.provide(index)
-                if (RSProtFlags.inventoryObjCheck) {
+                if (net.rsprot.protocol.internal.RSProtFlags.inventoryObjCheck) {
                     check(obj != InventoryObject.NULL) {
                         "Obj cannot be InventoryObject.NULL for partial updates. Use InventoryObject(slot, -1, -1) " +
                             "instead."

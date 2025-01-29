@@ -2,9 +2,9 @@ package net.rsprot.protocol.game.outgoing.info.playerinfo
 
 import io.netty.buffer.ByteBufAllocator
 import net.rsprot.compression.provider.HuffmanCodecProvider
-import net.rsprot.protocol.common.checkCommunicationThread
-import net.rsprot.protocol.common.game.outgoing.info.CoordGrid
-import net.rsprot.protocol.common.game.outgoing.info.playerinfo.encoder.PlayerExtendedInfoEncoders
+import net.rsprot.protocol.internal.checkCommunicationThread
+import net.rsprot.protocol.internal.game.outgoing.info.CoordGrid
+import net.rsprot.protocol.internal.game.outgoing.info.playerinfo.encoder.PlayerExtendedInfoEncoders
 import net.rsprot.protocol.game.outgoing.info.AvatarExtendedInfoWriter
 import net.rsprot.protocol.game.outgoing.info.AvatarPriority
 import net.rsprot.protocol.game.outgoing.info.filter.ExtendedInfoFilter
@@ -63,7 +63,7 @@ public class PlayerAvatar internal constructor(
      * The coordinate property will need to be updated for all players prior to computing
      * player info packet for any of them.
      */
-    public var currentCoord: CoordGrid = CoordGrid.INVALID
+    public var currentCoord: net.rsprot.protocol.internal.game.outgoing.info.CoordGrid = net.rsprot.protocol.internal.game.outgoing.info.CoordGrid.INVALID
         private set
 
     /**
@@ -89,7 +89,7 @@ public class PlayerAvatar internal constructor(
      * with [currentCoord] to determine the coordinate delta, which is then transmitted
      * to the clients.
      */
-    internal var lastCoord: CoordGrid = CoordGrid.INVALID
+    internal var lastCoord: net.rsprot.protocol.internal.game.outgoing.info.CoordGrid = net.rsprot.protocol.internal.game.outgoing.info.CoordGrid.INVALID
 
     /**
      * Extended info repository, commonly referred to as "masks", will track everything relevant
@@ -137,8 +137,8 @@ public class PlayerAvatar internal constructor(
         preferredResizeRange = DEFAULT_RESIZE_RANGE
         resizeRange = preferredResizeRange
         resizeCounter = DEFAULT_RESIZE_INTERVAL
-        currentCoord = CoordGrid.INVALID
-        lastCoord = CoordGrid.INVALID
+        currentCoord = net.rsprot.protocol.internal.game.outgoing.info.CoordGrid.INVALID
+        lastCoord = net.rsprot.protocol.internal.game.outgoing.info.CoordGrid.INVALID
         worldId = PlayerInfo.ROOT_WORLD
     }
 
@@ -157,7 +157,7 @@ public class PlayerAvatar internal constructor(
         z: Int,
     ) {
         checkCommunicationThread()
-        this.currentCoord = CoordGrid(level, x, z)
+        this.currentCoord = net.rsprot.protocol.internal.game.outgoing.info.CoordGrid(level, x, z)
     }
 
     /**

@@ -5,10 +5,10 @@ import io.netty.buffer.ByteBuf
 import io.netty.buffer.ByteBufAllocator
 import net.rsprot.buffer.JagByteBuf
 import net.rsprot.buffer.extensions.toJagByteBuf
-import net.rsprot.protocol.common.checkCommunicationThread
+import net.rsprot.protocol.internal.checkCommunicationThread
 import net.rsprot.protocol.common.client.OldSchoolClientType
-import net.rsprot.protocol.common.game.outgoing.info.CoordGrid
-import net.rsprot.protocol.common.game.outgoing.info.util.ZoneIndexStorage
+import net.rsprot.protocol.internal.game.outgoing.info.CoordGrid
+import net.rsprot.protocol.internal.game.outgoing.info.util.ZoneIndexStorage
 import net.rsprot.protocol.game.outgoing.info.ByteBufRecycler
 import net.rsprot.protocol.game.outgoing.info.exceptions.InfoProcessException
 import net.rsprot.protocol.game.outgoing.info.util.BuildArea
@@ -68,7 +68,7 @@ public class WorldEntityInfo internal constructor(
 ) : ReferencePooledObject {
     private var renderDistance: Int = DEFAULT_RENDER_DISTANCE
     private var currentWorldEntityId: Int = ROOT_WORLD
-    private var currentCoord: CoordGrid = CoordGrid.INVALID
+    private var currentCoord: net.rsprot.protocol.internal.game.outgoing.info.CoordGrid = net.rsprot.protocol.internal.game.outgoing.info.CoordGrid.INVALID
     private var buildArea: BuildArea = BuildArea.INVALID
     private var highResolutionIndicesCount: Int = 0
     private var highResolutionIndices: ShortArray =
@@ -93,7 +93,7 @@ public class WorldEntityInfo internal constructor(
 
     @Volatile
     internal var exception: Exception? = null
-    private var renderCoord: CoordGrid = CoordGrid.INVALID
+    private var renderCoord: net.rsprot.protocol.internal.game.outgoing.info.CoordGrid = net.rsprot.protocol.internal.game.outgoing.info.CoordGrid.INVALID
 
     override fun isDestroyed(): Boolean = this.exception != null
 
@@ -182,7 +182,7 @@ public class WorldEntityInfo internal constructor(
     ) {
         checkCommunicationThread()
         this.currentWorldEntityId = worldId
-        this.currentCoord = CoordGrid(level, x, z)
+        this.currentCoord = net.rsprot.protocol.internal.game.outgoing.info.CoordGrid(level, x, z)
     }
 
     /**
@@ -200,7 +200,7 @@ public class WorldEntityInfo internal constructor(
         z: Int,
     ) {
         checkCommunicationThread()
-        this.renderCoord = CoordGrid(level, x, z)
+        this.renderCoord = net.rsprot.protocol.internal.game.outgoing.info.CoordGrid(level, x, z)
     }
 
     /**
@@ -209,7 +209,7 @@ public class WorldEntityInfo internal constructor(
      */
     public fun resetRenderCoord() {
         checkCommunicationThread()
-        this.renderCoord = CoordGrid.INVALID
+        this.renderCoord = net.rsprot.protocol.internal.game.outgoing.info.CoordGrid.INVALID
     }
 
     /**
@@ -430,7 +430,7 @@ public class WorldEntityInfo internal constructor(
             renderDistance,
         ) ||
             (
-                renderCoord != CoordGrid.INVALID &&
+                renderCoord != net.rsprot.protocol.internal.game.outgoing.info.CoordGrid.INVALID &&
                     avatar.currentCoord.inDistance(
                         this.renderCoord,
                         renderDistance,
@@ -455,9 +455,9 @@ public class WorldEntityInfo internal constructor(
         this.oldSchoolClientType = oldSchoolClientType
         this.renderDistance = DEFAULT_RENDER_DISTANCE
         this.currentWorldEntityId = ROOT_WORLD
-        this.currentCoord = CoordGrid.INVALID
+        this.currentCoord = net.rsprot.protocol.internal.game.outgoing.info.CoordGrid.INVALID
         this.buildArea = BuildArea.INVALID
-        this.renderCoord = CoordGrid.INVALID
+        this.renderCoord = net.rsprot.protocol.internal.game.outgoing.info.CoordGrid.INVALID
         this.highResolutionIndicesCount = 0
         this.highResolutionIndices.fill(0)
         this.temporaryHighResolutionIndices.fill(0)

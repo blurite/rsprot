@@ -1,7 +1,7 @@
 package net.rsprot.protocol.game.outgoing.info.playerinfo
 
-import net.rsprot.protocol.common.game.outgoing.info.playerinfo.extendedinfo.Chat
-import net.rsprot.protocol.common.game.outgoing.info.shared.extendedinfo.Say
+import net.rsprot.protocol.internal.game.outgoing.info.playerinfo.extendedinfo.Chat
+import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.Say
 
 /**
  * A storage for any chat messages a player observed, in the exact order they appeared

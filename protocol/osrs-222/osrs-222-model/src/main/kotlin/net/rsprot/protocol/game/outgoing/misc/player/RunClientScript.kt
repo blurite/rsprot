@@ -1,7 +1,7 @@
 package net.rsprot.protocol.game.outgoing.misc.player
 
 import net.rsprot.protocol.ServerProtCategory
-import net.rsprot.protocol.common.RSProtFlags
+import net.rsprot.protocol.internal.RSProtFlags
 import net.rsprot.protocol.game.outgoing.GameServerProtCategory
 import net.rsprot.protocol.message.OutgoingGameMessage
 
@@ -35,7 +35,7 @@ public class RunClientScript : OutgoingGameMessage {
         this.id = id
         this.types = types
         this.values = values
-        if (RSProtFlags.clientscriptVerification) {
+        if (net.rsprot.protocol.internal.RSProtFlags.clientscriptVerification) {
             require(types.size == values.size) {
                 "Types and values sizes must match: ${types.size}, ${values.size}"
             }

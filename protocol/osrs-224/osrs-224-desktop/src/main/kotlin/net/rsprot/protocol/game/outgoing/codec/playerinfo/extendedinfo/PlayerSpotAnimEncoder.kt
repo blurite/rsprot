@@ -4,15 +4,15 @@ import io.netty.buffer.ByteBufAllocator
 import net.rsprot.buffer.JagByteBuf
 import net.rsprot.buffer.extensions.toJagByteBuf
 import net.rsprot.compression.provider.HuffmanCodecProvider
-import net.rsprot.protocol.common.game.outgoing.info.encoder.PrecomputedExtendedInfoEncoder
-import net.rsprot.protocol.common.game.outgoing.info.shared.extendedinfo.SpotAnimList
-import net.rsprot.protocol.common.game.outgoing.info.shared.extendedinfo.util.SpotAnim
+import net.rsprot.protocol.internal.game.outgoing.info.encoder.PrecomputedExtendedInfoEncoder
+import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.SpotAnimList
+import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.util.SpotAnim
 
-public class PlayerSpotAnimEncoder : PrecomputedExtendedInfoEncoder<SpotAnimList> {
+public class PlayerSpotAnimEncoder : PrecomputedExtendedInfoEncoder<net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.SpotAnimList> {
     override fun precompute(
-        alloc: ByteBufAllocator,
-        huffmanCodecProvider: HuffmanCodecProvider,
-        extendedInfo: SpotAnimList,
+	    alloc: ByteBufAllocator,
+	    huffmanCodecProvider: HuffmanCodecProvider,
+	    extendedInfo: net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.SpotAnimList,
     ): JagByteBuf {
         val changelist = extendedInfo.changelist
         val count = changelist.cardinality()

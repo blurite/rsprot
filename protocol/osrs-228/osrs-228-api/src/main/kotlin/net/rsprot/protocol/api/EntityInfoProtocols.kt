@@ -5,10 +5,10 @@ import net.rsprot.compression.provider.HuffmanCodecProvider
 import net.rsprot.protocol.api.suppliers.NpcInfoSupplier
 import net.rsprot.protocol.api.suppliers.PlayerInfoSupplier
 import net.rsprot.protocol.api.suppliers.WorldEntityInfoSupplier
-import net.rsprot.protocol.common.client.ClientTypeMap
+import net.rsprot.protocol.internal.client.ClientTypeMap
 import net.rsprot.protocol.common.client.OldSchoolClientType
-import net.rsprot.protocol.common.game.outgoing.info.npcinfo.encoder.NpcResolutionChangeEncoder
-import net.rsprot.protocol.common.game.outgoing.info.util.ZoneIndexStorage
+import net.rsprot.protocol.internal.game.outgoing.info.npcinfo.encoder.NpcResolutionChangeEncoder
+import net.rsprot.protocol.internal.game.outgoing.info.util.ZoneIndexStorage
 import net.rsprot.protocol.game.outgoing.codec.npcinfo.DesktopLowResolutionChangeEncoder
 import net.rsprot.protocol.game.outgoing.codec.npcinfo.extendedinfo.writer.NpcAvatarExtendedInfoDesktopWriter
 import net.rsprot.protocol.game.outgoing.codec.playerinfo.extendedinfo.writer.PlayerAvatarExtendedInfoDesktopWriter
@@ -89,7 +89,8 @@ public class EntityInfoProtocols
                     npcWriters += NpcAvatarExtendedInfoDesktopWriter()
                     npcResolutionChangeEncoders += DesktopLowResolutionChangeEncoder()
                 }
-                val zoneIndexStorage = ZoneIndexStorage(ZoneIndexStorage.WORLDENTITY_CAPACITY)
+                val zoneIndexStorage =
+	                net.rsprot.protocol.internal.game.outgoing.info.util.ZoneIndexStorage(net.rsprot.protocol.internal.game.outgoing.info.util.ZoneIndexStorage.WORLDENTITY_CAPACITY)
                 val worldEntityAvatarFactory =
                     buildWorldEntityAvatarFactory(
                         allocator,
@@ -110,7 +111,8 @@ public class EntityInfoProtocols
                         playerInfoSupplier,
                         playerAvatarFactory,
                     )
-                val storage = ZoneIndexStorage(ZoneIndexStorage.NPC_CAPACITY)
+                val storage =
+	                net.rsprot.protocol.internal.game.outgoing.info.util.ZoneIndexStorage(net.rsprot.protocol.internal.game.outgoing.info.util.ZoneIndexStorage.NPC_CAPACITY)
                 val supplier = DeferredNpcInfoProtocolSupplier()
                 val npcAvatarFactory =
                     buildNpcAvatarFactory(
@@ -142,11 +144,11 @@ public class EntityInfoProtocols
             }
 
             private fun buildNpcInfoProtocol(
-                allocator: ByteBufAllocator,
-                npcInfoSupplier: NpcInfoSupplier,
-                npcResolutionChangeEncoders: MutableList<NpcResolutionChangeEncoder>,
-                npcAvatarFactory: NpcAvatarFactory,
-                zoneIndexStorage: ZoneIndexStorage,
+	            allocator: ByteBufAllocator,
+	            npcInfoSupplier: NpcInfoSupplier,
+	            npcResolutionChangeEncoders: MutableList<NpcResolutionChangeEncoder>,
+	            npcAvatarFactory: NpcAvatarFactory,
+	            zoneIndexStorage: net.rsprot.protocol.internal.game.outgoing.info.util.ZoneIndexStorage,
             ) = NpcInfoProtocol(
                 allocator,
                 ClientTypeMap.of(
@@ -162,12 +164,12 @@ public class EntityInfoProtocols
             )
 
             private fun buildNpcAvatarFactory(
-                allocator: ByteBufAllocator,
-                npcInfoSupplier: NpcInfoSupplier,
-                npcWriters: MutableList<NpcAvatarExtendedInfoWriter>,
-                huffmanCodecProvider: HuffmanCodecProvider,
-                zoneIndexStorage: ZoneIndexStorage,
-                npcInfoProtocolSupplier: DeferredNpcInfoProtocolSupplier,
+	            allocator: ByteBufAllocator,
+	            npcInfoSupplier: NpcInfoSupplier,
+	            npcWriters: MutableList<NpcAvatarExtendedInfoWriter>,
+	            huffmanCodecProvider: HuffmanCodecProvider,
+	            zoneIndexStorage: net.rsprot.protocol.internal.game.outgoing.info.util.ZoneIndexStorage,
+	            npcInfoProtocolSupplier: DeferredNpcInfoProtocolSupplier,
             ): NpcAvatarFactory =
                 NpcAvatarFactory(
                     allocator,
@@ -179,8 +181,8 @@ public class EntityInfoProtocols
                 )
 
             private fun buildWorldEntityAvatarFactory(
-                allocator: ByteBufAllocator,
-                zoneIndexStorage: ZoneIndexStorage,
+	            allocator: ByteBufAllocator,
+	            zoneIndexStorage: net.rsprot.protocol.internal.game.outgoing.info.util.ZoneIndexStorage,
             ): WorldEntityAvatarFactory =
                 WorldEntityAvatarFactory(
                     allocator,
@@ -188,10 +190,10 @@ public class EntityInfoProtocols
                 )
 
             private fun buildWorldEntityInfoProtocol(
-                allocator: ByteBufAllocator,
-                worldEntityInfoSupplier: WorldEntityInfoSupplier,
-                worldEntityAvatarFactory: WorldEntityAvatarFactory,
-                zoneIndexStorage: ZoneIndexStorage,
+	            allocator: ByteBufAllocator,
+	            worldEntityInfoSupplier: WorldEntityInfoSupplier,
+	            worldEntityAvatarFactory: WorldEntityAvatarFactory,
+	            zoneIndexStorage: net.rsprot.protocol.internal.game.outgoing.info.util.ZoneIndexStorage,
             ) = WorldEntityProtocol(
                 allocator,
                 worldEntityInfoSupplier.worldEntityAvatarExceptionHandler,

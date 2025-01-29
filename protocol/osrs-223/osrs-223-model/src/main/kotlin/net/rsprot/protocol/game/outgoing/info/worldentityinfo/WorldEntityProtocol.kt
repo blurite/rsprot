@@ -3,7 +3,7 @@ package net.rsprot.protocol.game.outgoing.info.worldentityinfo
 import com.github.michaelbull.logging.InlineLogger
 import io.netty.buffer.ByteBufAllocator
 import net.rsprot.protocol.common.client.OldSchoolClientType
-import net.rsprot.protocol.common.game.outgoing.info.util.ZoneIndexStorage
+import net.rsprot.protocol.internal.game.outgoing.info.util.ZoneIndexStorage
 import net.rsprot.protocol.game.outgoing.info.ByteBufRecycler
 import net.rsprot.protocol.game.outgoing.info.worker.DefaultProtocolWorker
 import net.rsprot.protocol.game.outgoing.info.worker.ProtocolWorker

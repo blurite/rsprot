@@ -3,7 +3,7 @@ package net.rsprot.protocol.game.outgoing.info
 import io.netty.buffer.ByteBuf
 import io.netty.util.ReferenceCountUtil
 import io.netty.util.ReferenceCounted
-import net.rsprot.protocol.common.RSProtFlags
+import net.rsprot.protocol.internal.RSProtFlags
 import java.util.Queue
 import java.util.concurrent.ConcurrentLinkedQueue
 

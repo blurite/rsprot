@@ -3,20 +3,20 @@ package net.rsprot.protocol.game.outgoing.info.npcinfo
 import io.netty.buffer.ByteBufAllocator
 import net.rsprot.buffer.JagByteBuf
 import net.rsprot.compression.provider.HuffmanCodecProvider
-import net.rsprot.protocol.common.RSProtFlags
-import net.rsprot.protocol.common.checkCommunicationThread
+import net.rsprot.protocol.internal.RSProtFlags
+import net.rsprot.protocol.internal.checkCommunicationThread
 import net.rsprot.protocol.common.client.OldSchoolClientType
-import net.rsprot.protocol.common.game.outgoing.info.npcinfo.encoder.NpcExtendedInfoEncoders
-import net.rsprot.protocol.common.game.outgoing.info.npcinfo.extendedinfo.BaseAnimationSet
-import net.rsprot.protocol.common.game.outgoing.info.npcinfo.extendedinfo.CombatLevelChange
-import net.rsprot.protocol.common.game.outgoing.info.npcinfo.extendedinfo.HeadIconCustomisation
-import net.rsprot.protocol.common.game.outgoing.info.npcinfo.extendedinfo.TypeCustomisation
-import net.rsprot.protocol.common.game.outgoing.info.npcinfo.extendedinfo.VisibleOps
-import net.rsprot.protocol.common.game.outgoing.info.precompute
-import net.rsprot.protocol.common.game.outgoing.info.shared.extendedinfo.FacePathingEntity
-import net.rsprot.protocol.common.game.outgoing.info.shared.extendedinfo.util.HeadBar
-import net.rsprot.protocol.common.game.outgoing.info.shared.extendedinfo.util.HitMark
-import net.rsprot.protocol.common.game.outgoing.info.shared.extendedinfo.util.SpotAnim
+import net.rsprot.protocol.internal.game.outgoing.info.npcinfo.encoder.NpcExtendedInfoEncoders
+import net.rsprot.protocol.internal.game.outgoing.info.npcinfo.extendedinfo.BaseAnimationSet
+import net.rsprot.protocol.internal.game.outgoing.info.npcinfo.extendedinfo.CombatLevelChange
+import net.rsprot.protocol.internal.game.outgoing.info.npcinfo.extendedinfo.HeadIconCustomisation
+import net.rsprot.protocol.internal.game.outgoing.info.npcinfo.extendedinfo.TypeCustomisation
+import net.rsprot.protocol.internal.game.outgoing.info.npcinfo.extendedinfo.VisibleOps
+import net.rsprot.protocol.internal.game.outgoing.info.precompute
+import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.FacePathingEntity
+import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.util.HeadBar
+import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.util.HitMark
+import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.util.SpotAnim
 import net.rsprot.protocol.game.outgoing.info.AvatarExtendedInfoWriter
 import net.rsprot.protocol.game.outgoing.info.filter.ExtendedInfoFilter
 
@@ -1438,7 +1438,7 @@ public class NpcAvatarExtendedInfo(
             flag = flag or BODY_CUSTOMISATION
         }
         if (this.flags and LEVEL_CHANGE == 0 &&
-            blocks.combatLevelChange.level != CombatLevelChange.DEFAULT_LEVEL_OVERRIDE
+            blocks.combatLevelChange.level != net.rsprot.protocol.internal.game.outgoing.info.npcinfo.extendedinfo.CombatLevelChange.DEFAULT_LEVEL_OVERRIDE
         ) {
             flag = flag or LEVEL_CHANGE
         }

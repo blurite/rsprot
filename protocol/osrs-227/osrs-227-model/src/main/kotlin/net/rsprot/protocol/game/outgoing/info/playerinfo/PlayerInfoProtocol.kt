@@ -3,7 +3,7 @@ package net.rsprot.protocol.game.outgoing.info.playerinfo
 import com.github.michaelbull.logging.InlineLogger
 import io.netty.buffer.ByteBuf
 import io.netty.buffer.ByteBufAllocator
-import net.rsprot.protocol.common.checkCommunicationThread
+import net.rsprot.protocol.internal.checkCommunicationThread
 import net.rsprot.protocol.common.client.OldSchoolClientType
 import net.rsprot.protocol.game.outgoing.info.ByteBufRecycler
 import net.rsprot.protocol.game.outgoing.info.playerinfo.util.LowResolutionPosition

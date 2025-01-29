@@ -1,6 +1,6 @@
 package net.rsprot.protocol.game.outgoing.info.playerinfo
 
-import net.rsprot.protocol.common.game.outgoing.info.CoordGrid
+import net.rsprot.protocol.internal.game.outgoing.info.CoordGrid
 import net.rsprot.protocol.game.outgoing.info.util.BuildArea
 
 /**
@@ -13,7 +13,7 @@ internal class PlayerInfoWorldDetails(
     /**
      * The coordinate from which distance checks are done against other players.
      */
-    internal var renderCoord: CoordGrid = CoordGrid.INVALID
+    internal var renderCoord: net.rsprot.protocol.internal.game.outgoing.info.CoordGrid = net.rsprot.protocol.internal.game.outgoing.info.CoordGrid.INVALID
 
     /**
      * The entire build area of this world - this effectively caps what we can see
@@ -23,7 +23,7 @@ internal class PlayerInfoWorldDetails(
 
     internal fun onAlloc(worldId: Int) {
         this.worldId = worldId
-        this.renderCoord = CoordGrid.INVALID
+        this.renderCoord = net.rsprot.protocol.internal.game.outgoing.info.CoordGrid.INVALID
         this.buildArea = BuildArea.INVALID
     }
 }

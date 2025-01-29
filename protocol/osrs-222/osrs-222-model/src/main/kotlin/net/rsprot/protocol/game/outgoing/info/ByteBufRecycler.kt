@@ -3,7 +3,7 @@ package net.rsprot.protocol.game.outgoing.info
 import io.netty.buffer.ByteBuf
 import io.netty.util.ReferenceCountUtil
 import io.netty.util.ReferenceCounted
-import net.rsprot.protocol.common.RSProtFlags
+import net.rsprot.protocol.internal.RSProtFlags
 import java.util.Queue
 import java.util.concurrent.ConcurrentLinkedQueue
 
@@ -19,7 +19,7 @@ import java.util.concurrent.ConcurrentLinkedQueue
  * @property buffers a concurrent queue of tracked buffers.
  */
 internal class ByteBufRecycler(
-    private val forceReleaseThreshold: Int = RSProtFlags.byteBufRecyclerCycleThreshold,
+	private val forceReleaseThreshold: Int = net.rsprot.protocol.internal.RSProtFlags.byteBufRecyclerCycleThreshold,
 ) {
     private var cycleCount: Int = 0
     private val buffers: Queue<RecycledByteBuf> = ConcurrentLinkedQueue()

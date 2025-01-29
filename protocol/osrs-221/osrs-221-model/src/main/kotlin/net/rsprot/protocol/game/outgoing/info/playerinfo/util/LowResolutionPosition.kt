@@ -1,6 +1,6 @@
 package net.rsprot.protocol.game.outgoing.info.playerinfo.util
 
-import net.rsprot.protocol.common.game.outgoing.info.CoordGrid
+import net.rsprot.protocol.internal.game.outgoing.info.CoordGrid
 
 /**
  * A value class for holding low resolution position information in a primitive int.
@@ -24,7 +24,7 @@ internal value class LowResolutionPosition(
  * @param coordGrid the absolute coordinate to turn into a low resolution position.
  * @return the low resolution representation of the given [coordGrid]
  */
-internal fun LowResolutionPosition(coordGrid: CoordGrid): LowResolutionPosition =
+internal fun LowResolutionPosition(coordGrid: net.rsprot.protocol.internal.game.outgoing.info.CoordGrid): LowResolutionPosition =
     LowResolutionPosition(
         (coordGrid.z ushr 13)
             .or((coordGrid.x ushr 13) shl 8)
