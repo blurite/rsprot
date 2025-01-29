@@ -4,10 +4,7 @@ import io.netty.buffer.PooledByteBufAllocator
 import io.netty.buffer.Unpooled
 import net.rsprot.compression.HuffmanCodec
 import net.rsprot.compression.provider.DefaultHuffmanCodecProvider
-import net.rsprot.protocol.common.client.ClientTypeMap
 import net.rsprot.protocol.common.client.OldSchoolClientType
-import net.rsprot.protocol.common.game.outgoing.info.CoordGrid
-import net.rsprot.protocol.common.game.outgoing.info.util.ZoneIndexStorage
 import net.rsprot.protocol.game.outgoing.codec.npcinfo.DesktopLowResolutionChangeEncoder
 import net.rsprot.protocol.game.outgoing.codec.npcinfo.extendedinfo.writer.NpcAvatarExtendedInfoDesktopWriter
 import net.rsprot.protocol.game.outgoing.info.filter.DefaultExtendedInfoFilter
@@ -20,6 +17,9 @@ import net.rsprot.protocol.game.outgoing.info.npcinfo.NpcInfoProtocol
 import net.rsprot.protocol.game.outgoing.info.npcinfo.NpcInfoSmall
 import net.rsprot.protocol.game.outgoing.info.util.BuildArea
 import net.rsprot.protocol.game.outgoing.info.worker.DefaultProtocolWorker
+import net.rsprot.protocol.internal.client.ClientTypeMap
+import net.rsprot.protocol.internal.game.outgoing.info.CoordGrid
+import net.rsprot.protocol.internal.game.outgoing.info.util.ZoneIndexStorage
 import org.openjdk.jmh.annotations.Benchmark
 import org.openjdk.jmh.annotations.BenchmarkMode
 import org.openjdk.jmh.annotations.Fork
@@ -50,7 +50,8 @@ class NpcInfoBenchmark {
     private lateinit var serverNpcs: List<Npc>
     private lateinit var localNpcInfo: NpcInfo
     private lateinit var otherNpcInfos: List<NpcInfo>
-    private var localPlayerCoord = CoordGrid(0, 3207, 3207)
+    private var localPlayerCoord =
+        CoordGrid(0, 3207, 3207)
     private lateinit var factory: NpcAvatarFactory
 
     @Setup
@@ -137,7 +138,8 @@ class NpcInfoBenchmark {
             val x = random.nextInt(3200, 3213)
             val z = random.nextInt(3200, 3213)
             val id = (index * x * z) and 0x3FFF
-            val coord = CoordGrid(0, x, z)
+            val coord =
+                CoordGrid(0, x, z)
             npcs +=
                 Npc(
                     index,

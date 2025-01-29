@@ -5,10 +5,7 @@ import net.rsprot.compression.provider.HuffmanCodecProvider
 import net.rsprot.protocol.api.suppliers.NpcInfoSupplier
 import net.rsprot.protocol.api.suppliers.PlayerInfoSupplier
 import net.rsprot.protocol.api.suppliers.WorldEntityInfoSupplier
-import net.rsprot.protocol.common.client.ClientTypeMap
 import net.rsprot.protocol.common.client.OldSchoolClientType
-import net.rsprot.protocol.common.game.outgoing.info.npcinfo.encoder.NpcResolutionChangeEncoder
-import net.rsprot.protocol.common.game.outgoing.info.util.ZoneIndexStorage
 import net.rsprot.protocol.game.outgoing.codec.npcinfo.DesktopLowResolutionChangeEncoder
 import net.rsprot.protocol.game.outgoing.codec.npcinfo.extendedinfo.writer.NpcAvatarExtendedInfoDesktopWriter
 import net.rsprot.protocol.game.outgoing.codec.playerinfo.extendedinfo.writer.PlayerAvatarExtendedInfoDesktopWriter
@@ -21,6 +18,9 @@ import net.rsprot.protocol.game.outgoing.info.playerinfo.PlayerAvatarFactory
 import net.rsprot.protocol.game.outgoing.info.playerinfo.PlayerInfoProtocol
 import net.rsprot.protocol.game.outgoing.info.worldentityinfo.WorldEntityAvatarFactory
 import net.rsprot.protocol.game.outgoing.info.worldentityinfo.WorldEntityProtocol
+import net.rsprot.protocol.internal.client.ClientTypeMap
+import net.rsprot.protocol.internal.game.outgoing.info.npcinfo.encoder.NpcResolutionChangeEncoder
+import net.rsprot.protocol.internal.game.outgoing.info.util.ZoneIndexStorage
 
 /**
  * The entity info protocols class brings together the relatively complex player and NPC info
@@ -89,7 +89,10 @@ public class EntityInfoProtocols
                     npcWriters += NpcAvatarExtendedInfoDesktopWriter()
                     npcResolutionChangeEncoders += DesktopLowResolutionChangeEncoder()
                 }
-                val zoneIndexStorage = ZoneIndexStorage(ZoneIndexStorage.WORLDENTITY_CAPACITY)
+                val zoneIndexStorage =
+                    ZoneIndexStorage(
+                        ZoneIndexStorage.WORLDENTITY_CAPACITY,
+                    )
                 val worldEntityAvatarFactory =
                     buildWorldEntityAvatarFactory(
                         allocator,
@@ -110,7 +113,10 @@ public class EntityInfoProtocols
                         playerInfoSupplier,
                         playerAvatarFactory,
                     )
-                val storage = ZoneIndexStorage(ZoneIndexStorage.NPC_CAPACITY)
+                val storage =
+                    ZoneIndexStorage(
+                        ZoneIndexStorage.NPC_CAPACITY,
+                    )
                 val supplier = DeferredNpcInfoProtocolSupplier()
                 val npcAvatarFactory =
                     buildNpcAvatarFactory(

@@ -5,10 +5,7 @@ import io.netty.buffer.PooledByteBufAllocator
 import io.netty.buffer.Unpooled
 import net.rsprot.compression.HuffmanCodec
 import net.rsprot.compression.provider.DefaultHuffmanCodecProvider
-import net.rsprot.protocol.common.client.ClientTypeMap
 import net.rsprot.protocol.common.client.OldSchoolClientType
-import net.rsprot.protocol.common.game.outgoing.info.CoordGrid
-import net.rsprot.protocol.common.game.outgoing.info.util.ZoneIndexStorage
 import net.rsprot.protocol.game.outgoing.codec.npcinfo.DesktopLowResolutionChangeEncoder
 import net.rsprot.protocol.game.outgoing.codec.npcinfo.extendedinfo.writer.NpcAvatarExtendedInfoDesktopWriter
 import net.rsprot.protocol.game.outgoing.info.filter.DefaultExtendedInfoFilter
@@ -20,6 +17,9 @@ import net.rsprot.protocol.game.outgoing.info.npcinfo.NpcInfoLarge
 import net.rsprot.protocol.game.outgoing.info.npcinfo.NpcInfoProtocol
 import net.rsprot.protocol.game.outgoing.info.npcinfo.NpcInfoSmall
 import net.rsprot.protocol.game.outgoing.info.util.BuildArea
+import net.rsprot.protocol.internal.client.ClientTypeMap
+import net.rsprot.protocol.internal.game.outgoing.info.CoordGrid
+import net.rsprot.protocol.internal.game.outgoing.info.util.ZoneIndexStorage
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import kotlin.random.Random
@@ -31,7 +31,8 @@ class NpcInfoTest {
     private val random: Random = Random(0)
     private lateinit var serverNpcs: List<Npc>
     private lateinit var localNpcInfo: NpcInfo
-    private var localPlayerCoord = CoordGrid(0, 3207, 3207)
+    private var localPlayerCoord =
+        CoordGrid(0, 3207, 3207)
     private lateinit var factory: NpcAvatarFactory
 
     @BeforeEach
@@ -112,7 +113,8 @@ class NpcInfoTest {
         tick()
         client.decode(backingBuffer(), false, localPlayerCoord)
 
-        this.localPlayerCoord = CoordGrid(0, 2000, 2000)
+        this.localPlayerCoord =
+            CoordGrid(0, 2000, 2000)
         this.localNpcInfo.updateCoord(localPlayerCoord.level, localPlayerCoord.x, localPlayerCoord.z)
         tick()
         client.decode(backingBuffer(), false, localPlayerCoord)
@@ -267,7 +269,8 @@ class NpcInfoTest {
             val x = random.nextInt(3200, 3213)
             val z = random.nextInt(3200, 3213)
             val id = (index * x * z) and 0x3FFF
-            val coord = CoordGrid(0, x, z)
+            val coord =
+                CoordGrid(0, x, z)
             npcs +=
                 Npc(
                     index,
@@ -288,7 +291,8 @@ class NpcInfoTest {
         val npcs = ArrayList<Npc>(1)
         val x = random.nextInt(3200, 3213)
         val z = random.nextInt(3200, 3213)
-        val coord = CoordGrid(0, x, z)
+        val coord =
+            CoordGrid(0, x, z)
         npcs +=
             Npc(
                 0,

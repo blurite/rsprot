@@ -94,7 +94,9 @@ import java.nio.charset.Charset
  */
 @Suppress("NOTHING_TO_INLINE")
 @JvmInline
-public value class JagByteBuf(public val buffer: ByteBuf) {
+public value class JagByteBuf(
+    public val buffer: ByteBuf,
+) {
     public inline val isReadable: Boolean
         get() = buffer.isReadable
 

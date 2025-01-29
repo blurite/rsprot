@@ -1,27 +1,27 @@
 package net.rsprot.protocol.game.outgoing.info.npcinfo
 
-import net.rsprot.protocol.common.client.ClientTypeMap
 import net.rsprot.protocol.common.client.OldSchoolClientType
-import net.rsprot.protocol.common.game.outgoing.info.ExtendedInfo
-import net.rsprot.protocol.common.game.outgoing.info.encoder.ExtendedInfoEncoder
-import net.rsprot.protocol.common.game.outgoing.info.npcinfo.encoder.NpcExtendedInfoEncoders
-import net.rsprot.protocol.common.game.outgoing.info.npcinfo.extendedinfo.BaseAnimationSet
-import net.rsprot.protocol.common.game.outgoing.info.npcinfo.extendedinfo.BodyCustomisation
-import net.rsprot.protocol.common.game.outgoing.info.npcinfo.extendedinfo.CombatLevelChange
-import net.rsprot.protocol.common.game.outgoing.info.npcinfo.extendedinfo.FaceCoord
-import net.rsprot.protocol.common.game.outgoing.info.npcinfo.extendedinfo.HeadCustomisation
-import net.rsprot.protocol.common.game.outgoing.info.npcinfo.extendedinfo.HeadIconCustomisation
-import net.rsprot.protocol.common.game.outgoing.info.npcinfo.extendedinfo.NameChange
-import net.rsprot.protocol.common.game.outgoing.info.npcinfo.extendedinfo.NpcTinting
-import net.rsprot.protocol.common.game.outgoing.info.npcinfo.extendedinfo.Transformation
-import net.rsprot.protocol.common.game.outgoing.info.npcinfo.extendedinfo.VisibleOps
-import net.rsprot.protocol.common.game.outgoing.info.shared.extendedinfo.ExactMove
-import net.rsprot.protocol.common.game.outgoing.info.shared.extendedinfo.FacePathingEntity
-import net.rsprot.protocol.common.game.outgoing.info.shared.extendedinfo.Hit
-import net.rsprot.protocol.common.game.outgoing.info.shared.extendedinfo.Say
-import net.rsprot.protocol.common.game.outgoing.info.shared.extendedinfo.Sequence
-import net.rsprot.protocol.common.game.outgoing.info.shared.extendedinfo.SpotAnimList
 import net.rsprot.protocol.game.outgoing.info.AvatarExtendedInfoWriter
+import net.rsprot.protocol.internal.client.ClientTypeMap
+import net.rsprot.protocol.internal.game.outgoing.info.ExtendedInfo
+import net.rsprot.protocol.internal.game.outgoing.info.encoder.ExtendedInfoEncoder
+import net.rsprot.protocol.internal.game.outgoing.info.npcinfo.encoder.NpcExtendedInfoEncoders
+import net.rsprot.protocol.internal.game.outgoing.info.npcinfo.extendedinfo.BaseAnimationSet
+import net.rsprot.protocol.internal.game.outgoing.info.npcinfo.extendedinfo.BodyCustomisation
+import net.rsprot.protocol.internal.game.outgoing.info.npcinfo.extendedinfo.CombatLevelChange
+import net.rsprot.protocol.internal.game.outgoing.info.npcinfo.extendedinfo.FaceCoord
+import net.rsprot.protocol.internal.game.outgoing.info.npcinfo.extendedinfo.HeadCustomisation
+import net.rsprot.protocol.internal.game.outgoing.info.npcinfo.extendedinfo.HeadIconCustomisation
+import net.rsprot.protocol.internal.game.outgoing.info.npcinfo.extendedinfo.NameChange
+import net.rsprot.protocol.internal.game.outgoing.info.npcinfo.extendedinfo.NpcTinting
+import net.rsprot.protocol.internal.game.outgoing.info.npcinfo.extendedinfo.Transformation
+import net.rsprot.protocol.internal.game.outgoing.info.npcinfo.extendedinfo.VisibleOps
+import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.ExactMove
+import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.FacePathingEntity
+import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.Hit
+import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.Say
+import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.Sequence
+import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.SpotAnimList
 
 private typealias NEnc = NpcExtendedInfoEncoders
 private typealias HeadIcon = HeadIconCustomisation
@@ -39,7 +39,13 @@ private typealias NpcExtendedInfoWriters =
 public class NpcAvatarExtendedInfoBlocks(
     writers: NpcExtendedInfoWriters,
 ) {
-    public val spotAnims: SpotAnimList = SpotAnimList(encoders(writers, NEnc::spotAnim))
+    public val spotAnims: SpotAnimList =
+        SpotAnimList(
+            encoders(
+                writers,
+                NEnc::spotAnim,
+            ),
+        )
     public val say: Say = Say(encoders(writers, NEnc::say))
     public val visibleOps: VisibleOps = VisibleOps(encoders(writers, NEnc::visibleOps))
     public val exactMove: ExactMove = ExactMove(encoders(writers, NEnc::exactMove))
@@ -48,9 +54,21 @@ public class NpcAvatarExtendedInfoBlocks(
     public val headIconCustomisation: HeadIcon = HeadIcon(encoders(writers, NEnc::headIconCustomisation))
     public val nameChange: NameChange = NameChange(encoders(writers, NEnc::nameChange))
     public val headCustomisation: HeadCustomisation = HeadCustomisation(encoders(writers, NEnc::headCustomisation))
-    public val bodyCustomisation: BodyCustomisation = BodyCustomisation(encoders(writers, NEnc::bodyCustomisation))
+    public val bodyCustomisation: BodyCustomisation =
+        BodyCustomisation(
+            encoders(
+                writers,
+                NEnc::bodyCustomisation,
+            ),
+        )
     public val transformation: Transformation = Transformation(encoders(writers, NEnc::transformation))
-    public val combatLevelChange: CombatLevelChange = CombatLevelChange(encoders(writers, NEnc::combatLevelChange))
+    public val combatLevelChange: CombatLevelChange =
+        CombatLevelChange(
+            encoders(
+                writers,
+                NEnc::combatLevelChange,
+            ),
+        )
     public val hit: Hit = Hit(encoders(writers, NEnc::hit))
     public val faceCoord: FaceCoord = FaceCoord(encoders(writers, NEnc::faceCoord))
     public val facePathingEntity: FacePathingEntity = FacePathingEntity(encoders(writers, NEnc::facePathingEntity))

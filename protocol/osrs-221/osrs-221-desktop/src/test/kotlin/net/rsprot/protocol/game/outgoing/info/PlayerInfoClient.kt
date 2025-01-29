@@ -6,7 +6,7 @@ import net.rsprot.buffer.JagByteBuf
 import net.rsprot.buffer.bitbuffer.BitBuf
 import net.rsprot.buffer.bitbuffer.toBitBuf
 import net.rsprot.buffer.extensions.toJagByteBuf
-import net.rsprot.protocol.common.game.outgoing.info.CoordGrid
+import net.rsprot.protocol.internal.game.outgoing.info.CoordGrid
 
 @Suppress("MemberVisibilityCanBePrivate", "CascadeIf")
 class PlayerInfoClient {
@@ -30,7 +30,8 @@ class PlayerInfoClient {
             bytebuf.toBitBuf().use { buffer ->
                 val localPlayer = Player(localIndex)
                 cachedPlayers[localIndex] = localPlayer
-                val coord = CoordGrid(buffer.gBits(30))
+                val coord =
+                    CoordGrid(buffer.gBits(30))
                 localPlayer.coord = coord
                 highResolutionCount = 0
                 highResolutionIndices[highResolutionCount++] = localIndex
@@ -311,7 +312,8 @@ class PlayerInfoClient {
                 ++curX
                 ++curZ
             }
-            cachedPlayer.coord = CoordGrid(cachedPlayer.coord.level, curX, curZ)
+            cachedPlayer.coord =
+                CoordGrid(cachedPlayer.coord.level, curX, curZ)
             cachedPlayer.queuedMove = extendedInfo
         } else if (opcode == 2) {
             val movementOpcode = buffer.gBits(4)
@@ -362,7 +364,8 @@ class PlayerInfoClient {
                 curX += 2
                 curZ += 2
             }
-            cachedPlayer.coord = CoordGrid(cachedPlayer.coord.level, curX, curZ)
+            cachedPlayer.coord =
+                CoordGrid(cachedPlayer.coord.level, curX, curZ)
             cachedPlayer.queuedMove = extendedInfo
         } else {
             val far = buffer.gBits(1)
@@ -383,7 +386,8 @@ class PlayerInfoClient {
                 curX += deltaX
                 curZ += deltaZ
                 curLevel = (curLevel + deltaLevel) and 0x3
-                cachedPlayer.coord = CoordGrid(curLevel, curX, curZ)
+                cachedPlayer.coord =
+                    CoordGrid(curLevel, curX, curZ)
                 cachedPlayer.queuedMove = extendedInfo
             } else {
                 val coord = buffer.gBits(30)
@@ -396,7 +400,8 @@ class PlayerInfoClient {
                 curX = (curX + deltaX) and 16383
                 curZ = (curZ + deltaZ) and 16383
                 curLevel = (curLevel + deltaLevel) and 0x3
-                cachedPlayer.coord = CoordGrid(curLevel, curX, curZ)
+                cachedPlayer.coord =
+                    CoordGrid(curLevel, curX, curZ)
                 cachedPlayer.queuedMove = extendedInfo
             }
         }
@@ -427,7 +432,12 @@ class PlayerInfoClient {
             val level = lowResolutionPosition shr 28
             val lowResX = lowResolutionPosition shr 14 and 0xFF
             val lowResZ = lowResolutionPosition and 0xFF
-            player.coord = CoordGrid(level, (lowResX shl 13) + x, (lowResZ shl 13) + z)
+            player.coord =
+                CoordGrid(
+                    level,
+                    (lowResX shl 13) + x,
+                    (lowResZ shl 13) + z,
+                )
             player.queuedMove = false
             return true
         } else if (opcode == 1) {

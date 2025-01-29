@@ -5,14 +5,14 @@ import io.netty.buffer.ByteBuf
 import io.netty.buffer.ByteBufAllocator
 import net.rsprot.buffer.JagByteBuf
 import net.rsprot.buffer.extensions.toJagByteBuf
-import net.rsprot.protocol.common.checkCommunicationThread
 import net.rsprot.protocol.common.client.OldSchoolClientType
-import net.rsprot.protocol.common.game.outgoing.info.CoordGrid
-import net.rsprot.protocol.common.game.outgoing.info.util.ZoneIndexStorage
 import net.rsprot.protocol.game.outgoing.info.ByteBufRecycler
 import net.rsprot.protocol.game.outgoing.info.exceptions.InfoProcessException
 import net.rsprot.protocol.game.outgoing.info.util.BuildArea
 import net.rsprot.protocol.game.outgoing.info.util.ReferencePooledObject
+import net.rsprot.protocol.internal.checkCommunicationThread
+import net.rsprot.protocol.internal.game.outgoing.info.CoordGrid
+import net.rsprot.protocol.internal.game.outgoing.info.util.ZoneIndexStorage
 
 /**
  * The world entity info class tracks everything about the world entities that
@@ -182,7 +182,8 @@ public class WorldEntityInfo internal constructor(
     ) {
         checkCommunicationThread()
         this.currentWorldEntityId = worldId
-        this.currentCoord = CoordGrid(level, x, z)
+        this.currentCoord =
+            CoordGrid(level, x, z)
     }
 
     /**
@@ -200,7 +201,8 @@ public class WorldEntityInfo internal constructor(
         z: Int,
     ) {
         checkCommunicationThread()
-        this.renderCoord = CoordGrid(level, x, z)
+        this.renderCoord =
+            CoordGrid(level, x, z)
     }
 
     /**
