@@ -12,7 +12,7 @@ import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.util.
  */
 public class Hit(
     override val encoders: ClientTypeMap<OnDemandExtendedInfoEncoder<Hit>>,
-) : net.rsprot.protocol.internal.game.outgoing.info.TransientExtendedInfo<Hit, OnDemandExtendedInfoEncoder<Hit>>() {
+) : TransientExtendedInfo<Hit, OnDemandExtendedInfoEncoder<Hit>>() {
     public val headBarList: HeadBarList = HeadBarList()
     public val hitMarkList: HitMarkList = HitMarkList()
 

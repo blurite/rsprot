@@ -8,9 +8,9 @@ import net.rsprot.protocol.ServerProtCategory
 import net.rsprot.protocol.api.channel.inetAddress
 import net.rsprot.protocol.api.game.GameMessageDecoder
 import net.rsprot.protocol.api.logging.networkLog
-import net.rsprot.protocol.internal.RSProtFlags
 import net.rsprot.protocol.game.outgoing.GameServerProtCategory
 import net.rsprot.protocol.game.outgoing.zone.payload.SoundArea
+import net.rsprot.protocol.internal.RSProtFlags
 import net.rsprot.protocol.loginprot.incoming.util.LoginBlock
 import net.rsprot.protocol.loginprot.incoming.util.LoginClientType
 import net.rsprot.protocol.message.ConsumableMessage
@@ -129,7 +129,7 @@ public class Session<R>(
             }
             return
         }
-        if (net.rsprot.protocol.internal.RSProtFlags.filterMissingPacketsInClient) {
+        if (RSProtFlags.filterMissingPacketsInClient) {
             if (loginBlock.clientType == LoginClientType.DESKTOP && message is SoundArea) {
                 throw IllegalArgumentException(
                     "SoundArea packet may only be sent as part of " +

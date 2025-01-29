@@ -1,7 +1,7 @@
 package net.rsprot.protocol.game.outgoing.info.npcinfo
 
-import net.rsprot.protocol.internal.RSProtFlags
 import net.rsprot.protocol.game.outgoing.info.playerinfo.PlayerInfoProtocol.Companion.PROTOCOL_CAPACITY
+import net.rsprot.protocol.internal.RSProtFlags
 import java.util.concurrent.atomic.AtomicInteger
 import java.util.concurrent.atomic.AtomicLongArray
 

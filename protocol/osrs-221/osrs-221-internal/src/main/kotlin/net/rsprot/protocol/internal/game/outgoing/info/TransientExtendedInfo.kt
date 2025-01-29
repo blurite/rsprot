@@ -14,5 +14,5 @@ import net.rsprot.protocol.internal.game.outgoing.info.encoder.ExtendedInfoEncod
  * @param T the extended info block
  * @param E the encoder for the given extended info block
  */
-public abstract class TransientExtendedInfo<in T : net.rsprot.protocol.internal.game.outgoing.info.ExtendedInfo<T, E>, E : ExtendedInfoEncoder<T>> :
-    net.rsprot.protocol.internal.game.outgoing.info.ExtendedInfo<T, E>()
+public abstract class TransientExtendedInfo<in T : ExtendedInfo<T, E>, E : ExtendedInfoEncoder<T>> :
+    ExtendedInfo<T, E>()

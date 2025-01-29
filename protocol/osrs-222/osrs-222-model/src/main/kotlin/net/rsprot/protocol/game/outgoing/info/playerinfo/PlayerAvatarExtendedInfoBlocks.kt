@@ -1,7 +1,8 @@
 package net.rsprot.protocol.game.outgoing.info.playerinfo
 
-import net.rsprot.protocol.internal.client.ClientTypeMap
 import net.rsprot.protocol.common.client.OldSchoolClientType
+import net.rsprot.protocol.game.outgoing.info.AvatarExtendedInfoWriter
+import net.rsprot.protocol.internal.client.ClientTypeMap
 import net.rsprot.protocol.internal.game.outgoing.info.ExtendedInfo
 import net.rsprot.protocol.internal.game.outgoing.info.encoder.ExtendedInfoEncoder
 import net.rsprot.protocol.internal.game.outgoing.info.playerinfo.encoder.PlayerExtendedInfoEncoders
@@ -17,7 +18,6 @@ import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.Hit
 import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.Say
 import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.Sequence
 import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.SpotAnimList
-import net.rsprot.protocol.game.outgoing.info.AvatarExtendedInfoWriter
 
 private typealias PEnc = PlayerExtendedInfoEncoders
 private typealias TempMoveSpeed = TemporaryMoveSpeed

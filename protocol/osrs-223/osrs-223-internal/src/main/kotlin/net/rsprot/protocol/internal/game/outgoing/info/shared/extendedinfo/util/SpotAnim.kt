@@ -34,7 +34,7 @@ public value class SpotAnim(
         /**
          * The default value to initialize spotanim extended info as.
          */
-        public val INVALID: net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.util.SpotAnim =
-	        net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.util.SpotAnim(-1L)
+        public val INVALID: SpotAnim =
+            SpotAnim(-1L)
     }
 }

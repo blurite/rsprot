@@ -26,7 +26,7 @@ public class PlayerSpotAnimEncoder : PrecomputedExtendedInfoEncoder<SpotAnimList
         var slot = changelist.nextSetBit(0)
         while (slot != -1) {
             val spotanim =
-	            net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.util.SpotAnim(spotanims[slot])
+                SpotAnim(spotanims[slot])
             buffer.p1Alt3(slot)
             buffer.p2Alt2(spotanim.id)
             buffer.p4Alt1(spotanim.delay or (spotanim.height shl 16))

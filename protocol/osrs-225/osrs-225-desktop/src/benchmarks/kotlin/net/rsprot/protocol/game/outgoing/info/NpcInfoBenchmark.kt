@@ -4,10 +4,7 @@ import io.netty.buffer.PooledByteBufAllocator
 import io.netty.buffer.Unpooled
 import net.rsprot.compression.HuffmanCodec
 import net.rsprot.compression.provider.DefaultHuffmanCodecProvider
-import net.rsprot.protocol.internal.client.ClientTypeMap
 import net.rsprot.protocol.common.client.OldSchoolClientType
-import net.rsprot.protocol.internal.game.outgoing.info.CoordGrid
-import net.rsprot.protocol.internal.game.outgoing.info.util.ZoneIndexStorage
 import net.rsprot.protocol.game.outgoing.codec.npcinfo.DesktopLowResolutionChangeEncoder
 import net.rsprot.protocol.game.outgoing.codec.npcinfo.extendedinfo.writer.NpcAvatarExtendedInfoDesktopWriter
 import net.rsprot.protocol.game.outgoing.info.filter.DefaultExtendedInfoFilter
@@ -21,6 +18,9 @@ import net.rsprot.protocol.game.outgoing.info.npcinfo.NpcInfoProtocol
 import net.rsprot.protocol.game.outgoing.info.npcinfo.NpcInfoSmall
 import net.rsprot.protocol.game.outgoing.info.util.BuildArea
 import net.rsprot.protocol.game.outgoing.info.worker.DefaultProtocolWorker
+import net.rsprot.protocol.internal.client.ClientTypeMap
+import net.rsprot.protocol.internal.game.outgoing.info.CoordGrid
+import net.rsprot.protocol.internal.game.outgoing.info.util.ZoneIndexStorage
 import net.rsprot.protocol.message.ConsumableMessage
 import org.openjdk.jmh.annotations.Benchmark
 import org.openjdk.jmh.annotations.BenchmarkMode
@@ -52,7 +52,8 @@ class NpcInfoBenchmark {
     private lateinit var serverNpcs: List<Npc>
     private lateinit var localNpcInfo: NpcInfo
     private lateinit var otherNpcInfos: List<NpcInfo>
-    private var localPlayerCoord = net.rsprot.protocol.internal.game.outgoing.info.CoordGrid(0, 3207, 3207)
+    private var localPlayerCoord =
+        CoordGrid(0, 3207, 3207)
     private lateinit var factory: NpcAvatarFactory
 
     @Setup
@@ -72,7 +73,7 @@ class NpcInfoBenchmark {
         this.serverNpcs = createPhantomNpcs(factory)
 
         val encoders =
-            net.rsprot.protocol.internal.client.ClientTypeMap.of(
+            ClientTypeMap.of(
                 listOf(DesktopLowResolutionChangeEncoder()),
                 OldSchoolClientType.COUNT,
             ) {
@@ -147,7 +148,8 @@ class NpcInfoBenchmark {
             val x = random.nextInt(3200, 3213)
             val z = random.nextInt(3200, 3213)
             val id = (index * x * z) and 0x3FFF
-            val coord = net.rsprot.protocol.internal.game.outgoing.info.CoordGrid(0, x, z)
+            val coord =
+                CoordGrid(0, x, z)
             npcs +=
                 Npc(
                     index,
@@ -178,8 +180,7 @@ class NpcInfoBenchmark {
     }
 
     private companion object {
-        private fun NpcAvatar.getCoordGrid(): net.rsprot.protocol.internal.game.outgoing.info.CoordGrid =
-	        net.rsprot.protocol.internal.game.outgoing.info.CoordGrid(level(), x(), z())
+        private fun NpcAvatar.getCoordGrid(): CoordGrid = CoordGrid(level(), x(), z())
 
         private fun createHuffmanCodec(): HuffmanCodec {
             val resource = PlayerInfoTest::class.java.getResourceAsStream("huffman.dat")

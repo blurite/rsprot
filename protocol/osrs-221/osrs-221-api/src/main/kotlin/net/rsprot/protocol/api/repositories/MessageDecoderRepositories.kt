@@ -3,12 +3,12 @@ package net.rsprot.protocol.api.repositories
 import net.rsprot.compression.provider.HuffmanCodecProvider
 import net.rsprot.crypto.rsa.RsaKeyPair
 import net.rsprot.protocol.ClientProt
-import net.rsprot.protocol.internal.client.ClientTypeMap
 import net.rsprot.protocol.common.client.OldSchoolClientType
 import net.rsprot.protocol.common.client.OldSchoolClientType.DESKTOP
 import net.rsprot.protocol.common.js5.incoming.prot.Js5MessageDecoderRepository
 import net.rsprot.protocol.common.loginprot.incoming.prot.LoginMessageDecoderRepository
 import net.rsprot.protocol.game.incoming.prot.DesktopGameMessageDecoderRepository
+import net.rsprot.protocol.internal.client.ClientTypeMap
 import net.rsprot.protocol.message.codec.incoming.MessageDecoderRepository
 import java.math.BigInteger
 

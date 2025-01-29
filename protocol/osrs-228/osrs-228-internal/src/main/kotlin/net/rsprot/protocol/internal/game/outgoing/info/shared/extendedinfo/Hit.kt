@@ -13,10 +13,10 @@ import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.util.
 public class Hit(
     override val encoders: ClientTypeMap<OnDemandExtendedInfoEncoder<Hit>>,
 ) : TransientExtendedInfo<Hit, OnDemandExtendedInfoEncoder<Hit>>() {
-    public val headBarList: net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.util.HeadBarList =
-	    net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.util.HeadBarList()
-    public val hitMarkList: net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.util.HitMarkList =
-	    net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.util.HitMarkList()
+    public val headBarList: HeadBarList =
+        HeadBarList()
+    public val hitMarkList: HitMarkList =
+        HitMarkList()
 
     override fun clear() {
         releaseBuffers()

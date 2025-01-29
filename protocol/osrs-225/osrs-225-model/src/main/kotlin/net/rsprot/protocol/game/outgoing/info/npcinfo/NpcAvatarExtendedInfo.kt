@@ -3,9 +3,11 @@ package net.rsprot.protocol.game.outgoing.info.npcinfo
 import io.netty.buffer.ByteBufAllocator
 import net.rsprot.buffer.JagByteBuf
 import net.rsprot.compression.provider.HuffmanCodecProvider
+import net.rsprot.protocol.common.client.OldSchoolClientType
+import net.rsprot.protocol.game.outgoing.info.AvatarExtendedInfoWriter
+import net.rsprot.protocol.game.outgoing.info.filter.ExtendedInfoFilter
 import net.rsprot.protocol.internal.RSProtFlags
 import net.rsprot.protocol.internal.checkCommunicationThread
-import net.rsprot.protocol.common.client.OldSchoolClientType
 import net.rsprot.protocol.internal.game.outgoing.info.npcinfo.encoder.NpcExtendedInfoEncoders
 import net.rsprot.protocol.internal.game.outgoing.info.npcinfo.extendedinfo.BaseAnimationSet
 import net.rsprot.protocol.internal.game.outgoing.info.npcinfo.extendedinfo.CombatLevelChange
@@ -17,11 +19,9 @@ import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.FaceP
 import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.util.HeadBar
 import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.util.HitMark
 import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.util.SpotAnim
-import net.rsprot.protocol.game.outgoing.info.AvatarExtendedInfoWriter
-import net.rsprot.protocol.game.outgoing.info.filter.ExtendedInfoFilter
 
 public typealias NpcAvatarExtendedInfoWriter =
-    AvatarExtendedInfoWriter<net.rsprot.protocol.internal.game.outgoing.info.npcinfo.encoder.NpcExtendedInfoEncoders, NpcAvatarExtendedInfoBlocks>
+    AvatarExtendedInfoWriter<NpcExtendedInfoEncoders, NpcAvatarExtendedInfoBlocks>
 
 /**
  * Npc avatar extended info is a data structure used to keep track of all the extended info
@@ -217,8 +217,9 @@ public class NpcAvatarExtendedInfo(
                 "Unexpected delay: $height, expected range: $UNSIGNED_SHORT_RANGE"
             }
         }
-        blocks.spotAnims.set(slot,
-	        net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.util.SpotAnim(id, delay, height)
+        blocks.spotAnims.set(
+            slot,
+            SpotAnim(id, delay, height),
         )
         flags = flags or SPOTANIM
     }
@@ -1159,12 +1160,12 @@ public class NpcAvatarExtendedInfo(
     public fun setHeadCustomisationMirrored() {
         checkCommunicationThread()
         blocks.headCustomisation.customisation =
-	        net.rsprot.protocol.internal.game.outgoing.info.npcinfo.extendedinfo.TypeCustomisation(
-		        emptyList(),
-		        emptyList(),
-		        emptyList(),
-		        true,
-	        )
+            TypeCustomisation(
+                emptyList(),
+                emptyList(),
+                emptyList(),
+                true,
+            )
         flags = flags or HEAD_CUSTOMISATION
     }
 
@@ -1187,12 +1188,12 @@ public class NpcAvatarExtendedInfo(
     ) {
         checkCommunicationThread()
         blocks.headCustomisation.customisation =
-	        net.rsprot.protocol.internal.game.outgoing.info.npcinfo.extendedinfo.TypeCustomisation(
-		        models,
-		        recolours,
-		        retextures,
-		        false,
-	        )
+            TypeCustomisation(
+                models,
+                recolours,
+                retextures,
+                false,
+            )
         flags = flags or HEAD_CUSTOMISATION
     }
 
@@ -1211,12 +1212,12 @@ public class NpcAvatarExtendedInfo(
     public fun setBodyCustomisationMirrored() {
         checkCommunicationThread()
         blocks.bodyCustomisation.customisation =
-	        net.rsprot.protocol.internal.game.outgoing.info.npcinfo.extendedinfo.TypeCustomisation(
-		        emptyList(),
-		        emptyList(),
-		        emptyList(),
-		        true,
-	        )
+            TypeCustomisation(
+                emptyList(),
+                emptyList(),
+                emptyList(),
+                true,
+            )
         flags = flags or BODY_CUSTOMISATION
     }
 
@@ -1239,12 +1240,12 @@ public class NpcAvatarExtendedInfo(
     ) {
         checkCommunicationThread()
         blocks.bodyCustomisation.customisation =
-	        net.rsprot.protocol.internal.game.outgoing.info.npcinfo.extendedinfo.TypeCustomisation(
-		        models,
-		        recolours,
-		        retextures,
-		        false,
-	        )
+            TypeCustomisation(
+                models,
+                recolours,
+                retextures,
+                false,
+            )
         flags = flags or BODY_CUSTOMISATION
     }
 
@@ -1415,7 +1416,8 @@ public class NpcAvatarExtendedInfo(
     internal fun getLowToHighResChangeExtendedInfoFlags(): Int {
         var flag = 0
         if (this.flags and OPS == 0 &&
-            blocks.visibleOps.ops != net.rsprot.protocol.internal.game.outgoing.info.npcinfo.extendedinfo.VisibleOps.DEFAULT_OPS
+            blocks.visibleOps.ops !=
+            VisibleOps.DEFAULT_OPS
         ) {
             flag = flag or OPS
         }

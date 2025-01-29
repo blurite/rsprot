@@ -1,11 +1,11 @@
 package net.rsprot.protocol.game.outgoing.inv
 
 import net.rsprot.protocol.ServerProtCategory
-import net.rsprot.protocol.internal.RSProtFlags
 import net.rsprot.protocol.common.game.outgoing.inv.InventoryObject
+import net.rsprot.protocol.game.outgoing.GameServerProtCategory
+import net.rsprot.protocol.internal.RSProtFlags
 import net.rsprot.protocol.internal.game.outgoing.inv.internal.Inventory
 import net.rsprot.protocol.internal.game.outgoing.inv.internal.InventoryPool
-import net.rsprot.protocol.game.outgoing.GameServerProtCategory
 import net.rsprot.protocol.message.OutgoingGameMessage
 import net.rsprot.protocol.util.CombinedId
 
@@ -30,9 +30,9 @@ import net.rsprot.protocol.util.CombinedId
  * @property count the number of items added into this partial update.
  */
 public class UpdateInvPartial private constructor(
-	public val combinedId: Int,
-	private val _inventoryId: UShort,
-	private val inventory: net.rsprot.protocol.internal.game.outgoing.inv.internal.Inventory,
+    public val combinedId: Int,
+    private val _inventoryId: UShort,
+    private val inventory: Inventory,
 ) : OutgoingGameMessage {
     public constructor(
         interfaceId: Int,
@@ -97,7 +97,8 @@ public class UpdateInvPartial private constructor(
 
     public fun returnInventory() {
         inventory.clear()
-        net.rsprot.protocol.internal.game.outgoing.inv.internal.InventoryPool.pool.returnObject(inventory)
+        InventoryPool.pool
+            .returnObject(inventory)
     }
 
     override fun equals(other: Any?): Boolean {
@@ -154,8 +155,10 @@ public class UpdateInvPartial private constructor(
          * @return an inventory object, which is a compressed representation
          * of a list of [InventoryObject]s as longs, backed by a long array.
          */
-        private fun buildInventory(provider: IndexedObjectProvider): net.rsprot.protocol.internal.game.outgoing.inv.internal.Inventory {
-            val inventory = net.rsprot.protocol.internal.game.outgoing.inv.internal.InventoryPool.pool.borrowObject()
+        private fun buildInventory(provider: IndexedObjectProvider): Inventory {
+            val inventory =
+                InventoryPool.pool
+                    .borrowObject()
             for (index in provider.indices) {
                 val obj = provider.provide(index)
                 if (RSProtFlags.inventoryObjCheck) {

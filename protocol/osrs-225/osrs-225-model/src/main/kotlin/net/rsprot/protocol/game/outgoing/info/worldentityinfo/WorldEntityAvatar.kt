@@ -4,10 +4,10 @@ import io.netty.buffer.ByteBuf
 import io.netty.buffer.ByteBufAllocator
 import net.rsprot.buffer.extensions.p1
 import net.rsprot.buffer.extensions.p2
+import net.rsprot.protocol.game.outgoing.info.util.Avatar
 import net.rsprot.protocol.internal.checkCommunicationThread
 import net.rsprot.protocol.internal.game.outgoing.info.CoordGrid
 import net.rsprot.protocol.internal.game.outgoing.info.util.ZoneIndexStorage
-import net.rsprot.protocol.game.outgoing.info.util.Avatar
 
 /**
  * A world entity avatar represents a dynamic world entity as a single unit.
@@ -43,16 +43,16 @@ import net.rsprot.protocol.game.outgoing.info.util.Avatar
  * movement of this avatar.
  */
 public class WorldEntityAvatar(
-	internal val allocator: ByteBufAllocator,
-	internal val zoneIndexStorage: ZoneIndexStorage,
-	internal var index: Int,
-	internal var sizeX: Int,
-	internal var sizeZ: Int,
-	internal var currentCoord: net.rsprot.protocol.internal.game.outgoing.info.CoordGrid = net.rsprot.protocol.internal.game.outgoing.info.CoordGrid.INVALID,
-	internal var angle: Int,
+    internal val allocator: ByteBufAllocator,
+    internal val zoneIndexStorage: ZoneIndexStorage,
+    internal var index: Int,
+    internal var sizeX: Int,
+    internal var sizeZ: Int,
+    internal var currentCoord: CoordGrid = CoordGrid.INVALID,
+    internal var angle: Int,
 ) : Avatar {
     private var moveSpeed: Int = -1
-    internal var lastCoord: net.rsprot.protocol.internal.game.outgoing.info.CoordGrid = currentCoord
+    internal var lastCoord: CoordGrid = currentCoord
 
     internal var highResolutionBuffer: ByteBuf? = null
 
@@ -98,7 +98,8 @@ public class WorldEntityAvatar(
     ) {
         checkCommunicationThread()
         this.zoneIndexStorage.remove(this.index, this.currentCoord)
-        this.currentCoord = net.rsprot.protocol.internal.game.outgoing.info.CoordGrid(level, x, z)
+        this.currentCoord =
+            CoordGrid(level, x, z)
         this.zoneIndexStorage.add(this.index, this.currentCoord)
         this.moveSpeed = moveSpeed
     }

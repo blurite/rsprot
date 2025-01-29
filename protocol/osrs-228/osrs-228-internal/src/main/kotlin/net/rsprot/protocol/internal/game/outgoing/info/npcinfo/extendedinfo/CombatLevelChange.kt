@@ -5,15 +5,15 @@ import net.rsprot.protocol.internal.game.outgoing.info.TransientExtendedInfo
 import net.rsprot.protocol.internal.game.outgoing.info.encoder.PrecomputedExtendedInfoEncoder
 
 public class CombatLevelChange(
-	override val encoders: ClientTypeMap<PrecomputedExtendedInfoEncoder<net.rsprot.protocol.internal.game.outgoing.info.npcinfo.extendedinfo.CombatLevelChange>>,
-) : TransientExtendedInfo<net.rsprot.protocol.internal.game.outgoing.info.npcinfo.extendedinfo.CombatLevelChange, PrecomputedExtendedInfoEncoder<net.rsprot.protocol.internal.game.outgoing.info.npcinfo.extendedinfo.CombatLevelChange>>() {
+    override val encoders: ClientTypeMap<PrecomputedExtendedInfoEncoder<CombatLevelChange>>,
+) : TransientExtendedInfo<CombatLevelChange, PrecomputedExtendedInfoEncoder<CombatLevelChange>>() {
     public var level: Int =
-	    net.rsprot.protocol.internal.game.outgoing.info.npcinfo.extendedinfo.CombatLevelChange.Companion.DEFAULT_LEVEL_OVERRIDE
+        DEFAULT_LEVEL_OVERRIDE
 
     override fun clear() {
         releaseBuffers()
         this.level =
-	        net.rsprot.protocol.internal.game.outgoing.info.npcinfo.extendedinfo.CombatLevelChange.Companion.DEFAULT_LEVEL_OVERRIDE
+            DEFAULT_LEVEL_OVERRIDE
     }
 
     public companion object {

@@ -10,7 +10,7 @@ import net.rsprot.protocol.internal.game.outgoing.info.encoder.PrecomputedExtend
  */
 public class FacePathingEntity(
     override val encoders: ClientTypeMap<PrecomputedExtendedInfoEncoder<FacePathingEntity>>,
-) : net.rsprot.protocol.internal.game.outgoing.info.TransientExtendedInfo<FacePathingEntity, PrecomputedExtendedInfoEncoder<FacePathingEntity>>() {
+) : TransientExtendedInfo<FacePathingEntity, PrecomputedExtendedInfoEncoder<FacePathingEntity>>() {
     /**
      * The index of the avatar to face-lock onto. For player avatars,
      * a value of 0x10000 is added onto the index to differentiate it.

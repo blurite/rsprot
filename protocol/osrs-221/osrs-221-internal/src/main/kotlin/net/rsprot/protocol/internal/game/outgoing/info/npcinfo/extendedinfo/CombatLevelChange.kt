@@ -6,7 +6,7 @@ import net.rsprot.protocol.internal.game.outgoing.info.encoder.PrecomputedExtend
 
 public class CombatLevelChange(
     override val encoders: ClientTypeMap<PrecomputedExtendedInfoEncoder<CombatLevelChange>>,
-) : net.rsprot.protocol.internal.game.outgoing.info.TransientExtendedInfo<CombatLevelChange, PrecomputedExtendedInfoEncoder<CombatLevelChange>>() {
+) : TransientExtendedInfo<CombatLevelChange, PrecomputedExtendedInfoEncoder<CombatLevelChange>>() {
     public var level: Int = DEFAULT_LEVEL_OVERRIDE
 
     override fun clear() {

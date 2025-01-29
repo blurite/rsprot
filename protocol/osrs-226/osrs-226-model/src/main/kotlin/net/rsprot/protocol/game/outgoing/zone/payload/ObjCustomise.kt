@@ -1,9 +1,9 @@
 package net.rsprot.protocol.game.outgoing.zone.payload
 
 import net.rsprot.protocol.ServerProtCategory
-import net.rsprot.protocol.internal.game.outgoing.codec.zone.payload.OldSchoolZoneProt
 import net.rsprot.protocol.game.outgoing.GameServerProtCategory
 import net.rsprot.protocol.game.outgoing.zone.payload.util.CoordInZone
+import net.rsprot.protocol.internal.game.outgoing.codec.zone.payload.OldSchoolZoneProt
 import net.rsprot.protocol.message.ZoneProt
 import net.rsprot.protocol.message.toIntOrMinusOne
 

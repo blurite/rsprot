@@ -16,7 +16,7 @@ internal inline fun networkLog(
     logger: InlineLogger,
     block: () -> Any?,
 ) {
-    if (net.rsprot.protocol.internal.RSProtFlags.networkLogging) {
+    if (RSProtFlags.networkLogging) {
         logger.debug(block)
     }
 }
@@ -34,7 +34,7 @@ internal inline fun js5Log(
     logger: InlineLogger,
     block: () -> Any?,
 ) {
-    if (net.rsprot.protocol.internal.RSProtFlags.js5Logging) {
+    if (RSProtFlags.js5Logging) {
         logger.debug(block)
     }
 }

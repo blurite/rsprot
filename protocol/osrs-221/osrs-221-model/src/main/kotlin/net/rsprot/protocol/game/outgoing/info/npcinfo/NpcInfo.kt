@@ -5,16 +5,16 @@ import io.netty.buffer.ByteBufAllocator
 import net.rsprot.buffer.bitbuffer.BitBuf
 import net.rsprot.buffer.bitbuffer.toBitBuf
 import net.rsprot.buffer.extensions.toJagByteBuf
-import net.rsprot.protocol.internal.client.ClientTypeMap
 import net.rsprot.protocol.common.client.OldSchoolClientType
-import net.rsprot.protocol.internal.game.outgoing.info.CoordGrid
-import net.rsprot.protocol.internal.game.outgoing.info.npcinfo.encoder.NpcResolutionChangeEncoder
-import net.rsprot.protocol.internal.game.outgoing.info.util.ZoneIndexStorage
 import net.rsprot.protocol.game.outgoing.info.ByteBufRecycler
 import net.rsprot.protocol.game.outgoing.info.ObserverExtendedInfoFlags
 import net.rsprot.protocol.game.outgoing.info.exceptions.InfoProcessException
 import net.rsprot.protocol.game.outgoing.info.util.BuildArea
 import net.rsprot.protocol.game.outgoing.info.util.ReferencePooledObject
+import net.rsprot.protocol.internal.client.ClientTypeMap
+import net.rsprot.protocol.internal.game.outgoing.info.CoordGrid
+import net.rsprot.protocol.internal.game.outgoing.info.npcinfo.encoder.NpcResolutionChangeEncoder
+import net.rsprot.protocol.internal.game.outgoing.info.util.ZoneIndexStorage
 import net.rsprot.protocol.message.OutgoingGameMessage
 import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.contract
@@ -53,13 +53,13 @@ public class NpcInfo internal constructor(
      * in a simplified manner, rather than applying a coordinate check on each one. This commonly
      * occurs whenever a player teleports far away.
      */
-    private var localPlayerLastCoord: net.rsprot.protocol.internal.game.outgoing.info.CoordGrid = net.rsprot.protocol.internal.game.outgoing.info.CoordGrid.INVALID
+    private var localPlayerLastCoord: CoordGrid = CoordGrid.INVALID
 
     /**
      * The current coordinate of the local player used for the calculations of this npc info
      * packet. This will be cross-referenced against NPCs to ensure they are within distance.
      */
-    private var localPlayerCurrentCoord: net.rsprot.protocol.internal.game.outgoing.info.CoordGrid = net.rsprot.protocol.internal.game.outgoing.info.CoordGrid.INVALID
+    private var localPlayerCurrentCoord: CoordGrid = CoordGrid.INVALID
 
     /**
      * The entire build area of this world - this effectively caps what we can see
@@ -278,11 +278,11 @@ public class NpcInfo internal constructor(
         z: Int,
     ) {
         this.localPlayerCurrentCoord =
-	        net.rsprot.protocol.internal.game.outgoing.info.CoordGrid(
-		        level,
-		        x,
-		        z,
-	        )
+            CoordGrid(
+                level,
+                x,
+                z,
+            )
     }
 
     /**
@@ -619,9 +619,9 @@ public class NpcInfo internal constructor(
      * @return whether the coord is within distance of the local player's current coordinate.
      */
     private fun withinDistance(
-	    localPlayerCoordGrid: net.rsprot.protocol.internal.game.outgoing.info.CoordGrid,
-	    coord: net.rsprot.protocol.internal.game.outgoing.info.CoordGrid,
-	    distance: Int,
+        localPlayerCoordGrid: CoordGrid,
+        coord: CoordGrid,
+        distance: Int,
     ): Boolean =
         localPlayerCoordGrid.inDistance(
             coord,
@@ -647,7 +647,7 @@ public class NpcInfo internal constructor(
     ) {
         this.localPlayerIndex = index
         this.oldSchoolClientType = oldSchoolClientType
-        this.localPlayerLastCoord = net.rsprot.protocol.internal.game.outgoing.info.CoordGrid.INVALID
+        this.localPlayerLastCoord = CoordGrid.INVALID
         this.viewDistance = MAX_SMALL_PACKET_DISTANCE
         this.highResolutionNpcIndexCount = 0
         this.extendedInfoCount = 0

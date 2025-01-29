@@ -5,7 +5,7 @@ import net.rsprot.protocol.internal.game.outgoing.info.TransientExtendedInfo
 import net.rsprot.protocol.internal.game.outgoing.info.encoder.PrecomputedExtendedInfoEncoder
 
 public class HeadCustomisation(
-	override val encoders: net.rsprot.protocol.internal.client.ClientTypeMap<PrecomputedExtendedInfoEncoder<HeadCustomisation>>,
+    override val encoders: ClientTypeMap<PrecomputedExtendedInfoEncoder<HeadCustomisation>>,
 ) : TransientExtendedInfo<HeadCustomisation, PrecomputedExtendedInfoEncoder<HeadCustomisation>>() {
     public var customisation: TypeCustomisation? = null
 

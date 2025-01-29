@@ -13,8 +13,8 @@ import net.rsprot.protocol.internal.game.outgoing.info.util.ZoneIndexStorage
  */
 @Suppress("DuplicatedCode")
 public class WorldEntityAvatarFactory(
-	allocator: ByteBufAllocator,
-	zoneIndexStorage: net.rsprot.protocol.internal.game.outgoing.info.util.ZoneIndexStorage,
+    allocator: ByteBufAllocator,
+    zoneIndexStorage: ZoneIndexStorage,
 ) {
     internal val avatarRepository: WorldEntityAvatarRepository =
         WorldEntityAvatarRepository(

@@ -117,38 +117,38 @@ public object RSProtFlags {
         )
 
     @JvmStatic
-    public val networkLogging: net.rsprot.protocol.internal.LogLevel =
+    public val networkLogging: LogLevel =
         when (networkLoggingString) {
-            "off" -> net.rsprot.protocol.internal.LogLevel.OFF
-            "trace" -> net.rsprot.protocol.internal.LogLevel.TRACE
-            "debug" -> net.rsprot.protocol.internal.LogLevel.DEBUG
-            "info" -> net.rsprot.protocol.internal.LogLevel.INFO
-            "warn" -> net.rsprot.protocol.internal.LogLevel.WARN
-            "error" -> net.rsprot.protocol.internal.LogLevel.ERROR
+            "off" -> LogLevel.OFF
+            "trace" -> LogLevel.TRACE
+            "debug" -> LogLevel.DEBUG
+            "info" -> LogLevel.INFO
+            "warn" -> LogLevel.WARN
+            "error" -> LogLevel.ERROR
             else -> {
                 logger.warn {
                     "Unknown network logging option: $networkLoggingString, " +
                         "expected values: [off, trace, debug, info, warn, error]"
                 }
-                net.rsprot.protocol.internal.LogLevel.OFF
+                LogLevel.OFF
             }
         }
 
     @JvmStatic
-    public val js5Logging: net.rsprot.protocol.internal.LogLevel =
+    public val js5Logging: LogLevel =
         when (js5LoggingString) {
-            "off" -> net.rsprot.protocol.internal.LogLevel.OFF
-            "trace" -> net.rsprot.protocol.internal.LogLevel.TRACE
-            "debug" -> net.rsprot.protocol.internal.LogLevel.DEBUG
-            "info" -> net.rsprot.protocol.internal.LogLevel.INFO
-            "warn" -> net.rsprot.protocol.internal.LogLevel.WARN
-            "error" -> net.rsprot.protocol.internal.LogLevel.ERROR
+            "off" -> LogLevel.OFF
+            "trace" -> LogLevel.TRACE
+            "debug" -> LogLevel.DEBUG
+            "info" -> LogLevel.INFO
+            "warn" -> LogLevel.WARN
+            "error" -> LogLevel.ERROR
             else -> {
                 logger.warn {
                     "Unknown js5 logging option: $networkLoggingString, " +
                         "expected values: [off, trace, debug, info, warn, error]"
                 }
-                net.rsprot.protocol.internal.LogLevel.OFF
+                LogLevel.OFF
             }
         }
 

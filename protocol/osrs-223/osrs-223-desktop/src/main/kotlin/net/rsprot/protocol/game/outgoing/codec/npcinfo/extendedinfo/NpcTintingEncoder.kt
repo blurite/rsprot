@@ -7,11 +7,11 @@ import net.rsprot.compression.provider.HuffmanCodecProvider
 import net.rsprot.protocol.internal.game.outgoing.info.encoder.PrecomputedExtendedInfoEncoder
 import net.rsprot.protocol.internal.game.outgoing.info.npcinfo.extendedinfo.NpcTinting
 
-public class NpcTintingEncoder : PrecomputedExtendedInfoEncoder<net.rsprot.protocol.internal.game.outgoing.info.npcinfo.extendedinfo.NpcTinting> {
+public class NpcTintingEncoder : PrecomputedExtendedInfoEncoder<NpcTinting> {
     override fun precompute(
-	    alloc: ByteBufAllocator,
-	    huffmanCodecProvider: HuffmanCodecProvider,
-	    extendedInfo: net.rsprot.protocol.internal.game.outgoing.info.npcinfo.extendedinfo.NpcTinting,
+        alloc: ByteBufAllocator,
+        huffmanCodecProvider: HuffmanCodecProvider,
+        extendedInfo: NpcTinting,
     ): JagByteBuf {
         val buffer =
             alloc

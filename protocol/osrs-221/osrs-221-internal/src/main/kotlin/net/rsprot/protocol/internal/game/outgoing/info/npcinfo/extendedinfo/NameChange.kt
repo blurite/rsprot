@@ -5,8 +5,8 @@ import net.rsprot.protocol.internal.game.outgoing.info.TransientExtendedInfo
 import net.rsprot.protocol.internal.game.outgoing.info.encoder.PrecomputedExtendedInfoEncoder
 
 public class NameChange(
-	override val encoders: ClientTypeMap<PrecomputedExtendedInfoEncoder<net.rsprot.protocol.internal.game.outgoing.info.npcinfo.extendedinfo.NameChange>>,
-) : net.rsprot.protocol.internal.game.outgoing.info.TransientExtendedInfo<net.rsprot.protocol.internal.game.outgoing.info.npcinfo.extendedinfo.NameChange, PrecomputedExtendedInfoEncoder<net.rsprot.protocol.internal.game.outgoing.info.npcinfo.extendedinfo.NameChange>>() {
+    override val encoders: ClientTypeMap<PrecomputedExtendedInfoEncoder<NameChange>>,
+) : TransientExtendedInfo<NameChange, PrecomputedExtendedInfoEncoder<NameChange>>() {
     public var name: String? = null
 
     override fun clear() {

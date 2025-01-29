@@ -1,10 +1,10 @@
 package net.rsprot.protocol.game.outgoing.info.playerinfo
 
 import net.rsprot.buffer.bitbuffer.UnsafeLongBackedBitBuf
-import net.rsprot.protocol.internal.game.outgoing.info.CoordGrid
 import net.rsprot.protocol.game.outgoing.info.playerinfo.PlayerInfoProtocol.Companion.PROTOCOL_CAPACITY
 import net.rsprot.protocol.game.outgoing.info.playerinfo.util.CellOpcodes
 import net.rsprot.protocol.game.outgoing.info.playerinfo.util.LowResolutionPosition
+import net.rsprot.protocol.internal.game.outgoing.info.CoordGrid
 import kotlin.math.abs
 
 /**
@@ -38,8 +38,8 @@ internal class GlobalLowResolutionPositionRepository {
      * coordinate will be calculated out of it.
      */
     internal fun update(
-	    idx: Int,
-	    coordGrid: net.rsprot.protocol.internal.game.outgoing.info.CoordGrid,
+        idx: Int,
+        coordGrid: CoordGrid,
     ) {
         val lowResolutionPosition = LowResolutionPosition(coordGrid)
         currentLowResPositions[idx] = lowResolutionPosition.packed

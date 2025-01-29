@@ -9,7 +9,7 @@ import net.rsprot.protocol.internal.game.outgoing.info.encoder.PrecomputedExtend
  * @param encoders the array of client-specific encoders for face pathing entity.
  */
 public class FacePathingEntity(
-	override val encoders: net.rsprot.protocol.internal.client.ClientTypeMap<PrecomputedExtendedInfoEncoder<FacePathingEntity>>,
+    override val encoders: ClientTypeMap<PrecomputedExtendedInfoEncoder<FacePathingEntity>>,
 ) : TransientExtendedInfo<FacePathingEntity, PrecomputedExtendedInfoEncoder<FacePathingEntity>>() {
     /**
      * The index of the avatar to face-lock onto. For player avatars,

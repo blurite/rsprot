@@ -10,7 +10,7 @@ import net.rsprot.protocol.internal.game.outgoing.info.encoder.PrecomputedExtend
  * @param encoders the array of client-specific encoders for exact move.
  */
 public class ExactMove(
-	override val encoders: net.rsprot.protocol.internal.client.ClientTypeMap<PrecomputedExtendedInfoEncoder<ExactMove>>,
+    override val encoders: ClientTypeMap<PrecomputedExtendedInfoEncoder<ExactMove>>,
 ) : TransientExtendedInfo<ExactMove, PrecomputedExtendedInfoEncoder<ExactMove>>() {
     /**
      * The coordinate delta between the current absolute

@@ -5,9 +5,9 @@ import net.rsprot.protocol.internal.game.outgoing.info.TransientExtendedInfo
 import net.rsprot.protocol.internal.game.outgoing.info.encoder.PrecomputedExtendedInfoEncoder
 
 public class BodyCustomisation(
-	override val encoders: net.rsprot.protocol.internal.client.ClientTypeMap<PrecomputedExtendedInfoEncoder<BodyCustomisation>>,
+    override val encoders: ClientTypeMap<PrecomputedExtendedInfoEncoder<BodyCustomisation>>,
 ) : TransientExtendedInfo<BodyCustomisation, PrecomputedExtendedInfoEncoder<BodyCustomisation>>() {
-    public var customisation: net.rsprot.protocol.internal.game.outgoing.info.npcinfo.extendedinfo.TypeCustomisation? = null
+    public var customisation: TypeCustomisation? = null
 
     override fun clear() {
         releaseBuffers()

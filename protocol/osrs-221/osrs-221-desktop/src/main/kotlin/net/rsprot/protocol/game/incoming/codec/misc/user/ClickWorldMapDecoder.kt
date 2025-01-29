@@ -2,9 +2,9 @@ package net.rsprot.protocol.game.incoming.codec.misc.user
 
 import net.rsprot.buffer.JagByteBuf
 import net.rsprot.protocol.ClientProt
-import net.rsprot.protocol.internal.game.outgoing.info.CoordGrid
 import net.rsprot.protocol.game.incoming.misc.user.ClickWorldMap
 import net.rsprot.protocol.game.incoming.prot.GameClientProt
+import net.rsprot.protocol.internal.game.outgoing.info.CoordGrid
 import net.rsprot.protocol.message.codec.MessageDecoder
 
 public class ClickWorldMapDecoder : MessageDecoder<ClickWorldMap> {
@@ -12,6 +12,8 @@ public class ClickWorldMapDecoder : MessageDecoder<ClickWorldMap> {
 
     override fun decode(buffer: JagByteBuf): ClickWorldMap {
         val packed = buffer.g4Alt3()
-        return ClickWorldMap(net.rsprot.protocol.internal.game.outgoing.info.CoordGrid(packed))
+        return ClickWorldMap(
+            CoordGrid(packed),
+        )
     }
 }

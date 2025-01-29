@@ -2,11 +2,11 @@ package net.rsprot.protocol.game.outgoing.info.npcinfo
 
 import io.netty.buffer.ByteBufAllocator
 import net.rsprot.compression.provider.HuffmanCodecProvider
+import net.rsprot.protocol.game.outgoing.info.AvatarPriority
+import net.rsprot.protocol.game.outgoing.info.filter.ExtendedInfoFilter
 import net.rsprot.protocol.internal.game.outgoing.info.CoordGrid
 import net.rsprot.protocol.internal.game.outgoing.info.npcinfo.NpcAvatarDetails
 import net.rsprot.protocol.internal.game.outgoing.info.util.ZoneIndexStorage
-import net.rsprot.protocol.game.outgoing.info.AvatarPriority
-import net.rsprot.protocol.game.outgoing.info.filter.ExtendedInfoFilter
 import java.lang.ref.ReferenceQueue
 import java.lang.ref.SoftReference
 
@@ -28,12 +28,12 @@ import java.lang.ref.SoftReference
  * to get around a circular dependency issue without rewriting a great deal of code.
  */
 internal class NpcAvatarRepository(
-	private val allocator: ByteBufAllocator,
-	private val extendedInfoFilter: ExtendedInfoFilter,
-	private val extendedInfoWriter: List<NpcAvatarExtendedInfoWriter>,
-	private val huffmanCodec: HuffmanCodecProvider,
-	private val zoneIndexStorage: net.rsprot.protocol.internal.game.outgoing.info.util.ZoneIndexStorage,
-	private val npcInfoProtocolSupplier: DeferredNpcInfoProtocolSupplier,
+    private val allocator: ByteBufAllocator,
+    private val extendedInfoFilter: ExtendedInfoFilter,
+    private val extendedInfoWriter: List<NpcAvatarExtendedInfoWriter>,
+    private val huffmanCodec: HuffmanCodecProvider,
+    private val zoneIndexStorage: ZoneIndexStorage,
+    private val npcInfoProtocolSupplier: DeferredNpcInfoProtocolSupplier,
 ) {
     /**
      * The array of npc avatars that currently exist in the game.

@@ -8,8 +8,7 @@ import net.rsprot.protocol.internal.game.outgoing.info.ExtendedInfo
  * These differ from [PrecomputedExtendedInfoEncoder] in that they cannot be pre-computed, as the
  * data in the buffer is dependent on the observer.
  */
-public interface OnDemandExtendedInfoEncoder<in T : net.rsprot.protocol.internal.game.outgoing.info.ExtendedInfo<T, *>> :
-	net.rsprot.protocol.internal.game.outgoing.info.encoder.ExtendedInfoEncoder<T> {
+public interface OnDemandExtendedInfoEncoder<in T : ExtendedInfo<T, *>> : ExtendedInfoEncoder<T> {
     public fun encode(
         buffer: JagByteBuf,
         localPlayerIndex: Int,

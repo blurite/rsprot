@@ -1,10 +1,10 @@
 package net.rsprot.protocol.game.outgoing.zone.payload
 
 import net.rsprot.protocol.ServerProtCategory
-import net.rsprot.protocol.internal.game.outgoing.codec.zone.payload.OldSchoolZoneProt
 import net.rsprot.protocol.game.outgoing.GameServerProtCategory
 import net.rsprot.protocol.game.outgoing.zone.payload.util.CoordInZone
 import net.rsprot.protocol.game.outgoing.zone.payload.util.LocProperties
+import net.rsprot.protocol.internal.game.outgoing.codec.zone.payload.OldSchoolZoneProt
 import net.rsprot.protocol.message.ZoneProt
 
 /**
@@ -61,7 +61,7 @@ public class LocAddChange private constructor(
     override val category: ServerProtCategory
         get() = GameServerProtCategory.HIGH_PRIORITY_PROT
 
-    override val protId: Int = net.rsprot.protocol.internal.game.outgoing.codec.zone.payload.OldSchoolZoneProt.LOC_ADD_CHANGE
+    override val protId: Int = OldSchoolZoneProt.LOC_ADD_CHANGE
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

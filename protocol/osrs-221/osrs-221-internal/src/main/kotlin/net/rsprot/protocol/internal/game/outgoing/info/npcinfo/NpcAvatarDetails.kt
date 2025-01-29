@@ -21,17 +21,17 @@ import net.rsprot.protocol.internal.game.outgoing.info.CoordGrid
  * which furthermore requires cleanup and micromanaging.
  */
 public class NpcAvatarDetails internal constructor(
-	public var index: Int,
-	public var id: Int,
-	public var currentCoord: net.rsprot.protocol.internal.game.outgoing.info.CoordGrid = net.rsprot.protocol.internal.game.outgoing.info.CoordGrid.INVALID,
-	public var stepCount: Int = 0,
-	public var firstStep: Int = -1,
-	public var secondStep: Int = -1,
-	public var movementType: Int = 0,
-	public var spawnCycle: Int = 0,
-	public var direction: Int = 0,
-	public var inaccessible: Boolean = false,
-	public var allocateCycle: Int,
+    public var index: Int,
+    public var id: Int,
+    public var currentCoord: CoordGrid = CoordGrid.INVALID,
+    public var stepCount: Int = 0,
+    public var firstStep: Int = -1,
+    public var secondStep: Int = -1,
+    public var movementType: Int = 0,
+    public var spawnCycle: Int = 0,
+    public var direction: Int = 0,
+    public var inaccessible: Boolean = false,
+    public var allocateCycle: Int,
 ) {
     public constructor(
         index: Int,
@@ -45,7 +45,7 @@ public class NpcAvatarDetails internal constructor(
     ) : this(
         index,
         id,
-	    net.rsprot.protocol.internal.game.outgoing.info.CoordGrid(level, x, z),
+        CoordGrid(level, x, z),
         spawnCycle = spawnCycle,
         direction = direction,
         allocateCycle = allocateCycle,

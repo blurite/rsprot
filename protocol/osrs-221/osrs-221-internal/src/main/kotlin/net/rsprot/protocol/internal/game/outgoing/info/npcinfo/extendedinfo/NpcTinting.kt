@@ -11,7 +11,7 @@ import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.Tinti
  */
 public class NpcTinting(
     override val encoders: ClientTypeMap<PrecomputedExtendedInfoEncoder<NpcTinting>>,
-) : net.rsprot.protocol.internal.game.outgoing.info.TransientExtendedInfo<NpcTinting, PrecomputedExtendedInfoEncoder<NpcTinting>>() {
+) : TransientExtendedInfo<NpcTinting, PrecomputedExtendedInfoEncoder<NpcTinting>>() {
     public val global: Tinting = Tinting()
 
     override fun clear() {

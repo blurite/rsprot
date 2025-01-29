@@ -1,7 +1,8 @@
 package net.rsprot.protocol.game.outgoing.info.playerinfo
 
-import net.rsprot.protocol.internal.client.ClientTypeMap
 import net.rsprot.protocol.common.client.OldSchoolClientType
+import net.rsprot.protocol.game.outgoing.info.AvatarExtendedInfoWriter
+import net.rsprot.protocol.internal.client.ClientTypeMap
 import net.rsprot.protocol.internal.game.outgoing.info.ExtendedInfo
 import net.rsprot.protocol.internal.game.outgoing.info.encoder.ExtendedInfoEncoder
 import net.rsprot.protocol.internal.game.outgoing.info.playerinfo.encoder.PlayerExtendedInfoEncoders
@@ -17,7 +18,6 @@ import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.Hit
 import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.Say
 import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.Sequence
 import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.SpotAnimList
-import net.rsprot.protocol.game.outgoing.info.AvatarExtendedInfoWriter
 
 private typealias PEnc = PlayerExtendedInfoEncoders
 private typealias TempMoveSpeed = TemporaryMoveSpeed
@@ -60,8 +60,8 @@ public class PlayerAvatarExtendedInfoBlocks(
         private inline fun <T : ExtendedInfo<T, E>, reified E : ExtendedInfoEncoder<T>> encoders(
             allEncoders: List<AvatarExtendedInfoWriter<PlayerExtendedInfoEncoders, PlayerAvatarExtendedInfoBlocks>>,
             selector: (PlayerExtendedInfoEncoders) -> E,
-        ): net.rsprot.protocol.internal.client.ClientTypeMap<E> =
-            net.rsprot.protocol.internal.client.ClientTypeMap.ofType(allEncoders, OldSchoolClientType.COUNT) {
+        ): ClientTypeMap<E> =
+            ClientTypeMap.ofType(allEncoders, OldSchoolClientType.COUNT) {
                 it.encoders.oldSchoolClientType to selector(it.encoders)
             }
     }

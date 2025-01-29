@@ -2,12 +2,12 @@ package net.rsprot.protocol.game.outgoing.info.worldentityinfo
 
 import com.github.michaelbull.logging.InlineLogger
 import io.netty.buffer.ByteBufAllocator
-import net.rsprot.protocol.internal.checkCommunicationThread
 import net.rsprot.protocol.common.client.OldSchoolClientType
-import net.rsprot.protocol.internal.game.outgoing.info.util.ZoneIndexStorage
 import net.rsprot.protocol.game.outgoing.info.ByteBufRecycler
 import net.rsprot.protocol.game.outgoing.info.worker.DefaultProtocolWorker
 import net.rsprot.protocol.game.outgoing.info.worker.ProtocolWorker
+import net.rsprot.protocol.internal.checkCommunicationThread
+import net.rsprot.protocol.internal.game.outgoing.info.util.ZoneIndexStorage
 import java.util.concurrent.Callable
 
 /**
@@ -25,11 +25,11 @@ import java.util.concurrent.Callable
  * in-use world entity info instances.
  */
 public class WorldEntityProtocol(
-	private val allocator: ByteBufAllocator,
-	private val exceptionHandler: WorldEntityAvatarExceptionHandler,
-	factory: WorldEntityAvatarFactory,
-	private val worker: ProtocolWorker = DefaultProtocolWorker(),
-	private val zoneIndexStorage: net.rsprot.protocol.internal.game.outgoing.info.util.ZoneIndexStorage,
+    private val allocator: ByteBufAllocator,
+    private val exceptionHandler: WorldEntityAvatarExceptionHandler,
+    factory: WorldEntityAvatarFactory,
+    private val worker: ProtocolWorker = DefaultProtocolWorker(),
+    private val zoneIndexStorage: ZoneIndexStorage,
 ) {
     private val recycler: ByteBufRecycler = ByteBufRecycler()
     private val avatarRepository = factory.avatarRepository

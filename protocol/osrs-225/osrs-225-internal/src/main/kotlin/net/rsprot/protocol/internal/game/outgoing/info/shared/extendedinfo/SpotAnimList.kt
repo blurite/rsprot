@@ -17,7 +17,7 @@ import java.util.BitSet
  * @param encoders the array of client-specific encoders for spotanims.
  */
 public class SpotAnimList(
-	override val encoders: net.rsprot.protocol.internal.client.ClientTypeMap<PrecomputedExtendedInfoEncoder<SpotAnimList>>,
+    override val encoders: ClientTypeMap<PrecomputedExtendedInfoEncoder<SpotAnimList>>,
 ) : TransientExtendedInfo<SpotAnimList, PrecomputedExtendedInfoEncoder<SpotAnimList>>() {
     /**
      * The changelist that tracks all the slots which have been flagged for a spotanim update.
@@ -40,8 +40,8 @@ public class SpotAnimList(
      * @param spotAnim the spotanim to set.
      */
     public fun set(
-	    slot: Int,
-	    spotAnim: net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.util.SpotAnim,
+        slot: Int,
+        spotAnim: SpotAnim,
     ) {
         spotanims[slot] = spotAnim.packed
         changelist.set(slot)

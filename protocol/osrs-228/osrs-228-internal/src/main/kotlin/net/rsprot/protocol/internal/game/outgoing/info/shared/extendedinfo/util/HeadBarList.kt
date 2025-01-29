@@ -5,9 +5,11 @@ package net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.util
  * backed by an [ArrayList].
  */
 public class HeadBarList(
-	private val elements: MutableList<net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.util.HeadBar>,
-) : MutableList<net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.util.HeadBar> by elements {
-    public constructor(capacity: Int = net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.util.HeadBarList.Companion.DEFAULT_CAPACITY) : this(ArrayList(capacity))
+    private val elements: MutableList<HeadBar>,
+) : MutableList<HeadBar> by elements {
+    public constructor(
+        capacity: Int = DEFAULT_CAPACITY,
+    ) : this(ArrayList(capacity))
 
     private companion object {
         /**

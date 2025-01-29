@@ -4,11 +4,11 @@ import io.netty.buffer.ByteBuf
 import io.netty.buffer.ByteBufAllocator
 import net.rsprot.buffer.extensions.p1
 import net.rsprot.buffer.extensions.toJagByteBuf
+import net.rsprot.protocol.game.outgoing.info.util.Avatar
 import net.rsprot.protocol.internal.checkCommunicationThread
 import net.rsprot.protocol.internal.game.outgoing.info.CoordFine
 import net.rsprot.protocol.internal.game.outgoing.info.CoordGrid
 import net.rsprot.protocol.internal.game.outgoing.info.util.ZoneIndexStorage
-import net.rsprot.protocol.game.outgoing.info.util.Avatar
 
 /**
  * A world entity avatar represents a dynamic world entity as a single unit.
@@ -35,16 +35,16 @@ import net.rsprot.protocol.game.outgoing.info.util.Avatar
  * movement of this avatar.
  */
 public class WorldEntityAvatar(
-	internal val allocator: ByteBufAllocator,
-	internal val zoneIndexStorage: net.rsprot.protocol.internal.game.outgoing.info.util.ZoneIndexStorage,
-	internal var index: Int,
-	internal var sizeX: Int,
-	internal var sizeZ: Int,
-	internal var level: Int,
-	internal var currentCoordFine: CoordFine = CoordFine.INVALID,
-	internal var angle: Int,
-	internal var fineCenterOffsetX: Int,
-	internal var fineCenterOffsetZ: Int,
+    internal val allocator: ByteBufAllocator,
+    internal val zoneIndexStorage: ZoneIndexStorage,
+    internal var index: Int,
+    internal var sizeX: Int,
+    internal var sizeZ: Int,
+    internal var level: Int,
+    internal var currentCoordFine: CoordFine = CoordFine.INVALID,
+    internal var angle: Int,
+    internal var fineCenterOffsetX: Int,
+    internal var fineCenterOffsetZ: Int,
 ) : Avatar {
     internal var teleport: Boolean = false
     internal var lastAngle: Int = angle

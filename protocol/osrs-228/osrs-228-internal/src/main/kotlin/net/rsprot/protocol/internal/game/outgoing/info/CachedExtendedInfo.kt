@@ -10,5 +10,4 @@ import net.rsprot.protocol.internal.game.outgoing.info.encoder.ExtendedInfoEncod
  * @param T the extended info block
  * @param E the encoder for that extended info block
  */
-public abstract class CachedExtendedInfo<in T : net.rsprot.protocol.internal.game.outgoing.info.ExtendedInfo<T, E>, E : net.rsprot.protocol.internal.game.outgoing.info.encoder.ExtendedInfoEncoder<T>> :
-    net.rsprot.protocol.internal.game.outgoing.info.ExtendedInfo<T, E>()
+public abstract class CachedExtendedInfo<in T : ExtendedInfo<T, E>, E : ExtendedInfoEncoder<T>> : ExtendedInfo<T, E>()

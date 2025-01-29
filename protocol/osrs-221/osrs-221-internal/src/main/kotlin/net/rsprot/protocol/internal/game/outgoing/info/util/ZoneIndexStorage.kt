@@ -22,8 +22,8 @@ public class ZoneIndexStorage(
      * If the zone does not exist, a new instance is created.
      */
     public fun add(
-	    entityIndex: Int,
-	    coordGrid: net.rsprot.protocol.internal.game.outgoing.info.CoordGrid,
+        entityIndex: Int,
+        coordGrid: CoordGrid,
     ) {
         val zoneIndex = zoneIndex(coordGrid)
         var array = dictionary.get(zoneIndex)
@@ -44,8 +44,8 @@ public class ZoneIndexStorage(
      * the zone index array will be disposed.
      */
     public fun remove(
-	    entityIndex: Int,
-	    coordGrid: net.rsprot.protocol.internal.game.outgoing.info.CoordGrid,
+        entityIndex: Int,
+        coordGrid: CoordGrid,
     ) {
         val zoneIndex = zoneIndex(coordGrid)
         val array =
@@ -86,7 +86,7 @@ public class ZoneIndexStorage(
      * @param coordGrid the coord grid from which to calculate the zone index.
      * @return the bitpacked zone index.
      */
-    private fun zoneIndex(coordGrid: net.rsprot.protocol.internal.game.outgoing.info.CoordGrid): Int {
+    private fun zoneIndex(coordGrid: CoordGrid): Int {
         val level = coordGrid.level
         val zoneX = coordGrid.x ushr 3
         val zoneZ = coordGrid.z ushr 3

@@ -10,7 +10,7 @@ import net.rsprot.protocol.internal.game.outgoing.info.encoder.PrecomputedExtend
  * @param encoders the array of client-specific encoders for face angle.
  */
 public class FaceAngle(
-	override val encoders: net.rsprot.protocol.internal.client.ClientTypeMap<PrecomputedExtendedInfoEncoder<FaceAngle>>,
+    override val encoders: ClientTypeMap<PrecomputedExtendedInfoEncoder<FaceAngle>>,
 ) : TransientExtendedInfo<FaceAngle, PrecomputedExtendedInfoEncoder<FaceAngle>>() {
     /**
      * The value of the angle for this avatar to turn towards.

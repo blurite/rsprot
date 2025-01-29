@@ -8,11 +8,11 @@ import net.rsprot.protocol.internal.game.outgoing.info.encoder.PrecomputedExtend
 import net.rsprot.protocol.internal.game.outgoing.info.npcinfo.extendedinfo.BodyCustomisation
 
 @Suppress("DuplicatedCode")
-public class NpcBodyCustomisationEncoder : PrecomputedExtendedInfoEncoder<net.rsprot.protocol.internal.game.outgoing.info.npcinfo.extendedinfo.BodyCustomisation> {
+public class NpcBodyCustomisationEncoder : PrecomputedExtendedInfoEncoder<BodyCustomisation> {
     override fun precompute(
-	    alloc: ByteBufAllocator,
-	    huffmanCodecProvider: HuffmanCodecProvider,
-	    extendedInfo: net.rsprot.protocol.internal.game.outgoing.info.npcinfo.extendedinfo.BodyCustomisation,
+        alloc: ByteBufAllocator,
+        huffmanCodecProvider: HuffmanCodecProvider,
+        extendedInfo: BodyCustomisation,
     ): JagByteBuf {
         val customisation = extendedInfo.customisation
         if (customisation == null) {

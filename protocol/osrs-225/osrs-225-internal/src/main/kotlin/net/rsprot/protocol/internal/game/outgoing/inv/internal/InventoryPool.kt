@@ -34,20 +34,21 @@ import org.apache.commons.pool2.impl.SoftReferenceObjectPool
  * as done below.
  */
 public data object InventoryPool {
-    public val pool: ObjectPool<net.rsprot.protocol.internal.game.outgoing.inv.internal.Inventory> = SoftReferenceObjectPool(
-	    net.rsprot.protocol.internal.game.outgoing.inv.internal.InventoryPool.createFactory()
-    )
+    public val pool: ObjectPool<Inventory> =
+        SoftReferenceObjectPool(
+            createFactory(),
+        )
 
-    private fun createFactory(): PooledObjectFactory<net.rsprot.protocol.internal.game.outgoing.inv.internal.Inventory> {
-        return object : BasePooledObjectFactory<net.rsprot.protocol.internal.game.outgoing.inv.internal.Inventory>() {
-            override fun create(): net.rsprot.protocol.internal.game.outgoing.inv.internal.Inventory {
+    private fun createFactory(): PooledObjectFactory<Inventory> {
+        return object : BasePooledObjectFactory<Inventory>() {
+            override fun create(): Inventory {
                 // 5713 is the maximum theoretical number of objs an inventory can carry
                 // before the 40kb limitation could get hit
                 // This assumes each obj sends a quantity of >= 255
-                return net.rsprot.protocol.internal.game.outgoing.inv.internal.Inventory(5713)
+                return Inventory(5713)
             }
 
-            override fun wrap(p0: net.rsprot.protocol.internal.game.outgoing.inv.internal.Inventory): PooledObject<net.rsprot.protocol.internal.game.outgoing.inv.internal.Inventory> = DefaultPooledObject(p0)
+            override fun wrap(p0: Inventory): PooledObject<Inventory> = DefaultPooledObject(p0)
         }
     }
 }

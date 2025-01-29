@@ -52,8 +52,8 @@ public value class CoordGrid(
      * @return true if the [other] coord grid is within [distance] of this coord grid.
      */
     public fun inDistance(
-	    other: net.rsprot.protocol.internal.game.outgoing.info.CoordGrid,
-	    distance: Int,
+        other: CoordGrid,
+        distance: Int,
     ): Boolean {
         if (level != other.level) {
             return false
@@ -75,7 +75,7 @@ public value class CoordGrid(
      * unless directly using the single-argument constructor.
      */
     @Suppress("NOTHING_TO_INLINE")
-    public inline fun invalid(): Boolean = this == net.rsprot.protocol.internal.game.outgoing.info.CoordGrid.Companion.INVALID
+    public inline fun invalid(): Boolean = this == INVALID
 
     public operator fun component1(): Int = level
 
@@ -91,7 +91,7 @@ public value class CoordGrid(
             ")"
 
     public companion object {
-        public val INVALID: net.rsprot.protocol.internal.game.outgoing.info.CoordGrid =
-	        net.rsprot.protocol.internal.game.outgoing.info.CoordGrid(-1)
+        public val INVALID: CoordGrid =
+            CoordGrid(-1)
     }
 }

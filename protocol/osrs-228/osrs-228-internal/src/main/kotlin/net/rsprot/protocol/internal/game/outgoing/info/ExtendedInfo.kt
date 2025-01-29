@@ -3,8 +3,8 @@ package net.rsprot.protocol.internal.game.outgoing.info
 import io.netty.buffer.ByteBuf
 import io.netty.buffer.ByteBufAllocator
 import net.rsprot.compression.provider.HuffmanCodecProvider
-import net.rsprot.protocol.internal.client.ClientTypeMap
 import net.rsprot.protocol.common.client.OldSchoolClientType
+import net.rsprot.protocol.internal.client.ClientTypeMap
 import net.rsprot.protocol.internal.game.outgoing.info.encoder.ExtendedInfoEncoder
 import net.rsprot.protocol.internal.game.outgoing.info.encoder.PrecomputedExtendedInfoEncoder
 
@@ -14,7 +14,7 @@ import net.rsprot.protocol.internal.game.outgoing.info.encoder.PrecomputedExtend
  * @param T the extended info block type.
  * @param E the encoder for the given extended info block [T].
  */
-public abstract class ExtendedInfo<in T : net.rsprot.protocol.internal.game.outgoing.info.ExtendedInfo<T, E>, E : net.rsprot.protocol.internal.game.outgoing.info.encoder.ExtendedInfoEncoder<T>> {
+public abstract class ExtendedInfo<in T : ExtendedInfo<T, E>, E : ExtendedInfoEncoder<T>> {
     public abstract val encoders: ClientTypeMap<E>
 
     /**
@@ -84,7 +84,7 @@ public abstract class ExtendedInfo<in T : net.rsprot.protocol.internal.game.outg
  * Extended info blocks which do not support pre-computing (meaning they are observer-dependent)
  * will build the buffer on-demand per observer.
  */
-public fun <T : net.rsprot.protocol.internal.game.outgoing.info.ExtendedInfo<T, E>, E : PrecomputedExtendedInfoEncoder<T>> T.precompute(
+public fun <T : ExtendedInfo<T, E>, E : PrecomputedExtendedInfoEncoder<T>> T.precompute(
     allocator: ByteBufAllocator,
     huffmanCodecProvider: HuffmanCodecProvider,
 ) {

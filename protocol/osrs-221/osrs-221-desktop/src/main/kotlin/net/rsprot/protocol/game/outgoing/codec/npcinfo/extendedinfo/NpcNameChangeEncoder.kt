@@ -7,11 +7,11 @@ import net.rsprot.compression.provider.HuffmanCodecProvider
 import net.rsprot.protocol.internal.game.outgoing.info.encoder.PrecomputedExtendedInfoEncoder
 import net.rsprot.protocol.internal.game.outgoing.info.npcinfo.extendedinfo.NameChange
 
-public class NpcNameChangeEncoder : PrecomputedExtendedInfoEncoder<net.rsprot.protocol.internal.game.outgoing.info.npcinfo.extendedinfo.NameChange> {
+public class NpcNameChangeEncoder : PrecomputedExtendedInfoEncoder<NameChange> {
     override fun precompute(
-	    alloc: ByteBufAllocator,
-	    huffmanCodecProvider: HuffmanCodecProvider,
-	    extendedInfo: net.rsprot.protocol.internal.game.outgoing.info.npcinfo.extendedinfo.NameChange,
+        alloc: ByteBufAllocator,
+        huffmanCodecProvider: HuffmanCodecProvider,
+        extendedInfo: NameChange,
     ): JagByteBuf {
         val text = extendedInfo.name ?: ""
         val capacity = text.length + 1

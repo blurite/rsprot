@@ -5,8 +5,10 @@ package net.rsprot.protocol.game.outgoing.info.playerinfo
 import io.netty.buffer.ByteBufAllocator
 import net.rsprot.buffer.JagByteBuf
 import net.rsprot.compression.provider.HuffmanCodecProvider
-import net.rsprot.protocol.internal.RSProtFlags
 import net.rsprot.protocol.common.client.OldSchoolClientType
+import net.rsprot.protocol.game.outgoing.info.AvatarExtendedInfoWriter
+import net.rsprot.protocol.game.outgoing.info.filter.ExtendedInfoFilter
+import net.rsprot.protocol.internal.RSProtFlags
 import net.rsprot.protocol.internal.game.outgoing.info.playerinfo.encoder.PlayerExtendedInfoEncoders
 import net.rsprot.protocol.internal.game.outgoing.info.playerinfo.extendedinfo.FaceAngle
 import net.rsprot.protocol.internal.game.outgoing.info.playerinfo.extendedinfo.MoveSpeed
@@ -17,8 +19,6 @@ import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.Tinti
 import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.util.HeadBar
 import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.util.HitMark
 import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.util.SpotAnim
-import net.rsprot.protocol.game.outgoing.info.AvatarExtendedInfoWriter
-import net.rsprot.protocol.game.outgoing.info.filter.ExtendedInfoFilter
 
 public typealias PlayerAvatarExtendedInfoWriter =
     AvatarExtendedInfoWriter<PlayerExtendedInfoEncoders, PlayerAvatarExtendedInfoBlocks>
@@ -86,8 +86,8 @@ public class PlayerAvatarExtendedInfo(
      */
     public val observedChatStorage: ObservedChatStorage =
         ObservedChatStorage(
-            net.rsprot.protocol.internal.RSProtFlags.captureChat,
-            net.rsprot.protocol.internal.RSProtFlags.captureSay,
+            RSProtFlags.captureChat,
+            RSProtFlags.captureSay,
         )
 
     /**
@@ -380,8 +380,8 @@ public class PlayerAvatarExtendedInfo(
         height: Int,
     ) {
         verify {
-            require(slot in 0..<net.rsprot.protocol.internal.RSProtFlags.spotanimListCapacity) {
-                "Unexpected slot: $slot, expected range: 0..<${net.rsprot.protocol.internal.RSProtFlags.spotanimListCapacity}"
+            require(slot in 0..<RSProtFlags.spotanimListCapacity) {
+                "Unexpected slot: $slot, expected range: 0..<${RSProtFlags.spotanimListCapacity}"
             }
             require(id == -1 || id in UNSIGNED_SHORT_RANGE) {
                 "Unexpected id: $id, expected value -1 or in range: $UNSIGNED_SHORT_RANGE"
@@ -393,8 +393,9 @@ public class PlayerAvatarExtendedInfo(
                 "Unexpected delay: $height, expected range: $UNSIGNED_SHORT_RANGE"
             }
         }
-        blocks.spotAnims.set(slot,
-	        net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.util.SpotAnim(id, delay, height)
+        blocks.spotAnims.set(
+            slot,
+            SpotAnim(id, delay, height),
         )
         flags = flags or SPOTANIM
     }
@@ -1722,7 +1723,7 @@ public class PlayerAvatarExtendedInfo(
          * as there is still some overhead to running verifications.
          */
         private inline fun verify(crossinline block: () -> Unit) {
-            if (net.rsprot.protocol.internal.RSProtFlags.extendedInfoInputVerification) {
+            if (RSProtFlags.extendedInfoInputVerification) {
                 block()
             }
         }

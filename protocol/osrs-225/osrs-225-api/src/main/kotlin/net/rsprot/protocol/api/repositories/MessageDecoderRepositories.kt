@@ -3,12 +3,12 @@ package net.rsprot.protocol.api.repositories
 import net.rsprot.compression.provider.HuffmanCodecProvider
 import net.rsprot.crypto.rsa.RsaKeyPair
 import net.rsprot.protocol.ClientProt
-import net.rsprot.protocol.internal.client.ClientTypeMap
 import net.rsprot.protocol.common.client.OldSchoolClientType
 import net.rsprot.protocol.common.client.OldSchoolClientType.DESKTOP
 import net.rsprot.protocol.common.js5.incoming.prot.Js5MessageDecoderRepository
 import net.rsprot.protocol.common.loginprot.incoming.prot.LoginMessageDecoderRepository
 import net.rsprot.protocol.game.incoming.prot.DesktopGameMessageDecoderRepository
+import net.rsprot.protocol.internal.client.ClientTypeMap
 import net.rsprot.protocol.message.codec.incoming.MessageDecoderRepository
 import java.math.BigInteger
 
@@ -17,15 +17,15 @@ import java.math.BigInteger
  */
 @OptIn(ExperimentalStdlibApi::class)
 public class MessageDecoderRepositories private constructor(
-	public val loginMessageDecoderRepository: MessageDecoderRepository<ClientProt>,
-	public val js5MessageDecoderRepository: MessageDecoderRepository<ClientProt>,
-	public val gameMessageDecoderRepositories: net.rsprot.protocol.internal.client.ClientTypeMap<MessageDecoderRepository<ClientProt>>,
+    public val loginMessageDecoderRepository: MessageDecoderRepository<ClientProt>,
+    public val js5MessageDecoderRepository: MessageDecoderRepository<ClientProt>,
+    public val gameMessageDecoderRepositories: ClientTypeMap<MessageDecoderRepository<ClientProt>>,
 ) {
     public constructor(
-	    clientTypes: List<OldSchoolClientType>,
-	    exp: BigInteger,
-	    mod: BigInteger,
-	    gameMessageDecoderRepositories: net.rsprot.protocol.internal.client.ClientTypeMap<MessageDecoderRepository<ClientProt>>,
+        clientTypes: List<OldSchoolClientType>,
+        exp: BigInteger,
+        mod: BigInteger,
+        gameMessageDecoderRepositories: ClientTypeMap<MessageDecoderRepository<ClientProt>>,
     ) : this(
         LoginMessageDecoderRepository.build(clientTypes, exp, mod),
         Js5MessageDecoderRepository.build(),
@@ -45,7 +45,7 @@ public class MessageDecoderRepositories private constructor(
                     }
                 }
             val clientTypeMap =
-                net.rsprot.protocol.internal.client.ClientTypeMap.of(
+                ClientTypeMap.of(
                     OldSchoolClientType.COUNT,
                     repositories,
                 )

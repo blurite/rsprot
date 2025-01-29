@@ -11,7 +11,7 @@ import net.rsprot.protocol.internal.game.outgoing.info.encoder.PrecomputedExtend
  */
 public class ExactMove(
     override val encoders: ClientTypeMap<PrecomputedExtendedInfoEncoder<ExactMove>>,
-) : net.rsprot.protocol.internal.game.outgoing.info.TransientExtendedInfo<ExactMove, PrecomputedExtendedInfoEncoder<ExactMove>>() {
+) : TransientExtendedInfo<ExactMove, PrecomputedExtendedInfoEncoder<ExactMove>>() {
     /**
      * The coordinate delta between the current absolute
      * x coordinate and where the avatar is going.

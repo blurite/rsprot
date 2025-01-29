@@ -15,7 +15,7 @@ import net.rsprot.protocol.internal.game.outgoing.info.encoder.PrecomputedExtend
  * @param encoders the array of client-specific encoders for appearance.
  */
 public class Appearance(
-	override val encoders: net.rsprot.protocol.internal.client.ClientTypeMap<PrecomputedExtendedInfoEncoder<Appearance>>,
+    override val encoders: ClientTypeMap<PrecomputedExtendedInfoEncoder<Appearance>>,
 ) : CachedExtendedInfo<Appearance, PrecomputedExtendedInfoEncoder<Appearance>>() {
     /**
      * The name of this avatar.

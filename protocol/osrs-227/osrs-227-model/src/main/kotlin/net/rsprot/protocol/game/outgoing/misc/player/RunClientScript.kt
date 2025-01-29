@@ -1,8 +1,8 @@
 package net.rsprot.protocol.game.outgoing.misc.player
 
 import net.rsprot.protocol.ServerProtCategory
-import net.rsprot.protocol.internal.RSProtFlags
 import net.rsprot.protocol.game.outgoing.GameServerProtCategory
+import net.rsprot.protocol.internal.RSProtFlags
 import net.rsprot.protocol.message.OutgoingGameMessage
 import net.rsprot.protocol.message.util.estimateTextSize
 

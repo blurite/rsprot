@@ -23,134 +23,134 @@ public object RSProtFlags {
      */
     @JvmStatic
     private val development: Boolean =
-	    net.rsprot.protocol.internal.RSProtFlags.getBoolean(
-		    "development",
-		    true,
-	    )
+        getBoolean(
+            "development",
+            true,
+        )
 
     /**
      * Whether to check that obj ids in inventory packets are all positive.
      */
     @JvmStatic
     public val inventoryObjCheck: Boolean =
-	    net.rsprot.protocol.internal.RSProtFlags.getBoolean(
-		    "inventoryObjCheck",
-		    net.rsprot.protocol.internal.RSProtFlags.development,
-	    )
+        getBoolean(
+            "inventoryObjCheck",
+            development,
+        )
 
     /**
      * Whether to validate extended info block inputs.
      */
     @JvmStatic
     public val extendedInfoInputVerification: Boolean =
-	    net.rsprot.protocol.internal.RSProtFlags.getBoolean(
-		    "extendedInfoInputVerification",
-		    net.rsprot.protocol.internal.RSProtFlags.development,
-	    )
+        getBoolean(
+            "extendedInfoInputVerification",
+            development,
+        )
 
     @JvmStatic
     public val clientscriptVerification: Boolean =
-	    net.rsprot.protocol.internal.RSProtFlags.getBoolean(
-		    "clientscriptVerification",
-		    net.rsprot.protocol.internal.RSProtFlags.development,
-	    )
+        getBoolean(
+            "clientscriptVerification",
+            development,
+        )
 
     @JvmStatic
     public val networkLogging: Boolean =
-	    net.rsprot.protocol.internal.RSProtFlags.getBoolean(
-		    "networkLogging",
-		    false,
-	    )
+        getBoolean(
+            "networkLogging",
+            false,
+        )
 
     @JvmStatic
     public val js5Logging: Boolean =
-	    net.rsprot.protocol.internal.RSProtFlags.getBoolean(
-		    "js5Logging",
-		    false,
-	    )
+        getBoolean(
+            "js5Logging",
+            false,
+        )
 
     @JvmStatic
     public val byteBufRecyclerCycleThreshold: Int =
-	    net.rsprot.protocol.internal.RSProtFlags.getInt(
-		    "recyclerCycleThreshold",
-		    50,
-	    )
+        getInt(
+            "recyclerCycleThreshold",
+            50,
+        )
 
     @JvmStatic
     public val npcPlayerAvatarTracking: Boolean =
-	    net.rsprot.protocol.internal.RSProtFlags.getBoolean(
-		    "npcPlayerAvatarTracking",
-		    true,
-	    )
+        getBoolean(
+            "npcPlayerAvatarTracking",
+            true,
+        )
 
     @JvmStatic
     public val filterMissingPacketsInClient: Boolean =
-	    net.rsprot.protocol.internal.RSProtFlags.getBoolean(
-		    "filterMissingPacketsInClient",
-		    true,
-	    )
+        getBoolean(
+            "filterMissingPacketsInClient",
+            true,
+        )
 
     @JvmStatic
     public val spotanimListCapacity: Int =
-	    net.rsprot.protocol.internal.RSProtFlags.getInt(
-		    "spotanimListCapacity",
-		    256,
-	    )
+        getInt(
+            "spotanimListCapacity",
+            256,
+        )
 
     @JvmStatic
     public val captureChat: Boolean =
-	    net.rsprot.protocol.internal.RSProtFlags.getBoolean(
-		    "captureChat",
-		    false,
-	    )
+        getBoolean(
+            "captureChat",
+            false,
+        )
 
     @JvmStatic
     public val captureSay: Boolean =
-	    net.rsprot.protocol.internal.RSProtFlags.getBoolean(
-		    "captureSay",
-		    false,
-	    )
+        getBoolean(
+            "captureSay",
+            false,
+        )
 
     init {
-	    net.rsprot.protocol.internal.RSProtFlags.log(
-		    "development",
-		    net.rsprot.protocol.internal.RSProtFlags.development
-	    )
-	    net.rsprot.protocol.internal.RSProtFlags.log(
-		    "inventoryObjCheck",
-		    net.rsprot.protocol.internal.RSProtFlags.inventoryObjCheck
-	    )
-	    net.rsprot.protocol.internal.RSProtFlags.log(
-		    "extendedInfoInputVerification",
-		    net.rsprot.protocol.internal.RSProtFlags.extendedInfoInputVerification
-	    )
-	    net.rsprot.protocol.internal.RSProtFlags.log(
-		    "clientscriptVerification",
-		    net.rsprot.protocol.internal.RSProtFlags.clientscriptVerification
-	    )
-	    net.rsprot.protocol.internal.RSProtFlags.log(
-		    "networkLogging",
-		    net.rsprot.protocol.internal.RSProtFlags.networkLogging
-	    )
-	    net.rsprot.protocol.internal.RSProtFlags.log("js5Logging", net.rsprot.protocol.internal.RSProtFlags.js5Logging)
-	    net.rsprot.protocol.internal.RSProtFlags.log(
-		    "npcPlayerAvatarTracking",
-		    net.rsprot.protocol.internal.RSProtFlags.npcPlayerAvatarTracking
-	    )
-	    net.rsprot.protocol.internal.RSProtFlags.log(
-		    "filterMissingPacketsInClient",
-		    net.rsprot.protocol.internal.RSProtFlags.filterMissingPacketsInClient
-	    )
-	    net.rsprot.protocol.internal.RSProtFlags.log(
-		    "spotanimListCapacity",
-		    net.rsprot.protocol.internal.RSProtFlags.spotanimListCapacity
-	    )
-	    net.rsprot.protocol.internal.RSProtFlags.log(
-		    "captureChat",
-		    net.rsprot.protocol.internal.RSProtFlags.captureChat
-	    )
-	    net.rsprot.protocol.internal.RSProtFlags.log("captureSay", net.rsprot.protocol.internal.RSProtFlags.captureSay)
-        require(net.rsprot.protocol.internal.RSProtFlags.spotanimListCapacity in 0..256)
+        log(
+            "development",
+            development,
+        )
+        log(
+            "inventoryObjCheck",
+            inventoryObjCheck,
+        )
+        log(
+            "extendedInfoInputVerification",
+            extendedInfoInputVerification,
+        )
+        log(
+            "clientscriptVerification",
+            clientscriptVerification,
+        )
+        log(
+            "networkLogging",
+            networkLogging,
+        )
+        log("js5Logging", js5Logging)
+        log(
+            "npcPlayerAvatarTracking",
+            npcPlayerAvatarTracking,
+        )
+        log(
+            "filterMissingPacketsInClient",
+            filterMissingPacketsInClient,
+        )
+        log(
+            "spotanimListCapacity",
+            spotanimListCapacity,
+        )
+        log(
+            "captureChat",
+            captureChat,
+        )
+        log("captureSay", captureSay)
+        require(spotanimListCapacity in 0..256)
     }
 
     private fun getBoolean(
@@ -158,7 +158,7 @@ public object RSProtFlags {
         defaultValue: Boolean,
     ): Boolean =
         SystemPropertyUtil.getBoolean(
-            net.rsprot.protocol.internal.RSProtFlags.PREFIX + propertyName,
+            PREFIX + propertyName,
             defaultValue,
         )
 
@@ -169,7 +169,7 @@ public object RSProtFlags {
     ): Int =
         SystemPropertyUtil
             .get(
-                net.rsprot.protocol.internal.RSProtFlags.PREFIX + propertyName,
+                PREFIX + propertyName,
                 defaultValue.toString(),
             )?.toIntOrNull() ?: defaultValue
 
@@ -177,8 +177,8 @@ public object RSProtFlags {
         name: String,
         value: Any,
     ) {
-        net.rsprot.protocol.internal.RSProtFlags.logger.debug {
-            "-D${net.rsprot.protocol.internal.RSProtFlags.PREFIX}$name: $value"
+        logger.debug {
+            "-D$PREFIX$name: $value"
         }
     }
 }

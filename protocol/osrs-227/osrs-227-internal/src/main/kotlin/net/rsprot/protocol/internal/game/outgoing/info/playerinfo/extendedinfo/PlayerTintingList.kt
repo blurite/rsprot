@@ -14,8 +14,8 @@ import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.Tinti
  * @param encoders the array of client-specific encoders for tinting.
  */
 public class PlayerTintingList(
-	override val encoders: ClientTypeMap<OnDemandExtendedInfoEncoder<net.rsprot.protocol.internal.game.outgoing.info.playerinfo.extendedinfo.PlayerTintingList>>,
-) : TransientExtendedInfo<net.rsprot.protocol.internal.game.outgoing.info.playerinfo.extendedinfo.PlayerTintingList, OnDemandExtendedInfoEncoder<net.rsprot.protocol.internal.game.outgoing.info.playerinfo.extendedinfo.PlayerTintingList>>() {
+    override val encoders: ClientTypeMap<OnDemandExtendedInfoEncoder<PlayerTintingList>>,
+) : TransientExtendedInfo<PlayerTintingList, OnDemandExtendedInfoEncoder<PlayerTintingList>>() {
     public val global: Tinting = Tinting()
     public val observerDependent: MutableMap<Int, Tinting> = HashMap()
 

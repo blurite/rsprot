@@ -2,11 +2,11 @@ package net.rsprot.protocol.game.outgoing.info.npcinfo
 
 import io.netty.buffer.ByteBufAllocator
 import net.rsprot.compression.provider.HuffmanCodecProvider
+import net.rsprot.protocol.game.outgoing.info.AvatarPriority
+import net.rsprot.protocol.game.outgoing.info.filter.ExtendedInfoFilter
 import net.rsprot.protocol.internal.RSProtFlags
 import net.rsprot.protocol.internal.checkCommunicationThread
 import net.rsprot.protocol.internal.game.outgoing.info.util.ZoneIndexStorage
-import net.rsprot.protocol.game.outgoing.info.AvatarPriority
-import net.rsprot.protocol.game.outgoing.info.filter.ExtendedInfoFilter
 
 /**
  * NPC avatar factor is responsible for allocating new avatars for NPCs,

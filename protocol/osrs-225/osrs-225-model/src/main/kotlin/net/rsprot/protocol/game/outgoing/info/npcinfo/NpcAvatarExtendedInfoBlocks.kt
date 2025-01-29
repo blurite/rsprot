@@ -1,7 +1,8 @@
 package net.rsprot.protocol.game.outgoing.info.npcinfo
 
-import net.rsprot.protocol.internal.client.ClientTypeMap
 import net.rsprot.protocol.common.client.OldSchoolClientType
+import net.rsprot.protocol.game.outgoing.info.AvatarExtendedInfoWriter
+import net.rsprot.protocol.internal.client.ClientTypeMap
 import net.rsprot.protocol.internal.game.outgoing.info.ExtendedInfo
 import net.rsprot.protocol.internal.game.outgoing.info.encoder.ExtendedInfoEncoder
 import net.rsprot.protocol.internal.game.outgoing.info.npcinfo.encoder.NpcExtendedInfoEncoders
@@ -21,12 +22,11 @@ import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.Hit
 import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.Say
 import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.Sequence
 import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.SpotAnimList
-import net.rsprot.protocol.game.outgoing.info.AvatarExtendedInfoWriter
 
-private typealias NEnc = net.rsprot.protocol.internal.game.outgoing.info.npcinfo.encoder.NpcExtendedInfoEncoders
+private typealias NEnc = NpcExtendedInfoEncoders
 private typealias HeadIcon = HeadIconCustomisation
 private typealias NpcExtendedInfoWriters =
-    List<AvatarExtendedInfoWriter<net.rsprot.protocol.internal.game.outgoing.info.npcinfo.encoder.NpcExtendedInfoEncoders, NpcAvatarExtendedInfoBlocks>>
+    List<AvatarExtendedInfoWriter<NpcExtendedInfoEncoders, NpcAvatarExtendedInfoBlocks>>
 
 /**
  * A data structure to bring all the extended info blocks together,
@@ -41,16 +41,16 @@ public class NpcAvatarExtendedInfoBlocks(
 ) {
     public val spotAnims: SpotAnimList = SpotAnimList(encoders(writers, NEnc::spotAnim))
     public val say: Say = Say(encoders(writers, NEnc::say))
-    public val visibleOps: net.rsprot.protocol.internal.game.outgoing.info.npcinfo.extendedinfo.VisibleOps =
-	    net.rsprot.protocol.internal.game.outgoing.info.npcinfo.extendedinfo.VisibleOps(
-		    encoders(
-			    writers,
-			    NEnc::visibleOps
-		    )
-	    )
+    public val visibleOps: VisibleOps =
+        VisibleOps(
+            encoders(
+                writers,
+                NEnc::visibleOps,
+            ),
+        )
     public val exactMove: ExactMove = ExactMove(encoders(writers, NEnc::exactMove))
-    public val sequence: net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.Sequence =
-	    net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.Sequence(encoders(writers, NEnc::sequence))
+    public val sequence: Sequence =
+        Sequence(encoders(writers, NEnc::sequence))
     public val tinting: NpcTinting = NpcTinting(encoders(writers, NEnc::tinting))
     public val headIconCustomisation: HeadIcon = HeadIcon(encoders(writers, NEnc::headIconCustomisation))
     public val nameChange: NameChange = NameChange(encoders(writers, NEnc::nameChange))
@@ -75,10 +75,10 @@ public class NpcAvatarExtendedInfoBlocks(
          * keyed by [OldSchoolClientType.id].
          */
         private inline fun <T : ExtendedInfo<T, E>, reified E : ExtendedInfoEncoder<T>> encoders(
-	        allEncoders: NpcExtendedInfoWriters,
-	        selector: (net.rsprot.protocol.internal.game.outgoing.info.npcinfo.encoder.NpcExtendedInfoEncoders) -> E,
-        ): net.rsprot.protocol.internal.client.ClientTypeMap<E> =
-            net.rsprot.protocol.internal.client.ClientTypeMap.ofType(allEncoders, OldSchoolClientType.COUNT) {
+            allEncoders: NpcExtendedInfoWriters,
+            selector: (NpcExtendedInfoEncoders) -> E,
+        ): ClientTypeMap<E> =
+            ClientTypeMap.ofType(allEncoders, OldSchoolClientType.COUNT) {
                 it.encoders.oldSchoolClientType to selector(it.encoders)
             }
     }

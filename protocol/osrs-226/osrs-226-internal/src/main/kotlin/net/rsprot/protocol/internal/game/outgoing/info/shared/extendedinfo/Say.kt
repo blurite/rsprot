@@ -10,7 +10,7 @@ import net.rsprot.protocol.internal.game.outgoing.info.encoder.PrecomputedExtend
  * @param encoders the array of client-specific encoders for say.
  */
 public class Say(
-	override val encoders: net.rsprot.protocol.internal.client.ClientTypeMap<PrecomputedExtendedInfoEncoder<Say>>,
+    override val encoders: ClientTypeMap<PrecomputedExtendedInfoEncoder<Say>>,
 ) : TransientExtendedInfo<Say, PrecomputedExtendedInfoEncoder<Say>>() {
     /**
      * The text to render over the avatar.

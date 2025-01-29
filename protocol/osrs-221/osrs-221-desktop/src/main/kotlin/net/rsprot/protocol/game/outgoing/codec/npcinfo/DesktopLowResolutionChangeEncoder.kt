@@ -10,12 +10,12 @@ public class DesktopLowResolutionChangeEncoder : NpcResolutionChangeEncoder {
     override val clientType: OldSchoolClientType = OldSchoolClientType.DESKTOP
 
     override fun encode(
-	    bitBuffer: BitBuf,
-	    details: NpcAvatarDetails,
-	    extendedInfo: Boolean,
-	    localPlayerCoordGrid: net.rsprot.protocol.internal.game.outgoing.info.CoordGrid,
-	    largeDistance: Boolean,
-	    cycleCount: Int,
+        bitBuffer: BitBuf,
+        details: NpcAvatarDetails,
+        extendedInfo: Boolean,
+        localPlayerCoordGrid: CoordGrid,
+        largeDistance: Boolean,
+        cycleCount: Int,
     ) {
         val numOfBitsUsed = if (largeDistance) 8 else 5
         val maximumDistanceTransmittableByBits = if (largeDistance) 0xFF else 0x1F

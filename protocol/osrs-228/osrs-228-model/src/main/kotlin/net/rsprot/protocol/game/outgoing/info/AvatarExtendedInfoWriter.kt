@@ -45,8 +45,8 @@ public abstract class AvatarExtendedInfoWriter<E, B>(
      * for the given client type.
      */
     protected fun pCachedData(
-	    buffer: JagByteBuf,
-	    block: net.rsprot.protocol.internal.game.outgoing.info.ExtendedInfo<*, *>,
+        buffer: JagByteBuf,
+        block: ExtendedInfo<*, *>,
     ) {
         val precomputed =
             checkNotNull(block.getBuffer(oldSchoolClientType)) {
@@ -65,7 +65,7 @@ public abstract class AvatarExtendedInfoWriter<E, B>(
      * @param observerIndex the index of the avatar observing the avatar who owns this
      * extended info block.
      */
-    protected fun <T : net.rsprot.protocol.internal.game.outgoing.info.ExtendedInfo<T, E>, E : OnDemandExtendedInfoEncoder<T>> pOnDemandData(
+    protected fun <T : ExtendedInfo<T, E>, E : OnDemandExtendedInfoEncoder<T>> pOnDemandData(
         buffer: JagByteBuf,
         localIndex: Int,
         block: T,

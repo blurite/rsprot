@@ -2,14 +2,14 @@ package net.rsprot.protocol.game.outgoing.info.npcinfo
 
 import com.github.michaelbull.logging.InlineLogger
 import io.netty.buffer.ByteBufAllocator
-import net.rsprot.protocol.internal.checkCommunicationThread
-import net.rsprot.protocol.internal.client.ClientTypeMap
 import net.rsprot.protocol.common.client.OldSchoolClientType
-import net.rsprot.protocol.internal.game.outgoing.info.npcinfo.encoder.NpcResolutionChangeEncoder
-import net.rsprot.protocol.internal.game.outgoing.info.util.ZoneIndexStorage
 import net.rsprot.protocol.game.outgoing.info.ByteBufRecycler
 import net.rsprot.protocol.game.outgoing.info.worker.DefaultProtocolWorker
 import net.rsprot.protocol.game.outgoing.info.worker.ProtocolWorker
+import net.rsprot.protocol.internal.checkCommunicationThread
+import net.rsprot.protocol.internal.client.ClientTypeMap
+import net.rsprot.protocol.internal.game.outgoing.info.npcinfo.encoder.NpcResolutionChangeEncoder
+import net.rsprot.protocol.internal.game.outgoing.info.util.ZoneIndexStorage
 import java.util.concurrent.Callable
 
 /**
@@ -27,12 +27,12 @@ import java.util.concurrent.Callable
  */
 @Suppress("DuplicatedCode")
 public class NpcInfoProtocol(
-	private val allocator: ByteBufAllocator,
-	private val resolutionChangeEncoders: net.rsprot.protocol.internal.client.ClientTypeMap<NpcResolutionChangeEncoder>,
-	avatarFactory: NpcAvatarFactory,
-	private val exceptionHandler: NpcAvatarExceptionHandler,
-	private val worker: ProtocolWorker = DefaultProtocolWorker(),
-	private val zoneIndexStorage: ZoneIndexStorage,
+    private val allocator: ByteBufAllocator,
+    private val resolutionChangeEncoders: ClientTypeMap<NpcResolutionChangeEncoder>,
+    avatarFactory: NpcAvatarFactory,
+    private val exceptionHandler: NpcAvatarExceptionHandler,
+    private val worker: ProtocolWorker = DefaultProtocolWorker(),
+    private val zoneIndexStorage: ZoneIndexStorage,
 ) {
     private val detailsStorage: NpcInfoWorldDetailsStorage = NpcInfoWorldDetailsStorage()
     private val recycler: ByteBufRecycler = ByteBufRecycler()

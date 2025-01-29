@@ -25,12 +25,13 @@ public fun ByteBuf.decipherRsa(
     readBytes(bytes)
     val base = BigInteger(bytes)
     val result =
-        Rsa.modPow(
-            base,
-            exp,
-            mod,
-            preferNative,
-        ).toByteArray()
+        Rsa
+            .modPow(
+                base,
+                exp,
+                mod,
+                preferNative,
+            ).toByteArray()
     return this
         .alloc()
         .buffer(result.size)

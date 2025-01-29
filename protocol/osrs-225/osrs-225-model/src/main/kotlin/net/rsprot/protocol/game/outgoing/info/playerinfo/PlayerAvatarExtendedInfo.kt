@@ -5,9 +5,11 @@ package net.rsprot.protocol.game.outgoing.info.playerinfo
 import io.netty.buffer.ByteBufAllocator
 import net.rsprot.buffer.JagByteBuf
 import net.rsprot.compression.provider.HuffmanCodecProvider
+import net.rsprot.protocol.common.client.OldSchoolClientType
+import net.rsprot.protocol.game.outgoing.info.AvatarExtendedInfoWriter
+import net.rsprot.protocol.game.outgoing.info.filter.ExtendedInfoFilter
 import net.rsprot.protocol.internal.RSProtFlags
 import net.rsprot.protocol.internal.checkCommunicationThread
-import net.rsprot.protocol.common.client.OldSchoolClientType
 import net.rsprot.protocol.internal.game.outgoing.info.playerinfo.encoder.PlayerExtendedInfoEncoders
 import net.rsprot.protocol.internal.game.outgoing.info.playerinfo.extendedinfo.FaceAngle
 import net.rsprot.protocol.internal.game.outgoing.info.playerinfo.extendedinfo.MoveSpeed
@@ -18,8 +20,6 @@ import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.Tinti
 import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.util.HeadBar
 import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.util.HitMark
 import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.util.SpotAnim
-import net.rsprot.protocol.game.outgoing.info.AvatarExtendedInfoWriter
-import net.rsprot.protocol.game.outgoing.info.filter.ExtendedInfoFilter
 
 public typealias PlayerAvatarExtendedInfoWriter =
     AvatarExtendedInfoWriter<PlayerExtendedInfoEncoders, PlayerAvatarExtendedInfoBlocks>
@@ -396,8 +396,9 @@ public class PlayerAvatarExtendedInfo(
                 "Unexpected delay: $height, expected range: $UNSIGNED_SHORT_RANGE"
             }
         }
-        blocks.spotAnims.set(slot,
-	        net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.util.SpotAnim(id, delay, height)
+        blocks.spotAnims.set(
+            slot,
+            SpotAnim(id, delay, height),
         )
         flags = flags or SPOTANIM
     }
@@ -1546,7 +1547,8 @@ public class PlayerAvatarExtendedInfo(
             flag = flag or APPEARANCE
         }
         if (this.flags and MOVE_SPEED == 0 &&
-            blocks.moveSpeed.value != net.rsprot.protocol.internal.game.outgoing.info.playerinfo.extendedinfo.MoveSpeed.DEFAULT_MOVESPEED &&
+            blocks.moveSpeed.value !=
+            MoveSpeed.DEFAULT_MOVESPEED &&
             blocks.moveSpeed.isPrecomputed(oldSchoolClientType)
         ) {
             flag = flag or MOVE_SPEED

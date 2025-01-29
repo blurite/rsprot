@@ -6,7 +6,7 @@ import net.rsprot.protocol.internal.game.outgoing.info.encoder.PrecomputedExtend
 
 public class VisibleOps(
     override val encoders: ClientTypeMap<PrecomputedExtendedInfoEncoder<VisibleOps>>,
-) : net.rsprot.protocol.internal.game.outgoing.info.TransientExtendedInfo<VisibleOps, PrecomputedExtendedInfoEncoder<VisibleOps>>() {
+) : TransientExtendedInfo<VisibleOps, PrecomputedExtendedInfoEncoder<VisibleOps>>() {
     public var ops: UByte = DEFAULT_OPS
 
     override fun clear() {

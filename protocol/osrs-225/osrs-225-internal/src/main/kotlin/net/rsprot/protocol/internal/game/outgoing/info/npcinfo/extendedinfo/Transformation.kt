@@ -5,7 +5,7 @@ import net.rsprot.protocol.internal.game.outgoing.info.TransientExtendedInfo
 import net.rsprot.protocol.internal.game.outgoing.info.encoder.PrecomputedExtendedInfoEncoder
 
 public class Transformation(
-	override val encoders: net.rsprot.protocol.internal.client.ClientTypeMap<PrecomputedExtendedInfoEncoder<Transformation>>,
+    override val encoders: ClientTypeMap<PrecomputedExtendedInfoEncoder<Transformation>>,
 ) : TransientExtendedInfo<Transformation, PrecomputedExtendedInfoEncoder<Transformation>>() {
     public var id: UShort = 0xFFFFu
 

@@ -11,7 +11,7 @@ import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.util.
  * @param encoders the array of client-specific encoders for hits.
  */
 public class Hit(
-	override val encoders: net.rsprot.protocol.internal.client.ClientTypeMap<OnDemandExtendedInfoEncoder<Hit>>,
+    override val encoders: ClientTypeMap<OnDemandExtendedInfoEncoder<Hit>>,
 ) : TransientExtendedInfo<Hit, OnDemandExtendedInfoEncoder<Hit>>() {
     public val headBarList: HeadBarList = HeadBarList()
     public val hitMarkList: HitMarkList = HitMarkList()

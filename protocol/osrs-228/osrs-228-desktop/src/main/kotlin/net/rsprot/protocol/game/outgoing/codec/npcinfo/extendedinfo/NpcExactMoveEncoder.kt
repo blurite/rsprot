@@ -7,11 +7,11 @@ import net.rsprot.compression.provider.HuffmanCodecProvider
 import net.rsprot.protocol.internal.game.outgoing.info.encoder.PrecomputedExtendedInfoEncoder
 import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.ExactMove
 
-public class NpcExactMoveEncoder : PrecomputedExtendedInfoEncoder<net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.ExactMove> {
+public class NpcExactMoveEncoder : PrecomputedExtendedInfoEncoder<ExactMove> {
     override fun precompute(
-	    alloc: ByteBufAllocator,
-	    huffmanCodecProvider: HuffmanCodecProvider,
-	    extendedInfo: net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.ExactMove,
+        alloc: ByteBufAllocator,
+        huffmanCodecProvider: HuffmanCodecProvider,
+        extendedInfo: ExactMove,
     ): JagByteBuf {
         val buffer =
             alloc

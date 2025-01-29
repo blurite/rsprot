@@ -1,7 +1,8 @@
 package net.rsprot.protocol.game.outgoing.info.playerinfo
 
-import net.rsprot.protocol.internal.client.ClientTypeMap
 import net.rsprot.protocol.common.client.OldSchoolClientType
+import net.rsprot.protocol.game.outgoing.info.AvatarExtendedInfoWriter
+import net.rsprot.protocol.internal.client.ClientTypeMap
 import net.rsprot.protocol.internal.game.outgoing.info.ExtendedInfo
 import net.rsprot.protocol.internal.game.outgoing.info.encoder.ExtendedInfoEncoder
 import net.rsprot.protocol.internal.game.outgoing.info.playerinfo.encoder.PlayerExtendedInfoEncoders
@@ -17,9 +18,8 @@ import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.Hit
 import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.Say
 import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.Sequence
 import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.SpotAnimList
-import net.rsprot.protocol.game.outgoing.info.AvatarExtendedInfoWriter
 
-private typealias PEnc = net.rsprot.protocol.internal.game.outgoing.info.playerinfo.encoder.PlayerExtendedInfoEncoders
+private typealias PEnc = PlayerExtendedInfoEncoders
 private typealias TempMoveSpeed = TemporaryMoveSpeed
 
 /**
@@ -31,7 +31,7 @@ private typealias TempMoveSpeed = TemporaryMoveSpeed
  * the exact order described by the client.
  */
 public class PlayerAvatarExtendedInfoBlocks(
-	writers: List<AvatarExtendedInfoWriter<net.rsprot.protocol.internal.game.outgoing.info.playerinfo.encoder.PlayerExtendedInfoEncoders, PlayerAvatarExtendedInfoBlocks>>,
+    writers: List<AvatarExtendedInfoWriter<PlayerExtendedInfoEncoders, PlayerAvatarExtendedInfoBlocks>>,
 ) {
     public val appearance: Appearance = Appearance(encoders(writers, PEnc::appearance))
     public val moveSpeed: MoveSpeed = MoveSpeed(encoders(writers, PEnc::moveSpeed))
@@ -44,13 +44,13 @@ public class PlayerAvatarExtendedInfoBlocks(
     public val exactMove: ExactMove = ExactMove(encoders(writers, PEnc::exactMove))
     public val spotAnims: SpotAnimList = SpotAnimList(encoders(writers, PEnc::spotAnim))
     public val hit: Hit = Hit(encoders(writers, PEnc::hit))
-    public val tinting: net.rsprot.protocol.internal.game.outgoing.info.playerinfo.extendedinfo.PlayerTintingList =
-	    net.rsprot.protocol.internal.game.outgoing.info.playerinfo.extendedinfo.PlayerTintingList(
-		    encoders(
-			    writers,
-			    PEnc::tinting
-		    )
-	    )
+    public val tinting: PlayerTintingList =
+        PlayerTintingList(
+            encoders(
+                writers,
+                PEnc::tinting,
+            ),
+        )
 
     private companion object {
         /**
@@ -64,8 +64,10 @@ public class PlayerAvatarExtendedInfoBlocks(
          * keyed by [OldSchoolClientType.id].
          */
         private inline fun <T : ExtendedInfo<T, E>, reified E : ExtendedInfoEncoder<T>> encoders(
-	        allEncoders: List<AvatarExtendedInfoWriter<net.rsprot.protocol.internal.game.outgoing.info.playerinfo.encoder.PlayerExtendedInfoEncoders, PlayerAvatarExtendedInfoBlocks>>,
-	        selector: (net.rsprot.protocol.internal.game.outgoing.info.playerinfo.encoder.PlayerExtendedInfoEncoders) -> E,
+            allEncoders: List<AvatarExtendedInfoWriter<PlayerExtendedInfoEncoders, PlayerAvatarExtendedInfoBlocks>>,
+            selector: (
+                PlayerExtendedInfoEncoders,
+            ) -> E,
         ): ClientTypeMap<E> =
             ClientTypeMap.ofType(allEncoders, OldSchoolClientType.COUNT) {
                 it.encoders.oldSchoolClientType to selector(it.encoders)

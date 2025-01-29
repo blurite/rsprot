@@ -16,18 +16,18 @@ import net.rsprot.protocol.internal.game.outgoing.info.encoder.PrecomputedExtend
  * @param encoders the array of client-specific encoders for move speed.
  */
 public class MoveSpeed(
-	override val encoders: net.rsprot.protocol.internal.client.ClientTypeMap<PrecomputedExtendedInfoEncoder<net.rsprot.protocol.internal.game.outgoing.info.playerinfo.extendedinfo.MoveSpeed>>,
-) : TransientExtendedInfo<net.rsprot.protocol.internal.game.outgoing.info.playerinfo.extendedinfo.MoveSpeed, PrecomputedExtendedInfoEncoder<net.rsprot.protocol.internal.game.outgoing.info.playerinfo.extendedinfo.MoveSpeed>>() {
+    override val encoders: ClientTypeMap<PrecomputedExtendedInfoEncoder<MoveSpeed>>,
+) : TransientExtendedInfo<MoveSpeed, PrecomputedExtendedInfoEncoder<MoveSpeed>>() {
     /**
      * The current movement speed of this avatar.
      */
     public var value: Int =
-	    net.rsprot.protocol.internal.game.outgoing.info.playerinfo.extendedinfo.MoveSpeed.Companion.DEFAULT_MOVESPEED
+        DEFAULT_MOVESPEED
 
     override fun clear() {
         releaseBuffers()
         value =
-	        net.rsprot.protocol.internal.game.outgoing.info.playerinfo.extendedinfo.MoveSpeed.Companion.DEFAULT_MOVESPEED
+            DEFAULT_MOVESPEED
     }
 
     public companion object {

@@ -10,7 +10,7 @@ import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.Tinti
  * @param encoders the array of client-specific encoders for tinting.
  */
 public class NpcTinting(
-	override val encoders: net.rsprot.protocol.internal.client.ClientTypeMap<PrecomputedExtendedInfoEncoder<NpcTinting>>,
+    override val encoders: ClientTypeMap<PrecomputedExtendedInfoEncoder<NpcTinting>>,
 ) : TransientExtendedInfo<NpcTinting, PrecomputedExtendedInfoEncoder<NpcTinting>>() {
     public val global: Tinting = Tinting()
 

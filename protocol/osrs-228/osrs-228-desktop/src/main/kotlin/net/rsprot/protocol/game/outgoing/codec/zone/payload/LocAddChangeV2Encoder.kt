@@ -2,9 +2,9 @@ package net.rsprot.protocol.game.outgoing.codec.zone.payload
 
 import net.rsprot.buffer.JagByteBuf
 import net.rsprot.protocol.ServerProt
-import net.rsprot.protocol.internal.game.outgoing.codec.zone.payload.ZoneProtEncoder
 import net.rsprot.protocol.game.outgoing.prot.GameServerProt
 import net.rsprot.protocol.game.outgoing.zone.payload.LocAddChangeV2
+import net.rsprot.protocol.internal.game.outgoing.codec.zone.payload.ZoneProtEncoder
 
 public class LocAddChangeV2Encoder : ZoneProtEncoder<LocAddChangeV2> {
     override val prot: ServerProt = GameServerProt.LOC_ADD_CHANGE_V2

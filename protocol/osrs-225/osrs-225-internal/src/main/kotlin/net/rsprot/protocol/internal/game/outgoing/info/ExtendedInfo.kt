@@ -3,8 +3,8 @@ package net.rsprot.protocol.internal.game.outgoing.info
 import io.netty.buffer.ByteBuf
 import io.netty.buffer.ByteBufAllocator
 import net.rsprot.compression.provider.HuffmanCodecProvider
-import net.rsprot.protocol.internal.client.ClientTypeMap
 import net.rsprot.protocol.common.client.OldSchoolClientType
+import net.rsprot.protocol.internal.client.ClientTypeMap
 import net.rsprot.protocol.internal.game.outgoing.info.encoder.ExtendedInfoEncoder
 import net.rsprot.protocol.internal.game.outgoing.info.encoder.PrecomputedExtendedInfoEncoder
 
@@ -15,7 +15,7 @@ import net.rsprot.protocol.internal.game.outgoing.info.encoder.PrecomputedExtend
  * @param E the encoder for the given extended info block [T].
  */
 public abstract class ExtendedInfo<in T : ExtendedInfo<T, E>, E : ExtendedInfoEncoder<T>> {
-    public abstract val encoders: net.rsprot.protocol.internal.client.ClientTypeMap<E>
+    public abstract val encoders: ClientTypeMap<E>
 
     /**
      * An array of client-specific pre-computed buffers of this extended info block.

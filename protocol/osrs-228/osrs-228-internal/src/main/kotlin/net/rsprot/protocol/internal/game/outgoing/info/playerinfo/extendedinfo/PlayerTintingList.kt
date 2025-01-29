@@ -16,11 +16,12 @@ import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.Tinti
 public class PlayerTintingList(
     override val encoders: ClientTypeMap<OnDemandExtendedInfoEncoder<PlayerTintingList>>,
 ) : TransientExtendedInfo<PlayerTintingList, OnDemandExtendedInfoEncoder<PlayerTintingList>>() {
-    public val global: net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.Tinting =
-	    net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.Tinting()
-    public val observerDependent: MutableMap<Int, net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.Tinting> = HashMap()
+    public val global: Tinting =
+        Tinting()
+    public val observerDependent:
+        MutableMap<Int, Tinting> = HashMap()
 
-    public operator fun get(index: Int): net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.Tinting = observerDependent.getOrDefault(index, global)
+    public operator fun get(index: Int): Tinting = observerDependent.getOrDefault(index, global)
 
     override fun clear() {
         releaseBuffers()

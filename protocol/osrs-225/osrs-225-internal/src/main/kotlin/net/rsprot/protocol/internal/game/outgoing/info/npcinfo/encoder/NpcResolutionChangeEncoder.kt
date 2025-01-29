@@ -9,11 +9,11 @@ public interface NpcResolutionChangeEncoder {
     public val clientType: OldSchoolClientType
 
     public fun encode(
-	    bitBuffer: BitBuf,
-	    details: net.rsprot.protocol.internal.game.outgoing.info.npcinfo.NpcAvatarDetails,
-	    extendedInfo: Boolean,
-	    localPlayerCoordGrid: net.rsprot.protocol.internal.game.outgoing.info.CoordGrid,
-	    largeDistance: Boolean,
-	    cycleCount: Int,
+        bitBuffer: BitBuf,
+        details: NpcAvatarDetails,
+        extendedInfo: Boolean,
+        localPlayerCoordGrid: CoordGrid,
+        largeDistance: Boolean,
+        cycleCount: Int,
     )
 }

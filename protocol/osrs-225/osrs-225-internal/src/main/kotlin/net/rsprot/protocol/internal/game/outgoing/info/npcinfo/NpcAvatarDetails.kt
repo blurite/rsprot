@@ -26,19 +26,19 @@ import net.rsprot.protocol.internal.game.outgoing.info.CoordGrid
  * see the NPC regardless.
  */
 public class NpcAvatarDetails internal constructor(
-	public var index: Int,
-	public var id: Int,
-	public var currentCoord: net.rsprot.protocol.internal.game.outgoing.info.CoordGrid = net.rsprot.protocol.internal.game.outgoing.info.CoordGrid.INVALID,
-	public var stepCount: Int = 0,
-	public var firstStep: Int = -1,
-	public var secondStep: Int = -1,
-	public var movementType: Int = 0,
-	public var spawnCycle: Int = 0,
-	public var direction: Int = 0,
-	public var inaccessible: Boolean = false,
-	public var priorityBitcode: Int = 0,
-	public var specific: Boolean = false,
-	public var allocateCycle: Int,
+    public var index: Int,
+    public var id: Int,
+    public var currentCoord: CoordGrid = CoordGrid.INVALID,
+    public var stepCount: Int = 0,
+    public var firstStep: Int = -1,
+    public var secondStep: Int = -1,
+    public var movementType: Int = 0,
+    public var spawnCycle: Int = 0,
+    public var direction: Int = 0,
+    public var inaccessible: Boolean = false,
+    public var priorityBitcode: Int = 0,
+    public var specific: Boolean = false,
+    public var allocateCycle: Int,
 ) {
     public constructor(
         index: Int,
@@ -54,7 +54,7 @@ public class NpcAvatarDetails internal constructor(
     ) : this(
         index,
         id,
-	    net.rsprot.protocol.internal.game.outgoing.info.CoordGrid(level, x, z),
+        CoordGrid(level, x, z),
         spawnCycle = spawnCycle,
         direction = direction,
         priorityBitcode = priorityBitcode,
@@ -66,19 +66,27 @@ public class NpcAvatarDetails internal constructor(
      * Whether the npc is tele jumping, meaning it will jump over to the destination
      * coord, even if it is just one tile away.
      */
-    public fun isJumping(): Boolean = movementType and net.rsprot.protocol.internal.game.outgoing.info.npcinfo.NpcAvatarDetails.Companion.TELEJUMP != 0
+    public fun isJumping(): Boolean =
+        movementType and TELEJUMP !=
+            0
 
     /**
      * Whether the npc is teleporting, but not explicitly jumping.
      */
-    public fun isTeleWithoutJump(): Boolean = movementType and net.rsprot.protocol.internal.game.outgoing.info.npcinfo.NpcAvatarDetails.Companion.TELE != 0
+    public fun isTeleWithoutJump(): Boolean = movementType and TELE != 0
 
     /**
      * Whether the npc is teleporting. This means the npc will render as jumping
      * if the destination is > 2 tiles away, and normal walk/run/in-between if the
      * distance is 2 tiles or fewer.
      */
-    public fun isTeleporting(): Boolean = movementType and (net.rsprot.protocol.internal.game.outgoing.info.npcinfo.NpcAvatarDetails.Companion.TELE or net.rsprot.protocol.internal.game.outgoing.info.npcinfo.NpcAvatarDetails.Companion.TELEJUMP) != 0
+    public fun isTeleporting(): Boolean =
+        movementType and
+            (
+                TELE or
+                    TELEJUMP
+            ) !=
+            0
 
     /**
      * Updates the current direction of the npc, allowing the server to sync up

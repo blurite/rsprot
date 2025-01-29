@@ -18,7 +18,7 @@ import java.util.BitSet
  */
 public class SpotAnimList(
     override val encoders: ClientTypeMap<PrecomputedExtendedInfoEncoder<SpotAnimList>>,
-) : net.rsprot.protocol.internal.game.outgoing.info.TransientExtendedInfo<SpotAnimList, PrecomputedExtendedInfoEncoder<SpotAnimList>>() {
+) : TransientExtendedInfo<SpotAnimList, PrecomputedExtendedInfoEncoder<SpotAnimList>>() {
     /**
      * The changelist that tracks all the slots which have been flagged for a spotanim update.
      */

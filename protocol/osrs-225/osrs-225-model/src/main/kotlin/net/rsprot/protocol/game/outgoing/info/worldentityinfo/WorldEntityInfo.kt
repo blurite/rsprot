@@ -5,14 +5,14 @@ import io.netty.buffer.ByteBuf
 import io.netty.buffer.ByteBufAllocator
 import net.rsprot.buffer.JagByteBuf
 import net.rsprot.buffer.extensions.toJagByteBuf
-import net.rsprot.protocol.internal.checkCommunicationThread
 import net.rsprot.protocol.common.client.OldSchoolClientType
-import net.rsprot.protocol.internal.game.outgoing.info.CoordGrid
-import net.rsprot.protocol.internal.game.outgoing.info.util.ZoneIndexStorage
 import net.rsprot.protocol.game.outgoing.info.ByteBufRecycler
 import net.rsprot.protocol.game.outgoing.info.exceptions.InfoProcessException
 import net.rsprot.protocol.game.outgoing.info.util.BuildArea
 import net.rsprot.protocol.game.outgoing.info.util.ReferencePooledObject
+import net.rsprot.protocol.internal.checkCommunicationThread
+import net.rsprot.protocol.internal.game.outgoing.info.CoordGrid
+import net.rsprot.protocol.internal.game.outgoing.info.util.ZoneIndexStorage
 
 /**
  * The world entity info class tracks everything about the world entities that
@@ -68,7 +68,7 @@ public class WorldEntityInfo internal constructor(
 ) : ReferencePooledObject {
     private var renderDistance: Int = DEFAULT_RENDER_DISTANCE
     private var currentWorldEntityId: Int = ROOT_WORLD
-    private var currentCoord: net.rsprot.protocol.internal.game.outgoing.info.CoordGrid = net.rsprot.protocol.internal.game.outgoing.info.CoordGrid.INVALID
+    private var currentCoord: CoordGrid = CoordGrid.INVALID
     private var buildArea: BuildArea = BuildArea.INVALID
     private var highResolutionIndicesCount: Int = 0
     private var highResolutionIndices: ShortArray =
@@ -93,7 +93,7 @@ public class WorldEntityInfo internal constructor(
 
     @Volatile
     internal var exception: Exception? = null
-    private var renderCoord: net.rsprot.protocol.internal.game.outgoing.info.CoordGrid = net.rsprot.protocol.internal.game.outgoing.info.CoordGrid.INVALID
+    private var renderCoord: CoordGrid = CoordGrid.INVALID
 
     override fun isDestroyed(): Boolean = this.exception != null
 
@@ -182,7 +182,8 @@ public class WorldEntityInfo internal constructor(
     ) {
         checkCommunicationThread()
         this.currentWorldEntityId = worldId
-        this.currentCoord = net.rsprot.protocol.internal.game.outgoing.info.CoordGrid(level, x, z)
+        this.currentCoord =
+            CoordGrid(level, x, z)
     }
 
     /**
@@ -200,7 +201,8 @@ public class WorldEntityInfo internal constructor(
         z: Int,
     ) {
         checkCommunicationThread()
-        this.renderCoord = net.rsprot.protocol.internal.game.outgoing.info.CoordGrid(level, x, z)
+        this.renderCoord =
+            CoordGrid(level, x, z)
     }
 
     /**
@@ -209,7 +211,7 @@ public class WorldEntityInfo internal constructor(
      */
     public fun resetRenderCoord() {
         checkCommunicationThread()
-        this.renderCoord = net.rsprot.protocol.internal.game.outgoing.info.CoordGrid.INVALID
+        this.renderCoord = CoordGrid.INVALID
     }
 
     /**
@@ -430,7 +432,7 @@ public class WorldEntityInfo internal constructor(
             renderDistance,
         ) ||
             (
-                renderCoord != net.rsprot.protocol.internal.game.outgoing.info.CoordGrid.INVALID &&
+                renderCoord != CoordGrid.INVALID &&
                     avatar.currentCoord.inDistance(
                         this.renderCoord,
                         renderDistance,
@@ -455,9 +457,9 @@ public class WorldEntityInfo internal constructor(
         this.oldSchoolClientType = oldSchoolClientType
         this.renderDistance = DEFAULT_RENDER_DISTANCE
         this.currentWorldEntityId = ROOT_WORLD
-        this.currentCoord = net.rsprot.protocol.internal.game.outgoing.info.CoordGrid.INVALID
+        this.currentCoord = CoordGrid.INVALID
         this.buildArea = BuildArea.INVALID
-        this.renderCoord = net.rsprot.protocol.internal.game.outgoing.info.CoordGrid.INVALID
+        this.renderCoord = CoordGrid.INVALID
         this.highResolutionIndicesCount = 0
         this.highResolutionIndices.fill(0)
         this.temporaryHighResolutionIndices.fill(0)

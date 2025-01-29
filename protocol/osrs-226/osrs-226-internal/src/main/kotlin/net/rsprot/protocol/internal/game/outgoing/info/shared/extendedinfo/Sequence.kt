@@ -9,7 +9,7 @@ import net.rsprot.protocol.internal.game.outgoing.info.encoder.PrecomputedExtend
  * @param encoders the array of client-specific encoders for sequence.
  */
 public class Sequence(
-	override val encoders: net.rsprot.protocol.internal.client.ClientTypeMap<PrecomputedExtendedInfoEncoder<Sequence>>,
+    override val encoders: ClientTypeMap<PrecomputedExtendedInfoEncoder<Sequence>>,
 ) : TransientExtendedInfo<Sequence, PrecomputedExtendedInfoEncoder<Sequence>>() {
     /**
      * The id of the animation to play.

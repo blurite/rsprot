@@ -10,7 +10,7 @@ import net.rsprot.protocol.internal.game.outgoing.info.encoder.PrecomputedExtend
  */
 public class Chat(
     override val encoders: ClientTypeMap<PrecomputedExtendedInfoEncoder<Chat>>,
-) : net.rsprot.protocol.internal.game.outgoing.info.TransientExtendedInfo<Chat, PrecomputedExtendedInfoEncoder<Chat>>() {
+) : TransientExtendedInfo<Chat, PrecomputedExtendedInfoEncoder<Chat>>() {
     /**
      * The colour to apply to this chat message.
      */

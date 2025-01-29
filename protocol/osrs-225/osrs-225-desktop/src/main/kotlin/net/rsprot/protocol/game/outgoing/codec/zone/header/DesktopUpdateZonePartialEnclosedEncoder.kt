@@ -7,8 +7,6 @@ import net.rsprot.buffer.JagByteBuf
 import net.rsprot.buffer.extensions.toJagByteBuf
 import net.rsprot.crypto.cipher.StreamCipher
 import net.rsprot.protocol.ServerProt
-import net.rsprot.protocol.internal.game.outgoing.codec.zone.payload.OldSchoolZoneProt
-import net.rsprot.protocol.internal.game.outgoing.codec.zone.payload.ZoneProtEncoder
 import net.rsprot.protocol.game.outgoing.codec.zone.payload.LocAddChangeEncoder
 import net.rsprot.protocol.game.outgoing.codec.zone.payload.LocAnimEncoder
 import net.rsprot.protocol.game.outgoing.codec.zone.payload.LocDelEncoder
@@ -22,6 +20,8 @@ import net.rsprot.protocol.game.outgoing.codec.zone.payload.ObjEnabledOpsEncoder
 import net.rsprot.protocol.game.outgoing.codec.zone.payload.SoundAreaEncoder
 import net.rsprot.protocol.game.outgoing.prot.GameServerProt
 import net.rsprot.protocol.game.outgoing.zone.header.UpdateZonePartialEnclosed
+import net.rsprot.protocol.internal.game.outgoing.codec.zone.payload.OldSchoolZoneProt
+import net.rsprot.protocol.internal.game.outgoing.codec.zone.payload.ZoneProtEncoder
 import net.rsprot.protocol.message.ZoneProt
 import net.rsprot.protocol.message.codec.MessageEncoder
 import net.rsprot.protocol.message.codec.UpdateZonePartialEnclosedCache
@@ -97,12 +97,12 @@ public class DesktopUpdateZonePartialEnclosedEncoder : MessageEncoder<UpdateZone
          * based on the message itself.
          */
         private fun <T : ZoneProt> encodeMessage(
-	        buffer: JagByteBuf,
-	        message: T,
-	        encoder: net.rsprot.protocol.internal.game.outgoing.codec.zone.payload.ZoneProtEncoder<*>,
+            buffer: JagByteBuf,
+            message: T,
+            encoder: ZoneProtEncoder<*>,
         ) {
             @Suppress("UNCHECKED_CAST")
-            encoder as net.rsprot.protocol.internal.game.outgoing.codec.zone.payload.ZoneProtEncoder<T>
+            encoder as ZoneProtEncoder<T>
             encoder.encode(buffer, message)
         }
 
@@ -120,20 +120,53 @@ public class DesktopUpdateZonePartialEnclosedEncoder : MessageEncoder<UpdateZone
          * into a byte buffer.
          */
         private enum class IndexedZoneProtEncoder(
-	        private val protId: Int,
-	        val encoder: net.rsprot.protocol.internal.game.outgoing.codec.zone.payload.ZoneProtEncoder<*>,
+            private val protId: Int,
+            val encoder: ZoneProtEncoder<*>,
         ) {
-            LOC_ADD_CHANGE(net.rsprot.protocol.internal.game.outgoing.codec.zone.payload.OldSchoolZoneProt.LOC_ADD_CHANGE, LocAddChangeEncoder()),
-            OBJ_ADD(net.rsprot.protocol.internal.game.outgoing.codec.zone.payload.OldSchoolZoneProt.OBJ_ADD, ObjAddEncoder()),
-            LOC_DEL(net.rsprot.protocol.internal.game.outgoing.codec.zone.payload.OldSchoolZoneProt.LOC_DEL, LocDelEncoder()),
-            SOUND_AREA(net.rsprot.protocol.internal.game.outgoing.codec.zone.payload.OldSchoolZoneProt.SOUND_AREA, SoundAreaEncoder()),
-            OBJ_ENABLED_OPS(net.rsprot.protocol.internal.game.outgoing.codec.zone.payload.OldSchoolZoneProt.OBJ_ENABLED_OPS, ObjEnabledOpsEncoder()),
-            MAP_ANIM(net.rsprot.protocol.internal.game.outgoing.codec.zone.payload.OldSchoolZoneProt.MAP_ANIM, MapAnimEncoder()),
-            LOC_MERGE(net.rsprot.protocol.internal.game.outgoing.codec.zone.payload.OldSchoolZoneProt.LOC_MERGE, LocMergeEncoder()),
-            MAP_PROJANIM(net.rsprot.protocol.internal.game.outgoing.codec.zone.payload.OldSchoolZoneProt.MAP_PROJANIM, MapProjAnimEncoder()),
-            OBJ_COUNT(net.rsprot.protocol.internal.game.outgoing.codec.zone.payload.OldSchoolZoneProt.OBJ_COUNT, ObjCountEncoder()),
-            OBJ_DEL(net.rsprot.protocol.internal.game.outgoing.codec.zone.payload.OldSchoolZoneProt.OBJ_DEL, ObjDelEncoder()),
-            LOC_ANIM(net.rsprot.protocol.internal.game.outgoing.codec.zone.payload.OldSchoolZoneProt.LOC_ANIM, LocAnimEncoder()),
+            LOC_ADD_CHANGE(
+                OldSchoolZoneProt.LOC_ADD_CHANGE,
+                LocAddChangeEncoder(),
+            ),
+            OBJ_ADD(
+                OldSchoolZoneProt.OBJ_ADD,
+                ObjAddEncoder(),
+            ),
+            LOC_DEL(
+                OldSchoolZoneProt.LOC_DEL,
+                LocDelEncoder(),
+            ),
+            SOUND_AREA(
+                OldSchoolZoneProt.SOUND_AREA,
+                SoundAreaEncoder(),
+            ),
+            OBJ_ENABLED_OPS(
+                OldSchoolZoneProt.OBJ_ENABLED_OPS,
+                ObjEnabledOpsEncoder(),
+            ),
+            MAP_ANIM(
+                OldSchoolZoneProt.MAP_ANIM,
+                MapAnimEncoder(),
+            ),
+            LOC_MERGE(
+                OldSchoolZoneProt.LOC_MERGE,
+                LocMergeEncoder(),
+            ),
+            MAP_PROJANIM(
+                OldSchoolZoneProt.MAP_PROJANIM,
+                MapProjAnimEncoder(),
+            ),
+            OBJ_COUNT(
+                OldSchoolZoneProt.OBJ_COUNT,
+                ObjCountEncoder(),
+            ),
+            OBJ_DEL(
+                OldSchoolZoneProt.OBJ_DEL,
+                ObjDelEncoder(),
+            ),
+            LOC_ANIM(
+                OldSchoolZoneProt.LOC_ANIM,
+                LocAnimEncoder(),
+            ),
             ;
 
             companion object {

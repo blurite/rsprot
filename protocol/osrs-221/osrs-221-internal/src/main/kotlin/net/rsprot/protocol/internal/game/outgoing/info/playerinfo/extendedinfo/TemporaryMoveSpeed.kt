@@ -14,7 +14,7 @@ import net.rsprot.protocol.internal.game.outgoing.info.encoder.PrecomputedExtend
  */
 public class TemporaryMoveSpeed(
     override val encoders: ClientTypeMap<PrecomputedExtendedInfoEncoder<TemporaryMoveSpeed>>,
-) : net.rsprot.protocol.internal.game.outgoing.info.TransientExtendedInfo<TemporaryMoveSpeed, PrecomputedExtendedInfoEncoder<TemporaryMoveSpeed>>() {
+) : TransientExtendedInfo<TemporaryMoveSpeed, PrecomputedExtendedInfoEncoder<TemporaryMoveSpeed>>() {
     /**
      * The movement speed of this avatar for a single cycle.
      */

@@ -17,8 +17,8 @@ import java.util.BitSet
  * @param encoders the array of client-specific encoders for spotanims.
  */
 public class SpotAnimList(
-	override val encoders: ClientTypeMap<PrecomputedExtendedInfoEncoder<net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.SpotAnimList>>,
-) : TransientExtendedInfo<net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.SpotAnimList, PrecomputedExtendedInfoEncoder<net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.SpotAnimList>>() {
+    override val encoders: ClientTypeMap<PrecomputedExtendedInfoEncoder<SpotAnimList>>,
+) : TransientExtendedInfo<SpotAnimList, PrecomputedExtendedInfoEncoder<SpotAnimList>>() {
     /**
      * The changelist that tracks all the slots which have been flagged for a spotanim update.
      */
@@ -30,7 +30,7 @@ public class SpotAnimList(
      */
     public val spotanims: LongArray =
         LongArray(RSProtFlags.spotanimListCapacity) {
-	        net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.SpotAnimList.Companion.UNINITIALIZED_SPOTANIM
+            UNINITIALIZED_SPOTANIM
         }
 
     /**
@@ -58,7 +58,7 @@ public class SpotAnimList(
         }
         do {
             spotanims[nextSetBit] =
-	            net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.SpotAnimList.Companion.UNINITIALIZED_SPOTANIM
+                UNINITIALIZED_SPOTANIM
             nextSetBit = changelist.nextSetBit(nextSetBit + 1)
         } while (nextSetBit != -1)
         changelist.clear()

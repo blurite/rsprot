@@ -2,7 +2,6 @@ package net.rsprot.protocol.game.outgoing.codec.npcinfo.extendedinfo.writer
 
 import net.rsprot.buffer.JagByteBuf
 import net.rsprot.protocol.common.client.OldSchoolClientType
-import net.rsprot.protocol.internal.game.outgoing.info.npcinfo.encoder.NpcExtendedInfoEncoders
 import net.rsprot.protocol.game.outgoing.codec.npcinfo.extendedinfo.NpcBaseAnimationSetEncoder
 import net.rsprot.protocol.game.outgoing.codec.npcinfo.extendedinfo.NpcBodyCustomisationEncoder
 import net.rsprot.protocol.game.outgoing.codec.npcinfo.extendedinfo.NpcCombatLevelChangeEncoder
@@ -22,30 +21,31 @@ import net.rsprot.protocol.game.outgoing.codec.npcinfo.extendedinfo.NpcVisibleOp
 import net.rsprot.protocol.game.outgoing.info.AvatarExtendedInfoWriter
 import net.rsprot.protocol.game.outgoing.info.npcinfo.NpcAvatarExtendedInfo
 import net.rsprot.protocol.game.outgoing.info.npcinfo.NpcAvatarExtendedInfoBlocks
+import net.rsprot.protocol.internal.game.outgoing.info.npcinfo.encoder.NpcExtendedInfoEncoders
 
 @Suppress("DuplicatedCode")
 public class NpcAvatarExtendedInfoDesktopWriter :
-    AvatarExtendedInfoWriter<net.rsprot.protocol.internal.game.outgoing.info.npcinfo.encoder.NpcExtendedInfoEncoders, NpcAvatarExtendedInfoBlocks>(
+    AvatarExtendedInfoWriter<NpcExtendedInfoEncoders, NpcAvatarExtendedInfoBlocks>(
         OldSchoolClientType.DESKTOP,
-	    net.rsprot.protocol.internal.game.outgoing.info.npcinfo.encoder.NpcExtendedInfoEncoders(
-		    OldSchoolClientType.DESKTOP,
-		    NpcSpotAnimEncoder(),
-		    NpcSayEncoder(),
-		    NpcVisibleOpsEncoder(),
-		    NpcExactMoveEncoder(),
-		    NpcSequenceEncoder(),
-		    NpcTintingEncoder(),
-		    NpcHeadIconCustomisationEncoder(),
-		    NpcNameChangeEncoder(),
-		    NpcHeadCustomisationEncoder(),
-		    NpcBodyCustomisationEncoder(),
-		    NpcTransformationEncoder(),
-		    NpcCombatLevelChangeEncoder(),
-		    NpcHitEncoder(),
-		    NpcFaceCoordEncoder(),
-		    NpcFacePathingEntityEncoder(),
-		    NpcBaseAnimationSetEncoder(),
-	    ),
+        NpcExtendedInfoEncoders(
+            OldSchoolClientType.DESKTOP,
+            NpcSpotAnimEncoder(),
+            NpcSayEncoder(),
+            NpcVisibleOpsEncoder(),
+            NpcExactMoveEncoder(),
+            NpcSequenceEncoder(),
+            NpcTintingEncoder(),
+            NpcHeadIconCustomisationEncoder(),
+            NpcNameChangeEncoder(),
+            NpcHeadCustomisationEncoder(),
+            NpcBodyCustomisationEncoder(),
+            NpcTransformationEncoder(),
+            NpcCombatLevelChangeEncoder(),
+            NpcHitEncoder(),
+            NpcFaceCoordEncoder(),
+            NpcFacePathingEntityEncoder(),
+            NpcBaseAnimationSetEncoder(),
+        ),
     ) {
     private fun convertFlags(constantFlags: Int): Int {
         var clientFlags = 0

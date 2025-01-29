@@ -22,14 +22,14 @@ public class SpotAnimList(
     /**
      * The changelist that tracks all the slots which have been flagged for a spotanim update.
      */
-    public val changelist: BitSet = BitSet(net.rsprot.protocol.internal.RSProtFlags.spotanimListCapacity)
+    public val changelist: BitSet = BitSet(RSProtFlags.spotanimListCapacity)
 
     /**
      * The array of spotanims on this avatar.
      * This array utilizes the bitpacked representation of a [SpotAnim].
      */
     public val spotanims: LongArray =
-        LongArray(net.rsprot.protocol.internal.RSProtFlags.spotanimListCapacity) {
+        LongArray(RSProtFlags.spotanimListCapacity) {
             UNINITIALIZED_SPOTANIM
         }
 
@@ -40,8 +40,8 @@ public class SpotAnimList(
      * @param spotAnim the spotanim to set.
      */
     public fun set(
-	    slot: Int,
-	    spotAnim: net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.util.SpotAnim,
+        slot: Int,
+        spotAnim: SpotAnim,
     ) {
         spotanims[slot] = spotAnim.packed
         changelist.set(slot)

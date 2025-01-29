@@ -16,7 +16,7 @@ import net.rsprot.protocol.internal.game.outgoing.info.encoder.PrecomputedExtend
  * @param encoders the array of client-specific encoders for move speed.
  */
 public class MoveSpeed(
-	override val encoders: net.rsprot.protocol.internal.client.ClientTypeMap<PrecomputedExtendedInfoEncoder<MoveSpeed>>,
+    override val encoders: ClientTypeMap<PrecomputedExtendedInfoEncoder<MoveSpeed>>,
 ) : TransientExtendedInfo<MoveSpeed, PrecomputedExtendedInfoEncoder<MoveSpeed>>() {
     /**
      * The current movement speed of this avatar.

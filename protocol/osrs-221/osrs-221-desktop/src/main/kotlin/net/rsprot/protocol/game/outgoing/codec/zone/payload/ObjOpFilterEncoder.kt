@@ -2,9 +2,9 @@ package net.rsprot.protocol.game.outgoing.codec.zone.payload
 
 import net.rsprot.buffer.JagByteBuf
 import net.rsprot.protocol.ServerProt
-import net.rsprot.protocol.internal.game.outgoing.codec.zone.payload.ZoneProtEncoder
 import net.rsprot.protocol.game.outgoing.prot.GameServerProt
 import net.rsprot.protocol.game.outgoing.zone.payload.ObjOpFilter
+import net.rsprot.protocol.internal.game.outgoing.codec.zone.payload.ZoneProtEncoder
 
 public class ObjOpFilterEncoder : ZoneProtEncoder<ObjOpFilter> {
     override val prot: ServerProt = GameServerProt.OBJ_OPFILTER

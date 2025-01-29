@@ -6,7 +6,7 @@ import net.rsprot.protocol.internal.game.outgoing.info.encoder.PrecomputedExtend
 
 public class BaseAnimationSet(
     override val encoders: ClientTypeMap<PrecomputedExtendedInfoEncoder<BaseAnimationSet>>,
-) : net.rsprot.protocol.internal.game.outgoing.info.TransientExtendedInfo<BaseAnimationSet, PrecomputedExtendedInfoEncoder<BaseAnimationSet>>() {
+) : TransientExtendedInfo<BaseAnimationSet, PrecomputedExtendedInfoEncoder<BaseAnimationSet>>() {
     public var overrides: Int = DEFAULT_OVERRIDES_FLAG
     public var turnLeftAnim: UShort = 0xFFFFu
     public var turnRightAnim: UShort = 0xFFFFu

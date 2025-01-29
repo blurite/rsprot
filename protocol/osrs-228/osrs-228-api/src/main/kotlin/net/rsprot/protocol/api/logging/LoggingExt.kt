@@ -37,27 +37,27 @@ internal inline fun js5Log(
 }
 
 private inline fun logBlock(
-	logger: InlineLogger,
-	level: net.rsprot.protocol.internal.LogLevel,
-	block: () -> Any?,
+    logger: InlineLogger,
+    level: LogLevel,
+    block: () -> Any?,
 ) {
     when (level) {
-        net.rsprot.protocol.internal.LogLevel.OFF -> {
+        LogLevel.OFF -> {
             // no-op
         }
-        net.rsprot.protocol.internal.LogLevel.TRACE -> {
+        LogLevel.TRACE -> {
             logger.trace(block)
         }
-        net.rsprot.protocol.internal.LogLevel.DEBUG -> {
+        LogLevel.DEBUG -> {
             logger.debug(block)
         }
-        net.rsprot.protocol.internal.LogLevel.INFO -> {
+        LogLevel.INFO -> {
             logger.info(block)
         }
-        net.rsprot.protocol.internal.LogLevel.WARN -> {
+        LogLevel.WARN -> {
             logger.warn(block)
         }
-        net.rsprot.protocol.internal.LogLevel.ERROR -> {
+        LogLevel.ERROR -> {
             logger.error(block)
         }
     }

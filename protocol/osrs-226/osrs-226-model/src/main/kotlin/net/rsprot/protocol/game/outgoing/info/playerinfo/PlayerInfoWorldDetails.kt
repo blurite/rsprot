@@ -1,7 +1,7 @@
 package net.rsprot.protocol.game.outgoing.info.playerinfo
 
-import net.rsprot.protocol.internal.game.outgoing.info.CoordGrid
 import net.rsprot.protocol.game.outgoing.info.util.BuildArea
+import net.rsprot.protocol.internal.game.outgoing.info.CoordGrid
 
 /**
  * A class which wraps the details of a player info implementation in a specific world.

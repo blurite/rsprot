@@ -5,9 +5,11 @@ package net.rsprot.protocol.game.outgoing.info.playerinfo
 import io.netty.buffer.ByteBufAllocator
 import net.rsprot.buffer.JagByteBuf
 import net.rsprot.compression.provider.HuffmanCodecProvider
+import net.rsprot.protocol.common.client.OldSchoolClientType
+import net.rsprot.protocol.game.outgoing.info.AvatarExtendedInfoWriter
+import net.rsprot.protocol.game.outgoing.info.filter.ExtendedInfoFilter
 import net.rsprot.protocol.internal.RSProtFlags
 import net.rsprot.protocol.internal.checkCommunicationThread
-import net.rsprot.protocol.common.client.OldSchoolClientType
 import net.rsprot.protocol.internal.game.outgoing.info.playerinfo.encoder.PlayerExtendedInfoEncoders
 import net.rsprot.protocol.internal.game.outgoing.info.playerinfo.extendedinfo.FaceAngle
 import net.rsprot.protocol.internal.game.outgoing.info.playerinfo.extendedinfo.MoveSpeed
@@ -18,8 +20,6 @@ import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.Tinti
 import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.util.HeadBar
 import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.util.HitMark
 import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.util.SpotAnim
-import net.rsprot.protocol.game.outgoing.info.AvatarExtendedInfoWriter
-import net.rsprot.protocol.game.outgoing.info.filter.ExtendedInfoFilter
 
 public typealias PlayerAvatarExtendedInfoWriter =
     AvatarExtendedInfoWriter<PlayerExtendedInfoEncoders, PlayerAvatarExtendedInfoBlocks>
@@ -799,7 +799,8 @@ public class PlayerAvatarExtendedInfo(
                 "Unexpected weight: $weight, expected range $UNSIGNED_BYTE_RANGE"
             }
         }
-        val tint = net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.Tinting()
+        val tint =
+            Tinting()
         blocks.tinting.observerDependent[visibleTo.avatar.extendedInfo.localIndex] = tint
         tint.start = startTime.toUShort()
         tint.end = endTime.toUShort()

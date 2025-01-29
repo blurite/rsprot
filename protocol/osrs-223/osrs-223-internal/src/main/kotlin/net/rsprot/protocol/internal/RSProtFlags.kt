@@ -23,171 +23,171 @@ public object RSProtFlags {
      */
     @JvmStatic
     private val development: Boolean =
-	    net.rsprot.protocol.internal.RSProtFlags.getBoolean(
-		    "development",
-		    true,
-	    )
+        getBoolean(
+            "development",
+            true,
+        )
 
     /**
      * Whether to check that obj ids in inventory packets are all positive.
      */
     @JvmStatic
     public val inventoryObjCheck: Boolean =
-	    net.rsprot.protocol.internal.RSProtFlags.getBoolean(
-		    "inventoryObjCheck",
-		    net.rsprot.protocol.internal.RSProtFlags.development,
-	    )
+        getBoolean(
+            "inventoryObjCheck",
+            development,
+        )
 
     /**
      * Whether to validate extended info block inputs.
      */
     @JvmStatic
     public val extendedInfoInputVerification: Boolean =
-	    net.rsprot.protocol.internal.RSProtFlags.getBoolean(
-		    "extendedInfoInputVerification",
-		    net.rsprot.protocol.internal.RSProtFlags.development,
-	    )
+        getBoolean(
+            "extendedInfoInputVerification",
+            development,
+        )
 
     @JvmStatic
     public val clientscriptVerification: Boolean =
-	    net.rsprot.protocol.internal.RSProtFlags.getBoolean(
-		    "clientscriptVerification",
-		    net.rsprot.protocol.internal.RSProtFlags.development,
-	    )
+        getBoolean(
+            "clientscriptVerification",
+            development,
+        )
 
     private val networkLoggingString: String =
-	    net.rsprot.protocol.internal.RSProtFlags.getString(
-		    "networkLogging",
-		    "off",
-	    )
+        getString(
+            "networkLogging",
+            "off",
+        )
 
     private val js5LoggingString: String =
-	    net.rsprot.protocol.internal.RSProtFlags.getString(
-		    "js5Logging",
-		    "off",
-	    )
+        getString(
+            "js5Logging",
+            "off",
+        )
 
     @JvmStatic
     public val byteBufRecyclerCycleThreshold: Int =
-	    net.rsprot.protocol.internal.RSProtFlags.getInt(
-		    "recyclerCycleThreshold",
-		    50,
-	    )
+        getInt(
+            "recyclerCycleThreshold",
+            50,
+        )
 
     @JvmStatic
     public val npcPlayerAvatarTracking: Boolean =
-	    net.rsprot.protocol.internal.RSProtFlags.getBoolean(
-		    "npcPlayerAvatarTracking",
-		    true,
-	    )
+        getBoolean(
+            "npcPlayerAvatarTracking",
+            true,
+        )
 
     @JvmStatic
     public val filterMissingPacketsInClient: Boolean =
-	    net.rsprot.protocol.internal.RSProtFlags.getBoolean(
-		    "filterMissingPacketsInClient",
-		    true,
-	    )
+        getBoolean(
+            "filterMissingPacketsInClient",
+            true,
+        )
 
     @JvmStatic
     public val spotanimListCapacity: Int =
-	    net.rsprot.protocol.internal.RSProtFlags.getInt(
-		    "spotanimListCapacity",
-		    256,
-	    )
+        getInt(
+            "spotanimListCapacity",
+            256,
+        )
 
     @JvmStatic
     public val captureChat: Boolean =
-	    net.rsprot.protocol.internal.RSProtFlags.getBoolean(
-		    "captureChat",
-		    false,
-	    )
+        getBoolean(
+            "captureChat",
+            false,
+        )
 
     @JvmStatic
     public val captureSay: Boolean =
-	    net.rsprot.protocol.internal.RSProtFlags.getBoolean(
-		    "captureSay",
-		    false,
-	    )
+        getBoolean(
+            "captureSay",
+            false,
+        )
 
     @JvmStatic
-    public val networkLogging: net.rsprot.protocol.internal.LogLevel =
-        when (net.rsprot.protocol.internal.RSProtFlags.networkLoggingString) {
-            "off" -> net.rsprot.protocol.internal.LogLevel.OFF
-            "trace" -> net.rsprot.protocol.internal.LogLevel.TRACE
-            "debug" -> net.rsprot.protocol.internal.LogLevel.DEBUG
-            "info" -> net.rsprot.protocol.internal.LogLevel.INFO
-            "warn" -> net.rsprot.protocol.internal.LogLevel.WARN
-            "error" -> net.rsprot.protocol.internal.LogLevel.ERROR
+    public val networkLogging: LogLevel =
+        when (networkLoggingString) {
+            "off" -> LogLevel.OFF
+            "trace" -> LogLevel.TRACE
+            "debug" -> LogLevel.DEBUG
+            "info" -> LogLevel.INFO
+            "warn" -> LogLevel.WARN
+            "error" -> LogLevel.ERROR
             else -> {
-                net.rsprot.protocol.internal.RSProtFlags.logger.warn {
-                    "Unknown network logging option: ${net.rsprot.protocol.internal.RSProtFlags.networkLoggingString}, " +
+                logger.warn {
+                    "Unknown network logging option: $networkLoggingString, " +
                         "expected values: [off, trace, debug, info, warn, error]"
                 }
-	            net.rsprot.protocol.internal.LogLevel.OFF
+                LogLevel.OFF
             }
         }
 
     @JvmStatic
-    public val js5Logging: net.rsprot.protocol.internal.LogLevel =
-        when (net.rsprot.protocol.internal.RSProtFlags.js5LoggingString) {
-            "off" -> net.rsprot.protocol.internal.LogLevel.OFF
-            "trace" -> net.rsprot.protocol.internal.LogLevel.TRACE
-            "debug" -> net.rsprot.protocol.internal.LogLevel.DEBUG
-            "info" -> net.rsprot.protocol.internal.LogLevel.INFO
-            "warn" -> net.rsprot.protocol.internal.LogLevel.WARN
-            "error" -> net.rsprot.protocol.internal.LogLevel.ERROR
+    public val js5Logging: LogLevel =
+        when (js5LoggingString) {
+            "off" -> LogLevel.OFF
+            "trace" -> LogLevel.TRACE
+            "debug" -> LogLevel.DEBUG
+            "info" -> LogLevel.INFO
+            "warn" -> LogLevel.WARN
+            "error" -> LogLevel.ERROR
             else -> {
-                net.rsprot.protocol.internal.RSProtFlags.logger.warn {
-                    "Unknown js5 logging option: ${net.rsprot.protocol.internal.RSProtFlags.networkLoggingString}, " +
+                logger.warn {
+                    "Unknown js5 logging option: $networkLoggingString, " +
                         "expected values: [off, trace, debug, info, warn, error]"
                 }
-	            net.rsprot.protocol.internal.LogLevel.OFF
+                LogLevel.OFF
             }
         }
 
     init {
-	    net.rsprot.protocol.internal.RSProtFlags.log(
-		    "development",
-		    net.rsprot.protocol.internal.RSProtFlags.development
-	    )
-	    net.rsprot.protocol.internal.RSProtFlags.log(
-		    "inventoryObjCheck",
-		    net.rsprot.protocol.internal.RSProtFlags.inventoryObjCheck
-	    )
-	    net.rsprot.protocol.internal.RSProtFlags.log(
-		    "extendedInfoInputVerification",
-		    net.rsprot.protocol.internal.RSProtFlags.extendedInfoInputVerification
-	    )
-	    net.rsprot.protocol.internal.RSProtFlags.log(
-		    "clientscriptVerification",
-		    net.rsprot.protocol.internal.RSProtFlags.clientscriptVerification
-	    )
-	    net.rsprot.protocol.internal.RSProtFlags.log(
-		    "networkLogging",
-		    net.rsprot.protocol.internal.RSProtFlags.networkLoggingString
-	    )
-	    net.rsprot.protocol.internal.RSProtFlags.log(
-		    "js5Logging",
-		    net.rsprot.protocol.internal.RSProtFlags.js5LoggingString
-	    )
-	    net.rsprot.protocol.internal.RSProtFlags.log(
-		    "npcPlayerAvatarTracking",
-		    net.rsprot.protocol.internal.RSProtFlags.npcPlayerAvatarTracking
-	    )
-	    net.rsprot.protocol.internal.RSProtFlags.log(
-		    "filterMissingPacketsInClient",
-		    net.rsprot.protocol.internal.RSProtFlags.filterMissingPacketsInClient
-	    )
-	    net.rsprot.protocol.internal.RSProtFlags.log(
-		    "spotanimListCapacity",
-		    net.rsprot.protocol.internal.RSProtFlags.spotanimListCapacity
-	    )
-	    net.rsprot.protocol.internal.RSProtFlags.log(
-		    "captureChat",
-		    net.rsprot.protocol.internal.RSProtFlags.captureChat
-	    )
-	    net.rsprot.protocol.internal.RSProtFlags.log("captureSay", net.rsprot.protocol.internal.RSProtFlags.captureSay)
-        require(net.rsprot.protocol.internal.RSProtFlags.spotanimListCapacity in 0..256)
+        log(
+            "development",
+            development,
+        )
+        log(
+            "inventoryObjCheck",
+            inventoryObjCheck,
+        )
+        log(
+            "extendedInfoInputVerification",
+            extendedInfoInputVerification,
+        )
+        log(
+            "clientscriptVerification",
+            clientscriptVerification,
+        )
+        log(
+            "networkLogging",
+            networkLoggingString,
+        )
+        log(
+            "js5Logging",
+            js5LoggingString,
+        )
+        log(
+            "npcPlayerAvatarTracking",
+            npcPlayerAvatarTracking,
+        )
+        log(
+            "filterMissingPacketsInClient",
+            filterMissingPacketsInClient,
+        )
+        log(
+            "spotanimListCapacity",
+            spotanimListCapacity,
+        )
+        log(
+            "captureChat",
+            captureChat,
+        )
+        log("captureSay", captureSay)
+        require(spotanimListCapacity in 0..256)
     }
 
     private fun getBoolean(
@@ -195,7 +195,7 @@ public object RSProtFlags {
         defaultValue: Boolean,
     ): Boolean =
         SystemPropertyUtil.getBoolean(
-            net.rsprot.protocol.internal.RSProtFlags.PREFIX + propertyName,
+            PREFIX + propertyName,
             defaultValue,
         )
 
@@ -205,7 +205,7 @@ public object RSProtFlags {
         defaultValue: String,
     ): String =
         SystemPropertyUtil.get(
-            net.rsprot.protocol.internal.RSProtFlags.PREFIX + propertyName,
+            PREFIX + propertyName,
             defaultValue,
         )
 
@@ -216,7 +216,7 @@ public object RSProtFlags {
     ): Int =
         SystemPropertyUtil
             .get(
-                net.rsprot.protocol.internal.RSProtFlags.PREFIX + propertyName,
+                PREFIX + propertyName,
                 defaultValue.toString(),
             )?.toIntOrNull() ?: defaultValue
 
@@ -224,8 +224,8 @@ public object RSProtFlags {
         name: String,
         value: Any,
     ) {
-        net.rsprot.protocol.internal.RSProtFlags.logger.debug {
-            "-D${net.rsprot.protocol.internal.RSProtFlags.PREFIX}$name: $value"
+        logger.debug {
+            "-D$PREFIX$name: $value"
         }
     }
 }

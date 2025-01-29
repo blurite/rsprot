@@ -30,14 +30,15 @@ internal class ZoneIndexDictionary(
     private val mask: Int = capacity - 1
     private var containsNullKey: Boolean = false
     private val keys: IntArray = IntArray(capacity)
-    private val values: Array<net.rsprot.protocol.internal.game.outgoing.info.util.ZoneIndexArray?> = arrayOfNulls(capacity)
+    private val values: Array<ZoneIndexArray?> =
+        arrayOfNulls(capacity)
 
     /**
      * Puts a [value] into this dictionary with the specified [key].
      */
     fun put(
-	    key: Int,
-	    value: net.rsprot.protocol.internal.game.outgoing.info.util.ZoneIndexArray,
+        key: Int,
+        value: ZoneIndexArray,
     ) {
         val pos = find(key)
         if (pos < 0) {
@@ -51,9 +52,9 @@ internal class ZoneIndexDictionary(
      * Inserts a value into our hashmap with the specified [key] and [value] at the [pos].
      */
     private fun insert(
-	    pos: Int,
-	    key: Int,
-	    value: net.rsprot.protocol.internal.game.outgoing.info.util.ZoneIndexArray,
+        pos: Int,
+        key: Int,
+        value: ZoneIndexArray,
     ) {
         if (pos == mask) {
             containsNullKey = true
@@ -134,7 +135,7 @@ internal class ZoneIndexDictionary(
     /**
      * Gets the zone index array associated with the key [k] if it exists, or null.
      */
-    fun get(k: Int): net.rsprot.protocol.internal.game.outgoing.info.util.ZoneIndexArray? {
+    fun get(k: Int): ZoneIndexArray? {
         if (k == 0) {
             return if (containsNullKey) {
                 values[mask]

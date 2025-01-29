@@ -17,7 +17,7 @@ internal inline fun networkLog(
     logger: InlineLogger,
     block: () -> Any?,
 ) {
-    logBlock(logger, net.rsprot.protocol.internal.RSProtFlags.networkLogging, block)
+    logBlock(logger, RSProtFlags.networkLogging, block)
 }
 
 /**
@@ -33,7 +33,7 @@ internal inline fun js5Log(
     logger: InlineLogger,
     block: () -> Any?,
 ) {
-    logBlock(logger, net.rsprot.protocol.internal.RSProtFlags.js5Logging, block)
+    logBlock(logger, RSProtFlags.js5Logging, block)
 }
 
 private inline fun logBlock(

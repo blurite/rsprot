@@ -13,7 +13,8 @@ import net.rsprot.protocol.internal.game.outgoing.info.CoordGrid
 public class ZoneIndexStorage(
     maxKeyCount: Int,
 ) {
-    private val dictionary = net.rsprot.protocol.internal.game.outgoing.info.util.ZoneIndexDictionary(maxKeyCount)
+    private val dictionary =
+        ZoneIndexDictionary(maxKeyCount)
 
     /**
      * Adds the [entityIndex] to the zone that contains the [coordGrid] coord.
@@ -28,7 +29,8 @@ public class ZoneIndexStorage(
         val zoneIndex = zoneIndex(coordGrid)
         var array = dictionary.get(zoneIndex)
         if (array == null) {
-            array = net.rsprot.protocol.internal.game.outgoing.info.util.ZoneIndexArray()
+            array =
+                ZoneIndexArray()
             array.add(entityIndex)
             dictionary.put(zoneIndex, array)
             return

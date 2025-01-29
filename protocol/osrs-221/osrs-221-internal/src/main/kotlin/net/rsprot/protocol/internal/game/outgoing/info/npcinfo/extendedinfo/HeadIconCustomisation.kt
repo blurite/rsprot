@@ -6,7 +6,7 @@ import net.rsprot.protocol.internal.game.outgoing.info.encoder.PrecomputedExtend
 
 public class HeadIconCustomisation(
     override val encoders: ClientTypeMap<PrecomputedExtendedInfoEncoder<HeadIconCustomisation>>,
-) : net.rsprot.protocol.internal.game.outgoing.info.TransientExtendedInfo<HeadIconCustomisation, PrecomputedExtendedInfoEncoder<HeadIconCustomisation>>() {
+) : TransientExtendedInfo<HeadIconCustomisation, PrecomputedExtendedInfoEncoder<HeadIconCustomisation>>() {
     public var flag: Int = DEFAULT_FLAG
     public val headIconGroups: IntArray =
         IntArray(8) {

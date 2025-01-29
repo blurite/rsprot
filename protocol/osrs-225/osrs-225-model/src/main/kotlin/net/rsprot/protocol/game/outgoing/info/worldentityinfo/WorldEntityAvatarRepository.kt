@@ -64,7 +64,8 @@ public class WorldEntityAvatarRepository internal constructor(
             existing.index = index
             existing.sizeX = sizeX
             existing.sizeZ = sizeZ
-            existing.currentCoord = net.rsprot.protocol.internal.game.outgoing.info.CoordGrid(level, x, z)
+            existing.currentCoord =
+                CoordGrid(level, x, z)
             existing.lastCoord = existing.currentCoord
             existing.angle = angle
             existing.allocateCycle = WorldEntityProtocol.cycleCount
@@ -79,7 +80,7 @@ public class WorldEntityAvatarRepository internal constructor(
                 index,
                 sizeX,
                 sizeZ,
-	            net.rsprot.protocol.internal.game.outgoing.info.CoordGrid(level, x, z),
+                CoordGrid(level, x, z),
                 angle,
             )
         zoneIndexStorage.add(index, avatar.currentCoord)

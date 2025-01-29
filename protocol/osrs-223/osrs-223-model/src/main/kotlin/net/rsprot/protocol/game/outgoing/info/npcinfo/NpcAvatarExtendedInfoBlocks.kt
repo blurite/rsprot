@@ -1,7 +1,8 @@
 package net.rsprot.protocol.game.outgoing.info.npcinfo
 
-import net.rsprot.protocol.internal.client.ClientTypeMap
 import net.rsprot.protocol.common.client.OldSchoolClientType
+import net.rsprot.protocol.game.outgoing.info.AvatarExtendedInfoWriter
+import net.rsprot.protocol.internal.client.ClientTypeMap
 import net.rsprot.protocol.internal.game.outgoing.info.ExtendedInfo
 import net.rsprot.protocol.internal.game.outgoing.info.encoder.ExtendedInfoEncoder
 import net.rsprot.protocol.internal.game.outgoing.info.npcinfo.encoder.NpcExtendedInfoEncoders
@@ -21,7 +22,6 @@ import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.Hit
 import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.Say
 import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.Sequence
 import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.SpotAnimList
-import net.rsprot.protocol.game.outgoing.info.AvatarExtendedInfoWriter
 
 private typealias NEnc = NpcExtendedInfoEncoders
 private typealias HeadIcon = HeadIconCustomisation
@@ -44,13 +44,13 @@ public class NpcAvatarExtendedInfoBlocks(
     public val visibleOps: VisibleOps = VisibleOps(encoders(writers, NEnc::visibleOps))
     public val exactMove: ExactMove = ExactMove(encoders(writers, NEnc::exactMove))
     public val sequence: Sequence = Sequence(encoders(writers, NEnc::sequence))
-    public val tinting: net.rsprot.protocol.internal.game.outgoing.info.npcinfo.extendedinfo.NpcTinting =
-	    net.rsprot.protocol.internal.game.outgoing.info.npcinfo.extendedinfo.NpcTinting(
-		    encoders(
-			    writers,
-			    NEnc::tinting
-		    )
-	    )
+    public val tinting: NpcTinting =
+        NpcTinting(
+            encoders(
+                writers,
+                NEnc::tinting,
+            ),
+        )
     public val headIconCustomisation: HeadIcon = HeadIcon(encoders(writers, NEnc::headIconCustomisation))
     public val nameChange: NameChange = NameChange(encoders(writers, NEnc::nameChange))
     public val headCustomisation: HeadCustomisation = HeadCustomisation(encoders(writers, NEnc::headCustomisation))
