@@ -1279,6 +1279,14 @@ public class NpcAvatarExtendedInfo(
     }
 
     /**
+     * Checks if the avatar has any extended info flagged.
+     * @return whether any extended info flags are set.
+     */
+    internal fun hasExtendedInfo(): Boolean {
+        return this.flags != 0
+    }
+
+    /**
      * Pre-computes all the buffers for this avatar.
      * Pre-computation is done, so we don't have to calculate these extended info blocks
      * for every avatar that observes us. Instead, we can do more performance-efficient
@@ -1456,6 +1464,8 @@ public class NpcAvatarExtendedInfo(
      * Clears any transient extended info that was flagged in this cycle.
      */
     private fun clearTransientExtendedInformation() {
+        val flags = this.flags
+        if (flags == 0) return
         if (flags and SEQUENCE != 0) {
             blocks.sequence.clear()
         }
