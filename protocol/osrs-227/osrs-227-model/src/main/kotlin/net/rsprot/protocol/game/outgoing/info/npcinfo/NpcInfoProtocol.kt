@@ -33,6 +33,7 @@ public class NpcInfoProtocol(
     private val exceptionHandler: NpcAvatarExceptionHandler,
     private val worker: ProtocolWorker = DefaultProtocolWorker(),
     private val zoneIndexStorage: ZoneIndexStorage,
+    private val filter: NpcAvatarFilter? = null,
 ) {
     private val detailsStorage: NpcInfoWorldDetailsStorage = NpcInfoWorldDetailsStorage()
     private val recycler: ByteBufRecycler = ByteBufRecycler()
@@ -57,6 +58,7 @@ public class NpcInfoProtocol(
                 resolutionChangeEncoders,
                 detailsStorage,
                 recycler,
+                filter,
             )
         }
 

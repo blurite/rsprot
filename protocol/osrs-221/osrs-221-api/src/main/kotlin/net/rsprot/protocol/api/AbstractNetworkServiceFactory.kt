@@ -15,6 +15,7 @@ import net.rsprot.protocol.api.js5.Js5GroupProvider
 import net.rsprot.protocol.api.suppliers.NpcInfoSupplier
 import net.rsprot.protocol.api.suppliers.PlayerInfoSupplier
 import net.rsprot.protocol.common.client.OldSchoolClientType
+import net.rsprot.protocol.game.outgoing.info.npcinfo.NpcAvatarFilter
 import net.rsprot.protocol.message.codec.incoming.provider.GameMessageConsumerRepositoryProvider
 
 /**
@@ -263,6 +264,14 @@ public abstract class AbstractNetworkServiceFactory<R> {
     public open fun getNetworkConfiguration(): NetworkConfiguration.Builder = NetworkConfiguration.Builder()
 
     /**
+     * Gets the NPC avatar filter - a requirement for adding/keeping NPCs in high resolution.
+     * This is a server-side filter that can be customized to ones needs.
+     */
+    public open fun getNpcAvatarFilter(): NpcAvatarFilter? {
+        return null
+    }
+
+    /**
      * A Kotlin-only helper function to build a network configuration builder.
      */
     @JvmSynthetic
@@ -289,6 +298,7 @@ public abstract class AbstractNetworkServiceFactory<R> {
                 huffman,
                 getPlayerInfoSupplier(),
                 getNpcInfoSupplier(),
+                getNpcAvatarFilter(),
             )
         return NetworkService(
             allocator,

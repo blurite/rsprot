@@ -12,6 +12,7 @@ import net.rsprot.protocol.game.outgoing.codec.playerinfo.extendedinfo.writer.Pl
 import net.rsprot.protocol.game.outgoing.info.npcinfo.DeferredNpcInfoProtocolSupplier
 import net.rsprot.protocol.game.outgoing.info.npcinfo.NpcAvatarExtendedInfoWriter
 import net.rsprot.protocol.game.outgoing.info.npcinfo.NpcAvatarFactory
+import net.rsprot.protocol.game.outgoing.info.npcinfo.NpcAvatarFilter
 import net.rsprot.protocol.game.outgoing.info.npcinfo.NpcInfoProtocol
 import net.rsprot.protocol.game.outgoing.info.playerinfo.PlayerAvatarExtendedInfoWriter
 import net.rsprot.protocol.game.outgoing.info.playerinfo.PlayerAvatarFactory
@@ -80,6 +81,7 @@ public class EntityInfoProtocols
                 playerInfoSupplier: PlayerInfoSupplier,
                 npcInfoSupplier: NpcInfoSupplier,
                 worldEntityInfoSupplier: WorldEntityInfoSupplier,
+                filter: NpcAvatarFilter?,
             ): EntityInfoProtocols {
                 val playerWriters = mutableListOf<PlayerAvatarExtendedInfoWriter>()
                 val npcWriters = mutableListOf<NpcAvatarExtendedInfoWriter>()
@@ -128,6 +130,7 @@ public class EntityInfoProtocols
                         npcResolutionChangeEncoders,
                         npcAvatarFactory,
                         storage,
+                        filter,
                     )
                 supplier.supply(npcInfoProtocol)
 
@@ -147,6 +150,7 @@ public class EntityInfoProtocols
                 npcResolutionChangeEncoders: MutableList<NpcResolutionChangeEncoder>,
                 npcAvatarFactory: NpcAvatarFactory,
                 zoneIndexStorage: ZoneIndexStorage,
+                filter: NpcAvatarFilter?,
             ) = NpcInfoProtocol(
                 allocator,
                 ClientTypeMap.of(
@@ -159,6 +163,7 @@ public class EntityInfoProtocols
                 npcInfoSupplier.npcAvatarExceptionHandler,
                 npcInfoSupplier.npcInfoProtocolWorker,
                 zoneIndexStorage,
+                filter,
             )
 
             private fun buildNpcAvatarFactory(

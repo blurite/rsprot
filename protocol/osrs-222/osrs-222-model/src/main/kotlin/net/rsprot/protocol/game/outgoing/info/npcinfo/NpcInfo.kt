@@ -33,6 +33,7 @@ import kotlin.contracts.contract
  * @property lowResolutionToHighResolutionEncoders a client map of low resolution to high resolution
  * change encoders, used to move a npc into high resolution for the given player.
  * As this is scrambled, a separate client-specific implementation is required.
+ * @property filter a npc avatar filter that must be passed to add/keep a npc in high resolution.
  */
 @Suppress("ReplaceUntilWithRangeUntil")
 @OptIn(ExperimentalUnsignedTypes::class)
@@ -45,6 +46,7 @@ public class NpcInfo internal constructor(
     private val lowResolutionToHighResolutionEncoders: ClientTypeMap<NpcResolutionChangeEncoder>,
     private val detailsStorage: NpcInfoWorldDetailsStorage,
     private val recycler: ByteBufRecycler,
+    private val filter: NpcAvatarFilter?,
 ) : ReferencePooledObject {
     /**
      * The maximum view distance how far a player will see other NPCs.
@@ -525,7 +527,12 @@ public class NpcInfo internal constructor(
             return true
         }
         val buildArea = details.buildArea
-        return buildArea != BuildArea.INVALID && coord !in buildArea
+        if (buildArea != BuildArea.INVALID && coord !in buildArea) {
+            return true
+        }
+        val filter = this.filter
+        return filter != null &&
+            !filter.accept(localPlayerIndex, avatar.details.index)
     }
 
     /**
@@ -590,6 +597,7 @@ public class NpcInfo internal constructor(
         val startZ = ((centerZ - viewDistance) shr 3).coerceAtLeast(0)
         val endX = ((centerX + viewDistance) shr 3).coerceAtMost(0x7FF)
         val endZ = ((centerZ + viewDistance) shr 3).coerceAtMost(0x7FF)
+        val filter = this.filter
         loop@for (x in startX..endX) {
             for (z in startZ..endZ) {
                 val npcs = this.zoneIndexStorage.get(level, x, z) ?: continue
@@ -616,6 +624,9 @@ public class NpcInfo internal constructor(
                         continue
                     }
                     if (!isInBuildArea(details, avatar)) {
+                        continue
+                    }
+                    if (filter != null && !filter.accept(localPlayerIndex, index)) {
                         continue
                     }
                     avatar.addObserver(localPlayerIndex)

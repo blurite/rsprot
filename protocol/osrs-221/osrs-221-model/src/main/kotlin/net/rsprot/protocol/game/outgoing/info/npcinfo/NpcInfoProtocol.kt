@@ -32,6 +32,7 @@ public class NpcInfoProtocol(
     private val exceptionHandler: NpcAvatarExceptionHandler,
     private val worker: ProtocolWorker = DefaultProtocolWorker(),
     private val zoneIndexStorage: ZoneIndexStorage,
+    private val filter: NpcAvatarFilter? = null,
 ) {
     /**
      * The avatar repository keeps track of all the avatars currently in the game.
@@ -53,6 +54,7 @@ public class NpcInfoProtocol(
                 zoneIndexStorage,
                 resolutionChangeEncoders,
                 recycler,
+                filter,
             )
         }
 
