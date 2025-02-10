@@ -62,6 +62,7 @@ public data object ConcurrentNetworkTrafficWriter : NetworkTrafficWriter<Concurr
                 indent(3).append("Sub Version: ").appendLine(block.subVersion)
                 indent(3).append("Client Type: ").appendLine(block.clientType)
                 indent(3).append("Platform Type: ").appendLine(block.platformType)
+                indent(3).append("External Authenticator: ").appendLine(block.hasExternalAuthenticator)
                 indent(3).append("Seed: ").appendLine(block.seed.contentToString())
                 indent(3).append("Session Id: ").appendLine(format(block.sessionId))
                 indent(3).append("Username: ").appendLine(block.username)
@@ -72,7 +73,8 @@ public data object ConcurrentNetworkTrafficWriter : NetworkTrafficWriter<Concurr
                 indent(3).append("UUID: ").appendLine(block.uuid.contentToString())
                 indent(3).append("Site Settings: ").appendLine(block.siteSettings)
                 indent(3).append("Affiliate: ").appendLine(block.affiliate)
-                indent(3).append("CRC Header: ").appendLine(block.crcBlockHeader)
+                indent(3).append("Deep Links: ").appendLine(block.deepLinks)
+                indent(3).append("Reflection Check Const: ").appendLine(block.reflectionCheckerConst)
                 indent(3).append("CRC: ").appendLine(block.crc.toIntArray().contentToString())
                 appendHostPlatformStats(block.hostPlatformStats)
             }

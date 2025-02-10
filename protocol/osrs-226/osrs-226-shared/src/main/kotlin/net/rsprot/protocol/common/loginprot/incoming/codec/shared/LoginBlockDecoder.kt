@@ -39,7 +39,7 @@ public abstract class LoginBlockDecoder<T>(
                 throw UnsupportedClientException
             }
             val platformType = buffer.g1()
-            val constZero1 = buffer.g1()
+            val hasExternalAuthenticator = buffer.g1() == 1
             val rsaSize = buffer.g2()
             if (!buffer.isReadable(rsaSize)) {
                 throw IllegalStateException("RSA buffer not readable: $rsaSize, ${buffer.readableBytes()}")
@@ -77,13 +77,21 @@ public abstract class LoginBlockDecoder<T>(
                         }
                     val siteSettings = xteaBuffer.gjstr()
                     val affiliate = xteaBuffer.g4()
-                    val constZero2 = xteaBuffer.g1()
+                    val deepLinkCount = xteaBuffer.g1()
+                    val deepLinks =
+                        if (deepLinkCount == 0) {
+                            emptyList()
+                        } else {
+                            List(deepLinkCount) {
+                                xteaBuffer.g4()
+                            }
+                        }
                     val hostPlatformStats = decodeHostPlatformStats(xteaBuffer)
                     val secondClientType = xteaBuffer.g1()
                     if (secondClientType != firstClientType) {
                         throw UnsupportedClientException
                     }
-                    val crcBlockHeader = xteaBuffer.g4()
+                    val reflectionCheckerConst = xteaBuffer.g4()
                     val crc =
                         if (betaWorld) {
                             decodeBetaCrc(xteaBuffer)
@@ -95,7 +103,7 @@ public abstract class LoginBlockDecoder<T>(
                         subVersion,
                         firstClientType.toUByte(),
                         platformType.toUByte(),
-                        constZero1.toUByte(),
+                        hasExternalAuthenticator,
                         seed,
                         sessionId,
                         username,
@@ -106,10 +114,10 @@ public abstract class LoginBlockDecoder<T>(
                         uuid,
                         siteSettings,
                         affiliate,
-                        constZero2.toUByte(),
+                        deepLinks,
                         hostPlatformStats,
                         secondClientType.toUByte(),
-                        crcBlockHeader.toUByte(),
+                        reflectionCheckerConst,
                         crc,
                         authentication,
                     )
