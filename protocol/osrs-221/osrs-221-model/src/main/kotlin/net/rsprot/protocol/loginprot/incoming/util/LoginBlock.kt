@@ -133,6 +133,7 @@ public class LoginBlock<T>(
     private companion object {
         private val remainingBetaArchiveIndices =
             listOf(
+                0,
                 1,
                 2,
                 3,
