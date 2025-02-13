@@ -1593,42 +1593,34 @@ public class PlayerAvatarExtendedInfo(
         observer: PlayerAvatarExtendedInfo,
         oldSchoolClientType: OldSchoolClientType,
     ): Int {
+        val lastObservation = observer.otherAppearanceChangeCycles[localIndex]
         var flag = 0
         if (this.flags and APPEARANCE == 0 &&
-            checkOutOfDate(observer) &&
+            lastObservation < lastAppearanceChangeCycle &&
             blocks.appearance.isPrecomputed(oldSchoolClientType)
         ) {
             flag = flag or APPEARANCE
         }
         if (this.flags and MOVE_SPEED == 0 &&
-            blocks.moveSpeed.value != MoveSpeed.DEFAULT_MOVESPEED &&
+            (blocks.moveSpeed.value != MoveSpeed.DEFAULT_MOVESPEED || lastObservation != -1) &&
             blocks.moveSpeed.isPrecomputed(oldSchoolClientType)
         ) {
             flag = flag or MOVE_SPEED
         }
         if (this.flags and FACE_PATHINGENTITY == 0 &&
-            blocks.facePathingEntity.index != FacePathingEntity.DEFAULT_VALUE &&
+            (blocks.facePathingEntity.index != FacePathingEntity.DEFAULT_VALUE || lastObservation != -1) &&
             blocks.facePathingEntity.isPrecomputed(oldSchoolClientType)
         ) {
             flag = flag or FACE_PATHINGENTITY
         }
         if (this.flags and FACE_ANGLE == 0 &&
-            blocks.faceAngle.angle != FaceAngle.DEFAULT_VALUE &&
+            (blocks.faceAngle.angle != FaceAngle.DEFAULT_VALUE || lastObservation != -1) &&
             blocks.faceAngle.isPrecomputed(oldSchoolClientType)
         ) {
             flag = flag or FACE_ANGLE
         }
         return flag
     }
-
-    /**
-     * Checks if the cached version of our appearance is out for date for the [observer].
-     * @param observer the avatar observing us.
-     * @return true if the [observer] needs an updated version of our avatar, false if the cached
-     * variant is still up-to-date.
-     */
-    private fun checkOutOfDate(observer: PlayerAvatarExtendedInfo): Boolean =
-        observer.otherAppearanceChangeCycles[localIndex] < lastAppearanceChangeCycle
 
     /**
      * Silently synchronizes the angle of the avatar, meaning any new observers will see them
