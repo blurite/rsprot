@@ -179,7 +179,7 @@ public class RebuildRegion private constructor(
      * @property level the level of the static zone to be copied
      */
     @JvmInline
-    public value class ReferenceZone private constructor(
+    public value class ReferenceZone(
         public val packed: Int,
     ) {
         public constructor(
