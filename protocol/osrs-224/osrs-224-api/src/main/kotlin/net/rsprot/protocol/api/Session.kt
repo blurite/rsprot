@@ -220,6 +220,7 @@ public class Session<R>(
             return false
         }
         this.channelStatus = ChannelStatus.CLOSING
+        this.flush()
         return true
     }
 
