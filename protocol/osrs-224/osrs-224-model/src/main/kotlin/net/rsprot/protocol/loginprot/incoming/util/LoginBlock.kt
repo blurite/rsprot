@@ -8,7 +8,7 @@ public class LoginBlock<T>(
     public val subVersion: Int,
     private val _clientType: UByte,
     private val _platformType: UByte,
-    private val _constZero1: UByte,
+    public val hasExternalAuthenticator: Boolean,
     public val seed: IntArray,
     public val sessionId: Long,
     public val username: String,
@@ -19,10 +19,10 @@ public class LoginBlock<T>(
     public val uuid: ByteArray,
     public val siteSettings: String,
     public val affiliate: Int,
-    private val _constZero2: UByte,
+    public val deepLinks: List<Int>,
     public val hostPlatformStats: HostPlatformStats,
     private val _validationClientType: UByte,
-    private val _crcBlockHeader: UByte,
+    public val reflectionCheckerConst: Int,
     public val crc: CyclicRedundancyCheckBlock,
     public val authentication: T,
 ) {
@@ -30,18 +30,12 @@ public class LoginBlock<T>(
         get() = LoginClientType[_clientType.toInt()]
     public val platformType: LoginPlatformType
         get() = LoginPlatformType[_platformType.toInt()]
-    public val constZero1: Int
-        get() = _constZero1.toInt()
     public val width: Int
         get() = _width.toInt()
     public val height: Int
         get() = _height.toInt()
-    public val constZero2: Int
-        get() = _constZero2.toInt()
     public val validationClientType: LoginClientType
         get() = LoginClientType[_validationClientType.toInt()]
-    public val crcBlockHeader: Int
-        get() = _crcBlockHeader.toInt()
 
     public fun mergeBetaCrcs(remainingBetaArchives: RemainingBetaArchives) {
         for (i in remainingBetaArchiveIndices) {
@@ -59,7 +53,7 @@ public class LoginBlock<T>(
         if (subVersion != other.subVersion) return false
         if (_clientType != other._clientType) return false
         if (_platformType != other._platformType) return false
-        if (_constZero1 != other._constZero1) return false
+        if (hasExternalAuthenticator != other.hasExternalAuthenticator) return false
         if (!seed.contentEquals(other.seed)) return false
         if (sessionId != other.sessionId) return false
         if (username != other.username) return false
@@ -70,10 +64,10 @@ public class LoginBlock<T>(
         if (!uuid.contentEquals(other.uuid)) return false
         if (siteSettings != other.siteSettings) return false
         if (affiliate != other.affiliate) return false
-        if (_constZero2 != other._constZero2) return false
+        if (deepLinks != other.deepLinks) return false
         if (hostPlatformStats != other.hostPlatformStats) return false
         if (_validationClientType != other._validationClientType) return false
-        if (_crcBlockHeader != other._crcBlockHeader) return false
+        if (reflectionCheckerConst != other.reflectionCheckerConst) return false
         if (crc != other.crc) return false
         if (authentication != other.authentication) return false
 
@@ -85,7 +79,7 @@ public class LoginBlock<T>(
         result = 31 * result + subVersion
         result = 31 * result + _clientType.hashCode()
         result = 31 * result + _platformType.hashCode()
-        result = 31 * result + _constZero1.hashCode()
+        result = 31 * result + hasExternalAuthenticator.hashCode()
         result = 31 * result + seed.contentHashCode()
         result = 31 * result + sessionId.hashCode()
         result = 31 * result + username.hashCode()
@@ -96,17 +90,17 @@ public class LoginBlock<T>(
         result = 31 * result + uuid.contentHashCode()
         result = 31 * result + siteSettings.hashCode()
         result = 31 * result + affiliate
-        result = 31 * result + _constZero2.hashCode()
+        result = 31 * result + deepLinks.hashCode()
         result = 31 * result + hostPlatformStats.hashCode()
         result = 31 * result + _validationClientType.hashCode()
-        result = 31 * result + _crcBlockHeader.hashCode()
+        result = 31 * result + reflectionCheckerConst
         result = 31 * result + crc.hashCode()
-        result = 31 * result + authentication.hashCode()
+        result = 31 * result + (authentication?.hashCode() ?: 0)
         return result
     }
 
-    override fun toString(): String =
-        "LoginBlock(" +
+    override fun toString(): String {
+        return "LoginBlock(" +
             "version=$version, " +
             "subVersion=$subVersion, " +
             "seed=${seed.contentToString()}, " +
@@ -121,14 +115,15 @@ public class LoginBlock<T>(
             "crc=$crc, " +
             "clientType=$clientType, " +
             "platformType=$platformType, " +
-            "constZero1=$constZero1, " +
-            "constZero2=$constZero2, " +
+            "hasExternalAuthenticator=$hasExternalAuthenticator, " +
+            "deepLinks=$deepLinks, " +
             "width=$width, " +
             "height=$height, " +
             "validationClientType=$validationClientType, " +
-            "crcBlockHeader=$crcBlockHeader, " +
+            "reflectionCheckerConst=$reflectionCheckerConst, " +
             "authentication=$authentication" +
             ")"
+    }
 
     private companion object {
         private val remainingBetaArchiveIndices =
