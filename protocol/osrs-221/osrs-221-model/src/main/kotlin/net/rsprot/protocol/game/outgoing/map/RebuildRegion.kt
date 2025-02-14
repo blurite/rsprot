@@ -116,7 +116,7 @@ public class RebuildRegion private constructor(
      * @property referenceZone the zone to be copied from the static map
      * @property key the xtea key needed to decrypt the locs file in the cache of that respective mapsquare
      */
-    public class RebuildRegionZone private constructor(
+    public class RebuildRegionZone public constructor(
         public val referenceZone: ReferenceZone,
         public val key: XteaKey,
     ) {
