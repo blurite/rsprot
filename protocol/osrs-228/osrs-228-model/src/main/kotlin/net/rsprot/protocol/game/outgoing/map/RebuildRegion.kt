@@ -105,6 +105,7 @@ public class RebuildRegion private constructor(
      * needed for rebuild region to function, in the order the client
      * expects it in.
      */
+    @JvmDefaultWithCompatibility
     public fun interface RebuildRegionZoneProvider {
         /**
          * Provides a zone that the client must copy based on the parameters.

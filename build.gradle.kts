@@ -42,6 +42,9 @@ allprojects {
         kotlin {
             jvmToolchain(11)
             explicitApi()
+            compilerOptions {
+                freeCompilerArgs = listOf("-Xjvm-default=all")
+            }
         }
     }
 }

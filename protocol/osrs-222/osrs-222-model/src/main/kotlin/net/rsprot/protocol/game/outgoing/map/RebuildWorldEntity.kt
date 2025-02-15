@@ -70,6 +70,7 @@ public class RebuildWorldEntity private constructor(
      * needed for rebuild worldentity to function, in the order the client
      * expects it in.
      */
+    @JvmDefaultWithCompatibility
     public fun interface RebuildWorldEntityZoneProvider {
         /**
          * Provides a zone that the client must copy based on the parameters.
