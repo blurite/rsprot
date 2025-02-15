@@ -88,9 +88,9 @@ public class RebuildRegion private constructor(
          * Provides a zone that the client must copy based on the parameters.
          * In order to calculate the mapsquare id for xtea keys, use [getMapsquareId].
          *
-         * @param zoneX the x coordinate of the static zone to be copied
-         * @param zoneZ the z coordinate of the static zone to be copied
-         * @param level the level of the static zone to be copied
+         * @param zoneX the x coordinate of the region zone
+         * @param zoneZ the z coordinate of the region zone
+         * @param level the level of the region zone
          * @return the zone to be copied, or null if there's no zone to be copied there.
          */
         public fun provide(
