@@ -61,11 +61,11 @@ class NpcInfoClient {
                 val extra: Int = buffer.g1()
                 flag += extra shl 8
             }
-            if ((flag and 0x800) != 0) {
+            if ((flag and 0x400) != 0) {
                 val extra: Int = buffer.g1()
                 flag += extra shl 16
             }
-            check(flag and (0x10 or 0x800 or 0x4).inv() == 0) {
+            check(flag and (0x10 or 0x400 or 0x4).inv() == 0) {
                 "Extended info other than 'say' included!"
             }
             if (flag and 0x4 != 0) {
@@ -151,26 +151,27 @@ class NpcInfoClient {
                     npcSlot[npcSlotCount++] = index
                     npc.lastUpdateCycle = cycle
 
-                    val deltaZ = decodeDelta(large, buffer)
-                    val deltaX = decodeDelta(large, buffer)
-                    val hasSpawnCycle = buffer.gBits(1) == 1
-                    if (hasSpawnCycle) {
-                        npc.spawnCycle = buffer.gBits(32)
-                    }
-                    npc.id = buffer.gBits(14)
-                    val jump = buffer.gBits(1)
+                    // --
                     val angle = NPC_TURN_ANGLES[buffer.gBits(3)]
                     if (isNew) {
                         npc.turnAngle = angle
                         npc.angle = angle
                     }
-                    // reset bas
-                    if (npc.turnSpeed == 0) {
-                        npc.angle = 0
+                    val hasSpawnCycle = buffer.gBits(1) == 1
+                    if (hasSpawnCycle) {
+                        npc.spawnCycle = buffer.gBits(32)
                     }
+                    val jump = buffer.gBits(1)
+                    val deltaX = decodeDelta(large, buffer)
+                    val deltaZ = decodeDelta(large, buffer)
                     val extendedInfo = buffer.gBits(1)
                     if (extendedInfo == 1) {
                         updatedNpcSlot[updatedNpcSlotCount++] = index
+                    }
+                    npc.id = buffer.gBits(14)
+                    // reset bas
+                    if (npc.turnSpeed == 0) {
+                        npc.angle = 0
                     }
                     npc.addRouteWaypoint(
                         localPlayerCoord,
