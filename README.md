@@ -1,6 +1,7 @@
 # RSProt
 
 [![GitHub Actions][actions-badge]][actions] [![MIT license][mit-badge]][mit]
+[![OldSchool - 229 (Alpha)](https://img.shields.io/badge/OldSchool-229_(Alpha)-9a1abd)](https://github.com/blurite/rsprot/tree/master/protocol/osrs-229/osrs-229-api/src/main/kotlin/net/rsprot/protocol/api)
 [![OldSchool - 228 (Alpha)](https://img.shields.io/badge/OldSchool-228_(Alpha)-9a1abd)](https://github.com/blurite/rsprot/tree/master/protocol/osrs-228/osrs-228-api/src/main/kotlin/net/rsprot/protocol/api)
 [![OldSchool - 227 (Alpha)](https://img.shields.io/badge/OldSchool-227_(Alpha)-9a1abd)](https://github.com/blurite/rsprot/tree/master/protocol/osrs-227/osrs-227-api/src/main/kotlin/net/rsprot/protocol/api)
 [![OldSchool - 226 (Alpha)](https://img.shields.io/badge/OldSchool-226_(Alpha)-9a1abd)](https://github.com/blurite/rsprot/tree/master/protocol/osrs-226/osrs-226-api/src/main/kotlin/net/rsprot/protocol/api)
@@ -23,7 +24,7 @@ In order to add it to your server, add the below line under dependencies
 in your build.gradle.kts.
 
 ```kts
-implementation("net.rsprot:osrs-228-api:1.0.0-ALPHA-20250213")
+implementation("net.rsprot:osrs-229-api:1.0.0-ALPHA-20250217")
 ```
 
 An in-depth tutorial on how to implement it will be added into this read-me
@@ -241,6 +242,29 @@ protocol. This can be done via:
 `service.worldEntityAvatarFactory.release(avatar)`
 
 ## Changes
+
+### Revision 229
+Revision 229 brings the following changes:
+
+#### Additions
+1. SET_ACTIVE_WORLD_V2: A simplified variant of the V1 packet.
+2. An unknown var-short packet: Good chance this is the removed
+WORLDENTITY_INFO_V3 packet, but it's hard to say with certainty.
+It is unused on both Java and C++ clients, and only reads g1()
+which it discards.
+
+#### Removals
+1. LOC_ADD_CHANGE_V1: Removed as revision 228 introduced the V2 variant
+which has been in use since then.
+2. WORLDENTITY_INFO_V3: Removed since V4 has been in use starting with
+revision 227.
+
+#### Changes
+1. CAMERA_TARGET_V2 has now been migrated to V3, and structural changes
+have been done to the packet.
+2. Login CRCs now transmit 23 CRCs instead of the previous 21.
+REMAINING_BETA_ARCHIVES has gone from opcode 20 to 32, as the client
+still needs to support last revision's variant.
 
 ### Revision 228
 Revision 228 comes with very little changes, only introducing a single
