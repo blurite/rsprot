@@ -11,7 +11,7 @@ import net.rsprot.protocol.message.OutgoingGameMessage
  * Packets such as zone updates, player info, NPC info are a few examples of what may be sent afterwards.
  * @property worldType the world type to update next.
  */
-public class SetActiveWorld(
+public class SetActiveWorldV2(
     public val worldType: WorldType,
 ) : OutgoingGameMessage {
     override val category: ServerProtCategory
@@ -21,14 +21,14 @@ public class SetActiveWorld(
         if (this === other) return true
         if (javaClass != other?.javaClass) return false
 
-        other as SetActiveWorld
+        other as SetActiveWorldV2
 
         return worldType == other.worldType
     }
 
     override fun hashCode(): Int = worldType.hashCode()
 
-    override fun toString(): String = "SetActiveWorld(worldType=$worldType)"
+    override fun toString(): String = "SetActiveWorldV2(worldType=$worldType)"
 
     /**
      * A world type to set as the currently active world, allowing for updates

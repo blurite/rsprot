@@ -7,7 +7,6 @@ import net.rsprot.buffer.JagByteBuf
 import net.rsprot.buffer.extensions.toJagByteBuf
 import net.rsprot.crypto.cipher.StreamCipher
 import net.rsprot.protocol.ServerProt
-import net.rsprot.protocol.game.outgoing.codec.zone.payload.LocAddChangeV1Encoder
 import net.rsprot.protocol.game.outgoing.codec.zone.payload.LocAddChangeV2Encoder
 import net.rsprot.protocol.game.outgoing.codec.zone.payload.LocAnimEncoder
 import net.rsprot.protocol.game.outgoing.codec.zone.payload.LocDelEncoder
@@ -131,7 +130,6 @@ public class DesktopUpdateZonePartialEnclosedEncoder : MessageEncoder<UpdateZone
             OBJ_ENABLED_OPS(OldSchoolZoneProt.OBJ_ENABLED_OPS, ObjEnabledOpsEncoder()),
             OBJ_ADD(OldSchoolZoneProt.OBJ_ADD, ObjAddEncoder()),
             LOC_DEL(OldSchoolZoneProt.LOC_DEL, LocDelEncoder()),
-            LOC_ADD_CHANGE_V1(OldSchoolZoneProt.LOC_ADD_CHANGE_V1, LocAddChangeV1Encoder()),
             OBJ_UNCUSTOMISE(OldSchoolZoneProt.OBJ_UNCUSTOMISE, ObjUncustomiseEncoder()),
             LOC_ADD_CHANGE_V2(OldSchoolZoneProt.LOC_ADD_CHANGE_V2, LocAddChangeV2Encoder()),
             LOC_MERGE(OldSchoolZoneProt.LOC_MERGE, LocMergeEncoder()),

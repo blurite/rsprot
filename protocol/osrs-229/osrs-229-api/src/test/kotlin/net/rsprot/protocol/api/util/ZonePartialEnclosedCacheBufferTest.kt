@@ -3,7 +3,7 @@ package net.rsprot.protocol.api.util
 import io.netty.buffer.Unpooled
 import net.rsprot.protocol.common.client.OldSchoolClientType
 import net.rsprot.protocol.game.outgoing.util.OpFlags
-import net.rsprot.protocol.game.outgoing.zone.payload.LocAddChangeV1
+import net.rsprot.protocol.game.outgoing.zone.payload.LocAddChangeV2
 import net.rsprot.protocol.game.outgoing.zone.payload.LocAnim
 import net.rsprot.protocol.game.outgoing.zone.payload.LocDel
 import net.rsprot.protocol.game.outgoing.zone.payload.LocMerge
@@ -168,7 +168,7 @@ class ZonePartialEnclosedCacheBufferTest {
 
     private fun createFullZoneProtList(): List<ZoneProt> =
         listOf(
-            LocAddChangeV1(id = 123, xInZone = 0, zInZone = 0, shape = 0, rotation = 0, OpFlags.ALL_SHOWN),
+            LocAddChangeV2(id = 123, xInZone = 0, zInZone = 0, shape = 0, rotation = 0, OpFlags.ALL_SHOWN),
             LocAnim(id = 123, xInZone = 0, zInZone = 0, shape = 0, rotation = 0),
             LocDel(xInZone = 0, zInZone = 0, shape = 0, rotation = 0),
             LocMerge(

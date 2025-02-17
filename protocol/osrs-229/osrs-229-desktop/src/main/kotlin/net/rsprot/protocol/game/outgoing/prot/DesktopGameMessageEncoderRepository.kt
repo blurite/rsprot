@@ -13,7 +13,7 @@ import net.rsprot.protocol.game.outgoing.codec.camera.CamRotateByEncoder
 import net.rsprot.protocol.game.outgoing.codec.camera.CamRotateToEncoder
 import net.rsprot.protocol.game.outgoing.codec.camera.CamShakeEncoder
 import net.rsprot.protocol.game.outgoing.codec.camera.CamSmoothResetEncoder
-import net.rsprot.protocol.game.outgoing.codec.camera.CamTargetV2Encoder
+import net.rsprot.protocol.game.outgoing.codec.camera.CamTargetV3Encoder
 import net.rsprot.protocol.game.outgoing.codec.camera.OculusSyncEncoder
 import net.rsprot.protocol.game.outgoing.codec.clan.ClanChannelDeltaEncoder
 import net.rsprot.protocol.game.outgoing.codec.clan.ClanChannelFullEncoder
@@ -118,12 +118,12 @@ import net.rsprot.protocol.game.outgoing.codec.varp.VarpResetEncoder
 import net.rsprot.protocol.game.outgoing.codec.varp.VarpSmallEncoder
 import net.rsprot.protocol.game.outgoing.codec.varp.VarpSyncEncoder
 import net.rsprot.protocol.game.outgoing.codec.worldentity.ClearEntitiesEncoder
-import net.rsprot.protocol.game.outgoing.codec.worldentity.SetActiveWorldEncoder
+import net.rsprot.protocol.game.outgoing.codec.worldentity.SetActiveWorldV1Encoder
+import net.rsprot.protocol.game.outgoing.codec.worldentity.SetActiveWorldV2Encoder
 import net.rsprot.protocol.game.outgoing.codec.worldentity.WorldEntityInfoV4Encoder
 import net.rsprot.protocol.game.outgoing.codec.zone.header.DesktopUpdateZonePartialEnclosedEncoder
 import net.rsprot.protocol.game.outgoing.codec.zone.header.UpdateZoneFullFollowsEncoder
 import net.rsprot.protocol.game.outgoing.codec.zone.header.UpdateZonePartialFollowsEncoder
-import net.rsprot.protocol.game.outgoing.codec.zone.payload.LocAddChangeV1Encoder
 import net.rsprot.protocol.game.outgoing.codec.zone.payload.LocAddChangeV2Encoder
 import net.rsprot.protocol.game.outgoing.codec.zone.payload.LocAnimEncoder
 import net.rsprot.protocol.game.outgoing.codec.zone.payload.LocDelEncoder
@@ -186,7 +186,6 @@ public object DesktopGameMessageEncoderRepository {
                 bind(UpdateZonePartialFollowsEncoder())
                 bind(DesktopUpdateZonePartialEnclosedEncoder())
 
-                bind(LocAddChangeV1Encoder())
                 bind(LocAddChangeV2Encoder())
                 bind(LocDelEncoder())
                 bind(LocAnimEncoder())
@@ -216,7 +215,8 @@ public object DesktopGameMessageEncoderRepository {
                 bind(SetNpcUpdateOriginEncoder())
 
                 bind(ClearEntitiesEncoder())
-                bind(SetActiveWorldEncoder())
+                bind(SetActiveWorldV1Encoder())
+                bind(SetActiveWorldV2Encoder())
                 bind(WorldEntityInfoV4Encoder())
 
                 bindWithAlts(RebuildNormalEncoder(), RebuildLogin::class.java, RebuildNormal::class.java)
@@ -239,7 +239,7 @@ public object DesktopGameMessageEncoderRepository {
                 bind(CamRotateByEncoder())
                 bind(CamRotateToEncoder())
                 bind(CamModeEncoder())
-                bind(CamTargetV2Encoder())
+                bind(CamTargetV3Encoder())
                 bind(OculusSyncEncoder())
 
                 bind(UpdateInvFullEncoder())
