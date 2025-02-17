@@ -6,7 +6,7 @@ internal object LoginClientProtId {
     const val GAMELOGIN = 16
     const val GAMERECONNECT = 18
     const val POW_REPLY = 19
-    const val REMAINING_BETA_ARCHIVE_HASHES = 20
+    const val REMAINING_BETA_ARCHIVE_HASHES = 32
     const val UNKNOWN = 21
     const val SSL_WEB_CONNECTION = 27
 }

@@ -134,27 +134,29 @@ public abstract class LoginBlockDecoder<T>(
 
     private fun decodeCrc(buffer: JagByteBuf): CyclicRedundancyCheckBlock {
         val crc = IntArray(TRANSMITTED_CRC_COUNT)
-        crc[0] = buffer.g4()
-        crc[1] = buffer.g4Alt1()
-        crc[3] = buffer.g4Alt3()
-        crc[7] = buffer.g4()
-        crc[8] = buffer.g4()
-        crc[13] = buffer.g4Alt3()
-        crc[12] = buffer.g4Alt3()
-        crc[9] = buffer.g4()
-        crc[19] = buffer.g4Alt2()
-        crc[18] = buffer.g4Alt2()
-        crc[2] = buffer.g4Alt3()
+        crc[6] = buffer.g4()
+        crc[15] = buffer.g4Alt2()
+        crc[2] = buffer.g4Alt1()
+        crc[22] = buffer.g4Alt1()
+        crc[0] = buffer.g4Alt2()
         crc[11] = buffer.g4Alt3()
-        crc[16] = buffer.g4()
-        crc[10] = buffer.g4Alt2()
+        crc[4] = buffer.g4Alt2()
+        crc[13] = buffer.g4Alt3()
+        crc[10] = buffer.g4Alt3()
+        crc[14] = buffer.g4()
+        crc[21] = buffer.g4()
+        crc[7] = buffer.g4Alt2()
+        crc[9] = buffer.g4Alt2()
+        crc[1] = buffer.g4()
+        crc[12] = buffer.g4()
+        crc[17] = buffer.g4Alt1()
+        crc[3] = buffer.g4Alt3()
+        crc[5] = buffer.g4Alt2()
+        crc[16] = buffer.g4Alt2()
+        crc[18] = buffer.g4Alt3()
+        crc[8] = buffer.g4()
         crc[20] = buffer.g4()
-        crc[6] = buffer.g4Alt3()
-        crc[4] = buffer.g4()
-        crc[15] = buffer.g4()
-        crc[14] = buffer.g4Alt3()
-        crc[17] = buffer.g4Alt2()
-        crc[5] = buffer.g4()
+        crc[19] = buffer.g4Alt2()
 
         return object : CyclicRedundancyCheckBlock(crc) {
             override fun validate(serverCrc: IntArray): Boolean {
@@ -173,13 +175,13 @@ public abstract class LoginBlockDecoder<T>(
 
     private fun decodeBetaCrc(buffer: JagByteBuf): CyclicRedundancyCheckBlock {
         val crc = IntArray(TRANSMITTED_CRC_COUNT)
-        crc[14] = buffer.g4Alt1()
-        crc[13] = buffer.g4Alt1()
-        crc[6] = buffer.g4()
-        crc[15] = buffer.g4Alt2()
-        crc[8] = buffer.g4Alt1()
-        crc[10] = buffer.g4Alt1()
-        crc[4] = buffer.g4Alt3()
+        crc[6] = buffer.g4Alt2()
+        crc[14] = buffer.g4()
+        crc[4] = buffer.g4Alt2()
+        crc[15] = buffer.g4()
+        crc[8] = buffer.g4Alt2()
+        crc[13] = buffer.g4Alt2()
+        crc[10] = buffer.g4Alt2()
         return object : CyclicRedundancyCheckBlock(crc) {
             override fun validate(serverCrc: IntArray): Boolean {
                 require(serverCrc.size >= TRANSMITTED_CRC_COUNT) {
@@ -258,6 +260,6 @@ public abstract class LoginBlockDecoder<T>(
     }
 
     private companion object {
-        private const val TRANSMITTED_CRC_COUNT: Int = 21
+        private const val TRANSMITTED_CRC_COUNT: Int = 23
     }
 }
