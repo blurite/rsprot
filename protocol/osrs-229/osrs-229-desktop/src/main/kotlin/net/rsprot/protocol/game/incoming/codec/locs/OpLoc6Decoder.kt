@@ -10,7 +10,7 @@ public class OpLoc6Decoder : MessageDecoder<OpLoc6> {
     override val prot: ClientProt = GameClientProt.OPLOC6
 
     override fun decode(buffer: JagByteBuf): OpLoc6 {
-        val id = buffer.g2Alt3()
+        val id = buffer.g2Alt1()
         return OpLoc6(id)
     }
 }

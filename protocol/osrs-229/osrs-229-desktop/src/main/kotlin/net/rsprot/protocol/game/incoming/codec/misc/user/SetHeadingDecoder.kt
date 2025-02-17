@@ -10,7 +10,7 @@ public class SetHeadingDecoder : MessageDecoder<SetHeading> {
     override val prot: ClientProt = GameClientProt.SET_HEADING
 
     override fun decode(buffer: JagByteBuf): SetHeading {
-        val heading = buffer.g1Alt3()
+        val heading = buffer.g1Alt2()
         return SetHeading(heading)
     }
 }

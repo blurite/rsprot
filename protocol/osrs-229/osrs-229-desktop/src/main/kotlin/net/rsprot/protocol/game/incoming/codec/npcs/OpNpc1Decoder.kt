@@ -11,7 +11,7 @@ public class OpNpc1Decoder : MessageDecoder<OpNpc> {
 
     override fun decode(buffer: JagByteBuf): OpNpc {
         val controlKey = buffer.g1Alt1() == 1
-        val index = buffer.g2Alt2()
+        val index = buffer.g2Alt3()
         return OpNpc(
             index,
             controlKey,

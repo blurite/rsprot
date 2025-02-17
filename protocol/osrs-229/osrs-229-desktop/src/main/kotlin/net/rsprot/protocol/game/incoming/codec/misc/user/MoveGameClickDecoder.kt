@@ -10,9 +10,9 @@ public class MoveGameClickDecoder : MessageDecoder<MoveGameClick> {
     override val prot: ClientProt = GameClientProt.MOVE_GAMECLICK
 
     override fun decode(buffer: JagByteBuf): MoveGameClick {
-        val keyCombination = buffer.g1()
+        val keyCombination = buffer.g1Alt3()
         val z = buffer.g2()
-        val x = buffer.g2Alt2()
+        val x = buffer.g2Alt1()
         return MoveGameClick(
             x,
             z,
