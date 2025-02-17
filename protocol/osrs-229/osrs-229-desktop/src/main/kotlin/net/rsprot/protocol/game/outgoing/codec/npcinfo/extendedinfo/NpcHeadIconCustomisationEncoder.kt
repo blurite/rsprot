@@ -19,7 +19,7 @@ public class NpcHeadIconCustomisationEncoder : PrecomputedExtendedInfoEncoder<He
                 .buffer(capacity, capacity)
                 .toJagByteBuf()
         val flag = extendedInfo.flag
-        buffer.p1(flag)
+        buffer.p1Alt3(flag)
         for (i in extendedInfo.headIconGroups.indices) {
             if (flag and (1 shl i) == 0) {
                 continue

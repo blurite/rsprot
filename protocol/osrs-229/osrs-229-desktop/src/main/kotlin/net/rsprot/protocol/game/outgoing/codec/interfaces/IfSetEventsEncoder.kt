@@ -16,9 +16,9 @@ public class IfSetEventsEncoder : MessageEncoder<IfSetEvents> {
         buffer: JagByteBuf,
         message: IfSetEvents,
     ) {
-        buffer.p4Alt3(message.events)
         buffer.pCombinedIdAlt3(message.combinedId)
-        buffer.p2Alt3(message.end)
-        buffer.p2(message.start)
+        buffer.p2Alt2(message.end)
+        buffer.p2Alt3(message.start)
+        buffer.p4Alt2(message.events)
     }
 }

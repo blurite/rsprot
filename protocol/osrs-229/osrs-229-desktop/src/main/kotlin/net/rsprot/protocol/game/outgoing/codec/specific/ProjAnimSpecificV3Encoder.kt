@@ -15,17 +15,17 @@ public class ProjAnimSpecificV3Encoder : MessageEncoder<ProjAnimSpecificV3> {
         buffer: JagByteBuf,
         message: ProjAnimSpecificV3,
     ) {
-        buffer.p2Alt1(message.id)
-        buffer.p3(message.coordInBuildAreaPacked)
-        buffer.p2Alt1(message.startTime)
-        buffer.p1Alt2(message.deltaX)
-        buffer.p2Alt2(message.progress)
-        buffer.p1Alt1(message.endHeight)
-        buffer.p1Alt2(message.deltaZ)
-        buffer.p2(message.endTime)
-        buffer.p1Alt1(message.angle)
-        buffer.p3Alt2(message.targetIndex)
         buffer.p1Alt2(message.startHeight)
-        buffer.p3Alt2(message.sourceIndex)
+        buffer.p3Alt2(message.coordInBuildAreaPacked)
+        buffer.p3Alt3(message.targetIndex)
+        buffer.p2Alt3(message.endTime)
+        buffer.p1(message.deltaZ)
+        buffer.p1Alt2(message.endHeight)
+        buffer.p2Alt2(message.id)
+        buffer.p3Alt3(message.sourceIndex)
+        buffer.p2Alt1(message.progress)
+        buffer.p2Alt2(message.startTime)
+        buffer.p1Alt2(message.deltaX)
+        buffer.p1(message.angle)
     }
 }

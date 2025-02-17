@@ -53,7 +53,7 @@ public class NpcHeadCustomisationEncoder : PrecomputedExtendedInfoEncoder<HeadCu
         }
         if (flag and FLAG_RECOLOUR != 0) {
             for (recol in customisation.recolours) {
-                buffer.p2Alt2(recol)
+                buffer.p2Alt3(recol)
             }
         }
         if (flag and FLAG_RETEXTURE != 0) {

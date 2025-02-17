@@ -59,7 +59,7 @@ public class PlayerHitEncoder : OnDemandExtendedInfoEncoder<Hit> {
         }
         val writerIndex = buffer.writerIndex()
         buffer.writerIndex(countMarker)
-        buffer.p1(count)
+        buffer.p1Alt1(count)
         buffer.writerIndex(writerIndex)
     }
 
@@ -90,7 +90,7 @@ public class PlayerHitEncoder : OnDemandExtendedInfoEncoder<Hit> {
             buffer.pSmart1or2(endTime)
             if (endTime != 0x7FFF) {
                 buffer.pSmart1or2(headBar.startTime.toInt())
-                buffer.p1Alt1(headBar.startFill.toInt())
+                buffer.p1Alt3(headBar.startFill.toInt())
                 if (endTime > 0) {
                     buffer.p1Alt2(headBar.endFill.toInt())
                 }
@@ -103,7 +103,7 @@ public class PlayerHitEncoder : OnDemandExtendedInfoEncoder<Hit> {
         }
         val writerIndex = buffer.writerIndex()
         buffer.writerIndex(countMarker)
-        buffer.p1Alt2(count)
+        buffer.p1(count)
         buffer.writerIndex(writerIndex)
     }
 }

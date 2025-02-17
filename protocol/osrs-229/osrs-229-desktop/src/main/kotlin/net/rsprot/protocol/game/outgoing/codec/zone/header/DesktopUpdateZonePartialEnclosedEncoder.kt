@@ -37,9 +37,9 @@ public class DesktopUpdateZonePartialEnclosedEncoder : MessageEncoder<UpdateZone
         buffer: JagByteBuf,
         message: UpdateZonePartialEnclosed,
     ) {
-        buffer.p1Alt1(message.zoneZ)
-        buffer.p1Alt1(message.zoneX)
-        buffer.p1Alt1(message.level)
+        buffer.p1Alt3(message.zoneX)
+        buffer.p1(message.level)
+        buffer.p1(message.zoneZ)
         // Special handling in our Netty encoder for the payload
         // buffer.buffer.writeBytes(
         //     message.payload,
@@ -126,19 +126,19 @@ public class DesktopUpdateZonePartialEnclosedEncoder : MessageEncoder<UpdateZone
             private val protId: Int,
             val encoder: ZoneProtEncoder<*>,
         ) {
-            OBJ_DEL(OldSchoolZoneProt.OBJ_DEL, ObjDelEncoder()),
-            OBJ_ENABLED_OPS(OldSchoolZoneProt.OBJ_ENABLED_OPS, ObjEnabledOpsEncoder()),
-            OBJ_ADD(OldSchoolZoneProt.OBJ_ADD, ObjAddEncoder()),
-            LOC_DEL(OldSchoolZoneProt.LOC_DEL, LocDelEncoder()),
-            OBJ_UNCUSTOMISE(OldSchoolZoneProt.OBJ_UNCUSTOMISE, ObjUncustomiseEncoder()),
-            LOC_ADD_CHANGE_V2(OldSchoolZoneProt.LOC_ADD_CHANGE_V2, LocAddChangeV2Encoder()),
-            LOC_MERGE(OldSchoolZoneProt.LOC_MERGE, LocMergeEncoder()),
             SOUND_AREA(OldSchoolZoneProt.SOUND_AREA, SoundAreaEncoder()),
-            MAP_PROJANIM(OldSchoolZoneProt.MAP_PROJANIM, MapProjAnimEncoder()),
+            LOC_ADD_CHANGE_V2(OldSchoolZoneProt.LOC_ADD_CHANGE_V2, LocAddChangeV2Encoder()),
+            LOC_DEL(OldSchoolZoneProt.LOC_DEL, LocDelEncoder()),
+            OBJ_ADD(OldSchoolZoneProt.OBJ_ADD, ObjAddEncoder()),
             OBJ_COUNT(OldSchoolZoneProt.OBJ_COUNT, ObjCountEncoder()),
-            LOC_ANIM(OldSchoolZoneProt.LOC_ANIM, LocAnimEncoder()),
-            OBJ_CUSTOMISE(OldSchoolZoneProt.OBJ_CUSTOMISE, ObjCustomiseEncoder()),
             MAP_ANIM(OldSchoolZoneProt.MAP_ANIM, MapAnimEncoder()),
+            OBJ_DEL(OldSchoolZoneProt.OBJ_DEL, ObjDelEncoder()),
+            LOC_ANIM(OldSchoolZoneProt.LOC_ANIM, LocAnimEncoder()),
+            OBJ_ENABLED_OPS(OldSchoolZoneProt.OBJ_ENABLED_OPS, ObjEnabledOpsEncoder()),
+            LOC_MERGE(OldSchoolZoneProt.LOC_MERGE, LocMergeEncoder()),
+            OBJ_UNCUSTOMISE(OldSchoolZoneProt.OBJ_UNCUSTOMISE, ObjUncustomiseEncoder()),
+            OBJ_CUSTOMISE(OldSchoolZoneProt.OBJ_CUSTOMISE, ObjCustomiseEncoder()),
+            MAP_PROJANIM(OldSchoolZoneProt.MAP_PROJANIM, MapProjAnimEncoder()),
             ;
 
             companion object {

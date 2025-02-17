@@ -8,38 +8,31 @@ import net.rsprot.protocol.message.OutgoingGameMessage
 /**
  * Rebuild worldentity packet is used to build a new world entity block,
  * which will be rendered in the root world for the player.
- * @property index the index of the world entity (0-2048)
  * @property baseX the absolute base x coordinate of the world entity in the instance land
  * @property baseZ the absolute base z coordinate of the world entity in the instance land
  * @property zones the list of zones that will be built into the root world
  */
-public class RebuildWorldEntity private constructor(
-    private val _index: UShort,
+public class RebuildWorldEntityV2 private constructor(
     private val _baseX: UShort,
     private val _baseZ: UShort,
     public val zones: List<RebuildRegionZone?>,
 ) : OutgoingGameMessage {
     public constructor(
-        index: Int,
         baseX: Int,
         baseZ: Int,
         sizeX: Int,
         sizeZ: Int,
         zoneProvider: RebuildWorldEntityZoneProvider,
     ) : this(
-        index.toUShort(),
         baseX.toUShort(),
         baseZ.toUShort(),
-        buildRebuildWorldEntityZones(index, sizeX, sizeZ, zoneProvider),
+        buildRebuildWorldEntityZones(sizeX, sizeZ, zoneProvider),
     ) {
         require(sizeX in 0..<13) {
             "Size x must be in range of 0..<13: $sizeX"
         }
         require(sizeZ in 0..<13) {
             "Size z must be in range of 0..<13: $sizeZ"
-        }
-        require(index in 0..<2048) {
-            "Index must be in range of 0..<2048"
         }
         require(baseX in 0..<16384) {
             "Base x must be in range of 0..<16384"
@@ -49,8 +42,6 @@ public class RebuildWorldEntity private constructor(
         }
     }
 
-    public val index: Int
-        get() = _index.toInt()
     public val baseX: Int
         get() = _baseX.toInt()
     public val baseZ: Int
@@ -81,6 +72,14 @@ public class RebuildWorldEntity private constructor(
             xteaSize
     }
 
+    override fun toString(): String {
+        return "RebuildWorldEntityV2(" +
+            "zones=$zones, " +
+            "baseX=$baseX, " +
+            "baseZ=$baseZ" +
+            ")"
+    }
+
     /**
      * Zone provider acts as a function to provide all the necessary information
      * needed for rebuild worldentity to function, in the order the client
@@ -101,7 +100,6 @@ public class RebuildWorldEntity private constructor(
          * @return the zone to be copied, or null if there's no zone to be copied there.
          */
         public fun provide(
-            index: Int,
             zoneX: Int,
             zoneZ: Int,
             level: Int,
@@ -123,7 +121,6 @@ public class RebuildWorldEntity private constructor(
         /**
          * Builds a list of rebuild region zones to be written to the client,
          * in order as the client expects them.
-         * @param index the index of the world entity that is being built.
          * @param sizeX the width of the worldentity
          * @param sizeZ the length of the worldentity
          * @param zoneProvider the functional interface providing the necessary information
@@ -131,7 +128,6 @@ public class RebuildWorldEntity private constructor(
          * @return a list of rebuild region zones (or nulls) for each zone in the build area.
          */
         private fun buildRebuildWorldEntityZones(
-            index: Int,
             sizeX: Int,
             sizeZ: Int,
             zoneProvider: RebuildWorldEntityZoneProvider,
@@ -142,7 +138,6 @@ public class RebuildWorldEntity private constructor(
                     for (zoneZ in 0..<sizeZ) {
                         zones +=
                             zoneProvider.provide(
-                                index,
                                 zoneX,
                                 zoneZ,
                                 level,
