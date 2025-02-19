@@ -132,11 +132,11 @@ public class DesktopUpdateZonePartialEnclosedEncoder : MessageEncoder<UpdateZone
             OBJ_ADD(OldSchoolZoneProt.OBJ_ADD, ObjAddEncoder()),
             OBJ_COUNT(OldSchoolZoneProt.OBJ_COUNT, ObjCountEncoder()),
             MAP_ANIM(OldSchoolZoneProt.MAP_ANIM, MapAnimEncoder()),
-            OBJ_DEL(OldSchoolZoneProt.OBJ_DEL, ObjDelEncoder()),
+            OBJ_UNCUSTOMISE(OldSchoolZoneProt.OBJ_UNCUSTOMISE, ObjUncustomiseEncoder()),
             LOC_ANIM(OldSchoolZoneProt.LOC_ANIM, LocAnimEncoder()),
             OBJ_ENABLED_OPS(OldSchoolZoneProt.OBJ_ENABLED_OPS, ObjEnabledOpsEncoder()),
             LOC_MERGE(OldSchoolZoneProt.LOC_MERGE, LocMergeEncoder()),
-            OBJ_UNCUSTOMISE(OldSchoolZoneProt.OBJ_UNCUSTOMISE, ObjUncustomiseEncoder()),
+            OBJ_DEL(OldSchoolZoneProt.OBJ_DEL, ObjDelEncoder()),
             OBJ_CUSTOMISE(OldSchoolZoneProt.OBJ_CUSTOMISE, ObjCustomiseEncoder()),
             MAP_PROJANIM(OldSchoolZoneProt.MAP_PROJANIM, MapProjAnimEncoder()),
             ;
