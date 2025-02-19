@@ -11,7 +11,7 @@ import net.rsprot.protocol.metadata.Consistent
 
 @Consistent
 public class RebuildWorldEntityV2Encoder : MessageEncoder<RebuildWorldEntityV2> {
-    override val prot: ServerProt = GameServerProt.REBUILD_WORLDENTITY
+    override val prot: ServerProt = GameServerProt.REBUILD_WORLDENTITY_V2
 
     override fun encode(
         streamCipher: StreamCipher,
