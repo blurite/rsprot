@@ -96,7 +96,6 @@ public class PlayerAvatarExtendedInfoDesktopWriter :
         if (clientFlag and EXTENDED_MEDIUM != 0) {
             buffer.p1(clientFlag shr 16)
         }
-        // ---
         // Name extras
         if (clientFlag and FACE_PATHINGENTITY != 0) {
             pCachedData(buffer, blocks.facePathingEntity)

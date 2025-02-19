@@ -118,7 +118,6 @@ public class NpcAvatarExtendedInfoDesktopWriter :
             buffer.p1(clientFlag shr 16)
         }
 
-        // ---
         if (clientFlag and HITS != 0) {
             pOnDemandData(buffer, localIndex, blocks.hit, observerIndex)
         }
