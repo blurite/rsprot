@@ -25,6 +25,8 @@ public class WorldEntityAvatarFactory(
     /**
      * Allocates a new world entity with the provided arguments.
      * @param index the index of the world entity
+     * @param id the id of the world entity config
+     * @param priority the render priority of the world entity in the scene
      * @param sizeX the width of the world entity in zones (8 tiles/zone)
      * @param sizeZ the height of the world entity in zones (8 tiles/zone)
      * @param fineX the absolute fine x coordinate of the avatar. This can be calculated
@@ -36,19 +38,13 @@ public class WorldEntityAvatarFactory(
      * by doing z * 128 with absolute coord grid values.
      * @param level the height level of the world entity.
      * @param angle the angle to face
-     * @param fineCenterOffsetX the offset of the world entity's model from the center of the
-     * defined world entity space on the x-axis. A positive value moves the model left, a negative
-     * value moves the model to the right. Units are in fine coord, where 128 is equal to one full
-     * game square.
-     * @param fineCenterOffsetZ the offset of the world entity's model from the center of the
-     * defined world entity space on the z-axis. A positive value moves the model down, a negative
-     * value moves the model up. Units are in fine coord, where 128 is equal to one full
-     * game square.
      * @return either a new world entity avatar, or a pooled one that has been
      * updated to contain the provided params.
      */
     public fun alloc(
         index: Int,
+        id: Int,
+        priority: WorldEntityPriority,
         sizeX: Int,
         sizeZ: Int,
         fineX: Int,
@@ -56,12 +52,13 @@ public class WorldEntityAvatarFactory(
         fineZ: Int,
         level: Int,
         angle: Int,
-        fineCenterOffsetX: Int,
-        fineCenterOffsetZ: Int,
     ): WorldEntityAvatar {
         checkCommunicationThread()
         require(index in 0..2047) {
             "World entity index cannot be outside of 0..2047"
+        }
+        require(id in 0..65535) {
+            "World entity id must be in range of 0..65535"
         }
         require(sizeX in 0..255) {
             "Size x cannot be outside of 0..255 range"
@@ -86,6 +83,8 @@ public class WorldEntityAvatarFactory(
         }
         return avatarRepository.getOrAlloc(
             index,
+            id,
+            priority,
             sizeX,
             sizeZ,
             fineX,
@@ -93,8 +92,6 @@ public class WorldEntityAvatarFactory(
             fineZ,
             level,
             angle,
-            fineCenterOffsetX,
-            fineCenterOffsetZ,
         )
     }
 

@@ -37,6 +37,8 @@ public class WorldEntityAvatarRepository internal constructor(
      * Gets an existing world entity avatar from the queue if one is ready, or constructs
      * a new avatar if not.
      * @param index the index of the world entity
+     * @param id the id of the world entity
+     * @param priority the priority in which the world entity will be rendered into the scene.
      * @param sizeX the width of the world entity in zones (8 tiles/zone)
      * @param sizeZ the height of the world entity in zones (8 tiles/zone)
      * @param fineX the absolute fine x coordinate of the avatar. This can be calculated
@@ -50,17 +52,11 @@ public class WorldEntityAvatarRepository internal constructor(
      * @return either a new world entity avatar, or a pooled one that has been
      * updated to contain the provided params.
      * @param angle the angle to face
-     * @param fineCenterOffsetX the offset of the world entity's model from the center of the
-     * defined world entity space on the x-axis. A positive value moves the model left, a negative
-     * value moves the model to the right. Units are in fine coord, where 128 is equal to one full
-     * game square.
-     * @param fineCenterOffsetZ the offset of the world entity's model from the center of the
-     * defined world entity space on the z-axis. A positive value moves the model down, a negative
-     * value moves the model up. Units are in fine coord, where 128 is equal to one full
-     * game square.
      */
     public fun getOrAlloc(
         index: Int,
+        id: Int,
+        priority: WorldEntityPriority,
         sizeX: Int,
         sizeZ: Int,
         fineX: Int,
@@ -68,8 +64,6 @@ public class WorldEntityAvatarRepository internal constructor(
         fineZ: Int,
         level: Int,
         angle: Int,
-        fineCenterOffsetX: Int,
-        fineCenterOffsetZ: Int,
     ): WorldEntityAvatar {
         require(this.elements[index] == null) {
             "WorldEntity avatar with index $index is already allocated!"
@@ -85,8 +79,8 @@ public class WorldEntityAvatarRepository internal constructor(
             existing.lastAngle = angle
             existing.teleport = false
             existing.allocateCycle = WorldEntityProtocol.cycleCount
-            existing.fineCenterOffsetX = fineCenterOffsetX
-            existing.fineCenterOffsetZ = fineCenterOffsetZ
+            existing.id = id
+            existing.priority = priority
             zoneIndexStorage.add(index, existing.currentCoordFine.toCoordGrid(level))
             elements[index] = existing
             return existing
@@ -98,11 +92,11 @@ public class WorldEntityAvatarRepository internal constructor(
                 index,
                 sizeX,
                 sizeZ,
+                id,
+                priority,
                 level,
                 CoordFine(fineX, fineY, fineZ),
                 angle,
-                fineCenterOffsetX,
-                fineCenterOffsetZ,
             )
         zoneIndexStorage.add(index, avatar.currentCoordFine.toCoordGrid(level))
         elements[index] = avatar

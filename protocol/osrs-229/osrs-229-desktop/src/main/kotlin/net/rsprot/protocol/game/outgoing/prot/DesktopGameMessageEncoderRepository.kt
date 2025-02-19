@@ -120,7 +120,7 @@ import net.rsprot.protocol.game.outgoing.codec.varp.VarpSyncEncoder
 import net.rsprot.protocol.game.outgoing.codec.worldentity.ClearEntitiesEncoder
 import net.rsprot.protocol.game.outgoing.codec.worldentity.SetActiveWorldV1Encoder
 import net.rsprot.protocol.game.outgoing.codec.worldentity.SetActiveWorldV2Encoder
-import net.rsprot.protocol.game.outgoing.codec.worldentity.WorldEntityInfoV4Encoder
+import net.rsprot.protocol.game.outgoing.codec.worldentity.WorldEntityInfoV5Encoder
 import net.rsprot.protocol.game.outgoing.codec.zone.header.DesktopUpdateZonePartialEnclosedEncoder
 import net.rsprot.protocol.game.outgoing.codec.zone.header.UpdateZoneFullFollowsEncoder
 import net.rsprot.protocol.game.outgoing.codec.zone.header.UpdateZonePartialFollowsEncoder
@@ -217,7 +217,7 @@ public object DesktopGameMessageEncoderRepository {
                 bind(ClearEntitiesEncoder())
                 bind(SetActiveWorldV1Encoder())
                 bind(SetActiveWorldV2Encoder())
-                bind(WorldEntityInfoV4Encoder())
+                bind(WorldEntityInfoV5Encoder())
 
                 bindWithAlts(RebuildNormalEncoder(), RebuildLogin::class.java, RebuildNormal::class.java)
                 bind(RebuildRegionEncoder())

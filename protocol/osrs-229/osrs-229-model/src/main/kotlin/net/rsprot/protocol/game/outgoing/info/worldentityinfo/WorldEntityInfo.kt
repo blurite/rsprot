@@ -383,7 +383,7 @@ public class WorldEntityInfo internal constructor(
                     buffer.p2(avatar.index)
                     buffer.p1(avatar.sizeX)
                     buffer.p1(avatar.sizeZ)
-                    buffer.p1(avatar.level)
+                    buffer.p2(avatar.id)
                     val fineXOffset = buildArea.zoneX shl 10
                     val fineZOffset = buildArea.zoneZ shl 10
                     buffer.encodeAngledCoordFine(
@@ -392,8 +392,7 @@ public class WorldEntityInfo internal constructor(
                         avatar.currentCoordFine.z - fineZOffset,
                         avatar.angle,
                     )
-                    buffer.p2(avatar.fineCenterOffsetX)
-                    buffer.p2(avatar.fineCenterOffsetZ)
+                    buffer.p1(avatar.priority.id)
                 }
             }
         }

@@ -7,8 +7,8 @@ import net.rsprot.protocol.game.outgoing.info.worldentityinfo.WorldEntityInfoV4P
 import net.rsprot.protocol.game.outgoing.prot.GameServerProt
 import net.rsprot.protocol.message.codec.MessageEncoder
 
-public class WorldEntityInfoV4Encoder : MessageEncoder<WorldEntityInfoV4Packet> {
-    override val prot: ServerProt = GameServerProt.WORLDENTITY_INFO_V4
+public class WorldEntityInfoV5Encoder : MessageEncoder<WorldEntityInfoV4Packet> {
+    override val prot: ServerProt = GameServerProt.WORLDENTITY_INFO_V5
 
     override fun encode(
         streamCipher: StreamCipher,

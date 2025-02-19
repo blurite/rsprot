@@ -20,16 +20,10 @@ import net.rsprot.protocol.internal.game.outgoing.info.util.ZoneIndexStorage
  * @property index the index of this world entity.
  * @property sizeX the width of the world entity in zones.
  * @property sizeZ the height of the world entity in zones.
+ * @property id the cache config id
+ * @property priority the rendering priority
  * @property currentCoordFine the coordinate that this world entity is being rendered at.
  * @property angle the current angle of this world entity.
- * @property fineCenterOffsetX the offset of the world entity's model from the center of the
- * defined world entity space on the x-axis. A positive value moves the model left, a negative
- * value moves the model to the right. Units are in fine coord, where 128 is equal to one full
- * game square.
- * @property fineCenterOffsetZ the offset of the world entity's model from the center of the
- * defined world entity space on the z-axis. A positive value moves the model down, a negative
- * value moves the model up. Units are in fine coord, where 128 is equal to one full
- * game square.
  * @property lastCoordFine the last known coordinate of the world entity by the client.
  * @property highResolutionBuffer the buffer which contains the pre-computed high resolution
  * movement of this avatar.
@@ -40,11 +34,11 @@ public class WorldEntityAvatar(
     internal var index: Int,
     internal var sizeX: Int,
     internal var sizeZ: Int,
+    internal var id: Int,
+    internal var priority: WorldEntityPriority,
     internal var level: Int,
     internal var currentCoordFine: CoordFine = CoordFine.INVALID,
     internal var angle: Int,
-    internal var fineCenterOffsetX: Int,
-    internal var fineCenterOffsetZ: Int,
 ) : Avatar {
     internal var teleport: Boolean = false
     internal var lastAngle: Int = angle
