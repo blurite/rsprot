@@ -17,7 +17,7 @@ public class IfSetObjectEncoder : MessageEncoder<IfSetObject> {
         message: IfSetObject,
     ) {
         buffer.p4Alt3(message.count)
-        buffer.p2Alt2(message.obj)
+        buffer.p2Alt3(message.obj)
         buffer.pCombinedIdAlt1(message.combinedId)
     }
 }
