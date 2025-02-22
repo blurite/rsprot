@@ -63,14 +63,14 @@ internal class NpcInfoWorldDetails(
      * Priority flags for currently tracked NPCs, one bit per possible high resolution slot.
      * A flag of 0x1 implies low priority; if the flag isn't set, that NPC is in normal priority.
      */
-    private var highResolutionPriorityFlags = LongArray(4)
+    private var highResolutionPriorityFlags = LongArray(3)
 
     /**
      * A secondary array of high resolution priority flags.
      * This does the same as [highResolutionPriorityFlags], but because a defragmentation process
      * can take place, we need to re-sort the values.
      */
-    private var temporaryHighResolutionPriorityFlags = LongArray(4)
+    private var temporaryHighResolutionPriorityFlags = LongArray(3)
 
     /**
      * The indices of the high resolution NPCs, in the order as they came in.
@@ -188,7 +188,7 @@ internal class NpcInfoWorldDetails(
 
     /**
      * Decrements the priority counters for the given high resolution slot [index].
-     * @param index the high resolution (not absolute) index of the NPC, a value from 0 to 250.
+     * @param index the high resolution (not absolute) index of the NPC, a value from 0 to 149.
      */
     internal fun decrementPriority(index: Int) {
         if (isLowPriority(index)) {
@@ -207,7 +207,7 @@ internal class NpcInfoWorldDetails(
      * Increments the priority for a given slot [index].
      * If the NPC is not low priority, but our normal priority group is full, we instead
      * assign that NPC to the low priority group.
-     * @param index the high resolution (not absolute) index of the NPC, a value from 0 to 250.
+     * @param index the high resolution (not absolute) index of the NPC, a value from 0 to 149.
      * @param isLowPriority whether the NPC belongs in the low priority category.
      */
     internal fun incrementPriority(
@@ -224,7 +224,7 @@ internal class NpcInfoWorldDetails(
 
     /**
      * Checks whether the npc at high resolution slot [index] is in the low priority group.
-     * @param index the high resolution (not absolute) index of the NPC, a value from 0 to 250.
+     * @param index the high resolution (not absolute) index of the NPC, a value from 0 to 149.
      * @param array the array from which to check whether a bit is set.
      */
     private fun isLowPriority(
@@ -238,7 +238,7 @@ internal class NpcInfoWorldDetails(
 
     /**
      * Marks the npc at high resolution slot [index] as low priority.
-     * @param index the high resolution (not absolute) index of the NPC, a value from 0 to 250.
+     * @param index the high resolution (not absolute) index of the NPC, a value from 0 to 149.
      * @param array the array in which to modify the corresponding bit.
      */
     internal fun setLowPriority(
@@ -253,7 +253,7 @@ internal class NpcInfoWorldDetails(
 
     /**
      * Unmarks the npc at high resolution slot [index] as low priority.
-     * @param index the high resolution (not absolute) index of the NPC, a value from 0 to 250.
+     * @param index the high resolution (not absolute) index of the NPC, a value from 0 to 149.
      * @param array the array in which to modify the corresponding bit.
      */
     internal fun unsetLowPriority(
@@ -310,9 +310,12 @@ internal class NpcInfoWorldDetails(
     private companion object {
         /**
          * The maximum number of high resolution NPCs that the client supports, limited by the
-         * client's array of extended info updates being a size-250 int array.
+         * client's array of extended info updates being a size-149 int array.
+         * Starting with revision 229, on Java clients, the limit is 149, and OSRS
+         * does indeed only send 149 at most - tested via toy cats. On native, the limit
+         * is still 250.
          */
-        private const val MAX_HIGH_RESOLUTION_NPCS: Int = 250
+        private const val MAX_HIGH_RESOLUTION_NPCS: Int = 149
 
         /**
          * The terminator value used to indicate that no NPC is here.

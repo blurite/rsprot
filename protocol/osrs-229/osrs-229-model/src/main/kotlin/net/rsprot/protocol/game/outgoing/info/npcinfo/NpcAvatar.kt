@@ -44,7 +44,7 @@ import net.rsprot.protocol.internal.game.outgoing.info.util.ZoneIndexStorage
  * For [AvatarPriority.NORMAL], both groups are accessible, although they will prefer the normal group.
  * Low priority group will be used if normal group has no more free slots leftover.
  * The priorities are especially useful to limit how many pets a player can see at a time. It is very common
- * for servers to give everyone pets. During high population events, it is very easy to hit the 250 pet
+ * for servers to give everyone pets. During high population events, it is very easy to hit the 149 pet
  * threshold in a local area, which could result in important NPCs, such as shopkeepers and whatnot
  * from not rendering. Limiting the low priority count ensures that those arguably more important NPCs will
  * still be able to render with hundreds of pets around.

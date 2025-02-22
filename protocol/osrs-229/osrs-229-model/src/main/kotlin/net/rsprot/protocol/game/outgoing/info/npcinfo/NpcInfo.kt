@@ -324,13 +324,13 @@ public class NpcInfo internal constructor(
      *
      * The intended use-case here is to deprioritize dynamic NPCs such as pets which could fill up
      * the entire high resolution with just pets, preventing more important NPCs, such as shopkeepers
-     * from rendering to the player. By restricting low priority to say 150 NPCs, and normal priority
-     * to 100, as long as we correctly flag the pet NPCs as low priority, we ensure that no more than
-     * 150 pets can ever render at once, leaving those 100 remaining slots for any NPCs that are deemed
+     * from rendering to the player. By restricting low priority to say 50 NPCs, and normal priority
+     * to 99, as long as we correctly flag the pet NPCs as low priority, we ensure that no more than
+     * 50 pets can ever render at once, leaving those 99 remaining slots for any NPCs that are deemed
      * more important.
      *
      * Due to the structure of the NPC info protocol, it is not viable to do an implementation where
-     * the high resolution is consistently capped out (e.g. allow up to 250 pets, but if more important
+     * the high resolution is consistently capped out (e.g. allow up to 149 pets, but if more important
      * NPCs come into range, drop some pets and render the higher resolution NPCs instead). This would
      * be computationally heavy to check as the protocol first goes over any existing high resolution
      * NPCs, which means we lack any context over how many higher resolution NPCs in need of rendering.
@@ -962,9 +962,12 @@ public class NpcInfo internal constructor(
 
         /**
          * The maximum number of high resolution NPCs that the client supports, limited by the
-         * client's array of extended info updates being a size-250 int array.
+         * client's array of extended info updates being a size-149 int array.
+         * Starting with revision 229, on Java clients, the limit is 149, and OSRS
+         * does indeed only send 149 at most - tested via toy cats. On native, the limit
+         * is still 250.
          */
-        private const val MAX_HIGH_RESOLUTION_NPCS: Int = 250
+        private const val MAX_HIGH_RESOLUTION_NPCS: Int = 149
 
         /**
          * The terminator value used to indicate that no NPC is here.
