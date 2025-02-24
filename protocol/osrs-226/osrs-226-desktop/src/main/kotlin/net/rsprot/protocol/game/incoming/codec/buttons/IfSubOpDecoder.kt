@@ -22,7 +22,7 @@ public class IfSubOpDecoder : MessageDecoder<IfSubOp> {
             combinedId,
             sub,
             obj,
-            op + 1,
+            op,
             subop,
         )
     }
