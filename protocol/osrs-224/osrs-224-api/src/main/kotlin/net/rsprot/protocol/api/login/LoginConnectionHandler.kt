@@ -67,9 +67,7 @@ public class LoginConnectionHandler<R>(
 
     override fun channelUnregistered(ctx: ChannelHandlerContext) {
         // If the channel is unregistered, we must release the login block buffer
-        if (this.loginState == LoginState.REQUESTED_PROOF_OF_WORK) {
-            releaseLoginBlock()
-        }
+        releaseLoginBlock()
     }
 
     /**
