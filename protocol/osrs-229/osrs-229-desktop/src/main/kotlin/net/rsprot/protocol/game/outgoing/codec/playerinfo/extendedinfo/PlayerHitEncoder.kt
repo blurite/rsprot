@@ -28,16 +28,23 @@ public class PlayerHitEncoder : OnDemandExtendedInfoEncoder<Hit> {
         var count = 0
         for (hit in info.hitMarkList) {
             // If the hit appears on us, or we were the source of the hit in the first place
-            val tinted =
-                localPlayerIndex == updatedPlayerIndex ||
-                    localPlayerIndex == (hit.sourceIndex - 0x10_000)
+            val mainType =
+                when (localPlayerIndex) {
+                    (hit.sourceIndex - 0x10_000) -> hit.sourceType
+                    updatedPlayerIndex -> hit.selfType
+                    else -> hit.otherType
+                }
             // Skip the hitsplat if it isn't meant to render to us
             // Should be noted that we only check this on the main types, and not soak ones
-            if (hit.otherType == UShort.MAX_VALUE && !tinted) {
+            if (mainType == UShort.MAX_VALUE) {
                 continue
             }
-            val mainType = if (tinted) hit.selfType else hit.otherType
-            val soakType = if (tinted) hit.selfSoakType else hit.otherSoakType
+            val soakType =
+                when (localPlayerIndex) {
+                    (hit.sourceIndex - 0x10_000) -> hit.sourceSoakType
+                    updatedPlayerIndex -> hit.selfSoakType
+                    else -> hit.otherSoakType
+                }
             if (mainType.toInt() == 0x7FFE) {
                 buffer.pSmart1or2(0x7FFE)
             } else if (soakType != UShort.MAX_VALUE) {

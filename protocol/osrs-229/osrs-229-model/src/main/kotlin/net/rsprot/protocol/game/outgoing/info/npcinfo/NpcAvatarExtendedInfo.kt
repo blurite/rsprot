@@ -272,6 +272,7 @@ public class NpcAvatarExtendedInfo(
             HitMark(
                 sourceIndex,
                 selfType.toUShort(),
+                selfType.toUShort(),
                 otherType.toUShort(),
                 value.toUShort(),
                 delay.toUShort(),
@@ -352,13 +353,13 @@ public class NpcAvatarExtendedInfo(
                 "Unexpected value: $value, expected range $UNSIGNED_SMART_1_OR_2_RANGE"
             }
             require(selfSoakType in UNSIGNED_SMART_1_OR_2_RANGE) {
-                "Unexpected selfType: $selfSoakType, expected range $UNSIGNED_SMART_1_OR_2_RANGE"
+                "Unexpected selfSoakType: $selfSoakType, expected range $UNSIGNED_SMART_1_OR_2_RANGE"
             }
             require(otherSoakType in UNSIGNED_SMART_1_OR_2_RANGE) {
-                "Unexpected otherType: $otherSoakType, expected range $UNSIGNED_SMART_1_OR_2_RANGE"
+                "Unexpected otherSoakType: $otherSoakType, expected range $UNSIGNED_SMART_1_OR_2_RANGE"
             }
             require(soakValue in UNSIGNED_SMART_1_OR_2_RANGE) {
-                "Unexpected value: $soakValue, expected range $UNSIGNED_SMART_1_OR_2_RANGE"
+                "Unexpected soakValue: $soakValue, expected range $UNSIGNED_SMART_1_OR_2_RANGE"
             }
             require(delay in UNSIGNED_SMART_1_OR_2_RANGE) {
                 "Unexpected delay: $delay, expected range $UNSIGNED_SMART_1_OR_2_RANGE"
@@ -368,8 +369,10 @@ public class NpcAvatarExtendedInfo(
             HitMark(
                 sourceIndex,
                 selfType.toUShort(),
+                selfType.toUShort(),
                 otherType.toUShort(),
                 value.toUShort(),
+                selfSoakType.toUShort(),
                 selfSoakType.toUShort(),
                 otherSoakType.toUShort(),
                 soakValue.toUShort(),
