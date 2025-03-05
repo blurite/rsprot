@@ -722,7 +722,7 @@ public fun ByteBuf.pdataAlt2(
     length: Int = data.size,
 ): ByteBuf {
     for (i in offset..<(offset + length)) {
-        writeByte(data[i].toInt() - HALF_UBYTE)
+        writeByte(data[i].toInt() + HALF_UBYTE)
     }
     return this
 }
@@ -733,7 +733,7 @@ public fun ByteBuf.pdataAlt2(
     length: Int = data.readableBytes(),
 ): ByteBuf {
     for (i in offset..<(offset + length)) {
-        writeByte(data.getByte(i) - HALF_UBYTE)
+        writeByte(data.getByte(i) + HALF_UBYTE)
     }
     return this
 }
@@ -764,7 +764,7 @@ public fun ByteBuf.pdataAlt3(
     length: Int = data.size,
 ): ByteBuf {
     for (i in (offset + length - 1) downTo offset) {
-        writeByte(data[i].toInt() - HALF_UBYTE)
+        writeByte(data[i].toInt() + HALF_UBYTE)
     }
     return this
 }
@@ -775,7 +775,7 @@ public fun ByteBuf.pdataAlt3(
     length: Int = data.readableBytes(),
 ): ByteBuf {
     for (i in (offset + length - 1) downTo offset) {
-        writeByte(data.getByte(i) - HALF_UBYTE)
+        writeByte(data.getByte(i) + HALF_UBYTE)
     }
     return this
 }
