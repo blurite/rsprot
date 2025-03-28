@@ -392,6 +392,51 @@ public class NpcInfo internal constructor(
     }
 
     /**
+     * Checks whether the [avatar] is specific-visible.
+     * @param avatar the avatar of the NPC whom to check.
+     * @return whether the NPC has been marked as specific-visible.
+     */
+    public fun isSpecific(avatar: NpcAvatar): Boolean {
+        return isSpecific(avatar.details.index)
+    }
+
+    /**
+     * Gets a new instance of an ArrayList containing the indices of all the NPCs that are
+     * still marked as specific to us. Note that any NPC which was originally marked as
+     * specific, but got deallocated at some point will not be part of this collection,
+     * as deallocated NPCs automatically unset as specific on all relevant players.
+     *
+     * This function is best used before a player logs out, to clear any associated specific
+     * NPCs. The returned collection is a new mutable ArrayList - servers are free to
+     * utilize or mutate this however they want, should they wish to do so. Note that
+     * this function needs to be called before deallocating NPC info.
+     *
+     * @return an ArrayList of NPC indices that are marked as specific and have not yet
+     * been deallocated from the game. These NPCs may still be in the inaccessible AKA dead state.
+     */
+    public fun getSpecificIndices(): ArrayList<Int> {
+        val list = ArrayList<Int>(0)
+        val array = this.specificVisible
+        for (i in array.indices) {
+            val vis = array[i]
+            // Quickly skip over 64 NPCs if there are no specifics
+            if (vis == 0L) continue
+            // Otherwise, do a regular length-64 iteration
+            // While this could be improved with more complicated nextSetBit() computations,
+            // given the nature of this function and how rarely specific NPCs are actually used,
+            // it is not worth the hassle.
+            val start = i * Long.SIZE_BITS
+            val end = start + Long.SIZE_BITS
+            for (index in start..<end) {
+                if (isSpecific(index)) {
+                    list.add(index)
+                }
+            }
+        }
+        return list
+    }
+
+    /**
      * Checks whether the NPC at the specified [index] is specific-visible.
      * @param index the absolute index of the NPC to check.
      * @return whether the NPC has been marked as specific-visible.
