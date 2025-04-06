@@ -30,7 +30,9 @@ import net.rsprot.protocol.message.codec.incoming.provider.GameMessageConsumerRe
 import net.rsprot.protocol.metrics.NetworkTrafficMonitor
 import net.rsprot.protocol.threads.IllegalThreadAccessException
 import java.util.concurrent.CompletableFuture
-import java.util.concurrent.ScheduledFuture
+import java.util.concurrent.ExecutorService
+import java.util.concurrent.ScheduledExecutorService
+import java.util.concurrent.TimeUnit
 import kotlin.time.measureTime
 import net.rsprot.protocol.internal.setCommunicationThread as setInternalCommunicationThread
 
@@ -127,7 +129,7 @@ public class NetworkService<R>
 
         private lateinit var bossGroup: EventLoopGroup
         private lateinit var childGroup: EventLoopGroup
-        private lateinit var js5PrefetchFuture: ScheduledFuture<*>
+        private lateinit var js5PrefetchService: ScheduledExecutorService
 
         /**
          * Starts the network service by binding the provided ports.
@@ -161,7 +163,7 @@ public class NetworkService<R>
                                 }
                             }
                     js5ServiceExecutor.start()
-                    js5PrefetchFuture = Js5Service.startPrefetching(js5Service)
+                    js5PrefetchService = Js5Service.startPrefetching(js5Service)
                     try {
                         // join it, which will propagate any exceptions
                         future.join()
@@ -183,10 +185,22 @@ public class NetworkService<R>
         public fun shutdown() {
             logger.info { "Attempting to shut down network service." }
             js5Service.triggerShutdown()
-            js5PrefetchFuture.cancel(true)
+            js5PrefetchService.safeShutdown()
             bossGroup.shutdownGracefully()
             childGroup.shutdownGracefully()
             logger.info { "Network service successfully shut down." }
+        }
+
+        private fun ExecutorService.safeShutdown() {
+            shutdown()
+            try {
+                if (!awaitTermination(3L, TimeUnit.SECONDS)) {
+                    shutdownNow()
+                }
+            } catch (_: InterruptedException) {
+                shutdownNow()
+                Thread.currentThread().interrupt()
+            }
         }
 
         /**

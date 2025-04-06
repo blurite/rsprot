@@ -8,7 +8,7 @@ import net.rsprot.protocol.api.logging.js5Log
 import net.rsprot.protocol.js5.incoming.Js5GroupRequest
 import net.rsprot.protocol.js5.outgoing.Js5GroupResponse
 import java.util.concurrent.Executors
-import java.util.concurrent.ScheduledFuture
+import java.util.concurrent.ScheduledExecutorService
 import java.util.concurrent.TimeUnit
 import kotlin.math.min
 
@@ -322,12 +322,15 @@ public class Js5Service(
             return true
         }
 
-        public fun startPrefetching(service: Js5Service): ScheduledFuture<*> =
-            Executors.newSingleThreadScheduledExecutor().scheduleWithFixedDelay(
+        public fun startPrefetching(service: Js5Service): ScheduledExecutorService {
+            val executor = Executors.newSingleThreadScheduledExecutor()
+            executor.scheduleWithFixedDelay(
                 service.prefetch(),
                 200,
                 200,
                 TimeUnit.MILLISECONDS,
             )
+            return executor
+        }
     }
 }
