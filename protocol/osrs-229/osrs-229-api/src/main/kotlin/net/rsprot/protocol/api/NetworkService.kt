@@ -152,25 +152,10 @@ public class NetworkService<R>
                         ports
                             .map { if (host != null) initializer.bind(host, it) else initializer.bind(it) }
                             .map<ChannelFuture, CompletableFuture<Void>>(ChannelFuture::asCompletableFuture)
-                    val future =
-                        CompletableFuture
-                            .allOf(*futures.toTypedArray())
-                            .handle { _, exception ->
-                                if (exception != null) {
-                                    bossGroup.shutdownGracefully()
-                                    childGroup.shutdownGracefully()
-                                    throw exception
-                                }
-                            }
+                    val future = CompletableFuture.allOf(*futures.toTypedArray())
                     js5ServiceExecutor.start()
                     js5PrefetchService = Js5Service.startPrefetching(js5Service)
-                    try {
-                        // join it, which will propagate any exceptions
-                        future.join()
-                    } catch (t: Throwable) {
-                        js5Service.triggerShutdown()
-                        throw t
-                    }
+                    future.join()
                 }
             logger.info { "Started in: $time" }
             logger.info { "Bound to ports: ${ports.joinToString(", ")}" }
@@ -182,19 +167,83 @@ public class NetworkService<R>
             logger.info { "Supported client types: $clientTypeNames" }
         }
 
-        public fun shutdown() {
-            logger.info { "Attempting to shut down network service." }
-            js5Service.triggerShutdown()
-            js5PrefetchService.safeShutdown()
-            bossGroup.shutdownGracefully()
-            childGroup.shutdownGracefully()
-            logger.info { "Network service successfully shut down." }
+        /**
+         * Shuts the network service down and blocks the calling thread for up to [timeout] [timeUnit].
+         * If any part of the shutdown throws an Exception, it will be caught and logged, but it will not
+         * be propagated forward. Error types are logged too, but those *will* be propagated forward.
+         * @param quietPeriod the time Netty's event executor groups will wait for initially to make
+         * sure no new tasks are submitted. If any new task is submitted, the timer is reset.
+         * If the [timeout] is reached, it will forcibly shut down anyway. This is part of a graceful
+         * shutdown procedure.
+         * @param timeout the timeout to wait for before forcibly shutting down all the services.
+         * @param timeUnit the time unit used for both periods.
+         */
+        public fun shutdownNow(
+            quietPeriod: Long = 2L,
+            timeout: Long = 15L,
+            timeUnit: TimeUnit = TimeUnit.SECONDS,
+        ) {
+            val future = shutdown(quietPeriod, timeout, timeUnit)
+            try {
+                future.join()
+            } catch (e: Exception) {
+                logger.error(e) {
+                    "Network service may have not successfully shut down."
+                }
+            } catch (t: Throwable) {
+                logger.error(t) {
+                    "Network service may have not successfully shut down."
+                }
+                throw t
+            }
         }
 
-        private fun ExecutorService.safeShutdown() {
+        /**
+         * Submits a request to shut down the network service, returning a [CompletableFuture]. Calling
+         * this function will not block the calling thread.
+         * @param quietPeriod the time Netty's event executor groups will wait for initially to make
+         * sure no new tasks are submitted. If any new task is submitted, the timer is reset.
+         * If the [timeout] is reached, it will forcibly shut down anyway. This is part of a graceful
+         * shutdown procedure.
+         * @param timeout the timeout to wait for before forcibly shutting down all the services.
+         * @param timeUnit the time unit used for both periods.
+         */
+        @JvmOverloads
+        public fun shutdown(
+            quietPeriod: Long = 2L,
+            timeout: Long = 15L,
+            timeUnit: TimeUnit = TimeUnit.SECONDS,
+        ): CompletableFuture<Void> {
+            return CompletableFuture.allOf(
+                CompletableFuture.runAsync {
+                    js5Service.triggerShutdown()
+                    js5ServiceExecutor.join(timeUnit.toMillis(timeout))
+                },
+                CompletableFuture.runAsync {
+                    if (this::js5PrefetchService.isInitialized) {
+                        js5PrefetchService.safeShutdown(timeout, timeUnit)
+                    }
+                },
+                CompletableFuture.runAsync {
+                    if (this::bossGroup.isInitialized) {
+                        bossGroup.shutdownGracefully(quietPeriod, timeout, timeUnit)
+                    }
+                },
+                CompletableFuture.runAsync {
+                    if (this::childGroup.isInitialized) {
+                        childGroup.shutdownGracefully(quietPeriod, timeout, timeUnit)
+                    }
+                },
+            )
+        }
+
+        private fun ExecutorService.safeShutdown(
+            timeout: Long,
+            timeUnit: TimeUnit,
+        ) {
             shutdown()
             try {
-                if (!awaitTermination(3L, TimeUnit.SECONDS)) {
+                if (!awaitTermination(timeout, timeUnit)) {
                     shutdownNow()
                 }
             } catch (_: InterruptedException) {
