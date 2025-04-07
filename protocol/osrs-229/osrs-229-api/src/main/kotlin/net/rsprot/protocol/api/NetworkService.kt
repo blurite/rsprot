@@ -33,6 +33,7 @@ import java.util.concurrent.CompletableFuture
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.ScheduledExecutorService
 import java.util.concurrent.TimeUnit
+import kotlin.concurrent.thread
 import kotlin.time.measureTime
 import net.rsprot.protocol.internal.setCommunicationThread as setInternalCommunicationThread
 
@@ -107,7 +108,10 @@ public class NetworkService<R>
                 js5Configuration,
                 js5GroupProvider,
             )
-        private val js5ServiceExecutor = Thread(js5Service)
+        private val js5ServiceExecutor =
+            thread(start = false, name = "Js5 Service") {
+                js5Service.run()
+            }
         internal val decoderRepositories: MessageDecoderRepositories =
             MessageDecoderRepositories.initialize(
                 clientTypes,
