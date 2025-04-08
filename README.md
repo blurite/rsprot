@@ -1,6 +1,7 @@
 # RSProt
 
 [![GitHub Actions][actions-badge]][actions] [![MIT license][mit-badge]][mit]
+[![OldSchool - 230 (Alpha)](https://img.shields.io/badge/OldSchool-230_(Alpha)-9a1abd)](https://github.com/blurite/rsprot/tree/master/protocol/osrs-230/osrs-230-api/src/main/kotlin/net/rsprot/protocol/api)
 [![OldSchool - 229 (Alpha)](https://img.shields.io/badge/OldSchool-229_(Alpha)-9a1abd)](https://github.com/blurite/rsprot/tree/master/protocol/osrs-229/osrs-229-api/src/main/kotlin/net/rsprot/protocol/api)
 [![OldSchool - 228 (Alpha)](https://img.shields.io/badge/OldSchool-228_(Alpha)-9a1abd)](https://github.com/blurite/rsprot/tree/master/protocol/osrs-228/osrs-228-api/src/main/kotlin/net/rsprot/protocol/api)
 [![OldSchool - 227 (Alpha)](https://img.shields.io/badge/OldSchool-227_(Alpha)-9a1abd)](https://github.com/blurite/rsprot/tree/master/protocol/osrs-227/osrs-227-api/src/main/kotlin/net/rsprot/protocol/api)
@@ -24,7 +25,7 @@ In order to add it to your server, add the below line under dependencies
 in your build.gradle.kts.
 
 ```kts
-implementation("net.rsprot:osrs-229-api:1.0.0-ALPHA-20250407")
+implementation("net.rsprot:osrs-230-api:1.0.0-ALPHA-20250408")
 ```
 
 An in-depth tutorial on how to implement it will be added into this read-me
@@ -242,6 +243,14 @@ protocol. This can be done via:
 `service.worldEntityAvatarFactory.release(avatar)`
 
 ## Changes
+
+### Revision 230
+Revision 230 was primarily a cleanup revision, with no new packets or changes
+introduced.
+
+#### Removals
+- CLEAR_ENTITIES
+- WORLDENTITY_INFO_V4
 
 ### Revision 229
 Revision 229 brings the following changes:
