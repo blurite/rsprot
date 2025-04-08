@@ -17,8 +17,8 @@ public class PlayerSequenceEncoder : PrecomputedExtendedInfoEncoder<Sequence> {
             alloc
                 .buffer(3, 3)
                 .toJagByteBuf()
-        buffer.p2Alt2(extendedInfo.id.toInt())
-        buffer.p1Alt1(extendedInfo.delay.toInt())
+        buffer.p2Alt3(extendedInfo.id.toInt())
+        buffer.p1Alt3(extendedInfo.delay.toInt())
         return buffer
     }
 }

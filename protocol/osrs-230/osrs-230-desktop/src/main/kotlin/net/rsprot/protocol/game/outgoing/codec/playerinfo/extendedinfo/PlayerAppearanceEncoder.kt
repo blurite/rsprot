@@ -40,7 +40,7 @@ public class PlayerAppearanceEncoder : PrecomputedExtendedInfoEncoder<Appearance
         val buffer = alloc.buffer(capacity, capacity).toJagByteBuf()
         buffer.p1Alt2(capacity - 1)
         try {
-            buffer.pdataAlt2(intermediate.buffer)
+            buffer.pdataAlt3(intermediate.buffer)
         } finally {
             intermediate.buffer.release()
         }
