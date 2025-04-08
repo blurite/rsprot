@@ -117,7 +117,6 @@ import net.rsprot.protocol.game.outgoing.codec.varp.VarpLargeEncoder
 import net.rsprot.protocol.game.outgoing.codec.varp.VarpResetEncoder
 import net.rsprot.protocol.game.outgoing.codec.varp.VarpSmallEncoder
 import net.rsprot.protocol.game.outgoing.codec.varp.VarpSyncEncoder
-import net.rsprot.protocol.game.outgoing.codec.worldentity.ClearEntitiesEncoder
 import net.rsprot.protocol.game.outgoing.codec.worldentity.SetActiveWorldV1Encoder
 import net.rsprot.protocol.game.outgoing.codec.worldentity.SetActiveWorldV2Encoder
 import net.rsprot.protocol.game.outgoing.codec.worldentity.WorldEntityInfoV5Encoder
@@ -214,7 +213,6 @@ public object DesktopGameMessageEncoderRepository {
                 bind(NpcInfoLargeV5Encoder())
                 bind(SetNpcUpdateOriginEncoder())
 
-                bind(ClearEntitiesEncoder())
                 bind(SetActiveWorldV1Encoder())
                 bind(SetActiveWorldV2Encoder())
                 bind(WorldEntityInfoV5Encoder())
