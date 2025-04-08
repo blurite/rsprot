@@ -17,8 +17,8 @@ public class NpcFaceCoordEncoder : PrecomputedExtendedInfoEncoder<FaceCoord> {
             alloc
                 .buffer(5, 5)
                 .toJagByteBuf()
-        buffer.p2Alt2(extendedInfo.x.toInt())
-        buffer.p2Alt3(extendedInfo.z.toInt())
+        buffer.p2Alt1(extendedInfo.x.toInt())
+        buffer.p2Alt2(extendedInfo.z.toInt())
         buffer.p1(if (extendedInfo.instant) 1 else 0)
         return buffer
     }
