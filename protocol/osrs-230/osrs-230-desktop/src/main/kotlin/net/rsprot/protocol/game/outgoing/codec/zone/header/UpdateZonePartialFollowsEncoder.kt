@@ -16,7 +16,7 @@ public class UpdateZonePartialFollowsEncoder : MessageEncoder<UpdateZonePartialF
         message: UpdateZonePartialFollows,
     ) {
         buffer.p1Alt1(message.zoneZ)
-        buffer.p1Alt1(message.zoneX)
-        buffer.p1Alt2(message.level)
+        buffer.p1(message.level)
+        buffer.p1Alt2(message.zoneX)
     }
 }

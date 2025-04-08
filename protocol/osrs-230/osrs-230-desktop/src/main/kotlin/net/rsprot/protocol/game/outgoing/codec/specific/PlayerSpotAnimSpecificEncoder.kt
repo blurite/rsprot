@@ -15,9 +15,9 @@ public class PlayerSpotAnimSpecificEncoder : MessageEncoder<PlayerSpotAnimSpecif
         buffer: JagByteBuf,
         message: PlayerSpotAnimSpecific,
     ) {
-        buffer.p1Alt2(message.slot)
         buffer.p2(message.id)
-        buffer.p2(message.index)
-        buffer.p4Alt3((message.height shl 16) or message.delay)
+        buffer.p2Alt3(message.index)
+        buffer.p4((message.height shl 16) or message.delay)
+        buffer.p1(message.slot)
     }
 }

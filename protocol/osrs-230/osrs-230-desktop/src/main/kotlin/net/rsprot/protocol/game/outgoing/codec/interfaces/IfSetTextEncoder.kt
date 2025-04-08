@@ -6,7 +6,7 @@ import net.rsprot.protocol.ServerProt
 import net.rsprot.protocol.game.outgoing.interfaces.IfSetText
 import net.rsprot.protocol.game.outgoing.prot.GameServerProt
 import net.rsprot.protocol.message.codec.MessageEncoder
-import net.rsprot.protocol.util.pCombinedId
+import net.rsprot.protocol.util.pCombinedIdAlt2
 
 public class IfSetTextEncoder : MessageEncoder<IfSetText> {
     override val prot: ServerProt = GameServerProt.IF_SETTEXT
@@ -17,6 +17,6 @@ public class IfSetTextEncoder : MessageEncoder<IfSetText> {
         message: IfSetText,
     ) {
         buffer.pjstr(message.text)
-        buffer.pCombinedId(message.combinedId)
+        buffer.pCombinedIdAlt2(message.combinedId)
     }
 }

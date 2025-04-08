@@ -16,8 +16,8 @@ public class UpdateStatV2Encoder : MessageEncoder<UpdateStatV2> {
         message: UpdateStatV2,
     ) {
         buffer.p4Alt3(message.experience)
+        buffer.p1Alt1(message.currentLevel)
         buffer.p1Alt1(message.stat)
         buffer.p1Alt2(message.invisibleBoostedLevel)
-        buffer.p1Alt3(message.currentLevel)
     }
 }

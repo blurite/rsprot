@@ -6,7 +6,7 @@ import net.rsprot.protocol.ServerProt
 import net.rsprot.protocol.game.outgoing.interfaces.IfSetModel
 import net.rsprot.protocol.game.outgoing.prot.GameServerProt
 import net.rsprot.protocol.message.codec.MessageEncoder
-import net.rsprot.protocol.util.pCombinedId
+import net.rsprot.protocol.util.pCombinedIdAlt1
 
 public class IfSetModelEncoder : MessageEncoder<IfSetModel> {
     override val prot: ServerProt = GameServerProt.IF_SETMODEL
@@ -16,7 +16,7 @@ public class IfSetModelEncoder : MessageEncoder<IfSetModel> {
         buffer: JagByteBuf,
         message: IfSetModel,
     ) {
-        buffer.pCombinedId(message.combinedId)
-        buffer.p2(message.model)
+        buffer.p2Alt2(message.model)
+        buffer.pCombinedIdAlt1(message.combinedId)
     }
 }

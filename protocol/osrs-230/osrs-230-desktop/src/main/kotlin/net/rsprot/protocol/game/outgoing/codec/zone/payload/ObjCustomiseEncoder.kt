@@ -16,13 +16,13 @@ public class ObjCustomiseEncoder : ZoneProtEncoder<ObjCustomise> {
         // The function at the bottom of the OBJ_CUSTOMISE has a consistent order,
         // making it easy to identify all the properties of this packet:
         // objCustomise(level, x, z, id, count, recol, recolIndex, retex, retexIndex, model);
-        buffer.p2Alt1(message.retexIndex)
-        buffer.p1Alt2(message.coordInZonePacked)
-        buffer.p2(message.recol)
-        buffer.p2Alt3(message.recolIndex)
-        buffer.p2Alt2(message.model)
-        buffer.p2Alt3(message.retex)
+        buffer.p2(message.model)
+        buffer.p2(message.recolIndex)
+        buffer.p2Alt2(message.id)
+        buffer.p1Alt3(message.coordInZonePacked)
+        buffer.p2(message.retex)
         buffer.p4Alt3(message.quantity)
-        buffer.p2Alt3(message.id)
+        buffer.p2(message.retexIndex)
+        buffer.p2Alt1(message.recol)
     }
 }

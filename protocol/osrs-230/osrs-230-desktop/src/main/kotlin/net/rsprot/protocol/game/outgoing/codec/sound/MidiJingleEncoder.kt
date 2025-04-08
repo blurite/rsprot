@@ -15,7 +15,7 @@ public class MidiJingleEncoder : MessageEncoder<MidiJingle> {
         buffer: JagByteBuf,
         message: MidiJingle,
     ) {
-        buffer.p3(message.lengthInMillis)
+        buffer.p3Alt1(message.lengthInMillis)
         buffer.p2Alt1(message.id)
     }
 }

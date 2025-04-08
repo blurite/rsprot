@@ -17,8 +17,8 @@ public class IfSetEventsEncoder : MessageEncoder<IfSetEvents> {
         message: IfSetEvents,
     ) {
         buffer.pCombinedIdAlt3(message.combinedId)
-        buffer.p2Alt2(message.end)
-        buffer.p2Alt3(message.start)
-        buffer.p4Alt2(message.events)
+        buffer.p2Alt2(message.start)
+        buffer.p4Alt1(message.events)
+        buffer.p2(message.end)
     }
 }
