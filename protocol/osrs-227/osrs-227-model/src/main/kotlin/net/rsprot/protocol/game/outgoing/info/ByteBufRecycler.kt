@@ -1,5 +1,6 @@
 package net.rsprot.protocol.game.outgoing.info
 
+import com.github.michaelbull.logging.InlineLogger
 import io.netty.buffer.ByteBuf
 import io.netty.util.ReferenceCountUtil
 import io.netty.util.ReferenceCounted
@@ -52,11 +53,19 @@ internal class ByteBufRecycler(
         val iterator = buffers.iterator()
         while (iterator.hasNext()) {
             val next = iterator.next()
-            val elapsed = cycle - next.cycle
-            val refCount = next.refCnt()
-            if (refCount <= 1 || elapsed >= forceReleaseThreshold) {
-                ReferenceCountUtil.safeRelease(next, refCount)
-                iterator.remove()
+            try {
+                val elapsed = cycle - next.cycle
+                val refCount = next.refCnt()
+                if (refCount <= 1 || elapsed >= forceReleaseThreshold) {
+                    if (refCount > 0) {
+                        ReferenceCountUtil.safeRelease(next, refCount)
+                    }
+                    iterator.remove()
+                }
+            } catch (e: Exception) {
+                logger.error(e) {
+                    "Error recycling buffer $next"
+                }
             }
         }
     }
@@ -71,4 +80,8 @@ internal class ByteBufRecycler(
         val cycle: Int,
         val buffer: ByteBuf,
     ) : ReferenceCounted by buffer
+
+    private companion object {
+        private val logger = InlineLogger()
+    }
 }
