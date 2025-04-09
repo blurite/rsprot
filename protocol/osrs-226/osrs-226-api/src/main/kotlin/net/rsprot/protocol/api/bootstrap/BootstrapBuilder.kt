@@ -5,21 +5,24 @@ import io.netty.bootstrap.ServerBootstrap
 import io.netty.buffer.ByteBufAllocator
 import io.netty.channel.ChannelOption
 import io.netty.channel.EventLoopGroup
+import io.netty.channel.MultiThreadIoEventLoopGroup
 import io.netty.channel.ServerChannel
 import io.netty.channel.WriteBufferWaterMark
 import io.netty.channel.epoll.Epoll
-import io.netty.channel.epoll.EpollChannelOption
-import io.netty.channel.epoll.EpollEventLoopGroup
-import io.netty.channel.epoll.EpollMode
+import io.netty.channel.epoll.EpollIoHandler
 import io.netty.channel.epoll.EpollServerSocketChannel
 import io.netty.channel.kqueue.KQueue
-import io.netty.channel.kqueue.KQueueEventLoopGroup
+import io.netty.channel.kqueue.KQueueIoHandler
 import io.netty.channel.kqueue.KQueueServerSocketChannel
-import io.netty.channel.nio.NioEventLoopGroup
+import io.netty.channel.nio.NioIoHandler
 import io.netty.channel.socket.nio.NioServerSocketChannel
-import io.netty.incubator.channel.uring.IOUring
-import io.netty.incubator.channel.uring.IOUringEventLoopGroup
-import io.netty.incubator.channel.uring.IOUringServerSocketChannel
+import io.netty.channel.uring.IoUring
+import io.netty.channel.uring.IoUringIoHandler
+import io.netty.channel.uring.IoUringServerSocketChannel
+import net.rsprot.protocol.api.bootstrap.BootstrapBuilder.EventLoopGroupType.EPOLL
+import net.rsprot.protocol.api.bootstrap.BootstrapBuilder.EventLoopGroupType.IOURING
+import net.rsprot.protocol.api.bootstrap.BootstrapBuilder.EventLoopGroupType.KQUEUE
+import net.rsprot.protocol.api.bootstrap.BootstrapBuilder.EventLoopGroupType.NIO
 import net.rsprot.protocol.api.handlers.OutgoingMessageSizeEstimator
 import java.text.NumberFormat
 import kotlin.math.max
@@ -229,32 +232,36 @@ public class BootstrapBuilder {
             try {
                 when (type) {
                     EventLoopGroupType.IOURING -> {
-                        if (!IOUring.isAvailable()) {
+                        if (!IoUring.isAvailable()) {
                             continue
                         }
-                        val boss = IOUringEventLoopGroup(bossThreadCount)
-                        val child = IOUringEventLoopGroup(childThreadCount)
+                        val factory = IoUringIoHandler.newFactory()
+                        val boss = MultiThreadIoEventLoopGroup(bossThreadCount, factory)
+                        val child = MultiThreadIoEventLoopGroup(childThreadCount, factory)
                         return boss to child
                     }
                     EventLoopGroupType.EPOLL -> {
                         if (!Epoll.isAvailable()) {
                             continue
                         }
-                        val boss = EpollEventLoopGroup(bossThreadCount)
-                        val child = EpollEventLoopGroup(childThreadCount)
+                        val factory = EpollIoHandler.newFactory()
+                        val boss = MultiThreadIoEventLoopGroup(bossThreadCount, factory)
+                        val child = MultiThreadIoEventLoopGroup(childThreadCount, factory)
                         return boss to child
                     }
                     EventLoopGroupType.KQUEUE -> {
                         if (!KQueue.isAvailable()) {
                             continue
                         }
-                        val boss = KQueueEventLoopGroup(bossThreadCount)
-                        val child = KQueueEventLoopGroup(childThreadCount)
+                        val factory = KQueueIoHandler.newFactory()
+                        val boss = MultiThreadIoEventLoopGroup(bossThreadCount, factory)
+                        val child = MultiThreadIoEventLoopGroup(childThreadCount, factory)
                         return boss to child
                     }
                     EventLoopGroupType.NIO -> {
-                        val boss = NioEventLoopGroup(bossThreadCount)
-                        val child = NioEventLoopGroup(childThreadCount)
+                        val factory = NioIoHandler.newFactory()
+                        val boss = MultiThreadIoEventLoopGroup(bossThreadCount, factory)
+                        val child = MultiThreadIoEventLoopGroup(childThreadCount, factory)
                         return boss to child
                     }
                 }
@@ -270,13 +277,12 @@ public class BootstrapBuilder {
         throw IllegalStateException("No event loop groups are available in ${groupTypes.contentDeepToString()}")
     }
 
-    private fun determineSocketChannel(loopGroup: EventLoopGroup): Class<out ServerChannel> =
-        when (loopGroup) {
-            is IOUringEventLoopGroup -> IOUringServerSocketChannel::class.java
-            is EpollEventLoopGroup -> EpollServerSocketChannel::class.java
-            is KQueueEventLoopGroup -> KQueueServerSocketChannel::class.java
-            is NioEventLoopGroup -> NioServerSocketChannel::class.java
-            else -> throw IllegalArgumentException("Unknown EventLoopGroup type: $loopGroup")
+    private fun determineSocketChannel(): Class<out ServerChannel> =
+        when {
+            IoUring.isAvailable() -> IoUringServerSocketChannel::class.java
+            Epoll.isAvailable() -> EpollServerSocketChannel::class.java
+            KQueue.isAvailable() -> KQueueServerSocketChannel::class.java
+            else -> NioServerSocketChannel::class.java
         }
 
     /**
@@ -293,7 +299,7 @@ public class BootstrapBuilder {
                 childThreadCount,
                 groupTypes,
             )
-        val channel = determineSocketChannel(bossGroup)
+        val channel = determineSocketChannel()
         log {
             "Using event loop group: ${bossGroup.javaClass.simpleName} " +
                 "(bossThreads: $bossThreadCount, childThreads: $childThreadCount)"
@@ -330,10 +336,6 @@ public class BootstrapBuilder {
         bootstrap.childOption(ChannelOption.TCP_NODELAY, tcpNoDelay)
         log { "Nagle's algorithm (TCP no delay): ${if (tcpNoDelay) "disabled" else "enabled"}" }
         bootstrap.childOption(ChannelOption.MESSAGE_SIZE_ESTIMATOR, estimator)
-        if (bossGroup is EpollEventLoopGroup) {
-            bootstrap.childOption(EpollChannelOption.EPOLL_MODE, EpollMode.LEVEL_TRIGGERED)
-            log { "Using level-triggered Epoll mode." }
-        }
         return bootstrap
     }
 
