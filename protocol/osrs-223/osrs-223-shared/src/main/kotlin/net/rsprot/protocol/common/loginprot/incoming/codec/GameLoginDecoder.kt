@@ -18,7 +18,7 @@ public class GameLoginDecoder(
     private val supportedClientTypes: List<OldSchoolClientType>,
     exp: BigInteger,
     mod: BigInteger,
-) : LoginBlockDecoder<AuthenticationType<*>>(exp, mod),
+) : LoginBlockDecoder<AuthenticationType>(exp, mod),
     MessageDecoder<GameLogin> {
     override val prot: ClientProt = LoginClientProt.GAMELOGIN
 
@@ -31,7 +31,7 @@ public class GameLoginDecoder(
         }
     }
 
-    override fun decodeAuthentication(buffer: JagByteBuf): AuthenticationType<*> {
+    override fun decodeAuthentication(buffer: JagByteBuf): AuthenticationType {
         val otp = decodeOtpAuthentication(buffer)
         return when (val authenticationType = buffer.g1()) {
             PASSWORD_AUTHENTICATION ->

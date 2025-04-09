@@ -1,7 +1,7 @@
 package net.rsprot.protocol.loginprot.incoming.util
 
-public sealed interface AuthenticationType<T : OtpAuthenticationType> {
-    public val otpAuthentication: T
+public sealed interface AuthenticationType {
+    public val otpAuthentication: OtpAuthenticationType
 
     /**
      * Clears all data stored in this [AuthenticationType].
@@ -10,20 +10,20 @@ public sealed interface AuthenticationType<T : OtpAuthenticationType> {
      */
     public fun clear()
 
-    public data class PasswordAuthentication<T : OtpAuthenticationType>(
+    public data class PasswordAuthentication(
         public val password: Password,
-        override val otpAuthentication: T,
-    ) : AuthenticationType<T> {
+        override val otpAuthentication: OtpAuthenticationType,
+    ) : AuthenticationType {
         override fun clear() {
             otpAuthentication.clear()
             password.clear()
         }
     }
 
-    public data class TokenAuthentication<T : OtpAuthenticationType>(
+    public data class TokenAuthentication(
         public val token: Token,
-        override val otpAuthentication: T,
-    ) : AuthenticationType<T> {
+        override val otpAuthentication: OtpAuthenticationType,
+    ) : AuthenticationType {
         override fun clear() {
             otpAuthentication.clear()
             token.clear()
