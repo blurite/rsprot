@@ -14,6 +14,11 @@ public class Password(
     @Suppress("MemberVisibilityCanBePrivate")
     public fun asString(): String = String(data)
 
+    /**
+     * Returns the char array representation of the password.
+     */
+    public fun asCharArray(): CharArray = asString().toCharArray()
+
     override fun toString(): String = "Password(password=${asString()})"
 
     /**
