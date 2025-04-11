@@ -57,7 +57,8 @@ public class GameLoginResponseHandler<R>(
      * Writes a successful login response to the client.
      * @param response the login response to write
      * @param loginBlock the login request that the client initially made
-     * @return a session object if the login was successful, otherwise a null.
+     * @return a session object regardless of if the connection is still alive. If the connection has died,
+     * the disconnection hook will be triggered immediately upon being assigned.
      */
     public fun writeSuccessfulResponse(
         response: LoginResponse.Ok,
