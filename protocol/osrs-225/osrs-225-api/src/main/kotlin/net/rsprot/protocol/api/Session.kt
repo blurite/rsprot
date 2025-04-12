@@ -99,7 +99,7 @@ public class Session<R>(
      * Triggers the channel closing due to idling, if it hasn't yet been called.
      */
     internal fun triggerIdleClosing() {
-        if (requestClose()) {
+        if (internalRequestClose()) {
             invokeDisconnectionHook()
         }
     }
@@ -215,7 +215,7 @@ public class Session<R>(
         // Immediately trigger the disconnection hook if the channel already went inactive before
         // the hook could be triggered
         if (!ctx.channel().isActive) {
-            if (requestClose()) {
+            if (internalRequestClose()) {
                 invokeDisconnectionHook()
             }
         }
@@ -223,10 +223,26 @@ public class Session<R>(
 
     /**
      * Requests the channel to be closed once there's nothing more to write out, and the
-     * channel has been flushed.
+     * channel has been flushed. This will furthermore clear any disconnection hook set,
+     * to avoid any lingering memory. It will not invoke the disconnection hook.
      * @return whether the channel was open and will be closed in the future.
      */
     public fun requestClose(): Boolean {
+        if (this.channelStatus != ChannelStatus.OPEN) {
+            return false
+        }
+        this.disconnectionHook.set(null)
+        this.channelStatus = ChannelStatus.CLOSING
+        this.flush()
+        return true
+    }
+
+    /**
+     * Requests the channel to be closed once there's nothing more to write out, and the
+     * channel has been flushed.
+     * @return whether the channel was open and will be closed in the future.
+     */
+    private fun internalRequestClose(): Boolean {
         if (this.channelStatus != ChannelStatus.OPEN) {
             return false
         }
