@@ -1103,7 +1103,7 @@ public class NpcAvatarExtendedInfo(
         val headIcons = blocks.headIconCustomisation
         headIcons.headIconGroups[slot] = group
         headIcons.headIconIndices[slot] = index.toShort()
-        headIcons.flag = (1 shl slot)
+        headIcons.flag = headIcons.flag or (1 shl slot)
         flags = flags or HEADICON_CUSTOMISATION
     }
 
@@ -1120,7 +1120,23 @@ public class NpcAvatarExtendedInfo(
         val headIcons = blocks.headIconCustomisation
         headIcons.headIconGroups[slot] = -1
         headIcons.headIconIndices[slot] = -1
-        headIcons.flag = (1 shl slot)
+        headIcons.flag = headIcons.flag or (1 shl slot)
+        flags = flags or HEADICON_CUSTOMISATION
+    }
+
+    /**
+     * Resets all head icons which have been modified in the past.
+     * If the given avatar has had no headicon changes, this function will
+     * have no effect.
+     */
+    public fun resetHeadIcons() {
+        val headIcons = blocks.headIconCustomisation
+        if (headIcons.flag == 0) return
+        for (slot in 0..<8) {
+            headIcons.headIconGroups[slot] = -1
+            headIcons.headIconIndices[slot] = -1
+            headIcons.flag = headIcons.flag or (1 shl slot)
+        }
         flags = flags or HEADICON_CUSTOMISATION
     }
 
@@ -1458,6 +1474,23 @@ public class NpcAvatarExtendedInfo(
         }
         if (flags and TRANSFORMATION != 0) {
             blocks.transformation.clear()
+        }
+        // While this is a persistent flag, we still need to clear any "resets",
+        // so we aren't consistently sending "clear this head icon change" to any
+        // future players even though there hasn't been a headicon change in a while.
+        if (flags and HEADICON_CUSTOMISATION != 0) {
+            val headIcons = blocks.headIconCustomisation
+            val iconFlag = headIcons.flag
+            for (i in 0..<8) {
+                if (iconFlag and (1 shl i) == 0) continue
+                val group = headIcons.headIconGroups[i]
+                if (group != -1) continue
+                val index = headIcons.headIconIndices[i].toInt()
+                if (index != -1) continue
+                // Unflag any headicons which were reset, to avoid transmitting to new future
+                // observers - the NPC will by default not have any headicons anyway
+                headIcons.flag = headIcons.flag and (1 shl i).inv()
+            }
         }
     }
 
