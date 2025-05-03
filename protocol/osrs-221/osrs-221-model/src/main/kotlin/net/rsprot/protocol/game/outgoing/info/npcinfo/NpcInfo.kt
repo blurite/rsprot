@@ -301,7 +301,7 @@ public class NpcInfo internal constructor(
      * additionally marks down which NPCs need to furthermore send their extended info
      * updates.
      */
-    public fun compute() {
+    internal fun compute() {
         val viewDistance = this.viewDistance
         val buffer = allocBuffer()
         buffer.toBitBuf().use { bitBuffer ->
