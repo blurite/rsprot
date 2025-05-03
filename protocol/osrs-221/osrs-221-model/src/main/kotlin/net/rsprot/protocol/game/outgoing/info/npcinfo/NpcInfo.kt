@@ -1,3 +1,5 @@
+@file:Suppress("DuplicatedCode")
+
 package net.rsprot.protocol.game.outgoing.info.npcinfo
 
 import io.netty.buffer.ByteBuf
@@ -156,6 +158,7 @@ public class NpcInfo internal constructor(
      * @param num the distance from which NPCs become visible
      */
     public fun setViewDistance(num: Int) {
+        if (isDestroyed()) return
         this.viewDistance = num
     }
 
@@ -163,6 +166,7 @@ public class NpcInfo internal constructor(
      * Resets the view distance back to a default value of 15 tile radius.
      */
     public fun resetViewDistance() {
+        if (isDestroyed()) return
         this.viewDistance = MAX_SMALL_PACKET_DISTANCE
     }
 
@@ -172,6 +176,7 @@ public class NpcInfo internal constructor(
      * @return the newly created arraylist of indices
      */
     public fun getHighResolutionIndices(): ArrayList<Int> {
+        if (isDestroyed()) return ArrayList(0)
         val collection = ArrayList<Int>(highResolutionNpcIndexCount)
         for (i in 0..<highResolutionNpcIndexCount) {
             val index = highResolutionNpcIndices[i].toInt()
@@ -188,6 +193,7 @@ public class NpcInfo internal constructor(
      * @return the provided [collection] to chaining.
      */
     public fun <T> appendHighResolutionIndices(collection: T): T where T : MutableCollection<Int> {
+        if (isDestroyed()) return collection
         for (i in 0..<highResolutionNpcIndexCount) {
             val index = highResolutionNpcIndices[i].toInt()
             collection.add(index)
@@ -231,6 +237,7 @@ public class NpcInfo internal constructor(
      * @param buildArea the build area to assign.
      */
     public fun updateBuildArea(buildArea: BuildArea) {
+        if (isDestroyed()) return
         this.buildArea = buildArea
     }
 
@@ -250,6 +257,7 @@ public class NpcInfo internal constructor(
         widthInZones: Int = BuildArea.DEFAULT_BUILD_AREA_SIZE,
         heightInZones: Int = BuildArea.DEFAULT_BUILD_AREA_SIZE,
     ) {
+        if (isDestroyed()) return
         this.buildArea = BuildArea(zoneX, zoneZ, widthInZones, heightInZones)
     }
 
@@ -279,6 +287,7 @@ public class NpcInfo internal constructor(
         x: Int,
         z: Int,
     ) {
+        if (isDestroyed()) return
         this.localPlayerCurrentCoord =
             CoordGrid(
                 level,
@@ -646,6 +655,7 @@ public class NpcInfo internal constructor(
      * whenever a reconnect occurs.
      */
     public fun onReconnect() {
+        if (isDestroyed()) return
         onDealloc()
         this.highResolutionNpcIndexCount = 0
         this.extendedInfoCount = 0
