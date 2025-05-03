@@ -108,6 +108,7 @@ public class WorldEntityInfo internal constructor(
      */
     public fun updateRenderDistance(distance: Int) {
         checkCommunicationThread()
+        if (isDestroyed()) return
         this.renderDistance = distance
     }
 
@@ -118,6 +119,7 @@ public class WorldEntityInfo internal constructor(
      */
     public fun updateBuildArea(buildArea: BuildArea) {
         checkCommunicationThread()
+        if (isDestroyed()) return
         this.buildArea = buildArea
     }
 
@@ -137,6 +139,7 @@ public class WorldEntityInfo internal constructor(
         heightInZones: Int = BuildArea.DEFAULT_BUILD_AREA_SIZE,
     ) {
         checkCommunicationThread()
+        if (isDestroyed()) return
         this.buildArea = BuildArea(zoneX, zoneZ, widthInZones, heightInZones)
     }
 
@@ -145,7 +148,10 @@ public class WorldEntityInfo internal constructor(
      * allowing for correct functionality for player and npc infos, as well as zone updates.
      * @return a list of indices of the world entities currently in high resolution.
      */
-    public fun getAllWorldEntityIndices(): List<Int> = this.allWorldEntities
+    public fun getAllWorldEntityIndices(): List<Int> {
+        if (isDestroyed()) return emptyList()
+        return this.allWorldEntities
+    }
 
     /**
      * Gets the indices of all the world entities that were added to high resolution in this cycle,
@@ -154,7 +160,10 @@ public class WorldEntityInfo internal constructor(
      * @return a list of all the world entity indices added to the high resolution view in this
      * cycle.
      */
-    public fun getAddedWorldEntityIndices(): List<Int> = this.addedWorldEntities
+    public fun getAddedWorldEntityIndices(): List<Int> {
+        if (isDestroyed()) return emptyList()
+        return this.addedWorldEntities
+    }
 
     /**
      * Gets the indices of all the world entities that were removed from the high resolution in
@@ -163,7 +172,10 @@ public class WorldEntityInfo internal constructor(
      * @return a list of all the indices of the world entities that were removed from the high
      * resolution view this cycle.
      */
-    public fun getRemovedWorldEntityIndices(): List<Int> = this.removedWorldEntities
+    public fun getRemovedWorldEntityIndices(): List<Int> {
+        if (isDestroyed()) return emptyList()
+        return this.removedWorldEntities
+    }
 
     /**
      * Updates the current real absolute coordinate of the local player in the world.
@@ -181,6 +193,7 @@ public class WorldEntityInfo internal constructor(
         z: Int,
     ) {
         checkCommunicationThread()
+        if (isDestroyed()) return
         this.currentWorldEntityId = worldId
         this.currentCoord = CoordGrid(level, x, z)
     }
@@ -200,6 +213,7 @@ public class WorldEntityInfo internal constructor(
         z: Int,
     ) {
         checkCommunicationThread()
+        if (isDestroyed()) return
         this.renderCoord = CoordGrid(level, x, z)
     }
 
@@ -209,6 +223,7 @@ public class WorldEntityInfo internal constructor(
      */
     public fun resetRenderCoord() {
         checkCommunicationThread()
+        if (isDestroyed()) return
         this.renderCoord = CoordGrid.INVALID
     }
 
@@ -478,6 +493,7 @@ public class WorldEntityInfo internal constructor(
      */
     public fun onReconnect() {
         checkCommunicationThread()
+        if (isDestroyed()) return
         this.buffer = null
         this.exception = null
         this.previousPacket = null
@@ -506,6 +522,7 @@ public class WorldEntityInfo internal constructor(
      */
     public fun clearEntities(worldId: Int) {
         checkCommunicationThread()
+        if (isDestroyed()) return
         require(worldId == ROOT_WORLD || worldId in 0..<2048) {
             "World id must be -1 or in range of 0..<2048"
         }
