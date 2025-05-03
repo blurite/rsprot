@@ -19,8 +19,10 @@ import net.rsprot.protocol.game.outgoing.misc.client.PacketGroupStart
 import net.rsprot.protocol.loginprot.outgoing.LoginResponse
 import net.rsprot.protocol.message.ByteBufHolderWrapperFooterMessage
 import net.rsprot.protocol.message.ByteBufHolderWrapperHeaderMessage
+import net.rsprot.protocol.message.OutgoingGameMessage
 import net.rsprot.protocol.message.OutgoingMessage
 import net.rsprot.protocol.message.codec.outgoing.MessageEncoderRepository
+import kotlin.math.min
 
 /**
  * A generic message encoder for all outgoing messages, including login, JS5 and game.
@@ -44,16 +46,73 @@ public abstract class OutgoingMessageEncoder : ChannelOutboundHandlerAdapter() {
             return
         }
         try {
-            if (msg is ByteBufHolder) {
-                writeByteBufHolderMessage(ctx, msg, promise)
-            } else {
-                writeRegularMessage(ctx, msg, promise)
+            when (msg) {
+                is ByteBufHolder -> {
+                    writeByteBufHolderMessage(ctx, msg, promise)
+                }
+
+                is PacketGroupStart -> {
+                    writePacketGroup(ctx, msg, promise)
+                }
+
+                else -> {
+                    writeRegularMessage(ctx, msg, promise)
+                }
             }
         } catch (e: EncoderException) {
             throw e
         } catch (t: Throwable) {
             throw EncoderException(t)
         }
+    }
+
+    private fun writePacketGroup(
+        ctx: ChannelHandlerContext,
+        msg: PacketGroupStart,
+        promise: ChannelPromise,
+    ) {
+        // Partition the packet groups using our message estimates.
+        // While the estimates may not be perfectly accurate, they account for worst-case scenarios,
+        // and we technically have 7kb of headroom here.
+        val childLists =
+            buildList {
+                var sum = 0
+                var curList: MutableList<OutgoingGameMessage> = mutableListOf()
+                for (message in msg.messages) {
+                    val size = headerSize(message) + message.estimateSize()
+                    // If we've hit the 32767 limit, wrap up the list and append to the next one
+                    if (sum + size >= 32767) {
+                        add(curList)
+                        sum = size
+                        curList = ArrayList()
+                        curList += message
+                        continue
+                    }
+
+                    // Otherwise keep on appending here.
+                    sum += size
+                    curList += message
+                }
+            }
+        for ((index, list) in childLists.withIndex()) {
+            // Fulfill the promise on the last write operation here
+            val promiseToUse = if (index == childLists.size - 1) promise else ctx.voidPromise()
+            writeRegularMessage(ctx, PacketGroupStart(list), promiseToUse)
+        }
+    }
+
+    private fun headerSize(message: OutgoingGameMessage): Int {
+        val encoder = repository.getEncoder(message::class.java)
+        val prot = encoder.prot
+        val opcode = prot.opcode
+        val opcodeSize = if (opcode >= 0x80) Short.SIZE_BYTES else Byte.SIZE_BYTES
+        val constSize =
+            when (val size = prot.size) {
+                Prot.VAR_SHORT -> Short.SIZE_BYTES
+                Prot.VAR_BYTE -> Byte.SIZE_BYTES
+                else -> size
+            }
+        return opcodeSize + constSize
     }
 
     private fun writeRegularMessage(
@@ -295,7 +354,7 @@ public abstract class OutgoingMessageEncoder : ChannelOutboundHandlerAdapter() {
             }
             val finalMarker = out.writerIndex()
             val written = finalMarker - payloadMarker
-            if (written > 32767) {
+            if (written > 40000) {
                 throw IllegalStateException(
                     "PacketGroupStart message too long: $written bytes, " +
                         "${msg.messages.size} child messages.",
@@ -303,7 +362,9 @@ public abstract class OutgoingMessageEncoder : ChannelOutboundHandlerAdapter() {
             }
             // Lastly, update the actual number of bytes that the packet group start contained
             out.writerIndex(payloadMarker)
-            out.p2(written)
+            // Note that packet group start reads it as a signed short in the client, so we should
+            // cap it.
+            out.p2(min(32767, written))
             out.writerIndex(finalMarker)
         }
     }
