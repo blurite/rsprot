@@ -179,6 +179,7 @@ public class PlayerInfo internal constructor(
      * @param buildArea the build area to assign.
      */
     public fun updateBuildArea(buildArea: BuildArea) {
+        if (isDestroyed()) return
         this.buildArea = buildArea
     }
 
@@ -198,6 +199,7 @@ public class PlayerInfo internal constructor(
         widthInZones: Int = BuildArea.DEFAULT_BUILD_AREA_SIZE,
         heightInZones: Int = BuildArea.DEFAULT_BUILD_AREA_SIZE,
     ) {
+        if (isDestroyed()) return
         this.buildArea = BuildArea(zoneX, zoneZ, widthInZones, heightInZones)
     }
 
@@ -207,6 +209,7 @@ public class PlayerInfo internal constructor(
      * @return the newly created arraylist of indices
      */
     public fun getHighResolutionIndices(): ArrayList<Int> {
+        if (isDestroyed()) return ArrayList(0)
         val collection = ArrayList<Int>(highResolutionCount)
         for (i in 0..<highResolutionCount) {
             val index = highResolutionIndices[i].toInt()
@@ -222,6 +225,7 @@ public class PlayerInfo internal constructor(
      * @return the provided [collection] to chaining.
      */
     public fun <T> appendHighResolutionIndices(collection: T): T where T : MutableCollection<Int> {
+        if (isDestroyed()) return collection
         for (i in 0..<highResolutionCount) {
             val index = highResolutionIndices[i].toInt()
             collection.add(index)
@@ -263,6 +267,7 @@ public class PlayerInfo internal constructor(
         x: Int,
         z: Int,
     ) {
+        if (isDestroyed()) return
         this.avatar.updateCoord(level, x, z)
     }
 
@@ -335,6 +340,7 @@ public class PlayerInfo internal constructor(
      * @param byteBuf the buffer into which the information will be written.
      */
     public fun handleAbsolutePlayerPositions(byteBuf: ByteBuf) {
+        if (isDestroyed()) return
         check(avatar.currentCoord != CoordGrid.INVALID) {
             "Avatar position must be updated via playerinfo#updateCoord before sending RebuildLogin/ReconnectOk."
         }
@@ -362,6 +368,7 @@ public class PlayerInfo internal constructor(
      * Cached state should be re-assigned from the server as a result of this.
      */
     public fun onReconnect() {
+        if (isDestroyed()) return
         this.buffer = null
         highResMovementBuffer = null
 

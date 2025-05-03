@@ -198,6 +198,7 @@ public class PlayerInfo internal constructor(
      * @param otherPlayerAvatar the avatar to mark as high priority in relation to us.
      */
     public fun setHighPriority(otherPlayerAvatar: PlayerAvatar) {
+        if (isDestroyed()) return
         this.setHighPriority(otherPlayerAvatar.localPlayerIndex)
     }
 
@@ -208,6 +209,7 @@ public class PlayerInfo internal constructor(
      * @param otherPlayerAvatar the avatar to mark back down to normal priority.
      */
     public fun setNormalPriority(otherPlayerAvatar: PlayerAvatar) {
+        if (isDestroyed()) return
         this.unsetHighPriority(otherPlayerAvatar.localPlayerIndex)
     }
 
@@ -217,6 +219,7 @@ public class PlayerInfo internal constructor(
      * priority status.
      */
     public fun clearAllHighPriority() {
+        if (isDestroyed()) return
         this.highPriorityPlayers.fill(0L)
     }
 
@@ -260,6 +263,7 @@ public class PlayerInfo internal constructor(
      * @return an arraylist of all the avatars that are marked high priority to us.
      */
     public fun getHighPriorityAvatars(): List<PlayerAvatar> {
+        if (isDestroyed()) return emptyList()
         val players = highPriorityPlayers
         val count = players.sumOf(Long::countOneBits)
         if (count == 0) return emptyList()
@@ -311,6 +315,7 @@ public class PlayerInfo internal constructor(
         z: Int,
     ) {
         checkCommunicationThread()
+        if (isDestroyed()) return
         require(worldId == ROOT_WORLD || worldId in 0..<2048) {
             "World id must be -1 or in range of 0..<2048"
         }
@@ -332,6 +337,7 @@ public class PlayerInfo internal constructor(
         buildArea: BuildArea,
     ) {
         checkCommunicationThread()
+        if (isDestroyed()) return
         require(worldId == ROOT_WORLD || worldId in 0..<2048) {
             "World id must be -1 or in range of 0..<2048"
         }
@@ -359,6 +365,7 @@ public class PlayerInfo internal constructor(
         heightInZones: Int = BuildArea.DEFAULT_BUILD_AREA_SIZE,
     ) {
         checkCommunicationThread()
+        if (isDestroyed()) return
         require(worldId == ROOT_WORLD || worldId in 0..<2048) {
             "World id must be -1 or in range of 0..<2048"
         }
@@ -373,6 +380,7 @@ public class PlayerInfo internal constructor(
      */
     public fun allocateWorld(worldId: Int) {
         checkCommunicationThread()
+        if (isDestroyed()) return
         require(worldId in 0..<PROTOCOL_CAPACITY) {
             "World id out of bounds: $worldId"
         }
@@ -389,6 +397,7 @@ public class PlayerInfo internal constructor(
      */
     public fun destroyWorld(worldId: Int) {
         checkCommunicationThread()
+        if (isDestroyed()) return
         require(worldId in 0..<PROTOCOL_CAPACITY) {
             "World id out of bounds: $worldId"
         }
@@ -438,6 +447,7 @@ public class PlayerInfo internal constructor(
      */
     public fun getHighResolutionIndices(): ArrayList<Int> {
         checkCommunicationThread()
+        if (isDestroyed()) return ArrayList(0)
         val collection = ArrayList<Int>(highResolutionCount)
         for (i in 0..<highResolutionCount) {
             val index = highResolutionIndices[i].toInt()
@@ -454,6 +464,7 @@ public class PlayerInfo internal constructor(
      */
     public fun <T> appendHighResolutionIndices(collection: T): T where T : MutableCollection<Int> {
         checkCommunicationThread()
+        if (isDestroyed()) return collection
         for (i in 0..<highResolutionCount) {
             val index = highResolutionIndices[i].toInt()
             collection.add(index)
@@ -498,6 +509,7 @@ public class PlayerInfo internal constructor(
         z: Int,
     ) {
         checkCommunicationThread()
+        if (isDestroyed()) return
         this.avatar.updateCoord(level, x, z)
     }
 
@@ -571,6 +583,7 @@ public class PlayerInfo internal constructor(
      */
     public fun handleAbsolutePlayerPositions(byteBuf: ByteBuf) {
         checkCommunicationThread()
+        if (isDestroyed()) return
         check(avatar.currentCoord != CoordGrid.INVALID) {
             "Avatar position must be updated via playerinfo#updateCoord before sending RebuildLogin/ReconnectOk."
         }
@@ -599,6 +612,7 @@ public class PlayerInfo internal constructor(
      */
     public fun onReconnect() {
         checkCommunicationThread()
+        if (isDestroyed()) return
         buffer = null
         highResMovementBuffer = null
         previousPacket = null
@@ -664,6 +678,7 @@ public class PlayerInfo internal constructor(
      */
     public fun clearEntities(worldId: Int) {
         checkCommunicationThread()
+        if (isDestroyed()) return
         require(worldId == ROOT_WORLD || worldId in 0..<2048) {
             "World id must be -1 or in range of 0..<2048"
         }

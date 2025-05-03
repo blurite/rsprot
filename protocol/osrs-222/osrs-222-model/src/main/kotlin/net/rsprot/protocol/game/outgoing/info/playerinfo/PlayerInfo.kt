@@ -123,6 +123,7 @@ public class PlayerInfo internal constructor(
      * dynamic worlds, this value must be updated to reflect on it.
      */
     public fun setActiveWorld(worldId: Int) {
+        if (isDestroyed()) return
         require(worldId == ROOT_WORLD || worldId in 0..<2048) {
             "World id must be -1 or in range of 0..<2048"
         }
@@ -144,6 +145,7 @@ public class PlayerInfo internal constructor(
         x: Int,
         z: Int,
     ) {
+        if (isDestroyed()) return
         require(worldId == ROOT_WORLD || worldId in 0..<2048) {
             "World id must be -1 or in range of 0..<2048"
         }
@@ -163,6 +165,7 @@ public class PlayerInfo internal constructor(
         worldId: Int,
         buildArea: BuildArea,
     ) {
+        if (isDestroyed()) return
         require(worldId == ROOT_WORLD || worldId in 0..<2048) {
             "World id must be -1 or in range of 0..<2048"
         }
@@ -189,6 +192,7 @@ public class PlayerInfo internal constructor(
         widthInZones: Int = BuildArea.DEFAULT_BUILD_AREA_SIZE,
         heightInZones: Int = BuildArea.DEFAULT_BUILD_AREA_SIZE,
     ) {
+        if (isDestroyed()) return
         require(worldId == ROOT_WORLD || worldId in 0..<2048) {
             "World id must be -1 or in range of 0..<2048"
         }
@@ -202,6 +206,7 @@ public class PlayerInfo internal constructor(
      * @param worldId the new world entity id
      */
     public fun allocateWorld(worldId: Int) {
+        if (isDestroyed()) return
         require(worldId in 0..<PROTOCOL_CAPACITY) {
             "World id out of bounds: $worldId"
         }
@@ -218,6 +223,7 @@ public class PlayerInfo internal constructor(
      * This is intended to be used when one of the world entities leaves the render distance.
      */
     public fun destroyWorld(worldId: Int) {
+        if (isDestroyed()) return
         require(worldId in 0..<PROTOCOL_CAPACITY) {
             "World id out of bounds: $worldId"
         }
@@ -276,6 +282,7 @@ public class PlayerInfo internal constructor(
      * @return the newly created arraylist of indices
      */
     public fun getHighResolutionIndices(worldId: Int): ArrayList<Int> {
+        if (isDestroyed()) return ArrayList(0)
         val details = getDetails(worldId)
         val collection = ArrayList<Int>(details.highResolutionCount)
         for (i in 0..<details.highResolutionCount) {
@@ -327,6 +334,7 @@ public class PlayerInfo internal constructor(
         collection: T,
         throwExceptionIfNoWorld: Boolean = true,
     ): T where T : MutableCollection<Int> {
+        if (isDestroyed()) return collection
         val details =
             if (throwExceptionIfNoWorld) {
                 getDetails(worldId)
@@ -375,6 +383,7 @@ public class PlayerInfo internal constructor(
         x: Int,
         z: Int,
     ) {
+        if (isDestroyed()) return
         this.avatar.updateCoord(level, x, z)
     }
 
@@ -474,6 +483,7 @@ public class PlayerInfo internal constructor(
         worldId: Int,
         byteBuf: ByteBuf,
     ) {
+        if (isDestroyed()) return
         check(avatar.currentCoord != CoordGrid.INVALID) {
             "Avatar position must be updated via playerinfo#updateCoord before sending RebuildLogin/ReconnectOk."
         }
@@ -499,6 +509,7 @@ public class PlayerInfo internal constructor(
      * Cached state should be re-assigned from the server as a result of this.
      */
     public fun onReconnect() {
+        if (isDestroyed()) return
         reset()
         // Restore the root world by polling a new one
         val details = protocol.detailsStorage.poll(ROOT_WORLD)
@@ -546,6 +557,7 @@ public class PlayerInfo internal constructor(
      * If the world is in range of 0..<2048, only that specific world will be cleared.
      */
     public fun clearEntities(worldId: Int) {
+        if (isDestroyed()) return
         require(worldId == ROOT_WORLD || worldId in 0..<2048) {
             "World id must be -1 or in range of 0..<2048"
         }
@@ -1002,6 +1014,7 @@ public class PlayerInfo internal constructor(
      * Marks the player info object as initialized, allowing for any further coordinate changes to take effect.
      */
     public fun postRebuildLogin() {
+        if (isDestroyed()) return
         val rootDetails = getDetails(ROOT_WORLD)
         rootDetails.initialized = true
         avatar.postUpdate()
