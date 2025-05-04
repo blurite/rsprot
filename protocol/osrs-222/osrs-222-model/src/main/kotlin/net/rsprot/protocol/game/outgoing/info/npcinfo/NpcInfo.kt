@@ -420,7 +420,17 @@ public class NpcInfo internal constructor(
         val jagBuffer = backingBuffer(details).toJagByteBuf()
         for (i in 0 until details.extendedInfoCount) {
             val index = details.extendedInfoIndices[i].toInt()
-            val other = checkNotNull(repository.getOrNull(index))
+            val other = repository.getOrNull(index)
+            if (other == null) {
+                // If other is null at this point, it means it was destroyed mid-processing at an earlier
+                // stage. In order to avoid the issue escalating further by throwing errors for every player
+                // that was in vicinity of the NPC that got destroyed, we simply write no-mask-update,
+                // even though a mask update was requested at an earlier stage.
+                // The next game tick, the NPC will be removed as the info is null, which is one of
+                // the conditions for removing a NPC from tracking.
+                jagBuffer.p1(0)
+                continue
+            }
             val observerFlag = details.observerExtendedInfoFlags.getFlag(i)
             other.extendedInfo.pExtendedInfo(
                 oldSchoolClientType,
