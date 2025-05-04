@@ -78,8 +78,9 @@ public abstract class OutgoingMessageEncoder : ChannelOutboundHandlerAdapter() {
             buildList {
                 var sum = 0
                 var curList: MutableList<OutgoingGameMessage> = mutableListOf()
+                val estimatorHandle = estimator.newHandle()
                 for (message in msg.messages) {
-                    val size = headerSize(message) + message.estimateSize()
+                    val size = estimatorHandle.size(message)
                     // If we've hit the 32767 limit, wrap up the list and append to the next one
                     if (sum + size >= 32767) {
                         add(curList)
@@ -103,20 +104,6 @@ public abstract class OutgoingMessageEncoder : ChannelOutboundHandlerAdapter() {
             val promiseToUse = if (index == childLists.size - 1) promise else ctx.voidPromise()
             writeRegularMessage(ctx, PacketGroupStart(list), promiseToUse)
         }
-    }
-
-    private fun headerSize(message: OutgoingGameMessage): Int {
-        val encoder = repository.getEncoder(message::class.java)
-        val prot = encoder.prot
-        val opcode = prot.opcode
-        val opcodeSize = if (opcode >= 0x80) Short.SIZE_BYTES else Byte.SIZE_BYTES
-        val constSize =
-            when (val size = prot.size) {
-                Prot.VAR_SHORT -> Short.SIZE_BYTES
-                Prot.VAR_BYTE -> Byte.SIZE_BYTES
-                else -> size
-            }
-        return opcodeSize + constSize
     }
 
     private fun writeRegularMessage(
