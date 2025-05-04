@@ -233,8 +233,8 @@ public class NpcAvatarExtendedInfo(
      * The index will be used for tinting purposes, as both the player who dealt
      * the hit, and the recipient will see a tinted variant.
      * Everyone else, however, will see a regular darkened hit mark.
-     * @param selfType the multi hitmark id that supports tinted and darkened variants.
-     * If the value is -1, the hitmark will nto render to the player with the source index,
+     * @param sourceType the multi hitmark id that supports tinted and darkened variants.
+     * If the value is -1, the hitmark will not render to the player with the source index,
      * only everyone else.
      * @param otherType the hitmark id to render to anyone that isn't the recipient,
      * or the one who dealt the hit. This will generally be a darkened variant.
@@ -246,8 +246,8 @@ public class NpcAvatarExtendedInfo(
      */
     public fun addHitMark(
         sourceIndex: Int,
-        selfType: Int,
-        otherType: Int = selfType,
+        sourceType: Int,
+        otherType: Int = sourceType,
         value: Int,
         delay: Int = 0,
     ) {
@@ -264,8 +264,8 @@ public class NpcAvatarExtendedInfo(
         }
 
         // All the properties below here would result in a crash if an invalid input was provided.
-        require(selfType in HIT_TYPE_RANGE) {
-            "Unexpected selfType: $selfType, expected range $HIT_TYPE_RANGE"
+        require(sourceType in HIT_TYPE_RANGE) {
+            "Unexpected sourceType: $sourceType, expected range $HIT_TYPE_RANGE"
         }
         require(otherType in HIT_TYPE_RANGE) {
             "Unexpected otherType: $otherType, expected range $HIT_TYPE_RANGE"
@@ -279,8 +279,8 @@ public class NpcAvatarExtendedInfo(
         blocks.hit.hitMarkList +=
             HitMark(
                 sourceIndex,
-                selfType.toUShort(),
-                selfType.toUShort(),
+                sourceType.toUShort(),
+                sourceType.toUShort(),
                 otherType.toUShort(),
                 value.toUShort(),
                 delay.toUShort(),
@@ -314,8 +314,8 @@ public class NpcAvatarExtendedInfo(
      * The index will be used for tinting purposes, as both the player who dealt
      * the hit, and the recipient will see a tinted variant.
      * Everyone else, however, will see a regular darkened hit mark.
-     * @param selfType the multi hitmark id that supports tinted and darkened variants.
-     * If the value is -1, the hitmark will nto render to the player with the source index,
+     * @param sourceType the multi hitmark id that supports tinted and darkened variants.
+     * If the value is -1, the hitmark will not render to the player with the source index,
      * only everyone else.
      * @param otherType the hitmark id to render to anyone that isn't the recipient,
      * or the one who dealt the hit. This will generally be a darkened variant.
@@ -334,8 +334,8 @@ public class NpcAvatarExtendedInfo(
     @JvmOverloads
     public fun addSoakedHitMark(
         sourceIndex: Int,
-        selfType: Int,
-        otherType: Int = selfType,
+        sourceType: Int,
+        otherType: Int = sourceType,
         value: Int,
         selfSoakType: Int,
         otherSoakType: Int = selfSoakType,
@@ -355,8 +355,8 @@ public class NpcAvatarExtendedInfo(
         }
 
         // All the properties below here would result in a crash if an invalid input was provided.
-        require(selfType in HIT_TYPE_RANGE) {
-            "Unexpected selfType: $selfType, expected range $HIT_TYPE_RANGE"
+        require(sourceType in HIT_TYPE_RANGE) {
+            "Unexpected sourceType: $sourceType, expected range $HIT_TYPE_RANGE"
         }
         require(otherType in HIT_TYPE_RANGE) {
             "Unexpected otherType: $otherType, expected range $HIT_TYPE_RANGE"
@@ -379,8 +379,8 @@ public class NpcAvatarExtendedInfo(
         blocks.hit.hitMarkList +=
             HitMark(
                 sourceIndex,
-                selfType.toUShort(),
-                selfType.toUShort(),
+                sourceType.toUShort(),
+                sourceType.toUShort(),
                 otherType.toUShort(),
                 value.toUShort(),
                 selfSoakType.toUShort(),
@@ -402,11 +402,10 @@ public class NpcAvatarExtendedInfo(
      * If the target avatar is a NPC, set the index as it is.
      * If there is no source, set the index to -1.
      * The index will be used for rendering purposes, as both the player who dealt
-     * the hit, and the recipient will see the [selfType] variant, and everyone else
+     * the hit, and the recipient will see the [sourceType] variant, and everyone else
      * will see the [otherType] variant, which, if set to -1 will be skipped altogether.
-     * @param selfType the id of the headbar to render to the entity on which the headbar appears,
-     * as well as the source who resulted in the creation of the headbar.
-     * @param otherType the id of the headbar to render to everyone that doesn't fit the [selfType]
+     * @param sourceType the id of the headbar to render to the player with the source index.
+     * @param otherType the id of the headbar to render to everyone that doesn't fit the [sourceType]
      * criteria. If set to -1, the headbar will not be rendered to these individuals.
      * @param startFill the number of pixels to render of this headbar at in the start.
      * The number of pixels that a headbar supports is defined in its respective headbar config.
@@ -418,8 +417,8 @@ public class NpcAvatarExtendedInfo(
     @JvmOverloads
     public fun addHeadBar(
         sourceIndex: Int,
-        selfType: Int,
-        otherType: Int = selfType,
+        sourceType: Int,
+        otherType: Int = sourceType,
         startFill: Int,
         endFill: Int = startFill,
         startTime: Int = 0,
@@ -445,11 +444,11 @@ public class NpcAvatarExtendedInfo(
         }
 
         // All the properties below here would result in a crash if an invalid input was provided.
-        require(selfType == -1 || selfType in UNSIGNED_SMART_1_OR_2_RANGE) {
-            "Unexpected id: $selfType, expected value -1 or in range $UNSIGNED_SMART_1_OR_2_RANGE"
+        require(sourceType == -1 || sourceType in UNSIGNED_SMART_1_OR_2_RANGE) {
+            "Unexpected source type: $sourceType, expected value -1 or in range $UNSIGNED_SMART_1_OR_2_RANGE"
         }
         require(otherType == -1 || otherType in UNSIGNED_SMART_1_OR_2_RANGE) {
-            "Unexpected id: $otherType, expected value -1 or in range $UNSIGNED_SMART_1_OR_2_RANGE"
+            "Unexpected other type: $otherType, expected value -1 or in range $UNSIGNED_SMART_1_OR_2_RANGE"
         }
         require(startTime in UNSIGNED_SMART_1_OR_2_RANGE) {
             "Unexpected startTime: $startTime, expected range $UNSIGNED_SMART_1_OR_2_RANGE"
@@ -463,7 +462,7 @@ public class NpcAvatarExtendedInfo(
         blocks.hit.headBarList +=
             HeadBar(
                 sourceIndex,
-                selfType.toUShort(),
+                sourceType.toUShort(),
                 otherType.toUShort(),
                 startFill.toUByte(),
                 endFill.toUByte(),
