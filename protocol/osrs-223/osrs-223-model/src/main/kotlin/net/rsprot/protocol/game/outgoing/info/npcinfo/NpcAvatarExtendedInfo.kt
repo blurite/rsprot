@@ -699,7 +699,7 @@ public class NpcAvatarExtendedInfo(
      */
     @Suppress("MemberVisibilityCanBePrivate")
     @Deprecated(
-        message = "Deprecated. Use setVisibleOps(flag for consistency.",
+        message = "Deprecated. Use setVisibleOps(flag) for consistency.",
         replaceWith = ReplaceWith("setVisibleOps(flag)"),
     )
     public fun visibleOps(flag: Int) {
@@ -713,10 +713,13 @@ public class NpcAvatarExtendedInfo(
      * Note that this extended info block is not transient and will be transmitted to
      * future players as well.
      */
+    @Deprecated(
+        message = "Deprecated. Use setVisibleOps() with [net.rsprot.protocol.game.outgoing.util.OpFlags].",
+        replaceWith = ReplaceWith("setVisibleOps(flag.toByte())"),
+    )
     @Suppress("MemberVisibilityCanBePrivate")
     public fun setVisibleOps(flag: Int) {
-        blocks.visibleOps.ops = flag.toUByte()
-        flags = flags or OPS
+        setVisibleOps(flag.toByte())
     }
 
     /**
@@ -749,6 +752,10 @@ public class NpcAvatarExtendedInfo(
      * @param op4 whether to render op4
      * @param op5 whether to render op5
      */
+    @Deprecated(
+        message = "Deprecated. Use setVisibleOps() with [net.rsprot.protocol.game.outgoing.util.OpFlags].",
+        replaceWith = ReplaceWith("setVisibleOps(OpFlags.ofOps(op1, op2, op3, op4, op5))"),
+    )
     public fun setVisibleOps(
         op1: Boolean,
         op2: Boolean,
@@ -779,6 +786,10 @@ public class NpcAvatarExtendedInfo(
     /**
      * Sets all the right-click options invisible on this NPC.
      */
+    @Deprecated(
+        message = "Deprecated. Use setVisibleOps() with [net.rsprot.protocol.game.outgoing.util.OpFlags].",
+        replaceWith = ReplaceWith("setVisibleOps(OpFlags.NONE_SHOWN)"),
+    )
     public fun setAllOpsInvisible() {
         setVisibleOps(0)
     }
@@ -797,8 +808,26 @@ public class NpcAvatarExtendedInfo(
     /**
      * Sets all the right-click options as visible on this NPC.
      */
+    @Deprecated(
+        message = "Deprecated. Use setVisibleOps() with [net.rsprot.protocol.game.outgoing.util.OpFlags].",
+        replaceWith = ReplaceWith("setVisibleOps(OpFlags.ALL_SHOWN)"),
+    )
     public fun setAllOpsVisible() {
         setVisibleOps(0b11111)
+    }
+
+    /**
+     * Sets the visible ops flag of this NPC to the provided value.
+     * @param flag the bit flag to set. Only the 5 lowest bits are used,
+     * and an enabled bit implies the option at that index should render.
+     * Note that this extended info block is not transient and will be transmitted to
+     * future players as well.
+     *
+     * Use [net.rsprot.protocol.game.outgoing.util.OpFlags] class to build the flag.
+     */
+    public fun setVisibleOps(flag: Byte) {
+        blocks.visibleOps.ops = flag.toUByte()
+        flags = flags or OPS
     }
 
     /**
