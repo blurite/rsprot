@@ -93,6 +93,10 @@ public abstract class OutgoingMessageEncoder : ChannelOutboundHandlerAdapter() {
                     sum += size
                     curList += message
                 }
+
+                if (curList.isNotEmpty()) {
+                    add(curList)
+                }
             }
         for ((index, list) in childLists.withIndex()) {
             // Fulfill the promise on the last write operation here
