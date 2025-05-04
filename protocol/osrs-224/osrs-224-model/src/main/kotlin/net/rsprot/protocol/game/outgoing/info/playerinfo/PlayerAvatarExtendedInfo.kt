@@ -466,25 +466,28 @@ public class PlayerAvatarExtendedInfo(
             return
         }
         verify {
+            // Index being incorrect would not lead to a crash
             require(sourceIndex == -1 || sourceIndex in 0..0x107FF) {
                 "Unexpected source index: $sourceIndex, expected values: -1 to reset, " +
                     "0-65535 for NPCs, 65536-67583 for players"
             }
-            require(selfType in UNSIGNED_SMART_1_OR_2_RANGE) {
-                "Unexpected selfType: $selfType, expected range $UNSIGNED_SMART_1_OR_2_RANGE"
-            }
-            require(sourceType in UNSIGNED_SMART_1_OR_2_RANGE) {
-                "Unexpected sourceType: $sourceType, expected range $UNSIGNED_SMART_1_OR_2_RANGE"
-            }
-            require(otherType == -1 || otherType in UNSIGNED_SMART_1_OR_2_RANGE) {
-                "Unexpected otherType: $otherType, expected value -1 or range $UNSIGNED_SMART_1_OR_2_RANGE"
-            }
-            require(value in UNSIGNED_SMART_1_OR_2_RANGE) {
-                "Unexpected value: $value, expected range $UNSIGNED_SMART_1_OR_2_RANGE"
-            }
-            require(delay in UNSIGNED_SMART_1_OR_2_RANGE) {
-                "Unexpected delay: $delay, expected range $UNSIGNED_SMART_1_OR_2_RANGE"
-            }
+        }
+
+        // All the properties below here would result in a crash if an invalid input was provided.
+        require(selfType in HIT_TYPE_RANGE) {
+            "Unexpected selfType: $selfType, expected range $HIT_TYPE_RANGE"
+        }
+        require(sourceType in HIT_TYPE_RANGE) {
+            "Unexpected sourceType: $sourceType, expected range $HIT_TYPE_RANGE"
+        }
+        require(otherType in HIT_TYPE_RANGE) {
+            "Unexpected otherType: $otherType, expected range $HIT_TYPE_RANGE"
+        }
+        require(value in UNSIGNED_SMART_1_OR_2_RANGE) {
+            "Unexpected value: $value, expected range $UNSIGNED_SMART_1_OR_2_RANGE"
+        }
+        require(delay in UNSIGNED_SMART_1_OR_2_RANGE) {
+            "Unexpected delay: $delay, expected range $UNSIGNED_SMART_1_OR_2_RANGE"
         }
         blocks.hit.hitMarkList +=
             HitMark(
@@ -616,37 +619,40 @@ public class PlayerAvatarExtendedInfo(
             return
         }
         verify {
+            // Index being incorrect would not lead to a crash
             require(sourceIndex == -1 || sourceIndex in 0..0x107FF) {
                 "Unexpected source index: $sourceIndex, expected values: -1 to reset, " +
                     "0-65535 for NPCs, 65536-67583 for players"
             }
-            require(selfType in UNSIGNED_SMART_1_OR_2_RANGE) {
-                "Unexpected selfType: $selfType, expected range $UNSIGNED_SMART_1_OR_2_RANGE"
-            }
-            require(sourceType in UNSIGNED_SMART_1_OR_2_RANGE) {
-                "Unexpected sourceType: $sourceType, expected range $UNSIGNED_SMART_1_OR_2_RANGE"
-            }
-            require(otherType == -1 || otherType in UNSIGNED_SMART_1_OR_2_RANGE) {
-                "Unexpected otherType: $otherType, expected value -1 or in range $UNSIGNED_SMART_1_OR_2_RANGE"
-            }
-            require(value in UNSIGNED_SMART_1_OR_2_RANGE) {
-                "Unexpected value: $value, expected range $UNSIGNED_SMART_1_OR_2_RANGE"
-            }
-            require(selfSoakType in UNSIGNED_SMART_1_OR_2_RANGE) {
-                "Unexpected selfSoakType: $selfSoakType, expected range $UNSIGNED_SMART_1_OR_2_RANGE"
-            }
-            require(sourceSoakType in UNSIGNED_SMART_1_OR_2_RANGE) {
-                "Unexpected sourceSoakType: $sourceSoakType, expected range $UNSIGNED_SMART_1_OR_2_RANGE"
-            }
-            require(otherSoakType in UNSIGNED_SMART_1_OR_2_RANGE) {
-                "Unexpected otherSoakType: $otherSoakType, expected range $UNSIGNED_SMART_1_OR_2_RANGE"
-            }
-            require(soakValue in UNSIGNED_SMART_1_OR_2_RANGE) {
-                "Unexpected soakValue: $soakValue, expected range $UNSIGNED_SMART_1_OR_2_RANGE"
-            }
-            require(delay in UNSIGNED_SMART_1_OR_2_RANGE) {
-                "Unexpected delay: $delay, expected range $UNSIGNED_SMART_1_OR_2_RANGE"
-            }
+        }
+
+        // All the properties below here would result in a crash if an invalid input was provided.
+        require(selfType in HIT_TYPE_RANGE) {
+            "Unexpected selfType: $selfType, expected range $HIT_TYPE_RANGE"
+        }
+        require(sourceType in HIT_TYPE_RANGE) {
+            "Unexpected sourceType: $sourceType, expected range $HIT_TYPE_RANGE"
+        }
+        require(otherType in HIT_TYPE_RANGE) {
+            "Unexpected otherType: $otherType, expected range $HIT_TYPE_RANGE"
+        }
+        require(value in UNSIGNED_SMART_1_OR_2_RANGE) {
+            "Unexpected value: $value, expected range $UNSIGNED_SMART_1_OR_2_RANGE"
+        }
+        require(selfSoakType in UNSIGNED_SMART_1_OR_2_RANGE) {
+            "Unexpected selfSoakType: $selfSoakType, expected range $UNSIGNED_SMART_1_OR_2_RANGE"
+        }
+        require(sourceSoakType in UNSIGNED_SMART_1_OR_2_RANGE) {
+            "Unexpected sourceSoakType: $sourceSoakType, expected range $UNSIGNED_SMART_1_OR_2_RANGE"
+        }
+        require(otherSoakType in UNSIGNED_SMART_1_OR_2_RANGE) {
+            "Unexpected otherSoakType: $otherSoakType, expected range $UNSIGNED_SMART_1_OR_2_RANGE"
+        }
+        require(soakValue in UNSIGNED_SMART_1_OR_2_RANGE) {
+            "Unexpected soakValue: $soakValue, expected range $UNSIGNED_SMART_1_OR_2_RANGE"
+        }
+        require(delay in UNSIGNED_SMART_1_OR_2_RANGE) {
+            "Unexpected delay: $delay, expected range $UNSIGNED_SMART_1_OR_2_RANGE"
         }
         blocks.hit.hitMarkList +=
             HitMark(
@@ -701,31 +707,35 @@ public class PlayerAvatarExtendedInfo(
             return
         }
         verify {
+            // Index being incorrect would not lead to a crash
             require(sourceIndex == -1 || sourceIndex in 0..0x107FF) {
                 "Unexpected source index: $sourceIndex, expected values: -1 to reset, " +
                     "0-65535 for NPCs, 65536-67583 for players"
             }
-            require(selfType == -1 || selfType in UNSIGNED_SMART_1_OR_2_RANGE) {
-                "Unexpected id: $selfType, expected value -1 or in range $UNSIGNED_SMART_1_OR_2_RANGE"
-            }
-            require(otherType == -1 || otherType in UNSIGNED_SMART_1_OR_2_RANGE) {
-                "Unexpected id: $otherType, expected value -1 or in range $UNSIGNED_SMART_1_OR_2_RANGE"
-            }
+            // Fills are transmitted via a byte so they would not crash
             require(startFill in UNSIGNED_BYTE_RANGE) {
                 "Unexpected startFill: $startFill, expected range $UNSIGNED_BYTE_RANGE"
             }
             require(endFill in UNSIGNED_BYTE_RANGE) {
                 "Unexpected endFill: $endFill, expected range $UNSIGNED_BYTE_RANGE"
             }
-            require(startTime in UNSIGNED_SMART_1_OR_2_RANGE) {
-                "Unexpected startTime: $startTime, expected range $UNSIGNED_SMART_1_OR_2_RANGE"
-            }
-            require(endTime in UNSIGNED_SMART_1_OR_2_RANGE) {
-                "Unexpected endTime: $endTime, expected range $UNSIGNED_SMART_1_OR_2_RANGE"
-            }
-            require(endTime >= startTime) {
-                "End time must be greater than or equal to start time: $startTime <= $endTime"
-            }
+        }
+
+        // All the properties below here would result in a crash if an invalid input was provided.
+        require(selfType == -1 || selfType in UNSIGNED_SMART_1_OR_2_RANGE) {
+            "Unexpected id: $selfType, expected value -1 or in range $UNSIGNED_SMART_1_OR_2_RANGE"
+        }
+        require(otherType == -1 || otherType in UNSIGNED_SMART_1_OR_2_RANGE) {
+            "Unexpected id: $otherType, expected value -1 or in range $UNSIGNED_SMART_1_OR_2_RANGE"
+        }
+        require(startTime in UNSIGNED_SMART_1_OR_2_RANGE) {
+            "Unexpected startTime: $startTime, expected range $UNSIGNED_SMART_1_OR_2_RANGE"
+        }
+        require(endTime in UNSIGNED_SMART_1_OR_2_RANGE) {
+            "Unexpected endTime: $endTime, expected range $UNSIGNED_SMART_1_OR_2_RANGE"
+        }
+        require(endTime >= startTime) {
+            "End time must be greater than or equal to start time: $startTime <= $endTime"
         }
         blocks.hit.headBarList +=
             HeadBar(
@@ -1825,6 +1835,7 @@ public class PlayerAvatarExtendedInfo(
         private val UNSIGNED_BYTE_RANGE: IntRange = UByte.MIN_VALUE.toInt()..UByte.MAX_VALUE.toInt()
         private val UNSIGNED_SHORT_RANGE: IntRange = UShort.MIN_VALUE.toInt()..UShort.MAX_VALUE.toInt()
         private val UNSIGNED_SMART_1_OR_2_RANGE: IntRange = 0..0x7FFF
+        private val HIT_TYPE_RANGE: IntRange = -1..0x7FFD
 
         /**
          * Executes the [block] if input verification is enabled,
