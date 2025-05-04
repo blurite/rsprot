@@ -615,6 +615,9 @@ public class NpcAvatarExtendedInfo(
      * It should be noted that this extended info block is transient and only applies to one cycle.
      * The server is expected to additionally change the id of the avatar itself, otherwise
      * any new observers will get the old variant.
+     *
+     * Additionally, note that in order to reset the NPC back to the original variant, the server
+     * must transform the NPC to the original id. RSProt does not track the original id internally.
      * @param id the new id of the npc to transform to.
      */
     @Deprecated(
@@ -630,6 +633,9 @@ public class NpcAvatarExtendedInfo(
      * It should be noted that this extended info block is transient and only applies to one cycle.
      * The server is expected to additionally change the id of the avatar itself via [NpcAvatar.setId],
      * otherwise any new observers will get the old variant.
+     *
+     * Additionally, note that in order to reset the NPC back to the original variant, the server
+     * must transform the NPC to the original id. RSProt does not track the original id internally.
      * @param id the new id of the npc to transform to.
      */
     public fun setTransmogrification(id: Int) {
