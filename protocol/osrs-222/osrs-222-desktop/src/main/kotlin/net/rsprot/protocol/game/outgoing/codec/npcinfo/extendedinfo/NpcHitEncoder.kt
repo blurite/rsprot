@@ -28,12 +28,10 @@ public class NpcHitEncoder : OnDemandExtendedInfoEncoder<Hit> {
         for (hit in info.hitMarkList) {
             // If we were the source of the hit in the first place
             val tinted = localPlayerIndex == (hit.sourceIndex - 0x10_000)
+            val mainType = if (tinted) hit.selfType else hit.otherType
             // Skip the hitsplat if it isn't meant to render to us
             // Should be noted that we only check this on the main types, and not soak ones
-            if (hit.otherType == UShort.MAX_VALUE && !tinted) {
-                continue
-            }
-            val mainType = if (tinted) hit.selfType else hit.otherType
+            if (mainType == UShort.MAX_VALUE) continue
             val soakType = if (tinted) hit.selfSoakType else hit.otherSoakType
             if (mainType.toInt() == 0x7FFE) {
                 buffer.pSmart1or2(0x7FFE)
