@@ -510,10 +510,8 @@ public class PlayerAvatarExtendedInfo(
         if (blocks.hit.hitMarkList.size >= 0xFF) {
             return
         }
-        verify {
-            require(delay in UNSIGNED_SMART_1_OR_2_RANGE) {
-                "Unexpected delay: $delay, expected range $UNSIGNED_SMART_1_OR_2_RANGE"
-            }
+        require(delay in UNSIGNED_SMART_1_OR_2_RANGE) {
+            "Unexpected delay: $delay, expected range $UNSIGNED_SMART_1_OR_2_RANGE"
         }
         blocks.hit.hitMarkList += HitMark(0x7FFEu, delay.toUShort())
         flags = flags or HITS
