@@ -4,6 +4,7 @@ plugins {
 }
 
 dependencies {
+    implementation(rootProject.libs.inline.logger)
     api(platform(rootProject.libs.netty.bom))
     api(rootProject.libs.netty.buffer)
     api(rootProject.libs.netty.transport)

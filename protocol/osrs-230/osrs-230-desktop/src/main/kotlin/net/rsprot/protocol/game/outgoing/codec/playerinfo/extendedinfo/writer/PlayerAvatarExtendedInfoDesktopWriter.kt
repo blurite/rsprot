@@ -1,5 +1,8 @@
+@file:Suppress("DuplicatedCode")
+
 package net.rsprot.protocol.game.outgoing.codec.playerinfo.extendedinfo.writer
 
+import com.github.michaelbull.logging.InlineLogger
 import net.rsprot.buffer.JagByteBuf
 import net.rsprot.protocol.common.client.OldSchoolClientType
 import net.rsprot.protocol.game.outgoing.codec.playerinfo.extendedinfo.PlayerAppearanceEncoder
@@ -17,6 +20,9 @@ import net.rsprot.protocol.game.outgoing.codec.playerinfo.extendedinfo.PlayerTin
 import net.rsprot.protocol.game.outgoing.info.AvatarExtendedInfoWriter
 import net.rsprot.protocol.game.outgoing.info.playerinfo.PlayerAvatarExtendedInfo
 import net.rsprot.protocol.game.outgoing.info.playerinfo.PlayerAvatarExtendedInfoBlocks
+import net.rsprot.protocol.internal.game.outgoing.info.ExtendedInfo
+import net.rsprot.protocol.internal.game.outgoing.info.encoder.OnDemandExtendedInfoEncoder
+import net.rsprot.protocol.internal.game.outgoing.info.encoder.PrecomputedExtendedInfoEncoder
 import net.rsprot.protocol.internal.game.outgoing.info.playerinfo.encoder.PlayerExtendedInfoEncoders
 
 public class PlayerAvatarExtendedInfoDesktopWriter :
@@ -89,6 +95,9 @@ public class PlayerAvatarExtendedInfoDesktopWriter :
         var clientFlag = convertFlags(flag)
         if (clientFlag and 0xFF.inv() != 0) clientFlag = clientFlag or EXTENDED_SHORT
         if (clientFlag and 0xFFFF.inv() != 0) clientFlag = clientFlag or EXTENDED_MEDIUM
+        var outFlag = clientFlag and (EXTENDED_SHORT or EXTENDED_MEDIUM)
+        val flagIndex = buffer.writerIndex()
+
         buffer.p1(clientFlag)
         if (clientFlag and EXTENDED_SHORT != 0) {
             buffer.p1(clientFlag shr 8)
@@ -97,48 +106,80 @@ public class PlayerAvatarExtendedInfoDesktopWriter :
             buffer.p1(clientFlag shr 16)
         }
 
-        if (clientFlag and MOVE_SPEED != 0) {
-            pCachedData(buffer, blocks.moveSpeed)
-        }
-        if (clientFlag and SEQUENCE != 0) {
-            pCachedData(buffer, blocks.sequence)
-        }
-        if (clientFlag and SPOTANIM != 0) {
-            pCachedData(buffer, blocks.spotAnims)
-        }
-        if (clientFlag and TEMP_MOVE_SPEED != 0) {
-            pCachedData(buffer, blocks.temporaryMoveSpeed)
-        }
-        if (clientFlag and APPEARANCE != 0) {
-            pCachedData(buffer, blocks.appearance)
-        }
+        outFlag = outFlag or pCached(buffer, clientFlag, MOVE_SPEED, blocks.moveSpeed)
+        outFlag = outFlag or pCached(buffer, clientFlag, SEQUENCE, blocks.sequence)
+        outFlag = outFlag or pCached(buffer, clientFlag, SPOTANIM, blocks.spotAnims)
+        outFlag = outFlag or pCached(buffer, clientFlag, TEMP_MOVE_SPEED, blocks.temporaryMoveSpeed)
+        outFlag = outFlag or pCached(buffer, clientFlag, APPEARANCE, blocks.appearance)
         // Name extras
-        if (clientFlag and HITS != 0) {
-            pOnDemandData(buffer, localIndex, blocks.hit, observerIndex)
-        }
+        outFlag = outFlag or pOnDemand(buffer, clientFlag, HITS, blocks.hit, localIndex, observerIndex)
         // Old chat
-        if (clientFlag and FACE_ANGLE != 0) {
-            pCachedData(buffer, blocks.faceAngle)
+        outFlag = outFlag or pCached(buffer, clientFlag, FACE_ANGLE, blocks.faceAngle)
+        outFlag = outFlag or pOnDemand(buffer, clientFlag, TINTING, blocks.tinting, localIndex, observerIndex)
+        outFlag = outFlag or pCached(buffer, clientFlag, EXACT_MOVE, blocks.exactMove)
+        outFlag = outFlag or pCached(buffer, clientFlag, SAY, blocks.say)
+        outFlag = outFlag or pCached(buffer, clientFlag, CHAT, blocks.chat)
+        outFlag = outFlag or pCached(buffer, clientFlag, FACE_PATHINGENTITY, blocks.facePathingEntity)
+
+        if (outFlag != clientFlag) {
+            val finalPos = buffer.writerIndex()
+            buffer.writerIndex(flagIndex)
+            buffer.p1(outFlag)
+            if (outFlag and EXTENDED_SHORT != 0) {
+                buffer.p1(outFlag shr 8)
+            }
+            if (outFlag and EXTENDED_MEDIUM != 0) {
+                buffer.p1(outFlag shr 16)
+            }
+            buffer.writerIndex(finalPos)
         }
-        if (clientFlag and TINTING != 0) {
-            pOnDemandData(buffer, localIndex, blocks.tinting, observerIndex)
+    }
+
+    private fun <T : ExtendedInfo<T, E>, E : PrecomputedExtendedInfoEncoder<T>> pCached(
+        buffer: JagByteBuf,
+        clientFlag: Int,
+        blockFlag: Int,
+        block: T,
+    ): Int {
+        if (clientFlag and blockFlag == 0) return 0
+        val pos = buffer.writerIndex()
+        return try {
+            pCachedData(buffer, block)
+            blockFlag
+        } catch (e: Exception) {
+            buffer.writerIndex(pos)
+            logger.error(e) {
+                "Unable to put cached mask data for $block"
+            }
+            0
         }
-        if (clientFlag and EXACT_MOVE != 0) {
-            pCachedData(buffer, blocks.exactMove)
-        }
-        if (clientFlag and SAY != 0) {
-            pCachedData(buffer, blocks.say)
-        }
-        if (clientFlag and CHAT != 0) {
-            pCachedData(buffer, blocks.chat)
-        }
-        if (clientFlag and FACE_PATHINGENTITY != 0) {
-            pCachedData(buffer, blocks.facePathingEntity)
+    }
+
+    private fun <T : ExtendedInfo<T, E>, E : OnDemandExtendedInfoEncoder<T>> pOnDemand(
+        buffer: JagByteBuf,
+        clientFlag: Int,
+        blockFlag: Int,
+        block: T,
+        localIndex: Int,
+        observerIndex: Int,
+    ): Int {
+        if (clientFlag and blockFlag == 0) return 0
+        val pos = buffer.writerIndex()
+        return try {
+            pOnDemandData(buffer, localIndex, block, observerIndex)
+            blockFlag
+        } catch (e: Exception) {
+            buffer.writerIndex(pos)
+            logger.error(e) {
+                "Unable to put on demand mask data for $block"
+            }
+            0
         }
     }
 
     @Suppress("unused")
     private companion object {
+        private val logger = InlineLogger()
         private const val EXTENDED_SHORT = 0x4
         private const val EXTENDED_MEDIUM = 0x400
 

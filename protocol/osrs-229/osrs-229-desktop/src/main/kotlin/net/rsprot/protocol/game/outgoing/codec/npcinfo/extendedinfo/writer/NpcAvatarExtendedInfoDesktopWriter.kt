@@ -1,5 +1,8 @@
+@file:Suppress("DuplicatedCode")
+
 package net.rsprot.protocol.game.outgoing.codec.npcinfo.extendedinfo.writer
 
+import com.github.michaelbull.logging.InlineLogger
 import net.rsprot.buffer.JagByteBuf
 import net.rsprot.protocol.common.client.OldSchoolClientType
 import net.rsprot.protocol.game.outgoing.codec.npcinfo.extendedinfo.NpcBaseAnimationSetEncoder
@@ -21,6 +24,9 @@ import net.rsprot.protocol.game.outgoing.codec.npcinfo.extendedinfo.NpcVisibleOp
 import net.rsprot.protocol.game.outgoing.info.AvatarExtendedInfoWriter
 import net.rsprot.protocol.game.outgoing.info.npcinfo.NpcAvatarExtendedInfo
 import net.rsprot.protocol.game.outgoing.info.npcinfo.NpcAvatarExtendedInfoBlocks
+import net.rsprot.protocol.internal.game.outgoing.info.ExtendedInfo
+import net.rsprot.protocol.internal.game.outgoing.info.encoder.OnDemandExtendedInfoEncoder
+import net.rsprot.protocol.internal.game.outgoing.info.encoder.PrecomputedExtendedInfoEncoder
 import net.rsprot.protocol.internal.game.outgoing.info.npcinfo.encoder.NpcExtendedInfoEncoders
 
 @Suppress("DuplicatedCode")
@@ -110,6 +116,9 @@ public class NpcAvatarExtendedInfoDesktopWriter :
         var clientFlag = convertFlags(flag)
         if (clientFlag and 0xFF.inv() != 0) clientFlag = clientFlag or EXTENDED_SHORT
         if (clientFlag and 0xFFFF.inv() != 0) clientFlag = clientFlag or EXTENDED_MEDIUM
+        var outFlag = clientFlag and (EXTENDED_SHORT or EXTENDED_MEDIUM)
+        val flagIndex = buffer.writerIndex()
+
         buffer.p1(clientFlag)
         if (clientFlag and EXTENDED_SHORT != 0) {
             buffer.p1(clientFlag shr 8)
@@ -118,59 +127,84 @@ public class NpcAvatarExtendedInfoDesktopWriter :
             buffer.p1(clientFlag shr 16)
         }
 
-        if (clientFlag and HITS != 0) {
-            pOnDemandData(buffer, localIndex, blocks.hit, observerIndex)
-        }
-        if (clientFlag and TINTING != 0) {
-            pCachedData(buffer, blocks.tinting)
-        }
-        if (clientFlag and SAY != 0) {
-            pCachedData(buffer, blocks.say)
-        }
-        if (clientFlag and SEQUENCE != 0) {
-            pCachedData(buffer, blocks.sequence)
-        }
-        if (clientFlag and OPS != 0) {
-            pCachedData(buffer, blocks.visibleOps)
-        }
-        if (clientFlag and SPOTANIM != 0) {
-            pCachedData(buffer, blocks.spotAnims)
-        }
-        if (clientFlag and FACE_PATHINGENTITY != 0) {
-            pCachedData(buffer, blocks.facePathingEntity)
-        }
-        if (clientFlag and TRANSFORMATION != 0) {
-            pCachedData(buffer, blocks.transformation)
-        }
-        if (clientFlag and HEADICON_CUSTOMISATION != 0) {
-            pCachedData(buffer, blocks.headIconCustomisation)
-        }
-        if (clientFlag and NAME_CHANGE != 0) {
-            pCachedData(buffer, blocks.nameChange)
-        }
+        outFlag = outFlag or pOnDemand(buffer, clientFlag, HITS, blocks.hit, localIndex, observerIndex)
+        outFlag = outFlag or pCached(buffer, clientFlag, TINTING, blocks.tinting)
+        outFlag = outFlag or pCached(buffer, clientFlag, SAY, blocks.say)
+        outFlag = outFlag or pCached(buffer, clientFlag, SEQUENCE, blocks.sequence)
+        outFlag = outFlag or pCached(buffer, clientFlag, OPS, blocks.visibleOps)
+        outFlag = outFlag or pCached(buffer, clientFlag, SPOTANIM, blocks.spotAnims)
+        outFlag = outFlag or pCached(buffer, clientFlag, FACE_PATHINGENTITY, blocks.facePathingEntity)
+        outFlag = outFlag or pCached(buffer, clientFlag, TRANSFORMATION, blocks.transformation)
+        outFlag = outFlag or pCached(buffer, clientFlag, HEADICON_CUSTOMISATION, blocks.headIconCustomisation)
+        outFlag = outFlag or pCached(buffer, clientFlag, NAME_CHANGE, blocks.nameChange)
         // old spotanim
-        if (clientFlag and BAS_CHANGE != 0) {
-            pCachedData(buffer, blocks.baseAnimationSet)
+        outFlag = outFlag or pCached(buffer, clientFlag, BAS_CHANGE, blocks.baseAnimationSet)
+        outFlag = outFlag or pCached(buffer, clientFlag, LEVEL_CHANGE, blocks.combatLevelChange)
+        outFlag = outFlag or pCached(buffer, clientFlag, HEAD_CUSTOMISATION, blocks.headCustomisation)
+        outFlag = outFlag or pCached(buffer, clientFlag, FACE_COORD, blocks.faceCoord)
+        outFlag = outFlag or pCached(buffer, clientFlag, BODY_CUSTOMISATION, blocks.bodyCustomisation)
+        outFlag = outFlag or pCached(buffer, clientFlag, EXACT_MOVE, blocks.exactMove)
+
+        if (outFlag != clientFlag) {
+            val finalPos = buffer.writerIndex()
+            buffer.writerIndex(flagIndex)
+            buffer.p1(outFlag)
+            if (outFlag and EXTENDED_SHORT != 0) {
+                buffer.p1(outFlag shr 8)
+            }
+            if (outFlag and EXTENDED_MEDIUM != 0) {
+                buffer.p1(outFlag shr 16)
+            }
+            buffer.writerIndex(finalPos)
         }
-        if (clientFlag and LEVEL_CHANGE != 0) {
-            pCachedData(buffer, blocks.combatLevelChange)
+    }
+
+    private fun <T : ExtendedInfo<T, E>, E : PrecomputedExtendedInfoEncoder<T>> pCached(
+        buffer: JagByteBuf,
+        clientFlag: Int,
+        blockFlag: Int,
+        block: T,
+    ): Int {
+        if (clientFlag and blockFlag == 0) return 0
+        val pos = buffer.writerIndex()
+        return try {
+            pCachedData(buffer, block)
+            blockFlag
+        } catch (e: Exception) {
+            buffer.writerIndex(pos)
+            logger.error(e) {
+                "Unable to put cached mask data for $block"
+            }
+            0
         }
-        if (clientFlag and HEAD_CUSTOMISATION != 0) {
-            pCachedData(buffer, blocks.headCustomisation)
-        }
-        if (clientFlag and FACE_COORD != 0) {
-            pCachedData(buffer, blocks.faceCoord)
-        }
-        if (clientFlag and BODY_CUSTOMISATION != 0) {
-            pCachedData(buffer, blocks.bodyCustomisation)
-        }
-        if (clientFlag and EXACT_MOVE != 0) {
-            pCachedData(buffer, blocks.exactMove)
+    }
+
+    @Suppress("SameParameterValue")
+    private fun <T : ExtendedInfo<T, E>, E : OnDemandExtendedInfoEncoder<T>> pOnDemand(
+        buffer: JagByteBuf,
+        clientFlag: Int,
+        blockFlag: Int,
+        block: T,
+        localIndex: Int,
+        observerIndex: Int,
+    ): Int {
+        if (clientFlag and blockFlag == 0) return 0
+        val pos = buffer.writerIndex()
+        return try {
+            pOnDemandData(buffer, localIndex, block, observerIndex)
+            blockFlag
+        } catch (e: Exception) {
+            buffer.writerIndex(pos)
+            logger.error(e) {
+                "Unable to put on demand mask data for $block"
+            }
+            0
         }
     }
 
     @Suppress("unused")
     private companion object {
+        private val logger = InlineLogger()
         private const val EXTENDED_SHORT: Int = 0x10
         private const val EXTENDED_MEDIUM: Int = 0x400
 
