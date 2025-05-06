@@ -1,7 +1,9 @@
 package net.rsprot.protocol.internal.game.outgoing.info
 
+import com.github.michaelbull.logging.InlineLogger
 import io.netty.buffer.ByteBuf
 import io.netty.buffer.ByteBufAllocator
+import io.netty.util.ReferenceCountUtil
 import net.rsprot.compression.provider.HuffmanCodecProvider
 import net.rsprot.protocol.common.client.OldSchoolClientType
 import net.rsprot.protocol.internal.client.ClientTypeMap
@@ -58,10 +60,19 @@ public abstract class ExtendedInfo<in T : ExtendedInfo<T, E>, E : ExtendedInfoEn
      * which will either be garbage-collected or returned into the bytebuf pool.
      */
     internal fun releaseBuffers() {
-        for (i in 0..<OldSchoolClientType.COUNT) {
-            val buffer = buffers[i] ?: continue
-            buffer.release()
-            buffers[i] = null
+        try {
+            for (i in 0..<OldSchoolClientType.COUNT) {
+                val buffer = buffers[i] ?: continue
+                val refCnt = buffer.refCnt()
+                if (refCnt > 0) {
+                    ReferenceCountUtil.safeRelease(buffer, refCnt)
+                }
+                buffers[i] = null
+            }
+        } catch (e: Exception) {
+            logger.error(e) {
+                "Unable to release old buffers"
+            }
         }
     }
 
@@ -77,6 +88,10 @@ public abstract class ExtendedInfo<in T : ExtendedInfo<T, E>, E : ExtendedInfoEn
      * Clears this extended info block, making it ready for use by another avatar.
      */
     public abstract fun clear()
+
+    private companion object {
+        private val logger = InlineLogger()
+    }
 }
 
 /**
