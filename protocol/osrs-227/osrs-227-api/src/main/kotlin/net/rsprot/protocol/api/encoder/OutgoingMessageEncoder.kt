@@ -138,6 +138,13 @@ public abstract class OutgoingMessageEncoder : ChannelOutboundHandlerAdapter() {
         msg: T,
         promise: ChannelPromise,
     ) where T : OutgoingMessage, T : ByteBufHolder {
+        if (msg.refCnt() <= 0) {
+            logger.warn {
+                "Unable to write bytebuf holder message as it has been released: $msg"
+            }
+            return
+        }
+
         writePacketHeader(ctx, msg)
 
         val bufHolderContent = msg.content().slice()
@@ -364,6 +371,13 @@ public abstract class OutgoingMessageEncoder : ChannelOutboundHandlerAdapter() {
         message: T,
         buf: ByteBuf,
     ) where T : ByteBufHolder, T : OutgoingMessage {
+        if (message.refCnt() <= 0) {
+            logger.warn {
+                "Unable to write bytebuf holder message as it has been released: $message"
+            }
+            return
+        }
+
         val encoder = repository.getEncoder(message::class.java)
         val prot = encoder.prot
         val opcode = prot.opcode
