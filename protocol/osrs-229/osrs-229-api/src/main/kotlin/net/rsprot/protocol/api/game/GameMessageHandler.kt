@@ -99,6 +99,10 @@ public class GameMessageHandler<R>(
                 ctx.inetAddress(),
                 GameDisconnectionReason.EXCEPTION,
             )
+        val channel = ctx.channel()
+        if (channel.isOpen) {
+            channel.close()
+        }
     }
 
     override fun userEventTriggered(

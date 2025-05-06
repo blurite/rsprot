@@ -136,6 +136,10 @@ public class Js5ChannelHandler(
                 ctx.inetAddress(),
                 Js5DisconnectionReason.EXCEPTION,
             )
+        val channel = ctx.channel()
+        if (channel.isOpen) {
+            channel.close()
+        }
     }
 
     override fun userEventTriggered(

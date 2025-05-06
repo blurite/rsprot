@@ -118,6 +118,10 @@ public class Js5ChannelHandler(
             .exceptionHandlers
             .channelExceptionHandler
             .exceptionCaught(ctx, cause)
+        val channel = ctx.channel()
+        if (channel.isOpen) {
+            channel.close()
+        }
     }
 
     override fun userEventTriggered(

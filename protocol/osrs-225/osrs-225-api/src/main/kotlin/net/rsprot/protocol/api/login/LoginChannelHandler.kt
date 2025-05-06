@@ -260,6 +260,10 @@ public class LoginChannelHandler(
                 ctx.inetAddress(),
                 LoginDisconnectionReason.CHANNEL_EXCEPTION,
             )
+        val channel = ctx.channel()
+        if (channel.isOpen) {
+            channel.close()
+        }
     }
 
     override fun userEventTriggered(

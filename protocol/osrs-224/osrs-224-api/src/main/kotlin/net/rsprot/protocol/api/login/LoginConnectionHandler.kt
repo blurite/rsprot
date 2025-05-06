@@ -228,6 +228,10 @@ public class LoginConnectionHandler<R>(
             .exceptionHandlers
             .channelExceptionHandler
             .exceptionCaught(ctx, cause)
+        val channel = ctx.channel()
+        if (channel.isOpen) {
+            channel.close()
+        }
     }
 
     override fun userEventTriggered(
