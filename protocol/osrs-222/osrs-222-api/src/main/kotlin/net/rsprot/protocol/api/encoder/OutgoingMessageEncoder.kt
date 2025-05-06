@@ -143,11 +143,6 @@ public abstract class OutgoingMessageEncoder : MessageToByteEncoder<OutgoingMess
     }
 
     private companion object {
-        /**
-         * The highest possible value for an opcode that can still be written in a single byte
-         * using a 1 or 2 byte smart.
-         */
-        private const val MAX_OPCODE_VALUE_FOR_SINGLE_BYTE_OPCODE: Int = 127
         private const val MAX_USHORT_PAYLOAD_SIZE: Int = 40_000
         private const val MAX_UBYTE_PAYLOAD_SIZE: Int = 255
         private val logger = InlineLogger()
