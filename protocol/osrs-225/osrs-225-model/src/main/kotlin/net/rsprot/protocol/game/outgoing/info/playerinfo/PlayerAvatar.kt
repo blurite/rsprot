@@ -59,6 +59,18 @@ public class PlayerAvatar internal constructor(
     private var resizeCounter: Int = DEFAULT_RESIZE_INTERVAL
 
     /**
+     * The maximum local player count that the protocol will try to stay under.
+     * The default value is 250.
+     */
+    private var preferredPlayerCount: Int = DEFAULT_PREFERRED_PLAYER_COUNT
+
+    /**
+     * The interval in game cycles in which the resizing logic is re-attempted after failure.
+     * The default value is 10 game cycles.
+     */
+    private var preferredResizeInterval: Int = DEFAULT_RESIZE_INTERVAL
+
+    /**
      * The current known coordinate of the given player.
      * The coordinate property will need to be updated for all players prior to computing
      * player info packet for any of them.
@@ -137,6 +149,8 @@ public class PlayerAvatar internal constructor(
         preferredResizeRange = DEFAULT_RESIZE_RANGE
         resizeRange = preferredResizeRange
         resizeCounter = DEFAULT_RESIZE_INTERVAL
+        preferredPlayerCount = DEFAULT_PREFERRED_PLAYER_COUNT
+        preferredResizeInterval = DEFAULT_RESIZE_INTERVAL
         currentCoord = CoordGrid.INVALID
         lastCoord = CoordGrid.INVALID
         worldId = PlayerInfo.ROOT_WORLD
@@ -157,8 +171,7 @@ public class PlayerAvatar internal constructor(
         z: Int,
     ) {
         checkCommunicationThread()
-        this.currentCoord =
-            CoordGrid(level, x, z)
+        this.currentCoord = CoordGrid(level, x, z)
     }
 
     /**
@@ -202,6 +215,44 @@ public class PlayerAvatar internal constructor(
         checkCommunicationThread()
         this.resizeRange = range
         this.preferredResizeRange = Int.MAX_VALUE
+    }
+
+    /**
+     * Sets the preferred player count limit. This is the maximum amount of players
+     * that the protocol will try to render at any one time. It is a soft limit
+     * and can be exceeded. The default value is 250.
+     * @param limit the new preferred player count limit to assign.
+     */
+    public fun setPreferredPlayerCountLimit(limit: Int) {
+        checkCommunicationThread()
+        this.preferredPlayerCount = limit
+    }
+
+    /**
+     * Resets the preferred player count limit to 250.
+     */
+    public fun resetPreferredPlayerCountLimit() {
+        checkCommunicationThread()
+        this.preferredPlayerCount = DEFAULT_PREFERRED_PLAYER_COUNT
+    }
+
+    /**
+     * Sets the resize interval. This is after how many game cycles of inactivity the
+     * protocol will try to expand out again, to render more players.
+     * The default value is 10.
+     * @param interval the interval in game cycles after how long to attempt to increase range.
+     */
+    public fun setResizeInterval(interval: Int) {
+        checkCommunicationThread()
+        this.preferredResizeInterval = interval
+    }
+
+    /**
+     * Resets the resize interval to the default value of 10.
+     */
+    public fun resetResizeInterval() {
+        checkCommunicationThread()
+        this.preferredResizeInterval = DEFAULT_RESIZE_INTERVAL
     }
 
     /**
@@ -260,7 +311,7 @@ public class PlayerAvatar internal constructor(
         }
         // If there are more than 250 avatars in high resolution,
         // the range decrements by 1 every cycle.
-        if (highResCount >= PREFERRED_PLAYER_COUNT) {
+        if (highResCount >= preferredPlayerCount) {
             if (resizeRange > 0) {
                 resizeRange--
             }
@@ -270,7 +321,7 @@ public class PlayerAvatar internal constructor(
         // If our resize counter gets high enough, the protocol will
         // try to increment the range by 1 if it's less than 15
         // otherwise, resets the counter.
-        if (++resizeCounter >= DEFAULT_RESIZE_INTERVAL) {
+        if (++resizeCounter >= preferredResizeInterval) {
             if (resizeRange < preferredResizeRange) {
                 resizeRange++
             } else {
@@ -285,6 +336,8 @@ public class PlayerAvatar internal constructor(
             "preferredResizeRange=$preferredResizeRange, " +
             "resizeRange=$resizeRange, " +
             "resizeCounter=$resizeCounter, " +
+            "preferredPlayerCount=$preferredPlayerCount, " +
+            "preferredResizeInterval=$preferredResizeInterval, " +
             "currentCoord=$currentCoord, " +
             "worldId=$worldId, " +
             "priority=$priority, " +
@@ -310,6 +363,6 @@ public class PlayerAvatar internal constructor(
          * The maximum preferred number of players in high resolution.
          * Exceeding this count will cause the view range to start lowering.
          */
-        private const val PREFERRED_PLAYER_COUNT = 250
+        private const val DEFAULT_PREFERRED_PLAYER_COUNT = 250
     }
 }
