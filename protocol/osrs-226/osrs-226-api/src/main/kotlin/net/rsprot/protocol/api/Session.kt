@@ -20,6 +20,7 @@ import net.rsprot.protocol.message.codec.incoming.MessageConsumer
 import net.rsprot.protocol.metrics.NetworkTrafficMonitor
 import java.net.InetAddress
 import java.util.Queue
+import java.util.concurrent.atomic.AtomicBoolean
 import java.util.concurrent.atomic.AtomicReference
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds
@@ -337,10 +338,23 @@ public class Session<R>(
      */
     private fun writeAndFlush() {
         val channel = ctx.channel()
-        queues@ for (queue in outgoingMessageQueues) {
+        categories@ for (category in GameServerProtCategory.entries) {
+            val queue = outgoingMessageQueues[category.id]
+
+            // Safely discard any low priority category packets if they are disabled
+            if (category == GameServerProtCategory.LOW_PRIORITY_PROT &&
+                lowPriorityCategoryPacketsDiscarded.get()
+            ) {
+                while (true) {
+                    val next = queue.poll() ?: break
+                    next.safeRelease()
+                }
+                continue
+            }
+
             packets@ while (true) {
                 if (!channel.isWritable) {
-                    break@queues
+                    break@categories
                 }
                 val next = queue.poll() ?: break@packets
                 networkLog(logger) {
