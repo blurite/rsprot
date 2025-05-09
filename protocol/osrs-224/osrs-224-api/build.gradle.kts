@@ -5,7 +5,7 @@ dependencies {
     implementation(rootProject.libs.netty.handler)
     implementation(rootProject.libs.netty.native.epoll)
     implementation(rootProject.libs.netty.native.kqueue)
-    implementation(rootProject.libs.netty.incubator.iouring)
+    implementation(rootProject.libs.netty.iouring)
     implementation(rootProject.libs.netty.native.macos.dns.resolver)
     val epollClassifiers = listOf("linux-aarch_64", "linux-x86_64", "linux-riscv64")
     val kqueueClassifiers = listOf("osx-x86_64")
@@ -17,7 +17,7 @@ dependencies {
         implementation(variantOf(rootProject.libs.netty.native.kqueue) { classifier(classifier) })
     }
     for (classifier in iouringClassifiers) {
-        implementation(variantOf(rootProject.libs.netty.incubator.iouring) { classifier(classifier) })
+        implementation(variantOf(rootProject.libs.netty.iouring) { classifier(classifier) })
     }
     implementation(rootProject.libs.inline.logger)
     api(projects.protocol)
