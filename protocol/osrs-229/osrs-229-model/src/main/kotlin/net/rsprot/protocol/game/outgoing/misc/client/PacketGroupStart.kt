@@ -27,6 +27,18 @@ public class PacketGroupStart(
         return 40_000
     }
 
+    override fun markConsumed() {
+        for (message in messages) {
+            message.markConsumed()
+        }
+    }
+
+    override fun safeRelease() {
+        for (message in messages) {
+            message.safeRelease()
+        }
+    }
+
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (javaClass != other?.javaClass) return false

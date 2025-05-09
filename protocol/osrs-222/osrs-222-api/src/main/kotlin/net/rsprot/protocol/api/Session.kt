@@ -2,8 +2,6 @@ package net.rsprot.protocol.api
 
 import com.github.michaelbull.logging.InlineLogger
 import io.netty.channel.ChannelHandlerContext
-import io.netty.util.ReferenceCountUtil
-import io.netty.util.ReferenceCounted
 import net.rsprot.protocol.ServerProtCategory
 import net.rsprot.protocol.api.channel.inetAddress
 import net.rsprot.protocol.api.game.GameMessageDecoder
@@ -13,7 +11,6 @@ import net.rsprot.protocol.game.outgoing.zone.payload.SoundArea
 import net.rsprot.protocol.internal.RSProtFlags
 import net.rsprot.protocol.loginprot.incoming.util.LoginBlock
 import net.rsprot.protocol.loginprot.incoming.util.LoginClientType
-import net.rsprot.protocol.message.ConsumableMessage
 import net.rsprot.protocol.message.IncomingGameMessage
 import net.rsprot.protocol.message.OutgoingGameMessage
 import net.rsprot.protocol.message.codec.incoming.MessageConsumer
@@ -71,6 +68,26 @@ public class Session<R>(
 
     private var lastFlush: TimeSource.Monotonic.ValueTimeMark = TimeSource.Monotonic.markNow()
 
+    private var lowPriorityCategoryPacketsDiscarded: AtomicBoolean = AtomicBoolean()
+
+    /**
+     * Discards any packets which have a [GameServerProtCategory.LOW_PRIORITY_PROT] category.
+     *
+     * In Old School RuneScape, this is used on logout. Only packets which are marked as high priority
+     * category appear to get transmitted on the game cycle on which the player clicks the logout button.
+     * This function should only be invoked when the player is guaranteed to be getting logged out.
+     *
+     * The effects of this function take place on Netty's event loop threads, specifically when [flush]
+     * is invoked. If the low priority category packets are disabled, rather than passing them into
+     * the pipeline, the packets will be safely released and discarded.
+     * Furthermore, it is worth noting that [flush] can be invoked on RSProt's own volition,
+     * when there's a lot of backpressure and everything could not be flushed out in one go.
+     */
+    @JvmOverloads
+    public fun discardLowPriorityCategoryPackets(discard: Boolean = true) {
+        lowPriorityCategoryPacketsDiscarded.set(discard)
+    }
+
     private fun updateLastFlush() {
         lastFlush = TimeSource.Monotonic.markNow()
     }
@@ -118,17 +135,11 @@ public class Session<R>(
         message: OutgoingGameMessage,
         category: ServerProtCategory,
     ) {
-        if (message is ConsumableMessage) {
-            message.consume()
-        }
         if (this.channelStatus != ChannelStatus.OPEN) {
-            if (message is ReferenceCounted) {
-                if (message.refCnt() > 0) {
-                    ReferenceCountUtil.safeRelease(message)
-                }
-            }
+            message.safeRelease()
             return
         }
+        message.markConsumed()
         if (RSProtFlags.filterMissingPacketsInClient) {
             if (loginBlock.clientType == LoginClientType.DESKTOP && message is SoundArea) {
                 throw IllegalArgumentException(
@@ -293,23 +304,16 @@ public class Session<R>(
      */
     public fun clear() {
         for (queue in outgoingMessageQueues) {
-            for (message in queue) {
-                if (message is ReferenceCounted) {
-                    if (message.refCnt() > 0) {
-                        ReferenceCountUtil.safeRelease(message)
-                    }
-                }
-            }
-            queue.clear()
-        }
-        for (message in incomingMessageQueue) {
-            if (message is ReferenceCounted) {
-                if (message.refCnt() > 0) {
-                    ReferenceCountUtil.safeRelease(message)
-                }
+            while (true) {
+                val next = queue.poll() ?: break
+                next.safeRelease()
             }
         }
-        incomingMessageQueue.clear()
+        val incomingQueue = incomingMessageQueue
+        while (true) {
+            val next = incomingQueue.poll() ?: break
+            next.safeRelease()
+        }
     }
 
     /**

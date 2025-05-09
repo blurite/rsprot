@@ -21,7 +21,6 @@ import net.rsprot.protocol.game.outgoing.info.worker.DefaultProtocolWorker
 import net.rsprot.protocol.internal.client.ClientTypeMap
 import net.rsprot.protocol.internal.game.outgoing.info.CoordGrid
 import net.rsprot.protocol.internal.game.outgoing.info.util.ZoneIndexStorage
-import net.rsprot.protocol.message.ConsumableMessage
 import org.openjdk.jmh.annotations.Benchmark
 import org.openjdk.jmh.annotations.BenchmarkMode
 import org.openjdk.jmh.annotations.Fork
@@ -130,9 +129,7 @@ class NpcInfoBenchmark {
         for (i in 1..2046) {
             val info = protocol[i]
             val packet = info.toPacket(NpcInfo.ROOT_WORLD)
-            if (packet is ConsumableMessage) {
-                packet.consume()
-            }
+            packet.markConsumed()
             when (packet) {
                 is NpcInfoSmallV5 -> packet.release()
                 is NpcInfoLargeV5 -> packet.release()

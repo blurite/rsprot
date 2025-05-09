@@ -21,7 +21,6 @@ import net.rsprot.protocol.game.outgoing.info.util.BuildArea
 import net.rsprot.protocol.internal.client.ClientTypeMap
 import net.rsprot.protocol.internal.game.outgoing.info.CoordGrid
 import net.rsprot.protocol.internal.game.outgoing.info.util.ZoneIndexStorage
-import net.rsprot.protocol.message.ConsumableMessage
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import kotlin.random.Random
@@ -93,9 +92,7 @@ class NpcInfoTest {
 
     private fun backingBuffer(): ByteBuf {
         val packet = this.localNpcInfo.toPacket(NpcInfo.ROOT_WORLD)
-        if (packet is ConsumableMessage) {
-            packet.consume()
-        }
+        packet.markConsumed()
         return when (packet) {
             is NpcInfoSmallV5 -> packet.content()
             is NpcInfoLargeV5 -> packet.content()
