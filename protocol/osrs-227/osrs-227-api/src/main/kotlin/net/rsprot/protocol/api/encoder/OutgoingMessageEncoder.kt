@@ -351,7 +351,7 @@ public abstract class OutgoingMessageEncoder : ChannelOutboundHandlerAdapter() {
                 }
             }
             val finalMarker = out.writerIndex()
-            val written = finalMarker - payloadMarker
+            val written = finalMarker - endMarker
             if (written > 40000) {
                 throw IllegalStateException(
                     "PacketGroupStart message too long: $written bytes, " +
