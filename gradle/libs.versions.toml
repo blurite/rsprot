@@ -1,7 +1,6 @@
 [versions]
 kotlin = "1.9.23"
-netty = "4.1.109.Final"
-netty-iouring = "0.0.25.Final"
+netty = "4.2.1.Final"
 junit = "5.10.2"
 jmh = "0.4.10"
 inlinelogger = "1.0.6"
@@ -21,7 +20,7 @@ netty-handler = { module = "io.netty:netty-handler" }
 netty-native-epoll = { module = "io.netty:netty-transport-native-epoll" }
 netty-native-kqueue = { module = "io.netty:netty-transport-native-kqueue" }
 netty-native-macos-dns-resolver = { module = "io.netty:netty-resolver-dns-native-macos" }
-netty-incubator-iouring = { module = "io.netty.incubator:netty-incubator-transport-native-io_uring", version.ref = "netty-iouring" }
+netty-iouring = { module = "io.netty:netty-transport-native-io_uring", version.ref = "netty" }
 junit-bom = { module = "org.junit:junit-bom", version.ref = "junit" }
 junit-api = { module = "org.junit.jupiter:junit-jupiter-api" }
 junit-engine = { module = "org.junit.jupiter:junit-jupiter-engine" }
