@@ -25,7 +25,7 @@ In order to add it to your server, add the below line under dependencies
 in your build.gradle.kts.
 
 ```kts
-implementation("net.rsprot:osrs-230-api:1.0.0-ALPHA-20250515")
+implementation("net.rsprot:osrs-230-api:1.0.0-ALPHA-20250518")
 ```
 
 An in-depth tutorial on how to implement it will be added into this read-me
@@ -41,12 +41,12 @@ other revisions are welcome, but will not be provided by default.
 - Java 11
 
 ## Supported Versions
-This library currently supports revision 221-228 OldSchool desktop clients.
+This library currently supports revision 221-230 OldSchool desktop clients.
 
 ## Quick Guide
 This section covers a quick guide for how to use the protocol after implementing
 the base API. It is not a guide for the base API itself, that will come in the
-future. This specific quick guide refers to revision 228.
+future. This specific quick guide refers to revision 230.
 
 #### Player Initialization
 When a player logs in, a new protocol instance must be allocated for
