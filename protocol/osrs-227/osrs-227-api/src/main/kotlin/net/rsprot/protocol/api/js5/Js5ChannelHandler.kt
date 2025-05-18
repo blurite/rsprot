@@ -51,7 +51,7 @@ public class Js5ChannelHandler(
         service.onClientConnected(client)
         networkService
             .trafficMonitor
-            .loginChannelTrafficMonitor
+            .js5ChannelTrafficMonitor
             .incrementConnections(ctx.inetAddress())
     }
 
@@ -59,7 +59,7 @@ public class Js5ChannelHandler(
         service.onClientDisconnected(client)
         networkService
             .trafficMonitor
-            .loginChannelTrafficMonitor
+            .js5ChannelTrafficMonitor
             .decrementConnections(ctx.inetAddress())
     }
 
@@ -136,6 +136,10 @@ public class Js5ChannelHandler(
                 ctx.inetAddress(),
                 Js5DisconnectionReason.EXCEPTION,
             )
+        val channel = ctx.channel()
+        if (channel.isOpen) {
+            channel.close()
+        }
     }
 
     override fun userEventTriggered(

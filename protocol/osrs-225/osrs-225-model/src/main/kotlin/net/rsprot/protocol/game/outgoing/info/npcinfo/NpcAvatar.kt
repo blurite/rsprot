@@ -1,14 +1,14 @@
 package net.rsprot.protocol.game.outgoing.info.npcinfo
 
 import net.rsprot.buffer.bitbuffer.UnsafeLongBackedBitBuf
-import net.rsprot.protocol.common.RSProtFlags
-import net.rsprot.protocol.common.checkCommunicationThread
-import net.rsprot.protocol.common.game.outgoing.info.CoordGrid
-import net.rsprot.protocol.common.game.outgoing.info.npcinfo.NpcAvatarDetails
-import net.rsprot.protocol.common.game.outgoing.info.util.ZoneIndexStorage
 import net.rsprot.protocol.game.outgoing.info.AvatarPriority
 import net.rsprot.protocol.game.outgoing.info.npcinfo.util.NpcCellOpcodes
 import net.rsprot.protocol.game.outgoing.info.util.Avatar
+import net.rsprot.protocol.internal.RSProtFlags
+import net.rsprot.protocol.internal.checkCommunicationThread
+import net.rsprot.protocol.internal.game.outgoing.info.CoordGrid
+import net.rsprot.protocol.internal.game.outgoing.info.npcinfo.NpcAvatarDetails
+import net.rsprot.protocol.internal.game.outgoing.info.util.ZoneIndexStorage
 
 /**
  * The npc avatar class represents an NPC as shown by the client.
@@ -69,7 +69,7 @@ public class NpcAvatar internal constructor(
     specific: Boolean,
     allocateCycle: Int,
     public val extendedInfo: NpcAvatarExtendedInfo,
-    public val zoneIndexStorage: ZoneIndexStorage,
+    internal val zoneIndexStorage: ZoneIndexStorage,
 ) : Avatar {
     /**
      * Npc avatar details class wraps all the client properties of a NPC in its own
@@ -226,9 +226,12 @@ public class NpcAvatar internal constructor(
     ) {
         checkCommunicationThread()
         zoneIndexStorage.remove(details.index, details.currentCoord)
-        details.currentCoord = CoordGrid(level, x, z)
+        details.currentCoord =
+            CoordGrid(level, x, z)
         zoneIndexStorage.add(details.index, details.currentCoord)
-        details.movementType = details.movementType or (if (jump) NpcAvatarDetails.TELEJUMP else NpcAvatarDetails.TELE)
+        details.movementType =
+            details.movementType or
+            (if (jump) NpcAvatarDetails.TELEJUMP else NpcAvatarDetails.TELE)
     }
 
     /**
@@ -296,7 +299,8 @@ public class NpcAvatar internal constructor(
         val opcode = NpcCellOpcodes.singleCellMovementOpcode(deltaX, deltaZ)
         val (level, x, z) = details.currentCoord
         zoneIndexStorage.remove(details.index, details.currentCoord)
-        details.currentCoord = CoordGrid(level, x + deltaX, z + deltaZ)
+        details.currentCoord =
+            CoordGrid(level, x + deltaX, z + deltaZ)
         zoneIndexStorage.add(details.index, details.currentCoord)
         when (++details.stepCount) {
             1 -> {
@@ -305,10 +309,13 @@ public class NpcAvatar internal constructor(
             }
             2 -> {
                 details.secondStep = opcode
-                details.movementType = details.movementType or NpcAvatarDetails.RUN
+                details.movementType =
+                    details.movementType or NpcAvatarDetails.RUN
             }
             else -> {
-                details.movementType = details.movementType or NpcAvatarDetails.TELE
+                details.movementType =
+                    details.movementType or
+                    NpcAvatarDetails.TELE
             }
         }
     }
@@ -325,7 +332,14 @@ public class NpcAvatar internal constructor(
     internal fun prepareBitcodes() {
         val movementType = details.movementType
         // If teleporting, or if there are no observers, there's no need to compute this
-        if (movementType and (NpcAvatarDetails.TELE or NpcAvatarDetails.TELEJUMP) != 0 || !tracker.hasObservers()) {
+        if (movementType and
+            (
+                NpcAvatarDetails.TELE or
+                    NpcAvatarDetails.TELEJUMP
+            ) !=
+            0 ||
+            !tracker.hasObservers()
+        ) {
             return
         }
         val buffer = UnsafeLongBackedBitBuf()
@@ -333,9 +347,13 @@ public class NpcAvatar internal constructor(
         val extendedInfo = this.extendedInfo.flags != 0
         if (movementType and NpcAvatarDetails.RUN != 0) {
             pRun(buffer, extendedInfo)
-        } else if (movementType and NpcAvatarDetails.WALK != 0) {
+        } else if (movementType and NpcAvatarDetails.WALK !=
+            0
+        ) {
             pWalk(buffer, extendedInfo)
-        } else if (movementType and NpcAvatarDetails.CRAWL != 0) {
+        } else if (movementType and NpcAvatarDetails.CRAWL !=
+            0
+        ) {
             pCrawl(buffer, extendedInfo)
         } else if (extendedInfo) {
             pExtendedInfo(buffer)

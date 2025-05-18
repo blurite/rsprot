@@ -3,22 +3,22 @@ package net.rsprot.protocol.game.outgoing.info.npcinfo
 import io.netty.buffer.ByteBufAllocator
 import net.rsprot.buffer.JagByteBuf
 import net.rsprot.compression.provider.HuffmanCodecProvider
-import net.rsprot.protocol.common.RSProtFlags
-import net.rsprot.protocol.common.checkCommunicationThread
 import net.rsprot.protocol.common.client.OldSchoolClientType
-import net.rsprot.protocol.common.game.outgoing.info.npcinfo.encoder.NpcExtendedInfoEncoders
-import net.rsprot.protocol.common.game.outgoing.info.npcinfo.extendedinfo.BaseAnimationSet
-import net.rsprot.protocol.common.game.outgoing.info.npcinfo.extendedinfo.CombatLevelChange
-import net.rsprot.protocol.common.game.outgoing.info.npcinfo.extendedinfo.HeadIconCustomisation
-import net.rsprot.protocol.common.game.outgoing.info.npcinfo.extendedinfo.TypeCustomisation
-import net.rsprot.protocol.common.game.outgoing.info.npcinfo.extendedinfo.VisibleOps
-import net.rsprot.protocol.common.game.outgoing.info.precompute
-import net.rsprot.protocol.common.game.outgoing.info.shared.extendedinfo.FacePathingEntity
-import net.rsprot.protocol.common.game.outgoing.info.shared.extendedinfo.util.HeadBar
-import net.rsprot.protocol.common.game.outgoing.info.shared.extendedinfo.util.HitMark
-import net.rsprot.protocol.common.game.outgoing.info.shared.extendedinfo.util.SpotAnim
 import net.rsprot.protocol.game.outgoing.info.AvatarExtendedInfoWriter
 import net.rsprot.protocol.game.outgoing.info.filter.ExtendedInfoFilter
+import net.rsprot.protocol.internal.RSProtFlags
+import net.rsprot.protocol.internal.checkCommunicationThread
+import net.rsprot.protocol.internal.game.outgoing.info.npcinfo.encoder.NpcExtendedInfoEncoders
+import net.rsprot.protocol.internal.game.outgoing.info.npcinfo.extendedinfo.BaseAnimationSet
+import net.rsprot.protocol.internal.game.outgoing.info.npcinfo.extendedinfo.CombatLevelChange
+import net.rsprot.protocol.internal.game.outgoing.info.npcinfo.extendedinfo.HeadIconCustomisation
+import net.rsprot.protocol.internal.game.outgoing.info.npcinfo.extendedinfo.TypeCustomisation
+import net.rsprot.protocol.internal.game.outgoing.info.npcinfo.extendedinfo.VisibleOps
+import net.rsprot.protocol.internal.game.outgoing.info.precompute
+import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.FacePathingEntity
+import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.util.HeadBar
+import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.util.HitMark
+import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.util.SpotAnim
 
 public typealias NpcAvatarExtendedInfoWriter =
     AvatarExtendedInfoWriter<NpcExtendedInfoEncoders, NpcAvatarExtendedInfoBlocks>
@@ -217,7 +217,10 @@ public class NpcAvatarExtendedInfo(
                 "Unexpected delay: $height, expected range: $UNSIGNED_SHORT_RANGE"
             }
         }
-        blocks.spotAnims.set(slot, SpotAnim(id, delay, height))
+        blocks.spotAnims.set(
+            slot,
+            SpotAnim(id, delay, height),
+        )
         flags = flags or SPOTANIM
     }
 
@@ -230,7 +233,9 @@ public class NpcAvatarExtendedInfo(
      * The index will be used for tinting purposes, as both the player who dealt
      * the hit, and the recipient will see a tinted variant.
      * Everyone else, however, will see a regular darkened hit mark.
-     * @param selfType the multi hitmark id that supports tinted and darkened variants.
+     * @param sourceType the multi hitmark id that supports tinted and darkened variants.
+     * If the value is -1, the hitmark will not render to the player with the source index,
+     * only everyone else.
      * @param otherType the hitmark id to render to anyone that isn't the recipient,
      * or the one who dealt the hit. This will generally be a darkened variant.
      * If the hitmark should only render to the local player, set the [otherType]
@@ -241,8 +246,8 @@ public class NpcAvatarExtendedInfo(
      */
     public fun addHitMark(
         sourceIndex: Int,
-        selfType: Int,
-        otherType: Int = selfType,
+        sourceType: Int,
+        otherType: Int = sourceType,
         value: Int,
         delay: Int = 0,
     ) {
@@ -251,27 +256,31 @@ public class NpcAvatarExtendedInfo(
             return
         }
         verify {
+            // Index being incorrect would not lead to a crash
             require(sourceIndex == -1 || sourceIndex in 0..0x107FF) {
                 "Unexpected source index: $sourceIndex, expected values: -1 to reset, " +
                     "0-65535 for NPCs, 65536-67583 for players"
             }
-            require(selfType in UNSIGNED_SMART_1_OR_2_RANGE) {
-                "Unexpected selfType: $selfType, expected range $UNSIGNED_SMART_1_OR_2_RANGE"
-            }
-            require(otherType == -1 || otherType in UNSIGNED_SMART_1_OR_2_RANGE) {
-                "Unexpected otherType: $otherType, expected value -1 or range $UNSIGNED_SMART_1_OR_2_RANGE"
-            }
-            require(value in UNSIGNED_SMART_1_OR_2_RANGE) {
-                "Unexpected value: $value, expected range $UNSIGNED_SMART_1_OR_2_RANGE"
-            }
-            require(delay in UNSIGNED_SMART_1_OR_2_RANGE) {
-                "Unexpected delay: $delay, expected range $UNSIGNED_SMART_1_OR_2_RANGE"
-            }
+        }
+
+        // All the properties below here would result in a crash if an invalid input was provided.
+        require(sourceType in HIT_TYPE_RANGE) {
+            "Unexpected sourceType: $sourceType, expected range $HIT_TYPE_RANGE"
+        }
+        require(otherType in HIT_TYPE_RANGE) {
+            "Unexpected otherType: $otherType, expected range $HIT_TYPE_RANGE"
+        }
+        require(value in UNSIGNED_SMART_1_OR_2_RANGE) {
+            "Unexpected value: $value, expected range $UNSIGNED_SMART_1_OR_2_RANGE"
+        }
+        require(delay in UNSIGNED_SMART_1_OR_2_RANGE) {
+            "Unexpected delay: $delay, expected range $UNSIGNED_SMART_1_OR_2_RANGE"
         }
         blocks.hit.hitMarkList +=
             HitMark(
                 sourceIndex,
-                selfType.toUShort(),
+                sourceType.toUShort(),
+                sourceType.toUShort(),
                 otherType.toUShort(),
                 value.toUShort(),
                 delay.toUShort(),
@@ -289,10 +298,8 @@ public class NpcAvatarExtendedInfo(
         if (blocks.hit.hitMarkList.size >= 0xFF) {
             return
         }
-        verify {
-            require(delay in UNSIGNED_SMART_1_OR_2_RANGE) {
-                "Unexpected delay: $delay, expected range $UNSIGNED_SMART_1_OR_2_RANGE"
-            }
+        require(delay in UNSIGNED_SMART_1_OR_2_RANGE) {
+            "Unexpected delay: $delay, expected range $UNSIGNED_SMART_1_OR_2_RANGE"
         }
         blocks.hit.hitMarkList += HitMark(0x7FFEu, delay.toUShort())
         flags = flags or HITS
@@ -307,7 +314,9 @@ public class NpcAvatarExtendedInfo(
      * The index will be used for tinting purposes, as both the player who dealt
      * the hit, and the recipient will see a tinted variant.
      * Everyone else, however, will see a regular darkened hit mark.
-     * @param selfType the multi hitmark id that supports tinted and darkened variants.
+     * @param sourceType the multi hitmark id that supports tinted and darkened variants.
+     * If the value is -1, the hitmark will not render to the player with the source index,
+     * only everyone else.
      * @param otherType the hitmark id to render to anyone that isn't the recipient,
      * or the one who dealt the hit. This will generally be a darkened variant.
      * If the hitmark should only render to the local player, set the [otherType]
@@ -325,8 +334,8 @@ public class NpcAvatarExtendedInfo(
     @JvmOverloads
     public fun addSoakedHitMark(
         sourceIndex: Int,
-        selfType: Int,
-        otherType: Int = selfType,
+        sourceType: Int,
+        otherType: Int = sourceType,
         value: Int,
         selfSoakType: Int,
         otherSoakType: Int = selfSoakType,
@@ -338,38 +347,43 @@ public class NpcAvatarExtendedInfo(
             return
         }
         verify {
+            // Index being incorrect would not lead to a crash
             require(sourceIndex == -1 || sourceIndex in 0..0x107FF) {
                 "Unexpected source index: $sourceIndex, expected values: -1 to reset, " +
                     "0-65535 for NPCs, 65536-67583 for players"
             }
-            require(selfType in UNSIGNED_SMART_1_OR_2_RANGE) {
-                "Unexpected selfType: $selfType, expected range $UNSIGNED_SMART_1_OR_2_RANGE"
-            }
-            require(otherType == -1 || otherType in UNSIGNED_SMART_1_OR_2_RANGE) {
-                "Unexpected otherType: $otherType, expected value -1 or in range $UNSIGNED_SMART_1_OR_2_RANGE"
-            }
-            require(value in UNSIGNED_SMART_1_OR_2_RANGE) {
-                "Unexpected value: $value, expected range $UNSIGNED_SMART_1_OR_2_RANGE"
-            }
-            require(selfSoakType in UNSIGNED_SMART_1_OR_2_RANGE) {
-                "Unexpected selfType: $selfSoakType, expected range $UNSIGNED_SMART_1_OR_2_RANGE"
-            }
-            require(otherSoakType in UNSIGNED_SMART_1_OR_2_RANGE) {
-                "Unexpected otherType: $otherSoakType, expected range $UNSIGNED_SMART_1_OR_2_RANGE"
-            }
-            require(soakValue in UNSIGNED_SMART_1_OR_2_RANGE) {
-                "Unexpected value: $soakValue, expected range $UNSIGNED_SMART_1_OR_2_RANGE"
-            }
-            require(delay in UNSIGNED_SMART_1_OR_2_RANGE) {
-                "Unexpected delay: $delay, expected range $UNSIGNED_SMART_1_OR_2_RANGE"
-            }
+        }
+
+        // All the properties below here would result in a crash if an invalid input was provided.
+        require(sourceType in HIT_TYPE_RANGE) {
+            "Unexpected sourceType: $sourceType, expected range $HIT_TYPE_RANGE"
+        }
+        require(otherType in HIT_TYPE_RANGE) {
+            "Unexpected otherType: $otherType, expected range $HIT_TYPE_RANGE"
+        }
+        require(value in UNSIGNED_SMART_1_OR_2_RANGE) {
+            "Unexpected value: $value, expected range $UNSIGNED_SMART_1_OR_2_RANGE"
+        }
+        require(selfSoakType in UNSIGNED_SMART_1_OR_2_RANGE) {
+            "Unexpected selfSoakType: $selfSoakType, expected range $UNSIGNED_SMART_1_OR_2_RANGE"
+        }
+        require(otherSoakType in UNSIGNED_SMART_1_OR_2_RANGE) {
+            "Unexpected otherSoakType: $otherSoakType, expected range $UNSIGNED_SMART_1_OR_2_RANGE"
+        }
+        require(soakValue in UNSIGNED_SMART_1_OR_2_RANGE) {
+            "Unexpected soakValue: $soakValue, expected range $UNSIGNED_SMART_1_OR_2_RANGE"
+        }
+        require(delay in UNSIGNED_SMART_1_OR_2_RANGE) {
+            "Unexpected delay: $delay, expected range $UNSIGNED_SMART_1_OR_2_RANGE"
         }
         blocks.hit.hitMarkList +=
             HitMark(
                 sourceIndex,
-                selfType.toUShort(),
+                sourceType.toUShort(),
+                sourceType.toUShort(),
                 otherType.toUShort(),
                 value.toUShort(),
+                selfSoakType.toUShort(),
                 selfSoakType.toUShort(),
                 otherSoakType.toUShort(),
                 soakValue.toUShort(),
@@ -388,11 +402,10 @@ public class NpcAvatarExtendedInfo(
      * If the target avatar is a NPC, set the index as it is.
      * If there is no source, set the index to -1.
      * The index will be used for rendering purposes, as both the player who dealt
-     * the hit, and the recipient will see the [selfType] variant, and everyone else
+     * the hit, and the recipient will see the [sourceType] variant, and everyone else
      * will see the [otherType] variant, which, if set to -1 will be skipped altogether.
-     * @param selfType the id of the headbar to render to the entity on which the headbar appears,
-     * as well as the source who resulted in the creation of the headbar.
-     * @param otherType the id of the headbar to render to everyone that doesn't fit the [selfType]
+     * @param sourceType the id of the headbar to render to the player with the source index.
+     * @param otherType the id of the headbar to render to everyone that doesn't fit the [sourceType]
      * criteria. If set to -1, the headbar will not be rendered to these individuals.
      * @param startFill the number of pixels to render of this headbar at in the start.
      * The number of pixels that a headbar supports is defined in its respective headbar config.
@@ -404,8 +417,8 @@ public class NpcAvatarExtendedInfo(
     @JvmOverloads
     public fun addHeadBar(
         sourceIndex: Int,
-        selfType: Int,
-        otherType: Int = selfType,
+        sourceType: Int,
+        otherType: Int = sourceType,
         startFill: Int,
         endFill: Int = startFill,
         startTime: Int = 0,
@@ -416,36 +429,40 @@ public class NpcAvatarExtendedInfo(
             return
         }
         verify {
+            // Index being incorrect would not lead to a crash
             require(sourceIndex == -1 || sourceIndex in 0..0x107FF) {
                 "Unexpected source index: $sourceIndex, expected values: -1 to reset, " +
                     "0-65535 for NPCs, 65536-67583 for players"
             }
-            require(selfType == -1 || selfType in UNSIGNED_SMART_1_OR_2_RANGE) {
-                "Unexpected id: $selfType, expected value -1 or in range $UNSIGNED_SMART_1_OR_2_RANGE"
-            }
-            require(otherType == -1 || otherType in UNSIGNED_SMART_1_OR_2_RANGE) {
-                "Unexpected id: $otherType, expected value -1 or in range $UNSIGNED_SMART_1_OR_2_RANGE"
-            }
+            // Fills are transmitted via a byte, so they would not crash
             require(startFill in UNSIGNED_BYTE_RANGE) {
                 "Unexpected startFill: $startFill, expected range $UNSIGNED_BYTE_RANGE"
             }
             require(endFill in UNSIGNED_BYTE_RANGE) {
                 "Unexpected endFill: $endFill, expected range $UNSIGNED_BYTE_RANGE"
             }
-            require(startTime in UNSIGNED_SMART_1_OR_2_RANGE) {
-                "Unexpected startTime: $startTime, expected range $UNSIGNED_SMART_1_OR_2_RANGE"
-            }
-            require(endTime in UNSIGNED_SMART_1_OR_2_RANGE) {
-                "Unexpected endTime: $endTime, expected range $UNSIGNED_SMART_1_OR_2_RANGE"
-            }
-            require(endTime >= startTime) {
-                "End time must be greater than or equal to start time: $startTime <= $endTime"
-            }
+        }
+
+        // All the properties below here would result in a crash if an invalid input was provided.
+        require(sourceType == -1 || sourceType in UNSIGNED_SMART_1_OR_2_RANGE) {
+            "Unexpected source type: $sourceType, expected value -1 or in range $UNSIGNED_SMART_1_OR_2_RANGE"
+        }
+        require(otherType == -1 || otherType in UNSIGNED_SMART_1_OR_2_RANGE) {
+            "Unexpected other type: $otherType, expected value -1 or in range $UNSIGNED_SMART_1_OR_2_RANGE"
+        }
+        require(startTime in UNSIGNED_SMART_1_OR_2_RANGE) {
+            "Unexpected startTime: $startTime, expected range $UNSIGNED_SMART_1_OR_2_RANGE"
+        }
+        require(endTime in UNSIGNED_SMART_1_OR_2_RANGE) {
+            "Unexpected endTime: $endTime, expected range $UNSIGNED_SMART_1_OR_2_RANGE"
+        }
+        require(endTime >= startTime) {
+            "End time must be greater than or equal to start time: $startTime <= $endTime"
         }
         blocks.hit.headBarList +=
             HeadBar(
                 sourceIndex,
-                selfType.toUShort(),
+                sourceType.toUShort(),
                 otherType.toUShort(),
                 startFill.toUByte(),
                 endFill.toUByte(),
@@ -611,6 +628,9 @@ public class NpcAvatarExtendedInfo(
      * It should be noted that this extended info block is transient and only applies to one cycle.
      * The server is expected to additionally change the id of the avatar itself, otherwise
      * any new observers will get the old variant.
+     *
+     * Additionally, note that in order to reset the NPC back to the original variant, the server
+     * must transform the NPC to the original id. RSProt does not track the original id internally.
      * @param id the new id of the npc to transform to.
      */
     @Deprecated(
@@ -624,8 +644,11 @@ public class NpcAvatarExtendedInfo(
     /**
      * Transforms this NPC into the [id] provided.
      * It should be noted that this extended info block is transient and only applies to one cycle.
-     * The server is expected to additionally change the id of the avatar itself, otherwise
-     * any new observers will get the old variant.
+     * The server is expected to additionally change the id of the avatar itself via [NpcAvatar.setId],
+     * otherwise any new observers will get the old variant.
+     *
+     * Additionally, note that in order to reset the NPC back to the original variant, the server
+     * must transform the NPC to the original id. RSProt does not track the original id internally.
      * @param id the new id of the npc to transform to.
      */
     public fun setTransmogrification(id: Int) {
@@ -706,11 +729,14 @@ public class NpcAvatarExtendedInfo(
      * Note that this extended info block is not transient and will be transmitted to
      * future players as well.
      */
+    @Deprecated(
+        message = "Deprecated. Use setVisibleOps() with [net.rsprot.protocol.game.outgoing.util.OpFlags].",
+        replaceWith = ReplaceWith("setVisibleOps(flag.toByte())"),
+    )
     @Suppress("MemberVisibilityCanBePrivate")
     public fun setVisibleOps(flag: Int) {
         checkCommunicationThread()
-        blocks.visibleOps.ops = flag.toUByte()
-        flags = flags or OPS
+        setVisibleOps(flag.toByte())
     }
 
     /**
@@ -743,6 +769,10 @@ public class NpcAvatarExtendedInfo(
      * @param op4 whether to render op4
      * @param op5 whether to render op5
      */
+    @Deprecated(
+        message = "Deprecated. Use setVisibleOps() with [net.rsprot.protocol.game.outgoing.util.OpFlags].",
+        replaceWith = ReplaceWith("setVisibleOps(OpFlags.ofOps(op1, op2, op3, op4, op5))"),
+    )
     public fun setVisibleOps(
         op1: Boolean,
         op2: Boolean,
@@ -773,6 +803,10 @@ public class NpcAvatarExtendedInfo(
     /**
      * Sets all the right-click options invisible on this NPC.
      */
+    @Deprecated(
+        message = "Deprecated. Use setVisibleOps() with [net.rsprot.protocol.game.outgoing.util.OpFlags].",
+        replaceWith = ReplaceWith("setVisibleOps(OpFlags.NONE_SHOWN)"),
+    )
     public fun setAllOpsInvisible() {
         setVisibleOps(0)
     }
@@ -791,8 +825,27 @@ public class NpcAvatarExtendedInfo(
     /**
      * Sets all the right-click options as visible on this NPC.
      */
+    @Deprecated(
+        message = "Deprecated. Use setVisibleOps() with [net.rsprot.protocol.game.outgoing.util.OpFlags].",
+        replaceWith = ReplaceWith("setVisibleOps(OpFlags.ALL_SHOWN)"),
+    )
     public fun setAllOpsVisible() {
         setVisibleOps(0b11111)
+    }
+
+    /**
+     * Sets the visible ops flag of this NPC to the provided value.
+     * @param flag the bit flag to set. Only the 5 lowest bits are used,
+     * and an enabled bit implies the option at that index should render.
+     * Note that this extended info block is not transient and will be transmitted to
+     * future players as well.
+     *
+     * Use [net.rsprot.protocol.game.outgoing.util.OpFlags] class to build the flag.
+     */
+    public fun setVisibleOps(flag: Byte) {
+        checkCommunicationThread()
+        blocks.visibleOps.ops = flag.toUByte()
+        flags = flags or OPS
     }
 
     /**
@@ -905,69 +958,81 @@ public class NpcAvatarExtendedInfo(
         readyAnim: Int = Int.MIN_VALUE,
     ) {
         checkCommunicationThread()
-        var flag = 0
         val bas = blocks.baseAnimationSet
+        var flag = bas.overrides
         if (turnLeftAnim != Int.MIN_VALUE) {
             bas.turnLeftAnim = turnLeftAnim.toUShort()
-            flag = BaseAnimationSet.TURN_LEFT_ANIM_FLAG
+            flag = flag or BaseAnimationSet.TURN_LEFT_ANIM_FLAG
         }
         if (turnRightAnim != Int.MIN_VALUE) {
             bas.turnRightAnim = turnRightAnim.toUShort()
-            flag = BaseAnimationSet.TURN_RIGHT_ANIM_FLAG
+            flag = flag or BaseAnimationSet.TURN_RIGHT_ANIM_FLAG
         }
         if (walkAnim != Int.MIN_VALUE) {
             bas.walkAnim = walkAnim.toUShort()
-            flag = BaseAnimationSet.WALK_ANIM_FLAG
+            flag = flag or BaseAnimationSet.WALK_ANIM_FLAG
         }
         if (walkAnimBack != Int.MIN_VALUE) {
             bas.walkAnimBack = walkAnimBack.toUShort()
-            flag = BaseAnimationSet.WALK_ANIM_BACK_FLAG
+            flag = flag or BaseAnimationSet.WALK_ANIM_BACK_FLAG
         }
         if (walkAnimLeft != Int.MIN_VALUE) {
             bas.walkAnimLeft = walkAnimLeft.toUShort()
-            flag = BaseAnimationSet.WALK_ANIM_LEFT_FLAG
+            flag = flag or BaseAnimationSet.WALK_ANIM_LEFT_FLAG
         }
         if (walkAnimRight != Int.MIN_VALUE) {
             bas.walkAnimRight = walkAnimRight.toUShort()
-            flag = BaseAnimationSet.WALK_ANIM_RIGHT_FLAG
+            flag = flag or BaseAnimationSet.WALK_ANIM_RIGHT_FLAG
         }
         if (runAnim != Int.MIN_VALUE) {
             bas.runAnim = runAnim.toUShort()
-            flag = BaseAnimationSet.RUN_ANIM_FLAG
+            flag = flag or BaseAnimationSet.RUN_ANIM_FLAG
         }
         if (runAnimBack != Int.MIN_VALUE) {
             bas.runAnimBack = runAnimBack.toUShort()
-            flag = BaseAnimationSet.RUN_ANIM_BACK_FLAG
+            flag = flag or BaseAnimationSet.RUN_ANIM_BACK_FLAG
         }
         if (runAnimLeft != Int.MIN_VALUE) {
             bas.runAnimLeft = runAnimLeft.toUShort()
-            flag = BaseAnimationSet.RUN_ANIM_LEFT_FLAG
+            flag = flag or BaseAnimationSet.RUN_ANIM_LEFT_FLAG
         }
         if (runAnimRight != Int.MIN_VALUE) {
             bas.runAnimRight = runAnimRight.toUShort()
-            flag = BaseAnimationSet.RUN_ANIM_RIGHT_FLAG
+            flag = flag or BaseAnimationSet.RUN_ANIM_RIGHT_FLAG
         }
         if (crawlAnim != Int.MIN_VALUE) {
             bas.crawlAnim = crawlAnim.toUShort()
-            flag = BaseAnimationSet.CRAWL_ANIM_FLAG
+            flag = flag or BaseAnimationSet.CRAWL_ANIM_FLAG
         }
         if (crawlAnimBack != Int.MIN_VALUE) {
             bas.crawlAnimBack = crawlAnimBack.toUShort()
-            flag = BaseAnimationSet.CRAWL_ANIM_BACK_FLAG
+            flag = flag or BaseAnimationSet.CRAWL_ANIM_BACK_FLAG
         }
         if (crawlAnimLeft != Int.MIN_VALUE) {
             bas.crawlAnimLeft = crawlAnimLeft.toUShort()
-            flag = BaseAnimationSet.CRAWL_ANIM_LEFT_FLAG
+            flag = flag or BaseAnimationSet.CRAWL_ANIM_LEFT_FLAG
         }
         if (crawlAnimRight != Int.MIN_VALUE) {
             bas.crawlAnimRight = crawlAnimRight.toUShort()
-            flag = BaseAnimationSet.CRAWL_ANIM_RIGHT_FLAG
+            flag = flag or BaseAnimationSet.CRAWL_ANIM_RIGHT_FLAG
         }
         if (readyAnim != Int.MIN_VALUE) {
             bas.readyAnim = readyAnim.toUShort()
-            flag = BaseAnimationSet.READY_ANIM_FLAG
+            flag = flag or BaseAnimationSet.READY_ANIM_FLAG
         }
         bas.overrides = flag
+        flags = flags or BAS_CHANGE
+    }
+
+    /**
+     * Resets any cached base animation set values, making the NPC identical to that
+     * from the cache as far as base animations go.
+     */
+    public fun resetBaseAnimationSet() {
+        checkCommunicationThread()
+        val bas = blocks.baseAnimationSet
+        if (bas.overrides == 0) return
+        bas.overrides = 0
         flags = flags or BAS_CHANGE
     }
 
@@ -1108,7 +1173,7 @@ public class NpcAvatarExtendedInfo(
         val headIcons = blocks.headIconCustomisation
         headIcons.headIconGroups[slot] = group
         headIcons.headIconIndices[slot] = index.toShort()
-        headIcons.flag = (1 shl slot)
+        headIcons.flag = headIcons.flag or (1 shl slot)
         flags = flags or HEADICON_CUSTOMISATION
     }
 
@@ -1126,7 +1191,24 @@ public class NpcAvatarExtendedInfo(
         val headIcons = blocks.headIconCustomisation
         headIcons.headIconGroups[slot] = -1
         headIcons.headIconIndices[slot] = -1
-        headIcons.flag = (1 shl slot)
+        headIcons.flag = headIcons.flag or (1 shl slot)
+        flags = flags or HEADICON_CUSTOMISATION
+    }
+
+    /**
+     * Resets all head icons which have been modified in the past.
+     * If the given avatar has had no headicon changes, this function will
+     * have no effect.
+     */
+    public fun resetHeadIcons() {
+        checkCommunicationThread()
+        val headIcons = blocks.headIconCustomisation
+        if (headIcons.flag == 0) return
+        for (slot in 0..<8) {
+            headIcons.headIconGroups[slot] = -1
+            headIcons.headIconIndices[slot] = -1
+            headIcons.flag = headIcons.flag or (1 shl slot)
+        }
         flags = flags or HEADICON_CUSTOMISATION
     }
 
@@ -1267,6 +1349,14 @@ public class NpcAvatarExtendedInfo(
     }
 
     /**
+     * Checks if the avatar has any extended info flagged.
+     * @return whether any extended info flags are set.
+     */
+    internal fun hasExtendedInfo(): Boolean {
+        return this.flags != 0
+    }
+
+    /**
      * Pre-computes all the buffers for this avatar.
      * Pre-computation is done, so we don't have to calculate these extended info blocks
      * for every avatar that observes us. Instead, we can do more performance-efficient
@@ -1393,7 +1483,8 @@ public class NpcAvatarExtendedInfo(
     internal fun getLowToHighResChangeExtendedInfoFlags(): Int {
         var flag = 0
         if (this.flags and OPS == 0 &&
-            blocks.visibleOps.ops != VisibleOps.DEFAULT_OPS
+            blocks.visibleOps.ops !=
+            VisibleOps.DEFAULT_OPS
         ) {
             flag = flag or OPS
         }
@@ -1444,6 +1535,8 @@ public class NpcAvatarExtendedInfo(
      * Clears any transient extended info that was flagged in this cycle.
      */
     private fun clearTransientExtendedInformation() {
+        val flags = this.flags
+        if (flags == 0) return
         if (flags and SEQUENCE != 0) {
             blocks.sequence.clear()
         }
@@ -1465,6 +1558,23 @@ public class NpcAvatarExtendedInfo(
         if (flags and FACE_COORD != 0) {
             blocks.faceCoord.clear()
         }
+        // While this is a persistent flag, we still need to clear any "resets",
+        // so we aren't consistently sending "clear this head icon change" to any
+        // future players even though there hasn't been a headicon change in a while.
+        if (flags and HEADICON_CUSTOMISATION != 0) {
+            val headIcons = blocks.headIconCustomisation
+            val iconFlag = headIcons.flag
+            for (i in 0..<8) {
+                if (iconFlag and (1 shl i) == 0) continue
+                val group = headIcons.headIconGroups[i]
+                if (group != -1) continue
+                val index = headIcons.headIconIndices[i].toInt()
+                if (index != -1) continue
+                // Unflag any headicons which were reset, to avoid transmitting to new future
+                // observers - the NPC will by default not have any headicons anyway
+                headIcons.flag = headIcons.flag and (1 shl i).inv()
+            }
+        }
     }
 
     override fun toString(): String =
@@ -1479,6 +1589,7 @@ public class NpcAvatarExtendedInfo(
         private val UNSIGNED_SHORT_RANGE: IntRange = UShort.MIN_VALUE.toInt()..UShort.MAX_VALUE.toInt()
         private val UNSIGNED_SMART_1_OR_2_RANGE: IntRange = 0..0x7FFF
         private val EXTENDED_NPC_ID_RANGE: IntRange = 16384..65534
+        private val HIT_TYPE_RANGE: IntRange = -1..0x7FFD
 
         // Observer-dependent flags, utilizing the lowest bits as we store observer flags in a byte array
         // IMPORTANT: As we store it in a byte array, we currently only support 8 blocks

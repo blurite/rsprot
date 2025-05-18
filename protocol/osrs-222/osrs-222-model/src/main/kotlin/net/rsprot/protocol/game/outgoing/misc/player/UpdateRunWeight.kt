@@ -6,7 +6,7 @@ import net.rsprot.protocol.message.OutgoingGameMessage
 
 /**
  * Update runweight packet is used to modify the player's current
- * equipment and inventory weight, in grams.
+ * equipment and inventory weight, in kilograms.
  */
 public class UpdateRunWeight(
     public val runweight: Int,

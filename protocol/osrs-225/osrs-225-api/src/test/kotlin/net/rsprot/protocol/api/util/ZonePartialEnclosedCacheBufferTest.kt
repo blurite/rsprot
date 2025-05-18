@@ -1,7 +1,6 @@
 package net.rsprot.protocol.api.util
 
 import io.netty.buffer.Unpooled
-import net.rsprot.protocol.common.client.ClientTypeMap
 import net.rsprot.protocol.common.client.OldSchoolClientType
 import net.rsprot.protocol.game.outgoing.util.OpFlags
 import net.rsprot.protocol.game.outgoing.zone.payload.LocAddChange
@@ -15,6 +14,7 @@ import net.rsprot.protocol.game.outgoing.zone.payload.ObjCount
 import net.rsprot.protocol.game.outgoing.zone.payload.ObjDel
 import net.rsprot.protocol.game.outgoing.zone.payload.ObjEnabledOps
 import net.rsprot.protocol.game.outgoing.zone.payload.SoundArea
+import net.rsprot.protocol.internal.client.ClientTypeMap
 import net.rsprot.protocol.message.ZoneProt
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
@@ -22,17 +22,12 @@ import kotlin.test.Test
 
 class ZonePartialEnclosedCacheBufferTest {
     @Test
-    fun `every available oldschool client type has an associated encoder`() {
-        val encoders = ZonePartialEnclosedCacheBuffer.createEncoderMap()
-        assertEquals(OldSchoolClientType.entries.toSet(), encoders.toClientList().toSet())
-    }
-
-    @Test
     fun `computeZone creates buffers for supported clients`() {
         val cache = ZonePartialEnclosedCacheBuffer()
+        val encoders = ZonePartialEnclosedCacheBuffer.createEncoderMap()
         val buffers = cache.computeZone(emptyList())
 
-        assertEquals(buffers.keys.toSet(), cache.supportedClients.toSet())
+        assertEquals(encoders.toClientList().toSet(), buffers.keys.toSet())
 
         // `computeZone` did not receive any zone prot to encode, so all buffers should be empty.
         val expectedBuffers = buffers.map { Unpooled.wrappedBuffer(ByteArray(0)) }
@@ -40,27 +35,28 @@ class ZonePartialEnclosedCacheBufferTest {
     }
 
     @Test
-    fun `compute zone partial enclosed buffers`() {
+    fun `computeZoneForClient generates a single buffer for the specified client`() {
         val cache = ZonePartialEnclosedCacheBuffer()
-
         val zoneProt = createFullZoneProtList()
-        val buffers = cache.computeZone(zoneProt)
+        val client = OldSchoolClientType.DESKTOP
+
+        val buffer = cache.computeZoneForClient(client, zoneProt)
 
         // Each zone prot should _at minimum_ write their `indexedEncoder` id. (written as a byte)
         // Ensuring every zone prot opcode/payload is written correctly falls out of scope for this test.
         val expectedMinReadableBytes = zoneProt.size * Byte.SIZE_BYTES
-        for ((client, buffer) in buffers) {
-            assertTrue(buffer.readableBytes() >= expectedMinReadableBytes) {
-                "Expected `$expectedMinReadableBytes` readable bytes from " +
-                    "buffer for client: $client. (bytes=${buffer.readableBytes()})"
-            }
-        }
+        assertTrue(
+            buffer.readableBytes() >= expectedMinReadableBytes,
+            "Expected `$expectedMinReadableBytes` readable bytes from buffer for client: $client. " +
+                "(bytes=${buffer.readableBytes()})",
+        )
 
-        // Each supported client type should have added a buffer to `activeCachedBuffers`.
-        assertEquals(cache.supportedClients.size, buffers.size)
-
-        // The leak-reference-counter should have been incremented by a single zone.
-        assertEquals(1, cache.currentZoneComputationCount)
+        assertEquals(
+            1,
+            cache.currentZoneComputationCount,
+            "Zone computation should increment by 1 for a single client's buffer.",
+        )
+        assertEquals(1, cache.activeCachedBuffers.size)
     }
 
     @Test
@@ -82,7 +78,7 @@ class ZonePartialEnclosedCacheBufferTest {
     fun `retain buffers that cannot be released`() {
         val cache = ZonePartialEnclosedCacheBuffer(listOf(OldSchoolClientType.DESKTOP))
 
-        val threshold = ZonePartialEnclosedCacheBuffer.BUF_RETENTION_COUNT_BEFORE_RELEASE
+        val threshold = ZonePartialEnclosedCacheBuffer.DEFAULT_BUF_RETENTION_COUNT_BEFORE_RELEASE
         val retainedBuffers = (0..<threshold).map { Unpooled.buffer().retain() }
 
         try {
@@ -105,7 +101,7 @@ class ZonePartialEnclosedCacheBufferTest {
     fun `force release retained buffers when threshold is reached`() {
         val cache = ZonePartialEnclosedCacheBuffer(listOf(OldSchoolClientType.DESKTOP))
 
-        val threshold = ZonePartialEnclosedCacheBuffer.BUF_RETENTION_COUNT_BEFORE_RELEASE
+        val threshold = ZonePartialEnclosedCacheBuffer.DEFAULT_BUF_RETENTION_COUNT_BEFORE_RELEASE
         val retainedBuffersSplit1 = (0..<threshold).map { Unpooled.buffer().retain() }
         val retainedBuffersSplit2 = (0..<threshold).map { Unpooled.buffer().retain() }
         val retainedBuffers = retainedBuffersSplit1 + retainedBuffersSplit2

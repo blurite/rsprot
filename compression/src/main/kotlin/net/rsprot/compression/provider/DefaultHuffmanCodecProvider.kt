@@ -7,7 +7,9 @@ import net.rsprot.compression.HuffmanCodec
  * without any sort of extra steps.
  * @property huffmanCodec the huffman codec to supply.
  */
-public class DefaultHuffmanCodecProvider(private val huffmanCodec: HuffmanCodec) : HuffmanCodecProvider {
+public class DefaultHuffmanCodecProvider(
+    private val huffmanCodec: HuffmanCodec,
+) : HuffmanCodecProvider {
     override fun provide(): HuffmanCodec {
         return huffmanCodec
     }

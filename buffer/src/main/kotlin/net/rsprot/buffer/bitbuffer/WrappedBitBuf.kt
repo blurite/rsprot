@@ -4,7 +4,9 @@ package net.rsprot.buffer.bitbuffer
 
 import io.netty.buffer.ByteBuf
 
-public class WrappedBitBuf(buffer: ByteBuf) : BitBuf(buffer) {
+public class WrappedBitBuf(
+    buffer: ByteBuf,
+) : BitBuf(buffer) {
     init {
         req(buffer.capacity() <= Int.MAX_VALUE ushr LOG_BITS_PER_BYTE) {
             "This bitbuffer cannot work with buffers greater than 268,435,455 bytes in capacity."

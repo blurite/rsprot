@@ -1,47 +1,19 @@
 package net.rsprot.protocol.game.outgoing.inv
 
 import net.rsprot.protocol.ServerProtCategory
-import net.rsprot.protocol.common.RSProtFlags
 import net.rsprot.protocol.common.game.outgoing.inv.InventoryObject
-import net.rsprot.protocol.common.game.outgoing.inv.internal.Inventory
-import net.rsprot.protocol.common.game.outgoing.inv.internal.InventoryPool
 import net.rsprot.protocol.game.outgoing.GameServerProtCategory
+import net.rsprot.protocol.internal.RSProtFlags
+import net.rsprot.protocol.internal.game.outgoing.inv.internal.Inventory
+import net.rsprot.protocol.internal.game.outgoing.inv.internal.InventoryPool
 import net.rsprot.protocol.message.OutgoingGameMessage
 import net.rsprot.protocol.util.CombinedId
 
 /**
- * Update inv partial is used to send an update of an inventory
- * that doesn't include the entire inventory.
- * This is typically used after the first [UpdateInvFull]
- * update has been performed, as subsequent updates tend to
- * be smaller, such as picking up an object - only
- * a single slot in the player's inventory would change, not warranting
- * the full 28-slot update as a result.
- *
- * A general rule of thumb for when to use partial updates is
- * if the percentage of modified objects is less than two thirds
- * of that of the highest modified index.
- * So, if our inventory has a capacity of 1,000, and we have sparsely
- * modified 500 indices throughout that, including the 999th index,
- * it is more beneficial to use the partial inventory update,
- * as the total bandwidth used by it is generally going to be less
- * than what the full update would require.
- * If, however, there is a continuous sequence of indices that
- * have been modified, such as everything from indices 0 to 100,
- * it is more beneficial to use the full update and set the
- * capacity to 100 in that.
- *
- * Below is a percentage-breakdown of how much more bandwidth the partial update
- * requires per object basis given different criteria, compared to the full update:
- * ```
- * 14.3% if slot < 128 && count >= 255
- * 28.6% if slot >= 128 && count >= 255
- * 33.3% if slot < 128 && count < 255
- * 66.6% if slot >= 128 && count < 255
- * ```
- *
- * While it is impossible to truly estimate what the exact threshold is,
- * this provides a good general idea of when to use either packet.
+ * Update inv partial is used to send an update of an inventory after it has been
+ * initially synced up via [UpdateInvFull]. Every subsequent update is done via
+ * partial, until the [UpdateInvStopTransmit] packet happens, which resets the
+ * cycle.
  *
  * @property combinedId the combined id of the interface and the component id.
  * For IF3-type interfaces, only negative values are allowed.
@@ -125,7 +97,8 @@ public class UpdateInvPartial private constructor(
 
     public fun returnInventory() {
         inventory.clear()
-        InventoryPool.pool.returnObject(inventory)
+        InventoryPool.pool
+            .returnObject(inventory)
     }
 
     override fun equals(other: Any?): Boolean {
@@ -183,7 +156,9 @@ public class UpdateInvPartial private constructor(
          * of a list of [InventoryObject]s as longs, backed by a long array.
          */
         private fun buildInventory(provider: IndexedObjectProvider): Inventory {
-            val inventory = InventoryPool.pool.borrowObject()
+            val inventory =
+                InventoryPool.pool
+                    .borrowObject()
             for (index in provider.indices) {
                 val obj = provider.provide(index)
                 if (RSProtFlags.inventoryObjCheck) {

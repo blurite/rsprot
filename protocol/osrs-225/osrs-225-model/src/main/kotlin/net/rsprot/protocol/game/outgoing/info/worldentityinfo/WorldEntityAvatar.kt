@@ -4,10 +4,10 @@ import io.netty.buffer.ByteBuf
 import io.netty.buffer.ByteBufAllocator
 import net.rsprot.buffer.extensions.p1
 import net.rsprot.buffer.extensions.p2
-import net.rsprot.protocol.common.checkCommunicationThread
-import net.rsprot.protocol.common.game.outgoing.info.CoordGrid
-import net.rsprot.protocol.common.game.outgoing.info.util.ZoneIndexStorage
 import net.rsprot.protocol.game.outgoing.info.util.Avatar
+import net.rsprot.protocol.internal.checkCommunicationThread
+import net.rsprot.protocol.internal.game.outgoing.info.CoordGrid
+import net.rsprot.protocol.internal.game.outgoing.info.util.ZoneIndexStorage
 
 /**
  * A world entity avatar represents a dynamic world entity as a single unit.
@@ -98,7 +98,8 @@ public class WorldEntityAvatar(
     ) {
         checkCommunicationThread()
         this.zoneIndexStorage.remove(this.index, this.currentCoord)
-        this.currentCoord = CoordGrid(level, x, z)
+        this.currentCoord =
+            CoordGrid(level, x, z)
         this.zoneIndexStorage.add(this.index, this.currentCoord)
         this.moveSpeed = moveSpeed
     }

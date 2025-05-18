@@ -5,7 +5,7 @@ import net.rsprot.protocol.loginprot.incoming.util.AuthenticationType
 import net.rsprot.protocol.loginprot.incoming.util.LoginBlockDecodingFunction
 import net.rsprot.protocol.message.IncomingLoginMessage
 
-public typealias LoginDecodingFunction = LoginBlockDecodingFunction<AuthenticationType<*>>
+public typealias LoginDecodingFunction = LoginBlockDecodingFunction<AuthenticationType>
 
 public data class GameLogin(
     public val buffer: JagByteBuf,

@@ -71,22 +71,11 @@ public abstract class OutgoingMessageEncoder : MessageToByteEncoder<OutgoingMess
         if (sizeMarker != -1) {
             var length = endMarker - payloadMarker
 
-            // Ok login response is a relatively special case that requires encoding the size
-            // as either 3 or 4 bytes bigger than it actually is.
-            // This is because it is intended to include the header of the first packet that
-            // will come after the login response, so the client knows how many bytes to expect
-            // right away with the login response. This _could've_ been done differently by
-            // Jagex, but it isn't, resulting in this slightly awkward code.
-            // If the opcode is > 127, two bytes are needed to encode the opcode,
-            // otherwise a single byte is needed. In either case, 2 more bytes are needed
-            // for the size of the rebuild login packet itself.
+            // LoginResponse.Ok seems to require that one includes the size of its header
+            // as part of the written size. It's an odd inconsistency that's been around
+            // forever.
             if (msg is LoginResponse.Ok) {
-                length +=
-                    if (opcode > MAX_OPCODE_VALUE_FOR_SINGLE_BYTE_OPCODE) {
-                        Short.SIZE_BYTES + Short.SIZE_BYTES
-                    } else {
-                        Byte.SIZE_BYTES + Short.SIZE_BYTES
-                    }
+                length += Byte.SIZE_BYTES + Short.SIZE_BYTES
             }
             out.writerIndex(sizeMarker)
             when (prot.size) {
@@ -154,11 +143,6 @@ public abstract class OutgoingMessageEncoder : MessageToByteEncoder<OutgoingMess
     }
 
     private companion object {
-        /**
-         * The highest possible value for an opcode that can still be written in a single byte
-         * using a 1 or 2 byte smart.
-         */
-        private const val MAX_OPCODE_VALUE_FOR_SINGLE_BYTE_OPCODE: Int = 127
         private const val MAX_USHORT_PAYLOAD_SIZE: Int = 40_000
         private const val MAX_UBYTE_PAYLOAD_SIZE: Int = 255
         private val logger = InlineLogger()

@@ -16,13 +16,13 @@ public class IfSubOpDecoder : MessageDecoder<IfSubOp> {
         val combinedId = buffer.gCombinedId()
         val sub = buffer.g2()
         val obj = buffer.g2()
-        val subop = buffer.g1()
         val op = buffer.g1()
+        val subop = buffer.g1()
         return IfSubOp(
             combinedId,
             sub,
             obj,
-            op + 1,
+            op,
             subop,
         )
     }

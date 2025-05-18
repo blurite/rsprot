@@ -4,11 +4,11 @@ import io.netty.buffer.ByteBuf
 import io.netty.buffer.ByteBufAllocator
 import net.rsprot.buffer.extensions.p1
 import net.rsprot.buffer.extensions.toJagByteBuf
-import net.rsprot.protocol.common.checkCommunicationThread
-import net.rsprot.protocol.common.game.outgoing.info.CoordFine
-import net.rsprot.protocol.common.game.outgoing.info.CoordGrid
-import net.rsprot.protocol.common.game.outgoing.info.util.ZoneIndexStorage
 import net.rsprot.protocol.game.outgoing.info.util.Avatar
+import net.rsprot.protocol.internal.checkCommunicationThread
+import net.rsprot.protocol.internal.game.outgoing.info.CoordFine
+import net.rsprot.protocol.internal.game.outgoing.info.CoordGrid
+import net.rsprot.protocol.internal.game.outgoing.info.util.ZoneIndexStorage
 
 /**
  * A world entity avatar represents a dynamic world entity as a single unit.

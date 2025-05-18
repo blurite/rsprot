@@ -2,13 +2,13 @@ package net.rsprot.protocol.game.outgoing.info.playerinfo
 
 import io.netty.buffer.ByteBufAllocator
 import net.rsprot.compression.provider.HuffmanCodecProvider
-import net.rsprot.protocol.common.checkCommunicationThread
-import net.rsprot.protocol.common.game.outgoing.info.CoordGrid
-import net.rsprot.protocol.common.game.outgoing.info.playerinfo.encoder.PlayerExtendedInfoEncoders
 import net.rsprot.protocol.game.outgoing.info.AvatarExtendedInfoWriter
 import net.rsprot.protocol.game.outgoing.info.AvatarPriority
 import net.rsprot.protocol.game.outgoing.info.filter.ExtendedInfoFilter
 import net.rsprot.protocol.game.outgoing.info.util.Avatar
+import net.rsprot.protocol.internal.checkCommunicationThread
+import net.rsprot.protocol.internal.game.outgoing.info.CoordGrid
+import net.rsprot.protocol.internal.game.outgoing.info.playerinfo.encoder.PlayerExtendedInfoEncoders
 
 /**
  * The player avatar class represents an avatar for the purposes of player information packet.
@@ -26,7 +26,8 @@ public class PlayerAvatar internal constructor(
     /**
      * The index of our local player.
      */
-    internal var localPlayerIndex: Int = localIndex
+    public var localPlayerIndex: Int = localIndex
+        internal set
 
     /**
      * The preferred resize range. The player information protocol will attempt to
@@ -56,6 +57,18 @@ public class PlayerAvatar internal constructor(
      * for the next ten cycles.
      */
     private var resizeCounter: Int = DEFAULT_RESIZE_INTERVAL
+
+    /**
+     * The maximum local player count that the protocol will try to stay under.
+     * The default value is 250.
+     */
+    private var preferredPlayerCount: Int = DEFAULT_PREFERRED_PLAYER_COUNT
+
+    /**
+     * The interval in game cycles in which the resizing logic is re-attempted after failure.
+     * The default value is 10 game cycles.
+     */
+    private var preferredResizeInterval: Int = DEFAULT_RESIZE_INTERVAL
 
     /**
      * The current known coordinate of the given player.
@@ -109,8 +122,16 @@ public class PlayerAvatar internal constructor(
      * Whether this avatar is completed hidden from everyone else. Note that this completely skips
      * sending any information to the client about this given avatar, it is not the same as soft
      * hiding via the appearance extended info.
+     * The benefit to this function is that no plugins or RuneLite implementations can snoop on other
+     * players that are meant to be hidden. The downside, however, is that because the client has no
+     * knowledge of that specific avatar whatsoever, un-hiding while the player is moving is not as
+     * smooth as with the appearance variant, since it first appears as if the player teleported in.
      */
-    internal var hidden: Boolean = false
+    public var hidden: Boolean = false
+        set(value) {
+            checkCommunicationThread()
+            field = value
+        }
 
     /**
      * The [PlayerInfoProtocol.cycleCount] when this avatar was allocated.
@@ -122,27 +143,14 @@ public class PlayerAvatar internal constructor(
     internal var allocateCycle: Int = PlayerInfoProtocol.cycleCount
 
     /**
-     * Sets the avatar as hidden (or unhidden, depending on [hidden]). When hidden via this function,
-     * no information is transmitted to the clients about this avatar. It is a hard-hiding function,
-     * unlike the one via appearance extended info, which strictly only hides client-side, but all
-     * clients still receive information about the client existing.
-     * The benefit to this function is that no plugins or RuneLite implementations can snoop on other
-     * players that are meant to be hidden. The downside, however, is that because the client has no
-     * knowledge of that specific avatar whatsoever, un-hiding while the player is moving is not as
-     * smooth as with the appearance variant, since it first appears as if the player teleported in.
-     */
-    public fun setHidden(hidden: Boolean) {
-        checkCommunicationThread()
-        this.hidden = hidden
-    }
-
-    /**
      * Resets all the properties of the given avatar to their default values.
      */
     internal fun reset() {
         preferredResizeRange = DEFAULT_RESIZE_RANGE
         resizeRange = preferredResizeRange
         resizeCounter = DEFAULT_RESIZE_INTERVAL
+        preferredPlayerCount = DEFAULT_PREFERRED_PLAYER_COUNT
+        preferredResizeInterval = DEFAULT_RESIZE_INTERVAL
         currentCoord = CoordGrid.INVALID
         lastCoord = CoordGrid.INVALID
         worldId = PlayerInfo.ROOT_WORLD
@@ -210,6 +218,44 @@ public class PlayerAvatar internal constructor(
     }
 
     /**
+     * Sets the preferred player count limit. This is the maximum amount of players
+     * that the protocol will try to render at any one time. It is a soft limit
+     * and can be exceeded. The default value is 250.
+     * @param limit the new preferred player count limit to assign.
+     */
+    public fun setPreferredPlayerCountLimit(limit: Int) {
+        checkCommunicationThread()
+        this.preferredPlayerCount = limit
+    }
+
+    /**
+     * Resets the preferred player count limit to 250.
+     */
+    public fun resetPreferredPlayerCountLimit() {
+        checkCommunicationThread()
+        this.preferredPlayerCount = DEFAULT_PREFERRED_PLAYER_COUNT
+    }
+
+    /**
+     * Sets the resize interval. This is after how many game cycles of inactivity the
+     * protocol will try to expand out again, to render more players.
+     * The default value is 10.
+     * @param interval the interval in game cycles after how long to attempt to increase range.
+     */
+    public fun setResizeInterval(interval: Int) {
+        checkCommunicationThread()
+        this.preferredResizeInterval = interval
+    }
+
+    /**
+     * Resets the resize interval to the default value of 10.
+     */
+    public fun resetResizeInterval() {
+        checkCommunicationThread()
+        this.preferredResizeInterval = DEFAULT_RESIZE_INTERVAL
+    }
+
+    /**
      * Gets the current resize range. This variable might change over time.
      */
     public fun getResizeRange(): Int = this.resizeRange
@@ -265,7 +311,7 @@ public class PlayerAvatar internal constructor(
         }
         // If there are more than 250 avatars in high resolution,
         // the range decrements by 1 every cycle.
-        if (highResCount >= PREFERRED_PLAYER_COUNT) {
+        if (highResCount >= preferredPlayerCount) {
             if (resizeRange > 0) {
                 resizeRange--
             }
@@ -275,13 +321,31 @@ public class PlayerAvatar internal constructor(
         // If our resize counter gets high enough, the protocol will
         // try to increment the range by 1 if it's less than 15
         // otherwise, resets the counter.
-        if (++resizeCounter >= DEFAULT_RESIZE_INTERVAL) {
+        if (++resizeCounter >= preferredResizeInterval) {
             if (resizeRange < preferredResizeRange) {
                 resizeRange++
             } else {
                 resizeCounter = 0
             }
         }
+    }
+
+    override fun toString(): String {
+        return "PlayerAvatar(" +
+            "localPlayerIndex=$localPlayerIndex, " +
+            "preferredResizeRange=$preferredResizeRange, " +
+            "resizeRange=$resizeRange, " +
+            "resizeCounter=$resizeCounter, " +
+            "preferredPlayerCount=$preferredPlayerCount, " +
+            "preferredResizeInterval=$preferredResizeInterval, " +
+            "currentCoord=$currentCoord, " +
+            "worldId=$worldId, " +
+            "priority=$priority, " +
+            "lastCoord=$lastCoord, " +
+            "extendedInfo=$extendedInfo, " +
+            "hidden=$hidden, " +
+            "allocateCycle=$allocateCycle" +
+            ")"
     }
 
     private companion object {
@@ -299,6 +363,6 @@ public class PlayerAvatar internal constructor(
          * The maximum preferred number of players in high resolution.
          * Exceeding this count will cause the view range to start lowering.
          */
-        private const val PREFERRED_PLAYER_COUNT = 250
+        private const val DEFAULT_PREFERRED_PLAYER_COUNT = 250
     }
 }

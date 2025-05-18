@@ -1,10 +1,10 @@
 package net.rsprot.protocol.game.outgoing.info.playerinfo
 
 import net.rsprot.buffer.bitbuffer.UnsafeLongBackedBitBuf
-import net.rsprot.protocol.common.game.outgoing.info.CoordGrid
 import net.rsprot.protocol.game.outgoing.info.playerinfo.PlayerInfoProtocol.Companion.PROTOCOL_CAPACITY
 import net.rsprot.protocol.game.outgoing.info.playerinfo.util.CellOpcodes
 import net.rsprot.protocol.game.outgoing.info.playerinfo.util.LowResolutionPosition
+import net.rsprot.protocol.internal.game.outgoing.info.CoordGrid
 import kotlin.math.abs
 
 /**

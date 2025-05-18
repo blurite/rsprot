@@ -8,7 +8,7 @@ import net.rsprot.crypto.xtea.XteaKey
  * @property referenceZone the zone to be copied from the static map
  * @property key the xtea key needed to decrypt the locs file in the cache of that respective mapsquare
  */
-public class RebuildRegionZone private constructor(
+public class RebuildRegionZone public constructor(
     public val referenceZone: ReferenceZone,
     public val key: XteaKey,
 ) {
@@ -73,7 +73,7 @@ public class RebuildRegionZone private constructor(
      * @property level the level of the static zone to be copied
      */
     @JvmInline
-    public value class ReferenceZone private constructor(
+    public value class ReferenceZone(
         public val packed: Int,
     ) {
         public constructor(

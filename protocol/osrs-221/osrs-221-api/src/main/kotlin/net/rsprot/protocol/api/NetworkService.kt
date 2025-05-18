@@ -20,12 +20,12 @@ import net.rsprot.protocol.api.repositories.MessageEncoderRepositories
 import net.rsprot.protocol.api.util.asCompletableFuture
 import net.rsprot.protocol.client.ClientType
 import net.rsprot.protocol.common.RSProtConstants
-import net.rsprot.protocol.common.client.ClientTypeMap
 import net.rsprot.protocol.common.client.OldSchoolClientType
 import net.rsprot.protocol.game.outgoing.codec.zone.header.DesktopUpdateZonePartialEnclosedEncoder
 import net.rsprot.protocol.game.outgoing.info.npcinfo.NpcAvatarFactory
 import net.rsprot.protocol.game.outgoing.info.npcinfo.NpcInfoProtocol
 import net.rsprot.protocol.game.outgoing.info.playerinfo.PlayerInfoProtocol
+import net.rsprot.protocol.internal.client.ClientTypeMap
 import net.rsprot.protocol.message.ZoneProt
 import net.rsprot.protocol.message.codec.UpdateZonePartialEnclosedCache
 import net.rsprot.protocol.message.codec.incoming.provider.GameMessageConsumerRepositoryProvider
@@ -40,6 +40,7 @@ import kotlin.time.measureTime
  * in a single "god" object.
  * @param R the receiver type for the incoming game message consumers, typically a player
  * @property allocator the byte buffer allocator used throughout the library
+ * @property host the host to which to bind to, defaulting to null.
  * @property ports the list of ports that the service will connect to
  * @property betaWorld whether this world is a beta world
  * @property bootstrapFactory the bootstrap factory used to configure the socket and Netty
@@ -76,11 +77,11 @@ import kotlin.time.measureTime
  * @property npcInfoProtocol the protocol responsible for tracking and computing everything related
  * to the NPC info packet for every player
  */
-@OptIn(ExperimentalUnsignedTypes::class)
 @Suppress("MemberVisibilityCanBePrivate")
 public class NetworkService<R>
     internal constructor(
         internal val allocator: ByteBufAllocator,
+        internal val host: String?,
         internal val ports: List<Int>,
         internal val betaWorld: Boolean,
         internal val bootstrapFactory: BootstrapFactory,
@@ -92,6 +93,8 @@ public class NetworkService<R>
         internal val gameMessageHandlers: GameMessageHandlers,
         internal val loginHandlers: LoginHandlers,
         internal val configuration: NetworkConfiguration,
+        internal val zoneCountBeforeLeakWarning: Int,
+        internal val bufRetentionCountBeforeRelease: Int,
         public val huffmanCodecProvider: HuffmanCodecProvider,
         public val gameMessageConsumerRepositoryProvider: GameMessageConsumerRepositoryProvider<R>,
         rsaKeyPair: RsaKeyPair,
@@ -133,9 +136,10 @@ public class NetworkService<R>
                             .childHandler(
                                 LoginChannelInitializer(this),
                             )
+                    val host = this.host
                     val futures =
                         ports
-                            .map(initializer::bind)
+                            .map { if (host != null) initializer.bind(host, it) else initializer.bind(it) }
                             .map<ChannelFuture, CompletableFuture<Void>>(ChannelFuture::asCompletableFuture)
                     val future =
                         CompletableFuture
@@ -206,7 +210,7 @@ public class NetworkService<R>
             // In normal circumstances, it should never hit this scenario, as
             // it requires 25,000 unique zones to have a partial enclosed buffer
             // which is basically an eight of the entire game map as a whole, excluding instances.
-            if (++currentZoneCallCount >= 25_000) {
+            if (++currentZoneCallCount >= zoneCountBeforeLeakWarning) {
                 logger.warn {
                     "Update zone partial enclosed buffers have not been correctly released!"
                 }
@@ -227,7 +231,7 @@ public class NetworkService<R>
         public fun postUpdate() {
             currentZoneCallCount = 0
             val bufferList = this.updateZonePartialEnclosedBufferList
-            if (bufferList.size >= 100) {
+            if (bufferList.size >= bufRetentionCountBeforeRelease) {
                 val first = bufferList.removeFirst()
                 releaseBuffers(first, true)
             }

@@ -477,7 +477,7 @@ public fun ByteBuf.pSmart1or2s(value: Int): ByteBuf {
     when (value) {
         in -0x40..0x3F -> writeByte(value + 0x40)
         in -0x4000..0x3FFF -> writeShort(0x8000 or (value + 0x4000))
-        else -> throw IllegalArgumentException()
+        else -> throw IllegalArgumentException("Smart1or2s value out of range: $value")
     }
     return this
 }
@@ -495,7 +495,7 @@ public fun ByteBuf.pSmart1or2(value: Int): ByteBuf {
     when (value) {
         in 0..0x7F -> writeByte(value)
         in 0..0x7FFF -> writeShort(0x8000 or value)
-        else -> throw IllegalArgumentException()
+        else -> throw IllegalArgumentException("Smart1or2 value out of range: $value")
     }
     return this
 }
@@ -513,7 +513,7 @@ public fun ByteBuf.pSmart1or2null(value: Int): ByteBuf {
     when (value) {
         in -1..<0x7F -> writeByte(value + 1)
         in -1..<0x7FFF -> writeShort(0x8000 or (value + 1))
-        else -> throw IllegalArgumentException()
+        else -> throw IllegalArgumentException("Smart1or2null value out of range: $value")
     }
     return this
 }
@@ -552,7 +552,7 @@ public fun ByteBuf.pSmart2or4(value: Int): ByteBuf {
     when (value) {
         in 0..0x7FFF -> writeShort(value)
         in 0..0x7FFFFFFF -> writeInt(0x80000000.toInt() or value)
-        else -> throw IllegalArgumentException()
+        else -> throw IllegalArgumentException("Smart2or4 value out of range: $value")
     }
     return this
 }
@@ -569,7 +569,9 @@ public fun ByteBuf.gSmart2or4null(): Int {
 
 public fun ByteBuf.pSmart2or4null(value: Int): ByteBuf {
     when {
-        value !in -1..<Int.MAX_VALUE -> throw IllegalArgumentException()
+        value !in -1..<Int.MAX_VALUE -> {
+            throw IllegalArgumentException("Smart2or4null value out of range: $value")
+        }
         value == -1 -> {
             writeShort(0x7FFF)
         }
@@ -722,7 +724,7 @@ public fun ByteBuf.pdataAlt2(
     length: Int = data.size,
 ): ByteBuf {
     for (i in offset..<(offset + length)) {
-        writeByte(data[i].toInt() - HALF_UBYTE)
+        writeByte(data[i].toInt() + HALF_UBYTE)
     }
     return this
 }
@@ -733,7 +735,7 @@ public fun ByteBuf.pdataAlt2(
     length: Int = data.readableBytes(),
 ): ByteBuf {
     for (i in offset..<(offset + length)) {
-        writeByte(data.getByte(i) - HALF_UBYTE)
+        writeByte(data.getByte(i) + HALF_UBYTE)
     }
     return this
 }
@@ -764,7 +766,7 @@ public fun ByteBuf.pdataAlt3(
     length: Int = data.size,
 ): ByteBuf {
     for (i in (offset + length - 1) downTo offset) {
-        writeByte(data[i].toInt() - HALF_UBYTE)
+        writeByte(data[i].toInt() + HALF_UBYTE)
     }
     return this
 }
@@ -775,7 +777,7 @@ public fun ByteBuf.pdataAlt3(
     length: Int = data.readableBytes(),
 ): ByteBuf {
     for (i in (offset + length - 1) downTo offset) {
-        writeByte(data.getByte(i) - HALF_UBYTE)
+        writeByte(data.getByte(i) + HALF_UBYTE)
     }
     return this
 }

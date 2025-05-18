@@ -1,8 +1,8 @@
 package net.rsprot.protocol.api.logging
 
 import com.github.michaelbull.logging.InlineLogger
-import net.rsprot.protocol.common.LogLevel
-import net.rsprot.protocol.common.RSProtFlags
+import net.rsprot.protocol.internal.LogLevel
+import net.rsprot.protocol.internal.RSProtFlags
 
 /**
  * Performs a debug log if network logging flag is enabled.

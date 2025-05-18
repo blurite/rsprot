@@ -7,9 +7,7 @@ import net.rsprot.buffer.bitbuffer.BitBuf
 import net.rsprot.buffer.bitbuffer.UnsafeLongBackedBitBuf
 import net.rsprot.buffer.bitbuffer.toBitBuf
 import net.rsprot.buffer.extensions.toJagByteBuf
-import net.rsprot.protocol.common.checkCommunicationThread
 import net.rsprot.protocol.common.client.OldSchoolClientType
-import net.rsprot.protocol.common.game.outgoing.info.CoordGrid
 import net.rsprot.protocol.game.outgoing.info.AvatarPriority
 import net.rsprot.protocol.game.outgoing.info.ByteBufRecycler
 import net.rsprot.protocol.game.outgoing.info.ObserverExtendedInfoFlags
@@ -19,6 +17,8 @@ import net.rsprot.protocol.game.outgoing.info.playerinfo.util.CellOpcodes
 import net.rsprot.protocol.game.outgoing.info.util.Avatar
 import net.rsprot.protocol.game.outgoing.info.util.BuildArea
 import net.rsprot.protocol.game.outgoing.info.util.ReferencePooledObject
+import net.rsprot.protocol.internal.checkCommunicationThread
+import net.rsprot.protocol.internal.game.outgoing.info.CoordGrid
 import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.contract
 import kotlin.math.abs
@@ -198,6 +198,7 @@ public class PlayerInfo internal constructor(
      * @param otherPlayerAvatar the avatar to mark as high priority in relation to us.
      */
     public fun setHighPriority(otherPlayerAvatar: PlayerAvatar) {
+        if (isDestroyed()) return
         this.setHighPriority(otherPlayerAvatar.localPlayerIndex)
     }
 
@@ -208,7 +209,18 @@ public class PlayerInfo internal constructor(
      * @param otherPlayerAvatar the avatar to mark back down to normal priority.
      */
     public fun setNormalPriority(otherPlayerAvatar: PlayerAvatar) {
+        if (isDestroyed()) return
         this.unsetHighPriority(otherPlayerAvatar.localPlayerIndex)
+    }
+
+    /**
+     * Gets all high priority players. This only applies to players marked as high
+     * priority via [setHighPriority], and not avatars which have a global high
+     * priority status.
+     */
+    public fun clearAllHighPriority() {
+        if (isDestroyed()) return
+        this.highPriorityPlayers.fill(0L)
     }
 
     /**
@@ -245,6 +257,49 @@ public class PlayerInfo internal constructor(
     }
 
     /**
+     * Gets the avatars of all the players that have been marked as high priority
+     * for us specifically. This does not include avatars which have a global high
+     * priority.
+     * @return an arraylist of all the avatars that are marked high priority to us.
+     */
+    public fun getHighPriorityAvatars(): List<PlayerAvatar> {
+        if (isDestroyed()) return emptyList()
+        val players = highPriorityPlayers
+        val count = players.sumOf(Long::countOneBits)
+        if (count == 0) return emptyList()
+        val list = ArrayList<PlayerAvatar>(count)
+        loop@ for (i in players.indices) {
+            val bitpacked = players[i]
+            if (bitpacked == 0L) continue
+            val offset = i * Long.SIZE_BITS
+            var index = -1
+            while (true) {
+                index = nextSetBit(index + 1, bitpacked)
+                if (index == -1) continue@loop
+                val avatar = protocol.getPlayerInfo(offset + index)?.avatar ?: continue
+                list.add(avatar)
+            }
+        }
+        return list
+    }
+
+    /**
+     * Gets the index of the next set bit in the specified [long], starting from [index].
+     * @param index the starting index to count the bits from, ignoring anything before that.
+     * @param long the value to find the next set bit in
+     * @return the index of the next set bit (value 0-63), or -1 if there are no more bits set
+     * after [index].
+     */
+    private fun nextSetBit(
+        index: Int,
+        long: Long,
+    ): Int {
+        val remaining = long and (-1L shl index)
+        if (remaining == 0L) return -1
+        return remaining.countTrailingZeroBits()
+    }
+
+    /**
      * Updates the render coordinate for the provided world id.
      * This coordinate is what will be used to perform distance checks between the player
      * and everyone else.
@@ -260,6 +315,7 @@ public class PlayerInfo internal constructor(
         z: Int,
     ) {
         checkCommunicationThread()
+        if (isDestroyed()) return
         require(worldId == ROOT_WORLD || worldId in 0..<2048) {
             "World id must be -1 or in range of 0..<2048"
         }
@@ -280,6 +336,7 @@ public class PlayerInfo internal constructor(
         buildArea: BuildArea,
     ) {
         checkCommunicationThread()
+        if (isDestroyed()) return
         require(worldId == ROOT_WORLD || worldId in 0..<2048) {
             "World id must be -1 or in range of 0..<2048"
         }
@@ -307,6 +364,7 @@ public class PlayerInfo internal constructor(
         heightInZones: Int = BuildArea.DEFAULT_BUILD_AREA_SIZE,
     ) {
         checkCommunicationThread()
+        if (isDestroyed()) return
         require(worldId == ROOT_WORLD || worldId in 0..<2048) {
             "World id must be -1 or in range of 0..<2048"
         }
@@ -321,6 +379,7 @@ public class PlayerInfo internal constructor(
      */
     public fun allocateWorld(worldId: Int) {
         checkCommunicationThread()
+        if (isDestroyed()) return
         require(worldId in 0..<PROTOCOL_CAPACITY) {
             "World id out of bounds: $worldId"
         }
@@ -337,6 +396,7 @@ public class PlayerInfo internal constructor(
      */
     public fun destroyWorld(worldId: Int) {
         checkCommunicationThread()
+        if (isDestroyed()) return
         require(worldId in 0..<PROTOCOL_CAPACITY) {
             "World id out of bounds: $worldId"
         }
@@ -386,6 +446,7 @@ public class PlayerInfo internal constructor(
      */
     public fun getHighResolutionIndices(): ArrayList<Int> {
         checkCommunicationThread()
+        if (isDestroyed()) return ArrayList(0)
         val collection = ArrayList<Int>(highResolutionCount)
         for (i in 0..<highResolutionCount) {
             val index = highResolutionIndices[i].toInt()
@@ -402,6 +463,7 @@ public class PlayerInfo internal constructor(
      */
     public fun <T> appendHighResolutionIndices(collection: T): T where T : MutableCollection<Int> {
         checkCommunicationThread()
+        if (isDestroyed()) return collection
         for (i in 0..<highResolutionCount) {
             val index = highResolutionIndices[i].toInt()
             collection.add(index)
@@ -446,6 +508,7 @@ public class PlayerInfo internal constructor(
         z: Int,
     ) {
         checkCommunicationThread()
+        if (isDestroyed()) return
         this.avatar.updateCoord(level, x, z)
     }
 
@@ -519,6 +582,7 @@ public class PlayerInfo internal constructor(
      */
     public fun handleAbsolutePlayerPositions(byteBuf: ByteBuf) {
         checkCommunicationThread()
+        if (isDestroyed()) return
         check(avatar.currentCoord != CoordGrid.INVALID) {
             "Avatar position must be updated via playerinfo#updateCoord before sending RebuildLogin/ReconnectOk."
         }
@@ -547,6 +611,7 @@ public class PlayerInfo internal constructor(
      */
     public fun onReconnect() {
         checkCommunicationThread()
+        if (isDestroyed()) return
         buffer = null
         highResMovementBuffer = null
         previousPacket = null
@@ -612,6 +677,7 @@ public class PlayerInfo internal constructor(
      */
     public fun clearEntities(worldId: Int) {
         checkCommunicationThread()
+        if (isDestroyed()) return
         require(worldId == ROOT_WORLD || worldId in 0..<2048) {
             "World id must be -1 or in range of 0..<2048"
         }
@@ -635,6 +701,8 @@ public class PlayerInfo internal constructor(
      * This function will be thread-safe relative to other players and can be calculated concurrently for all players.
      */
     internal fun prepareBitcodes() {
+        this.avatar.extendedInfo.observedChatStorage
+            .reset()
         this.highResMovementBuffer = prepareHighResMovement()
     }
 
@@ -662,7 +730,17 @@ public class PlayerInfo internal constructor(
         val jagBuffer = backingBuffer().toJagByteBuf()
         for (i in 0 until extendedInfoCount) {
             val index = extendedInfoIndices[i].toInt()
-            val other = checkNotNull(protocol.getPlayerInfo(index))
+            val other = protocol.getPlayerInfo(index)
+            // If other is null at this point, it means it was destroyed mid-processing at an earlier
+            // stage. In order to avoid the issue escalating further by throwing errors for every player
+            // that was in vicinity of the player that got destroyed, we simply write no-mask-update,
+            // even though a mask update was requested at an earlier stage.
+            // The next game tick, the player will be removed as the info is null, which is one of
+            // the conditions for removing another player from tracking.
+            if (other == null) {
+                jagBuffer.p1(0)
+                continue
+            }
             val observerFlag = observerExtendedInfoFlags.getFlag(index)
             val isHighResolutionTracked = isHighResolutionExtendedInfoTracked(index)
             val tracked =

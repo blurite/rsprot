@@ -25,6 +25,7 @@ public class HiscoreReplyEncoder : MessageEncoder<HiscoreReply> {
             }
             is HiscoreReply.SuccessfulHiscoreReply -> {
                 buffer.p1(0)
+                buffer.p1(1)
                 buffer.p1(response.statResults.size)
                 for (stat in response.statResults) {
                     buffer.p2(stat.id)

@@ -7,7 +7,6 @@ import net.rsprot.buffer.bitbuffer.UnsafeLongBackedBitBuf
 import net.rsprot.buffer.bitbuffer.toBitBuf
 import net.rsprot.buffer.extensions.toJagByteBuf
 import net.rsprot.protocol.common.client.OldSchoolClientType
-import net.rsprot.protocol.common.game.outgoing.info.CoordGrid
 import net.rsprot.protocol.game.outgoing.info.ByteBufRecycler
 import net.rsprot.protocol.game.outgoing.info.ObserverExtendedInfoFlags
 import net.rsprot.protocol.game.outgoing.info.exceptions.InfoProcessException
@@ -16,6 +15,7 @@ import net.rsprot.protocol.game.outgoing.info.playerinfo.util.CellOpcodes
 import net.rsprot.protocol.game.outgoing.info.util.Avatar
 import net.rsprot.protocol.game.outgoing.info.util.BuildArea
 import net.rsprot.protocol.game.outgoing.info.util.ReferencePooledObject
+import net.rsprot.protocol.internal.game.outgoing.info.CoordGrid
 import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.contract
 import kotlin.math.abs
@@ -123,6 +123,7 @@ public class PlayerInfo internal constructor(
      * dynamic worlds, this value must be updated to reflect on it.
      */
     public fun setActiveWorld(worldId: Int) {
+        if (isDestroyed()) return
         require(worldId == ROOT_WORLD || worldId in 0..<2048) {
             "World id must be -1 or in range of 0..<2048"
         }
@@ -144,6 +145,7 @@ public class PlayerInfo internal constructor(
         x: Int,
         z: Int,
     ) {
+        if (isDestroyed()) return
         require(worldId == ROOT_WORLD || worldId in 0..<2048) {
             "World id must be -1 or in range of 0..<2048"
         }
@@ -163,6 +165,7 @@ public class PlayerInfo internal constructor(
         worldId: Int,
         buildArea: BuildArea,
     ) {
+        if (isDestroyed()) return
         require(worldId == ROOT_WORLD || worldId in 0..<2048) {
             "World id must be -1 or in range of 0..<2048"
         }
@@ -189,6 +192,7 @@ public class PlayerInfo internal constructor(
         widthInZones: Int = BuildArea.DEFAULT_BUILD_AREA_SIZE,
         heightInZones: Int = BuildArea.DEFAULT_BUILD_AREA_SIZE,
     ) {
+        if (isDestroyed()) return
         require(worldId == ROOT_WORLD || worldId in 0..<2048) {
             "World id must be -1 or in range of 0..<2048"
         }
@@ -202,6 +206,7 @@ public class PlayerInfo internal constructor(
      * @param worldId the new world entity id
      */
     public fun allocateWorld(worldId: Int) {
+        if (isDestroyed()) return
         require(worldId in 0..<PROTOCOL_CAPACITY) {
             "World id out of bounds: $worldId"
         }
@@ -218,6 +223,7 @@ public class PlayerInfo internal constructor(
      * This is intended to be used when one of the world entities leaves the render distance.
      */
     public fun destroyWorld(worldId: Int) {
+        if (isDestroyed()) return
         require(worldId in 0..<PROTOCOL_CAPACITY) {
             "World id out of bounds: $worldId"
         }
@@ -276,6 +282,7 @@ public class PlayerInfo internal constructor(
      * @return the newly created arraylist of indices
      */
     public fun getHighResolutionIndices(worldId: Int): ArrayList<Int> {
+        if (isDestroyed()) return ArrayList(0)
         val details = getDetails(worldId)
         val collection = ArrayList<Int>(details.highResolutionCount)
         for (i in 0..<details.highResolutionCount) {
@@ -297,6 +304,7 @@ public class PlayerInfo internal constructor(
      * @return the newly created arraylist of indices, or null if the world does not exist.
      */
     public fun getHighResolutionIndicesOrNull(worldId: Int): ArrayList<Int>? {
+        if (isDestroyed()) return null
         val details = getDetailsOrNull(worldId) ?: return null
         val collection = ArrayList<Int>(details.highResolutionCount)
         for (i in 0..<details.highResolutionCount) {
@@ -327,6 +335,7 @@ public class PlayerInfo internal constructor(
         collection: T,
         throwExceptionIfNoWorld: Boolean = true,
     ): T where T : MutableCollection<Int> {
+        if (isDestroyed()) return collection
         val details =
             if (throwExceptionIfNoWorld) {
                 getDetails(worldId)
@@ -349,7 +358,6 @@ public class PlayerInfo internal constructor(
      * for this specific playerinfo object,
      */
     public fun toPacket(worldId: Int): PlayerInfoPacket {
-        val details = getDetails(worldId)
         val exception = this.exception
         if (exception != null) {
             throw InfoProcessException(
@@ -357,6 +365,7 @@ public class PlayerInfo internal constructor(
                 exception,
             )
         }
+        val details = getDetails(worldId)
         return PlayerInfoPacket(backingBuffer(details))
     }
 
@@ -375,6 +384,7 @@ public class PlayerInfo internal constructor(
         x: Int,
         z: Int,
     ) {
+        if (isDestroyed()) return
         this.avatar.updateCoord(level, x, z)
     }
 
@@ -474,6 +484,7 @@ public class PlayerInfo internal constructor(
         worldId: Int,
         byteBuf: ByteBuf,
     ) {
+        if (isDestroyed()) return
         check(avatar.currentCoord != CoordGrid.INVALID) {
             "Avatar position must be updated via playerinfo#updateCoord before sending RebuildLogin/ReconnectOk."
         }
@@ -499,6 +510,7 @@ public class PlayerInfo internal constructor(
      * Cached state should be re-assigned from the server as a result of this.
      */
     public fun onReconnect() {
+        if (isDestroyed()) return
         reset()
         // Restore the root world by polling a new one
         val details = protocol.detailsStorage.poll(ROOT_WORLD)
@@ -546,6 +558,7 @@ public class PlayerInfo internal constructor(
      * If the world is in range of 0..<2048, only that specific world will be cleared.
      */
     public fun clearEntities(worldId: Int) {
+        if (isDestroyed()) return
         require(worldId == ROOT_WORLD || worldId in 0..<2048) {
             "World id must be -1 or in range of 0..<2048"
         }
@@ -569,6 +582,8 @@ public class PlayerInfo internal constructor(
      * This function will be thread-safe relative to other players and can be calculated concurrently for all players.
      */
     internal fun prepareBitcodes() {
+        this.avatar.extendedInfo.observedChatStorage
+            .reset()
         this.highResMovementBuffer = prepareHighResMovement()
     }
 
@@ -596,7 +611,17 @@ public class PlayerInfo internal constructor(
         val jagBuffer = backingBuffer(details).toJagByteBuf()
         for (i in 0 until details.extendedInfoCount) {
             val index = details.extendedInfoIndices[i].toInt()
-            val other = checkNotNull(protocol.getPlayerInfo(index))
+            val other = protocol.getPlayerInfo(index)
+            // If other is null at this point, it means it was destroyed mid-processing at an earlier
+            // stage. In order to avoid the issue escalating further by throwing errors for every player
+            // that was in vicinity of the player that got destroyed, we simply write no-mask-update,
+            // even though a mask update was requested at an earlier stage.
+            // The next game tick, the player will be removed as the info is null, which is one of
+            // the conditions for removing another player from tracking.
+            if (other == null) {
+                jagBuffer.p1(0)
+                continue
+            }
             val observerFlag = observerExtendedInfoFlags.getFlag(index)
             val tracked =
                 other.avatar.extendedInfo.pExtendedInfo(
@@ -1000,6 +1025,7 @@ public class PlayerInfo internal constructor(
      * Marks the player info object as initialized, allowing for any further coordinate changes to take effect.
      */
     public fun postRebuildLogin() {
+        if (isDestroyed()) return
         val rootDetails = getDetails(ROOT_WORLD)
         rootDetails.initialized = true
         avatar.postUpdate()

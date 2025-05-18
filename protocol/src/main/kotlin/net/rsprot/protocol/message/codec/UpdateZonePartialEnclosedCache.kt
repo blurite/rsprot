@@ -7,6 +7,6 @@ import net.rsprot.protocol.message.ZoneProt
 public interface UpdateZonePartialEnclosedCache {
     public fun <T : ZoneProt> buildCache(
         allocator: ByteBufAllocator,
-        messages: List<T>,
+        messages: Collection<T>,
     ): ByteBuf
 }

@@ -97,7 +97,7 @@ public class LoginChannelHandler(
                 "INetAddressValidator rejected game connection for channel ${ctx.channel()}"
             }
             ctx
-                .write(LoginResponse.TooManyAttempts)
+                .writeAndFlush(LoginResponse.TooManyAttempts)
                 .addListener(ChannelFutureListener.CLOSE)
             networkService
                 .trafficMonitor
@@ -117,7 +117,7 @@ public class LoginChannelHandler(
             "Game connection accepted with session id: ${NumberFormat.getNumberInstance().format(sessionId)}"
         }
         ctx
-            .write(LoginResponse.Successful(sessionId))
+            .writeAndFlush(LoginResponse.Successful(sessionId))
             .addListener(
                 ChannelFutureListener { future ->
                     if (!future.isSuccess) {
@@ -170,7 +170,7 @@ public class LoginChannelHandler(
                     LoginDisconnectionReason.CHANNEL_OUT_OF_DATE,
                 )
             ctx
-                .write(LoginResponse.ClientOutOfDate)
+                .writeAndFlush(LoginResponse.ClientOutOfDate)
                 .addListener(ChannelFutureListener.CLOSE)
             return
         }
@@ -190,7 +190,7 @@ public class LoginChannelHandler(
                 "INetAddressValidator rejected JS5 connection for channel ${ctx.channel()}"
             }
             ctx
-                .write(LoginResponse.IPLimit)
+                .writeAndFlush(LoginResponse.IPLimit)
                 .addListener(ChannelFutureListener.CLOSE)
             networkService
                 .trafficMonitor
@@ -202,7 +202,7 @@ public class LoginChannelHandler(
             return
         }
         ctx
-            .write(LoginResponse.Successful(null))
+            .writeAndFlush(LoginResponse.Successful(null))
             .addListener(
                 ChannelFutureListener { future ->
                     if (!future.isSuccess) {
@@ -260,6 +260,10 @@ public class LoginChannelHandler(
                 ctx.inetAddress(),
                 LoginDisconnectionReason.CHANNEL_EXCEPTION,
             )
+        val channel = ctx.channel()
+        if (channel.isOpen) {
+            channel.close()
+        }
     }
 
     override fun userEventTriggered(

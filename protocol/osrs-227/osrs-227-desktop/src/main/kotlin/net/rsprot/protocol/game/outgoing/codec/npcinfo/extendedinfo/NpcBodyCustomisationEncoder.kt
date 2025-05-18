@@ -4,8 +4,8 @@ import io.netty.buffer.ByteBufAllocator
 import net.rsprot.buffer.JagByteBuf
 import net.rsprot.buffer.extensions.toJagByteBuf
 import net.rsprot.compression.provider.HuffmanCodecProvider
-import net.rsprot.protocol.common.game.outgoing.info.encoder.PrecomputedExtendedInfoEncoder
-import net.rsprot.protocol.common.game.outgoing.info.npcinfo.extendedinfo.BodyCustomisation
+import net.rsprot.protocol.internal.game.outgoing.info.encoder.PrecomputedExtendedInfoEncoder
+import net.rsprot.protocol.internal.game.outgoing.info.npcinfo.extendedinfo.BodyCustomisation
 
 @Suppress("DuplicatedCode")
 public class NpcBodyCustomisationEncoder : PrecomputedExtendedInfoEncoder<BodyCustomisation> {
@@ -46,7 +46,7 @@ public class NpcBodyCustomisationEncoder : PrecomputedExtendedInfoEncoder<BodyCu
         }
         buffer.pFlag(flag)
         if (flag and FLAG_REMODEL != 0) {
-            buffer.p1Alt1(customisation.models.size)
+            buffer.p1(customisation.models.size)
             for (model in customisation.models) {
                 buffer.p2Alt2(model)
             }

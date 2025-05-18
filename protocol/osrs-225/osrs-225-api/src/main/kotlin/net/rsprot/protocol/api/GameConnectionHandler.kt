@@ -22,7 +22,7 @@ public interface GameConnectionHandler<R> {
      */
     public fun onLogin(
         responseHandler: GameLoginResponseHandler<R>,
-        block: LoginBlock<AuthenticationType<*>>,
+        block: LoginBlock<AuthenticationType>,
     )
 
     /**

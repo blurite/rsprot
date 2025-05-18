@@ -83,14 +83,15 @@ public class RebuildRegion private constructor(
      * needed for rebuild region to function, in the order the client
      * expects it in.
      */
+    @JvmDefaultWithCompatibility
     public fun interface RebuildRegionZoneProvider {
         /**
          * Provides a zone that the client must copy based on the parameters.
          * In order to calculate the mapsquare id for xtea keys, use [getMapsquareId].
          *
-         * @param zoneX the x coordinate of the static zone to be copied
-         * @param zoneZ the z coordinate of the static zone to be copied
-         * @param level the level of the static zone to be copied
+         * @param zoneX the x coordinate of the region zone
+         * @param zoneZ the z coordinate of the region zone
+         * @param level the level of the region zone
          * @return the zone to be copied, or null if there's no zone to be copied there.
          */
         public fun provide(
@@ -116,7 +117,7 @@ public class RebuildRegion private constructor(
      * @property referenceZone the zone to be copied from the static map
      * @property key the xtea key needed to decrypt the locs file in the cache of that respective mapsquare
      */
-    public class RebuildRegionZone private constructor(
+    public class RebuildRegionZone public constructor(
         public val referenceZone: ReferenceZone,
         public val key: XteaKey,
     ) {
@@ -179,7 +180,7 @@ public class RebuildRegion private constructor(
      * @property level the level of the static zone to be copied
      */
     @JvmInline
-    public value class ReferenceZone private constructor(
+    public value class ReferenceZone(
         public val packed: Int,
     ) {
         public constructor(

@@ -21,7 +21,6 @@ import net.rsprot.protocol.api.repositories.MessageEncoderRepositories
 import net.rsprot.protocol.api.util.asCompletableFuture
 import net.rsprot.protocol.client.ClientType
 import net.rsprot.protocol.common.RSProtConstants
-import net.rsprot.protocol.common.client.ClientTypeMap
 import net.rsprot.protocol.common.client.OldSchoolClientType
 import net.rsprot.protocol.game.outgoing.codec.zone.header.DesktopUpdateZonePartialEnclosedEncoder
 import net.rsprot.protocol.game.outgoing.info.npcinfo.NpcAvatarFactory
@@ -29,6 +28,7 @@ import net.rsprot.protocol.game.outgoing.info.npcinfo.NpcInfoProtocol
 import net.rsprot.protocol.game.outgoing.info.playerinfo.PlayerInfoProtocol
 import net.rsprot.protocol.game.outgoing.info.worldentityinfo.WorldEntityAvatarFactory
 import net.rsprot.protocol.game.outgoing.info.worldentityinfo.WorldEntityProtocol
+import net.rsprot.protocol.internal.client.ClientTypeMap
 import net.rsprot.protocol.message.ZoneProt
 import net.rsprot.protocol.message.codec.UpdateZonePartialEnclosedCache
 import net.rsprot.protocol.message.codec.incoming.provider.GameMessageConsumerRepositoryProvider
@@ -36,7 +36,9 @@ import java.util.ArrayDeque
 import java.util.EnumMap
 import java.util.LinkedList
 import java.util.concurrent.CompletableFuture
-import java.util.concurrent.ScheduledFuture
+import java.util.concurrent.ExecutorService
+import java.util.concurrent.ScheduledExecutorService
+import java.util.concurrent.TimeUnit
 import kotlin.time.measureTime
 
 /**
@@ -44,6 +46,7 @@ import kotlin.time.measureTime
  * in a single "god" object.
  * @param R the receiver type for the incoming game message consumers, typically a player
  * @property allocator the byte buffer allocator used throughout the library
+ * @property host the host to which to bind to, defaulting to null.
  * @property ports the list of ports that the service will connect to
  * @property betaWorld whether this world is a beta world
  * @property bootstrapFactory the bootstrap factory used to configure the socket and Netty
@@ -84,6 +87,7 @@ import kotlin.time.measureTime
 public class NetworkService<R>
     internal constructor(
         internal val allocator: ByteBufAllocator,
+        internal val host: String?,
         internal val ports: List<Int>,
         internal val betaWorld: Boolean,
         internal val bootstrapFactory: BootstrapFactory,
@@ -95,6 +99,8 @@ public class NetworkService<R>
         internal val gameMessageHandlers: GameMessageHandlers,
         internal val loginHandlers: LoginHandlers,
         internal val configuration: NetworkConfiguration,
+        internal val zoneCountBeforeLeakWarning: Int,
+        internal val bufRetentionCountBeforeRelease: Int,
         public val huffmanCodecProvider: HuffmanCodecProvider,
         public val gameMessageConsumerRepositoryProvider: GameMessageConsumerRepositoryProvider<R>,
         rsaKeyPair: RsaKeyPair,
@@ -125,7 +131,7 @@ public class NetworkService<R>
 
         private lateinit var bossGroup: EventLoopGroup
         private lateinit var childGroup: EventLoopGroup
-        private lateinit var js5PrefetchFuture: ScheduledFuture<*>
+        private lateinit var js5PrefetchService: ScheduledExecutorService
 
         /**
          * Starts the network service by binding the provided ports.
@@ -144,9 +150,10 @@ public class NetworkService<R>
                             .childHandler(
                                 LoginChannelInitializer(this),
                             )
+                    val host = this.host
                     val futures =
                         ports
-                            .map(initializer::bind)
+                            .map { if (host != null) initializer.bind(host, it) else initializer.bind(it) }
                             .map<ChannelFuture, CompletableFuture<Void>>(ChannelFuture::asCompletableFuture)
                     val future =
                         CompletableFuture
@@ -159,7 +166,7 @@ public class NetworkService<R>
                                 }
                             }
                     js5ServiceExecutor.start()
-                    js5PrefetchFuture = Js5Service.startPrefetching(js5Service)
+                    js5PrefetchService = Js5Service.startPrefetching(js5Service)
                     try {
                         // join it, which will propagate any exceptions
                         future.join()
@@ -181,10 +188,22 @@ public class NetworkService<R>
         public fun shutdown() {
             logger.info { "Attempting to shut down network service." }
             js5Service.triggerShutdown()
-            js5PrefetchFuture.cancel(true)
+            js5PrefetchService.safeShutdown()
             bossGroup.shutdownGracefully()
             childGroup.shutdownGracefully()
             logger.info { "Network service successfully shut down." }
+        }
+
+        private fun ExecutorService.safeShutdown() {
+            shutdown()
+            try {
+                if (!awaitTermination(3L, TimeUnit.SECONDS)) {
+                    shutdownNow()
+                }
+            } catch (_: InterruptedException) {
+                shutdownNow()
+                Thread.currentThread().interrupt()
+            }
         }
 
         private fun initializeUpdateZonePartialEnclosedCacheClientMap(): ClientTypeMap<UpdateZonePartialEnclosedCache> {
@@ -226,7 +245,7 @@ public class NetworkService<R>
             // In normal circumstances, it should never hit this scenario, as
             // it requires 25,000 unique zones to have a partial enclosed buffer
             // which is basically an eight of the entire game map as a whole, excluding instances.
-            if (++currentZoneCallCount >= 25_000) {
+            if (++currentZoneCallCount >= zoneCountBeforeLeakWarning) {
                 logger.warn {
                     "Update zone partial enclosed buffers have not been correctly released!"
                 }
@@ -247,7 +266,7 @@ public class NetworkService<R>
         public fun postUpdate() {
             currentZoneCallCount = 0
             val bufferList = this.updateZonePartialEnclosedBufferList
-            if (bufferList.size >= 100) {
+            if (bufferList.size >= bufRetentionCountBeforeRelease) {
                 val first = bufferList.removeFirst()
                 releaseBuffers(first, true)
             }

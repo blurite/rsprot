@@ -87,16 +87,13 @@ public class Js5MessageEncoder(
         msg: OutgoingMessage,
         out: ByteBuf,
     ) {
-        // Unlike all the other encoders, JS5 does not use any opcode system
-        // It simply just writes the request ids followed by the payload itself.
-        val writerIndex = out.writerIndex()
         val encoder = repository.getEncoder(msg::class.java)
         encoder.encode(
             cipher,
             out.toJagByteBuf(),
             msg,
         )
-        val writtenBytes = out.writerIndex() - writerIndex
+        val writtenBytes = out.readableBytes()
         networkService
             .trafficMonitor
             .js5ChannelTrafficMonitor

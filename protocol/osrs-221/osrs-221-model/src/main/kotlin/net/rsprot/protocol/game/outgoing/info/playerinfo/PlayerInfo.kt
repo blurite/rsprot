@@ -7,7 +7,6 @@ import net.rsprot.buffer.bitbuffer.UnsafeLongBackedBitBuf
 import net.rsprot.buffer.bitbuffer.toBitBuf
 import net.rsprot.buffer.extensions.toJagByteBuf
 import net.rsprot.protocol.common.client.OldSchoolClientType
-import net.rsprot.protocol.common.game.outgoing.info.CoordGrid
 import net.rsprot.protocol.game.outgoing.info.ByteBufRecycler
 import net.rsprot.protocol.game.outgoing.info.ObserverExtendedInfoFlags
 import net.rsprot.protocol.game.outgoing.info.exceptions.InfoProcessException
@@ -16,6 +15,7 @@ import net.rsprot.protocol.game.outgoing.info.playerinfo.util.CellOpcodes
 import net.rsprot.protocol.game.outgoing.info.util.Avatar
 import net.rsprot.protocol.game.outgoing.info.util.BuildArea
 import net.rsprot.protocol.game.outgoing.info.util.ReferencePooledObject
+import net.rsprot.protocol.internal.game.outgoing.info.CoordGrid
 import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.contract
 import kotlin.math.abs
@@ -179,6 +179,7 @@ public class PlayerInfo internal constructor(
      * @param buildArea the build area to assign.
      */
     public fun updateBuildArea(buildArea: BuildArea) {
+        if (isDestroyed()) return
         this.buildArea = buildArea
     }
 
@@ -198,6 +199,7 @@ public class PlayerInfo internal constructor(
         widthInZones: Int = BuildArea.DEFAULT_BUILD_AREA_SIZE,
         heightInZones: Int = BuildArea.DEFAULT_BUILD_AREA_SIZE,
     ) {
+        if (isDestroyed()) return
         this.buildArea = BuildArea(zoneX, zoneZ, widthInZones, heightInZones)
     }
 
@@ -207,6 +209,7 @@ public class PlayerInfo internal constructor(
      * @return the newly created arraylist of indices
      */
     public fun getHighResolutionIndices(): ArrayList<Int> {
+        if (isDestroyed()) return ArrayList(0)
         val collection = ArrayList<Int>(highResolutionCount)
         for (i in 0..<highResolutionCount) {
             val index = highResolutionIndices[i].toInt()
@@ -222,6 +225,7 @@ public class PlayerInfo internal constructor(
      * @return the provided [collection] to chaining.
      */
     public fun <T> appendHighResolutionIndices(collection: T): T where T : MutableCollection<Int> {
+        if (isDestroyed()) return collection
         for (i in 0..<highResolutionCount) {
             val index = highResolutionIndices[i].toInt()
             collection.add(index)
@@ -263,6 +267,7 @@ public class PlayerInfo internal constructor(
         x: Int,
         z: Int,
     ) {
+        if (isDestroyed()) return
         this.avatar.updateCoord(level, x, z)
     }
 
@@ -335,6 +340,7 @@ public class PlayerInfo internal constructor(
      * @param byteBuf the buffer into which the information will be written.
      */
     public fun handleAbsolutePlayerPositions(byteBuf: ByteBuf) {
+        if (isDestroyed()) return
         check(avatar.currentCoord != CoordGrid.INVALID) {
             "Avatar position must be updated via playerinfo#updateCoord before sending RebuildLogin/ReconnectOk."
         }
@@ -362,6 +368,7 @@ public class PlayerInfo internal constructor(
      * Cached state should be re-assigned from the server as a result of this.
      */
     public fun onReconnect() {
+        if (isDestroyed()) return
         this.buffer = null
         highResMovementBuffer = null
 
@@ -410,6 +417,8 @@ public class PlayerInfo internal constructor(
      * This function will be thread-safe relative to other players and can be calculated concurrently for all players.
      */
     internal fun prepareBitcodes() {
+        this.avatar.extendedInfo.observedChatStorage
+            .reset()
         this.highResMovementBuffer = prepareHighResMovement()
     }
 
@@ -437,7 +446,17 @@ public class PlayerInfo internal constructor(
         val jagBuffer = backingBuffer().toJagByteBuf()
         for (i in 0 until extendedInfoCount) {
             val index = extendedInfoIndices[i].toInt()
-            val other = checkNotNull(protocol.getPlayerInfo(index))
+            val other = protocol.getPlayerInfo(index)
+            // If other is null at this point, it means it was destroyed mid-processing at an earlier
+            // stage. In order to avoid the issue escalating further by throwing errors for every player
+            // that was in vicinity of the player that got destroyed, we simply write no-mask-update,
+            // even though a mask update was requested at an earlier stage.
+            // The next game tick, the player will be removed as the info is null, which is one of
+            // the conditions for removing another player from tracking.
+            if (other == null) {
+                jagBuffer.p1(0)
+                continue
+            }
             val observerFlag = observerExtendedInfoFlags.getFlag(index)
             val tracked =
                 other.avatar.extendedInfo.pExtendedInfo(

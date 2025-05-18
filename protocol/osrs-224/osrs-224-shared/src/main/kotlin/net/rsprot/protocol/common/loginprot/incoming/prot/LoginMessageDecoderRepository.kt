@@ -1,6 +1,7 @@
 package net.rsprot.protocol.common.loginprot.incoming.prot
 
 import net.rsprot.protocol.ProtRepository
+import net.rsprot.protocol.common.client.OldSchoolClientType
 import net.rsprot.protocol.common.loginprot.incoming.codec.GameLoginDecoder
 import net.rsprot.protocol.common.loginprot.incoming.codec.GameReconnectDecoder
 import net.rsprot.protocol.common.loginprot.incoming.codec.InitGameConnectionDecoder
@@ -14,6 +15,7 @@ import java.math.BigInteger
 public object LoginMessageDecoderRepository {
     @ExperimentalStdlibApi
     public fun build(
+        supportedClientTypes: List<OldSchoolClientType>,
         exp: BigInteger,
         mod: BigInteger,
     ): MessageDecoderRepository<LoginClientProt> {
@@ -24,8 +26,8 @@ public object LoginMessageDecoderRepository {
             ).apply {
                 bind(InitGameConnectionDecoder())
                 bind(InitJs5RemoteConnectionDecoder())
-                bind(GameLoginDecoder(exp, mod))
-                bind(GameReconnectDecoder(exp, mod))
+                bind(GameLoginDecoder(supportedClientTypes, exp, mod))
+                bind(GameReconnectDecoder(supportedClientTypes, exp, mod))
                 bind(ProofOfWorkReplyDecoder())
                 bind(RemainingBetaArchivesDecoder())
             }

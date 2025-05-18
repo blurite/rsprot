@@ -2,27 +2,26 @@ package net.rsprot.protocol.api
 
 import com.github.michaelbull.logging.InlineLogger
 import io.netty.channel.ChannelHandlerContext
-import io.netty.util.ReferenceCountUtil
-import io.netty.util.ReferenceCounted
 import net.rsprot.protocol.ServerProtCategory
 import net.rsprot.protocol.api.channel.inetAddress
 import net.rsprot.protocol.api.game.GameDisconnectionReason
 import net.rsprot.protocol.api.game.GameMessageDecoder
 import net.rsprot.protocol.api.logging.networkLog
 import net.rsprot.protocol.api.metrics.addDisconnectionReason
-import net.rsprot.protocol.common.RSProtFlags
 import net.rsprot.protocol.game.outgoing.GameServerProtCategory
 import net.rsprot.protocol.game.outgoing.zone.payload.MapProjAnim
 import net.rsprot.protocol.game.outgoing.zone.payload.SoundArea
+import net.rsprot.protocol.internal.RSProtFlags
 import net.rsprot.protocol.loginprot.incoming.util.LoginBlock
 import net.rsprot.protocol.loginprot.incoming.util.LoginClientType
-import net.rsprot.protocol.message.ConsumableMessage
 import net.rsprot.protocol.message.IncomingGameMessage
 import net.rsprot.protocol.message.OutgoingGameMessage
 import net.rsprot.protocol.message.codec.incoming.MessageConsumer
 import net.rsprot.protocol.metrics.NetworkTrafficMonitor
 import java.net.InetAddress
 import java.util.Queue
+import java.util.concurrent.atomic.AtomicBoolean
+import java.util.concurrent.atomic.AtomicReference
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds
 import kotlin.time.TimeSource
@@ -68,12 +67,32 @@ public class Session<R>(
             outgoingMessageQueueProvider.provide()
         }
     public val inetAddress: InetAddress = ctx.inetAddress()
-    private var disconnectionHook: Runnable? = null
+    private var disconnectionHook: AtomicReference<Runnable?> = AtomicReference(null)
 
     @Volatile
     private var channelStatus: ChannelStatus = ChannelStatus.OPEN
 
     private var lastFlush: TimeSource.Monotonic.ValueTimeMark = TimeSource.Monotonic.markNow()
+
+    private var lowPriorityCategoryPacketsDiscarded: AtomicBoolean = AtomicBoolean()
+
+    /**
+     * Discards any packets which have a [GameServerProtCategory.LOW_PRIORITY_PROT] category.
+     *
+     * In Old School RuneScape, this is used on logout. Only packets which are marked as high priority
+     * category appear to get transmitted on the game cycle on which the player clicks the logout button.
+     * This function should only be invoked when the player is guaranteed to be getting logged out.
+     *
+     * The effects of this function take place on Netty's event loop threads, specifically when [flush]
+     * is invoked. If the low priority category packets are disabled, rather than passing them into
+     * the pipeline, the packets will be safely released and discarded.
+     * Furthermore, it is worth noting that [flush] can be invoked on RSProt's own volition,
+     * when there's a lot of backpressure and everything could not be flushed out in one go.
+     */
+    @JvmOverloads
+    public fun discardLowPriorityCategoryPackets(discard: Boolean = true) {
+        lowPriorityCategoryPacketsDiscarded.set(discard)
+    }
 
     private fun updateLastFlush() {
         lastFlush = TimeSource.Monotonic.markNow()
@@ -98,8 +117,8 @@ public class Session<R>(
      * Triggers the channel closing due to idling, if it hasn't yet been called.
      */
     internal fun triggerIdleClosing() {
-        if (requestClose()) {
-            this.disconnectionHook?.run()
+        if (internalRequestClose()) {
+            invokeDisconnectionHook()
         }
     }
 
@@ -122,10 +141,11 @@ public class Session<R>(
         message: OutgoingGameMessage,
         category: ServerProtCategory,
     ) {
-        if (message is ConsumableMessage) {
-            message.consume()
+        if (this.channelStatus != ChannelStatus.OPEN) {
+            message.safeRelease()
+            return
         }
-        if (this.channelStatus != ChannelStatus.OPEN) return
+        message.markConsumed()
         if (RSProtFlags.filterMissingPacketsInClient) {
             if (loginBlock.clientType == LoginClientType.DESKTOP && message is SoundArea) {
                 throw IllegalArgumentException(
@@ -200,17 +220,33 @@ public class Session<R>(
      */
     public fun setDisconnectionHook(hook: Runnable) {
         val currentHook = this.disconnectionHook
-        if (currentHook != null) {
+        val assigned = currentHook.compareAndSet(null, hook)
+        if (!assigned) {
             throw IllegalStateException("A disconnection hook has already been registered!")
         }
-        this.disconnectionHook = hook
         // Immediately trigger the disconnection hook if the channel already went inactive before
         // the hook could be triggered
         if (!ctx.channel().isActive) {
-            if (requestClose()) {
-                hook.run()
+            if (internalRequestClose()) {
+                invokeDisconnectionHook()
             }
         }
+    }
+
+    /**
+     * Requests the channel to be closed once there's nothing more to write out, and the
+     * channel has been flushed. This will furthermore clear any disconnection hook set,
+     * to avoid any lingering memory. It will not invoke the disconnection hook.
+     * @return whether the channel was open and will be closed in the future.
+     */
+    public fun requestClose(): Boolean {
+        if (this.channelStatus != ChannelStatus.OPEN) {
+            return false
+        }
+        this.disconnectionHook.set(null)
+        this.channelStatus = ChannelStatus.CLOSING
+        this.flush()
+        return true
     }
 
     /**
@@ -218,11 +254,12 @@ public class Session<R>(
      * channel has been flushed.
      * @return whether the channel was open and will be closed in the future.
      */
-    public fun requestClose(): Boolean {
+    private fun internalRequestClose(): Boolean {
         if (this.channelStatus != ChannelStatus.OPEN) {
             return false
         }
         this.channelStatus = ChannelStatus.CLOSING
+        this.flush()
         return true
     }
 
@@ -279,23 +316,16 @@ public class Session<R>(
      */
     public fun clear() {
         for (queue in outgoingMessageQueues) {
-            for (message in queue) {
-                if (message is ReferenceCounted) {
-                    if (message.refCnt() > 0) {
-                        ReferenceCountUtil.safeRelease(message)
-                    }
-                }
-            }
-            queue.clear()
-        }
-        for (message in incomingMessageQueue) {
-            if (message is ReferenceCounted) {
-                if (message.refCnt() > 0) {
-                    ReferenceCountUtil.safeRelease(message)
-                }
+            while (true) {
+                val next = queue.poll() ?: break
+                next.safeRelease()
             }
         }
-        incomingMessageQueue.clear()
+        val incomingQueue = incomingMessageQueue
+        while (true) {
+            val next = incomingQueue.poll() ?: break
+            next.safeRelease()
+        }
     }
 
     /**
@@ -308,10 +338,23 @@ public class Session<R>(
      */
     private fun writeAndFlush() {
         val channel = ctx.channel()
-        queues@ for (queue in outgoingMessageQueues) {
+        categories@ for (category in GameServerProtCategory.entries) {
+            val queue = outgoingMessageQueues[category.id]
+
+            // Safely discard any low priority category packets if they are disabled
+            if (category == GameServerProtCategory.LOW_PRIORITY_PROT &&
+                lowPriorityCategoryPacketsDiscarded.get()
+            ) {
+                while (true) {
+                    val next = queue.poll() ?: break
+                    next.safeRelease()
+                }
+                continue
+            }
+
             packets@ while (true) {
                 if (!channel.isWritable) {
-                    break@queues
+                    break@categories
                 }
                 val next = queue.poll() ?: break@packets
                 networkLog(logger) {
@@ -384,9 +427,11 @@ public class Session<R>(
     }
 
     /**
-     * Adds an incoming message to the incoming message queue
+     * Adds an incoming message to the incoming message queue.
+     * Function is public to assist with testing, and should not be invoked
+     * by servers outside of that.
      */
-    internal fun addIncomingMessage(incomingGameMessage: IncomingGameMessage) {
+    public fun addIncomingMessage(incomingGameMessage: IncomingGameMessage) {
         if (this.channelStatus != ChannelStatus.OPEN) return
         incomingMessageQueue += incomingGameMessage
     }
@@ -405,6 +450,15 @@ public class Session<R>(
      * no more packets should be decoded.
      */
     internal fun isFull(): Boolean = counter.isFull()
+
+    /**
+     * Invokes the disconnection hook if it isn't null, while also nulling out the property,
+     * so that it will never get invoked more than once, even if it ends up getting called from
+     * different threads simultaneously.
+     */
+    private fun invokeDisconnectionHook() {
+        this.disconnectionHook.getAndSet(null)?.run()
+    }
 
     private enum class ChannelStatus {
         OPEN,

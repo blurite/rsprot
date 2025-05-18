@@ -1,6 +1,9 @@
 # RSProt
 
 [![GitHub Actions][actions-badge]][actions] [![MIT license][mit-badge]][mit]
+[![OldSchool - 230 (Alpha)](https://img.shields.io/badge/OldSchool-230_(Alpha)-9a1abd)](https://github.com/blurite/rsprot/tree/master/protocol/osrs-230/osrs-230-api/src/main/kotlin/net/rsprot/protocol/api)
+[![OldSchool - 229 (Alpha)](https://img.shields.io/badge/OldSchool-229_(Alpha)-9a1abd)](https://github.com/blurite/rsprot/tree/master/protocol/osrs-229/osrs-229-api/src/main/kotlin/net/rsprot/protocol/api)
+[![OldSchool - 228 (Alpha)](https://img.shields.io/badge/OldSchool-228_(Alpha)-9a1abd)](https://github.com/blurite/rsprot/tree/master/protocol/osrs-228/osrs-228-api/src/main/kotlin/net/rsprot/protocol/api)
 [![OldSchool - 227 (Alpha)](https://img.shields.io/badge/OldSchool-227_(Alpha)-9a1abd)](https://github.com/blurite/rsprot/tree/master/protocol/osrs-227/osrs-227-api/src/main/kotlin/net/rsprot/protocol/api)
 [![OldSchool - 226 (Alpha)](https://img.shields.io/badge/OldSchool-226_(Alpha)-9a1abd)](https://github.com/blurite/rsprot/tree/master/protocol/osrs-226/osrs-226-api/src/main/kotlin/net/rsprot/protocol/api)
 [![OldSchool - 225 (Alpha)](https://img.shields.io/badge/OldSchool-225_(Alpha)-9a1abd)](https://github.com/blurite/rsprot/tree/master/protocol/osrs-225/osrs-225-api/src/main/kotlin/net/rsprot/protocol/api)
@@ -22,7 +25,7 @@ In order to add it to your server, add the below line under dependencies
 in your build.gradle.kts.
 
 ```kts
-implementation("net.rsprot:osrs-227-api:1.0.0-ALPHA-20241122")
+implementation("net.rsprot:osrs-230-api:1.0.0-ALPHA-20250515")
 ```
 
 An in-depth tutorial on how to implement it will be added into this read-me
@@ -38,12 +41,12 @@ other revisions are welcome, but will not be provided by default.
 - Java 11
 
 ## Supported Versions
-This library currently supports revision 221-227 OldSchool desktop clients.
+This library currently supports revision 221-228 OldSchool desktop clients.
 
 ## Quick Guide
 This section covers a quick guide for how to use the protocol after implementing
 the base API. It is not a guide for the base API itself, that will come in the
-future. This specific quick guide refers to revision 227.
+future. This specific quick guide refers to revision 228.
 
 #### Player Initialization
 When a player logs in, a new protocol instance must be allocated for
@@ -241,10 +244,53 @@ protocol. This can be done via:
 
 ## Changes
 
+### Revision 230
+Revision 230 was primarily a cleanup revision, with no new packets or changes
+introduced.
+
+#### Removals
+- CLEAR_ENTITIES
+- WORLDENTITY_INFO_V4
+
+### Revision 229
+Revision 229 brings the following changes:
+
+#### Additions
+1. SET_ACTIVE_WORLD_V2: A simplified variant of the V1 packet.
+2. An unknown var-short packet: Good chance this is the removed
+WORLDENTITY_INFO_V3 packet, but it's hard to say with certainty.
+It is unused on both Java and C++ clients, and only reads g1()
+which it discards.
+
+#### Removals
+1. LOC_ADD_CHANGE_V1: Removed as revision 228 introduced the V2 variant
+which has been in use since then.
+2. WORLDENTITY_INFO_V3: Removed since V4 has been in use starting with
+revision 227.
+
+#### Changes
+1. CAMERA_TARGET_V2 has now been migrated to V3, and structural changes
+have been done to the packet.
+2. Login CRCs now transmit 23 CRCs instead of the previous 21.
+REMAINING_BETA_ARCHIVES has gone from opcode 20 to 32, as the client
+still needs to support last revision's variant.
+
+### Revision 228
+Revision 228 comes with very little changes, only introducing a single
+new server packet. This revision does not delete any other packets, or
+change almost anything else in the client, even outside of networking.
+
+#### Additions
+1. LOC_ADD_CHANGE_V2: A new variant of LOC_ADD_CHANGE that has support for
+server-provided minimenu ops. An example of this would be "Cut-down" on trees,
+allowing the server to change that to something completely dynamic.
+OldSchool RuneScape is no longer using the older packet, even if no option
+overrides are used.
+
 ### Revision 227
 Revision 227 was mostly a clean-up revision, doing little overall changes.
 
-### Additions
+#### Additions
 1. An unknown client packet which is not used on native desktop nor java.
 This packet might be used in mobile, we do not know. It has a size of 1 byte.
 2. PACKET_GROUP_START: A packet which lets the server tell the client to process
@@ -255,7 +301,7 @@ sizes and payloads).
 3. WORLDENTITY_INFO_V4: A new variant of world entity info, adding support
 for defining the offset for the ship model/center-point in fine client units.
 
-### Removals
+#### Removals
 1. WORLDENTITY_INFO_V1 (server)
 2. WORLDENTITY_INFO_V2 (server)
 3. NPC_INFO_SMALL_V4 (server)

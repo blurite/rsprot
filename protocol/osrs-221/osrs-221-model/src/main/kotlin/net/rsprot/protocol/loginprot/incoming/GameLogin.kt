@@ -8,5 +8,5 @@ import java.util.function.BiFunction
 
 public data class GameLogin(
     public val buffer: JagByteBuf,
-    public val decoder: BiFunction<JagByteBuf, Boolean, LoginBlock<AuthenticationType<*>>>,
+    public val decoder: BiFunction<JagByteBuf, Boolean, LoginBlock<AuthenticationType>>,
 ) : IncomingLoginMessage

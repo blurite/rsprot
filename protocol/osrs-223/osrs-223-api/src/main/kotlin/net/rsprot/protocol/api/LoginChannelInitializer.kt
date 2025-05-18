@@ -46,6 +46,10 @@ public class LoginChannelInitializer<R>(
             .exceptionHandlers
             .channelExceptionHandler
             .exceptionCaught(ctx, cause)
+        val channel = ctx.channel()
+        if (channel.isOpen) {
+            channel.close()
+        }
     }
 
     private companion object {

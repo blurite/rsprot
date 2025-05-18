@@ -1,9 +1,9 @@
 package net.rsprot.protocol.game.outgoing.info.npcinfo
 
 import io.netty.buffer.ByteBuf
-import net.rsprot.protocol.common.game.outgoing.info.CoordGrid
 import net.rsprot.protocol.game.outgoing.info.ObserverExtendedInfoFlags
 import net.rsprot.protocol.game.outgoing.info.util.BuildArea
+import net.rsprot.protocol.internal.game.outgoing.info.CoordGrid
 
 /**
  * A world detail implementation for NPC info, tracking local NPCs in a specific world.
