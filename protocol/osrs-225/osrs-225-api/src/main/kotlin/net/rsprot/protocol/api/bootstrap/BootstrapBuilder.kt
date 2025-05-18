@@ -5,6 +5,7 @@ import io.netty.bootstrap.ServerBootstrap
 import io.netty.buffer.ByteBufAllocator
 import io.netty.channel.ChannelOption
 import io.netty.channel.EventLoopGroup
+import io.netty.channel.IoHandlerFactory
 import io.netty.channel.MultiThreadIoEventLoopGroup
 import io.netty.channel.ServerChannel
 import io.netty.channel.WriteBufferWaterMark
@@ -203,10 +204,10 @@ public class BootstrapBuilder {
             return types
         }
         return arrayOf(
-            EventLoopGroupType.IOURING,
-            EventLoopGroupType.EPOLL,
-            EventLoopGroupType.KQUEUE,
-            EventLoopGroupType.NIO,
+            IOURING,
+            EPOLL,
+            KQUEUE,
+            NIO,
         )
     }
 
@@ -223,46 +224,52 @@ public class BootstrapBuilder {
         return max(1, physicalThreads - 2)
     }
 
+    private data class BuildEventLoopGroupsResult(
+        val factory: IoHandlerFactory,
+        val bossGroup: EventLoopGroup,
+        val childGroup: EventLoopGroup,
+    )
+
     private fun buildEventLoopGroups(
         bossThreadCount: Int,
         childThreadCount: Int,
         groupTypes: Array<out EventLoopGroupType>,
-    ): Pair<EventLoopGroup, EventLoopGroup> {
+    ): BuildEventLoopGroupsResult {
         for (type in groupTypes) {
             try {
                 when (type) {
-                    EventLoopGroupType.IOURING -> {
+                    IOURING -> {
                         if (!IoUring.isAvailable()) {
                             continue
                         }
                         val factory = IoUringIoHandler.newFactory()
                         val boss = MultiThreadIoEventLoopGroup(bossThreadCount, factory)
                         val child = MultiThreadIoEventLoopGroup(childThreadCount, factory)
-                        return boss to child
+                        return BuildEventLoopGroupsResult(factory, boss, child)
                     }
-                    EventLoopGroupType.EPOLL -> {
+                    EPOLL -> {
                         if (!Epoll.isAvailable()) {
                             continue
                         }
                         val factory = EpollIoHandler.newFactory()
                         val boss = MultiThreadIoEventLoopGroup(bossThreadCount, factory)
                         val child = MultiThreadIoEventLoopGroup(childThreadCount, factory)
-                        return boss to child
+                        return BuildEventLoopGroupsResult(factory, boss, child)
                     }
-                    EventLoopGroupType.KQUEUE -> {
+                    KQUEUE -> {
                         if (!KQueue.isAvailable()) {
                             continue
                         }
                         val factory = KQueueIoHandler.newFactory()
                         val boss = MultiThreadIoEventLoopGroup(bossThreadCount, factory)
                         val child = MultiThreadIoEventLoopGroup(childThreadCount, factory)
-                        return boss to child
+                        return BuildEventLoopGroupsResult(factory, boss, child)
                     }
-                    EventLoopGroupType.NIO -> {
+                    NIO -> {
                         val factory = NioIoHandler.newFactory()
                         val boss = MultiThreadIoEventLoopGroup(bossThreadCount, factory)
                         val child = MultiThreadIoEventLoopGroup(childThreadCount, factory)
-                        return boss to child
+                        return BuildEventLoopGroupsResult(factory, boss, child)
                     }
                 }
             } catch (t: Throwable) {
@@ -293,7 +300,7 @@ public class BootstrapBuilder {
         val groupTypes = getEventLoopGroupTypes()
         val bossThreadCount = determineBossThreadCount()
         val childThreadCount = determineChildThreadCount()
-        val (bossGroup, childGroup) =
+        val (factory, bossGroup, childGroup) =
             buildEventLoopGroups(
                 bossThreadCount,
                 childThreadCount,
@@ -301,7 +308,7 @@ public class BootstrapBuilder {
             )
         val channel = determineSocketChannel()
         log {
-            "Using event loop group: ${bossGroup.javaClass.simpleName} " +
+            "Using IO handler factory: ${factory.javaClass.simpleName} " +
                 "(bossThreads: $bossThreadCount, childThreads: $childThreadCount)"
         }
         bootstrap.group(bossGroup, childGroup)
