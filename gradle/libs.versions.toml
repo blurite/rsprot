@@ -1,6 +1,6 @@
 [versions]
 kotlin = "1.9.23"
-netty = "4.2.0.Beta1"
+netty = "4.2.1.Final"
 junit = "5.10.2"
 jmh = "0.4.10"
 inlinelogger = "1.0.6"
