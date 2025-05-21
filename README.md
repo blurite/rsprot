@@ -1,16 +1,7 @@
 # RSProt
 
 [![GitHub Actions][actions-badge]][actions] [![MIT license][mit-badge]][mit]
-[![OldSchool - 230 (Alpha)](https://img.shields.io/badge/OldSchool-230_(Alpha)-9a1abd)](https://github.com/blurite/rsprot/tree/master/protocol/osrs-230/osrs-230-api/src/main/kotlin/net/rsprot/protocol/api)
-[![OldSchool - 229 (Alpha)](https://img.shields.io/badge/OldSchool-229_(Alpha)-9a1abd)](https://github.com/blurite/rsprot/tree/master/protocol/osrs-229/osrs-229-api/src/main/kotlin/net/rsprot/protocol/api)
-[![OldSchool - 228 (Alpha)](https://img.shields.io/badge/OldSchool-228_(Alpha)-9a1abd)](https://github.com/blurite/rsprot/tree/master/protocol/osrs-228/osrs-228-api/src/main/kotlin/net/rsprot/protocol/api)
-[![OldSchool - 227 (Alpha)](https://img.shields.io/badge/OldSchool-227_(Alpha)-9a1abd)](https://github.com/blurite/rsprot/tree/master/protocol/osrs-227/osrs-227-api/src/main/kotlin/net/rsprot/protocol/api)
-[![OldSchool - 226 (Alpha)](https://img.shields.io/badge/OldSchool-226_(Alpha)-9a1abd)](https://github.com/blurite/rsprot/tree/master/protocol/osrs-226/osrs-226-api/src/main/kotlin/net/rsprot/protocol/api)
-[![OldSchool - 225 (Alpha)](https://img.shields.io/badge/OldSchool-225_(Alpha)-9a1abd)](https://github.com/blurite/rsprot/tree/master/protocol/osrs-225/osrs-225-api/src/main/kotlin/net/rsprot/protocol/api)
-[![OldSchool - 224 (Alpha)](https://img.shields.io/badge/OldSchool-224_(Alpha)-9a1abd)](https://github.com/blurite/rsprot/tree/master/protocol/osrs-224/osrs-224-api/src/main/kotlin/net/rsprot/protocol/api)
-[![OldSchool - 223 (Alpha)](https://img.shields.io/badge/OldSchool-223_(Alpha)-9a1abd)](https://github.com/blurite/rsprot/tree/master/protocol/osrs-223/osrs-223-api/src/main/kotlin/net/rsprot/protocol/api)
-[![OldSchool - 222 (Alpha)](https://img.shields.io/badge/OldSchool-222_(Alpha)-9a1abd)](https://github.com/blurite/rsprot/tree/master/protocol/osrs-222/osrs-222-api/src/main/kotlin/net/rsprot/protocol/api)
-[![OldSchool - 221 (Alpha)](https://img.shields.io/badge/OldSchool-221_(Alpha)-9a1abd)](https://github.com/blurite/rsprot/tree/master/protocol/osrs-221-api/src/main/kotlin/net/rsprot/protocol/api)
+[![OldSchool - 223 - 230 (Alpha)](https://img.shields.io/badge/OldSchool-223--230_(Alpha)-9a1abd)](https://github.com/blurite/rsprot/tree/master/protocol/osrs-230/osrs-230-api/src/main/kotlin/net/rsprot/protocol/api)
 
 ## Status
 > [!NOTE]
@@ -25,7 +16,7 @@ In order to add it to your server, add the below line under dependencies
 in your build.gradle.kts.
 
 ```kts
-implementation("net.rsprot:osrs-230-api:1.0.0-ALPHA-20250518-2")
+implementation("net.rsprot:osrs-230-api:1.0.0-ALPHA-20250521")
 ```
 
 An in-depth tutorial on how to implement it will be added into this read-me
