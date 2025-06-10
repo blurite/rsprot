@@ -115,6 +115,7 @@ import net.rsprot.protocol.game.outgoing.codec.specific.NpcSpotAnimSpecificEncod
 import net.rsprot.protocol.game.outgoing.codec.specific.PlayerAnimSpecificEncoder
 import net.rsprot.protocol.game.outgoing.codec.specific.PlayerSpotAnimSpecificEncoder
 import net.rsprot.protocol.game.outgoing.codec.specific.ProjAnimSpecificV3Encoder
+import net.rsprot.protocol.game.outgoing.codec.specific.ProjAnimSpecificV4Encoder
 import net.rsprot.protocol.game.outgoing.codec.varp.VarpLargeEncoder
 import net.rsprot.protocol.game.outgoing.codec.varp.VarpResetEncoder
 import net.rsprot.protocol.game.outgoing.codec.varp.VarpSmallEncoder
@@ -203,6 +204,7 @@ public object DesktopGameMessageEncoderRepository {
                 bind(SoundAreaEncoder())
 
                 bind(ProjAnimSpecificV3Encoder())
+                bind(ProjAnimSpecificV4Encoder())
                 bind(MapAnimSpecificEncoder())
                 bind(LocAnimSpecificEncoder())
                 bind(NpcHeadIconSpecificEncoder())
