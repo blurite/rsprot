@@ -7,3 +7,9 @@ package net.rsprot.protocol.game.outgoing.interfaces
     replaceWith = ReplaceWith("IfResyncV1"),
 )
 public typealias IfResync = IfResyncV1
+
+@Deprecated(
+    message = "Deprecated. Use IfSetEventsV1.",
+    replaceWith = ReplaceWith("IfSetEventsV1"),
+)
+public typealias IfSetEvents = IfSetEventsV1

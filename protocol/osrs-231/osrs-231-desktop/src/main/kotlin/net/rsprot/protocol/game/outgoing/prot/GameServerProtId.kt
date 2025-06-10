@@ -80,7 +80,7 @@ internal object GameServerProtId {
     const val SET_NPC_UPDATE_ORIGIN = 76
     const val NPC_INFO_LARGE_V5 = 77
     const val CAM_MOVETO = 78
-    const val IF_SETEVENTS = 79
+    const val IF_SETEVENTS_V1 = 79
     const val IF_OPENTOP = 80
     const val IF_SETHIDE = 81
     const val UPDATE_FRIENDCHAT_CHANNEL_SINGLEUSER = 82

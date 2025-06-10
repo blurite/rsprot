@@ -37,7 +37,8 @@ import net.rsprot.protocol.game.outgoing.codec.interfaces.IfResyncV2Encoder
 import net.rsprot.protocol.game.outgoing.codec.interfaces.IfSetAngleEncoder
 import net.rsprot.protocol.game.outgoing.codec.interfaces.IfSetAnimEncoder
 import net.rsprot.protocol.game.outgoing.codec.interfaces.IfSetColourEncoder
-import net.rsprot.protocol.game.outgoing.codec.interfaces.IfSetEventsEncoder
+import net.rsprot.protocol.game.outgoing.codec.interfaces.IfSetEventsV1Encoder
+import net.rsprot.protocol.game.outgoing.codec.interfaces.IfSetEventsV2Encoder
 import net.rsprot.protocol.game.outgoing.codec.interfaces.IfSetHideEncoder
 import net.rsprot.protocol.game.outgoing.codec.interfaces.IfSetModelEncoder
 import net.rsprot.protocol.game.outgoing.codec.interfaces.IfSetNpcHeadActiveEncoder
@@ -156,7 +157,8 @@ public object DesktopGameMessageEncoderRepository {
                 bind(IfCloseSubEncoder())
                 bind(IfMoveSubEncoder())
                 bind(IfClearInvEncoder())
-                bind(IfSetEventsEncoder())
+                bind(IfSetEventsV1Encoder())
+                bind(IfSetEventsV2Encoder())
                 bind(IfSetPositionEncoder())
                 bind(IfSetScrollPosEncoder())
                 bind(IfSetRotateSpeedEncoder())

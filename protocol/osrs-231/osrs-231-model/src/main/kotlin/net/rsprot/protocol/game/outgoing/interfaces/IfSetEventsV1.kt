@@ -6,7 +6,7 @@ import net.rsprot.protocol.message.OutgoingGameMessage
 import net.rsprot.protocol.util.CombinedId
 
 /**
- * Interface events are sent to set/unlock various options on a component,
+ * Interface events v1 are sent to set/unlock various options on a component,
  * such as button clicks and dragging.
  * @property combinedId the bitpacked combination of [interfaceId] and [componentId].
  * @property interfaceId the interface id on which to set the events
@@ -15,7 +15,7 @@ import net.rsprot.protocol.util.CombinedId
  * @property end the end subcomponent id (inclusive)
  * @property events the bitpacked events
  */
-public class IfSetEvents private constructor(
+public class IfSetEventsV1 private constructor(
     public val combinedId: Int,
     private val _start: UShort,
     private val _end: UShort,
@@ -63,7 +63,7 @@ public class IfSetEvents private constructor(
         if (this === other) return true
         if (javaClass != other?.javaClass) return false
 
-        other as IfSetEvents
+        other as IfSetEventsV1
 
         if (combinedId != other.combinedId) return false
         if (_start != other._start) return false
@@ -82,7 +82,7 @@ public class IfSetEvents private constructor(
     }
 
     override fun toString(): String =
-        "IfSetEvents(" +
+        "IfSetEventsV1(" +
             "events=$events, " +
             "interfaceId=$interfaceId, " +
             "componentId=$componentId, " +
