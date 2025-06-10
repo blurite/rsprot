@@ -7,13 +7,13 @@ import net.rsprot.protocol.message.toIntOrMinusOne
 import net.rsprot.protocol.util.CombinedId
 
 /**
- * If resync is used to synchronize opened interfaces with the client.
+ * If resync v1 is used to synchronize opened interfaces with the client.
  * @property topLevelInterface the top-level interface being opened
  * @property subInterfaces the sub interfaces being opened in this batch
  * @property events the interface events being set in this batch
  */
 @Suppress("MemberVisibilityCanBePrivate")
-public class IfResync private constructor(
+public class IfResyncV1 private constructor(
     private val _topLevelInterface: UShort,
     public val subInterfaces: List<SubInterfaceMessage>,
     public val events: List<InterfaceEventsMessage>,
@@ -43,7 +43,7 @@ public class IfResync private constructor(
         if (this === other) return true
         if (javaClass != other?.javaClass) return false
 
-        other as IfResync
+        other as IfResyncV1
 
         if (_topLevelInterface != other._topLevelInterface) return false
         if (subInterfaces != other.subInterfaces) return false
@@ -60,7 +60,7 @@ public class IfResync private constructor(
     }
 
     override fun toString(): String =
-        "IfResync(" +
+        "IfResyncV1(" +
             "topLevelInterface=$topLevelInterface, " +
             "subInterfaces=$subInterfaces, " +
             "events=$events" +

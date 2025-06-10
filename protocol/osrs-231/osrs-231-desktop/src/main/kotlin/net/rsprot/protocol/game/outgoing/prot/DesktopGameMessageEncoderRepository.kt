@@ -32,7 +32,8 @@ import net.rsprot.protocol.game.outgoing.codec.interfaces.IfCloseSubEncoder
 import net.rsprot.protocol.game.outgoing.codec.interfaces.IfMoveSubEncoder
 import net.rsprot.protocol.game.outgoing.codec.interfaces.IfOpenSubEncoder
 import net.rsprot.protocol.game.outgoing.codec.interfaces.IfOpenTopEncoder
-import net.rsprot.protocol.game.outgoing.codec.interfaces.IfResyncEncoder
+import net.rsprot.protocol.game.outgoing.codec.interfaces.IfResyncV1Encoder
+import net.rsprot.protocol.game.outgoing.codec.interfaces.IfResyncV2Encoder
 import net.rsprot.protocol.game.outgoing.codec.interfaces.IfSetAngleEncoder
 import net.rsprot.protocol.game.outgoing.codec.interfaces.IfSetAnimEncoder
 import net.rsprot.protocol.game.outgoing.codec.interfaces.IfSetColourEncoder
@@ -148,7 +149,8 @@ public object DesktopGameMessageEncoderRepository {
             MessageEncoderRepositoryBuilder(
                 protRepository,
             ).apply {
-                bind(IfResyncEncoder())
+                bind(IfResyncV1Encoder())
+                bind(IfResyncV2Encoder())
                 bind(IfOpenTopEncoder())
                 bind(IfOpenSubEncoder())
                 bind(IfCloseSubEncoder())

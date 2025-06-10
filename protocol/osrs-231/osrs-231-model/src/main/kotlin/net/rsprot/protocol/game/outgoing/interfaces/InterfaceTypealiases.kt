@@ -1,0 +1,9 @@
+@file:Suppress("ktlint:standard:filename")
+
+package net.rsprot.protocol.game.outgoing.interfaces
+
+@Deprecated(
+    message = "Deprecated. Use IfResyncV1.",
+    replaceWith = ReplaceWith("IfResyncV1"),
+)
+public typealias IfResync = IfResyncV1

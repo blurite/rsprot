@@ -43,7 +43,7 @@ internal object GameServerProtId {
     const val CAM_LOOKAT_EASED_COORD = 39
     const val SERVER_TICK_END = 40
     const val IF_SETNPCHEAD = 41
-    const val IF_RESYNC = 42
+    const val IF_RESYNC_V1 = 42
     const val IF_SETTEXT = 43
     const val NPC_SPOTANIM_SPECIFIC = 44
     const val NPC_ANIM_SPECIFIC = 45
