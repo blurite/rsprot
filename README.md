@@ -1,7 +1,7 @@
 # RSProt
 
 [![GitHub Actions][actions-badge]][actions] [![MIT license][mit-badge]][mit]
-[![OldSchool - 223 - 230 (Alpha)](https://img.shields.io/badge/OldSchool-223--230_(Alpha)-9a1abd)](https://github.com/blurite/rsprot/tree/master/protocol/osrs-230/osrs-230-api/src/main/kotlin/net/rsprot/protocol/api)
+[![OldSchool - 221 - 231 (Alpha)](https://img.shields.io/badge/OldSchool-221--231_(Alpha)-9a1abd)](https://github.com/blurite/rsprot/tree/master/protocol/osrs-231/osrs-231-api/src/main/kotlin/net/rsprot/protocol/api)
 
 ## Status
 > [!NOTE]
@@ -16,7 +16,7 @@ In order to add it to your server, add the below line under dependencies
 in your build.gradle.kts.
 
 ```kts
-implementation("net.rsprot:osrs-230-api:1.0.0-ALPHA-20250521")
+implementation("net.rsprot:osrs-231-api:1.0.0-ALPHA-20250521")
 ```
 
 An in-depth tutorial on how to implement it will be added into this read-me
@@ -32,12 +32,12 @@ other revisions are welcome, but will not be provided by default.
 - Java 11
 
 ## Supported Versions
-This library currently supports revision 221-230 OldSchool desktop clients.
+This library currently supports revision 221-231 OldSchool desktop clients.
 
 ## Quick Guide
 This section covers a quick guide for how to use the protocol after implementing
 the base API. It is not a guide for the base API itself, that will come in the
-future. This specific quick guide refers to revision 230.
+future. This specific quick guide refers to revision 231.
 
 #### Player Initialization
 When a player logs in, a new protocol instance must be allocated for
