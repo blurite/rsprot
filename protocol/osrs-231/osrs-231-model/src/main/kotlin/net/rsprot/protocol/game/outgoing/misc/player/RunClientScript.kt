@@ -11,12 +11,12 @@ import net.rsprot.protocol.message.util.estimateTextSize
  * with the provided arguments.
  * @property id the id of the script to invoke
  * @property types the array of characters representing the clientscript types
- * to send to the client. It is important to remember that all types which
- * aren't `'s'` will be integer-based, with `'s'` being the only string-type.
- * If the given value element cannot be cast to string/int respective
- * to its type, an exception is thrown.
- * @property values the list of int or string values to be sent to the
- * client script.
+ * to send to the client.
+ * The supported types are IntArray('W'), Array<String>('X'), String('s') and Int ('i').
+ * Note that IntArray(int[] in Java) specifically must be passed in,
+ * and not an Array<Integer>(Integer[] in Java). Latter will throw an exception.
+ * Any char code not in the aforementioned list will be treated as an int.
+ * @property values the list of values to be sent in the client script.
  */
 public class RunClientScript : OutgoingGameMessage {
     public val id: Int
@@ -43,13 +43,34 @@ public class RunClientScript : OutgoingGameMessage {
             for (i in types.indices) {
                 val type = types[i]
                 val value = values[i]
-                if (type == 's') {
-                    require(value is String) {
-                        "Expected string value at index $i for char $type, got: $value"
+                when (type) {
+                    'W' -> {
+                        require(value is IntArray) {
+                            "Expected IntArray(int[] in Java) value at index $i for char $type, got: $value"
+                        }
                     }
-                } else {
-                    require(value is Int) {
-                        "Expected int value at index $i for char $type, got: $value"
+                    'X' -> {
+                        require(value is Array<*>) {
+                            "Expected Array<String>(String[] in Java) value at index $i for char $type, got: $value"
+                        }
+                        for (index in value.indices) {
+                            val element = value[index]
+                            require(element is String) {
+                                "Only string elements expected in string arrays; " +
+                                    "index $index in array is not a string: $element " +
+                                    "(full array: ${value.contentToString()})"
+                            }
+                        }
+                    }
+                    's' -> {
+                        require(value is String) {
+                            "Expected string value at index $i for char $type, got: $value"
+                        }
+                    }
+                    else -> {
+                        require(value is Int) {
+                            "Expected int value at index $i for char $type, got: $value"
+                        }
                     }
                 }
             }
@@ -58,7 +79,7 @@ public class RunClientScript : OutgoingGameMessage {
 
     /**
      * A secondary constructor that allows one to only pass in the values and infer the types from the
-     * values. All values must be integer or string types, both of which can be mixed too.
+     * values. All values must be IntArray, Array<String>, Int or String types, and may be mixed.
      * As client discards the actual types, there's no value in providing the exact type values to the
      * client, and we can simply infer this the same way client reverses it.
      */
@@ -71,11 +92,14 @@ public class RunClientScript : OutgoingGameMessage {
         this.types =
             CharArray(values.size) { index ->
                 when (val value = values[index]) {
+                    is IntArray -> 'W'
+                    is Array<*> -> 'X'
                     is Int -> 'i'
                     is String -> 's'
                     else -> throw IllegalArgumentException(
                         "Unknown clientscript value type: " +
-                            "${value.javaClass} @ $value, accepted types only include integers and strings.",
+                            "${value.javaClass} @ $value, " +
+                            "accepted types only include IntArray, Array<String>, Int and String.",
                     )
                 }
             }
@@ -86,14 +110,29 @@ public class RunClientScript : OutgoingGameMessage {
 
     override fun estimateSize(): Int {
         var payloadSize = 0
-        // For clientscripts, as they can be so volatile in length,
-        // we calculate an accurate length of the message
+        // For clientscripts, as they can be so volatile,
+        // we calculate an accurate length of the message based on highest possible values.
         for (i in (types.size - 1) downTo 0) {
             val type = types[i]
-            if (type == 's') {
-                estimateTextSize(values[i] as String)
-            } else {
-                payloadSize += Int.SIZE_BYTES
+            when (type) {
+                'W' -> {
+                    payloadSize += VAR_INT_2_SIZE_ESTIMATE
+                    val element = values[i] as IntArray
+                    payloadSize += element.size * VAR_INT_2_SIZE_ESTIMATE
+                }
+                'X' -> {
+                    payloadSize += VAR_INT_2_SIZE_ESTIMATE
+                    val elements = values[i] as Array<*>
+                    for (element in elements) {
+                        payloadSize += estimateTextSize(element as String)
+                    }
+                }
+                's' -> {
+                    payloadSize += estimateTextSize(values[i] as String)
+                }
+                else -> {
+                    payloadSize += Int.SIZE_BYTES
+                }
             }
         }
         return types.size +
@@ -128,4 +167,12 @@ public class RunClientScript : OutgoingGameMessage {
             "types=${types.contentToString()}, " +
             "values=$values" +
             ")"
+
+    private companion object {
+        /**
+         * A size estimate in bytes for VarInt2. Since the value is dynamic, we can only assume it
+         * will be the highest possible size, which is 5 bytes.
+         */
+        private const val VAR_INT_2_SIZE_ESTIMATE: Int = 5
+    }
 }

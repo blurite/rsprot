@@ -24,10 +24,30 @@ public class RunClientScriptEncoder : MessageEncoder<RunClientScript> {
         val length = types.size
         for (i in (length - 1) downTo 0) {
             val type = types[i]
-            if (type == 's') {
-                buffer.pjstr(values[i] as String)
-            } else {
-                buffer.p4(values[i] as Int)
+            val value = values[i]
+            when (type) {
+                'W' -> {
+                    value as IntArray
+
+                    buffer.pVarInt2(value.size)
+                    for (element in value) {
+                        buffer.pVarInt2s(element)
+                    }
+                }
+                'X' -> {
+                    value as Array<*>
+
+                    buffer.pVarInt2(value.size)
+                    for (element in value) {
+                        buffer.pjstr(element as String)
+                    }
+                }
+                's' -> {
+                    buffer.pjstr(value as String)
+                }
+                else -> {
+                    buffer.p4(value as Int)
+                }
             }
         }
         buffer.p4(message.id)
