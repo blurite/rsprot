@@ -95,4 +95,52 @@ class ByteBufSpecialTypeTest {
         assertEquals(-0x7FFFFFFF, buffer.gVarInt())
         assertTrue(!buffer.isReadable)
     }
+
+    @Test
+    fun `test gvarint2`() {
+        val buffer = buffer()
+        buffer.pVarInt2(0)
+        buffer.pVarInt2(0xF)
+        buffer.pVarInt2(0xFF)
+        buffer.pVarInt2(0xFFFF)
+        buffer.pVarInt2(0xFFFFFF)
+        buffer.pVarInt2(0x7FFFFFFF)
+        buffer.pVarInt2(-1)
+        buffer.pVarInt2(-0xFFFFFF)
+        buffer.pVarInt2(-0x7FFFFFFF)
+        assertEquals(0, buffer.gVarInt2())
+        assertEquals(0xF, buffer.gVarInt2())
+        assertEquals(0xFF, buffer.gVarInt2())
+        assertEquals(0xFFFF, buffer.gVarInt2())
+        assertEquals(0xFFFFFF, buffer.gVarInt2())
+        assertEquals(0x7FFFFFFF, buffer.gVarInt2())
+        assertEquals(-1, buffer.gVarInt2())
+        assertEquals(-0xFFFFFF, buffer.gVarInt2())
+        assertEquals(-0x7FFFFFFF, buffer.gVarInt2())
+        assertTrue(!buffer.isReadable)
+    }
+
+    @Test
+    fun `test gvarint2s`() {
+        val buffer = buffer()
+        buffer.pVarInt2s(0)
+        buffer.pVarInt2s(0xF)
+        buffer.pVarInt2s(0xFF)
+        buffer.pVarInt2s(0xFFFF)
+        buffer.pVarInt2s(0xFFFFFF)
+        buffer.pVarInt2s(0x7FFFFFFF)
+        buffer.pVarInt2s(-1)
+        buffer.pVarInt2s(-0xFFFFFF)
+        buffer.pVarInt2s(-0x7FFFFFFF)
+        assertEquals(0, buffer.gVarInt2s())
+        assertEquals(0xF, buffer.gVarInt2s())
+        assertEquals(0xFF, buffer.gVarInt2s())
+        assertEquals(0xFFFF, buffer.gVarInt2s())
+        assertEquals(0xFFFFFF, buffer.gVarInt2s())
+        assertEquals(0x7FFFFFFF, buffer.gVarInt2s())
+        assertEquals(-1, buffer.gVarInt2s())
+        assertEquals(-0xFFFFFF, buffer.gVarInt2s())
+        assertEquals(-0x7FFFFFFF, buffer.gVarInt2s())
+        assertTrue(!buffer.isReadable)
+    }
 }
