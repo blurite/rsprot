@@ -17,6 +17,7 @@ import net.rsprot.protocol.internal.game.outgoing.info.npcinfo.extendedinfo.NpcT
 import net.rsprot.protocol.internal.game.outgoing.info.npcinfo.extendedinfo.Transformation
 import net.rsprot.protocol.internal.game.outgoing.info.npcinfo.extendedinfo.VisibleOps
 import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.ExactMove
+import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.FaceAngle
 import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.FacePathingEntity
 import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.Hit
 import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.Say
@@ -78,6 +79,7 @@ public class NpcAvatarExtendedInfoBlocks(
         )
     public val hit: Hit = Hit(encoders(writers, NEnc::hit))
     public val faceCoord: FaceCoord = FaceCoord(encoders(writers, NEnc::faceCoord))
+    public val faceAngle: FaceAngle = FaceAngle(encoders(writers, NEnc::faceAngle))
     public val facePathingEntity: FacePathingEntity = FacePathingEntity(encoders(writers, NEnc::facePathingEntity))
     public val baseAnimationSet: BaseAnimationSet = BaseAnimationSet(encoders(writers, NEnc::baseAnimationSet))
 

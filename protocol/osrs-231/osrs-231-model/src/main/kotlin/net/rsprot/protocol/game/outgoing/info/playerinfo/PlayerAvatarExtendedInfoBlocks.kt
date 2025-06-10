@@ -8,11 +8,11 @@ import net.rsprot.protocol.internal.game.outgoing.info.encoder.ExtendedInfoEncod
 import net.rsprot.protocol.internal.game.outgoing.info.playerinfo.encoder.PlayerExtendedInfoEncoders
 import net.rsprot.protocol.internal.game.outgoing.info.playerinfo.extendedinfo.Appearance
 import net.rsprot.protocol.internal.game.outgoing.info.playerinfo.extendedinfo.Chat
-import net.rsprot.protocol.internal.game.outgoing.info.playerinfo.extendedinfo.FaceAngle
 import net.rsprot.protocol.internal.game.outgoing.info.playerinfo.extendedinfo.MoveSpeed
 import net.rsprot.protocol.internal.game.outgoing.info.playerinfo.extendedinfo.PlayerTintingList
 import net.rsprot.protocol.internal.game.outgoing.info.playerinfo.extendedinfo.TemporaryMoveSpeed
 import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.ExactMove
+import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.FaceAngle
 import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.FacePathingEntity
 import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.Hit
 import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.Say

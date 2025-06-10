@@ -11,10 +11,10 @@ import net.rsprot.protocol.game.outgoing.info.filter.ExtendedInfoFilter
 import net.rsprot.protocol.internal.RSProtFlags
 import net.rsprot.protocol.internal.checkCommunicationThread
 import net.rsprot.protocol.internal.game.outgoing.info.playerinfo.encoder.PlayerExtendedInfoEncoders
-import net.rsprot.protocol.internal.game.outgoing.info.playerinfo.extendedinfo.FaceAngle
 import net.rsprot.protocol.internal.game.outgoing.info.playerinfo.extendedinfo.MoveSpeed
 import net.rsprot.protocol.internal.game.outgoing.info.playerinfo.extendedinfo.ObjTypeCustomisation
 import net.rsprot.protocol.internal.game.outgoing.info.precompute
+import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.FaceAngle
 import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.FacePathingEntity
 import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.Tinting
 import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.util.HeadBar

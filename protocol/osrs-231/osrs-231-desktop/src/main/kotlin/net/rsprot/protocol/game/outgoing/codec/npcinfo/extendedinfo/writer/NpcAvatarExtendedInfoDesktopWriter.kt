@@ -9,6 +9,7 @@ import net.rsprot.protocol.game.outgoing.codec.npcinfo.extendedinfo.NpcBaseAnima
 import net.rsprot.protocol.game.outgoing.codec.npcinfo.extendedinfo.NpcBodyCustomisationEncoder
 import net.rsprot.protocol.game.outgoing.codec.npcinfo.extendedinfo.NpcCombatLevelChangeEncoder
 import net.rsprot.protocol.game.outgoing.codec.npcinfo.extendedinfo.NpcExactMoveEncoder
+import net.rsprot.protocol.game.outgoing.codec.npcinfo.extendedinfo.NpcFaceAngleEncoder
 import net.rsprot.protocol.game.outgoing.codec.npcinfo.extendedinfo.NpcFaceCoordEncoder
 import net.rsprot.protocol.game.outgoing.codec.npcinfo.extendedinfo.NpcFacePathingEntityEncoder
 import net.rsprot.protocol.game.outgoing.codec.npcinfo.extendedinfo.NpcHeadCustomisationEncoder
@@ -49,6 +50,7 @@ public class NpcAvatarExtendedInfoDesktopWriter :
             NpcCombatLevelChangeEncoder(),
             NpcHitEncoder(),
             NpcFaceCoordEncoder(),
+            NpcFaceAngleEncoder(),
             NpcFacePathingEntityEncoder(),
             NpcBaseAnimationSetEncoder(),
         ),
@@ -103,6 +105,9 @@ public class NpcAvatarExtendedInfoDesktopWriter :
         if (constantFlags and NpcAvatarExtendedInfo.BAS_CHANGE != 0) {
             clientFlags = clientFlags or BAS_CHANGE
         }
+        if (constantFlags and NpcAvatarExtendedInfo.FACE_ANGLE != 0) {
+            clientFlags = clientFlags or FACE_ANGLE
+        }
         return clientFlags
     }
 
@@ -130,7 +135,7 @@ public class NpcAvatarExtendedInfoDesktopWriter :
         outFlag = outFlag or pCached(buffer, clientFlag, TINTING, blocks.tinting)
         outFlag = outFlag or pOnDemand(buffer, clientFlag, HITS, blocks.hit, localIndex, observerIndex)
         outFlag = outFlag or pCached(buffer, clientFlag, LEVEL_CHANGE, blocks.combatLevelChange)
-        // TODO: face angle (new)
+        outFlag = outFlag or pCached(buffer, clientFlag, FACE_ANGLE, blocks.faceAngle)
         outFlag = outFlag or pCached(buffer, clientFlag, BODY_CUSTOMISATION, blocks.bodyCustomisation)
         // old spotanim
         outFlag = outFlag or pCached(buffer, clientFlag, HEADICON_CUSTOMISATION, blocks.headIconCustomisation)

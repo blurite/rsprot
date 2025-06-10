@@ -621,6 +621,34 @@ public class NpcAvatarExtendedInfo(
     }
 
     /**
+     * Sets the angle for this avatar to face.
+     * @param angle the angle to face, value range is 0..<2048,
+     * with 0 implying south, 512 west, 1024 north and 1536 east; interpolate
+     * between to get finer directions.
+     * @param instant whether to turn towards the angle instantly without any turn anim,
+     * or gradually. The instant property is typically used when spawning in NPCs;
+     * While the low to high resolution change does support a direction, it only supports
+     * in increments of 45 degrees - so utilizing this extended info blocks allows for
+     * more precise control over it.
+     */
+    @JvmOverloads
+    public fun setFaceAngle(
+        angle: Int,
+        instant: Boolean = false,
+    ) {
+        checkCommunicationThread()
+        verify {
+            require(angle in 0..2047) {
+                "Unexpected angle: $angle, expected range: 0-2047"
+            }
+        }
+        val faceAngle = blocks.faceAngle
+        faceAngle.angle = angle.toUShort()
+        faceAngle.instant = instant
+        flags = flags or FACE_ANGLE
+    }
+
+    /**
      * Transforms this NPC into the [id] provided.
      * It should be noted that this extended info block is transient and only applies to one cycle.
      * The server is expected to additionally change the id of the avatar itself, otherwise
@@ -1335,6 +1363,7 @@ public class NpcAvatarExtendedInfo(
         blocks.hit.clear()
         blocks.tinting.clear()
         blocks.faceCoord.clear()
+        blocks.faceAngle.clear()
         blocks.transformation.clear()
         blocks.bodyCustomisation.clear()
         blocks.headCustomisation.clear()
@@ -1380,6 +1409,9 @@ public class NpcAvatarExtendedInfo(
         }
         if (flags and FACE_COORD != 0) {
             blocks.faceCoord.precompute(allocator, huffmanCodec)
+        }
+        if (flags and FACE_ANGLE != 0) {
+            blocks.faceAngle.precompute(allocator, huffmanCodec)
         }
         if (flags and TRANSFORMATION != 0) {
             blocks.transformation.precompute(allocator, huffmanCodec)
@@ -1555,6 +1587,9 @@ public class NpcAvatarExtendedInfo(
         if (flags and FACE_COORD != 0) {
             blocks.faceCoord.clear()
         }
+        if (flags and FACE_ANGLE != 0) {
+            blocks.faceAngle.clear()
+        }
         // While this is a persistent flag, we still need to clear any "resets",
         // so we aren't consistently sending "clear this head icon change" to any
         // future players even though there hasn't been a headicon change in a while.
@@ -1610,6 +1645,7 @@ public class NpcAvatarExtendedInfo(
         public const val SEQUENCE: Int = 0x2000
         public const val EXACT_MOVE: Int = 0x4000
         public const val SPOTANIM: Int = 0x8000
+        public const val FACE_ANGLE: Int = 0x10000
 
         /**
          * Executes the [block] if input verification is enabled,

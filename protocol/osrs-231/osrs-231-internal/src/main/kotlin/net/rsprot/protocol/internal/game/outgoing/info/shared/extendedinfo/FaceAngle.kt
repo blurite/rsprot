@@ -1,4 +1,4 @@
-package net.rsprot.protocol.internal.game.outgoing.info.playerinfo.extendedinfo
+package net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo
 
 import net.rsprot.protocol.internal.client.ClientTypeMap
 import net.rsprot.protocol.internal.game.outgoing.info.TransientExtendedInfo
@@ -16,6 +16,8 @@ public class FaceAngle(
      * The value of the angle for this avatar to turn towards.
      */
     public var angle: UShort = UShort.MAX_VALUE
+    public var instant: Boolean = DEFAULT_INSTANT
+
     public var outOfDate: Boolean = false
         private set
 
@@ -35,10 +37,12 @@ public class FaceAngle(
     override fun clear() {
         releaseBuffers()
         angle = UShort.MAX_VALUE
+        instant = DEFAULT_INSTANT
         outOfDate = false
     }
 
     public companion object {
         public val DEFAULT_VALUE: UShort = UShort.MAX_VALUE
+        public const val DEFAULT_INSTANT: Boolean = false
     }
 }
