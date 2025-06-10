@@ -90,11 +90,12 @@ public class RunClientScript : OutgoingGameMessage {
         // we calculate an accurate length of the message
         for (i in (types.size - 1) downTo 0) {
             val type = types[i]
-            if (type == 's') {
-                estimateTextSize(values[i] as String)
-            } else {
-                payloadSize += Int.SIZE_BYTES
-            }
+            payloadSize +=
+                if (type == 's') {
+                    estimateTextSize(values[i] as String)
+                } else {
+                    Int.SIZE_BYTES
+                }
         }
         return types.size +
             Byte.SIZE_BYTES +
