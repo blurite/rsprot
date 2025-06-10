@@ -79,7 +79,6 @@ public enum class GameServerProt(
     SET_NPC_UPDATE_ORIGIN(GameServerProtId.SET_NPC_UPDATE_ORIGIN, 2),
 
     // World entity packets
-    SET_ACTIVE_WORLD_V1(GameServerProtId.SET_ACTIVE_WORLD_V1, 4),
     SET_ACTIVE_WORLD_V2(GameServerProtId.SET_ACTIVE_WORLD_V2, 3),
 
     @Deprecated("Deprecated since revision 229.")
