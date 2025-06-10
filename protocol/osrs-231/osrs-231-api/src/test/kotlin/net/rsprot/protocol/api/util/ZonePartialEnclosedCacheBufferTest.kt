@@ -8,7 +8,7 @@ import net.rsprot.protocol.game.outgoing.zone.payload.LocAnim
 import net.rsprot.protocol.game.outgoing.zone.payload.LocDel
 import net.rsprot.protocol.game.outgoing.zone.payload.LocMerge
 import net.rsprot.protocol.game.outgoing.zone.payload.MapAnim
-import net.rsprot.protocol.game.outgoing.zone.payload.MapProjAnim
+import net.rsprot.protocol.game.outgoing.zone.payload.MapProjAnimV1
 import net.rsprot.protocol.game.outgoing.zone.payload.ObjAdd
 import net.rsprot.protocol.game.outgoing.zone.payload.ObjCount
 import net.rsprot.protocol.game.outgoing.zone.payload.ObjDel
@@ -186,7 +186,7 @@ class ZonePartialEnclosedCacheBufferTest {
                 maxZ = 0,
             ),
             MapAnim(id = 123, delay = 0, height = 0, xInZone = 0, zInZone = 0),
-            MapProjAnim(
+            MapProjAnimV1(
                 id = 123,
                 startHeight = 0,
                 endHeight = 0,

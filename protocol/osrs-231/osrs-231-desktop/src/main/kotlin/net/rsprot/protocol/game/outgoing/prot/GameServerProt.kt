@@ -60,7 +60,10 @@ public enum class GameServerProt(
     OBJ_CUSTOMISE(GameServerProtId.OBJ_CUSTOMISE, 17),
     OBJ_UNCUSTOMISE(GameServerProtId.OBJ_UNCUSTOMISE, 7),
     MAP_ANIM(GameServerProtId.MAP_ANIM, 6),
-    MAP_PROJANIM(GameServerProtId.MAP_PROJANIM, 20),
+    MAP_PROJANIM_V1(GameServerProtId.MAP_PROJANIM_V1, 20),
+
+    // MAP_PROJANIM_V2 has no packet of its own. It can only be transmitted via the partial enclosed packet.
+    MAP_PROJANIM_V2(-1, 24),
     SOUND_AREA(GameServerProtId.SOUND_AREA, 7),
 
     // Specific packets

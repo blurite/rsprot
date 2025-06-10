@@ -48,7 +48,7 @@ public class ZonePartialEnclosedCacheBuffer
          * - [net.rsprot.protocol.game.outgoing.zone.payload.LocDel]
          * - [net.rsprot.protocol.game.outgoing.zone.payload.LocMerge]
          * - [net.rsprot.protocol.game.outgoing.zone.payload.MapAnim]
-         * - [net.rsprot.protocol.game.outgoing.zone.payload.MapProjAnim]
+         * - [net.rsprot.protocol.game.outgoing.zone.payload.MapProjAnimV1]
          * - [net.rsprot.protocol.game.outgoing.zone.payload.ObjAdd]: *Only for "publicly-visible" objs*
          * - [net.rsprot.protocol.game.outgoing.zone.payload.ObjDel]: *Only for "publicly-visible" objs*
          * - [net.rsprot.protocol.game.outgoing.zone.payload.ObjEnabledOps]

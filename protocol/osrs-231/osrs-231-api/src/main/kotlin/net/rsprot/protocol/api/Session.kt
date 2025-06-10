@@ -9,7 +9,8 @@ import net.rsprot.protocol.api.game.GameMessageDecoder
 import net.rsprot.protocol.api.logging.networkLog
 import net.rsprot.protocol.api.metrics.addDisconnectionReason
 import net.rsprot.protocol.game.outgoing.GameServerProtCategory
-import net.rsprot.protocol.game.outgoing.zone.payload.MapProjAnim
+import net.rsprot.protocol.game.outgoing.zone.payload.MapProjAnimV1
+import net.rsprot.protocol.game.outgoing.zone.payload.MapProjAnimV2
 import net.rsprot.protocol.game.outgoing.zone.payload.SoundArea
 import net.rsprot.protocol.internal.RSProtFlags
 import net.rsprot.protocol.loginprot.incoming.util.LoginBlock
@@ -156,11 +157,14 @@ public class Session<R>(
                         "partial enclosed as of revision 221 on Java clients. Packet: $message",
                 )
             }
-            if (loginBlock.clientType != LoginClientType.DESKTOP && message is MapProjAnim) {
+            if (loginBlock.clientType != LoginClientType.DESKTOP && message is MapProjAnimV1) {
                 throw IllegalArgumentException(
                     "MapProjAnim packet may only be sent as part of " +
                         "partial enclosed as of revision 225 on C++ clients. Packet: $message",
                 )
+            }
+            if (message is MapProjAnimV2) {
+                throw IllegalArgumentException("MapProjAnimV2 can only be sent as part of UpdateZonePartialEnclosed.")
             }
         }
         val categoryId = category.id

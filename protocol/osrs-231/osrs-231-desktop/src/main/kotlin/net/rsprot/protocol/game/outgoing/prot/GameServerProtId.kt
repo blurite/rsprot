@@ -117,7 +117,7 @@ internal object GameServerProtId {
     const val VARCLAN = 113
     const val PLAYER_INFO = 114
     const val CAM_MODE = 115
-    const val MAP_PROJANIM = 116
+    const val MAP_PROJANIM_V1 = 116
     const val IF_CLEARINV = 117
     const val MAP_ANIM_SPECIFIC = 118
     const val UPDATE_STOCKMARKET_SLOT = 119

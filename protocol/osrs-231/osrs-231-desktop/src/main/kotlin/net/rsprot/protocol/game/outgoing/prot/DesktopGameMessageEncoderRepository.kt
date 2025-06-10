@@ -130,7 +130,7 @@ import net.rsprot.protocol.game.outgoing.codec.zone.payload.LocAnimEncoder
 import net.rsprot.protocol.game.outgoing.codec.zone.payload.LocDelEncoder
 import net.rsprot.protocol.game.outgoing.codec.zone.payload.LocMergeEncoder
 import net.rsprot.protocol.game.outgoing.codec.zone.payload.MapAnimEncoder
-import net.rsprot.protocol.game.outgoing.codec.zone.payload.MapProjAnimEncoder
+import net.rsprot.protocol.game.outgoing.codec.zone.payload.MapProjAnimV1Encoder
 import net.rsprot.protocol.game.outgoing.codec.zone.payload.ObjAddEncoder
 import net.rsprot.protocol.game.outgoing.codec.zone.payload.ObjCountEncoder
 import net.rsprot.protocol.game.outgoing.codec.zone.payload.ObjCustomiseEncoder
@@ -200,7 +200,7 @@ public object DesktopGameMessageEncoderRepository {
                 bind(ObjUncustomiseEncoder())
                 bind(ObjEnabledOpsEncoder())
                 bind(MapAnimEncoder())
-                bind(MapProjAnimEncoder())
+                bind(MapProjAnimV1Encoder())
                 bind(SoundAreaEncoder())
 
                 bind(ProjAnimSpecificV3Encoder())
