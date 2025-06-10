@@ -235,6 +235,42 @@ protocol. This can be done via:
 
 ## Changes
 
+### Revision 231
+Revision 231 comes with a handful of protocol changes.
+
+#### Additions
+Below is a list of additions to __server__ prots.
+- PROJANIM_SPECIFIC_V4 - now supports the start and end coordinates as absolutes,
+  meaning the packet is no longer limited to within a single world.
+  Additionally, the packet no longer multiplies the heights by 4 in the client,
+  giving finer precision to servers.
+- IF_SETEVENTS_V2 - a new variant of IF_SETEVENTS, supporting up to 32 ifbuttons,
+  up from the previous 10.
+- IF_RESYNC_V2 - a new variant of IF_RESYNC that adds support for the expanded
+  ifbuttons, just like IF_SETEVENTS_V2
+- MAP_PROJANIM_V2 - a new variant of the regular MAP_PROJANIM, supporting
+  the end as an absolute coordinate, not relative to the start, allowing
+  the projectile to be shot across-worlds.
+  Additionally, the packet no longer multiplies the heights by 4 in the client,
+  giving finer precision to servers.
+  Unlike every other packet, this one does not come with a ServerProt instance,
+  and can only be transmitted through UPDATE_ZONE_PARTIAL_ENCLOSED.
+- A new extended info block for NPC_INFO - face angle. The old face coord
+variant is still available for the time being, but is likely going to be removed
+in the future. The new face angle variant works nearly the same as for players,
+but comes with the 'instant' boolean property.
+
+Below is a list of additions to __client__ prots.
+- IF_BUTTONX - A new variant of IF_BUTTON(1-10) that sends the button id
+  inside the packet. It now supports button ids 1 through 32.
+- IF_RUNSCRIPT - A way of invoking a serverscript in the server, by the client.
+  The exact usages of it are currently unknown, but it effectively works the same
+  way as RUN_CLIENTSCRIPT does for server -> client.
+
+#### Removals
+- SET_ACTIVE_WORLD_V1
+
+
 ### Revision 230
 Revision 230 was primarily a cleanup revision, with no new packets or changes
 introduced.
