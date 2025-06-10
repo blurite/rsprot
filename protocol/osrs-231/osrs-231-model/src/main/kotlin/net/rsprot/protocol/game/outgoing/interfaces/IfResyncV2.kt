@@ -39,7 +39,7 @@ public class IfResyncV2 private constructor(
         Short.SIZE_BYTES +
             Short.SIZE_BYTES +
             (subInterfaces.size * (Int.SIZE_BYTES + Short.SIZE_BYTES + Byte.SIZE_BYTES)) +
-            (events.size * (Int.SIZE_BYTES + Short.SIZE_BYTES + Short.SIZE_BYTES + Int.SIZE_BYTES))
+            (events.size * (Int.SIZE_BYTES + Short.SIZE_BYTES + Short.SIZE_BYTES + Int.SIZE_BYTES + Int.SIZE_BYTES))
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
