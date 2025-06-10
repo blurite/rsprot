@@ -9,6 +9,7 @@ public enum class GameClientProt(
 ) : ClientProt {
     // If buttons
     IF_BUTTON(GameClientProtId.IF_BUTTON, 4),
+    IF_BUTTONX(GameClientProtId.IF_BUTTONX, 9),
     IF_BUTTON1(GameClientProtId.IF_BUTTON1, 8),
     IF_BUTTON2(GameClientProtId.IF_BUTTON2, 8),
     IF_BUTTON3(GameClientProtId.IF_BUTTON3, 8),

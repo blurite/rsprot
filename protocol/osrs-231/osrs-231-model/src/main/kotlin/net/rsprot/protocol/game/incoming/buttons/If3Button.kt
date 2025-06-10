@@ -14,7 +14,7 @@ import net.rsprot.protocol.util.CombinedId
  * @property componentId the component id on that interface the player interacted with
  * @property sub the subcomponent within that component if it has one, otherwise -1
  * @property obj the obj in that subcomponent, or -1
- * @property op the option clicked, ranging from 1 to 10
+ * @property op the option clicked, ranging from 1 to 32
  */
 @Suppress("MemberVisibilityCanBePrivate")
 public class If3Button private constructor(
