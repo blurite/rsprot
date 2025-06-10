@@ -17,7 +17,7 @@ public class ObjEnabledOpsEncoder : ZoneProtEncoder<ObjEnabledOps> {
         // making it easy to identify all the properties of this packet:
         // obj_opfilter(level, x, z, id, opFlags)
         buffer.p2Alt2(message.id)
-        buffer.p1Alt3(message.coordInZonePacked)
+        buffer.p1(message.coordInZonePacked)
         buffer.p1(message.opFlags.toInt())
     }
 }

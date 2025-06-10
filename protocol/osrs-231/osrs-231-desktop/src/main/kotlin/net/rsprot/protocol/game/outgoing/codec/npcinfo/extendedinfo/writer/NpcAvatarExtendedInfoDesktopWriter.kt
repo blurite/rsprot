@@ -127,22 +127,23 @@ public class NpcAvatarExtendedInfoDesktopWriter :
             buffer.p1(clientFlag shr 16)
         }
 
+        outFlag = outFlag or pCached(buffer, clientFlag, TINTING, blocks.tinting)
         outFlag = outFlag or pOnDemand(buffer, clientFlag, HITS, blocks.hit, localIndex, observerIndex)
+        outFlag = outFlag or pCached(buffer, clientFlag, LEVEL_CHANGE, blocks.combatLevelChange)
+        // TODO: face angle (new)
+        outFlag = outFlag or pCached(buffer, clientFlag, BODY_CUSTOMISATION, blocks.bodyCustomisation)
         // old spotanim
+        outFlag = outFlag or pCached(buffer, clientFlag, HEADICON_CUSTOMISATION, blocks.headIconCustomisation)
+        outFlag = outFlag or pCached(buffer, clientFlag, NAME_CHANGE, blocks.nameChange)
+        outFlag = outFlag or pCached(buffer, clientFlag, HEAD_CUSTOMISATION, blocks.headCustomisation)
+        outFlag = outFlag or pCached(buffer, clientFlag, FACE_COORD, blocks.faceCoord)
         outFlag = outFlag or pCached(buffer, clientFlag, SEQUENCE, blocks.sequence)
         outFlag = outFlag or pCached(buffer, clientFlag, TRANSFORMATION, blocks.transformation)
-        outFlag = outFlag or pCached(buffer, clientFlag, SAY, blocks.say)
-        outFlag = outFlag or pCached(buffer, clientFlag, FACE_COORD, blocks.faceCoord)
-        outFlag = outFlag or pCached(buffer, clientFlag, LEVEL_CHANGE, blocks.combatLevelChange)
-        outFlag = outFlag or pCached(buffer, clientFlag, HEAD_CUSTOMISATION, blocks.headCustomisation)
-        outFlag = outFlag or pCached(buffer, clientFlag, SPOTANIM, blocks.spotAnims)
-        outFlag = outFlag or pCached(buffer, clientFlag, TINTING, blocks.tinting)
-        outFlag = outFlag or pCached(buffer, clientFlag, EXACT_MOVE, blocks.exactMove)
         outFlag = outFlag or pCached(buffer, clientFlag, FACE_PATHINGENTITY, blocks.facePathingEntity)
-        outFlag = outFlag or pCached(buffer, clientFlag, NAME_CHANGE, blocks.nameChange)
-        outFlag = outFlag or pCached(buffer, clientFlag, HEADICON_CUSTOMISATION, blocks.headIconCustomisation)
-        outFlag = outFlag or pCached(buffer, clientFlag, BODY_CUSTOMISATION, blocks.bodyCustomisation)
         outFlag = outFlag or pCached(buffer, clientFlag, BAS_CHANGE, blocks.baseAnimationSet)
+        outFlag = outFlag or pCached(buffer, clientFlag, EXACT_MOVE, blocks.exactMove)
+        outFlag = outFlag or pCached(buffer, clientFlag, SPOTANIM, blocks.spotAnims)
+        outFlag = outFlag or pCached(buffer, clientFlag, SAY, blocks.say)
         outFlag = outFlag or pCached(buffer, clientFlag, OPS, blocks.visibleOps)
 
         if (outFlag != clientFlag) {
@@ -206,24 +207,25 @@ public class NpcAvatarExtendedInfoDesktopWriter :
     private companion object {
         private val logger = InlineLogger()
         private const val EXTENDED_SHORT: Int = 0x40
-        private const val EXTENDED_MEDIUM: Int = 0x8000
+        private const val EXTENDED_MEDIUM: Int = 0x800
 
-        private const val TRANSFORMATION: Int = 0x1
-        private const val FACE_PATHINGENTITY: Int = 0x2
+        private const val SAY: Int = 0x1
+        private const val HITS: Int = 0x2
         private const val OLD_SPOTANIM_UNUSED: Int = 0x4
-        private const val FACE_COORD: Int = 0x8
-        private const val SEQUENCE: Int = 0x10
-        private const val SAY: Int = 0x20
-        private const val HITS: Int = 0x80
-        private const val OPS: Int = 0x100
-        private const val EXACT_MOVE: Int = 0x200
-        private const val HEAD_CUSTOMISATION: Int = 0x400
-        private const val BODY_CUSTOMISATION: Int = 0x800
-        private const val TINTING: Int = 0x1000
-        private const val NAME_CHANGE: Int = 0x2000
-        private const val LEVEL_CHANGE: Int = 0x4000
+        private const val TRANSFORMATION: Int = 0x8
+        private const val FACE_PATHINGENTITY: Int = 0x10
+        private const val SEQUENCE: Int = 0x20
+        private const val FACE_COORD: Int = 0x80
+        private const val TINTING: Int = 0x100
+        private const val BODY_CUSTOMISATION: Int = 0x200
+        private const val NAME_CHANGE: Int = 0x400
+        private const val EXACT_MOVE: Int = 0x1000
+        private const val HEAD_CUSTOMISATION: Int = 0x2000
+        private const val OPS: Int = 0x4000
+        private const val LEVEL_CHANGE: Int = 0x8000
         private const val HEADICON_CUSTOMISATION: Int = 0x10000
-        private const val BAS_CHANGE: Int = 0x20000
-        private const val SPOTANIM: Int = 0x40000
+        private const val FACE_ANGLE: Int = 0x20000
+        private const val BAS_CHANGE: Int = 0x40000
+        private const val SPOTANIM: Int = 0x80000
     }
 }

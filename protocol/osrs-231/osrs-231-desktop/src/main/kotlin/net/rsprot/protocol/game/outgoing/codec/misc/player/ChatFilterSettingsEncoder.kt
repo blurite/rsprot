@@ -15,7 +15,7 @@ public class ChatFilterSettingsEncoder : MessageEncoder<ChatFilterSettings> {
         buffer: JagByteBuf,
         message: ChatFilterSettings,
     ) {
-        buffer.p1Alt2(message.tradeChatFilter)
-        buffer.p1(message.publicChatFilter)
+        buffer.p1Alt1(message.publicChatFilter)
+        buffer.p1(message.tradeChatFilter)
     }
 }

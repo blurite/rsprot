@@ -13,21 +13,23 @@ public class MapProjAnimEncoder : ZoneProtEncoder<MapProjAnim> {
         buffer: JagByteBuf,
         message: MapProjAnim,
     ) {
-        // The function at the bottom of the MAP_PROJANIM has a consistent order,
+        // The constructor at the bottom of the MAP_PROJANIM has a consistent order,
         // making it easy to identify all the properties of this packet:
-        // map_projanim(level, startX, startZ, endX, endZ, targetIndex, id,
-        // startHeight, endHeight, startTime, endTime, angle, progress, sourceIndex)
-        buffer.p3Alt2(message.targetIndex)
-        buffer.p2(message.endTime)
-        buffer.p3Alt1(message.sourceIndex)
-        buffer.p1Alt2(message.startHeight)
-        buffer.p2Alt1(message.progress)
-        buffer.p2Alt3(message.id)
-        buffer.p1Alt3(message.deltaX)
-        buffer.p1Alt2(message.deltaZ)
-        buffer.p1Alt1(message.angle)
-        buffer.p1Alt2(message.endHeight)
+        // ClientProj(
+        // startLevel, startX, startZ, startHeight, sourceIndex,
+        // endLevel, endX, endZ, endHeight, targetIndex,
+        // id, startTime, endTime, angle, progress)
         buffer.p1(message.coordInZonePacked)
-        buffer.p2Alt1(message.startTime)
+        buffer.p1Alt2(message.deltaX)
+        buffer.p1(message.startHeight)
+        buffer.p2(message.id)
+        buffer.p1Alt1(message.angle)
+        buffer.p2(message.progress)
+        buffer.p1Alt1(message.endHeight)
+        buffer.p1Alt1(message.deltaZ)
+        buffer.p3Alt3(message.targetIndex)
+        buffer.p2(message.startTime)
+        buffer.p2Alt2(message.endTime)
+        buffer.p3Alt1(message.sourceIndex)
     }
 }

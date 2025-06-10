@@ -15,8 +15,8 @@ public class UpdateZoneFullFollowsEncoder : MessageEncoder<UpdateZoneFullFollows
         buffer: JagByteBuf,
         message: UpdateZoneFullFollows,
     ) {
-        buffer.p1(message.zoneX)
-        buffer.p1Alt2(message.level)
-        buffer.p1Alt2(message.zoneZ)
+        buffer.p1(message.zoneZ)
+        buffer.p1Alt3(message.zoneX)
+        buffer.p1(message.level)
     }
 }

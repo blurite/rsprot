@@ -22,9 +22,9 @@ public class PlayerChatEncoder : PrecomputedExtendedInfoEncoder<Chat> {
             alloc
                 .buffer(capacity)
                 .toJagByteBuf()
-        buffer.p2(colour shl 8 or extendedInfo.effects.toInt())
+        buffer.p2Alt2(colour shl 8 or extendedInfo.effects.toInt())
         buffer.p1(extendedInfo.modicon.toInt())
-        buffer.p1(if (extendedInfo.autotyper) 1 else 0)
+        buffer.p1Alt2(if (extendedInfo.autotyper) 1 else 0)
         val huffmanBuffer =
             alloc
                 .buffer(text.length)
@@ -32,7 +32,7 @@ public class PlayerChatEncoder : PrecomputedExtendedInfoEncoder<Chat> {
         codec.encode(huffmanBuffer, text)
         buffer.p1(huffmanBuffer.readableBytes())
         try {
-            buffer.pdata(huffmanBuffer.buffer)
+            buffer.pdataAlt1(huffmanBuffer.buffer)
         } finally {
             huffmanBuffer.buffer.release()
         }

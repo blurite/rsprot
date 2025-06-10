@@ -17,7 +17,7 @@ public class NpcTransformationEncoder : PrecomputedExtendedInfoEncoder<Transform
             alloc
                 .buffer(2, 2)
                 .toJagByteBuf()
-        buffer.p2Alt3(extendedInfo.id.toInt())
+        buffer.p2(extendedInfo.id.toInt())
         return buffer
     }
 }

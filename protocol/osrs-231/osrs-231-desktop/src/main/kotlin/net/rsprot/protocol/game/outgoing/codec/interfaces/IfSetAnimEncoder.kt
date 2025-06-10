@@ -17,6 +17,6 @@ public class IfSetAnimEncoder : MessageEncoder<IfSetAnim> {
         message: IfSetAnim,
     ) {
         buffer.pCombinedIdAlt2(message.combinedId)
-        buffer.p2Alt3(message.anim)
+        buffer.p2(message.anim)
     }
 }

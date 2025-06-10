@@ -46,14 +46,14 @@ public class NpcHeadCustomisationEncoder : PrecomputedExtendedInfoEncoder<HeadCu
         }
         buffer.pFlag(flag)
         if (flag and FLAG_REMODEL != 0) {
-            buffer.p1Alt3(customisation.models.size)
+            buffer.p1(customisation.models.size)
             for (model in customisation.models) {
-                buffer.p2Alt2(model)
+                buffer.p2(model)
             }
         }
         if (flag and FLAG_RECOLOUR != 0) {
             for (recol in customisation.recolours) {
-                buffer.p2(recol)
+                buffer.p2Alt3(recol)
             }
         }
         if (flag and FLAG_RETEXTURE != 0) {
@@ -68,7 +68,7 @@ public class NpcHeadCustomisationEncoder : PrecomputedExtendedInfoEncoder<HeadCu
     }
 
     private fun JagByteBuf.pFlag(value: Int) {
-        p1Alt3(value)
+        p1Alt2(value)
     }
 
     private companion object {
