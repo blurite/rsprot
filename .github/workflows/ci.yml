@@ -7,6 +7,9 @@ on:
   pull_request:
     branches: [ "master" ]
 
+permissions:
+  contents: write
+
 jobs:
   test:
     strategy:
@@ -24,9 +27,10 @@ jobs:
         distribution: 'temurin'
 
     - name: Setup Gradle
-      uses: gradle/actions/setup-gradle@v3
+      uses: gradle/actions/setup-gradle@v4
       with:
           validate-wrappers: true
+          dependency-graph: generate-and-submit
 
     - name: Test with Gradle Wrapper
       run: ./gradlew test
