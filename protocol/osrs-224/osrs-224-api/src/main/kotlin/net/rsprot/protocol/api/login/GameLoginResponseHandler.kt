@@ -71,25 +71,42 @@ public class GameLoginResponseHandler<R>(
                 "Login client type cannot be null"
             }
         val cipher = createStreamCipherPair(loginBlock)
+        val encoder =
+            networkService
+                .encoderRepositories
+                .loginMessageEncoderRepository
+                .getEncoder(response::class.java)
 
-        if (networkService.betaWorld) {
-            val encoder =
-                networkService
-                    .encoderRepositories
-                    .loginMessageEncoderRepository
-                    .getEncoder(response::class.java)
-            val buffer = ctx.alloc().buffer(37 + 1).toJagByteBuf()
-            buffer.p1(37)
-            encoder.encode(cipher.encoderCipher, buffer, response)
-            ctx.writeAndFlush(buffer.buffer)
-        } else {
-            ctx.writeAndFlush(response)
+        // Special logic here due to beta worlds having a special login flow, and Netty 4.2.RC3 doing
+        // a breaking change which gave each pipeline handler its own executor. The fact the executors
+        // are no longer the same requires us to delicately write the data out in a predictable manner.
+
+        // See: https://github.com/netty/netty/pull/14705
+        // > This also means that some code now moves from the executor of the target context,
+        // > to the executor of the calling context. This can create different behaviors from Netty 4.1,
+        // > if the pipeline has multiple handlers, is modified by the handlers during the call,
+        // > and the handlers use child-executors.
+
+        // This issue was experienced in production by having LoginResponse.Ok arrive after certain
+        // game packets, due to the executor differing and race conditions taking place.
+
+        val buffer = ctx.alloc().buffer(37).toJagByteBuf()
+        if (!networkService.betaWorld) {
+            buffer.p1(encoder.prot.opcode)
         }
+        // Client expects a hardcoded 37 value for the size, even though it is not the exact size
+        // of the login packet
+        buffer.p1(37)
+        encoder.encode(cipher.encoderCipher, buffer, response)
 
         val pipeline = ctx.channel().pipeline()
 
         val session =
             createSession(loginBlock, pipeline, cipher.decodeCipher, oldSchoolClientType, cipher.encoderCipher)
+        ctx.executor().submit {
+            ctx.write(buffer.buffer)
+            session.onLoginTransitionComplete()
+        }
         networkLog(logger) {
             "Successful game login from channel '${ctx.channel()}': $loginBlock"
         }
@@ -108,13 +125,40 @@ public class GameLoginResponseHandler<R>(
             }
         val (encodingCipher, decodingCipher) = createStreamCipherPair(loginBlock)
 
-        // Unlike in the above case, we kind of have to assume it was successful
-        // as the player is already in the game and needs to continue on as normal
-        ctx.write(response, ctx.voidPromise())
+        val encoder =
+            networkService
+                .encoderRepositories
+                .loginMessageEncoderRepository
+                .getEncoder(response::class.java)
+
+        // Allocate a perfectly-sized buffer for this packet
+        val bufLength = Byte.SIZE_BYTES + Short.SIZE_BYTES + response.content().readableBytes()
+        val buffer = ctx.alloc().buffer(bufLength).toJagByteBuf()
+        buffer.p1(encoder.prot.opcode)
+
+        // Write a placeholder size of 0 bytes
+        val lengthPos = buffer.writerIndex()
+        buffer.p2(0)
+
+        // Write the payload
+        val start = buffer.writerIndex()
+        encoder.encode(encodingCipher, buffer, response)
+        val end = buffer.writerIndex()
+        val written = end - start
+
+        // Update the size with the actual number of bytes written
+        buffer.writerIndex(lengthPos)
+        buffer.p2(written)
+        buffer.writerIndex(end)
+
         val pipeline = ctx.channel().pipeline()
 
         val session =
             createSession(loginBlock, pipeline, decodingCipher, oldSchoolClientType, encodingCipher)
+        ctx.executor().submit {
+            ctx.write(buffer.buffer)
+            session.onLoginTransitionComplete()
+        }
         networkLog(logger) {
             "Successful game login from channel '${ctx.channel()}': $loginBlock"
         }
@@ -127,7 +171,6 @@ public class GameLoginResponseHandler<R>(
             IntArray(encodeSeed.size) { index ->
                 encodeSeed[index] + DECODE_SEED_OFFSET
             }
-
         val provider = networkService.loginHandlers.streamCipherProvider
         val encodingCipher = provider.provide(decodeSeed)
         val decodingCipher = provider.provide(encodeSeed)

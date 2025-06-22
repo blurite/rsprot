@@ -17,6 +17,7 @@ import net.rsprot.protocol.message.codec.incoming.MessageConsumer
 import java.net.InetAddress
 import java.util.Queue
 import java.util.concurrent.atomic.AtomicBoolean
+import java.util.concurrent.atomic.AtomicInteger
 import java.util.concurrent.atomic.AtomicReference
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds
@@ -70,6 +71,8 @@ public class Session<R>(
     private var lastFlush: TimeSource.Monotonic.ValueTimeMark = TimeSource.Monotonic.markNow()
 
     private var lowPriorityCategoryPacketsDiscarded: AtomicBoolean = AtomicBoolean()
+
+    private var loginTransitionStatus: AtomicInteger = AtomicInteger(0)
 
     /**
      * Discards any packets which have a [GameServerProtCategory.LOW_PRIORITY_PROT] category.
@@ -266,6 +269,31 @@ public class Session<R>(
     }
 
     /**
+     * Marks the login transition as complete, meaning we can now write out any packets that
+     * were queued up until now.
+     * This process is necessary as of Netty 4.2, specifically [this](https://github.com/netty/netty/pull/14705) PR.
+     *
+     * Quote:
+     * > **This also means that some code now moves from the executor of the target context, to the executor of the
+     * calling context. This can create different behaviors from Netty 4.1, if the pipeline has multiple handlers, is
+     * modified by the handlers during the call, and the handlers use child-executors.**
+     *
+     * Due to the underlying changes in Netty, it is no longer safe to queue packets up, switch pipeline
+     * and queue more packets up. The packets that were queued after the pipeline switch may end up processing
+     * and sending out first, as each pipeline handler has its own dedicated executor now, which is subject
+     * to the usual race condition issues.
+     */
+    internal fun onLoginTransitionComplete() {
+        val flag =
+            this.loginTransitionStatus.getAndUpdate { old ->
+                old or LOGIN_TRANSITION_COMPLETE
+            }
+        if (flag and FLUSH_REQUESTED != 0) {
+            flush()
+        }
+    }
+
+    /**
      * Flushes any queued messages to the client, if any exist.
      * The flushing process takes place in the netty event loop, thus
      * the calls to this function are non-blocking and fast.
@@ -286,6 +314,18 @@ public class Session<R>(
             return
         }
         updateLastFlush()
+        // If login transition hasn't finished yet, wait.
+        // We do this without the write call for extra performance
+        if (this.loginTransitionStatus.get() and LOGIN_TRANSITION_COMPLETE == 0) {
+            val latest =
+                this.loginTransitionStatus.getAndUpdate { old ->
+                    old or FLUSH_REQUESTED
+                }
+            // Secondary check due to race conditions; it may have changed since the preliminary check
+            if (latest and LOGIN_TRANSITION_COMPLETE == 0) {
+                return
+            }
+        }
         val eventLoop = ctx.channel().eventLoop()
         if (eventLoop.inEventLoop()) {
             writeAndFlush()
@@ -452,5 +492,7 @@ public class Session<R>(
     private companion object {
         private val logger: InlineLogger = InlineLogger()
         private val limboIdleDuration: Duration = 30.seconds
+        private const val LOGIN_TRANSITION_COMPLETE: Int = 0x1
+        private const val FLUSH_REQUESTED: Int = 0x2
     }
 }

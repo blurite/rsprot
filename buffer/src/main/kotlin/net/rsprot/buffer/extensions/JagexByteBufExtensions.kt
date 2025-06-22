@@ -616,6 +616,39 @@ public fun ByteBuf.pVarInt(v: Int): ByteBuf {
     return this
 }
 
+public fun ByteBuf.gVarInt2(): Int {
+    var value = 0
+    var bits = 0
+    do {
+        val temp = g1()
+        value = value or ((temp and 0x7F) shl bits)
+        bits += Byte.SIZE_BITS - 1
+    } while (temp > 0x7F)
+    return value
+}
+
+public fun ByteBuf.gVarInt2s(): Int {
+    val unsigned = gVarInt2()
+    return (unsigned ushr 1) xor -(unsigned and 0x1)
+}
+
+public fun ByteBuf.pVarInt2(value: Int): ByteBuf {
+    var remaining = value
+    while (remaining < 0 || remaining > 0x7F) {
+        p1(0x80 or (remaining and 0x7F))
+        remaining = remaining ushr (Byte.SIZE_BITS - 1)
+    }
+
+    p1(remaining)
+    return this
+}
+
+public fun ByteBuf.pVarInt2s(value: Int): ByteBuf {
+    val signed = (value shl 1) xor (value shr 31)
+    pVarInt2(signed)
+    return this
+}
+
 public fun ByteBuf.gdata(
     dest: ByteArray,
     offset: Int = 0,
