@@ -1,16 +1,16 @@
 [versions]
 kotlin = "1.9.23"
 netty = "4.2.2.Final"
-junit = "5.10.2"
+junit = "5.13.1"
 jmh = "0.4.10"
 inlinelogger = "1.0.6"
-log4j = "2.23.1"
-commons-pool2 = "2.12.0"
-ktlint = "12.1.0"
+log4j = "2.25.0"
+commons-pool2 = "2.12.1"
+ktlint = "12.3.0"
 jnagmp = "3.0.0"
-dokka = "1.9.20"
-mavenpublish = "0.28.0"
-konsist = "0.14.0"
+dokka = "2.0.0"
+mavenpublish = "0.32.0"
+konsist = "0.17.3"
 
 [libraries]
 netty-bom = { module = "io.netty:netty-bom", version.ref = "netty" }
@@ -25,7 +25,7 @@ junit-bom = { module = "org.junit:junit-bom", version.ref = "junit" }
 junit-api = { module = "org.junit.jupiter:junit-jupiter-api" }
 junit-engine = { module = "org.junit.jupiter:junit-jupiter-engine" }
 junit-params = { module = "org.junit.jupiter:junit-jupiter-params" }
-junit-launcher = { module = "org.junit.platform:junit-platform-launcher", version = "1.10.2" }
+junit-launcher = { module = "org.junit.platform:junit-platform-launcher", version = "1.13.1" }
 konsist = { module = "com.lemonappdev:konsist", version.ref = "konsist" }
 log4j-bom = { module = "org.apache.logging.log4j:log4j-bom", version.ref = "log4j" }
 log4j-core = { module = "org.apache.logging.log4j:log4j-core" }
