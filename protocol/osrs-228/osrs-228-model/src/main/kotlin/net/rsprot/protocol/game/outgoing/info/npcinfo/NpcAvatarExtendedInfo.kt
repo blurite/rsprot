@@ -104,17 +104,13 @@ public class NpcAvatarExtendedInfo(
 
     /**
      * Sets the overhead chat of this avatar.
-     * If the [text] starts with the character `~`, the message will additionally
-     * also be rendered in the chatbox of everyone nearby, although no chat icons
-     * will appear alongside. The first `~` character itself will not be rendered
-     * in that scenario.
      * @param text the text to render overhead.
      */
     public fun setSay(text: String) {
         checkCommunicationThread()
         verify {
-            require(text.length <= 80) {
-                "Unexpected say input; expected value 80 characters or less, " +
+            require(text.length <= 256) {
+                "Unexpected say input; expected value 256 characters or less, " +
                     "input len: ${text.length}, input: $text"
             }
         }
