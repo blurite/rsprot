@@ -1,3 +1,5 @@
+import com.vanniktech.maven.publish.MavenPublishBaseExtension
+import com.vanniktech.maven.publish.MavenPublishBasePlugin
 import com.vanniktech.maven.publish.SonatypeHost
 import org.jetbrains.kotlin.gradle.plugin.KotlinPluginWrapper
 
@@ -84,6 +86,7 @@ subprojects {
             }
         }
     }
+
     mavenPublishing {
         coordinates(
             groupId = project.group.toString(),
@@ -119,7 +122,11 @@ subprojects {
                     url = "https://github.com/Z-Kris"
                 }
             }
+        }
+    }
 
+    plugins.withType<MavenPublishBasePlugin> {
+        the<MavenPublishBaseExtension>().apply {
             // Configure publishing to Maven Central
             publishToMavenCentral(SonatypeHost.CENTRAL_PORTAL)
 
