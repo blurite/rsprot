@@ -17,6 +17,7 @@ import net.rsprot.protocol.api.channel.inetAddress
 import net.rsprot.protocol.api.decoder.DecoderState
 import net.rsprot.protocol.api.logging.networkLog
 import net.rsprot.protocol.common.client.OldSchoolClientType
+import net.rsprot.protocol.internal.RSProtFlags
 import net.rsprot.protocol.message.IncomingGameMessage
 import net.rsprot.protocol.message.codec.MessageDecoder
 import net.rsprot.protocol.message.codec.incoming.MessageDecoderRepository
@@ -122,10 +123,11 @@ public class GameMessageDecoder<R>(
             if (!input.isReadable(length)) {
                 return
             }
-            if (length > SINGLE_PACKET_MAX_ACCEPTED_LENGTH) {
+            if (length > RSProtFlags.singleVarShortPacketMaxAcceptedLength) {
                 throw DecoderException(
                     "Opcode $opcode exceeds the natural maximum allowed length in OldSchool: " +
-                        "$length > $SINGLE_PACKET_MAX_ACCEPTED_LENGTH, previous packets: ${buildPreviousPacketLog()}",
+                        "$length > ${RSProtFlags.singleVarShortPacketMaxAcceptedLength}, " +
+                        "previous packets: ${buildPreviousPacketLog()}",
                 )
             }
             networkService
@@ -172,10 +174,6 @@ public class GameMessageDecoder<R>(
          */
         private const val SINGLE_PACKET_MAX_PAYLOAD_LENGTH: Int = 5_000
 
-        /**
-         * The maximum size a single packet can have that the server still accepts in OldSchool.
-         */
-        private const val SINGLE_PACKET_MAX_ACCEPTED_LENGTH: Int = 1_600
         private val logger: InlineLogger = InlineLogger()
     }
 }
