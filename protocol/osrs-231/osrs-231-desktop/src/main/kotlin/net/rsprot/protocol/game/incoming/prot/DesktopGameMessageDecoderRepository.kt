@@ -40,6 +40,7 @@ import net.rsprot.protocol.game.incoming.codec.misc.client.IdleDecoder
 import net.rsprot.protocol.game.incoming.codec.misc.client.MapBuildCompleteDecoder
 import net.rsprot.protocol.game.incoming.codec.misc.client.MembershipPromotionEligibilityDecoder
 import net.rsprot.protocol.game.incoming.codec.misc.client.NoTimeoutDecoder
+import net.rsprot.protocol.game.incoming.codec.misc.client.RSevenStatusDecoder
 import net.rsprot.protocol.game.incoming.codec.misc.client.ReflectionCheckReplyDecoder
 import net.rsprot.protocol.game.incoming.codec.misc.client.SendPingReplyDecoder
 import net.rsprot.protocol.game.incoming.codec.misc.client.SoundJingleEndDecoder
@@ -208,6 +209,7 @@ public object DesktopGameMessageDecoderRepository {
                 bind(MembershipPromotionEligibilityDecoder())
                 bind(SoundJingleEndDecoder())
                 bind(WindowStatusDecoder())
+                bind(RSevenStatusDecoder())
             }
         return builder.build()
     }
