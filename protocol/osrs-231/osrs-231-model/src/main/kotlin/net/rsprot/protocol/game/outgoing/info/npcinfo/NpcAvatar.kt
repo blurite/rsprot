@@ -225,9 +225,9 @@ public class NpcAvatar internal constructor(
         jump: Boolean,
     ) {
         checkCommunicationThread()
-        zoneIndexStorage.remove(details.index, details.currentCoord)
-        details.currentCoord = CoordGrid(level, x, z)
-        zoneIndexStorage.add(details.index, details.currentCoord)
+        val nextCoord = CoordGrid(level, x, z)
+        zoneIndexStorage.move(details.index, details.currentCoord, nextCoord)
+        details.currentCoord = nextCoord
         details.movementType = details.movementType or (if (jump) NpcAvatarDetails.TELEJUMP else NpcAvatarDetails.TELE)
     }
 
@@ -295,9 +295,9 @@ public class NpcAvatar internal constructor(
     ) {
         val opcode = NpcCellOpcodes.singleCellMovementOpcode(deltaX, deltaZ)
         val (level, x, z) = details.currentCoord
-        zoneIndexStorage.remove(details.index, details.currentCoord)
-        details.currentCoord = CoordGrid(level, x + deltaX, z + deltaZ)
-        zoneIndexStorage.add(details.index, details.currentCoord)
+        val nextCoord = CoordGrid(level, x + deltaX, z + deltaZ)
+        zoneIndexStorage.move(details.index, details.currentCoord, nextCoord)
+        details.currentCoord = nextCoord
         when (++details.stepCount) {
             1 -> {
                 details.firstStep = opcode
