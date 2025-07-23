@@ -225,6 +225,7 @@ public class BootstrapBuilder {
     }
 
     private data class BuildEventLoopGroupsResult(
+        val type: EventLoopGroupType,
         val factory: IoHandlerFactory,
         val bossGroup: EventLoopGroup,
         val childGroup: EventLoopGroup,
@@ -245,7 +246,7 @@ public class BootstrapBuilder {
                         val factory = IoUringIoHandler.newFactory()
                         val boss = MultiThreadIoEventLoopGroup(bossThreadCount, factory)
                         val child = MultiThreadIoEventLoopGroup(childThreadCount, factory)
-                        return BuildEventLoopGroupsResult(factory, boss, child)
+                        return BuildEventLoopGroupsResult(type, factory, boss, child)
                     }
                     EPOLL -> {
                         if (!Epoll.isAvailable()) {
@@ -254,7 +255,7 @@ public class BootstrapBuilder {
                         val factory = EpollIoHandler.newFactory()
                         val boss = MultiThreadIoEventLoopGroup(bossThreadCount, factory)
                         val child = MultiThreadIoEventLoopGroup(childThreadCount, factory)
-                        return BuildEventLoopGroupsResult(factory, boss, child)
+                        return BuildEventLoopGroupsResult(type, factory, boss, child)
                     }
                     KQUEUE -> {
                         if (!KQueue.isAvailable()) {
@@ -263,13 +264,13 @@ public class BootstrapBuilder {
                         val factory = KQueueIoHandler.newFactory()
                         val boss = MultiThreadIoEventLoopGroup(bossThreadCount, factory)
                         val child = MultiThreadIoEventLoopGroup(childThreadCount, factory)
-                        return BuildEventLoopGroupsResult(factory, boss, child)
+                        return BuildEventLoopGroupsResult(type, factory, boss, child)
                     }
                     NIO -> {
                         val factory = NioIoHandler.newFactory()
                         val boss = MultiThreadIoEventLoopGroup(bossThreadCount, factory)
                         val child = MultiThreadIoEventLoopGroup(childThreadCount, factory)
-                        return BuildEventLoopGroupsResult(factory, boss, child)
+                        return BuildEventLoopGroupsResult(type, factory, boss, child)
                     }
                 }
             } catch (t: Throwable) {
@@ -284,12 +285,12 @@ public class BootstrapBuilder {
         throw IllegalStateException("No event loop groups are available in ${groupTypes.contentDeepToString()}")
     }
 
-    private fun determineSocketChannel(): Class<out ServerChannel> =
-        when {
-            IoUring.isAvailable() -> IoUringServerSocketChannel::class.java
-            Epoll.isAvailable() -> EpollServerSocketChannel::class.java
-            KQueue.isAvailable() -> KQueueServerSocketChannel::class.java
-            else -> NioServerSocketChannel::class.java
+    private fun determineSocketChannel(type: EventLoopGroupType): Class<out ServerChannel> =
+        when (type) {
+            IOURING -> IoUringServerSocketChannel::class.java
+            EPOLL -> EpollServerSocketChannel::class.java
+            KQUEUE -> KQueueServerSocketChannel::class.java
+            NIO -> NioServerSocketChannel::class.java
         }
 
     /**
@@ -300,13 +301,13 @@ public class BootstrapBuilder {
         val groupTypes = getEventLoopGroupTypes()
         val bossThreadCount = determineBossThreadCount()
         val childThreadCount = determineChildThreadCount()
-        val (factory, bossGroup, childGroup) =
+        val (type, factory, bossGroup, childGroup) =
             buildEventLoopGroups(
                 bossThreadCount,
                 childThreadCount,
                 groupTypes,
             )
-        val channel = determineSocketChannel()
+        val channel = determineSocketChannel(type)
         log {
             "Using IO handler factory: ${factory.javaClass.simpleName} " +
                 "(bossThreads: $bossThreadCount, childThreads: $childThreadCount)"

@@ -110,6 +110,10 @@ public object RSProtFlags {
         )
 
     @JvmStatic
+    public val singleVarShortPacketMaxAcceptedLength: Int =
+        getInt("singleVarShortPacketMaxAcceptedLength", 1_600)
+
+    @JvmStatic
     public val networkLogging: LogLevel =
         when (networkLoggingString) {
             "off" -> LogLevel.OFF
@@ -187,7 +191,11 @@ public object RSProtFlags {
             captureChat,
         )
         log("captureSay", captureSay)
+        log("singleVarShortPacketMaxAcceptedLength", singleVarShortPacketMaxAcceptedLength)
         require(spotanimListCapacity in 0..256)
+        require(singleVarShortPacketMaxAcceptedLength <= 5_000) {
+            "Single var-short packet max accepted length cannot exceed 5,000 bytes."
+        }
     }
 
     private fun getBoolean(

@@ -739,9 +739,6 @@ public class PlayerAvatarExtendedInfo(
         require(endTime in UNSIGNED_SMART_1_OR_2_RANGE) {
             "Unexpected endTime: $endTime, expected range $UNSIGNED_SMART_1_OR_2_RANGE"
         }
-        require(endTime >= startTime) {
-            "End time must be greater than or equal to start time: $startTime <= $endTime"
-        }
         blocks.hit.headBarList +=
             HeadBar(
                 sourceIndex,

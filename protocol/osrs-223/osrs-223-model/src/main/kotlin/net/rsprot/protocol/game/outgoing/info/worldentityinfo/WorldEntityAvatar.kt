@@ -94,9 +94,9 @@ public class WorldEntityAvatar(
         z: Int,
         moveSpeed: Int,
     ) {
-        this.zoneIndexStorage.remove(this.index, this.currentCoord)
-        this.currentCoord = CoordGrid(level, x, z)
-        this.zoneIndexStorage.add(this.index, this.currentCoord)
+        val nextCoord = CoordGrid(level, x, z)
+        this.zoneIndexStorage.move(this.index, this.currentCoord, nextCoord)
+        this.currentCoord = nextCoord
         this.moveSpeed = moveSpeed
     }
 

@@ -13,7 +13,25 @@ import net.rsprot.protocol.internal.game.outgoing.info.CoordGrid
 public class ZoneIndexStorage(
     maxKeyCount: Int,
 ) {
-    private val dictionary = ZoneIndexDictionary(maxKeyCount)
+    private val dictionary =
+        ZoneIndexDictionary(maxKeyCount)
+
+    /**
+     * Moves the [entityIndex] from the zone at [from] to the zone at [to] if the zones differ.
+     * If the zones are equal, no change is performed.
+     */
+    public fun move(
+        entityIndex: Int,
+        from: CoordGrid,
+        to: CoordGrid,
+    ) {
+        val fromZoneIndex = zoneIndex(from)
+        val toZoneIndex = zoneIndex(to)
+        if (fromZoneIndex != toZoneIndex) {
+            remove(entityIndex, fromZoneIndex)
+            add(entityIndex, toZoneIndex)
+        }
+    }
 
     /**
      * Adds the [entityIndex] to the zone that contains the [coordGrid] coord.
@@ -26,9 +44,22 @@ public class ZoneIndexStorage(
         coordGrid: CoordGrid,
     ) {
         val zoneIndex = zoneIndex(coordGrid)
+        add(entityIndex, zoneIndex)
+    }
+
+    /**
+     * Adds the [entityIndex] to the zone with the provided index.
+     * @param entityIndex the index to add to the end of the zone.
+     * @param zoneIndex the index of the zone to add into.
+     */
+    public fun add(
+        entityIndex: Int,
+        zoneIndex: Int,
+    ) {
         var array = dictionary.get(zoneIndex)
         if (array == null) {
-            array = ZoneIndexArray()
+            array =
+                ZoneIndexArray()
             array.add(entityIndex)
             dictionary.put(zoneIndex, array)
             return
@@ -48,9 +79,21 @@ public class ZoneIndexStorage(
         coordGrid: CoordGrid,
     ) {
         val zoneIndex = zoneIndex(coordGrid)
+        remove(entityIndex, zoneIndex)
+    }
+
+    /**
+     * Removes the [entityIndex] at the zone with the index [zoneIndex].
+     * @param entityIndex the index to remove from the zone.
+     * @param zoneIndex the zone index to remove the entity from.
+     */
+    public fun remove(
+        entityIndex: Int,
+        zoneIndex: Int,
+    ) {
         val array =
             checkNotNull(dictionary.get(zoneIndex)) {
-                "Array not found at $coordGrid"
+                "Array not found for zone index: $zoneIndex"
             }
         if (array.size == 1) {
             dictionary.remove(zoneIndex)

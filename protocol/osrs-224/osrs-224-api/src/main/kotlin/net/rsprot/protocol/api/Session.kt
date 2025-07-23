@@ -237,6 +237,7 @@ public class Session<R>(
         }
         this.disconnectionHook.set(null)
         this.channelStatus = ChannelStatus.CLOSING
+        this.stopReading()
         this.flush()
         return true
     }
@@ -251,6 +252,7 @@ public class Session<R>(
             return false
         }
         this.channelStatus = ChannelStatus.CLOSING
+        this.stopReading()
         this.flush()
         return true
     }

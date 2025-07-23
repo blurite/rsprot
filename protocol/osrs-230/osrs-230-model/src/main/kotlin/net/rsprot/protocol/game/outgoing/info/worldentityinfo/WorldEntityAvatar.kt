@@ -112,10 +112,9 @@ public class WorldEntityAvatar(
         checkCommunicationThread()
         val coordFine = CoordFine(fineX, fineY, fineZ)
         val coordGrid = coordFine.toCoordGrid(level)
-        this.zoneIndexStorage.remove(this.index, currentCoordGrid)
+        this.zoneIndexStorage.move(this.index, currentCoordGrid, coordGrid)
         this.currentCoordFine = coordFine
         this.level = level
-        this.zoneIndexStorage.add(this.index, coordGrid)
         this.teleport = teleport
     }
 

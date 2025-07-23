@@ -50,16 +50,8 @@ public class RunClientScript : OutgoingGameMessage {
                         }
                     }
                     'X' -> {
-                        require(value is Array<*>) {
+                        require(value is Array<*> && value.isArrayOf<String>()) {
                             "Expected Array<String>(String[] in Java) value at index $i for char $type, got: $value"
-                        }
-                        for (index in value.indices) {
-                            val element = value[index]
-                            require(element is String) {
-                                "Only string elements expected in string arrays; " +
-                                    "index $index in array is not a string: $element " +
-                                    "(full array: ${value.contentToString()})"
-                            }
                         }
                     }
                     's' -> {
