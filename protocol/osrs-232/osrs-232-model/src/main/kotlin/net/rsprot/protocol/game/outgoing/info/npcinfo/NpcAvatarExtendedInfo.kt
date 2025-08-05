@@ -559,61 +559,6 @@ public class NpcAvatarExtendedInfo(
     }
 
     /**
-     * Faces the center of the absolute coordinate provided.
-     * @param x the absolute x coordinate to turn towards
-     * @param z the absolute z coordinate to turn towards
-     * @param instant whether to turn towards the coord instantly without any turn anim,
-     * or gradually. The instant property is typically used when spawning in NPCs;
-     * While the low to high resolution change does support a direction, it only supports
-     * in increments of 45 degrees - so utilizing this extended info blocks allows for
-     * more precise control over it.
-     */
-    @JvmOverloads
-    @Deprecated(
-        message = "Deprecated. Use setFaceCoord(x, z, instant) for consistency.",
-        replaceWith = ReplaceWith("setFaceCoord(x, z, instant)"),
-    )
-    public fun faceCoord(
-        x: Int,
-        z: Int,
-        instant: Boolean = false,
-    ) {
-        setFaceCoord(x, z, instant)
-    }
-
-    /**
-     * Faces the center of the absolute coordinate provided.
-     * @param x the absolute x coordinate to turn towards
-     * @param z the absolute z coordinate to turn towards
-     * @param instant whether to turn towards the coord instantly without any turn anim,
-     * or gradually. The instant property is typically used when spawning in NPCs;
-     * While the low to high resolution change does support a direction, it only supports
-     * in increments of 45 degrees - so utilizing this extended info blocks allows for
-     * more precise control over it.
-     */
-    @JvmOverloads
-    public fun setFaceCoord(
-        x: Int,
-        z: Int,
-        instant: Boolean = false,
-    ) {
-        checkCommunicationThread()
-        verify {
-            require(x in 0..<16384) {
-                "Unexpected x coord: $x, expected range: 0..<16384"
-            }
-            require(z in 0..<16384) {
-                "Unexpected z coord: $z, expected range: 0..<16384"
-            }
-        }
-        val faceCoord = blocks.faceCoord
-        faceCoord.x = x.toUShort()
-        faceCoord.z = z.toUShort()
-        faceCoord.instant = instant
-        flags = flags or FACE_COORD
-    }
-
-    /**
      * Sets the angle for this avatar to face.
      * @param angle the angle to face, value range is 0..<2048,
      * with 0 implying south, 512 west, 1024 north and 1536 east; interpolate
@@ -1355,7 +1300,6 @@ public class NpcAvatarExtendedInfo(
         blocks.spotAnims.clear()
         blocks.hit.clear()
         blocks.tinting.clear()
-        blocks.faceCoord.clear()
         blocks.faceAngle.clear()
         blocks.transformation.clear()
         blocks.bodyCustomisation.clear()
@@ -1399,9 +1343,6 @@ public class NpcAvatarExtendedInfo(
         }
         if (flags and TINTING != 0) {
             blocks.tinting.precompute(allocator, huffmanCodec)
-        }
-        if (flags and FACE_COORD != 0) {
-            blocks.faceCoord.precompute(allocator, huffmanCodec)
         }
         if (flags and FACE_ANGLE != 0) {
             blocks.faceAngle.precompute(allocator, huffmanCodec)
@@ -1577,9 +1518,6 @@ public class NpcAvatarExtendedInfo(
         if (flags and TINTING != 0) {
             blocks.tinting.clear()
         }
-        if (flags and FACE_COORD != 0) {
-            blocks.faceCoord.clear()
-        }
         if (flags and FACE_ANGLE != 0) {
             blocks.faceAngle.clear()
         }
@@ -1633,7 +1571,6 @@ public class NpcAvatarExtendedInfo(
         public const val TINTING: Int = 0x100
         public const val SAY: Int = 0x200
         public const val HITS: Int = 0x400
-        public const val FACE_COORD: Int = 0x800
         public const val TRANSFORMATION: Int = 0x1000
         public const val SEQUENCE: Int = 0x2000
         public const val EXACT_MOVE: Int = 0x4000

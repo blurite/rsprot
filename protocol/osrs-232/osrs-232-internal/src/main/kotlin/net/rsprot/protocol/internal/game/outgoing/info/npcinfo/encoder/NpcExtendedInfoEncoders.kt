@@ -6,7 +6,6 @@ import net.rsprot.protocol.internal.game.outgoing.info.encoder.PrecomputedExtend
 import net.rsprot.protocol.internal.game.outgoing.info.npcinfo.extendedinfo.BaseAnimationSet
 import net.rsprot.protocol.internal.game.outgoing.info.npcinfo.extendedinfo.BodyCustomisation
 import net.rsprot.protocol.internal.game.outgoing.info.npcinfo.extendedinfo.CombatLevelChange
-import net.rsprot.protocol.internal.game.outgoing.info.npcinfo.extendedinfo.FaceCoord
 import net.rsprot.protocol.internal.game.outgoing.info.npcinfo.extendedinfo.HeadCustomisation
 import net.rsprot.protocol.internal.game.outgoing.info.npcinfo.extendedinfo.HeadIconCustomisation
 import net.rsprot.protocol.internal.game.outgoing.info.npcinfo.extendedinfo.NameChange
@@ -40,7 +39,6 @@ public data class NpcExtendedInfoEncoders(
     public val transformation: PrecomputedExtendedInfoEncoder<Transformation>,
     public val combatLevelChange: PrecomputedExtendedInfoEncoder<CombatLevelChange>,
     public val hit: OnDemandExtendedInfoEncoder<Hit>,
-    public val faceCoord: PrecomputedExtendedInfoEncoder<FaceCoord>,
     public val faceAngle: PrecomputedExtendedInfoEncoder<FaceAngle>,
     public val facePathingEntity: PrecomputedExtendedInfoEncoder<FacePathingEntity>,
     public val baseAnimationSet: PrecomputedExtendedInfoEncoder<BaseAnimationSet>,

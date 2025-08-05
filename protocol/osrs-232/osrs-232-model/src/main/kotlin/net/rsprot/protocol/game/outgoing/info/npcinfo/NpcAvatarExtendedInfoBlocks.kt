@@ -9,7 +9,6 @@ import net.rsprot.protocol.internal.game.outgoing.info.npcinfo.encoder.NpcExtend
 import net.rsprot.protocol.internal.game.outgoing.info.npcinfo.extendedinfo.BaseAnimationSet
 import net.rsprot.protocol.internal.game.outgoing.info.npcinfo.extendedinfo.BodyCustomisation
 import net.rsprot.protocol.internal.game.outgoing.info.npcinfo.extendedinfo.CombatLevelChange
-import net.rsprot.protocol.internal.game.outgoing.info.npcinfo.extendedinfo.FaceCoord
 import net.rsprot.protocol.internal.game.outgoing.info.npcinfo.extendedinfo.HeadCustomisation
 import net.rsprot.protocol.internal.game.outgoing.info.npcinfo.extendedinfo.HeadIconCustomisation
 import net.rsprot.protocol.internal.game.outgoing.info.npcinfo.extendedinfo.NameChange
@@ -78,7 +77,6 @@ public class NpcAvatarExtendedInfoBlocks(
             ),
         )
     public val hit: Hit = Hit(encoders(writers, NEnc::hit))
-    public val faceCoord: FaceCoord = FaceCoord(encoders(writers, NEnc::faceCoord))
     public val faceAngle: FaceAngle = FaceAngle(encoders(writers, NEnc::faceAngle))
     public val facePathingEntity: FacePathingEntity = FacePathingEntity(encoders(writers, NEnc::facePathingEntity))
     public val baseAnimationSet: BaseAnimationSet = BaseAnimationSet(encoders(writers, NEnc::baseAnimationSet))
