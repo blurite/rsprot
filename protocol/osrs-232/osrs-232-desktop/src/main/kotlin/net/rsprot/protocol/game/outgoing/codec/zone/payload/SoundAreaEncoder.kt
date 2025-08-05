@@ -13,14 +13,13 @@ public class SoundAreaEncoder : ZoneProtEncoder<SoundArea> {
         buffer: JagByteBuf,
         message: SoundArea,
     ) {
-        // While the sound area packet doesn't have a static function call like
-        // most of these other packets, one can still identify it with relative ease
-        // using the screenshot below: https://media.z-kris.com/2024/04/0QX3RtlJF9.png
+        // Sound area function can be found at the bottom as:
+        // SoundList.playAreaSound(activeWorld.id, id, x, z, radius, size, loops, delay);
         buffer.p1Alt2(message.coordInZonePacked)
-        buffer.p1Alt3(message.loops)
-        buffer.p2Alt1(message.id)
-        buffer.p1Alt1(message.delay)
-        buffer.p1Alt2(message.range)
-        buffer.p1Alt1(message.dropOffRange)
+        buffer.p1Alt3(message.delay)
+        buffer.p1Alt2(message.loops)
+        buffer.p2Alt2(message.id)
+        buffer.p1(message.dropOffRange)
+        buffer.p1Alt3(message.range)
     }
 }

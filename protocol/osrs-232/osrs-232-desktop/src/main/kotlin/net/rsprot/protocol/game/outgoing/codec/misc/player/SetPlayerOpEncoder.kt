@@ -16,7 +16,7 @@ public class SetPlayerOpEncoder : MessageEncoder<SetPlayerOp> {
         message: SetPlayerOp,
     ) {
         buffer.p1Alt1(if (message.priority) 1 else 0)
-        buffer.p1(message.id)
+        buffer.p1Alt3(message.id)
         buffer.pjstr(message.op ?: "null")
     }
 }

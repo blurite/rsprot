@@ -19,16 +19,16 @@ public class MapProjAnimV2Encoder : ZoneProtEncoder<MapProjAnimV2> {
         // startLevel, startX, startZ, startHeight, sourceIndex,
         // endLevel, endX, endZ, endHeight, targetIndex,
         // id, startTime, endTime, angle, progress)
-        buffer.p2Alt2(message.endHeight)
-        buffer.p4(message.end.packed)
-        buffer.p2Alt1(message.startHeight)
-        buffer.p2(message.id)
-        buffer.p1Alt3(message.coordInZonePacked)
-        buffer.p2Alt2(message.startTime)
-        buffer.p3Alt2(message.targetIndex)
-        buffer.p2Alt2(message.endTime)
-        buffer.p1(message.angle)
+        buffer.p2(message.startHeight)
         buffer.p2Alt3(message.progress)
-        buffer.p3Alt1(message.sourceIndex)
+        buffer.p2(message.id)
+        buffer.p2Alt1(message.endTime)
+        buffer.p2Alt3(message.endHeight)
+        buffer.p1Alt2(message.angle)
+        buffer.p4Alt1(message.end.packed)
+        buffer.p3Alt2(message.sourceIndex)
+        buffer.p2Alt3(message.startTime)
+        buffer.p1(message.coordInZonePacked)
+        buffer.p3Alt2(message.targetIndex)
     }
 }

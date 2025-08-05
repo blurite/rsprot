@@ -15,9 +15,9 @@ public class NpcSpotAnimSpecificEncoder : MessageEncoder<NpcSpotAnimSpecific> {
         buffer: JagByteBuf,
         message: NpcSpotAnimSpecific,
     ) {
-        buffer.p2(message.index)
-        buffer.p1(message.slot)
+        buffer.p1Alt3(message.slot)
         buffer.p2Alt1(message.id)
-        buffer.p4((message.height shl 16) or message.delay)
+        buffer.p4Alt1((message.height shl 16) or message.delay)
+        buffer.p2Alt2(message.index)
     }
 }

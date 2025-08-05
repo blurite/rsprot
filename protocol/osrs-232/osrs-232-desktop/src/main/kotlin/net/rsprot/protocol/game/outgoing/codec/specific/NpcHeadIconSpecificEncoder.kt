@@ -15,9 +15,9 @@ public class NpcHeadIconSpecificEncoder : MessageEncoder<NpcHeadIconSpecific> {
         buffer: JagByteBuf,
         message: NpcHeadIconSpecific,
     ) {
-        buffer.p4Alt3(message.spriteGroup)
         buffer.p2Alt1(message.spriteIndex)
-        buffer.p1Alt1(message.headIconSlot)
         buffer.p2Alt1(message.index)
+        buffer.p4Alt2(message.spriteGroup)
+        buffer.p1Alt3(message.headIconSlot)
     }
 }
