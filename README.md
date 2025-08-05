@@ -1,7 +1,7 @@
 # RSProt
 
 [![GitHub Actions][actions-badge]][actions] [![MIT license][mit-badge]][mit]
-[![OldSchool - 221 - 231 (Alpha)](https://img.shields.io/badge/OldSchool-221--231_(Alpha)-9a1abd)](https://github.com/blurite/rsprot/tree/master/protocol/osrs-231/osrs-231-api/src/main/kotlin/net/rsprot/protocol/api)
+[![OldSchool - 221 - 232 (Alpha)](https://img.shields.io/badge/OldSchool-221--232_(Alpha)-9a1abd)](https://github.com/blurite/rsprot/tree/master/protocol/osrs-232/osrs-232-api/src/main/kotlin/net/rsprot/protocol/api)
 
 ## Status
 > [!NOTE]
@@ -16,7 +16,7 @@ In order to add it to your server, add the below line under dependencies
 in your build.gradle.kts.
 
 ```kts
-implementation("net.rsprot:osrs-231-api:1.0.0-ALPHA-20250724")
+implementation("net.rsprot:osrs-232-api:1.0.0-ALPHA-20250805")
 ```
 
 An in-depth tutorial on how to implement it will be added into this read-me
@@ -32,12 +32,12 @@ other revisions are welcome, but will not be provided by default.
 - Java 11
 
 ## Supported Versions
-This library currently supports revision 221-231 OldSchool desktop clients.
+This library currently supports revision 221-232 OldSchool desktop clients.
 
 ## Quick Guide
 This section covers a quick guide for how to use the protocol after implementing
 the base API. It is not a guide for the base API itself, that will come in the
-future. This specific quick guide refers to revision 231.
+future. This specific quick guide refers to revision 232.
 
 #### Player Initialization
 When a player logs in, a new protocol instance must be allocated for
@@ -234,6 +234,41 @@ protocol. This can be done via:
 `service.worldEntityAvatarFactory.release(avatar)`
 
 ## Changes
+
+### Revision 232
+
+#### Additions
+Revision 232 adds new variants of obj packets, ones which aren't zone-local,
+instead transmitting the absolute, global coordinate. It is unclear at this
+time whether these packets are _SPECIFIC variants, or intended as full
+replacements to the existing zone packets. This will be determined when
+revision 232 actually rolls out in the server.
+
+The newly added packets:
+- OBJ_ADD_SPECIFIC
+- OBJ_DEL_SPECIFIC
+- OBJ_COUNT_SPECIFIC
+- OBJ_ENABLED_OPS_SPECIFIC
+- OBJ_CUSTOMISE_SPECIFIC
+- OBJ_UNCUSTOMISE_SPECIFIC
+
+#### Changes
+EVENT_MOUSE_CLICK packet was changed to be uniform between the Native and
+Java clients. The old EVENT_NATIVE_MOUSE_CLICK packed is no longer in use,
+and instead a new variant was created that will be used by both ends when
+revision 232 rolls out in server.
+
+#### Removals
+A few now-unused packets were removed with this revision:
+- IF_SET_EVENTS_V1
+- IF_RESYNC_V1
+- MAP_PROJANIM_V1
+- PROJANIM_SPECIFIC_V3
+
+Additionally, the face-coord NPC extended info is no longer utilized by
+the client, and as such, has been removed from RSProt altogether as well.
+Clients are expected to use the face-angle extended info instead, which
+was first introduced in 231.
 
 ### Revision 231
 Revision 231 comes with a handful of protocol changes.

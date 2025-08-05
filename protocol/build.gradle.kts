@@ -14,6 +14,18 @@ testing {
                 implementation(project())
                 implementation(libs.konsist)
             }
+
+            // This configures the JVM args for the actual test execution
+            targets {
+                all {
+                    testTask.configure {
+                        jvmArgs =
+                            listOf(
+                                "-Xmx8g",
+                            )
+                    }
+                }
+            }
         }
     }
 }
