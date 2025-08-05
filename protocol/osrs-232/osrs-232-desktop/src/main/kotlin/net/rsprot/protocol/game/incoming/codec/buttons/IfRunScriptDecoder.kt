@@ -5,16 +5,18 @@ import net.rsprot.protocol.ClientProt
 import net.rsprot.protocol.game.incoming.buttons.IfRunScript
 import net.rsprot.protocol.game.incoming.prot.GameClientProt
 import net.rsprot.protocol.message.codec.MessageDecoder
-import net.rsprot.protocol.util.gCombinedIdAlt3
+import net.rsprot.protocol.util.gCombinedIdAlt2
 
 public class IfRunScriptDecoder : MessageDecoder<IfRunScript> {
     override val prot: ClientProt = GameClientProt.IF_RUNSCRIPT
 
     override fun decode(buffer: JagByteBuf): IfRunScript {
-        val sub = buffer.g2()
-        val combinedId = buffer.gCombinedIdAlt3()
-        val obj = buffer.g2Alt3()
-        val script = buffer.g4Alt1()
+        // Function is method(int combinedId, int sub, int obj, int script, Object[] args)
+        // The order of argument does not seem to change (based on two revisions)
+        val sub = buffer.g2Alt1()
+        val combinedId = buffer.gCombinedIdAlt2()
+        val obj = buffer.g2()
+        val script = buffer.g4Alt3()
 
         val copy = buffer.buffer.copy()
         // Mark the buffer as "read" as copy function doesn't do it automatically.

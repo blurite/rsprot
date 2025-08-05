@@ -11,12 +11,12 @@ public class IfCrmViewClickDecoder : MessageDecoder<IfCrmViewClick> {
     override val prot: ClientProt = GameClientProt.IF_CRMVIEW_CLICK
 
     override fun decode(buffer: JagByteBuf): IfCrmViewClick {
-        val serverTarget = buffer.g4Alt3()
-        val behaviour3 = buffer.g4()
         val combinedId = buffer.gCombinedIdAlt3()
+        val serverTarget = buffer.g4Alt1()
+        val behaviour1 = buffer.g4()
+        val behaviour3 = buffer.g4Alt1()
+        val behaviour2 = buffer.g4()
         val sub = buffer.g2()
-        val behaviour1 = buffer.g4Alt1()
-        val behaviour2 = buffer.g4Alt2()
         return IfCrmViewClick(
             serverTarget,
             combinedId,
