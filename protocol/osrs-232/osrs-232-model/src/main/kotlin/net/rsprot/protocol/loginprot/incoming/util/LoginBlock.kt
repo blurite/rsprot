@@ -6,6 +6,7 @@ import net.rsprot.protocol.loginprot.incoming.RemainingBetaArchives
 public class LoginBlock<T>(
     public val version: Int,
     public val subVersion: Int,
+    public val serverVersion: Int,
     private val _clientType: UByte,
     private val _platformType: UByte,
     public val hasExternalAuthenticator: Boolean,
@@ -51,6 +52,7 @@ public class LoginBlock<T>(
 
         if (version != other.version) return false
         if (subVersion != other.subVersion) return false
+        if (serverVersion != other.version) return false
         if (_clientType != other._clientType) return false
         if (_platformType != other._platformType) return false
         if (hasExternalAuthenticator != other.hasExternalAuthenticator) return false
@@ -77,6 +79,7 @@ public class LoginBlock<T>(
     override fun hashCode(): Int {
         var result = version
         result = 31 * result + subVersion
+        result = 31 * result + serverVersion
         result = 31 * result + _clientType.hashCode()
         result = 31 * result + _platformType.hashCode()
         result = 31 * result + hasExternalAuthenticator.hashCode()
@@ -103,6 +106,7 @@ public class LoginBlock<T>(
         return "LoginBlock(" +
             "version=$version, " +
             "subVersion=$subVersion, " +
+            "serverVersion=$serverVersion, " +
             "seed=${seed.contentToString()}, " +
             "sessionId=$sessionId, " +
             "username='$username', " +

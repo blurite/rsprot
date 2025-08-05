@@ -32,6 +32,7 @@ public abstract class LoginBlockDecoder<T>(
                 throw InvalidVersionException
             }
             val subVersion = buffer.g4()
+            val serverVersion = buffer.g4()
             val firstClientType = buffer.g1()
             val loginClientType = LoginClientType[firstClientType]
             val oldSchoolClientType = loginClientType.toOldSchoolClientType()
@@ -101,6 +102,7 @@ public abstract class LoginBlockDecoder<T>(
                     return LoginBlock(
                         version,
                         subVersion,
+                        serverVersion,
                         firstClientType.toUByte(),
                         platformType.toUByte(),
                         hasExternalAuthenticator,
