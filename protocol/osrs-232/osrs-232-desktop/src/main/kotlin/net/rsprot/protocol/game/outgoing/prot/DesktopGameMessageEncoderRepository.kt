@@ -32,12 +32,10 @@ import net.rsprot.protocol.game.outgoing.codec.interfaces.IfCloseSubEncoder
 import net.rsprot.protocol.game.outgoing.codec.interfaces.IfMoveSubEncoder
 import net.rsprot.protocol.game.outgoing.codec.interfaces.IfOpenSubEncoder
 import net.rsprot.protocol.game.outgoing.codec.interfaces.IfOpenTopEncoder
-import net.rsprot.protocol.game.outgoing.codec.interfaces.IfResyncV1Encoder
 import net.rsprot.protocol.game.outgoing.codec.interfaces.IfResyncV2Encoder
 import net.rsprot.protocol.game.outgoing.codec.interfaces.IfSetAngleEncoder
 import net.rsprot.protocol.game.outgoing.codec.interfaces.IfSetAnimEncoder
 import net.rsprot.protocol.game.outgoing.codec.interfaces.IfSetColourEncoder
-import net.rsprot.protocol.game.outgoing.codec.interfaces.IfSetEventsV1Encoder
 import net.rsprot.protocol.game.outgoing.codec.interfaces.IfSetEventsV2Encoder
 import net.rsprot.protocol.game.outgoing.codec.interfaces.IfSetHideEncoder
 import net.rsprot.protocol.game.outgoing.codec.interfaces.IfSetModelEncoder
@@ -114,7 +112,6 @@ import net.rsprot.protocol.game.outgoing.codec.specific.NpcHeadIconSpecificEncod
 import net.rsprot.protocol.game.outgoing.codec.specific.NpcSpotAnimSpecificEncoder
 import net.rsprot.protocol.game.outgoing.codec.specific.PlayerAnimSpecificEncoder
 import net.rsprot.protocol.game.outgoing.codec.specific.PlayerSpotAnimSpecificEncoder
-import net.rsprot.protocol.game.outgoing.codec.specific.ProjAnimSpecificV3Encoder
 import net.rsprot.protocol.game.outgoing.codec.specific.ProjAnimSpecificV4Encoder
 import net.rsprot.protocol.game.outgoing.codec.varp.VarpLargeEncoder
 import net.rsprot.protocol.game.outgoing.codec.varp.VarpResetEncoder
@@ -130,7 +127,6 @@ import net.rsprot.protocol.game.outgoing.codec.zone.payload.LocAnimEncoder
 import net.rsprot.protocol.game.outgoing.codec.zone.payload.LocDelEncoder
 import net.rsprot.protocol.game.outgoing.codec.zone.payload.LocMergeEncoder
 import net.rsprot.protocol.game.outgoing.codec.zone.payload.MapAnimEncoder
-import net.rsprot.protocol.game.outgoing.codec.zone.payload.MapProjAnimV1Encoder
 import net.rsprot.protocol.game.outgoing.codec.zone.payload.ObjAddEncoder
 import net.rsprot.protocol.game.outgoing.codec.zone.payload.ObjCountEncoder
 import net.rsprot.protocol.game.outgoing.codec.zone.payload.ObjCustomiseEncoder
@@ -151,14 +147,12 @@ public object DesktopGameMessageEncoderRepository {
             MessageEncoderRepositoryBuilder(
                 protRepository,
             ).apply {
-                bind(IfResyncV1Encoder())
                 bind(IfResyncV2Encoder())
                 bind(IfOpenTopEncoder())
                 bind(IfOpenSubEncoder())
                 bind(IfCloseSubEncoder())
                 bind(IfMoveSubEncoder())
                 bind(IfClearInvEncoder())
-                bind(IfSetEventsV1Encoder())
                 bind(IfSetEventsV2Encoder())
                 bind(IfSetPositionEncoder())
                 bind(IfSetScrollPosEncoder())
@@ -200,10 +194,8 @@ public object DesktopGameMessageEncoderRepository {
                 bind(ObjUncustomiseEncoder())
                 bind(ObjEnabledOpsEncoder())
                 bind(MapAnimEncoder())
-                bind(MapProjAnimV1Encoder())
                 bind(SoundAreaEncoder())
 
-                bind(ProjAnimSpecificV3Encoder())
                 bind(ProjAnimSpecificV4Encoder())
                 bind(MapAnimSpecificEncoder())
                 bind(LocAnimSpecificEncoder())

@@ -176,7 +176,7 @@ public class ProjAnimSpecificV4 private constructor(
     }
 
     override fun toString(): String =
-        "ProjAnimSpecificV3(" +
+        "ProjAnimSpecificV4(" +
             "id=$id, " +
             "startHeight=$startHeight, " +
             "endHeight=$endHeight, " +

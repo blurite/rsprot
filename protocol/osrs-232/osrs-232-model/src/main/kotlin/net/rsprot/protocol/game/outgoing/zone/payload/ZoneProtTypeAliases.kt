@@ -7,9 +7,3 @@ package net.rsprot.protocol.game.outgoing.zone.payload
     replaceWith = ReplaceWith("LocAddChangeV2"),
 )
 public typealias LocAddChange = LocAddChangeV2
-
-@Deprecated(
-    message = "Deprecated. Use MapProjAnimV1.",
-    replaceWith = ReplaceWith("MapProjAnimV1"),
-)
-public typealias MapProjAnim = MapProjAnimV1

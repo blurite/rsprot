@@ -8,14 +8,13 @@ public enum class GameServerProt(
     override val size: Int,
 ) : ServerProt {
     // Interface related packets
-    IF_RESYNC_V1(GameServerProtId.IF_RESYNC_V1, Prot.VAR_SHORT),
     IF_RESYNC_V2(GameServerProtId.IF_RESYNC_V2, Prot.VAR_SHORT),
     IF_OPENTOP(GameServerProtId.IF_OPENTOP, 2),
     IF_OPENSUB(GameServerProtId.IF_OPENSUB, 7),
     IF_CLOSESUB(GameServerProtId.IF_CLOSESUB, 4),
     IF_MOVESUB(GameServerProtId.IF_MOVESUB, 8),
     IF_CLEARINV(GameServerProtId.IF_CLEARINV, 4),
-    IF_SETEVENTS_V1(GameServerProtId.IF_SETEVENTS_V1, 12),
+
     IF_SETEVENTS_V2(GameServerProtId.IF_SETEVENTS_V2, 16),
     IF_SETPOSITION(GameServerProtId.IF_SETPOSITION, 8),
     IF_SETSCROLLPOS(GameServerProtId.IF_SETSCROLLPOS, 6),
@@ -60,14 +59,12 @@ public enum class GameServerProt(
     OBJ_CUSTOMISE(GameServerProtId.OBJ_CUSTOMISE, 17),
     OBJ_UNCUSTOMISE(GameServerProtId.OBJ_UNCUSTOMISE, 7),
     MAP_ANIM(GameServerProtId.MAP_ANIM, 6),
-    MAP_PROJANIM_V1(GameServerProtId.MAP_PROJANIM_V1, 20),
 
     // MAP_PROJANIM_V2 has no packet of its own. It can only be transmitted via the partial enclosed packet.
     MAP_PROJANIM_V2(-1, 24),
     SOUND_AREA(GameServerProtId.SOUND_AREA, 7),
 
     // Specific packets
-    PROJANIM_SPECIFIC_V3(GameServerProtId.PROJANIM_SPECIFIC_V3, 22),
     PROJANIM_SPECIFIC_V4(GameServerProtId.PROJANIM_SPECIFIC_V4, 27),
     MAP_ANIM_SPECIFIC(GameServerProtId.MAP_ANIM_SPECIFIC, 8),
     LOC_ANIM_SPECIFIC(GameServerProtId.LOC_ANIM_SPECIFIC, 6),
@@ -76,6 +73,12 @@ public enum class GameServerProt(
     NPC_ANIM_SPECIFIC(GameServerProtId.NPC_ANIM_SPECIFIC, 5),
     PLAYER_ANIM_SPECIFIC(GameServerProtId.PLAYER_ANIM_SPECIFIC, 3),
     PLAYER_SPOTANIM_SPECIFIC(GameServerProtId.PLAYER_SPOTANIM_SPECIFIC, 9),
+    OBJ_ADD_SPECIFIC(GameServerProtId.OBJ_ADD_SPECIFIC, 17),
+    OBJ_DEL_SPECIFIC(GameServerProtId.OBJ_DEL_SPECIFIC, 10),
+    OBJ_ENABLED_OPS_SPECIFIC(GameServerProtId.OBJ_ENABLED_OPS_SPECIFIC, 7),
+    OBJ_UNCUSTOMISE_SPECIFIC(GameServerProtId.OBJ_UNCUSTOMISE_SPECIFIC, 10),
+    OBJ_COUNT_SPECIFIC(GameServerProtId.OBJ_COUNT_SPECIFIC, 14),
+    OBJ_CUSTOMISE_SPECIFIC(GameServerProtId.OBJ_CUSTOMISE_SPECIFIC, 20),
 
     // Info packets
     PLAYER_INFO(GameServerProtId.PLAYER_INFO, Prot.VAR_SHORT),
