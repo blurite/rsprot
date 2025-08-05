@@ -110,6 +110,12 @@ import net.rsprot.protocol.game.outgoing.codec.specific.MapAnimSpecificEncoder
 import net.rsprot.protocol.game.outgoing.codec.specific.NpcAnimSpecificEncoder
 import net.rsprot.protocol.game.outgoing.codec.specific.NpcHeadIconSpecificEncoder
 import net.rsprot.protocol.game.outgoing.codec.specific.NpcSpotAnimSpecificEncoder
+import net.rsprot.protocol.game.outgoing.codec.specific.ObjAddSpecificEncoder
+import net.rsprot.protocol.game.outgoing.codec.specific.ObjCountSpecificEncoder
+import net.rsprot.protocol.game.outgoing.codec.specific.ObjCustomiseSpecificEncoder
+import net.rsprot.protocol.game.outgoing.codec.specific.ObjDelSpecificEncoder
+import net.rsprot.protocol.game.outgoing.codec.specific.ObjEnabledOpsSpecificEncoder
+import net.rsprot.protocol.game.outgoing.codec.specific.ObjUncustomiseSpecificEncoder
 import net.rsprot.protocol.game.outgoing.codec.specific.PlayerAnimSpecificEncoder
 import net.rsprot.protocol.game.outgoing.codec.specific.PlayerSpotAnimSpecificEncoder
 import net.rsprot.protocol.game.outgoing.codec.specific.ProjAnimSpecificV4Encoder
@@ -204,6 +210,12 @@ public object DesktopGameMessageEncoderRepository {
                 bind(NpcAnimSpecificEncoder())
                 bind(PlayerAnimSpecificEncoder())
                 bind(PlayerSpotAnimSpecificEncoder())
+                bind(ObjAddSpecificEncoder())
+                bind(ObjDelSpecificEncoder())
+                bind(ObjCountSpecificEncoder())
+                bind(ObjEnabledOpsSpecificEncoder())
+                bind(ObjCustomiseSpecificEncoder())
+                bind(ObjUncustomiseSpecificEncoder())
 
                 bind(PlayerInfoEncoder())
                 bind(NpcInfoSmallV5Encoder())
