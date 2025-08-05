@@ -3,7 +3,6 @@ package net.rsprot.protocol.game.incoming.prot
 import net.rsprot.compression.provider.HuffmanCodecProvider
 import net.rsprot.protocol.ProtRepository
 import net.rsprot.protocol.game.incoming.codec.buttons.If1ButtonDecoder
-import net.rsprot.protocol.game.incoming.codec.buttons.If3ButtonDecoder
 import net.rsprot.protocol.game.incoming.codec.buttons.IfButtonDDecoder
 import net.rsprot.protocol.game.incoming.codec.buttons.IfButtonTDecoder
 import net.rsprot.protocol.game.incoming.codec.buttons.IfButtonXDecoder
@@ -17,10 +16,10 @@ import net.rsprot.protocol.game.incoming.codec.clan.ClanSettingsFullRequestDecod
 import net.rsprot.protocol.game.incoming.codec.events.EventAppletFocusDecoder
 import net.rsprot.protocol.game.incoming.codec.events.EventCameraPositionDecoder
 import net.rsprot.protocol.game.incoming.codec.events.EventKeyboardDecoder
-import net.rsprot.protocol.game.incoming.codec.events.EventMouseClickDecoder
+import net.rsprot.protocol.game.incoming.codec.events.EventMouseClickV1Decoder
+import net.rsprot.protocol.game.incoming.codec.events.EventMouseClickV2Decoder
 import net.rsprot.protocol.game.incoming.codec.events.EventMouseMoveDecoder
 import net.rsprot.protocol.game.incoming.codec.events.EventMouseScrollDecoder
-import net.rsprot.protocol.game.incoming.codec.events.EventNativeMouseClickDecoder
 import net.rsprot.protocol.game.incoming.codec.events.EventNativeMouseMoveDecoder
 import net.rsprot.protocol.game.incoming.codec.friendchat.FriendChatJoinLeaveDecoder
 import net.rsprot.protocol.game.incoming.codec.friendchat.FriendChatKickDecoder
@@ -103,16 +102,6 @@ public object DesktopGameMessageDecoderRepository {
             ).apply {
                 bind(If1ButtonDecoder())
                 bind(IfButtonXDecoder())
-                bind(If3ButtonDecoder(GameClientProt.IF_BUTTON1, 1))
-                bind(If3ButtonDecoder(GameClientProt.IF_BUTTON2, 2))
-                bind(If3ButtonDecoder(GameClientProt.IF_BUTTON3, 3))
-                bind(If3ButtonDecoder(GameClientProt.IF_BUTTON4, 4))
-                bind(If3ButtonDecoder(GameClientProt.IF_BUTTON5, 5))
-                bind(If3ButtonDecoder(GameClientProt.IF_BUTTON6, 6))
-                bind(If3ButtonDecoder(GameClientProt.IF_BUTTON7, 7))
-                bind(If3ButtonDecoder(GameClientProt.IF_BUTTON8, 8))
-                bind(If3ButtonDecoder(GameClientProt.IF_BUTTON9, 9))
-                bind(If3ButtonDecoder(GameClientProt.IF_BUTTON10, 10))
                 bind(IfSubOpDecoder())
                 bind(IfButtonDDecoder())
                 bind(IfButtonTDecoder())
@@ -158,8 +147,8 @@ public object DesktopGameMessageDecoderRepository {
                 bind(EventMouseScrollDecoder())
                 bind(EventMouseMoveDecoder())
                 bind(EventNativeMouseMoveDecoder())
-                bind(EventMouseClickDecoder())
-                bind(EventNativeMouseClickDecoder())
+                bind(EventMouseClickV1Decoder())
+                bind(EventMouseClickV2Decoder())
 
                 bind(ResumePauseButtonDecoder())
                 bind(ResumePNameDialogDecoder())
