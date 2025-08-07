@@ -86,8 +86,6 @@ public enum class GameServerProt(
 
     // World entity packets
     SET_ACTIVE_WORLD_V2(GameServerProtId.SET_ACTIVE_WORLD_V2, 3),
-
-    @Deprecated("Deprecated since revision 229.")
     WORLDENTITY_INFO_V5(GameServerProtId.WORLDENTITY_INFO_V5, Prot.VAR_SHORT),
 
     // Map packets
