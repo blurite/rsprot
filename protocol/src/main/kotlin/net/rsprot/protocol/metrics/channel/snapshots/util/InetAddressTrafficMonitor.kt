@@ -148,27 +148,25 @@ public class InetAddressTrafficMonitor<CP, SP, DC>(
         trafficByOutgoingPackets = AtomicLongArray(oldTrafficByOutgoingPackets.length())
         val disconnectionsByReason = EnumMap<DC, Int>(disconnectionReasons[0].javaClass)
         for (i in disconnectionReasons.indices) {
-            disconnectionsByReason.put(disconnectionReasons[i], oldDisconnectionsByReason.get(i))
+            disconnectionsByReason[disconnectionReasons[i]] = oldDisconnectionsByReason.get(i)
         }
         val incomingPackets = EnumMap<CP, PacketSnapshot>(clientProts[0].javaClass)
         for (prot in clientProts) {
-            incomingPackets.put(
-                prot,
+            if (prot.opcode < 0) continue
+            incomingPackets[prot] =
                 PacketSnapshot(
                     oldIncomingPackets.get(prot.opcode),
                     oldTrafficByIncomingPackets.get(prot.opcode),
-                ),
-            )
+                )
         }
         val outgoingPackets = EnumMap<SP, PacketSnapshot>(serverProts[0].javaClass)
         for (prot in serverProts) {
-            outgoingPackets.put(
-                prot,
+            if (prot.opcode < 0) continue
+            outgoingPackets[prot] =
                 PacketSnapshot(
                     oldOutgoingPackets.get(prot.opcode),
                     oldTrafficByOutgoingPackets.get(prot.opcode),
-                ),
-            )
+                )
         }
         return InetAddressSnapshot(
             disconnectionsByReason,
