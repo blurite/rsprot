@@ -68,7 +68,7 @@ public class NpcBodyCustomisationEncoder : PrecomputedExtendedInfoEncoder<BodyCu
     }
 
     private fun JagByteBuf.pFlag(value: Int) {
-        p1Alt1(value)
+        p1Alt3(value)
     }
 
     private companion object {
