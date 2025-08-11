@@ -1,6 +1,5 @@
 import com.vanniktech.maven.publish.MavenPublishBaseExtension
 import com.vanniktech.maven.publish.MavenPublishBasePlugin
-import com.vanniktech.maven.publish.SonatypeHost
 import org.jetbrains.kotlin.gradle.plugin.KotlinPluginWrapper
 
 plugins {
@@ -128,7 +127,7 @@ subprojects {
     plugins.withType<MavenPublishBasePlugin> {
         the<MavenPublishBaseExtension>().apply {
             // Configure publishing to Maven Central
-            publishToMavenCentral(SonatypeHost.CENTRAL_PORTAL)
+            publishToMavenCentral(true)
 
             // Enable GPG signing for all publications.
             // Signing can be skipped for localhost and GitHub packages,
