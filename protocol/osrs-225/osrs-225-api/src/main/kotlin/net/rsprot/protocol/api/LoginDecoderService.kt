@@ -19,6 +19,7 @@ public interface LoginDecoderService {
      * @param buffer the buffer to decode
      * @param betaWorld whether the login connection came from a beta world,
      * which means the decoding is only partial
+     * @param header the header of the login block that was previously decoded.
      * @param decoder the decoder function used to turn the buffer into a login block
      * @return a completable future instance that may be completed on a different thread,
      * to avoid blocking Netty threads.
@@ -26,6 +27,19 @@ public interface LoginDecoderService {
     public fun <Result> decode(
         buffer: JagByteBuf,
         betaWorld: Boolean,
+        header: LoginBlock.Header,
         decoder: LoginBlockDecodingFunction<Result>,
     ): CompletableFuture<LoginBlock<Result>>
+
+    /**
+     * Decodes the header block of login.
+     * This is necessary to determine the difficulty level for proof of work,
+     * as we need to know whether we're dealing with a mobile or a desktop user.
+     * @param buffer the buffer to decode
+     * @param decoder the decode to use for decoding the header block
+     */
+    public fun decodeHeader(
+        buffer: JagByteBuf,
+        decoder: LoginBlockDecodingFunction<*>,
+    ): LoginBlock.Header
 }

@@ -13,9 +13,17 @@ public class DefaultLoginDecoderService : LoginDecoderService {
     override fun <Result> decode(
         buffer: JagByteBuf,
         betaWorld: Boolean,
+        header: LoginBlock.Header,
         decoder: LoginBlockDecodingFunction<Result>,
     ): CompletableFuture<LoginBlock<Result>> =
         CompletableFuture<LoginBlock<Result>>().completeAsync {
-            decoder.decode(buffer, betaWorld)
+            decoder.decode(header, buffer, betaWorld)
         }
+
+    override fun decodeHeader(
+        buffer: JagByteBuf,
+        decoder: LoginBlockDecodingFunction<*>,
+    ): LoginBlock.Header {
+        return decoder.decodeHeader(buffer)
+    }
 }

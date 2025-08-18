@@ -37,6 +37,7 @@ public class LoginConnectionHandler<R>(
 ) : SimpleChannelInboundHandler<IncomingLoginMessage>(IncomingLoginMessage::class.java) {
     private var loginState: LoginState = LoginState.UNINITIALIZED
     private var loginPacket: IncomingLoginMessage? = null
+    private var loginHeader: LoginBlock.Header? = null
     private lateinit var proofOfWork: ProofOfWork<*, *>
 
     override fun handlerAdded(ctx: ChannelHandlerContext) {
@@ -78,6 +79,7 @@ public class LoginConnectionHandler<R>(
         // If login block isn't initialized yet, or has already been decoded, do nothing
         val loginPacket = this.loginPacket ?: return
         this.loginPacket = null
+        this.loginHeader = null
         val jagBuffer =
             when (val packet = loginPacket) {
                 is GameLogin -> packet.buffer
@@ -112,11 +114,21 @@ public class LoginConnectionHandler<R>(
                     return
                 }
                 this.loginPacket = msg
+                this.loginHeader =
+                    networkService
+                        .loginHandlers
+                        .loginDecoderService
+                        .decodeHeader(msg.buffer, msg.decoder)
                 requestProofOfWork(ctx)
             }
 
             is GameReconnect -> {
                 this.loginPacket = msg
+                this.loginHeader =
+                    networkService
+                        .loginHandlers
+                        .loginDecoderService
+                        .decodeHeader(msg.buffer, msg.decoder)
                 continueLogin(ctx)
             }
 
@@ -414,7 +426,12 @@ public class LoginConnectionHandler<R>(
         networkService
             .loginHandlers
             .loginDecoderService
-            .decode(buf, betaWorld, function)
+            .decode(
+                buf,
+                betaWorld,
+                this.loginHeader ?: error("Login header not set"),
+                function,
+            )
 
     private fun <T : ChallengeType<MetaData>, MetaData : ChallengeMetaData> verifyProofOfWork(
         pow: ProofOfWork<T, MetaData>,

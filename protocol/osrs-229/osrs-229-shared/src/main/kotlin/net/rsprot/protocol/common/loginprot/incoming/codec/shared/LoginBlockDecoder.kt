@@ -21,25 +21,38 @@ public abstract class LoginBlockDecoder<T>(
 ) {
     protected abstract fun decodeAuthentication(buffer: JagByteBuf): T
 
+    public fun decodeHeader(
+        buffer: JagByteBuf,
+        supportedClientTypes: List<OldSchoolClientType>,
+    ): LoginBlock.Header {
+        val version = buffer.g4()
+        if (version != RSProtConstants.REVISION) {
+            throw InvalidVersionException
+        }
+        val subVersion = buffer.g4()
+        val firstClientType = buffer.g1()
+        val loginClientType = LoginClientType[firstClientType]
+        val oldSchoolClientType = loginClientType.toOldSchoolClientType()
+        if (oldSchoolClientType !in supportedClientTypes) {
+            throw UnsupportedClientException
+        }
+        val platformType = buffer.g1()
+        val hasExternalAuthenticator = buffer.g1() == 1
+        return LoginBlock.Header(
+            version,
+            subVersion,
+            firstClientType.toUByte(),
+            platformType.toUByte(),
+            hasExternalAuthenticator,
+        )
+    }
+
     protected fun decodeLoginBlock(
+        header: LoginBlock.Header,
         buffer: JagByteBuf,
         betaWorld: Boolean,
-        supportedClientTypes: List<OldSchoolClientType>,
     ): LoginBlock<T> {
         try {
-            val version = buffer.g4()
-            if (version != RSProtConstants.REVISION) {
-                throw InvalidVersionException
-            }
-            val subVersion = buffer.g4()
-            val firstClientType = buffer.g1()
-            val loginClientType = LoginClientType[firstClientType]
-            val oldSchoolClientType = loginClientType.toOldSchoolClientType()
-            if (oldSchoolClientType !in supportedClientTypes) {
-                throw UnsupportedClientException
-            }
-            val platformType = buffer.g1()
-            val hasExternalAuthenticator = buffer.g1() == 1
             val rsaSize = buffer.g2()
             if (!buffer.isReadable(rsaSize)) {
                 throw IllegalStateException("RSA buffer not readable: $rsaSize, ${buffer.readableBytes()}")
@@ -88,7 +101,7 @@ public abstract class LoginBlockDecoder<T>(
                         }
                     val hostPlatformStats = decodeHostPlatformStats(xteaBuffer)
                     val secondClientType = xteaBuffer.g1()
-                    if (secondClientType != firstClientType) {
+                    if (secondClientType != header.clientType.id) {
                         throw UnsupportedClientException
                     }
                     val reflectionCheckerConst = xteaBuffer.g4()
@@ -99,11 +112,7 @@ public abstract class LoginBlockDecoder<T>(
                             decodeCrc(xteaBuffer)
                         }
                     return LoginBlock(
-                        version,
-                        subVersion,
-                        firstClientType.toUByte(),
-                        platformType.toUByte(),
-                        hasExternalAuthenticator,
+                        header,
                         seed,
                         sessionId,
                         username,

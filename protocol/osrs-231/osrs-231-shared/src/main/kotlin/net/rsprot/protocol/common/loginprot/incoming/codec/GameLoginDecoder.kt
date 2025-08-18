@@ -7,7 +7,9 @@ import net.rsprot.protocol.common.client.OldSchoolClientType
 import net.rsprot.protocol.common.loginprot.incoming.codec.shared.LoginBlockDecoder
 import net.rsprot.protocol.common.loginprot.incoming.prot.LoginClientProt
 import net.rsprot.protocol.loginprot.incoming.GameLogin
+import net.rsprot.protocol.loginprot.incoming.LoginDecodingFunction
 import net.rsprot.protocol.loginprot.incoming.util.AuthenticationType
+import net.rsprot.protocol.loginprot.incoming.util.LoginBlock
 import net.rsprot.protocol.loginprot.incoming.util.OtpAuthenticationType
 import net.rsprot.protocol.loginprot.incoming.util.Password
 import net.rsprot.protocol.loginprot.incoming.util.Token
@@ -22,13 +24,26 @@ public class GameLoginDecoder(
     MessageDecoder<GameLogin> {
     override val prot: ClientProt = LoginClientProt.GAMELOGIN
 
+    private val decoder =
+        object : LoginDecodingFunction {
+            override fun decode(
+                header: LoginBlock.Header,
+                buffer: JagByteBuf,
+                betaWorld: Boolean,
+            ): LoginBlock<AuthenticationType> {
+                return decodeLoginBlock(header, buffer, betaWorld)
+            }
+
+            override fun decodeHeader(buffer: JagByteBuf): LoginBlock.Header {
+                return decodeHeader(buffer, supportedClientTypes)
+            }
+        }
+
     override fun decode(buffer: JagByteBuf): GameLogin {
         val copy = buffer.buffer.copy()
         // Mark the buffer as "read" as copy function doesn't do it automatically.
         buffer.buffer.readerIndex(buffer.buffer.writerIndex())
-        return GameLogin(copy.toJagByteBuf()) { jagByteBuf, betaWorld ->
-            decodeLoginBlock(jagByteBuf, betaWorld, supportedClientTypes)
-        }
+        return GameLogin(copy.toJagByteBuf(), decoder)
     }
 
     override fun decodeAuthentication(buffer: JagByteBuf): AuthenticationType {
