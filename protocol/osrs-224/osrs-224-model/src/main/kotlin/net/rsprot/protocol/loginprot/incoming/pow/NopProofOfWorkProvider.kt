@@ -3,6 +3,7 @@ package net.rsprot.protocol.loginprot.incoming.pow
 import net.rsprot.buffer.JagByteBuf
 import net.rsprot.protocol.loginprot.incoming.pow.challenges.ChallengeMetaData
 import net.rsprot.protocol.loginprot.incoming.pow.challenges.ChallengeType
+import net.rsprot.protocol.loginprot.incoming.util.LoginBlock
 import java.net.InetAddress
 
 /**
@@ -10,7 +11,12 @@ import java.net.InetAddress
  */
 public object NopProofOfWorkProvider :
     ProofOfWorkProvider<NopProofOfWorkProvider.NopChallengeType, NopProofOfWorkProvider.NopChallengeMetaData> {
-    override fun provide(inetAddress: InetAddress): ProofOfWork<NopChallengeType, NopChallengeMetaData>? = null
+    override fun provide(
+        inetAddress: InetAddress,
+        header: LoginBlock.Header,
+    ): ProofOfWork<NopChallengeType, NopChallengeMetaData>? {
+        return null
+    }
 
     public object NopChallengeType : ChallengeType<NopChallengeMetaData> {
         override val id: Int = 0

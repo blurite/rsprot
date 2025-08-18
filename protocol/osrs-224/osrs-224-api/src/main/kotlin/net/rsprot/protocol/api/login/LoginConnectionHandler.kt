@@ -183,7 +183,7 @@ public class LoginConnectionHandler<R>(
             networkService
                 .loginHandlers
                 .proofOfWorkProvider
-                .provide(ctx.inetAddress())
+                .provide(ctx.inetAddress(), checkNotNull(this.loginHeader))
                 ?: return continueLogin(ctx)
         loginState = LoginState.REQUESTED_PROOF_OF_WORK
         this.proofOfWork = pow
