@@ -1,7 +1,7 @@
 package net.rsprot.protocol.game.outgoing.info
 
-import io.netty.buffer.PooledByteBufAllocator
 import io.netty.buffer.Unpooled
+import io.netty.buffer.UnpooledByteBufAllocator
 import net.rsprot.compression.HuffmanCodec
 import net.rsprot.compression.provider.DefaultHuffmanCodecProvider
 import net.rsprot.protocol.common.client.OldSchoolClientType
@@ -26,7 +26,7 @@ class PlayerInfoTest {
 
     @BeforeEach
     fun initialize() {
-        val allocator = PooledByteBufAllocator.DEFAULT
+        val allocator = UnpooledByteBufAllocator.DEFAULT
         val factory =
             PlayerAvatarFactory(
                 allocator,

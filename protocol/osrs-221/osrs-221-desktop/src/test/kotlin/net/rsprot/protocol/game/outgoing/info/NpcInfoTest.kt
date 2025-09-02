@@ -1,8 +1,8 @@
 package net.rsprot.protocol.game.outgoing.info
 
 import io.netty.buffer.ByteBuf
-import io.netty.buffer.PooledByteBufAllocator
 import io.netty.buffer.Unpooled
+import io.netty.buffer.UnpooledByteBufAllocator
 import net.rsprot.compression.HuffmanCodec
 import net.rsprot.compression.provider.DefaultHuffmanCodecProvider
 import net.rsprot.protocol.common.client.OldSchoolClientType
@@ -37,7 +37,7 @@ class NpcInfoTest {
 
     @BeforeEach
     fun initialize() {
-        val allocator = PooledByteBufAllocator.DEFAULT
+        val allocator = UnpooledByteBufAllocator.DEFAULT
         val storage = ZoneIndexStorage(ZoneIndexStorage.NPC_CAPACITY)
         this.factory =
             NpcAvatarFactory(
