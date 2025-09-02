@@ -17,4 +17,26 @@ public class RemainingBetaArchives(
     override fun hashCode(): Int = crc.contentHashCode()
 
     override fun toString(): String = "RemainingBetaArchives(crc=${crc.contentToString()})"
+
+    public companion object {
+        public val protectedArchives: List<Int> =
+            listOf(
+                0,
+                1,
+                2,
+                3,
+                5,
+                7,
+                9,
+                11,
+                12,
+                16,
+                17,
+                18,
+                19,
+                20,
+                21,
+                22,
+            )
+    }
 }

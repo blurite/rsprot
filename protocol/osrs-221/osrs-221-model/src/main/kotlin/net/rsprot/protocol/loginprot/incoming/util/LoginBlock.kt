@@ -38,7 +38,7 @@ public class LoginBlock<T>(
         get() = LoginClientType[_validationClientType.toInt()]
 
     public fun mergeBetaCrcs(remainingBetaArchives: RemainingBetaArchives) {
-        for (i in remainingBetaArchiveIndices) {
+        for (i in RemainingBetaArchives.protectedArchives) {
             this.crc.set(i, remainingBetaArchives.crc[i])
         }
     }
@@ -123,25 +123,5 @@ public class LoginBlock<T>(
             "reflectionCheckerConst=$reflectionCheckerConst, " +
             "authentication=$authentication" +
             ")"
-    }
-
-    private companion object {
-        private val remainingBetaArchiveIndices =
-            listOf(
-                0,
-                1,
-                2,
-                3,
-                5,
-                7,
-                9,
-                11,
-                12,
-                16,
-                17,
-                18,
-                19,
-                20,
-            )
     }
 }
