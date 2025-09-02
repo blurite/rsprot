@@ -1,6 +1,7 @@
 package net.rsprot.protocol.game.incoming.buttons
 
 import io.netty.buffer.ByteBuf
+import io.netty.buffer.DefaultByteBufHolder
 import net.rsprot.buffer.extensions.g1
 import net.rsprot.buffer.extensions.gSmart1or2
 import net.rsprot.buffer.extensions.gVarInt2s
@@ -32,7 +33,8 @@ public class IfRunScript private constructor(
     private val _obj: UShort,
     public val script: Int,
     public val buffer: ByteBuf,
-) : IncomingGameMessage {
+) : DefaultByteBufHolder(buffer),
+    IncomingGameMessage {
     public constructor(
         combinedId: CombinedId,
         sub: Int,

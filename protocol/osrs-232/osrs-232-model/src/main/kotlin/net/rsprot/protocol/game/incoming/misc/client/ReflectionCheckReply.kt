@@ -1,6 +1,7 @@
 package net.rsprot.protocol.game.incoming.misc.client
 
 import io.netty.buffer.ByteBuf
+import io.netty.buffer.DefaultByteBufHolder
 import net.rsprot.buffer.extensions.checkCRC32
 import net.rsprot.buffer.extensions.toJagByteBuf
 import net.rsprot.protocol.ClientProtCategory
@@ -26,7 +27,8 @@ import kotlin.IllegalArgumentException
 public class ReflectionCheckReply(
     public val id: Int,
     public val result: ByteBuf,
-) : IncomingGameMessage {
+) : DefaultByteBufHolder(result),
+    IncomingGameMessage {
     override val category: ClientProtCategory
         get() = GameClientProtCategory.CLIENT_EVENT
 
