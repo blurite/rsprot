@@ -29,9 +29,9 @@ import kotlin.math.min
 public class Js5Client(
     public val ctx: ChannelHandlerContext,
 ) {
-    private val urgent: IntArrayDeque = IntArrayDeque(MAX_QUEUE_SIZE)
-    private val prefetch: IntArrayDeque = IntArrayDeque(MAX_QUEUE_SIZE)
-    private val awaitingPrefetch: IntArrayDeque = IntArrayDeque(MAX_QUEUE_SIZE)
+    private val urgent: IntArrayDeque = IntArrayDeque(INITIAL_QUEUE_SIZE)
+    private val prefetch: IntArrayDeque = IntArrayDeque(INITIAL_QUEUE_SIZE)
+    private val awaitingPrefetch: IntArrayDeque = IntArrayDeque(INITIAL_QUEUE_SIZE)
     private val currentRequest: PartialJs5GroupRequest = PartialJs5GroupRequest()
     private var lowPriorityChangeCount: Int = 0
     public var priority: ClientPriority = ClientPriority.LOW
@@ -368,6 +368,12 @@ public class Js5Client(
 
     private companion object {
         private val logger: InlineLogger = InlineLogger()
+
+        /**
+         * Initialize all the queues as size-0 by default.
+         * This ensures that any connection-based attack cannot result in an out-of-memory error.
+         */
+        private const val INITIAL_QUEUE_SIZE: Int = 0
 
         /**
          * The maximum number of requests the client can send out per each group at a time.

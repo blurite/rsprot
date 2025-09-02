@@ -600,7 +600,7 @@ public class IntArrayDeque {
             }
         }
 
-        private const val MAX_ARRAY_SIZE = Int.MAX_VALUE - 8
+        private const val MAX_ARRAY_SIZE = 201
 
         /** [oldCapacity] and [minCapacity] must be non-negative. */
         internal fun newCapacity(
