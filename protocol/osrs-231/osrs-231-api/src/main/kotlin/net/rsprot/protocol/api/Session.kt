@@ -87,6 +87,10 @@ public class Session<R>(
      * category appear to get transmitted on the game cycle on which the player clicks the logout button.
      * This function should only be invoked when the player is guaranteed to be getting logged out.
      *
+     * Note that info packets (player info, npc info, worldentity info) appear to also not send out
+     * once the player enters the logging out state, even though they are in high priority categories.
+     * The server should take care of it in such cases.
+     *
      * The effects of this function take place on Netty's event loop threads, specifically when [flush]
      * is invoked. If the low priority category packets are disabled, rather than passing them into
      * the pipeline, the packets will be safely released and discarded.
