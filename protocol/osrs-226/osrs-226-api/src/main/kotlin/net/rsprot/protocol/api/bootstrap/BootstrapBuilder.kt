@@ -26,6 +26,7 @@ import net.rsprot.protocol.api.bootstrap.BootstrapBuilder.EventLoopGroupType.KQU
 import net.rsprot.protocol.api.bootstrap.BootstrapBuilder.EventLoopGroupType.NIO
 import net.rsprot.protocol.api.handlers.OutgoingMessageSizeEstimator
 import java.text.NumberFormat
+import java.util.function.Consumer
 import kotlin.math.max
 
 /**
@@ -58,6 +59,7 @@ public class BootstrapBuilder {
     private var soBacklog: Int? = null
     private var soReuseAddress: Boolean? = null
     private var eventLoopGroupTypes: Array<out EventLoopGroupType>? = null
+    private var configureBootstrapExtra: Consumer<ServerBootstrap>? = null
 
     /**
      * Sets the default byte buffer allocator that is used throughout RSProt for incoming
@@ -232,6 +234,31 @@ public class BootstrapBuilder {
         return this
     }
 
+    /**
+     * Allows the server to re-configure the bootstrap on-top of the offered settings here,
+     * or override any pre-existing settings.
+     * Note that [ChannelOption.AUTO_READ] should not be reconfigured under any circumstances,
+     * as the logic flow of the network depends on it being default-disabled.
+     *
+     * @param block the block invoked on the server bootstrap at the very end.
+     */
+    @JvmSynthetic
+    public fun configureBootstrapExtra(block: (ServerBootstrap) -> Unit) {
+        this.configureBootstrapExtra = Consumer { block(it) }
+    }
+
+    /**
+     * Allows the server to re-configure the bootstrap on-top of the offered settings here,
+     * or override any pre-existing settings.
+     * Note that [ChannelOption.AUTO_READ] should not be reconfigured under any circumstances,
+     * as the logic flow of the network depends on it being default-disabled.
+     *
+     * @param consumer the consumer invoked on the server bootstrap at the very end.
+     */
+    public fun configureBootstrapExtra(consumer: Consumer<ServerBootstrap>) {
+        this.configureBootstrapExtra = consumer
+    }
+
     private fun getEventLoopGroupTypes(): Array<out EventLoopGroupType> {
         val types = this.eventLoopGroupTypes
         if (types != null) {
@@ -383,6 +410,11 @@ public class BootstrapBuilder {
         bootstrap.childOption(ChannelOption.TCP_NODELAY, tcpNoDelay)
         log { "Nagle's algorithm (TCP no delay): ${if (tcpNoDelay) "disabled" else "enabled"}" }
         bootstrap.childOption(ChannelOption.MESSAGE_SIZE_ESTIMATOR, estimator)
+        val extra = this.configureBootstrapExtra
+        if (extra != null) {
+            log { "Configuring bootstrap with custom modifications" }
+            extra.accept(bootstrap)
+        }
         return bootstrap
     }
 
