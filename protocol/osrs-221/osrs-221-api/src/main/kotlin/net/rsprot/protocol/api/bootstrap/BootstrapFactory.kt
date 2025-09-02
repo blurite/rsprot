@@ -74,6 +74,8 @@ public class BootstrapFactory(
             .group(parentGroup, childGroup)
             .channel(channel)
             .option(ChannelOption.ALLOCATOR, alloc)
+            .option(ChannelOption.SO_BACKLOG, 4096)
+            .option(ChannelOption.SO_REUSEADDR, true)
             .childOption(ChannelOption.ALLOCATOR, alloc)
             .childOption(ChannelOption.AUTO_READ, false)
             .childOption(ChannelOption.TCP_NODELAY, true)

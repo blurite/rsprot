@@ -55,6 +55,8 @@ public class BootstrapBuilder {
     private var writeBufferWatermarkLow: Int? = null
     private var writeBufferWatermarkHigh: Int? = null
     private var tcpNoDelay: Boolean? = null
+    private var soBacklog: Int? = null
+    private var soReuseAddress: Boolean? = null
     private var eventLoopGroupTypes: Array<out EventLoopGroupType>? = null
 
     /**
@@ -179,6 +181,38 @@ public class BootstrapBuilder {
      */
     public fun tcpNoDelay(value: Boolean): BootstrapBuilder {
         this.tcpNoDelay = value
+        return this
+    }
+
+    /**
+     * Sets the maximum number of TCP connections that can be queued up before the server
+     * actually accepts the connection. Note that the default value is whatever the OS' kernel
+     * has by default. Increasing it here alone will NOT increase the backlog capacity alone.
+     * You must also modify the kernel to allow a higher capacity alongside it.
+     *
+     * On Linux, backlog can be configured via `somaxconn` and `tcp_max_syn_backlog`.
+     * `somaxconn` is the maximum allowed backlow, often defaulting to 128.
+     * `tcp_max_syn_backlog` is the maximum allowed half-open connections while the
+     * syn-handshake takes place. The default is usually either 1024 or 4096.
+     *
+     * @param value the maximum number of connections to queue up at the kernel level,
+     * limited to the kernel's own configuration. The default on our end is 4096, although
+     * most kernels limit it to a smaller value, such as 128. The smallest of the two is picked.
+     */
+    public fun soBacklog(value: Int): BootstrapBuilder {
+        this.soBacklog = value
+        return this
+    }
+
+    /**
+     * Allows for the socket to bind to the same ip & port if the previous socket is in
+     * TIME_WAIT state, which happens for a short period after a socket is shut down, to
+     * capture any stray packets. The default value is true.
+     *
+     * @param value whether to enable SO_REUSEADDR.
+     */
+    public fun reuseAddress(value: Boolean): BootstrapBuilder {
+        this.soReuseAddress = value
         return this
     }
 
@@ -318,7 +352,6 @@ public class BootstrapBuilder {
         val allocator = this.allocator ?: ByteBufAllocator.DEFAULT
         bootstrap.option(ChannelOption.ALLOCATOR, allocator)
         bootstrap.childOption(ChannelOption.ALLOCATOR, allocator)
-        allocator.isDirectBufferPooled
         log { "Using byte buffer allocator: $allocator" }
         bootstrap.childOption(ChannelOption.AUTO_READ, false)
         log { "Auto read: disabled" }
@@ -327,6 +360,12 @@ public class BootstrapBuilder {
         log { "Socket receive buffer size: ${formatter.format(soRcvBufSize)}" }
         val soSndBufSize = this.soSndBufSize ?: 65536
         bootstrap.childOption(ChannelOption.SO_SNDBUF, soSndBufSize)
+        val soBacklog = soBacklog ?: 4096
+        log { "Socket backlog: $soBacklog" }
+        bootstrap.option(ChannelOption.SO_BACKLOG, soBacklog)
+        val soReuseAddr = soReuseAddress ?: true
+        log { "Reuse socket address: $soReuseAddr" }
+        bootstrap.option(ChannelOption.SO_REUSEADDR, soReuseAddr)
         log { "Socket send buffer size: ${formatter.format(soSndBufSize)}" }
         val lowWatermark = this.writeBufferWatermarkLow ?: 524_288
         val highWatermark = this.writeBufferWatermarkHigh ?: 2_097_152
