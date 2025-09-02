@@ -91,8 +91,9 @@ internal class NpcAvatarRepository(
         spawnCycle: Int = 0,
         direction: Int = 0,
     ): NpcAvatar {
-        require(this.elements[index] == null) {
-            "NPC Avatar with index $index is already allocated!"
+        val old = this.elements[index]
+        require(old == null) {
+            "NPC Avatar with index $index is already allocated: $old"
         }
         val existing = queue.poll()?.get()
         if (existing != null) {

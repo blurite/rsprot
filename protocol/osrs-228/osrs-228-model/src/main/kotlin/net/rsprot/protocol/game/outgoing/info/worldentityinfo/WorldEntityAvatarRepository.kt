@@ -71,8 +71,9 @@ public class WorldEntityAvatarRepository internal constructor(
         fineCenterOffsetX: Int,
         fineCenterOffsetZ: Int,
     ): WorldEntityAvatar {
-        require(this.elements[index] == null) {
-            "WorldEntity avatar with index $index is already allocated!"
+        val old = this.elements[index]
+        require(old == null) {
+            "WorldEntity avatar with index $index is already allocated: $old"
         }
         val existing = queue.poll()?.get()
         if (existing != null) {
