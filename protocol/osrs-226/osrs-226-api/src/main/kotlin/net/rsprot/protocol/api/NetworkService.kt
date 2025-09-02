@@ -80,13 +80,13 @@ import net.rsprot.protocol.internal.setCommunicationThread as setInternalCommuni
 @Suppress("MemberVisibilityCanBePrivate")
 public class NetworkService<R>
     internal constructor(
-        internal val allocator: ByteBufAllocator,
-        internal val host: String?,
-        internal val ports: List<Int>,
-        internal val betaWorld: Boolean,
-        internal val bootstrapBuilder: BootstrapBuilder,
+        public val allocator: ByteBufAllocator,
+        public val host: String?,
+        public val ports: List<Int>,
+        public val betaWorld: Boolean,
+        public val bootstrapBuilder: BootstrapBuilder,
         internal val entityInfoProtocols: EntityInfoProtocols,
-        internal val clientTypes: List<OldSchoolClientType>,
+        public val clientTypes: List<OldSchoolClientType>,
         internal val gameConnectionHandler: GameConnectionHandler<R>,
         internal val exceptionHandlers: ExceptionHandlers<R>,
         internal val iNetAddressHandlers: INetAddressHandlers,
@@ -100,15 +100,15 @@ public class NetworkService<R>
         js5Configuration: Js5Configuration,
         js5GroupProvider: Js5GroupProvider,
     ) {
-        internal val encoderRepositories: MessageEncoderRepositories = MessageEncoderRepositories(huffmanCodecProvider)
-        internal val js5Service: Js5Service =
+        public var encoderRepositories: MessageEncoderRepositories = MessageEncoderRepositories(huffmanCodecProvider)
+        public val js5Service: Js5Service =
             Js5Service(
                 this,
                 js5Configuration,
                 js5GroupProvider,
             )
-        private val js5ServiceExecutor = Thread(js5Service)
-        internal val decoderRepositories: MessageDecoderRepositories =
+        public val js5ServiceExecutor: Thread = Thread(js5Service)
+        public var decoderRepositories: MessageDecoderRepositories =
             MessageDecoderRepositories.initialize(
                 clientTypes,
                 rsaKeyPair,
@@ -124,12 +124,12 @@ public class NetworkService<R>
             get() = entityInfoProtocols.worldEntityAvatarFactory
         public val worldEntityInfoProtocol: WorldEntityProtocol
             get() = entityInfoProtocols.worldEntityInfoProtocol
-        public val messageSizeEstimator: OutgoingMessageSizeEstimator =
+        public var messageSizeEstimator: OutgoingMessageSizeEstimator =
             OutgoingMessageSizeEstimator(encoderRepositories)
 
-        private lateinit var bossGroup: EventLoopGroup
-        private lateinit var childGroup: EventLoopGroup
-        private lateinit var js5PrefetchService: ScheduledExecutorService
+        public lateinit var bossGroup: EventLoopGroup
+        public lateinit var childGroup: EventLoopGroup
+        public lateinit var js5PrefetchService: ScheduledExecutorService
 
         /**
          * Starts the network service by binding the provided ports.

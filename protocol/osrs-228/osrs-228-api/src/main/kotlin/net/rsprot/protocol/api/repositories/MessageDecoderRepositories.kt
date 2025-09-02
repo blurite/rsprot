@@ -16,7 +16,7 @@ import java.math.BigInteger
  * The message decoder repositories for login, JS5 and game, all held in the same place.
  */
 @OptIn(ExperimentalStdlibApi::class)
-public class MessageDecoderRepositories private constructor(
+public class MessageDecoderRepositories(
     public val loginMessageDecoderRepository: MessageDecoderRepository<ClientProt>,
     public val js5MessageDecoderRepository: MessageDecoderRepository<ClientProt>,
     public val gameMessageDecoderRepositories: ClientTypeMap<MessageDecoderRepository<ClientProt>>,
@@ -32,8 +32,8 @@ public class MessageDecoderRepositories private constructor(
         gameMessageDecoderRepositories,
     )
 
-    internal companion object {
-        fun initialize(
+    public companion object {
+        public fun initialize(
             clientTypes: List<OldSchoolClientType>,
             rsaKeyPair: RsaKeyPair,
             huffmanCodecProvider: HuffmanCodecProvider,

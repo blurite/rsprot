@@ -357,7 +357,7 @@ public class BootstrapBuilder {
     /**
      * Builds the server bootstrap based on the criteria given through the builder.
      */
-    internal fun build(estimator: OutgoingMessageSizeEstimator): ServerBootstrap {
+    public fun build(estimator: OutgoingMessageSizeEstimator): ServerBootstrap {
         val bootstrap = ServerBootstrap()
         val groupTypes = getEventLoopGroupTypes()
         val bossThreadCount = determineBossThreadCount()
