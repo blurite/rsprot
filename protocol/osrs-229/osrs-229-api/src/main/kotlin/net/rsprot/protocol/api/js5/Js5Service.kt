@@ -18,11 +18,14 @@ import kotlin.math.min
  * all connected clients, with a priority on those in the logged in state.
  * @property configuration the configuration to use for writing the data to clients
  * @property provider the provider for JS5 groups to write over
+ * @property authorizer the js5 authorizer that will reject attempts at downloading
+ * protected beta cache archives.
  */
 public class Js5Service(
     private val networkService: NetworkService<*>,
     private val configuration: Js5Configuration,
     private val provider: Js5GroupProvider,
+    private val authorizer: Js5Authorizer,
 ) : Runnable {
     private val clients = UniqueQueue<Js5Client>()
     private val connectedClients = ArrayDeque<Js5Client>()
@@ -67,6 +70,7 @@ public class Js5Service(
                         try {
                             response = client.getNextBlock(
                                 networkService,
+                                authorizer,
                                 configuration.missingGroupBehaviour,
                                 provider,
                                 configuration.blockSizeInBytes * ratio,

@@ -12,9 +12,12 @@ import net.rsprot.protocol.api.handlers.ExceptionHandlers
 import net.rsprot.protocol.api.handlers.GameMessageHandlers
 import net.rsprot.protocol.api.handlers.INetAddressHandlers
 import net.rsprot.protocol.api.handlers.LoginHandlers
+import net.rsprot.protocol.api.js5.ConcurrentJs5Authorizer
+import net.rsprot.protocol.api.js5.Js5Authorizer
 import net.rsprot.protocol.api.js5.Js5Configuration
 import net.rsprot.protocol.api.js5.Js5GroupProvider
 import net.rsprot.protocol.api.js5.Js5Service
+import net.rsprot.protocol.api.js5.NoopJs5Authorizer
 import net.rsprot.protocol.api.repositories.MessageDecoderRepositories
 import net.rsprot.protocol.api.repositories.MessageEncoderRepositories
 import net.rsprot.protocol.api.util.asCompletableFuture
@@ -94,7 +97,14 @@ public class NetworkService<R>
         js5GroupProvider: Js5GroupProvider,
     ) {
         internal val encoderRepositories: MessageEncoderRepositories = MessageEncoderRepositories(huffmanCodecProvider)
-        internal val js5Service: Js5Service = Js5Service(js5Configuration, js5GroupProvider)
+        public val js5Authorizer: Js5Authorizer = if (betaWorld) ConcurrentJs5Authorizer() else NoopJs5Authorizer
+        public val js5Service: Js5Service =
+            Js5Service(
+                this,
+                js5Configuration,
+                js5GroupProvider,
+                js5Authorizer,
+            )
         private val js5ServiceExecutor = Thread(js5Service)
         internal val decoderRepositories: MessageDecoderRepositories =
             MessageDecoderRepositories.initialize(

@@ -41,11 +41,13 @@ public class GameMessageHandler<R>(
             session.triggerIdleClosing()
         } finally {
             ctx.fireChannelInactive()
+            val address = ctx.inetAddress()
+            networkService.js5Authorizer.unauthorize(address)
             // Must ensure both blocks of code get invoked, even if one throws an exception
             networkService
                 .iNetAddressHandlers
                 .gameInetAddressTracker
-                .deregister(ctx.inetAddress())
+                .deregister(address)
             networkLog(logger) {
                 "Channel is now inactive: ${ctx.channel()}"
             }

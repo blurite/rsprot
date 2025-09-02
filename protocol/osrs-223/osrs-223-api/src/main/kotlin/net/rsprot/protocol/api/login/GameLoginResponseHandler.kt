@@ -103,6 +103,7 @@ public class GameLoginResponseHandler<R>(
 
         val session =
             createSession(loginBlock, pipeline, cipher.decodeCipher, oldSchoolClientType, cipher.encoderCipher)
+        networkService.js5Authorizer.authorize(ctx.inetAddress())
         ctx.executor().submit {
             ctx.write(buffer.buffer)
             session.onLoginTransitionComplete()
@@ -155,6 +156,7 @@ public class GameLoginResponseHandler<R>(
 
         val session =
             createSession(loginBlock, pipeline, decodingCipher, oldSchoolClientType, encodingCipher)
+        networkService.js5Authorizer.authorize(ctx.inetAddress())
         ctx.executor().submit {
             ctx.write(buffer.buffer)
             session.onLoginTransitionComplete()

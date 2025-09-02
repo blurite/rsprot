@@ -13,9 +13,12 @@ import net.rsprot.protocol.api.handlers.GameMessageHandlers
 import net.rsprot.protocol.api.handlers.INetAddressHandlers
 import net.rsprot.protocol.api.handlers.LoginHandlers
 import net.rsprot.protocol.api.handlers.OutgoingMessageSizeEstimator
+import net.rsprot.protocol.api.js5.ConcurrentJs5Authorizer
+import net.rsprot.protocol.api.js5.Js5Authorizer
 import net.rsprot.protocol.api.js5.Js5Configuration
 import net.rsprot.protocol.api.js5.Js5GroupProvider
 import net.rsprot.protocol.api.js5.Js5Service
+import net.rsprot.protocol.api.js5.NoopJs5Authorizer
 import net.rsprot.protocol.api.repositories.MessageDecoderRepositories
 import net.rsprot.protocol.api.repositories.MessageEncoderRepositories
 import net.rsprot.protocol.api.util.asCompletableFuture
@@ -102,11 +105,13 @@ public class NetworkService<R>
         js5GroupProvider: Js5GroupProvider,
     ) {
         public var encoderRepositories: MessageEncoderRepositories = MessageEncoderRepositories(huffmanCodecProvider)
+        public val js5Authorizer: Js5Authorizer = if (betaWorld) ConcurrentJs5Authorizer() else NoopJs5Authorizer
         public val js5Service: Js5Service =
             Js5Service(
                 this,
                 js5Configuration,
                 js5GroupProvider,
+                js5Authorizer,
             )
         public val js5ServiceExecutor: Thread =
             thread(start = false, name = "Js5 Service") {
