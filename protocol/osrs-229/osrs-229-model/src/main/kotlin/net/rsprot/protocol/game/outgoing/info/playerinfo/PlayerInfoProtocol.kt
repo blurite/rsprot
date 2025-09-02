@@ -149,7 +149,7 @@ public class PlayerInfoProtocol(
     /**
      * Prepares the player info protocol for every player in the world.
      * First it will synchronize the low resolution positions of all the avatars in the world.
-     * Afterwards, according to the implementation defined by the [worker],
+     * Afterward, according to the implementation defined by the [worker],
      * this will cache the low and high resolution movement bit buffers
      * for every avatar in the world.
      */
@@ -163,10 +163,8 @@ public class PlayerInfoProtocol(
                 lowResolutionPositionRepository.update(i, info.avatar.currentCoord)
             }
             lowResolutionPositionRepository.prepareLowResBuffer(i)
-        }
-        for (i in 1..<PROTOCOL_CAPACITY) {
             try {
-                playerInfoRepository.getOrNull(i)?.prepareBitcodes()
+                info?.prepareBitcodes()
             } catch (e: Exception) {
                 catchException(i, e)
             } catch (t: Throwable) {
