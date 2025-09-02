@@ -32,4 +32,9 @@ public class GameMessageEncoder(
             .gameChannelTrafficMonitor
             .incrementOutgoingPackets(ctx.inetAddress(), opcode, payloadSize)
     }
+
+    override fun mapOpcode(opcode: Int): Int {
+        val mapper = networkService.serverToClientOpcodeMapper ?: return opcode
+        return mapper.encode(opcode)
+    }
 }

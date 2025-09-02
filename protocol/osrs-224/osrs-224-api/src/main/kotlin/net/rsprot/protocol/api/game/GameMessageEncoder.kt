@@ -17,4 +17,9 @@ public class GameMessageEncoder(
     override val repository: MessageEncoderRepository<*> =
         networkService.encoderRepositories.gameMessageEncoderRepositories[client]
     override val validate: Boolean = true
+
+    override fun mapOpcode(opcode: Int): Int {
+        val mapper = networkService.serverToClientOpcodeMapper ?: return opcode
+        return mapper.encode(opcode)
+    }
 }

@@ -24,6 +24,10 @@ public abstract class OutgoingMessageEncoder : MessageToByteEncoder<OutgoingMess
     protected abstract val repository: MessageEncoderRepository<*>
     protected abstract val validate: Boolean
 
+    protected open fun mapOpcode(opcode: Int): Int {
+        return opcode
+    }
+
     override fun encode(
         ctx: ChannelHandlerContext,
         msg: OutgoingMessage,
@@ -32,7 +36,8 @@ public abstract class OutgoingMessageEncoder : MessageToByteEncoder<OutgoingMess
         val startMarker = out.writerIndex()
         val encoder = repository.getEncoder(msg::class.java)
         val prot = encoder.prot
-        val opcode = prot.opcode
+        val sourceOpcode = prot.opcode
+        val opcode = mapOpcode(sourceOpcode)
         if (encoder.encryptedPayload) {
             pSmart1Or2Enc(out, opcode)
         } else {

@@ -55,6 +55,10 @@ public abstract class OutgoingMessageEncoder : ChannelOutboundHandlerAdapter() {
         }
     }
 
+    protected open fun mapOpcode(opcode: Int): Int {
+        return opcode
+    }
+
     private fun writeRegularMessage(
         ctx: ChannelHandlerContext,
         msg: OutgoingMessage,
@@ -139,7 +143,8 @@ public abstract class OutgoingMessageEncoder : ChannelOutboundHandlerAdapter() {
     ) where T : OutgoingMessage, T : ByteBufHolder {
         val encoder = repository.getEncoder(msg::class.java)
         val prot = encoder.prot
-        val opcode = prot.opcode
+        val sourceOpcode = prot.opcode
+        val opcode = mapOpcode(sourceOpcode)
         var headerSize = if (opcode >= 0x80) Short.SIZE_BYTES else Byte.SIZE_BYTES
         when (prot.size) {
             Prot.VAR_BYTE -> headerSize += Byte.SIZE_BYTES
@@ -168,7 +173,7 @@ public abstract class OutgoingMessageEncoder : ChannelOutboundHandlerAdapter() {
             }
             ctx.write(buf, ctx.voidPromise())
             buf = null
-            onMessageWritten(ctx, opcode, bytes)
+            onMessageWritten(ctx, sourceOpcode, bytes)
         } finally {
             buf?.release()
         }
@@ -194,7 +199,8 @@ public abstract class OutgoingMessageEncoder : ChannelOutboundHandlerAdapter() {
         val startMarker = out.writerIndex()
         val encoder = repository.getEncoder(msg::class.java)
         val prot = encoder.prot
-        val opcode = prot.opcode
+        val sourceOpcode = prot.opcode
+        val opcode = mapOpcode(sourceOpcode)
         if (encoder.encryptedPayload) {
             pSmart1Or2Enc(out, opcode)
         } else {
@@ -280,7 +286,7 @@ public abstract class OutgoingMessageEncoder : ChannelOutboundHandlerAdapter() {
                 return
             }
         }
-        onMessageWritten(ctx, opcode, endMarker - payloadMarker)
+        onMessageWritten(ctx, sourceOpcode, endMarker - payloadMarker)
         if (!encoder.encryptedPayload) {
             out.writerIndex(startMarker)
             pSmart1Or2Enc(out, opcode)

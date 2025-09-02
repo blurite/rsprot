@@ -13,6 +13,7 @@ import net.rsprot.protocol.api.handlers.INetAddressHandlers
 import net.rsprot.protocol.api.handlers.LoginHandlers
 import net.rsprot.protocol.api.js5.Js5Configuration
 import net.rsprot.protocol.api.js5.Js5GroupProvider
+import net.rsprot.protocol.api.obfuscation.OpcodeMapper
 import net.rsprot.protocol.api.suppliers.NpcInfoSupplier
 import net.rsprot.protocol.api.suppliers.PlayerInfoSupplier
 import net.rsprot.protocol.api.suppliers.WorldEntityInfoSupplier
@@ -270,6 +271,23 @@ public abstract class AbstractNetworkServiceFactory<R> {
     }
 
     /**
+     * An opcode mapper for client to server game packets.
+     * All incoming opcodes will be mapped immediately before any processing.
+     */
+    public open fun getClientToServerOpcodeMapper(): OpcodeMapper? {
+        return null
+    }
+
+    /**
+     * An opcode mapper for server to client game packets.
+     * All outgoing opcodes will be mapped right before writing to the buffer.
+     * Any computations prior will be using source opcodes.
+     */
+    public open fun getServerToClientOpcodeMapper(): OpcodeMapper? {
+        return null
+    }
+
+    /**
      * A Kotlin-only helper function to build a network configuration builder.
      */
     @JvmSynthetic
@@ -315,6 +333,8 @@ public abstract class AbstractNetworkServiceFactory<R> {
             getNetworkConfiguration().build(),
             huffman,
             getGameMessageConsumerRepositoryProvider(),
+            getClientToServerOpcodeMapper(),
+            getServerToClientOpcodeMapper(),
             getRsaKeyPair(),
             getJs5Configuration(),
             getJs5GroupProvider(),

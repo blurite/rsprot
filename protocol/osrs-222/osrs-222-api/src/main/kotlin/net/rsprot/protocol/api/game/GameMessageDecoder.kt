@@ -67,6 +67,11 @@ public class GameMessageDecoder<R>(
             delete(length - 2, length)
         }
 
+    private fun mapOpcode(opcode: Int): Int {
+        val mapper = networkService.clientToServerOpcodeMapper ?: return opcode
+        return mapper.decode(opcode)
+    }
+
     override fun decode(
         ctx: ChannelHandlerContext,
         input: ByteBuf,
@@ -76,7 +81,7 @@ public class GameMessageDecoder<R>(
             if (!input.isReadable) {
                 return
             }
-            this.opcode = (input.g1() - streamCipher.nextInt()) and 0xFF
+            this.opcode = mapOpcode((input.g1() - streamCipher.nextInt()) and 0xFF)
             this.previousPackets[this.previousPacketIndex++ % this.previousPackets.size] = this.opcode
             val decoderOrNull = decoders.getDecoderOrNull(opcode)
             if (decoderOrNull == null) {

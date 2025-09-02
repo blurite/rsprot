@@ -18,6 +18,7 @@ import net.rsprot.protocol.api.js5.Js5Configuration
 import net.rsprot.protocol.api.js5.Js5GroupProvider
 import net.rsprot.protocol.api.js5.Js5Service
 import net.rsprot.protocol.api.js5.NoopJs5Authorizer
+import net.rsprot.protocol.api.obfuscation.OpcodeMapper
 import net.rsprot.protocol.api.repositories.MessageDecoderRepositories
 import net.rsprot.protocol.api.repositories.MessageEncoderRepositories
 import net.rsprot.protocol.api.util.asCompletableFuture
@@ -100,6 +101,8 @@ public class NetworkService<R>
         internal val bufRetentionCountBeforeRelease: Int,
         public val huffmanCodecProvider: HuffmanCodecProvider,
         public val gameMessageConsumerRepositoryProvider: GameMessageConsumerRepositoryProvider<R>,
+        public val clientToServerOpcodeMapper: OpcodeMapper?,
+        public val serverToClientOpcodeMapper: OpcodeMapper?,
         rsaKeyPair: RsaKeyPair,
         js5Configuration: Js5Configuration,
         js5GroupProvider: Js5GroupProvider,
