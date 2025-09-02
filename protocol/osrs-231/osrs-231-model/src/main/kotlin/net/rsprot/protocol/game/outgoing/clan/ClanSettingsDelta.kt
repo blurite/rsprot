@@ -77,7 +77,7 @@ public class ClanSettingsDelta private constructor(
 
     /**
      * Add banned updates are used to add a member to the banned members list.
-     * @property hash the hash of the member, or 0 if this clan does not use hashes.
+     * @property hash the hash of the member, or -1 if this clan does not use hashes.
      * @property name the name of the member.
      */
     public class AddBannedUpdate(
@@ -90,7 +90,7 @@ public class ClanSettingsDelta private constructor(
         public constructor(
             name: String,
         ) : this(
-            0,
+            -1,
             name,
         )
 
@@ -121,7 +121,7 @@ public class ClanSettingsDelta private constructor(
 
     /**
      * Older add-member update for clans.
-     * @property hash the hash of the member, or 0 if this clan does not use hashes.
+     * @property hash the hash of the member, or -1 if this clan does not use hashes.
      * @property name the name of the member.
      */
     public class AddMemberV1Update(
@@ -134,7 +134,7 @@ public class ClanSettingsDelta private constructor(
         public constructor(
             name: String,
         ) : this(
-            0,
+            -1,
             name,
         )
 
@@ -165,7 +165,7 @@ public class ClanSettingsDelta private constructor(
 
     /**
      * Newer add-member update for clans.
-     * @property hash the hash of the member, or 0 if this clan does not use hashes.
+     * @property hash the hash of the member, or -1 if this clan does not use hashes.
      * @property name the name of the member.
      * @property joinRuneDay the rune day when this user joined the clan
      */
@@ -188,7 +188,7 @@ public class ClanSettingsDelta private constructor(
             name: String?,
             joinRuneDay: Int,
         ) : this(
-            0,
+            -1,
             name,
             joinRuneDay.toUShort(),
         )

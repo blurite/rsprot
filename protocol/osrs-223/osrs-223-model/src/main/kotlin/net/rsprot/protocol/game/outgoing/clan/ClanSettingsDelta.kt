@@ -10,7 +10,7 @@ import net.rsprot.protocol.message.OutgoingGameMessage
  * @property owner the hash of the owner.
  * As the value of this property is never assigned in the client, but it is compared,
  * this property should always be assigned the value 0.
- * @property updateNum the number of updates this clans settings has had.
+ * @property updateNum the number of updates this clan's settings has had.
  * If the value does not match up, the client will throw an exception!
  */
 public class ClanSettingsDelta private constructor(
@@ -69,7 +69,7 @@ public class ClanSettingsDelta private constructor(
 
     /**
      * Add banned updates are used to add a member to the banned members list.
-     * @property hash the hash of the member, or 0 if this clan does not use hashes.
+     * @property hash the hash of the member, or -1 if this clan does not use hashes.
      * @property name the name of the member.
      */
     public class AddBannedUpdate(
@@ -82,7 +82,7 @@ public class ClanSettingsDelta private constructor(
         public constructor(
             name: String,
         ) : this(
-            0,
+            -1,
             name,
         )
 
@@ -113,7 +113,7 @@ public class ClanSettingsDelta private constructor(
 
     /**
      * Older add-member update for clans.
-     * @property hash the hash of the member, or 0 if this clan does not use hashes.
+     * @property hash the hash of the member, or -1 if this clan does not use hashes.
      * @property name the name of the member.
      */
     public class AddMemberV1Update(
@@ -126,7 +126,7 @@ public class ClanSettingsDelta private constructor(
         public constructor(
             name: String,
         ) : this(
-            0,
+            -1,
             name,
         )
 
@@ -157,7 +157,7 @@ public class ClanSettingsDelta private constructor(
 
     /**
      * Newer add-member update for clans.
-     * @property hash the hash of the member, or 0 if this clan does not use hashes.
+     * @property hash the hash of the member, or -1 if this clan does not use hashes.
      * @property name the name of the member.
      * @property joinRuneDay the rune day when this user joined the clan
      */
@@ -180,7 +180,7 @@ public class ClanSettingsDelta private constructor(
             name: String?,
             joinRuneDay: Int,
         ) : this(
-            0,
+            -1,
             name,
             joinRuneDay.toUShort(),
         )
