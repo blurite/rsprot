@@ -15,7 +15,7 @@ public open class DefaultIdleStateHandlerSupplier
                 observeOutput,
                 idleTime,
                 idleTime,
-                idleTime,
+                0,
                 idleTimeUnit,
             )
 
