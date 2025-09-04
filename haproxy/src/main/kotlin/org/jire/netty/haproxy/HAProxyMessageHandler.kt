@@ -92,6 +92,11 @@ public class HAProxyMessageHandler<C : Channel>(
             HAPROXY_CHANNEL_INITIALIZER_NAME,
             childInitializer,
         )
+
+        channel.eventLoop().execute {
+            // Because auto-read may be disabled, we need to trigger the next read
+            ctx.read()
+        }
     }
 
     private fun handleLocalCommand(ctx: ChannelHandlerContext) {
