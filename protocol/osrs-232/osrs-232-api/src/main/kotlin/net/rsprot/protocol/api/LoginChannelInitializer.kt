@@ -4,12 +4,10 @@ import com.github.michaelbull.logging.InlineLogger
 import io.netty.channel.Channel
 import io.netty.channel.ChannelHandlerContext
 import io.netty.channel.ChannelInitializer
-import io.netty.handler.timeout.IdleStateHandler
 import net.rsprot.protocol.api.logging.networkLog
 import net.rsprot.protocol.api.login.LoginChannelHandler
 import net.rsprot.protocol.api.login.LoginMessageDecoder
 import net.rsprot.protocol.api.login.LoginMessageEncoder
-import java.util.concurrent.TimeUnit
 
 /**
  * The channel initializer for login blocks.
@@ -25,13 +23,7 @@ public class LoginChannelInitializer<R>(
         }
         networkService.trafficMonitor.incrementConnections()
         ch.pipeline().addLast(
-            IdleStateHandler(
-                true,
-                NetworkService.INITIAL_TIMEOUT_SECONDS,
-                NetworkService.INITIAL_TIMEOUT_SECONDS,
-                NetworkService.INITIAL_TIMEOUT_SECONDS,
-                TimeUnit.SECONDS,
-            ),
+            networkService.idleStateHandlerSuppliers.initialSupplier.supply(),
             LoginMessageDecoder(networkService),
             LoginMessageEncoder(networkService),
             LoginChannelHandler(networkService),

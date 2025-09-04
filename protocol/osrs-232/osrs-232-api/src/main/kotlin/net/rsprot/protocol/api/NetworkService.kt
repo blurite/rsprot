@@ -13,6 +13,7 @@ import net.rsprot.protocol.api.handlers.GameMessageHandlers
 import net.rsprot.protocol.api.handlers.INetAddressHandlers
 import net.rsprot.protocol.api.handlers.LoginHandlers
 import net.rsprot.protocol.api.handlers.OutgoingMessageSizeEstimator
+import net.rsprot.protocol.api.handlers.idlestate.IdleStateHandlerSuppliers
 import net.rsprot.protocol.api.js5.ConcurrentJs5Authorizer
 import net.rsprot.protocol.api.js5.Js5Authorizer
 import net.rsprot.protocol.api.js5.Js5Configuration
@@ -106,6 +107,7 @@ public class NetworkService<R>
         rsaKeyPair: RsaKeyPair,
         js5Configuration: Js5Configuration,
         js5GroupProvider: Js5GroupProvider,
+        public val idleStateHandlerSuppliers: IdleStateHandlerSuppliers,
     ) {
         public var encoderRepositories: MessageEncoderRepositories = MessageEncoderRepositories(huffmanCodecProvider)
         public val js5Authorizer: Js5Authorizer = if (betaWorld) ConcurrentJs5Authorizer() else NoopJs5Authorizer
@@ -284,11 +286,7 @@ public class NetworkService<R>
          */
         public fun isSupported(clientType: OldSchoolClientType): Boolean = clientType in clientTypes
 
-        public companion object {
-            public const val INITIAL_TIMEOUT_SECONDS: Long = 30
-            public const val LOGIN_TIMEOUT_SECONDS: Long = 40
-            public const val GAME_TIMEOUT_SECONDS: Long = 15
-            public const val JS5_TIMEOUT_SECONDS: Long = 30
+        private companion object {
             private val logger = InlineLogger()
         }
     }
