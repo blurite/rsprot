@@ -9,6 +9,9 @@ build/
 !/.idea/fileTemplates/*
 !/.idea/dictionaries/*
 !/.idea/runConfigurations/*
+!/.idea/codeStyles/
+!/.idea/codeStyles/codeStyleConfig.xml
+!/.idea/codeStyles/Project.xml
 *.iws
 *.iml
 *.ipr
