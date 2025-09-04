@@ -3,7 +3,7 @@ package net.rsprot.protocol.metrics.channel.impl
 import net.rsprot.protocol.metrics.channel.ChannelTrafficMonitor
 import net.rsprot.protocol.metrics.channel.snapshots.ChannelTrafficSnapshot
 import net.rsprot.protocol.metrics.channel.snapshots.impl.NoopChannelTrafficSnapshot
-import java.net.InetAddress
+import java.net.SocketAddress
 import java.time.LocalDateTime
 import kotlin.time.Duration
 
@@ -11,40 +11,40 @@ import kotlin.time.Duration
  * A no-op channel traffic monitor. All function calls here do nothing.
  */
 public data object NoopChannelTrafficMonitor : ChannelTrafficMonitor {
-    override fun incrementConnections(inetAddress: InetAddress) {
+    override fun incrementConnections(socketAddress: SocketAddress) {
     }
 
-    override fun decrementConnections(inetAddress: InetAddress) {
+    override fun decrementConnections(socketAddress: SocketAddress) {
     }
 
     override fun addDisconnectionReason(
-        inetAddress: InetAddress,
+        socketAddress: SocketAddress,
         reason: Int,
     ) {
     }
 
     override fun incrementIncomingPackets(
-        inetAddress: InetAddress,
+        socketAddress: SocketAddress,
         opcode: Int,
         payloadSize: Int,
     ) {
     }
 
     override fun incrementOutgoingPackets(
-        inetAddress: InetAddress,
+        socketAddress: SocketAddress,
         opcode: Int,
         payloadSize: Int,
     ) {
     }
 
     override fun incrementOutgoingPacketOpcode(
-        inetAddress: InetAddress,
+        socketAddress: SocketAddress,
         opcode: Int,
     ) {
     }
 
     override fun incrementOutgoingPacketPayload(
-        inetAddress: InetAddress,
+        socketAddress: SocketAddress,
         opcode: Int,
         payloadSize: Int,
     ) {

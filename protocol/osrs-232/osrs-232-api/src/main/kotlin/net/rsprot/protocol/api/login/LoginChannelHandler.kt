@@ -7,13 +7,13 @@ import io.netty.channel.SimpleChannelInboundHandler
 import io.netty.handler.timeout.IdleStateEvent
 import io.netty.handler.timeout.IdleStateHandler
 import net.rsprot.protocol.api.NetworkService
-import net.rsprot.protocol.api.channel.inetAddress
-import net.rsprot.protocol.api.channel.replace
 import net.rsprot.protocol.api.js5.Js5ChannelHandler
 import net.rsprot.protocol.api.js5.Js5MessageDecoder
 import net.rsprot.protocol.api.js5.Js5MessageEncoder
 import net.rsprot.protocol.api.logging.networkLog
 import net.rsprot.protocol.api.metrics.addDisconnectionReason
+import net.rsprot.protocol.channel.replace
+import net.rsprot.protocol.channel.socketAddress
 import net.rsprot.protocol.common.RSProtConstants
 import net.rsprot.protocol.loginprot.incoming.InitGameConnection
 import net.rsprot.protocol.loginprot.incoming.InitJs5RemoteConnection
@@ -33,14 +33,14 @@ public class LoginChannelHandler(
         networkService
             .trafficMonitor
             .loginChannelTrafficMonitor
-            .incrementConnections(ctx.inetAddress())
+            .incrementConnections(ctx.socketAddress())
     }
 
     override fun handlerRemoved(ctx: ChannelHandlerContext) {
         networkService
             .trafficMonitor
             .loginChannelTrafficMonitor
-            .decrementConnections(ctx.inetAddress())
+            .decrementConnections(ctx.socketAddress())
     }
 
     override fun channelActive(ctx: ChannelHandlerContext) {
@@ -72,7 +72,7 @@ public class LoginChannelHandler(
                     .trafficMonitor
                     .loginChannelTrafficMonitor
                     .addDisconnectionReason(
-                        ctx.inetAddress(),
+                        ctx.socketAddress(),
                         LoginDisconnectionReason.CHANNEL_UNKNOWN_PACKET,
                     )
                 throw IllegalStateException("Unknown login channel message: $msg")
@@ -81,7 +81,7 @@ public class LoginChannelHandler(
     }
 
     private fun handleInitGameConnection(ctx: ChannelHandlerContext) {
-        val address = ctx.inetAddress()
+        val address = ctx.socketAddress()
         val count =
             networkService
                 .iNetAddressHandlers
@@ -103,7 +103,7 @@ public class LoginChannelHandler(
                 .trafficMonitor
                 .loginChannelTrafficMonitor
                 .addDisconnectionReason(
-                    ctx.inetAddress(),
+                    ctx.socketAddress(),
                     LoginDisconnectionReason.CHANNEL_IP_LIMIT,
                 )
             return
@@ -160,7 +160,7 @@ public class LoginChannelHandler(
                 .trafficMonitor
                 .loginChannelTrafficMonitor
                 .addDisconnectionReason(
-                    ctx.inetAddress(),
+                    ctx.socketAddress(),
                     LoginDisconnectionReason.CHANNEL_OUT_OF_DATE,
                 )
             ctx
@@ -168,7 +168,7 @@ public class LoginChannelHandler(
                 .addListener(ChannelFutureListener.CLOSE)
             return
         }
-        val address = ctx.inetAddress()
+        val address = ctx.socketAddress()
         val count =
             networkService
                 .iNetAddressHandlers
@@ -190,7 +190,7 @@ public class LoginChannelHandler(
                 .trafficMonitor
                 .loginChannelTrafficMonitor
                 .addDisconnectionReason(
-                    ctx.inetAddress(),
+                    ctx.socketAddress(),
                     LoginDisconnectionReason.CHANNEL_IP_LIMIT,
                 )
             return
@@ -245,7 +245,7 @@ public class LoginChannelHandler(
             .trafficMonitor
             .loginChannelTrafficMonitor
             .addDisconnectionReason(
-                ctx.inetAddress(),
+                ctx.socketAddress(),
                 LoginDisconnectionReason.CHANNEL_EXCEPTION,
             )
         val channel = ctx.channel()
@@ -266,7 +266,7 @@ public class LoginChannelHandler(
                 .trafficMonitor
                 .loginChannelTrafficMonitor
                 .addDisconnectionReason(
-                    ctx.inetAddress(),
+                    ctx.socketAddress(),
                     LoginDisconnectionReason.CHANNEL_IDLE,
                 )
             ctx.close()

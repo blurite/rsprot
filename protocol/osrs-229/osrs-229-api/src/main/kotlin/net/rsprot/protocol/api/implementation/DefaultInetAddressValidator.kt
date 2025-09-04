@@ -1,7 +1,7 @@
 package net.rsprot.protocol.api.implementation
 
 import net.rsprot.protocol.api.InetAddressValidator
-import java.net.InetAddress
+import java.net.SocketAddress
 
 /**
  * The default validation for a max number of concurrent active connections
@@ -11,12 +11,12 @@ public class DefaultInetAddressValidator(
     public val limit: Int = MAX_CONNECTIONS,
 ) : InetAddressValidator {
     override fun acceptGameConnection(
-        address: InetAddress,
+        address: SocketAddress,
         activeGameConnections: Int,
     ): Boolean = activeGameConnections < limit
 
     override fun acceptJs5Connection(
-        address: InetAddress,
+        address: SocketAddress,
         activeJs5Connections: Int,
         seed: IntArray,
     ): Boolean = activeJs5Connections < limit

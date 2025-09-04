@@ -3,11 +3,11 @@ package net.rsprot.protocol.api
 import com.github.michaelbull.logging.InlineLogger
 import io.netty.channel.ChannelHandlerContext
 import net.rsprot.protocol.ServerProtCategory
-import net.rsprot.protocol.api.channel.inetAddress
 import net.rsprot.protocol.api.game.GameDisconnectionReason
 import net.rsprot.protocol.api.game.GameMessageDecoder
 import net.rsprot.protocol.api.logging.networkLog
 import net.rsprot.protocol.api.metrics.addDisconnectionReason
+import net.rsprot.protocol.channel.socketAddress
 import net.rsprot.protocol.game.outgoing.GameServerProtCategory
 import net.rsprot.protocol.game.outgoing.zone.payload.MapProjAnimV2
 import net.rsprot.protocol.game.outgoing.zone.payload.SoundArea
@@ -18,7 +18,7 @@ import net.rsprot.protocol.message.IncomingGameMessage
 import net.rsprot.protocol.message.OutgoingGameMessage
 import net.rsprot.protocol.message.codec.incoming.MessageConsumer
 import net.rsprot.protocol.metrics.NetworkTrafficMonitor
-import java.net.InetAddress
+import java.net.SocketAddress
 import java.util.Queue
 import java.util.concurrent.atomic.AtomicBoolean
 import java.util.concurrent.atomic.AtomicInteger
@@ -67,7 +67,7 @@ public class Session<R>(
         Array(GameServerProtCategory.COUNT) {
             outgoingMessageQueueProvider.provide()
         }
-    public val inetAddress: InetAddress = ctx.inetAddress()
+    public val inetAddress: SocketAddress = ctx.socketAddress()
     private var disconnectionHook: AtomicReference<Runnable?> = AtomicReference(null)
 
     @Volatile
@@ -412,7 +412,7 @@ public class Session<R>(
             trafficMonitor
                 .gameChannelTrafficMonitor
                 .addDisconnectionReason(
-                    ctx.inetAddress(),
+                    ctx.socketAddress(),
                     GameDisconnectionReason.LOGOUT,
                 )
             channel.close()

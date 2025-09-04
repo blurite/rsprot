@@ -10,9 +10,9 @@ import net.rsprot.buffer.extensions.toJagByteBuf
 import net.rsprot.crypto.cipher.NopStreamCipher
 import net.rsprot.crypto.cipher.StreamCipher
 import net.rsprot.protocol.api.NetworkService
-import net.rsprot.protocol.api.channel.inetAddress
 import net.rsprot.protocol.api.encoder.OutgoingMessageEncoder
 import net.rsprot.protocol.api.handlers.OutgoingMessageSizeEstimator
+import net.rsprot.protocol.channel.socketAddress
 import net.rsprot.protocol.common.js5.outgoing.prot.Js5ServerProt
 import net.rsprot.protocol.js5.outgoing.Js5GroupResponse
 import net.rsprot.protocol.message.OutgoingMessage
@@ -97,6 +97,6 @@ public class Js5MessageEncoder(
         networkService
             .trafficMonitor
             .js5ChannelTrafficMonitor
-            .incrementOutgoingPacketPayload(ctx.inetAddress(), Js5ServerProt.JS5_GROUP_RESPONSE.opcode, writtenBytes)
+            .incrementOutgoingPacketPayload(ctx.socketAddress(), Js5ServerProt.JS5_GROUP_RESPONSE.opcode, writtenBytes)
     }
 }

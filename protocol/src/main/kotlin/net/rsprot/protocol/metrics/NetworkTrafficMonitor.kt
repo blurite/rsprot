@@ -4,7 +4,7 @@ import net.rsprot.protocol.metrics.channel.impl.GameChannelTrafficMonitor
 import net.rsprot.protocol.metrics.channel.impl.Js5ChannelTrafficMonitor
 import net.rsprot.protocol.metrics.channel.impl.LoginChannelTrafficMonitor
 import net.rsprot.protocol.metrics.snapshots.NetworkTrafficSnapshot
-import java.net.InetAddress
+import java.net.SocketAddress
 
 /**
  * A complete network traffic monitor that covers all channel types.
@@ -24,12 +24,12 @@ public interface NetworkTrafficMonitor<in LoginBlock> {
     public fun incrementConnections()
 
     /**
-     * Adds a new login block from the provided [inetAddress].
+     * Adds a new login block from the provided [SocketAddress].
      * @param inetAddress the address from which a complete login block was received.
      * @param block the login block that was received.
      */
     public fun addLoginBlock(
-        inetAddress: InetAddress,
+        socketAddress: SocketAddress,
         block: LoginBlock,
     )
 

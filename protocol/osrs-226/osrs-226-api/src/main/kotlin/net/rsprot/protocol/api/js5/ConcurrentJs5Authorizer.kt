@@ -2,12 +2,12 @@ package net.rsprot.protocol.api.js5
 
 import com.github.michaelbull.logging.InlineLogger
 import net.rsprot.protocol.loginprot.incoming.RemainingBetaArchives
-import java.net.InetAddress
+import java.net.SocketAddress
 import java.util.concurrent.ConcurrentHashMap
 
 /**
  * A JS5 authorizer that utilizes a concurrent hashmap to keep track of how many times
- * an [InetAddress] has been authorized, to allow multiple clients to keep downloading
+ * an [SocketAddress] has been authorized, to allow multiple clients to keep downloading
  * the cache, if necessary.
  * Furthermore, utilizes a [Long] bitmask of [protectedArchives] for performant authorization
  * validation.
@@ -20,7 +20,7 @@ public class ConcurrentJs5Authorizer(
 ) : Js5Authorizer {
     public constructor() : this(RemainingBetaArchives.protectedArchives)
 
-    private val counts = ConcurrentHashMap<InetAddress, Int>(DEFAULT_CAPACITY)
+    private val counts = ConcurrentHashMap<SocketAddress, Int>(DEFAULT_CAPACITY)
     private val protectedArchivesBitMask: Long = buildProtectedArchivesBitMask(protectedArchives)
 
     private fun buildProtectedArchivesBitMask(protectedArchives: List<Int>): Long {
@@ -34,7 +34,7 @@ public class ConcurrentJs5Authorizer(
         return protectedArchivesBitMask and (1L shl archive) != 0L
     }
 
-    override fun authorize(address: InetAddress) {
+    override fun authorize(address: SocketAddress) {
         try {
             counts.compute(address) { _, old ->
                 if (old != null) {
@@ -60,7 +60,7 @@ public class ConcurrentJs5Authorizer(
         }
     }
 
-    override fun unauthorize(address: InetAddress) {
+    override fun unauthorize(address: SocketAddress) {
         try {
             counts.compute(address) { _, old ->
                 when {
@@ -76,7 +76,7 @@ public class ConcurrentJs5Authorizer(
     }
 
     override fun isAuthorized(
-        address: InetAddress,
+        address: SocketAddress,
         archive: Int,
     ): Boolean {
         return try {
@@ -90,7 +90,7 @@ public class ConcurrentJs5Authorizer(
     }
 
     @Suppress("NOTHING_TO_INLINE")
-    private inline fun isAuthorized(address: InetAddress): Boolean {
+    private inline fun isAuthorized(address: SocketAddress): Boolean {
         val count = counts[address]
         return count != null && count > 0
     }

@@ -22,6 +22,7 @@ include(
     "protocol",
     "crypto",
     "compression",
+    "haproxy",
 )
 
 includeSubprojects(":protocol")

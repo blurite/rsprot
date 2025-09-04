@@ -1,9 +1,9 @@
 package net.rsprot.protocol.api
 
-import java.net.InetAddress
+import java.net.SocketAddress
 
 /**
- * The validation service for [InetAddress].
+ * The validation service for [SocketAddress].
  * This service is responsible for accepting of rejecting connections based
  * on the number of active connections from said service.
  * It is worth noting that game and JS5 are tracked separately, as each
@@ -21,7 +21,7 @@ public interface InetAddressValidator {
      * @param activeGameConnections the number of currently active game connections from that address
      */
     public fun acceptGameConnection(
-        address: InetAddress,
+        address: SocketAddress,
         activeGameConnections: Int,
     ): Boolean
 
@@ -33,7 +33,7 @@ public interface InetAddressValidator {
      * @param seed the seed used for reconnections and xtea block decryption.
      */
     public fun acceptJs5Connection(
-        address: InetAddress,
+        address: SocketAddress,
         activeJs5Connections: Int,
         seed: IntArray,
     ): Boolean

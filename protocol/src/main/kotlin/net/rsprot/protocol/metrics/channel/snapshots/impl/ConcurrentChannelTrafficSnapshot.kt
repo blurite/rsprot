@@ -4,7 +4,7 @@ import net.rsprot.protocol.ClientProt
 import net.rsprot.protocol.ServerProt
 import net.rsprot.protocol.metrics.channel.snapshots.ChannelTrafficSnapshot
 import net.rsprot.protocol.metrics.channel.snapshots.InetAddressSnapshot
-import java.net.InetAddress
+import java.net.SocketAddress
 import java.time.LocalDateTime
 import java.time.temporal.ChronoUnit
 import kotlin.time.Duration
@@ -14,14 +14,14 @@ import kotlin.time.Duration.Companion.milliseconds
  * A concurrent channel traffic snapshot is the result of calling
  * [net.rsprot.protocol.metrics.channel.impl.ConcurrentChannelTrafficMonitor.snapshot].
  * This snapshot will track any metrics behind a specific channel type (login, JS5, game),
- * such as the number of active connections from each [InetAddress] at the time of capturing
+ * such as the number of active connections from each [SocketAddress] at the time of capturing
  * the snapshot, as well as a general overview of the traffic that a specific channel witnessed.
  *
  * @property startDateTime the local datetime when the tracking began for this snapshot.
  * @property endDateTime the local datetime when the snapshot was captured.
  * @property activeConnectionsByAddress the active connections at the time of capturing the snapshot,
- * organized per [InetAddress].
- * @property inetAddressSnapshots the snapshots per [InetAddress], containing any
+ * organized per [SocketAddress].
+ * @property inetAddressSnapshots the snapshots per [SocketAddress], containing any
  * packet traffic, disconnection reasons and more.
  * @property elapsedMillis the number of milliseconds that this snapshot covers.
  * @property elapsed the duration that this snapshot covers.
@@ -29,8 +29,8 @@ import kotlin.time.Duration.Companion.milliseconds
 public class ConcurrentChannelTrafficSnapshot<CP, SP, DC>(
     public val startDateTime: LocalDateTime,
     public val endDateTime: LocalDateTime,
-    public val activeConnectionsByAddress: Map<InetAddress, Int>,
-    public val inetAddressSnapshots: Map<InetAddress, InetAddressSnapshot<CP, SP, DC>>,
+    public val activeConnectionsByAddress: Map<SocketAddress, Int>,
+    public val inetAddressSnapshots: Map<SocketAddress, InetAddressSnapshot<CP, SP, DC>>,
 ) : ChannelTrafficSnapshot where CP : ClientProt, CP : Enum<CP>, SP : ServerProt, SP : Enum<SP>, DC : Enum<DC> {
     public val elapsedMillis: Long
         get() = ChronoUnit.MILLIS.between(startDateTime, endDateTime)

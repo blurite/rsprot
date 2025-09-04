@@ -6,7 +6,7 @@ import net.rsprot.protocol.metrics.channel.ChannelTrafficMonitor
 import net.rsprot.protocol.metrics.channel.snapshots.impl.ConcurrentChannelTrafficSnapshot
 import net.rsprot.protocol.metrics.channel.snapshots.util.InetAddressTrafficMonitor
 import net.rsprot.protocol.metrics.lock.TrafficMonitorLock
-import java.net.InetAddress
+import java.net.SocketAddress
 import java.time.LocalDateTime
 import java.time.temporal.ChronoUnit
 import java.util.concurrent.ConcurrentHashMap
@@ -22,8 +22,8 @@ import kotlin.time.Duration.Companion.milliseconds
  * @property disconnectionReasons an array of disconnection reasons for this channel.
  * @property startDateTime the local datetime when this traffic monitor began tracking,
  * or was last reset.
- * @property activeConnectionsByAddress the active connections established per [InetAddress] basis.
- * @property inetAddressTrafficMonitors the traffic monitors per [InetAddress], tracking various
+ * @property activeConnectionsByAddress the active connections established per [SocketAddress] basis.
+ * @property inetAddressTrafficMonitors the traffic monitors per [SocketAddress], tracking various
  * packets and disconnection reasons at a finer level.
  * @property frozen whether the transient properties are frozen, meaning any changes to them
  * are discarded. Anything stateful will continue to be modified.
@@ -35,32 +35,32 @@ public class ConcurrentChannelTrafficMonitor<CP, SP, DC>(
     private val disconnectionReasons: Array<out DC>,
     private var startDateTime: LocalDateTime = LocalDateTime.now(),
 ) : ChannelTrafficMonitor where CP : ClientProt, CP : Enum<CP>, SP : ServerProt, SP : Enum<SP>, DC : Enum<DC> {
-    private val activeConnectionsByAddress: MutableMap<InetAddress, Int> = ConcurrentHashMap()
-    private var inetAddressTrafficMonitors: MutableMap<InetAddress, InetAddressTrafficMonitor<CP, SP, DC>> =
+    private val activeConnectionsByAddress: MutableMap<SocketAddress, Int> = ConcurrentHashMap()
+    private var inetAddressTrafficMonitors: MutableMap<SocketAddress, InetAddressTrafficMonitor<CP, SP, DC>> =
         ConcurrentHashMap()
 
     @Volatile
     private var frozen: Boolean = false
 
-    override fun incrementConnections(inetAddress: InetAddress) {
+    override fun incrementConnections(socketAddress: SocketAddress) {
         lock.use {
-            activeConnectionsByAddress.compute(inetAddress) { _, v ->
+            activeConnectionsByAddress.compute(socketAddress) { _, v ->
                 (v ?: 0) + 1
             }
         }
     }
 
-    override fun decrementConnections(inetAddress: InetAddress) {
+    override fun decrementConnections(socketAddress: SocketAddress) {
         lock.use {
-            activeConnectionsByAddress.compute(inetAddress) { _, v ->
+            activeConnectionsByAddress.compute(socketAddress) { _, v ->
                 val result = (v ?: 0) - 1
                 return@compute if (result <= 0) null else result
             }
         }
     }
 
-    private fun getTrafficCounter(inetAddress: InetAddress): InetAddressTrafficMonitor<CP, SP, DC> =
-        inetAddressTrafficMonitors.computeIfAbsent(inetAddress) {
+    private fun getTrafficCounter(socketAddress: SocketAddress): InetAddressTrafficMonitor<CP, SP, DC> =
+        inetAddressTrafficMonitors.computeIfAbsent(socketAddress) {
             InetAddressTrafficMonitor(
                 clientProts,
                 serverProts,
@@ -69,68 +69,68 @@ public class ConcurrentChannelTrafficMonitor<CP, SP, DC>(
         }
 
     override fun addDisconnectionReason(
-        inetAddress: InetAddress,
+        socketAddress: SocketAddress,
         reason: Int,
     ) {
         if (frozen) return
         lock.use {
             if (reason in disconnectionReasons.indices) {
-                val trafficCounter = getTrafficCounter(inetAddress)
+                val trafficCounter = getTrafficCounter(socketAddress)
                 trafficCounter.addDisconnectionReason(reason)
             }
         }
     }
 
     override fun incrementIncomingPackets(
-        inetAddress: InetAddress,
+        socketAddress: SocketAddress,
         opcode: Int,
         payloadSize: Int,
     ) {
         if (frozen) return
         lock.use {
             if (opcode in clientProts.indices) {
-                val trafficCounter = getTrafficCounter(inetAddress)
+                val trafficCounter = getTrafficCounter(socketAddress)
                 trafficCounter.incrementIncomingPackets(opcode, payloadSize)
             }
         }
     }
 
     override fun incrementOutgoingPackets(
-        inetAddress: InetAddress,
+        socketAddress: SocketAddress,
         opcode: Int,
         payloadSize: Int,
     ) {
         if (frozen) return
         lock.use {
             if (opcode in serverProts.indices) {
-                val trafficCounter = getTrafficCounter(inetAddress)
+                val trafficCounter = getTrafficCounter(socketAddress)
                 trafficCounter.incrementOutgoingPackets(opcode, payloadSize)
             }
         }
     }
 
     override fun incrementOutgoingPacketPayload(
-        inetAddress: InetAddress,
+        socketAddress: SocketAddress,
         opcode: Int,
         payloadSize: Int,
     ) {
         if (frozen) return
         lock.use {
             if (opcode in serverProts.indices) {
-                val trafficCounter = getTrafficCounter(inetAddress)
+                val trafficCounter = getTrafficCounter(socketAddress)
                 trafficCounter.incrementOutgoingPacketPayload(opcode, payloadSize)
             }
         }
     }
 
     override fun incrementOutgoingPacketOpcode(
-        inetAddress: InetAddress,
+        socketAddress: SocketAddress,
         opcode: Int,
     ) {
         if (frozen) return
         lock.use {
             if (opcode in serverProts.indices) {
-                val trafficCounter = getTrafficCounter(inetAddress)
+                val trafficCounter = getTrafficCounter(socketAddress)
                 trafficCounter.incrementOutgoingPacketOpcode(opcode)
             }
         }
@@ -148,8 +148,8 @@ public class ConcurrentChannelTrafficMonitor<CP, SP, DC>(
     override fun snapshot(): ConcurrentChannelTrafficSnapshot<CP, SP, DC> {
         lock.use {
             val now = LocalDateTime.now()
-            val activeConnectionsByAddress: Map<InetAddress, Int> = this.activeConnectionsByAddress.toMap()
-            val inetAddressTrafficMonitors: Map<InetAddress, InetAddressTrafficMonitor<CP, SP, DC>> =
+            val activeConnectionsByAddress: Map<SocketAddress, Int> = this.activeConnectionsByAddress.toMap()
+            val inetAddressTrafficMonitors: Map<SocketAddress, InetAddressTrafficMonitor<CP, SP, DC>> =
                 this
                     .inetAddressTrafficMonitors
                     .toMap()
@@ -169,8 +169,8 @@ public class ConcurrentChannelTrafficMonitor<CP, SP, DC>(
     override fun resetTransient(): ConcurrentChannelTrafficSnapshot<CP, SP, DC> {
         var oldStart: LocalDateTime
         var newStart: LocalDateTime
-        var activeConnectionsByAddress: Map<InetAddress, Int>
-        var inetAddressTrafficMonitors: Map<InetAddress, InetAddressTrafficMonitor<CP, SP, DC>>
+        var activeConnectionsByAddress: Map<SocketAddress, Int>
+        var inetAddressTrafficMonitors: Map<SocketAddress, InetAddressTrafficMonitor<CP, SP, DC>>
         // Synchronize during the reallocation to ensure _some_ kind of consistency
         // This won't be perfect, but it should avoid most cases of inconsistency
         // where mutations are performed while we are clearing the transient data

@@ -2,7 +2,7 @@ package net.rsprot.protocol.metrics.snapshots.impl
 
 import net.rsprot.protocol.metrics.channel.snapshots.ChannelTrafficSnapshot
 import net.rsprot.protocol.metrics.snapshots.NetworkTrafficSnapshot
-import java.net.InetAddress
+import java.net.SocketAddress
 import java.time.LocalDateTime
 import java.time.temporal.ChronoUnit
 import kotlin.time.Duration
@@ -18,7 +18,7 @@ import kotlin.time.Duration.Companion.milliseconds
  * @property startDateTime the local datetime when the tracking began.
  * @property endDateTime the local datetime when the snapshot was captured.
  * @property connectionRequests the number of connection requests that were received.
- * @property loginBlocks the complete login blocks that were received from each [InetAddress],
+ * @property loginBlocks the complete login blocks that were received from each [SocketAddress],
  * in the order that they were received.
  * @property loginSnapshot a snapshot of the login channel's traffic.
  * @property js5Snapshot a snapshot of the JS5 channel's traffic.
@@ -30,7 +30,7 @@ public class ConcurrentNetworkTrafficSnapshot<LoginBlock>(
     public val startDateTime: LocalDateTime,
     public val endDateTime: LocalDateTime,
     public val connectionRequests: Int,
-    public val loginBlocks: Map<InetAddress, List<LoginBlock>>,
+    public val loginBlocks: Map<SocketAddress, List<LoginBlock>>,
     public val loginSnapshot: ChannelTrafficSnapshot,
     public val js5Snapshot: ChannelTrafficSnapshot,
     public val gameSnapshot: ChannelTrafficSnapshot,

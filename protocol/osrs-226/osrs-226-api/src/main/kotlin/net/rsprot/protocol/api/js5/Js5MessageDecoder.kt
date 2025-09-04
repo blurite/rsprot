@@ -10,8 +10,8 @@ import net.rsprot.buffer.extensions.toJagByteBuf
 import net.rsprot.protocol.ClientProt
 import net.rsprot.protocol.Prot
 import net.rsprot.protocol.api.NetworkService
-import net.rsprot.protocol.api.channel.inetAddress
 import net.rsprot.protocol.api.decoder.DecoderState
+import net.rsprot.protocol.channel.socketAddress
 import net.rsprot.protocol.message.codec.MessageDecoder
 import net.rsprot.protocol.message.codec.incoming.MessageDecoderRepository
 
@@ -90,7 +90,7 @@ public class Js5MessageDecoder(
             networkService
                 .trafficMonitor
                 .js5ChannelTrafficMonitor
-                .incrementIncomingPackets(ctx.inetAddress(), opcode, length)
+                .incrementIncomingPackets(ctx.socketAddress(), opcode, length)
 
             state = DecoderState.READ_OPCODE
         }

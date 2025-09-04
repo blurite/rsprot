@@ -2,7 +2,7 @@ package net.rsprot.protocol.loginprot.incoming.pow.challenges.sha256
 
 import net.rsprot.protocol.loginprot.incoming.pow.challenges.ChallengeMetaDataProvider
 import net.rsprot.protocol.loginprot.incoming.util.LoginBlock
-import java.net.InetAddress
+import java.net.SocketAddress
 
 /**
  * The default SHA-256 metadata provider will return a metadata object
@@ -13,7 +13,7 @@ public class DefaultSha256MetaDataProvider(
     private val world: Int,
 ) : ChallengeMetaDataProvider<Sha256MetaData> {
     override fun provide(
-        inetAddress: InetAddress,
+        socketAddress: SocketAddress,
         header: LoginBlock.Header,
     ): Sha256MetaData = Sha256MetaData(world)
 }

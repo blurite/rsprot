@@ -3,9 +3,9 @@ package net.rsprot.protocol.api.game
 import io.netty.channel.ChannelHandlerContext
 import net.rsprot.crypto.cipher.StreamCipher
 import net.rsprot.protocol.api.NetworkService
-import net.rsprot.protocol.api.channel.inetAddress
 import net.rsprot.protocol.api.encoder.OutgoingMessageEncoder
 import net.rsprot.protocol.api.handlers.OutgoingMessageSizeEstimator
+import net.rsprot.protocol.channel.socketAddress
 import net.rsprot.protocol.common.client.OldSchoolClientType
 import net.rsprot.protocol.message.codec.outgoing.MessageEncoderRepository
 
@@ -30,7 +30,7 @@ public class GameMessageEncoder(
         networkService
             .trafficMonitor
             .gameChannelTrafficMonitor
-            .incrementOutgoingPackets(ctx.inetAddress(), opcode, payloadSize)
+            .incrementOutgoingPackets(ctx.socketAddress(), opcode, payloadSize)
     }
 
     override fun mapOpcode(opcode: Int): Int {

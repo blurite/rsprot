@@ -5,6 +5,8 @@ dependencies {
     implementation(projects.buffer)
     implementation(projects.crypto)
     implementation(projects.compression)
+
+    api(projects.haproxy)
 }
 
 testing {

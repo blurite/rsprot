@@ -12,13 +12,13 @@ import net.rsprot.crypto.cipher.StreamCipher
 import net.rsprot.crypto.cipher.StreamCipherPair
 import net.rsprot.protocol.api.NetworkService
 import net.rsprot.protocol.api.Session
-import net.rsprot.protocol.api.channel.inetAddress
-import net.rsprot.protocol.api.channel.replace
 import net.rsprot.protocol.api.game.GameMessageDecoder
 import net.rsprot.protocol.api.game.GameMessageEncoder
 import net.rsprot.protocol.api.game.GameMessageHandler
 import net.rsprot.protocol.api.logging.networkLog
 import net.rsprot.protocol.api.metrics.addDisconnectionReason
+import net.rsprot.protocol.channel.replace
+import net.rsprot.protocol.channel.socketAddress
 import net.rsprot.protocol.common.client.OldSchoolClientType
 import net.rsprot.protocol.loginprot.incoming.util.LoginBlock
 import net.rsprot.protocol.loginprot.outgoing.LoginResponse
@@ -42,7 +42,7 @@ public class GameLoginResponseHandler<R>(
      * response back to the client via [writeFailedResponse], should they wish to do so.
      */
     public fun validateNewConnection(): Boolean {
-        val address = ctx.inetAddress()
+        val address = ctx.socketAddress()
         val count =
             networkService
                 .iNetAddressHandlers
@@ -104,7 +104,7 @@ public class GameLoginResponseHandler<R>(
 
         val session =
             createSession(loginBlock, pipeline, cipher.decodeCipher, oldSchoolClientType, cipher.encoderCipher)
-        networkService.js5Authorizer.authorize(ctx.inetAddress())
+        networkService.js5Authorizer.authorize(ctx.socketAddress())
         ctx.executor().submit {
             ctx.write(buffer.buffer)
             session.onLoginTransitionComplete()
@@ -157,7 +157,7 @@ public class GameLoginResponseHandler<R>(
 
         val session =
             createSession(loginBlock, pipeline, decodingCipher, oldSchoolClientType, encodingCipher)
-        networkService.js5Authorizer.authorize(ctx.inetAddress())
+        networkService.js5Authorizer.authorize(ctx.socketAddress())
         ctx.executor().submit {
             ctx.write(buffer.buffer)
             session.onLoginTransitionComplete()
@@ -259,7 +259,7 @@ public class GameLoginResponseHandler<R>(
                 "Channel '${ctx.channel()}' has gone inactive, skipping failed response."
             }
             networkService.trafficMonitor.loginChannelTrafficMonitor.addDisconnectionReason(
-                ctx.inetAddress(),
+                ctx.socketAddress(),
                 LoginDisconnectionReason.GAME_CHANNEL_INACTIVE,
             )
             return
@@ -271,7 +271,7 @@ public class GameLoginResponseHandler<R>(
         val disconnectReason = LoginDisconnectionReason.responseToReasonMap[response]
         if (disconnectReason != null) {
             networkService.trafficMonitor.loginChannelTrafficMonitor.addDisconnectionReason(
-                ctx.inetAddress(),
+                ctx.socketAddress(),
                 disconnectReason,
             )
         }

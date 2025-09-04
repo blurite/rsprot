@@ -15,12 +15,13 @@ konsist = "0.17.3"
 [libraries]
 netty-bom = { module = "io.netty:netty-bom", version.ref = "netty" }
 netty-buffer = { module = "io.netty:netty-buffer" }
+netty-codec-haproxy = { module = "io.netty:netty-codec-haproxy" }
 netty-transport = { module = "io.netty:netty-transport" }
 netty-handler = { module = "io.netty:netty-handler" }
 netty-native-epoll = { module = "io.netty:netty-transport-native-epoll" }
 netty-native-kqueue = { module = "io.netty:netty-transport-native-kqueue" }
 netty-native-macos-dns-resolver = { module = "io.netty:netty-resolver-dns-native-macos" }
-netty-iouring = { module = "io.netty:netty-transport-native-io_uring", version.ref = "netty" }
+netty-iouring = { module = "io.netty:netty-transport-native-io_uring" }
 junit-bom = { module = "org.junit:junit-bom", version.ref = "junit" }
 junit-api = { module = "org.junit.jupiter:junit-jupiter-api" }
 junit-engine = { module = "org.junit.jupiter:junit-jupiter-engine" }

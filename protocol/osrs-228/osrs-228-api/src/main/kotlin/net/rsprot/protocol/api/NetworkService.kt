@@ -33,6 +33,7 @@ import net.rsprot.protocol.game.outgoing.info.worldentityinfo.WorldEntityProtoco
 import net.rsprot.protocol.message.codec.incoming.provider.GameMessageConsumerRepositoryProvider
 import net.rsprot.protocol.metrics.NetworkTrafficMonitor
 import net.rsprot.protocol.threads.IllegalThreadAccessException
+import org.jire.netty.haproxy.HAProxyMode
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.ScheduledExecutorService
@@ -105,6 +106,7 @@ public class NetworkService<R>
         rsaKeyPair: RsaKeyPair,
         js5Configuration: Js5Configuration,
         js5GroupProvider: Js5GroupProvider,
+        public val haProxyMode: HAProxyMode,
     ) {
         public var encoderRepositories: MessageEncoderRepositories = MessageEncoderRepositories(huffmanCodecProvider)
         public val js5Authorizer: Js5Authorizer = if (betaWorld) ConcurrentJs5Authorizer() else NoopJs5Authorizer
