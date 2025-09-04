@@ -8,6 +8,7 @@ import io.netty.channel.ChannelHandlerContext
 import io.netty.channel.ChannelInitializer
 import io.netty.channel.SimpleChannelInboundHandler
 import io.netty.handler.codec.haproxy.HAProxyMessageDecoder
+import io.netty.handler.timeout.IdleStateEvent
 import org.jire.netty.haproxy.HAProxyHandlerNames.HAPROXY_CHANNEL_INITIALIZER_NAME
 import org.jire.netty.haproxy.HAProxyHandlerNames.HAPROXY_IDLE_STATE_HANDLER_NAME
 import org.jire.netty.haproxy.HAProxyHandlerNames.HAPROXY_MESSAGE_DECODER_HANDLER_NAME
@@ -27,21 +28,44 @@ public class HAProxyDetectionHandler<C : Channel>(
     private val childInitializer: ChannelInitializer<C>,
     private val haproxyMessageHandler: HAProxyMessageHandler<C>,
 ) : SimpleChannelInboundHandler<ByteBuf>(true) {
+    override fun channelActive(ctx: ChannelHandlerContext) {
+        // Because auto-read may be disabled, we need to trigger the detection
+        ctx.read()
+
+        ctx.fireChannelActive()
+    }
+
+    override fun userEventTriggered(
+        ctx: ChannelHandlerContext,
+        evt: Any,
+    ) {
+        ctx.fireUserEventTriggered(evt)
+
+        if (evt is IdleStateEvent) {
+            logger.debug {
+                "Channel has gone idle during HAProxy detection, closing for ${ctx.channel()}"
+            }
+            ctx.close()
+        }
+    }
+
     override fun channelRead0(
         ctx: ChannelHandlerContext,
         msg: ByteBuf,
     ) {
+        val channel = ctx.channel()
+
         val firstByte = msg.getUnsignedByte(0)
         logger.trace {
-            "First byte from ${ctx.channel()} was $firstByte"
+            "First byte from $channel was $firstByte"
         }
         when (firstByte) {
-            FIRST_BYTE_V2, FIRST_BYTE_V1 -> handleProxied(ctx)
-            else -> handleNonProxied(ctx)
+            FIRST_BYTE_V2, FIRST_BYTE_V1 -> handleProxied(ctx, channel)
+            else -> handleNonProxied(ctx, channel)
         }
 
         val retainedMsg = msg.retain()
-        ctx.executor().execute {
+        channel.eventLoop().execute {
             ctx.fireChannelRead(retainedMsg)
 
             // Because auto-read may be disabled, we need to trigger the next read
@@ -49,9 +73,12 @@ public class HAProxyDetectionHandler<C : Channel>(
         }
     }
 
-    private fun handleProxied(ctx: ChannelHandlerContext) {
+    private fun handleProxied(
+        ctx: ChannelHandlerContext,
+        channel: Channel,
+    ) {
         logger.trace {
-            "HAProxy protocol detected from ${ctx.channel()}"
+            "HAProxy protocol detected from $channel"
         }
 
         val pipeline = ctx.pipeline()
@@ -68,9 +95,12 @@ public class HAProxyDetectionHandler<C : Channel>(
         )
     }
 
-    private fun handleNonProxied(ctx: ChannelHandlerContext) {
+    private fun handleNonProxied(
+        ctx: ChannelHandlerContext,
+        channel: Channel,
+    ) {
         logger.trace {
-            "HAProxy protocol not detected from ${ctx.channel()}"
+            "HAProxy protocol not detected from $channel"
         }
 
         val pipeline = ctx.pipeline()

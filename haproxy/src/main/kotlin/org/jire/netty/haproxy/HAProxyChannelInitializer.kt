@@ -1,16 +1,12 @@
 package org.jire.netty.haproxy
 
-import com.github.michaelbull.logging.InlineLogger
 import io.netty.channel.Channel
 import io.netty.channel.ChannelHandler.Sharable
-import io.netty.channel.ChannelHandlerContext
 import io.netty.channel.ChannelInitializer
 import io.netty.channel.ChannelPipeline
 import io.netty.handler.codec.haproxy.HAProxyMessage
 import io.netty.handler.codec.haproxy.HAProxyMessageDecoder
-import io.netty.handler.timeout.IdleStateEvent
 import io.netty.handler.timeout.IdleStateHandler
-import org.jire.netty.haproxy.HAProxyAttributes.sourceAddress
 import org.jire.netty.haproxy.HAProxyHandlerNames.HAPROXY_CHANNEL_INITIALIZER_NAME
 import org.jire.netty.haproxy.HAProxyHandlerNames.HAPROXY_DETECTION_HANDLER_NAME
 import org.jire.netty.haproxy.HAProxyHandlerNames.HAPROXY_IDLE_STATE_HANDLER_NAME
@@ -52,13 +48,6 @@ public class HAProxyChannelInitializer<C : Channel>
         private val detectionHandler: HAProxyDetectionHandler<C> =
             HAProxyDetectionHandler(childInitializer, messageHandler)
 
-        override fun channelActive(ctx: ChannelHandlerContext) {
-            // Because auto-read may be disabled, we need to trigger the detection
-            ctx.read()
-
-            ctx.fireChannelActive()
-        }
-
         override fun initChannel(ch: C) {
             val pipeline = ch.pipeline()
 
@@ -86,21 +75,6 @@ public class HAProxyChannelInitializer<C : Channel>
             }
         }
 
-        override fun userEventTriggered(
-            ctx: ChannelHandlerContext,
-            evt: Any,
-        ) {
-            if (evt is IdleStateEvent) {
-                logger.debug {
-                    "Channel has gone idle, closing for ${ctx.sourceAddress}"
-                }
-                ctx.close()
-                return
-            }
-
-            childInitializer.userEventTriggered(ctx, evt)
-        }
-
         public fun addIdleStateHandler(pipeline: ChannelPipeline) {
             pipeline.addLast(
                 HAPROXY_IDLE_STATE_HANDLER_NAME,
@@ -120,9 +94,5 @@ public class HAProxyChannelInitializer<C : Channel>
                 HAPROXY_MESSAGE_HANDLER_NAME,
                 messageHandler,
             )
-        }
-
-        private companion object {
-            private val logger = InlineLogger()
         }
     }
