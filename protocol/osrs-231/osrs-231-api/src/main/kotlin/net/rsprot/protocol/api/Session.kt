@@ -7,7 +7,7 @@ import net.rsprot.protocol.api.game.GameDisconnectionReason
 import net.rsprot.protocol.api.game.GameMessageDecoder
 import net.rsprot.protocol.api.logging.networkLog
 import net.rsprot.protocol.api.metrics.addDisconnectionReason
-import net.rsprot.protocol.channel.socketAddress
+import net.rsprot.protocol.channel.hostAddress
 import net.rsprot.protocol.game.outgoing.GameServerProtCategory
 import net.rsprot.protocol.game.outgoing.zone.payload.MapProjAnimV1
 import net.rsprot.protocol.game.outgoing.zone.payload.MapProjAnimV2
@@ -19,7 +19,6 @@ import net.rsprot.protocol.message.IncomingGameMessage
 import net.rsprot.protocol.message.OutgoingGameMessage
 import net.rsprot.protocol.message.codec.incoming.MessageConsumer
 import net.rsprot.protocol.metrics.NetworkTrafficMonitor
-import java.net.SocketAddress
 import java.util.Queue
 import java.util.concurrent.atomic.AtomicBoolean
 import java.util.concurrent.atomic.AtomicInteger
@@ -47,7 +46,7 @@ import kotlin.time.TimeSource
  * @property outgoingMessageQueues the array of outgoing game messages, categorized based
  * on the server prots. This is because some packets are given priority and written
  * to the client first, despite often being computed near the end of the cycle.
- * @property inetAddress the inet address behind this connection
+ * @property hostAddress the inet address behind this connection
  * @property disconnectionHook the disconnection hook to trigger if the channel happens
  * to disconnect. It should be noted that it is the server's responsibility to set
  * the hook after a successful login.
@@ -68,7 +67,7 @@ public class Session<R>(
         Array(GameServerProtCategory.COUNT) {
             outgoingMessageQueueProvider.provide()
         }
-    public val socketAddress: SocketAddress = ctx.socketAddress()
+    public val hostAddress: String = ctx.hostAddress()
     private var disconnectionHook: AtomicReference<Runnable?> = AtomicReference(null)
 
     @Volatile
@@ -419,7 +418,7 @@ public class Session<R>(
             trafficMonitor
                 .gameChannelTrafficMonitor
                 .addDisconnectionReason(
-                    ctx.socketAddress(),
+                    ctx.hostAddress(),
                     GameDisconnectionReason.LOGOUT,
                 )
             channel.close()

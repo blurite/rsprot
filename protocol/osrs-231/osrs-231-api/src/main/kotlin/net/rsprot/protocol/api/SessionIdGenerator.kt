@@ -1,7 +1,5 @@
 package net.rsprot.protocol.api
 
-import java.net.SocketAddress
-
 /**
  * A session id generator for new connections.
  * By default, a secure random implementation is used.
@@ -13,5 +11,5 @@ public interface SessionIdGenerator {
      * Generates a new session id
      * @param address in case the session id should be based on the address
      */
-    public fun generate(address: SocketAddress): Long
+    public fun generate(address: String): Long
 }

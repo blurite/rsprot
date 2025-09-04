@@ -1,7 +1,6 @@
 package net.rsprot.protocol.metrics.channel
 
 import net.rsprot.protocol.metrics.channel.snapshots.ChannelTrafficSnapshot
-import java.net.SocketAddress
 import java.time.LocalDateTime
 import kotlin.time.Duration
 
@@ -20,14 +19,14 @@ import kotlin.time.Duration
  */
 public interface ChannelTrafficMonitor {
     /**
-     * Increments connections from the provided [SocketAddress]. This function is called
+     * Increments connections from the provided [String]. This function is called
      * when a channel handler is registered in Netty.
      * @param inetAddress the address which is establishing a connection.
      */
-    public fun incrementConnections(socketAddress: SocketAddress)
+    public fun incrementConnections(hostAddress: String)
 
     /**
-     * Decrements connections from the provided [SocketAddress]. This function is called
+     * Decrements connections from the provided [String]. This function is called
      * when a channel handler is _unregistered_ in Netty. Whenever a handler
      * switches from one to another, the old one will be unregistered first, before
      * the new one is registered. An example of this is moving from login to JS5.
@@ -39,10 +38,10 @@ public interface ChannelTrafficMonitor {
      *
      * @param inetAddress the address to decrement a connection from.
      */
-    public fun decrementConnections(socketAddress: SocketAddress)
+    public fun decrementConnections(hostAddress: String)
 
     /**
-     * Adds a channel disconnection reason from the provided [SocketAddress].
+     * Adds a channel disconnection reason from the provided [String].
      * @param inetAddress the address which was disconnected.
      * @param reason the numeric reason behind the disconnection. These values
      * are backed by an enum provided in the corresponding
@@ -50,12 +49,12 @@ public interface ChannelTrafficMonitor {
      * [Enum.ordinal] value is used for the numeric representation.
      */
     public fun addDisconnectionReason(
-        socketAddress: SocketAddress,
+        hostAddress: String,
         reason: Int,
     )
 
     /**
-     * Increments the incoming packets received from the provided [SocketAddress].
+     * Increments the incoming packets received from the provided [String].
      * @param inetAddress the address from which a packet was received.
      * @param opcode the opcode of the packet which was received. The opcodes
      * correspond to the ones found in the client.
@@ -68,13 +67,13 @@ public interface ChannelTrafficMonitor {
      * the metrics would never be truly accurate in terms of the data received.
      */
     public fun incrementIncomingPackets(
-        socketAddress: SocketAddress,
+        hostAddress: String,
         opcode: Int,
         payloadSize: Int,
     )
 
     /**
-     * Increments the outgoing packets sent to the provided [SocketAddress].
+     * Increments the outgoing packets sent to the provided [String].
      * @param inetAddress the address to which a packet was sent.
      * @param opcode the opcode of the packet which was sent. The opcodes
      * correspond to the ones found in the client.
@@ -87,7 +86,7 @@ public interface ChannelTrafficMonitor {
      * the metrics would never be truly accurate in terms of the data received.
      */
     public fun incrementOutgoingPackets(
-        socketAddress: SocketAddress,
+        hostAddress: String,
         opcode: Int,
         payloadSize: Int,
     )
@@ -103,12 +102,12 @@ public interface ChannelTrafficMonitor {
      * supported for it. As such, we use a filler opcode of `0` to fit our needs.
      */
     public fun incrementOutgoingPacketOpcode(
-        socketAddress: SocketAddress,
+        hostAddress: String,
         opcode: Int,
     )
 
     /**
-     * Increments the outgoing packet payload sent to the provided [SocketAddress].
+     * Increments the outgoing packet payload sent to the provided [String].
      * @param inetAddress the address to which a packet was sent.
      * @param opcode the opcode of the packet which was sent. The opcodes
      * correspond to the ones found in the client. The opcode itself will
@@ -123,7 +122,7 @@ public interface ChannelTrafficMonitor {
      * the metrics would never be truly accurate in terms of the data received.
      */
     public fun incrementOutgoingPacketPayload(
-        socketAddress: SocketAddress,
+        hostAddress: String,
         opcode: Int,
         payloadSize: Int,
     )

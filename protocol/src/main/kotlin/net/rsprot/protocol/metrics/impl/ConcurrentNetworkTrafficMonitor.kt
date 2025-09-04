@@ -6,7 +6,6 @@ import net.rsprot.protocol.metrics.channel.impl.Js5ChannelTrafficMonitor
 import net.rsprot.protocol.metrics.channel.impl.LoginChannelTrafficMonitor
 import net.rsprot.protocol.metrics.lock.TrafficMonitorLock
 import net.rsprot.protocol.metrics.snapshots.impl.ConcurrentNetworkTrafficSnapshot
-import java.net.SocketAddress
 import java.time.LocalDateTime
 import java.util.Queue
 import java.util.concurrent.ConcurrentHashMap
@@ -17,7 +16,7 @@ import java.util.concurrent.atomic.AtomicInteger
  * A concurrent network traffic monitor, responsible for tracking all the data sent via
  * the [loginChannelTrafficMonitor], the [js5ChannelTrafficMonitor] and the [gameChannelTrafficMonitor].
  * In addition to those, it will track the number of connections established, as well as any
- * login complete login blocks that reach the server, based on the respective [SocketAddress]
+ * login complete login blocks that reach the server, based on the respective [String]
  * behind the login blocks. Latter can be used to link any abnormalities to specific individuals.
  *
  * While this implementation is _mostly_ atomic, it will shortly block during the [resetTransient]
@@ -38,7 +37,7 @@ import java.util.concurrent.atomic.AtomicInteger
  * is reset to [LocalDateTime.now] whenever the [resetTransient] function is called.
  * @property connections the number of connections that were established in total since the traffic
  * began.
- * @property loginBlocks the complete login blocks received per [SocketAddress].
+ * @property loginBlocks the complete login blocks received per [String].
  * @property frozen whether the tracking of [loginBlocks] is temporarily frozen.
  */
 public class ConcurrentNetworkTrafficMonitor<LoginBlock>(
@@ -49,7 +48,7 @@ public class ConcurrentNetworkTrafficMonitor<LoginBlock>(
     private var startDateTime: LocalDateTime = LocalDateTime.now(),
 ) : NetworkTrafficMonitor<LoginBlock> {
     private var connections: AtomicInteger = AtomicInteger(0)
-    private var loginBlocks: MutableMap<SocketAddress, Queue<LoginBlock>> = ConcurrentHashMap()
+    private var loginBlocks: MutableMap<String, Queue<LoginBlock>> = ConcurrentHashMap()
 
     @Volatile
     private var frozen: Boolean = false
@@ -59,12 +58,12 @@ public class ConcurrentNetworkTrafficMonitor<LoginBlock>(
     }
 
     override fun addLoginBlock(
-        socketAddress: SocketAddress,
+        hostAddress: String,
         block: LoginBlock,
     ) {
         if (frozen) return
         val queue =
-            loginBlocks.computeIfAbsent(socketAddress) {
+            loginBlocks.computeIfAbsent(hostAddress) {
                 ConcurrentLinkedQueue()
             }
         queue.add(block)
@@ -90,7 +89,7 @@ public class ConcurrentNetworkTrafficMonitor<LoginBlock>(
     override fun resetTransient(): ConcurrentNetworkTrafficSnapshot<LoginBlock> {
         var oldStart: LocalDateTime
         var oldConnections: AtomicInteger
-        var oldLoginBlocks: Map<SocketAddress, Queue<LoginBlock>>
+        var oldLoginBlocks: Map<String, Queue<LoginBlock>>
         lock.transfer {
             oldStart = this.startDateTime
             oldConnections = this.connections

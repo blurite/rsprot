@@ -54,7 +54,7 @@ import net.rsprot.protocol.internal.setCommunicationThread as setInternalCommuni
  * @property clientTypes the list of client types that were registered
  * @property gameConnectionHandler the handler for game logins and reconnections
  * @property exceptionHandlers the wrapper object for any exception handlers that the server must provide
- * @property iNetAddressHandlers the wrapper object to handle anything to do with tracking and rejecting
+ * @property hostAddressHandlers the wrapper object to handle anything to do with tracking and rejecting
  * network addresses trying to establish connections
  * @property gameMessageHandlers the wrapper object for anything to do with game packets post-login
  * @property huffmanCodecProvider the provider for Huffman codecs, used to compress the text

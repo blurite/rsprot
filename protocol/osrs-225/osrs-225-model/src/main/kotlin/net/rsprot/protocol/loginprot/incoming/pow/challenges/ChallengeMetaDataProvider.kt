@@ -1,7 +1,6 @@
 package net.rsprot.protocol.loginprot.incoming.pow.challenges
 
 import net.rsprot.protocol.loginprot.incoming.util.LoginBlock
-import java.net.SocketAddress
 
 /**
  * A challenge metadata provider is used to generate a metadata necessary to construct a challenge.
@@ -17,7 +16,7 @@ public interface ChallengeMetaDataProvider<out T : ChallengeMetaData> {
      * @return the metadata object necessary to construct a challenge.
      */
     public fun provide(
-        socketAddress: SocketAddress,
+        hostAddress: String,
         header: LoginBlock.Header,
     ): T
 }

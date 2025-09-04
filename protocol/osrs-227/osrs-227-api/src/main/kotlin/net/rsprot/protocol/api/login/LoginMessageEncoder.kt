@@ -6,7 +6,7 @@ import net.rsprot.crypto.cipher.StreamCipher
 import net.rsprot.protocol.api.NetworkService
 import net.rsprot.protocol.api.encoder.OutgoingMessageEncoder
 import net.rsprot.protocol.api.handlers.OutgoingMessageSizeEstimator
-import net.rsprot.protocol.channel.socketAddress
+import net.rsprot.protocol.channel.hostAddress
 import net.rsprot.protocol.message.codec.outgoing.MessageEncoderRepository
 
 /**
@@ -29,6 +29,6 @@ public class LoginMessageEncoder(
         networkService
             .trafficMonitor
             .loginChannelTrafficMonitor
-            .incrementOutgoingPackets(ctx.socketAddress(), opcode, payloadSize)
+            .incrementOutgoingPackets(ctx.hostAddress(), opcode, payloadSize)
     }
 }

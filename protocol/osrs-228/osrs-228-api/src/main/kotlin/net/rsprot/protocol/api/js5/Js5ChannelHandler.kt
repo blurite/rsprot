@@ -8,7 +8,7 @@ import net.rsprot.protocol.api.NetworkService
 import net.rsprot.protocol.api.logging.js5Log
 import net.rsprot.protocol.api.logging.networkLog
 import net.rsprot.protocol.api.metrics.addDisconnectionReason
-import net.rsprot.protocol.channel.socketAddress
+import net.rsprot.protocol.channel.hostAddress
 import net.rsprot.protocol.js5.incoming.Js5GroupRequest
 import net.rsprot.protocol.js5.incoming.PriorityChangeHigh
 import net.rsprot.protocol.js5.incoming.PriorityChangeLow
@@ -29,7 +29,7 @@ public class Js5ChannelHandler(
         networkService
             .iNetAddressHandlers
             .js5InetAddressTracker
-            .register(ctx.socketAddress())
+            .register(ctx.hostAddress())
         networkLog(logger) {
             "Js5 channel '${ctx.channel()}' is now active"
         }
@@ -39,7 +39,7 @@ public class Js5ChannelHandler(
         networkService
             .iNetAddressHandlers
             .js5InetAddressTracker
-            .deregister(ctx.socketAddress())
+            .deregister(ctx.hostAddress())
         networkLog(logger) {
             "Js5 channel '${ctx.channel()}' is now inactive"
         }
@@ -52,7 +52,7 @@ public class Js5ChannelHandler(
         networkService
             .trafficMonitor
             .js5ChannelTrafficMonitor
-            .incrementConnections(ctx.socketAddress())
+            .incrementConnections(ctx.hostAddress())
     }
 
     override fun handlerRemoved(ctx: ChannelHandlerContext) {
@@ -60,7 +60,7 @@ public class Js5ChannelHandler(
         networkService
             .trafficMonitor
             .js5ChannelTrafficMonitor
-            .decrementConnections(ctx.socketAddress())
+            .decrementConnections(ctx.hostAddress())
     }
 
     override fun channelRead0(
@@ -133,7 +133,7 @@ public class Js5ChannelHandler(
             .trafficMonitor
             .js5ChannelTrafficMonitor
             .addDisconnectionReason(
-                ctx.socketAddress(),
+                ctx.hostAddress(),
                 Js5DisconnectionReason.EXCEPTION,
             )
         val channel = ctx.channel()
@@ -155,7 +155,7 @@ public class Js5ChannelHandler(
                 .trafficMonitor
                 .js5ChannelTrafficMonitor
                 .addDisconnectionReason(
-                    ctx.socketAddress(),
+                    ctx.hostAddress(),
                     Js5DisconnectionReason.IDLE,
                 )
             ctx.close()

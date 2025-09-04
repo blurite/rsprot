@@ -7,7 +7,7 @@ import io.netty.channel.SimpleChannelInboundHandler
 import io.netty.handler.timeout.IdleStateEvent
 import net.rsprot.protocol.api.NetworkService
 import net.rsprot.protocol.api.logging.networkLog
-import net.rsprot.protocol.channel.socketAddress
+import net.rsprot.protocol.channel.hostAddress
 import net.rsprot.protocol.common.loginprot.incoming.codec.shared.exceptions.InvalidVersionException
 import net.rsprot.protocol.loginprot.incoming.GameLogin
 import net.rsprot.protocol.loginprot.incoming.GameReconnect
@@ -45,7 +45,7 @@ public class LoginConnectionHandler<R>(
         networkService
             .iNetAddressHandlers
             .gameInetAddressTracker
-            .register(ctx.socketAddress())
+            .register(ctx.hostAddress())
         networkLog(logger) {
             "Channel is now active: ${ctx.channel()}"
         }
@@ -56,7 +56,7 @@ public class LoginConnectionHandler<R>(
         networkService
             .iNetAddressHandlers
             .gameInetAddressTracker
-            .deregister(ctx.socketAddress())
+            .deregister(ctx.hostAddress())
         networkLog(logger) {
             "Channel is now inactive: ${ctx.channel()}"
         }
@@ -168,7 +168,7 @@ public class LoginConnectionHandler<R>(
             networkService
                 .loginHandlers
                 .proofOfWorkProvider
-                .provide(ctx.socketAddress())
+                .provide(ctx.hostAddress())
                 ?: return continueLogin(ctx)
         loginState = LoginState.REQUESTED_PROOF_OF_WORK
         this.proofOfWork = pow

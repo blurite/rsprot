@@ -11,7 +11,7 @@ import net.rsprot.protocol.ClientProt
 import net.rsprot.protocol.Prot
 import net.rsprot.protocol.api.NetworkService
 import net.rsprot.protocol.api.decoder.DecoderState
-import net.rsprot.protocol.channel.socketAddress
+import net.rsprot.protocol.channel.hostAddress
 import net.rsprot.protocol.message.codec.MessageDecoder
 import net.rsprot.protocol.message.codec.incoming.MessageDecoderRepository
 
@@ -90,7 +90,7 @@ public class Js5MessageDecoder(
             networkService
                 .trafficMonitor
                 .js5ChannelTrafficMonitor
-                .incrementIncomingPackets(ctx.socketAddress(), opcode, length)
+                .incrementIncomingPackets(ctx.hostAddress(), opcode, length)
 
             state = DecoderState.READ_OPCODE
         }

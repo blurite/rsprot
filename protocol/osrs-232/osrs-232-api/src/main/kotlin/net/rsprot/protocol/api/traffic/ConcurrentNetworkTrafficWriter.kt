@@ -6,7 +6,6 @@ import net.rsprot.protocol.metrics.channel.snapshots.impl.ConcurrentChannelTraff
 import net.rsprot.protocol.metrics.channel.snapshots.util.PacketSnapshot
 import net.rsprot.protocol.metrics.snapshots.impl.ConcurrentNetworkTrafficSnapshot
 import net.rsprot.protocol.metrics.writer.NetworkTrafficWriter
-import java.net.SocketAddress
 import java.text.NumberFormat
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
@@ -47,11 +46,11 @@ public data object ConcurrentNetworkTrafficWriter : NetworkTrafficWriter<Concurr
             )
             appendLine()
             @Suppress("UNCHECKED_CAST")
-            val loginBlocks = snapshot.loginBlocks as Map<SocketAddress, List<LoginBlock<*>>>
+            val loginBlocks = snapshot.loginBlocks as Map<String, List<LoginBlock<*>>>
             appendLoginBlocks(loginBlocks)
         }
 
-    private fun StringBuilder.appendLoginBlocks(loginBlocks: Map<SocketAddress, List<LoginBlock<*>>>) {
+    private fun StringBuilder.appendLoginBlocks(loginBlocks: Map<String, List<LoginBlock<*>>>) {
         appendLine("Login Blocks")
         for ((k, v) in loginBlocks) {
             indent().append("Inet Address: ").appendLine(k)

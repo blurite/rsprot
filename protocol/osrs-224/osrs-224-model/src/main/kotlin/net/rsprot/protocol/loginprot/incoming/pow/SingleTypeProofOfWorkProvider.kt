@@ -6,7 +6,6 @@ import net.rsprot.protocol.loginprot.incoming.pow.challenges.ChallengeMetaDataPr
 import net.rsprot.protocol.loginprot.incoming.pow.challenges.ChallengeType
 import net.rsprot.protocol.loginprot.incoming.pow.challenges.ChallengeVerifier
 import net.rsprot.protocol.loginprot.incoming.util.LoginBlock
-import java.net.SocketAddress
 
 /**
  * A single type proof of work provider is used to always return proof of work instances
@@ -24,10 +23,10 @@ public class SingleTypeProofOfWorkProvider<T : ChallengeType<MetaData>, in MetaD
     private val challengeVerifier: ChallengeVerifier<T>,
 ) : ProofOfWorkProvider<T, MetaData> {
     override fun provide(
-        socketAddress: SocketAddress,
+        hostAddress: String,
         header: LoginBlock.Header,
     ): ProofOfWork<T, MetaData> {
-        val metadata = metaDataProvider.provide(socketAddress, header)
+        val metadata = metaDataProvider.provide(hostAddress, header)
         val challenge = challengeGenerator.generate(metadata)
         return ProofOfWork(challenge, challengeVerifier)
     }

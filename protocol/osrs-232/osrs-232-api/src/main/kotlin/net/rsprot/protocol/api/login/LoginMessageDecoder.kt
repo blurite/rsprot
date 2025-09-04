@@ -13,7 +13,7 @@ import net.rsprot.protocol.Prot
 import net.rsprot.protocol.api.NetworkService
 import net.rsprot.protocol.api.decoder.DecoderState
 import net.rsprot.protocol.api.logging.networkLog
-import net.rsprot.protocol.channel.socketAddress
+import net.rsprot.protocol.channel.hostAddress
 import net.rsprot.protocol.message.codec.MessageDecoder
 import net.rsprot.protocol.message.codec.incoming.MessageDecoderRepository
 
@@ -112,7 +112,7 @@ public class LoginMessageDecoder(
             networkService
                 .trafficMonitor
                 .loginChannelTrafficMonitor
-                .incrementIncomingPackets(ctx.socketAddress(), opcode, length)
+                .incrementIncomingPackets(ctx.hostAddress(), opcode, length)
 
             state = DecoderState.READ_OPCODE
         }
