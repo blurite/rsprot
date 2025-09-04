@@ -29,7 +29,9 @@ public class HAProxyMessageHandler<C : Channel>(
         ctx: ChannelHandlerContext,
         msg: HAProxyMessage,
     ) {
-        when (val command = msg.command()) {
+        val command = msg.command()
+        logger.trace { "Received HAProxy command $command from ${ctx.channel()}" }
+        when (command) {
             HAProxyCommand.PROXY -> handleProxyCommand(ctx, msg)
             HAProxyCommand.LOCAL -> handleLocalCommand(ctx)
 
@@ -46,8 +48,7 @@ public class HAProxyMessageHandler<C : Channel>(
         ctx: ChannelHandlerContext,
         msg: HAProxyMessage,
     ) {
-        val channel = ctx.channel()
-        channel.haproxyAttribute =
+        val attribute =
             HAProxyAttribute(
                 msg.protocolVersion(),
                 msg.proxiedProtocol(),
@@ -56,6 +57,11 @@ public class HAProxyMessageHandler<C : Channel>(
                 msg.destinationAddress(),
                 msg.destinationPort(),
             )
+
+        val channel = ctx.channel()
+        channel.haproxyAttribute = attribute
+
+        logger.debug { "Set HAProxy attribute $attribute for channel $channel" }
 
         val pipeline = ctx.pipeline()
         pipeline.remove(HAPROXY_IDLE_STATE_HANDLER_NAME)
@@ -67,7 +73,6 @@ public class HAProxyMessageHandler<C : Channel>(
     }
 
     private fun handleLocalCommand(ctx: ChannelHandlerContext) {
-        logger.debug { "Received HAProxy LOCAL command from ${ctx.channel()}" }
         ctx.close()
     }
 
