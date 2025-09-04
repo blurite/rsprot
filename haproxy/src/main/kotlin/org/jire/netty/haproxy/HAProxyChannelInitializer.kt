@@ -52,6 +52,13 @@ public class HAProxyChannelInitializer<C : Channel>
         private val detectionHandler: HAProxyDetectionHandler<C> =
             HAProxyDetectionHandler(childInitializer, messageHandler)
 
+        override fun channelActive(ctx: ChannelHandlerContext) {
+            // Because auto-read may be disabled, we need to trigger the detection
+            ctx.read()
+
+            ctx.fireChannelActive()
+        }
+
         override fun initChannel(ch: C) {
             val pipeline = ch.pipeline()
 

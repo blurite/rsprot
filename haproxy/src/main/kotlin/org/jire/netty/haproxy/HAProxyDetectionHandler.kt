@@ -27,11 +27,6 @@ public class HAProxyDetectionHandler<C : Channel>(
     private val childInitializer: ChannelInitializer<C>,
     private val haproxyMessageHandler: HAProxyMessageHandler<C>,
 ) : SimpleChannelInboundHandler<ByteBuf>(true) {
-    override fun channelActive(ctx: ChannelHandlerContext) {
-        // Because auto-read may be disabled, we need to trigger the detection
-        ctx.read()
-    }
-
     override fun channelRead0(
         ctx: ChannelHandlerContext,
         msg: ByteBuf,
@@ -48,6 +43,9 @@ public class HAProxyDetectionHandler<C : Channel>(
         val retainedMsg = msg.retain()
         ctx.executor().execute {
             ctx.fireChannelRead(retainedMsg)
+
+            // Because auto-read may be disabled, we need to trigger the next read
+            ctx.read()
         }
     }
 
