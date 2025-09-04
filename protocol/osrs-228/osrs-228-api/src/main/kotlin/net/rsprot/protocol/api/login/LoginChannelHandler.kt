@@ -20,7 +20,6 @@ import net.rsprot.protocol.loginprot.incoming.InitJs5RemoteConnection
 import net.rsprot.protocol.loginprot.outgoing.LoginResponse
 import net.rsprot.protocol.message.IncomingLoginMessage
 import java.text.NumberFormat
-import java.util.concurrent.TimeUnit
 
 /**
  * The channel handler for login channels, essentially the very first requests that will
@@ -63,6 +62,7 @@ public class LoginChannelHandler(
             InitGameConnection -> {
                 handleInitGameConnection(ctx)
             }
+
             is InitJs5RemoteConnection -> {
                 handleInitJs5RemoteConnection(ctx, msg.revision, msg.seed)
             }
@@ -141,13 +141,7 @@ public class LoginChannelHandler(
                     val pipeline = future.channel().pipeline()
                     pipeline.replace<LoginChannelHandler>(LoginConnectionHandler(networkService, sessionId))
                     pipeline.replace<IdleStateHandler>(
-                        IdleStateHandler(
-                            true,
-                            NetworkService.LOGIN_TIMEOUT_SECONDS,
-                            NetworkService.LOGIN_TIMEOUT_SECONDS,
-                            NetworkService.LOGIN_TIMEOUT_SECONDS,
-                            TimeUnit.SECONDS,
-                        ),
+                        networkService.idleStateHandlerSuppliers.loginSupplier.supply(),
                     )
                 },
             )
@@ -228,13 +222,7 @@ public class LoginChannelHandler(
                     pipeline.replace<LoginMessageEncoder>(Js5MessageEncoder(networkService))
                     pipeline.replace<LoginChannelHandler>(Js5ChannelHandler(networkService))
                     pipeline.replace<IdleStateHandler>(
-                        IdleStateHandler(
-                            true,
-                            NetworkService.JS5_TIMEOUT_SECONDS,
-                            NetworkService.JS5_TIMEOUT_SECONDS,
-                            NetworkService.JS5_TIMEOUT_SECONDS,
-                            TimeUnit.SECONDS,
-                        ),
+                        networkService.idleStateHandlerSuppliers.js5Supplier.supply(),
                     )
                 },
             )

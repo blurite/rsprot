@@ -327,7 +327,7 @@ public abstract class AbstractNetworkServiceFactory<R> {
      * Gets the [IdleStateHandlerSuppliers] which supply [io.netty.handler.timeout.IdleStateHandler]s for the
      * [NetworkService].
      */
-    public open fun getIdleStateHandlers(): IdleStateHandlerSuppliers = IdleStateHandlerSuppliers()
+    public open fun getIdleStateHandlerSuppliers(): IdleStateHandlerSuppliers = IdleStateHandlerSuppliers()
 
     /**
      * A Kotlin-only helper function to build a network configuration builder.
@@ -381,7 +381,7 @@ public abstract class AbstractNetworkServiceFactory<R> {
             getRsaKeyPair(),
             getJs5Configuration(),
             getJs5GroupProvider(),
-            getIdleStateHandlers(),
+            getIdleStateHandlerSuppliers(),
             haproxyMode,
         )
     }

@@ -12,6 +12,7 @@ import net.rsprot.protocol.api.handlers.ExceptionHandlers
 import net.rsprot.protocol.api.handlers.GameMessageHandlers
 import net.rsprot.protocol.api.handlers.INetAddressHandlers
 import net.rsprot.protocol.api.handlers.LoginHandlers
+import net.rsprot.protocol.api.handlers.idlestate.IdleStateHandlerSuppliers
 import net.rsprot.protocol.api.js5.Js5Configuration
 import net.rsprot.protocol.api.js5.Js5DisconnectionReason
 import net.rsprot.protocol.api.js5.Js5GroupProvider
@@ -323,6 +324,12 @@ public abstract class AbstractNetworkServiceFactory<R> {
     }
 
     /**
+     * Gets the [IdleStateHandlerSuppliers] which supply [io.netty.handler.timeout.IdleStateHandler]s for the
+     * [NetworkService].
+     */
+    public open fun getIdleStateHandlerSuppliers(): IdleStateHandlerSuppliers = IdleStateHandlerSuppliers()
+
+    /**
      * A Kotlin-only helper function to build a network configuration builder.
      */
     @JvmSynthetic
@@ -374,6 +381,7 @@ public abstract class AbstractNetworkServiceFactory<R> {
             getRsaKeyPair(),
             getJs5Configuration(),
             getJs5GroupProvider(),
+            getIdleStateHandlerSuppliers(),
             haproxyMode,
         )
     }
