@@ -23,8 +23,9 @@ import org.jire.netty.haproxy.HAProxyHandlerNames.HAPROXY_IDLE_STATE_HANDLER_NAM
  */
 @Sharable
 public class HAProxyMessageHandler(
-    private val childHandler: ChannelInboundHandler,
-) : SimpleChannelInboundHandler<HAProxyMessage>(true) {
+    override val childHandler: ChannelInboundHandler,
+) : SimpleChannelInboundHandler<HAProxyMessage>(true),
+    HAProxyParentHandler {
     override fun channelActive(ctx: ChannelHandlerContext) {
         // Because auto-read may be disabled, we need to trigger the handling
         ctx.read()

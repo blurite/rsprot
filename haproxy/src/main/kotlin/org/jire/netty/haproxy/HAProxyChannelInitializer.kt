@@ -38,11 +38,12 @@ import java.util.concurrent.TimeUnit
 public class HAProxyChannelInitializer
     @JvmOverloads
     public constructor(
-        private val childHandler: ChannelInboundHandler,
+        override val childHandler: ChannelInboundHandler,
         private val mode: HAProxyMode = HAProxyMode.AUTO,
         private val idleTimeout: Long = DEFAULT_IDLE_TIMEOUT,
         private val idleTimeoutUnit: TimeUnit = DEFAULT_IDLE_TIMEOUT_UNIT,
-    ) : ChannelInitializer<Channel>() {
+    ) : ChannelInitializer<Channel>(),
+        HAProxyParentHandler {
         private val messageHandler: HAProxyMessageHandler =
             HAProxyMessageHandler(childHandler)
 

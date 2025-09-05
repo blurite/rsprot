@@ -25,9 +25,10 @@ import org.jire.netty.haproxy.HAProxyHandlerNames.HAPROXY_MESSAGE_HANDLER_NAME
  */
 @Sharable
 public class HAProxyDetectionHandler(
-    private val childHandler: ChannelInboundHandler,
+    override val childHandler: ChannelInboundHandler,
     private val haproxyMessageHandler: HAProxyMessageHandler,
-) : SimpleChannelInboundHandler<ByteBuf>(true) {
+) : SimpleChannelInboundHandler<ByteBuf>(true),
+    HAProxyParentHandler {
     override fun channelActive(ctx: ChannelHandlerContext) {
         // Because auto-read may be disabled, we need to trigger the detection
         ctx.read()

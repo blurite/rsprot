@@ -2,9 +2,9 @@ package org.jire.netty.haproxy
 
 import io.netty.buffer.ByteBuf
 import io.netty.buffer.Unpooled
-import io.netty.channel.ChannelHandler
 import io.netty.channel.ChannelHandler.Sharable
 import io.netty.channel.ChannelHandlerContext
+import io.netty.channel.ChannelInboundHandler
 import io.netty.channel.SimpleChannelInboundHandler
 import org.jire.netty.haproxy.HAProxyHandlerNames.HAPROXY_PING_HANDLER_CHILD_NAME
 
@@ -26,10 +26,11 @@ import org.jire.netty.haproxy.HAProxyHandlerNames.HAPROXY_PING_HANDLER_CHILD_NAM
 public class HAProxyPingHandler
     @JvmOverloads
     public constructor(
-        private val childHandler: ChannelHandler,
+        override val childHandler: ChannelInboundHandler,
         private val requestOpcode: Int = DEFAULT_PING_REQUEST_OPCODE,
         private val responseOpcode: Int = DEFAULT_PING_RESPONSE_OPCODE,
-    ) : SimpleChannelInboundHandler<ByteBuf>(true) {
+    ) : SimpleChannelInboundHandler<ByteBuf>(true),
+        HAProxyParentHandler {
         private val response: ByteBuf =
             Unpooled.unreleasableBuffer(
                 Unpooled

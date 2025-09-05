@@ -21,9 +21,15 @@ public object HAProxy {
         apply {
             when (mode) {
                 HAProxyMode.OFF -> {
-                    childHandler(
-                        childHandler,
-                    )
+                    if (childHandler is HAProxyParentHandler) {
+                        childHandler(
+                            childHandler.childHandler,
+                        )
+                    } else {
+                        childHandler(
+                            childHandler,
+                        )
+                    }
                 }
 
                 HAProxyMode.ON, HAProxyMode.AUTO -> {
