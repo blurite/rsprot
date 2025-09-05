@@ -5,11 +5,11 @@ import io.netty.buffer.ByteBuf
 import io.netty.channel.Channel
 import io.netty.channel.ChannelHandler.Sharable
 import io.netty.channel.ChannelHandlerContext
-import io.netty.channel.ChannelInitializer
+import io.netty.channel.ChannelInboundHandler
 import io.netty.channel.SimpleChannelInboundHandler
 import io.netty.handler.codec.haproxy.HAProxyMessageDecoder
 import io.netty.handler.timeout.IdleStateEvent
-import org.jire.netty.haproxy.HAProxyHandlerNames.HAPROXY_CHANNEL_INITIALIZER_NAME
+import org.jire.netty.haproxy.HAProxyHandlerNames.HAPROXY_CHANNEL_INITIALIZER_CHILD_NAME
 import org.jire.netty.haproxy.HAProxyHandlerNames.HAPROXY_IDLE_STATE_HANDLER_NAME
 import org.jire.netty.haproxy.HAProxyHandlerNames.HAPROXY_MESSAGE_DECODER_HANDLER_NAME
 import org.jire.netty.haproxy.HAProxyHandlerNames.HAPROXY_MESSAGE_HANDLER_NAME
@@ -24,9 +24,9 @@ import org.jire.netty.haproxy.HAProxyHandlerNames.HAPROXY_MESSAGE_HANDLER_NAME
  * This handler is [Sharable] and thus can be added to multiple pipelines.
  */
 @Sharable
-public class HAProxyDetectionHandler<C : Channel>(
-    private val childInitializer: ChannelInitializer<C>,
-    private val haproxyMessageHandler: HAProxyMessageHandler<C>,
+public class HAProxyDetectionHandler(
+    private val childHandler: ChannelInboundHandler,
+    private val haproxyMessageHandler: HAProxyMessageHandler,
 ) : SimpleChannelInboundHandler<ByteBuf>(true) {
     override fun channelActive(ctx: ChannelHandlerContext) {
         // Because auto-read may be disabled, we need to trigger the detection
@@ -107,8 +107,8 @@ public class HAProxyDetectionHandler<C : Channel>(
         pipeline.remove(HAPROXY_IDLE_STATE_HANDLER_NAME)
         pipeline.replace(
             this@HAProxyDetectionHandler,
-            HAPROXY_CHANNEL_INITIALIZER_NAME,
-            childInitializer,
+            HAPROXY_CHANNEL_INITIALIZER_CHILD_NAME,
+            childHandler,
         )
     }
 

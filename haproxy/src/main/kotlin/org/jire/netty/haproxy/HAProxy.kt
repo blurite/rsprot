@@ -1,8 +1,7 @@
 package org.jire.netty.haproxy
 
 import io.netty.bootstrap.ServerBootstrap
-import io.netty.channel.Channel
-import io.netty.channel.ChannelInitializer
+import io.netty.channel.ChannelInboundHandler
 import org.jire.netty.haproxy.HAProxyIdleStateHandler.Companion.DEFAULT_IDLE_TIMEOUT
 import org.jire.netty.haproxy.HAProxyIdleStateHandler.Companion.DEFAULT_IDLE_TIMEOUT_UNIT
 import java.util.concurrent.TimeUnit
@@ -13,8 +12,8 @@ import java.util.concurrent.TimeUnit
 public object HAProxy {
     @JvmStatic
     @JvmOverloads
-    public fun <C : Channel> ServerBootstrap.childHandlerProxied(
-        initializer: ChannelInitializer<C>,
+    public fun ServerBootstrap.childHandlerProxied(
+        childHandler: ChannelInboundHandler,
         mode: HAProxyMode = HAProxyMode.AUTO,
         idleTimeout: Long = DEFAULT_IDLE_TIMEOUT,
         idleTimeoutUnit: TimeUnit = DEFAULT_IDLE_TIMEOUT_UNIT,
@@ -23,14 +22,14 @@ public object HAProxy {
             when (mode) {
                 HAProxyMode.OFF -> {
                     childHandler(
-                        initializer,
+                        childHandler,
                     )
                 }
 
                 HAProxyMode.ON, HAProxyMode.AUTO -> {
                     childHandler(
                         HAProxyChannelInitializer(
-                            initializer,
+                            childHandler,
                             mode,
                             idleTimeout,
                             idleTimeoutUnit,

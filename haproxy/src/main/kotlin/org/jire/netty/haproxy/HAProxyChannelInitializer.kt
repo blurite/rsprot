@@ -2,12 +2,13 @@ package org.jire.netty.haproxy
 
 import io.netty.channel.Channel
 import io.netty.channel.ChannelHandler.Sharable
+import io.netty.channel.ChannelInboundHandler
 import io.netty.channel.ChannelInitializer
 import io.netty.channel.ChannelPipeline
 import io.netty.handler.codec.haproxy.HAProxyMessage
 import io.netty.handler.codec.haproxy.HAProxyMessageDecoder
 import io.netty.handler.timeout.IdleStateHandler
-import org.jire.netty.haproxy.HAProxyHandlerNames.HAPROXY_CHANNEL_INITIALIZER_NAME
+import org.jire.netty.haproxy.HAProxyHandlerNames.HAPROXY_CHANNEL_INITIALIZER_CHILD_NAME
 import org.jire.netty.haproxy.HAProxyHandlerNames.HAPROXY_DETECTION_HANDLER_NAME
 import org.jire.netty.haproxy.HAProxyHandlerNames.HAPROXY_IDLE_STATE_HANDLER_NAME
 import org.jire.netty.haproxy.HAProxyHandlerNames.HAPROXY_MESSAGE_DECODER_HANDLER_NAME
@@ -23,7 +24,7 @@ import java.util.concurrent.TimeUnit
  * This includes an [IdleStateHandler] to close idle connections, a [HAProxyMessageDecoder] to decode
  * the [HAProxyMessage]s, and a [HAProxyMessageHandler] to handle the decoded messages.
  *
- * @param childInitializer The initializer to use for initializing the child channel after the HAProxy handlers.
+ * @param childHandler The handler to use for the child channel after the HAProxy handlers.
  *
  * @param mode The [HAProxyMode] to use. Default is [HAProxyMode.AUTO] which will
  * support both proxied and non-proxied connections.
@@ -34,21 +35,21 @@ import java.util.concurrent.TimeUnit
  * Default to [DEFAULT_IDLE_TIMEOUT_UNIT].
  */
 @Sharable
-public class HAProxyChannelInitializer<C : Channel>
+public class HAProxyChannelInitializer
     @JvmOverloads
     public constructor(
-        private val childInitializer: ChannelInitializer<C>,
+        private val childHandler: ChannelInboundHandler,
         private val mode: HAProxyMode = HAProxyMode.AUTO,
         private val idleTimeout: Long = DEFAULT_IDLE_TIMEOUT,
         private val idleTimeoutUnit: TimeUnit = DEFAULT_IDLE_TIMEOUT_UNIT,
-    ) : ChannelInitializer<C>() {
-        private val messageHandler: HAProxyMessageHandler<C> =
-            HAProxyMessageHandler(childInitializer)
+    ) : ChannelInitializer<Channel>() {
+        private val messageHandler: HAProxyMessageHandler =
+            HAProxyMessageHandler(childHandler)
 
-        private val detectionHandler: HAProxyDetectionHandler<C> =
-            HAProxyDetectionHandler(childInitializer, messageHandler)
+        private val detectionHandler: HAProxyDetectionHandler =
+            HAProxyDetectionHandler(childHandler, messageHandler)
 
-        override fun initChannel(ch: C) {
+        override fun initChannel(ch: Channel) {
             val pipeline = ch.pipeline()
 
             when (mode) {
@@ -68,8 +69,8 @@ public class HAProxyChannelInitializer<C : Channel>
                 HAProxyMode.OFF -> {
                     pipeline.replace(
                         this@HAProxyChannelInitializer,
-                        HAPROXY_CHANNEL_INITIALIZER_NAME,
-                        childInitializer,
+                        HAPROXY_CHANNEL_INITIALIZER_CHILD_NAME,
+                        childHandler,
                     )
                 }
             }
