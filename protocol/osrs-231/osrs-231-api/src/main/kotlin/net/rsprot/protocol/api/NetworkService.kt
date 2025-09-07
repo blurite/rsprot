@@ -13,6 +13,7 @@ import net.rsprot.protocol.api.handlers.GameMessageHandlers
 import net.rsprot.protocol.api.handlers.INetAddressHandlers
 import net.rsprot.protocol.api.handlers.LoginHandlers
 import net.rsprot.protocol.api.handlers.OutgoingMessageSizeEstimator
+import net.rsprot.protocol.api.handlers.idlestate.IdleStateHandlerSuppliers
 import net.rsprot.protocol.api.js5.ConcurrentJs5Authorizer
 import net.rsprot.protocol.api.js5.Js5Authorizer
 import net.rsprot.protocol.api.js5.Js5Configuration
@@ -33,6 +34,8 @@ import net.rsprot.protocol.game.outgoing.info.worldentityinfo.WorldEntityProtoco
 import net.rsprot.protocol.message.codec.incoming.provider.GameMessageConsumerRepositoryProvider
 import net.rsprot.protocol.metrics.NetworkTrafficMonitor
 import net.rsprot.protocol.threads.IllegalThreadAccessException
+import org.jire.netty.haproxy.HAProxy.childHandlerProxied
+import org.jire.netty.haproxy.HAProxyMode
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.ScheduledExecutorService
@@ -106,6 +109,8 @@ public class NetworkService<R>
         rsaKeyPair: RsaKeyPair,
         js5Configuration: Js5Configuration,
         js5GroupProvider: Js5GroupProvider,
+        public val idleStateHandlerSuppliers: IdleStateHandlerSuppliers,
+        public val haProxyMode: HAProxyMode,
     ) {
         public var encoderRepositories: MessageEncoderRepositories = MessageEncoderRepositories(huffmanCodecProvider)
         public val js5Authorizer: Js5Authorizer = if (betaWorld) ConcurrentJs5Authorizer() else NoopJs5Authorizer
@@ -153,16 +158,14 @@ public class NetworkService<R>
             val time =
                 measureTime {
                     val bootstrap = bootstrapBuilder.build(messageSizeEstimator)
-                    val initializer =
-                        bootstrap.childHandler(
-                            LoginChannelInitializer(this),
-                        )
-                    this.bossGroup = initializer.config().group()
-                    this.childGroup = initializer.config().childGroup()
+                    val initializer = LoginChannelInitializer(this)
+                    bootstrap.childHandlerProxied(initializer, haProxyMode)
+                    this.bossGroup = bootstrap.config().group()
+                    this.childGroup = bootstrap.config().childGroup()
                     val host = this.host
                     val futures =
                         ports
-                            .map { if (host != null) initializer.bind(host, it) else initializer.bind(it) }
+                            .map { if (host != null) bootstrap.bind(host, it) else bootstrap.bind(it) }
                             .map<ChannelFuture, CompletableFuture<Void>>(ChannelFuture::asCompletableFuture)
                     val future = CompletableFuture.allOf(*futures.toTypedArray())
                     js5ServiceExecutor.start()
@@ -284,11 +287,7 @@ public class NetworkService<R>
          */
         public fun isSupported(clientType: OldSchoolClientType): Boolean = clientType in clientTypes
 
-        public companion object {
-            public const val INITIAL_TIMEOUT_SECONDS: Long = 30
-            public const val LOGIN_TIMEOUT_SECONDS: Long = 40
-            public const val GAME_TIMEOUT_SECONDS: Long = 15
-            public const val JS5_TIMEOUT_SECONDS: Long = 30
+        private companion object {
             private val logger = InlineLogger()
         }
     }

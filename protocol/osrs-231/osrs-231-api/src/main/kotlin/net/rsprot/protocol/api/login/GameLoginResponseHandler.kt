@@ -22,7 +22,6 @@ import net.rsprot.protocol.channel.replace
 import net.rsprot.protocol.common.client.OldSchoolClientType
 import net.rsprot.protocol.loginprot.incoming.util.LoginBlock
 import net.rsprot.protocol.loginprot.outgoing.LoginResponse
-import java.util.concurrent.TimeUnit
 
 /**
  * A response handler for login requests, allowing the server to write either
@@ -228,13 +227,7 @@ public class GameLoginResponseHandler<R>(
         )
         pipeline.replace<LoginConnectionHandler<R>>(GameMessageHandler(networkService, session))
         pipeline.replace<IdleStateHandler>(
-            IdleStateHandler(
-                true,
-                NetworkService.GAME_TIMEOUT_SECONDS,
-                NetworkService.GAME_TIMEOUT_SECONDS,
-                NetworkService.GAME_TIMEOUT_SECONDS,
-                TimeUnit.SECONDS,
-            ),
+            networkService.idleStateHandlerSuppliers.gameSupplier.supply(),
         )
         return session
     }
