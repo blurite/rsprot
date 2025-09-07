@@ -3,11 +3,11 @@ package net.rsprot.protocol.api
 import com.github.michaelbull.logging.InlineLogger
 import io.netty.channel.ChannelHandlerContext
 import net.rsprot.protocol.ServerProtCategory
-import net.rsprot.protocol.api.channel.inetAddress
 import net.rsprot.protocol.api.game.GameDisconnectionReason
 import net.rsprot.protocol.api.game.GameMessageDecoder
 import net.rsprot.protocol.api.logging.networkLog
 import net.rsprot.protocol.api.metrics.addDisconnectionReason
+import net.rsprot.protocol.channel.hostAddress
 import net.rsprot.protocol.game.outgoing.GameServerProtCategory
 import net.rsprot.protocol.game.outgoing.zone.payload.MapProjAnim
 import net.rsprot.protocol.game.outgoing.zone.payload.SoundArea
@@ -18,7 +18,6 @@ import net.rsprot.protocol.message.IncomingGameMessage
 import net.rsprot.protocol.message.OutgoingGameMessage
 import net.rsprot.protocol.message.codec.incoming.MessageConsumer
 import net.rsprot.protocol.metrics.NetworkTrafficMonitor
-import java.net.InetAddress
 import java.util.Queue
 import java.util.concurrent.atomic.AtomicBoolean
 import java.util.concurrent.atomic.AtomicInteger
@@ -46,7 +45,7 @@ import kotlin.time.TimeSource
  * @property outgoingMessageQueues the array of outgoing game messages, categorized based
  * on the server prots. This is because some packets are given priority and written
  * to the client first, despite often being computed near the end of the cycle.
- * @property inetAddress the inet address behind this connection
+ * @property hostAddress the inet address behind this connection
  * @property disconnectionHook the disconnection hook to trigger if the channel happens
  * to disconnect. It should be noted that it is the server's responsibility to set
  * the hook after a successful login.
@@ -67,7 +66,7 @@ public class Session<R>(
         Array(GameServerProtCategory.COUNT) {
             outgoingMessageQueueProvider.provide()
         }
-    public val inetAddress: InetAddress = ctx.inetAddress()
+    public val hostAddress: String = ctx.hostAddress()
     private var disconnectionHook: AtomicReference<Runnable?> = AtomicReference(null)
 
     @Volatile
@@ -415,7 +414,7 @@ public class Session<R>(
             trafficMonitor
                 .gameChannelTrafficMonitor
                 .addDisconnectionReason(
-                    ctx.inetAddress(),
+                    ctx.hostAddress(),
                     GameDisconnectionReason.LOGOUT,
                 )
             channel.close()

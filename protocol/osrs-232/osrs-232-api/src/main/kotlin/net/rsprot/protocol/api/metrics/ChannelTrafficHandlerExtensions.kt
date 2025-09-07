@@ -6,34 +6,33 @@ import net.rsprot.protocol.api.login.LoginDisconnectionReason
 import net.rsprot.protocol.metrics.channel.impl.GameChannelTrafficMonitor
 import net.rsprot.protocol.metrics.channel.impl.Js5ChannelTrafficMonitor
 import net.rsprot.protocol.metrics.channel.impl.LoginChannelTrafficMonitor
-import java.net.InetAddress
 
 internal fun LoginChannelTrafficMonitor.addDisconnectionReason(
-    inetAddress: InetAddress,
+    hostAddress: String,
     reason: LoginDisconnectionReason,
 ) {
     addDisconnectionReason(
-        inetAddress,
+        hostAddress,
         reason.ordinal,
     )
 }
 
 internal fun Js5ChannelTrafficMonitor.addDisconnectionReason(
-    inetAddress: InetAddress,
+    hostAddress: String,
     reason: Js5DisconnectionReason,
 ) {
     addDisconnectionReason(
-        inetAddress,
+        hostAddress,
         reason.ordinal,
     )
 }
 
 internal fun GameChannelTrafficMonitor.addDisconnectionReason(
-    inetAddress: InetAddress,
+    hostAddress: String,
     reason: GameDisconnectionReason,
 ) {
     addDisconnectionReason(
-        inetAddress,
+        hostAddress,
         reason.ordinal,
     )
 }

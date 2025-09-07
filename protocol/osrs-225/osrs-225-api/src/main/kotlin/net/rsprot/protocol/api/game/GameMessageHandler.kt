@@ -6,9 +6,9 @@ import io.netty.channel.SimpleChannelInboundHandler
 import io.netty.handler.timeout.IdleStateEvent
 import net.rsprot.protocol.api.NetworkService
 import net.rsprot.protocol.api.Session
-import net.rsprot.protocol.api.channel.inetAddress
 import net.rsprot.protocol.api.logging.networkLog
 import net.rsprot.protocol.api.metrics.addDisconnectionReason
+import net.rsprot.protocol.channel.hostAddress
 import net.rsprot.protocol.message.IncomingGameMessage
 
 /**
@@ -25,14 +25,14 @@ public class GameMessageHandler<R>(
         networkService
             .trafficMonitor
             .gameChannelTrafficMonitor
-            .incrementConnections(ctx.inetAddress())
+            .incrementConnections(ctx.hostAddress())
     }
 
     override fun handlerRemoved(ctx: ChannelHandlerContext) {
         networkService
             .trafficMonitor
             .gameChannelTrafficMonitor
-            .decrementConnections(ctx.inetAddress())
+            .decrementConnections(ctx.hostAddress())
     }
 
     override fun channelActive(ctx: ChannelHandlerContext) {
@@ -40,7 +40,7 @@ public class GameMessageHandler<R>(
         networkService
             .iNetAddressHandlers
             .gameInetAddressTracker
-            .register(ctx.inetAddress())
+            .register(ctx.hostAddress())
         networkLog(logger) {
             "Channel is now active: ${ctx.channel()}"
         }
@@ -53,7 +53,7 @@ public class GameMessageHandler<R>(
             session.triggerIdleClosing()
         } finally {
             ctx.fireChannelInactive()
-            val address = ctx.inetAddress()
+            val address = ctx.hostAddress()
             networkService.js5Authorizer.unauthorize(address)
             // Must ensure both blocks of code get invoked, even if one throws an exception
             networkService
@@ -98,7 +98,7 @@ public class GameMessageHandler<R>(
             .trafficMonitor
             .gameChannelTrafficMonitor
             .addDisconnectionReason(
-                ctx.inetAddress(),
+                ctx.hostAddress(),
                 GameDisconnectionReason.EXCEPTION,
             )
         val channel = ctx.channel()
@@ -121,7 +121,7 @@ public class GameMessageHandler<R>(
                 .trafficMonitor
                 .gameChannelTrafficMonitor
                 .addDisconnectionReason(
-                    ctx.inetAddress(),
+                    ctx.hostAddress(),
                     GameDisconnectionReason.IDLE,
                 )
             ctx.close()

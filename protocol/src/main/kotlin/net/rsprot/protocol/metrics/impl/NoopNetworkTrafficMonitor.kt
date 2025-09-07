@@ -6,7 +6,6 @@ import net.rsprot.protocol.metrics.channel.impl.Js5ChannelTrafficMonitor
 import net.rsprot.protocol.metrics.channel.impl.LoginChannelTrafficMonitor
 import net.rsprot.protocol.metrics.channel.impl.NoopChannelTrafficMonitor
 import net.rsprot.protocol.metrics.snapshots.impl.NoopNetworkTrafficSnapshot
-import java.net.InetAddress
 
 /**
  * A no-operation implementation of a [NetworkTrafficMonitor].
@@ -24,7 +23,7 @@ public data object NoopNetworkTrafficMonitor : NetworkTrafficMonitor<Any?> {
     }
 
     override fun addLoginBlock(
-        inetAddress: InetAddress,
+        hostAddress: String,
         block: Any?,
     ) {
     }

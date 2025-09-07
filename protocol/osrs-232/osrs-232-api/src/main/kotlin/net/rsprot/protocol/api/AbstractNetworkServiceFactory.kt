@@ -12,6 +12,7 @@ import net.rsprot.protocol.api.handlers.ExceptionHandlers
 import net.rsprot.protocol.api.handlers.GameMessageHandlers
 import net.rsprot.protocol.api.handlers.INetAddressHandlers
 import net.rsprot.protocol.api.handlers.LoginHandlers
+import net.rsprot.protocol.api.handlers.idlestate.IdleStateHandlerSuppliers
 import net.rsprot.protocol.api.js5.Js5Configuration
 import net.rsprot.protocol.api.js5.Js5DisconnectionReason
 import net.rsprot.protocol.api.js5.Js5GroupProvider
@@ -38,6 +39,7 @@ import net.rsprot.protocol.metrics.channel.impl.LoginChannelTrafficMonitor
 import net.rsprot.protocol.metrics.impl.ConcurrentNetworkTrafficMonitor
 import net.rsprot.protocol.metrics.impl.NoopNetworkTrafficMonitor
 import net.rsprot.protocol.metrics.lock.TrafficMonitorLock
+import org.jire.netty.haproxy.HAProxyMode
 
 /**
  * The abstract network service factory is used to build the network service that is used
@@ -109,6 +111,13 @@ public abstract class AbstractNetworkServiceFactory<R> {
      */
     public open val betaWorld: Boolean
         get() = false
+
+    /**
+     * Gets the HAProxy mode to use for the network service.
+     * By default, HAProxy support is turned off.
+     */
+    public open val haproxyMode: HAProxyMode
+        get() = HAProxyMode.OFF
 
     /**
      * Gets the bootstrap factory builder to register the network service.
@@ -315,6 +324,12 @@ public abstract class AbstractNetworkServiceFactory<R> {
     }
 
     /**
+     * Gets the [IdleStateHandlerSuppliers] which supply [io.netty.handler.timeout.IdleStateHandler]s for the
+     * [NetworkService].
+     */
+    public open fun getIdleStateHandlerSuppliers(): IdleStateHandlerSuppliers = IdleStateHandlerSuppliers()
+
+    /**
      * A Kotlin-only helper function to build a network configuration builder.
      */
     @JvmSynthetic
@@ -366,6 +381,8 @@ public abstract class AbstractNetworkServiceFactory<R> {
             getRsaKeyPair(),
             getJs5Configuration(),
             getJs5GroupProvider(),
+            getIdleStateHandlerSuppliers(),
+            haproxyMode,
         )
     }
 

@@ -243,8 +243,9 @@ public class BootstrapBuilder {
      * @param block the block invoked on the server bootstrap at the very end.
      */
     @JvmSynthetic
-    public fun configureBootstrapExtra(block: (ServerBootstrap) -> Unit) {
+    public fun configureBootstrapExtra(block: (ServerBootstrap) -> Unit): BootstrapBuilder {
         this.configureBootstrapExtra = Consumer { block(it) }
+        return this
     }
 
     /**
@@ -255,8 +256,9 @@ public class BootstrapBuilder {
      *
      * @param consumer the consumer invoked on the server bootstrap at the very end.
      */
-    public fun configureBootstrapExtra(consumer: Consumer<ServerBootstrap>) {
+    public fun configureBootstrapExtra(consumer: Consumer<ServerBootstrap>): BootstrapBuilder {
         this.configureBootstrapExtra = consumer
+        return this
     }
 
     private fun getEventLoopGroupTypes(): Array<out EventLoopGroupType> {

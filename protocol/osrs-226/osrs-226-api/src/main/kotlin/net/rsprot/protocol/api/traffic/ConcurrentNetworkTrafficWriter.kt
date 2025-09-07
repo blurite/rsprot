@@ -6,12 +6,10 @@ import net.rsprot.protocol.metrics.channel.snapshots.impl.ConcurrentChannelTraff
 import net.rsprot.protocol.metrics.channel.snapshots.util.PacketSnapshot
 import net.rsprot.protocol.metrics.snapshots.impl.ConcurrentNetworkTrafficSnapshot
 import net.rsprot.protocol.metrics.writer.NetworkTrafficWriter
-import java.net.InetAddress
 import java.text.NumberFormat
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
-import kotlin.collections.iterator
 
 public data object ConcurrentNetworkTrafficWriter : NetworkTrafficWriter<ConcurrentNetworkTrafficSnapshot<*>, String> {
     private const val INDENT: String = "  "
@@ -48,11 +46,11 @@ public data object ConcurrentNetworkTrafficWriter : NetworkTrafficWriter<Concurr
             )
             appendLine()
             @Suppress("UNCHECKED_CAST")
-            val loginBlocks = snapshot.loginBlocks as Map<InetAddress, List<LoginBlock<*>>>
+            val loginBlocks = snapshot.loginBlocks as Map<String, List<LoginBlock<*>>>
             appendLoginBlocks(loginBlocks)
         }
 
-    private fun StringBuilder.appendLoginBlocks(loginBlocks: Map<InetAddress, List<LoginBlock<*>>>) {
+    private fun StringBuilder.appendLoginBlocks(loginBlocks: Map<String, List<LoginBlock<*>>>) {
         appendLine("Login Blocks")
         for ((k, v) in loginBlocks) {
             indent().append("Inet Address: ").appendLine(k)

@@ -5,9 +5,9 @@ import io.netty.channel.ChannelHandlerContext
 import io.netty.channel.SimpleChannelInboundHandler
 import io.netty.handler.timeout.IdleStateEvent
 import net.rsprot.protocol.api.NetworkService
-import net.rsprot.protocol.api.channel.inetAddress
 import net.rsprot.protocol.api.logging.js5Log
 import net.rsprot.protocol.api.logging.networkLog
+import net.rsprot.protocol.channel.hostAddress
 import net.rsprot.protocol.js5.incoming.Js5GroupRequest
 import net.rsprot.protocol.js5.incoming.PriorityChangeHigh
 import net.rsprot.protocol.js5.incoming.PriorityChangeLow
@@ -28,7 +28,7 @@ public class Js5ChannelHandler(
         networkService
             .iNetAddressHandlers
             .js5InetAddressTracker
-            .register(ctx.inetAddress())
+            .register(ctx.hostAddress())
         networkLog(logger) {
             "Js5 channel '${ctx.channel()}' is now active"
         }
@@ -38,7 +38,7 @@ public class Js5ChannelHandler(
         networkService
             .iNetAddressHandlers
             .js5InetAddressTracker
-            .deregister(ctx.inetAddress())
+            .deregister(ctx.hostAddress())
         networkLog(logger) {
             "Js5 channel '${ctx.channel()}' is now inactive"
         }
