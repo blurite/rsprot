@@ -11,7 +11,7 @@ public class FriendChatSetRankDecoder : MessageDecoder<FriendChatSetRank> {
 
     override fun decode(buffer: JagByteBuf): FriendChatSetRank {
         val name = buffer.gjstr()
-        val rank = buffer.g1Alt3()
+        val rank = buffer.g1Alt1()
         return FriendChatSetRank(
             name,
             rank,

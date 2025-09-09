@@ -89,6 +89,13 @@ import net.rsprot.protocol.game.incoming.codec.social.FriendListAddDecoder
 import net.rsprot.protocol.game.incoming.codec.social.FriendListDelDecoder
 import net.rsprot.protocol.game.incoming.codec.social.IgnoreListAddDecoder
 import net.rsprot.protocol.game.incoming.codec.social.IgnoreListDelDecoder
+import net.rsprot.protocol.game.incoming.codec.worldentities.OpWorldEntity1Decoder
+import net.rsprot.protocol.game.incoming.codec.worldentities.OpWorldEntity2Decoder
+import net.rsprot.protocol.game.incoming.codec.worldentities.OpWorldEntity3Decoder
+import net.rsprot.protocol.game.incoming.codec.worldentities.OpWorldEntity4Decoder
+import net.rsprot.protocol.game.incoming.codec.worldentities.OpWorldEntity5Decoder
+import net.rsprot.protocol.game.incoming.codec.worldentities.OpWorldEntity6Decoder
+import net.rsprot.protocol.game.incoming.codec.worldentities.OpWorldEntityTDecoder
 import net.rsprot.protocol.message.codec.incoming.MessageDecoderRepository
 import net.rsprot.protocol.message.codec.incoming.MessageDecoderRepositoryBuilder
 
@@ -140,6 +147,14 @@ public object DesktopGameMessageDecoderRepository {
                 bind(OpPlayer7Decoder())
                 bind(OpPlayer8Decoder())
                 bind(OpPlayerTDecoder())
+
+                bind(OpWorldEntity1Decoder())
+                bind(OpWorldEntity2Decoder())
+                bind(OpWorldEntity3Decoder())
+                bind(OpWorldEntity4Decoder())
+                bind(OpWorldEntity5Decoder())
+                bind(OpWorldEntity6Decoder())
+                bind(OpWorldEntityTDecoder())
 
                 bind(EventAppletFocusDecoder())
                 bind(EventCameraPositionDecoder())

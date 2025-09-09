@@ -11,7 +11,7 @@ public class OpPlayer1Decoder : MessageDecoder<OpPlayer> {
 
     override fun decode(buffer: JagByteBuf): OpPlayer {
         val index = buffer.g2Alt1()
-        val controlKey = buffer.g1() == 1
+        val controlKey = buffer.g1Alt2() == 1
         return OpPlayer(
             index,
             controlKey,
