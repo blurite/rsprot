@@ -89,7 +89,7 @@ public class WorldEntityInfo internal constructor(
      * We ensure that a server hasn't accidentally left a packet unwritten, which would
      * de-synchronize the client and cause errors.
      */
-    internal var previousPacket: WorldEntityInfoV4Packet? = null
+    internal var previousPacket: WorldEntityInfoV6Packet? = null
 
     @Volatile
     internal var exception: Exception? = null
@@ -244,7 +244,7 @@ public class WorldEntityInfo internal constructor(
      * in a per-player perspective.
      * @return the world entity packet instance.
      */
-    public fun toPacket(): WorldEntityInfoV4Packet {
+    public fun toPacket(): WorldEntityInfoV6Packet {
         val exception = this.exception
         if (exception != null) {
             throw InfoProcessException(
@@ -315,7 +315,7 @@ public class WorldEntityInfo internal constructor(
                     "not sent out to the client for player index $localIndex!"
             }
         }
-        val packet = WorldEntityInfoV4Packet(backingBuffer())
+        val packet = WorldEntityInfoV6Packet(backingBuffer())
         this.previousPacket = packet
     }
 
@@ -345,6 +345,7 @@ public class WorldEntityInfo internal constructor(
                 precomputedBuffer.readerIndex(),
                 precomputedBuffer.readableBytes(),
             )
+            putWorldEntityExtendedInfo(avatar, buffer)
         }
         return count != this.highResolutionIndicesCount
     }
@@ -408,9 +409,23 @@ public class WorldEntityInfo internal constructor(
                         avatar.angle,
                     )
                     buffer.p1(avatar.priority.id)
+                    putWorldEntityExtendedInfo(avatar, buffer)
                 }
             }
         }
+    }
+
+    private fun putWorldEntityExtendedInfo(
+        avatar: WorldEntityAvatar,
+        buffer: JagByteBuf,
+    ) {
+        // No extra flags right now as the extended info system is still primitive
+        avatar.extendedInfo.pExtendedInfo(
+            oldSchoolClientType,
+            buffer,
+            localIndex,
+            0,
+        )
     }
 
     /**

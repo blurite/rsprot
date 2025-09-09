@@ -11,7 +11,6 @@ import net.rsprot.protocol.internal.game.outgoing.info.npcinfo.extendedinfo.Head
 import net.rsprot.protocol.internal.game.outgoing.info.npcinfo.extendedinfo.NameChange
 import net.rsprot.protocol.internal.game.outgoing.info.npcinfo.extendedinfo.NpcTinting
 import net.rsprot.protocol.internal.game.outgoing.info.npcinfo.extendedinfo.Transformation
-import net.rsprot.protocol.internal.game.outgoing.info.npcinfo.extendedinfo.VisibleOps
 import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.ExactMove
 import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.FaceAngle
 import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.FacePathingEntity
@@ -19,6 +18,7 @@ import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.Hit
 import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.Say
 import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.Sequence
 import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.SpotAnimList
+import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.VisibleOps
 
 /**
  * A data class to bring all the extended info encoders for a given client together.

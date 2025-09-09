@@ -39,6 +39,7 @@ public class WorldEntityAvatar(
     internal var level: Int,
     internal var currentCoordFine: CoordFine = CoordFine.INVALID,
     internal var angle: Int,
+    public val extendedInfo: WorldEntityAvatarExtendedInfo,
 ) : Avatar {
     internal var teleport: Boolean = false
     internal var lastAngle: Int = angle
@@ -62,6 +63,7 @@ public class WorldEntityAvatar(
      * Precomputes the high resolution buffer of this world entity.
      */
     internal fun precompute() {
+        extendedInfo.precompute()
         if (this.currentCoordFine == this.lastCoordFine && this.angle == this.lastAngle) {
             val buffer = allocator.buffer(1, 1)
             this.highResolutionBuffer = buffer

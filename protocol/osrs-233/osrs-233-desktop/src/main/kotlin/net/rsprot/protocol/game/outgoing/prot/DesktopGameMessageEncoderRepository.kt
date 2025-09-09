@@ -78,6 +78,7 @@ import net.rsprot.protocol.game.outgoing.codec.misc.client.SiteSettingsEncoder
 import net.rsprot.protocol.game.outgoing.codec.misc.client.UpdateRebootTimerEncoder
 import net.rsprot.protocol.game.outgoing.codec.misc.client.UpdateUid192Encoder
 import net.rsprot.protocol.game.outgoing.codec.misc.client.UrlOpenEncoder
+import net.rsprot.protocol.game.outgoing.codec.misc.player.AccountFlagsEncoder
 import net.rsprot.protocol.game.outgoing.codec.misc.player.ChatFilterSettingsEncoder
 import net.rsprot.protocol.game.outgoing.codec.misc.player.ChatFilterSettingsPrivateChatEncoder
 import net.rsprot.protocol.game.outgoing.codec.misc.player.MessageGameEncoder
@@ -124,7 +125,7 @@ import net.rsprot.protocol.game.outgoing.codec.varp.VarpResetEncoder
 import net.rsprot.protocol.game.outgoing.codec.varp.VarpSmallEncoder
 import net.rsprot.protocol.game.outgoing.codec.varp.VarpSyncEncoder
 import net.rsprot.protocol.game.outgoing.codec.worldentity.SetActiveWorldV2Encoder
-import net.rsprot.protocol.game.outgoing.codec.worldentity.WorldEntityInfoV5Encoder
+import net.rsprot.protocol.game.outgoing.codec.worldentity.WorldEntityInfoV6Encoder
 import net.rsprot.protocol.game.outgoing.codec.zone.header.DesktopUpdateZonePartialEnclosedEncoder
 import net.rsprot.protocol.game.outgoing.codec.zone.header.UpdateZoneFullFollowsEncoder
 import net.rsprot.protocol.game.outgoing.codec.zone.header.UpdateZonePartialFollowsEncoder
@@ -223,7 +224,7 @@ public object DesktopGameMessageEncoderRepository {
                 bind(SetNpcUpdateOriginEncoder())
 
                 bind(SetActiveWorldV2Encoder())
-                bind(WorldEntityInfoV5Encoder())
+                bind(WorldEntityInfoV6Encoder())
 
                 bindWithAlts(RebuildNormalEncoder(), RebuildLogin::class.java, RebuildNormal::class.java)
                 bind(RebuildRegionEncoder())
@@ -289,6 +290,7 @@ public object DesktopGameMessageEncoderRepository {
                 bind(ChatFilterSettingsPrivateChatEncoder())
                 bind(UpdateTradingPostEncoder())
                 bind(UpdateStockMarketSlotEncoder())
+                bind(AccountFlagsEncoder())
 
                 bind(HintArrowEncoder())
                 bind(ResetAnimsEncoder())

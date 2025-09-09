@@ -1,4 +1,4 @@
-package net.rsprot.protocol.internal.game.outgoing.info.npcinfo.extendedinfo
+package net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo
 
 import net.rsprot.protocol.internal.client.ClientTypeMap
 import net.rsprot.protocol.internal.game.outgoing.info.TransientExtendedInfo

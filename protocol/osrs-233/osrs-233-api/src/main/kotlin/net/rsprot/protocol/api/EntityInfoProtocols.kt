@@ -9,6 +9,7 @@ import net.rsprot.protocol.common.client.OldSchoolClientType
 import net.rsprot.protocol.game.outgoing.codec.npcinfo.DesktopLowResolutionChangeEncoder
 import net.rsprot.protocol.game.outgoing.codec.npcinfo.extendedinfo.writer.NpcAvatarExtendedInfoDesktopWriter
 import net.rsprot.protocol.game.outgoing.codec.playerinfo.extendedinfo.writer.PlayerAvatarExtendedInfoDesktopWriter
+import net.rsprot.protocol.game.outgoing.codec.worldentity.extendedinfo.WorldEntityAvatarExtendedInfoDesktopWriter
 import net.rsprot.protocol.game.outgoing.info.npcinfo.DeferredNpcInfoProtocolSupplier
 import net.rsprot.protocol.game.outgoing.info.npcinfo.NpcAvatarExtendedInfoWriter
 import net.rsprot.protocol.game.outgoing.info.npcinfo.NpcAvatarFactory
@@ -17,6 +18,7 @@ import net.rsprot.protocol.game.outgoing.info.npcinfo.NpcInfoProtocol
 import net.rsprot.protocol.game.outgoing.info.playerinfo.PlayerAvatarExtendedInfoWriter
 import net.rsprot.protocol.game.outgoing.info.playerinfo.PlayerAvatarFactory
 import net.rsprot.protocol.game.outgoing.info.playerinfo.PlayerInfoProtocol
+import net.rsprot.protocol.game.outgoing.info.worldentityinfo.WorldEntityAvatarExtendedInfoWriter
 import net.rsprot.protocol.game.outgoing.info.worldentityinfo.WorldEntityAvatarFactory
 import net.rsprot.protocol.game.outgoing.info.worldentityinfo.WorldEntityProtocol
 import net.rsprot.protocol.internal.client.ClientTypeMap
@@ -86,10 +88,12 @@ public class EntityInfoProtocols
                 val playerWriters = mutableListOf<PlayerAvatarExtendedInfoWriter>()
                 val npcWriters = mutableListOf<NpcAvatarExtendedInfoWriter>()
                 val npcResolutionChangeEncoders = mutableListOf<NpcResolutionChangeEncoder>()
+                val worldEntityWriters = mutableListOf<WorldEntityAvatarExtendedInfoWriter>()
                 if (OldSchoolClientType.DESKTOP in clientTypes) {
                     playerWriters += PlayerAvatarExtendedInfoDesktopWriter()
                     npcWriters += NpcAvatarExtendedInfoDesktopWriter()
                     npcResolutionChangeEncoders += DesktopLowResolutionChangeEncoder()
+                    worldEntityWriters += WorldEntityAvatarExtendedInfoDesktopWriter()
                 }
                 val zoneIndexStorage =
                     ZoneIndexStorage(
@@ -99,6 +103,8 @@ public class EntityInfoProtocols
                     buildWorldEntityAvatarFactory(
                         allocator,
                         zoneIndexStorage,
+                        worldEntityWriters,
+                        huffmanCodecProvider,
                     )
                 val worldEntityProtocol =
                     buildWorldEntityInfoProtocol(
@@ -192,10 +198,14 @@ public class EntityInfoProtocols
             private fun buildWorldEntityAvatarFactory(
                 allocator: ByteBufAllocator,
                 zoneIndexStorage: ZoneIndexStorage,
+                worldEntityWriters: MutableList<WorldEntityAvatarExtendedInfoWriter>,
+                huffmanCodecProvider: HuffmanCodecProvider,
             ): WorldEntityAvatarFactory =
                 WorldEntityAvatarFactory(
                     allocator,
                     zoneIndexStorage,
+                    worldEntityWriters,
+                    huffmanCodecProvider,
                 )
 
             private fun buildWorldEntityInfoProtocol(

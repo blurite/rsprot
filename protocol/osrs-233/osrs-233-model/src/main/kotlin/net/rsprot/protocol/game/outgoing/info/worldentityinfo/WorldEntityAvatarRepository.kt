@@ -1,6 +1,7 @@
 package net.rsprot.protocol.game.outgoing.info.worldentityinfo
 
 import io.netty.buffer.ByteBufAllocator
+import net.rsprot.compression.provider.HuffmanCodecProvider
 import net.rsprot.protocol.internal.game.outgoing.info.CoordFine
 import net.rsprot.protocol.internal.game.outgoing.info.util.ZoneIndexStorage
 import java.lang.ref.ReferenceQueue
@@ -13,6 +14,7 @@ import java.lang.ref.SoftReference
  * precomputed high resolution blocks.
  * @property zoneIndexStorage the zone index storage is responsible for tracking
  * world entities across zones.
+ * @property extendedInfoWriter the client-specific extended info writers for World Entity information.
  * @property elements the array of existing world entity avatars, currently in use.
  * @property queue the soft reference queue of world avatars that were previously in use.
  * As a soft reference queue, it will hold on-to the unused references until the JVM
@@ -22,6 +24,8 @@ import java.lang.ref.SoftReference
 public class WorldEntityAvatarRepository internal constructor(
     private val allocator: ByteBufAllocator,
     private val zoneIndexStorage: ZoneIndexStorage,
+    private val extendedInfoWriter: List<WorldEntityAvatarExtendedInfoWriter>,
+    private val huffmanCodec: HuffmanCodecProvider,
 ) {
     private val elements: Array<WorldEntityAvatar?> = arrayOfNulls(AVATAR_CAPACITY)
     private val queue: ReferenceQueue<WorldEntityAvatar> = ReferenceQueue<WorldEntityAvatar>()
@@ -86,6 +90,13 @@ public class WorldEntityAvatarRepository internal constructor(
             elements[index] = existing
             return existing
         }
+        val extendedInfo =
+            WorldEntityAvatarExtendedInfo(
+                index,
+                extendedInfoWriter,
+                allocator,
+                huffmanCodec,
+            )
         val avatar =
             WorldEntityAvatar(
                 allocator,
@@ -98,6 +109,7 @@ public class WorldEntityAvatarRepository internal constructor(
                 level,
                 CoordFine(fineX, fineY, fineZ),
                 angle,
+                extendedInfo,
             )
         zoneIndexStorage.add(index, avatar.currentCoordFine.toCoordGrid(level))
         elements[index] = avatar

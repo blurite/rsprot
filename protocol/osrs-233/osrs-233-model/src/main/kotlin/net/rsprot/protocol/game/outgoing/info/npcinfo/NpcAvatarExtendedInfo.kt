@@ -13,9 +13,9 @@ import net.rsprot.protocol.internal.game.outgoing.info.npcinfo.extendedinfo.Base
 import net.rsprot.protocol.internal.game.outgoing.info.npcinfo.extendedinfo.CombatLevelChange
 import net.rsprot.protocol.internal.game.outgoing.info.npcinfo.extendedinfo.HeadIconCustomisation
 import net.rsprot.protocol.internal.game.outgoing.info.npcinfo.extendedinfo.TypeCustomisation
-import net.rsprot.protocol.internal.game.outgoing.info.npcinfo.extendedinfo.VisibleOps
 import net.rsprot.protocol.internal.game.outgoing.info.precompute
 import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.FacePathingEntity
+import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.VisibleOps
 import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.util.HeadBar
 import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.util.HitMark
 import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.util.SpotAnim

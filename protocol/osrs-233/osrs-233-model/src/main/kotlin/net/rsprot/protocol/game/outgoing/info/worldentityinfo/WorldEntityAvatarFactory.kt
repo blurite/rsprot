@@ -1,6 +1,7 @@
 package net.rsprot.protocol.game.outgoing.info.worldentityinfo
 
 import io.netty.buffer.ByteBufAllocator
+import net.rsprot.compression.provider.HuffmanCodecProvider
 import net.rsprot.protocol.internal.checkCommunicationThread
 import net.rsprot.protocol.internal.game.outgoing.info.util.ZoneIndexStorage
 
@@ -10,16 +11,23 @@ import net.rsprot.protocol.internal.game.outgoing.info.util.ZoneIndexStorage
  * allowing them to be pooled and re-used, if needed.
  * @property avatarRepository the repository keeping track of existing and past world
  * entity avatars.
+ * @property huffmanCodec the huffman codec is used to compress chat extended info.
+ * While NPCs do not currently have any such extended info blocks, the interface requires
+ * it be passed in, so we must still provide it.
  */
 @Suppress("DuplicatedCode")
 public class WorldEntityAvatarFactory(
     allocator: ByteBufAllocator,
     zoneIndexStorage: ZoneIndexStorage,
+    extendedInfoWriter: List<WorldEntityAvatarExtendedInfoWriter>,
+    huffmanCodec: HuffmanCodecProvider,
 ) {
     internal val avatarRepository: WorldEntityAvatarRepository =
         WorldEntityAvatarRepository(
             allocator,
             zoneIndexStorage,
+            extendedInfoWriter,
+            huffmanCodec,
         )
 
     /**
