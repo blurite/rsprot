@@ -1,7 +1,7 @@
 # RSProt
 
 [![GitHub Actions][actions-badge]][actions] [![MIT license][mit-badge]][mit]
-[![OldSchool - 221 - 232 (Alpha)](https://img.shields.io/badge/OldSchool-221--232_(Alpha)-9a1abd)](https://github.com/blurite/rsprot/tree/master/protocol/osrs-232/osrs-232-api/src/main/kotlin/net/rsprot/protocol/api)
+[![OldSchool - 221 - 233 (Alpha)](https://img.shields.io/badge/OldSchool-221--233_(Alpha)-9a1abd)](https://github.com/blurite/rsprot/tree/master/protocol/osrs-233/osrs-233-api/src/main/kotlin/net/rsprot/protocol/api)
 
 ## Status
 > [!NOTE]
@@ -16,7 +16,7 @@ In order to add it to your server, add the below line under dependencies
 in your build.gradle.kts.
 
 ```kts
-implementation("net.rsprot:osrs-232-api:1.0.0-ALPHA-20250907")
+implementation("net.rsprot:osrs-233-api:1.0.0-ALPHA-20250909")
 ```
 
 An in-depth tutorial on how to implement it will be added into this read-me
@@ -32,12 +32,12 @@ other revisions are welcome, but will not be provided by default.
 - Java 11
 
 ## Supported Versions
-This library currently supports revision 221-232 OldSchool desktop clients.
+This library currently supports revision 221-233 OldSchool desktop clients.
 
 ## Quick Guide
 This section covers a quick guide for how to use the protocol after implementing
 the base API. It is not a guide for the base API itself, that will come in the
-future. This specific quick guide refers to revision 232.
+future. This specific quick guide refers to revision 233.
 
 #### Player Initialization
 When a player logs in, a new protocol instance must be allocated for
@@ -234,6 +234,16 @@ protocol. This can be done via:
 `service.worldEntityAvatarFactory.release(avatar)`
 
 ## Changes
+
+### Revision 233
+
+#### Additions
+- ACCOUNT_FLAGS - a server-to-client packet which sets flags for client to use.
+- OPWORLDENTITY* - Adds interaction support with world entities, same as locs, npcs etc.
+
+#### Changes
+- WORLDENTITY_INFO_V6 - Adds support for extended info in world entities. Currently
+only the visible-ops flag is implemented.
 
 ### Revision 232
 
