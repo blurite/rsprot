@@ -23,8 +23,8 @@ public class PlayerChatEncoder : PrecomputedExtendedInfoEncoder<Chat> {
                 .buffer(capacity)
                 .toJagByteBuf()
         buffer.p2Alt3(colour shl 8 or extendedInfo.effects.toInt())
-        buffer.p1Alt1(extendedInfo.modicon.toInt())
-        buffer.p1Alt3(if (extendedInfo.autotyper) 1 else 0)
+        buffer.p1(extendedInfo.modicon.toInt())
+        buffer.p1Alt2(if (extendedInfo.autotyper) 1 else 0)
         val huffmanBuffer =
             alloc
                 .buffer(text.length)
@@ -32,14 +32,14 @@ public class PlayerChatEncoder : PrecomputedExtendedInfoEncoder<Chat> {
         codec.encode(huffmanBuffer, text)
         buffer.p1Alt3(huffmanBuffer.readableBytes())
         try {
-            buffer.pdataAlt1(huffmanBuffer.buffer)
+            buffer.pdataAlt2(huffmanBuffer.buffer)
         } finally {
             huffmanBuffer.buffer.release()
         }
         if (patternLength in 1..8) {
             val pattern = checkNotNull(extendedInfo.pattern)
             for (i in 0..<patternLength) {
-                buffer.p1Alt1(pattern[i].toInt())
+                buffer.p1Alt2(pattern[i].toInt())
             }
         }
         return buffer
