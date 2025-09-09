@@ -18,8 +18,8 @@ public class ObjUncustomiseSpecificEncoder : MessageEncoder<ObjUncustomiseSpecif
         // The function at the bottom of the OBJ_UNCUSTOMISE_SPECIFIC has a consistent order,
         // making it easy to identify all the properties of this packet:
         // objUncustomise(world, level, x, z, id, count);
-        buffer.p2Alt3(message.id)
         buffer.p4Alt3(message.coordGrid.packed)
-        buffer.p4Alt2(message.quantity)
+        buffer.p2Alt1(message.id)
+        buffer.p4Alt1(message.quantity)
     }
 }

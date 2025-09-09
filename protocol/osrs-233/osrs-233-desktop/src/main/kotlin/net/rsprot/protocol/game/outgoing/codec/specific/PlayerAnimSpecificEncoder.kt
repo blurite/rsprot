@@ -16,6 +16,6 @@ public class PlayerAnimSpecificEncoder : MessageEncoder<PlayerAnimSpecific> {
         message: PlayerAnimSpecific,
     ) {
         buffer.p2Alt2(message.id)
-        buffer.p1(message.delay)
+        buffer.p1Alt2(message.delay)
     }
 }

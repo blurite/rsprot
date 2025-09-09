@@ -15,8 +15,8 @@ public class LocAnimSpecificEncoder : MessageEncoder<LocAnimSpecific> {
         buffer: JagByteBuf,
         message: LocAnimSpecific,
     ) {
-        buffer.p3Alt1(message.coordInBuildAreaPacked)
-        buffer.p2Alt2(message.id)
         buffer.p1Alt2(message.locPropertiesPacked)
+        buffer.p2(message.id)
+        buffer.p3(message.coordInBuildAreaPacked)
     }
 }

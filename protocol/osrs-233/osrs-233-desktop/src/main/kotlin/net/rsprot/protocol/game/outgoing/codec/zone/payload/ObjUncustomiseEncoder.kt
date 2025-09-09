@@ -16,8 +16,8 @@ public class ObjUncustomiseEncoder : ZoneProtEncoder<ObjUncustomise> {
         // The function at the bottom of the OBJ_CUSTOMISE has a consistent order,
         // making it easy to identify all the properties of this packet:
         // objUncustomise(level, x, z, id, count);
-        buffer.p4Alt3(message.quantity)
-        buffer.p1(message.coordInZonePacked)
+        buffer.p1Alt3(message.coordInZonePacked)
         buffer.p2Alt2(message.id)
+        buffer.p4Alt3(message.quantity)
     }
 }

@@ -16,10 +16,12 @@ public class IfSetEventsV2Encoder : MessageEncoder<IfSetEventsV2> {
         buffer: JagByteBuf,
         message: IfSetEventsV2,
     ) {
-        buffer.p2Alt2(message.end)
+        // The function uses arguments in this order:
+        // component, start, end, events1, events2
+        buffer.p4Alt2(message.events1)
+        buffer.p2(message.end)
         buffer.p2Alt2(message.start)
-        buffer.p4(message.events2)
         buffer.pCombinedIdAlt1(message.combinedId)
-        buffer.p4Alt1(message.events1)
+        buffer.p4Alt3(message.events2)
     }
 }

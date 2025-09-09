@@ -18,8 +18,8 @@ public class ObjDelSpecificEncoder : MessageEncoder<ObjDelSpecific> {
         // The function at the bottom of the OBJ_DEL_SPECIFIC has a consistent order,
         // making it easy to identify all the properties of this packet:
         // obj_del(world, level, x, z, id, quantity)
-        buffer.p2Alt3(message.id)
+        buffer.p4Alt1(message.quantity)
         buffer.p4Alt1(message.coordGrid.packed)
-        buffer.p4Alt2(message.quantity)
+        buffer.p2(message.id)
     }
 }

@@ -6,7 +6,7 @@ import net.rsprot.protocol.ServerProt
 import net.rsprot.protocol.game.outgoing.interfaces.IfSetNpcHeadActive
 import net.rsprot.protocol.game.outgoing.prot.GameServerProt
 import net.rsprot.protocol.message.codec.MessageEncoder
-import net.rsprot.protocol.util.pCombinedIdAlt1
+import net.rsprot.protocol.util.pCombinedIdAlt2
 
 public class IfSetNpcHeadActiveEncoder : MessageEncoder<IfSetNpcHeadActive> {
     override val prot: ServerProt = GameServerProt.IF_SETNPCHEAD_ACTIVE
@@ -16,7 +16,7 @@ public class IfSetNpcHeadActiveEncoder : MessageEncoder<IfSetNpcHeadActive> {
         buffer: JagByteBuf,
         message: IfSetNpcHeadActive,
     ) {
-        buffer.p2(message.index)
-        buffer.pCombinedIdAlt1(message.combinedId)
+        buffer.pCombinedIdAlt2(message.combinedId)
+        buffer.p2Alt1(message.index)
     }
 }

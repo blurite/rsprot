@@ -16,8 +16,8 @@ public class LocAnimEncoder : ZoneProtEncoder<LocAnim> {
         // The function at the bottom of the LOC_ANIM has a consistent order,
         // making it easy to identify all the properties of this packet:
         // loc_anim(level, x, z, shape, rotation, layer, id)
-        buffer.p2Alt2(message.id)
-        buffer.p1(message.coordInZonePacked)
-        buffer.p1Alt1(message.locPropertiesPacked)
+        buffer.p2(message.id)
+        buffer.p1Alt2(message.coordInZonePacked)
+        buffer.p1Alt2(message.locPropertiesPacked)
     }
 }
