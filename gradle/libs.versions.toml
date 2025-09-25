@@ -11,6 +11,7 @@ jnagmp = "3.0.0"
 dokka = "2.0.0"
 mavenpublish = "0.32.0"
 konsist = "0.17.3"
+fastutil = "8.5.16"
 
 [libraries]
 netty-bom = { module = "io.netty:netty-bom", version.ref = "netty" }
@@ -36,6 +37,7 @@ jmh-runtime = { module = "org.jetbrains.kotlinx:kotlinx-benchmark-runtime", vers
 inline-logger = { module = "com.michael-bull.kotlin-inline-logger:kotlin-inline-logger", version.ref = "inlinelogger" }
 commons-pool2 = { module = "org.apache.commons:commons-pool2", version.ref = "commons-pool2" }
 jna-gmp = { module = "com.squareup.jnagmp:jnagmp", version.ref = "jnagmp" }
+fastutil = { module = "it.unimi.dsi:fastutil", version.ref = "fastutil" }
 
 [plugins]
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }

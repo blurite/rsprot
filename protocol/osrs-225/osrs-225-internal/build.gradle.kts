@@ -9,6 +9,7 @@ dependencies {
     api(projects.crypto)
     api(projects.protocol)
     api(projects.protocol.osrs225.osrs225Common)
+    implementation(rootProject.libs.fastutil)
 }
 
 mavenPublishing {

@@ -1,20 +1,19 @@
 package net.rsprot.protocol.internal.game.outgoing.info.util
 
+import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap
 import net.rsprot.protocol.internal.game.outgoing.info.CoordGrid
 
 /**
  * A dictionary based implementation allowing one to store npc indices within zones.
- * @param maxKeyCount the maximum number of keys that will be stored in the map. This value must be
- * a power of two (e.g. 2048, 65536).
+ * @param expected the expect number of keys that will be stored in the map.
  * @property dictionary a stripped down primitive hashmap implementation that stores zone objects based
  * on their bitpacked coordinate.
  */
 @Suppress("DuplicatedCode")
 public class ZoneIndexStorage(
-    maxKeyCount: Int,
+    expected: Int,
 ) {
-    private val dictionary =
-        ZoneIndexDictionary(maxKeyCount)
+    private val dictionary = Int2ObjectOpenHashMap<ZoneIndexArray>(expected)
 
     /**
      * Moves the [entityIndex] from the zone at [from] to the zone at [to] if the zones differ.
