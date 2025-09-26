@@ -16,7 +16,7 @@ import net.rsprot.protocol.message.IncomingGameMessage
 public class GameMessageHandler<R>(
     private val networkService: NetworkService<R>,
     private val session: Session<R>,
-) : SimpleChannelInboundHandler<IncomingGameMessage>() {
+) : SimpleChannelInboundHandler<IncomingGameMessage>(false) {
     override fun handlerAdded(ctx: ChannelHandlerContext) {
         // As auto-read is false, immediately begin reading once this handler
         // has been added post-login
