@@ -48,6 +48,8 @@ public class UpdateFriendChatChannelFullV2(
      * @property kickRank the minimum rank id to kick another player from
      * the friend chat.
      * @property entries the list of friend chat entries to be added.
+     * If the list is empty, the client will only refresh the details and leave
+     * the members of the chat untouched.
      */
     public class JoinUpdate private constructor(
         override val channelOwner: String,
