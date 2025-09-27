@@ -7,7 +7,7 @@ import net.rsprot.protocol.message.OutgoingGameMessage
 
 /**
  * Update friendchat channel full V1 is used to send full channel updates
- * where the list of entries has a size of 255 or less, as that is
+ * where the list of entries has a size of 254 or less, as that is
  * the maximum theoretical limitation.
  */
 public class UpdateFriendChatChannelFullV1(
@@ -47,6 +47,8 @@ public class UpdateFriendChatChannelFullV1(
      * @property kickRank the minimum rank id to kick another player from
      * the friend chat.
      * @property entries the list of friend chat entries to be added.
+     * If the list is empty, the client will only refresh the details and leave
+     * the members of the chat untouched.
      */
     public class JoinUpdate private constructor(
         override val channelOwner: String,

@@ -22,12 +22,16 @@ public class UpdateFriendChatChannelFullV1Encoder : MessageEncoder<UpdateFriendC
                 buffer.pjstr(update.channelOwner)
                 buffer.p8(update.channelNameBase37)
                 buffer.p1(update.kickRank)
-                buffer.p1(update.entries.size)
-                for (entry in update.entries) {
-                    buffer.pjstr(entry.name)
-                    buffer.p2(entry.worldId)
-                    buffer.p1(entry.rank)
-                    buffer.pjstr(entry.worldName)
+                if (update.entries.isEmpty()) {
+                    buffer.p1(0xFF)
+                } else {
+                    buffer.p1(update.entries.size)
+                    for (entry in update.entries) {
+                        buffer.pjstr(entry.name)
+                        buffer.p2(entry.worldId)
+                        buffer.p1(entry.rank)
+                        buffer.pjstr(entry.worldName)
+                    }
                 }
             }
             UpdateFriendChatChannelFullV1.LeaveUpdate -> {
