@@ -1891,7 +1891,6 @@ public class PlayerAvatarExtendedInfo(
      * so it will be updated whenever someone else takes their index.
      */
     internal fun onOtherAvatarDeallocated(idx: Int) {
-        checkCommunicationThread()
         otherAppearanceChangeCycles[idx] = -1
     }
 
