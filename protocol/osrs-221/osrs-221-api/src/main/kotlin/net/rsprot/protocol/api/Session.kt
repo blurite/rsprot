@@ -1,6 +1,8 @@
 package net.rsprot.protocol.api
 
 import com.github.michaelbull.logging.InlineLogger
+import io.netty.buffer.Unpooled
+import io.netty.channel.ChannelFutureListener
 import io.netty.channel.ChannelHandlerContext
 import net.rsprot.protocol.ServerProtCategory
 import net.rsprot.protocol.api.game.GameMessageDecoder
@@ -397,16 +399,18 @@ public class Session<R>(
                 channel.write(next, channel.voidPromise())
             }
         }
-        channel.flush()
         if (this.channelStatus == ChannelStatus.CLOSING) {
             this.channelStatus = ChannelStatus.CLOSED
-            channel.close()
+            channel
+                .writeAndFlush(Unpooled.EMPTY_BUFFER)
+                .addListener(ChannelFutureListener.CLOSE)
             clear()
             networkLog(logger) {
                 "Flushed outgoing game packets to channel '${ctx.channel()}', closing channel."
             }
             return
         }
+        channel.flush()
         networkLog(logger) {
             val leftoverPackets = outgoingMessageQueues.sumOf(Queue<OutgoingGameMessage>::size)
             if (leftoverPackets > 0) {
