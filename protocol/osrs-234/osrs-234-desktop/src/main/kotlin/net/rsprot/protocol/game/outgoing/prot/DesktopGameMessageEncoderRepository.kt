@@ -78,6 +78,7 @@ import net.rsprot.protocol.game.outgoing.codec.misc.client.SiteSettingsEncoder
 import net.rsprot.protocol.game.outgoing.codec.misc.client.UpdateRebootTimerEncoder
 import net.rsprot.protocol.game.outgoing.codec.misc.client.UpdateUid192Encoder
 import net.rsprot.protocol.game.outgoing.codec.misc.client.UrlOpenEncoder
+import net.rsprot.protocol.game.outgoing.codec.misc.client.ZBufEncoder
 import net.rsprot.protocol.game.outgoing.codec.misc.player.AccountFlagsEncoder
 import net.rsprot.protocol.game.outgoing.codec.misc.player.ChatFilterSettingsEncoder
 import net.rsprot.protocol.game.outgoing.codec.misc.player.ChatFilterSettingsPrivateChatEncoder
@@ -304,6 +305,7 @@ public object DesktopGameMessageEncoderRepository {
                 bind(SetInteractionModeEncoder())
                 bind(ResetInteractionModeEncoder())
                 bind(PacketGroupStartEncoder())
+                bind(ZBufEncoder())
 
                 bind(UrlOpenEncoder())
                 bind(SiteSettingsEncoder())
