@@ -194,7 +194,7 @@ class PlayerInfoClient {
         flag: Int,
     ) {
         if (flag and 0x10 != 0) {
-            val len = buffer.g1()
+            val len = buffer.g1Alt3()
             val data = ByteArray(len)
             buffer.gdata(data)
             decodeAppearance(Unpooled.wrappedBuffer(data).toJagByteBuf(), player)
