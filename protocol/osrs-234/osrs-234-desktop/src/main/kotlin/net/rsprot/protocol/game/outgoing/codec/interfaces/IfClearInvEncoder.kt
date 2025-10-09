@@ -6,7 +6,7 @@ import net.rsprot.protocol.ServerProt
 import net.rsprot.protocol.game.outgoing.interfaces.IfClearInv
 import net.rsprot.protocol.game.outgoing.prot.GameServerProt
 import net.rsprot.protocol.message.codec.MessageEncoder
-import net.rsprot.protocol.util.pCombinedId
+import net.rsprot.protocol.util.pCombinedIdAlt2
 
 public class IfClearInvEncoder : MessageEncoder<IfClearInv> {
     override val prot: ServerProt = GameServerProt.IF_CLEARINV
@@ -16,6 +16,6 @@ public class IfClearInvEncoder : MessageEncoder<IfClearInv> {
         buffer: JagByteBuf,
         message: IfClearInv,
     ) {
-        buffer.pCombinedId(message.combinedId)
+        buffer.pCombinedIdAlt2(message.combinedId)
     }
 }

@@ -34,6 +34,11 @@ public class HintArrowEncoder : MessageEncoder<HintArrow> {
                 buffer.p2(type.z)
                 buffer.p1(type.height)
             }
+            is HintArrow.WorldEntityHintArrow -> {
+                buffer.p1(11)
+                buffer.p2(type.index)
+                buffer.p3(type.height)
+            }
             HintArrow.ResetHintArrow -> {
                 buffer.p1(0)
                 buffer.skipWrite(5)

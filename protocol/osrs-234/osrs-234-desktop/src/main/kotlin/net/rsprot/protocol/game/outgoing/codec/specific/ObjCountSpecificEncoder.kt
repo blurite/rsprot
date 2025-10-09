@@ -18,9 +18,9 @@ public class ObjCountSpecificEncoder : MessageEncoder<ObjCountSpecific> {
         // The function at the bottom of the OBJ_COUNT_SPECIFIC has a consistent order,
         // making it easy to identify all the properties of this packet:
         // obj_count(world, level, x, z, id, oldQuantity, newQuantity)
-        buffer.p2Alt1(message.id)
-        buffer.p4(message.oldQuantity)
-        buffer.p4Alt1(message.coordGrid.packed)
         buffer.p4Alt2(message.newQuantity)
+        buffer.p2Alt3(message.id)
+        buffer.p4Alt3(message.coordGrid.packed)
+        buffer.p4Alt1(message.oldQuantity)
     }
 }

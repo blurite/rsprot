@@ -16,6 +16,6 @@ public class VarpLargeEncoder : MessageEncoder<VarpLarge> {
         message: VarpLarge,
     ) {
         buffer.p2Alt3(message.id)
-        buffer.p4(message.value)
+        buffer.p4Alt1(message.value)
     }
 }

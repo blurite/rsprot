@@ -16,18 +16,18 @@ public class LocAddChangeV2Encoder : ZoneProtEncoder<LocAddChangeV2> {
         // The function at the bottom of the LOC_ADD_CHANGE has a consistent order,
         // making it easy to identify all the properties of this packet:
         // loc_add_change_del(world, level, x, z, layer, id, shape, rotation, opFlags, ops, 0, -1);
+        buffer.p1Alt2(message.opFlags.toInt())
+        buffer.p2(message.id)
         val ops = message.ops
         val opCount = ops?.size ?: 0
         buffer.p1Alt2(opCount)
         if (!ops.isNullOrEmpty()) {
             for ((key, value) in ops) {
-                buffer.p1Alt3(key.toInt() - 1)
+                buffer.p1(key.toInt() - 1)
                 buffer.pjstr(value)
             }
         }
-        buffer.p1Alt2(message.coordInZonePacked)
-        buffer.p1Alt2(message.locPropertiesPacked)
-        buffer.p2Alt1(message.id)
-        buffer.p1(message.opFlags.toInt())
+        buffer.p1Alt3(message.locPropertiesPacked)
+        buffer.p1Alt1(message.coordInZonePacked)
     }
 }

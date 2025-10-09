@@ -19,7 +19,7 @@ public class ObjEnabledOpsSpecificEncoder : MessageEncoder<ObjEnabledOpsSpecific
         // making it easy to identify all the properties of this packet:
         // obj_enabledops(world, level, x, z, id, opFlags)
         buffer.p1(message.opFlags.toInt())
-        buffer.p2Alt1(message.id)
-        buffer.p4Alt2(message.coordGrid.packed)
+        buffer.p4Alt3(message.coordGrid.packed)
+        buffer.p2Alt3(message.id)
     }
 }

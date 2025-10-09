@@ -6,7 +6,7 @@ import net.rsprot.protocol.message.OutgoingGameMessage
 
 /**
  * Hint arrow packets are used to render a hint arrow
- * at a specific player, NPC or a tile.
+ * at a specific player, NPC, Worldentity or a tile.
  * Only a single hint arrow can exist at a time in OldSchool.
  * @property type the hint arrow type to render.
  */
@@ -190,5 +190,30 @@ public class HintArrow(
                 "height=$height, " +
                 "position=$position" +
                 ")"
+    }
+
+    /**
+     * World entity hint arrows are used to render a hint arrow
+     * on-top of a specific world entity.
+     * @property index the index of the world entity in the root world to render the hint arrow on-top of.
+     * @property height the tile height value at which to render the world entity.
+     * Three bytes are read for it, meaning a value range of 0 to 16,777,215 could be transmitted.
+     */
+    public class WorldEntityHintArrow(
+        public val index: Int,
+        public val height: Int,
+    ) : HintArrowType {
+        override fun equals(other: Any?): Boolean {
+            if (this === other) return true
+            if (javaClass != other?.javaClass) return false
+
+            other as PlayerHintArrow
+
+            return index == other.index
+        }
+
+        override fun hashCode(): Int = index
+
+        override fun toString(): String = "WorldEntityHintArrow(index=$index, height=$height)"
     }
 }

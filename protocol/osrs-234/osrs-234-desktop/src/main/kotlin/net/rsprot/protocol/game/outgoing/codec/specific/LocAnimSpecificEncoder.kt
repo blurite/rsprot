@@ -17,6 +17,6 @@ public class LocAnimSpecificEncoder : MessageEncoder<LocAnimSpecific> {
     ) {
         buffer.p1Alt2(message.locPropertiesPacked)
         buffer.p2(message.id)
-        buffer.p3(message.coordInBuildAreaPacked)
+        buffer.p3Alt2(message.coordInBuildAreaPacked)
     }
 }
