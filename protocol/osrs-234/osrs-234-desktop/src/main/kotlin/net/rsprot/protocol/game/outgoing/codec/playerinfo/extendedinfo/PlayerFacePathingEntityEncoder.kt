@@ -17,7 +17,7 @@ public class PlayerFacePathingEntityEncoder : PrecomputedExtendedInfoEncoder<Fac
             alloc
                 .buffer(3, 3)
                 .toJagByteBuf()
-        buffer.p2Alt3(extendedInfo.index)
+        buffer.p2Alt1(extendedInfo.index)
         buffer.p1Alt2(extendedInfo.index shr 16)
         return buffer
     }
