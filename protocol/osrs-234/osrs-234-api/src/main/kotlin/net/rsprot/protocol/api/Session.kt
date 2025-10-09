@@ -12,6 +12,12 @@ import net.rsprot.protocol.api.metrics.addDisconnectionReason
 import net.rsprot.protocol.channel.hostAddress
 import net.rsprot.protocol.game.outgoing.GameServerProtCategory
 import net.rsprot.protocol.game.outgoing.zone.payload.MapProjAnimV2
+import net.rsprot.protocol.game.outgoing.zone.payload.ObjAdd
+import net.rsprot.protocol.game.outgoing.zone.payload.ObjCount
+import net.rsprot.protocol.game.outgoing.zone.payload.ObjCustomise
+import net.rsprot.protocol.game.outgoing.zone.payload.ObjDel
+import net.rsprot.protocol.game.outgoing.zone.payload.ObjEnabledOps
+import net.rsprot.protocol.game.outgoing.zone.payload.ObjUncustomise
 import net.rsprot.protocol.game.outgoing.zone.payload.SoundArea
 import net.rsprot.protocol.internal.RSProtFlags
 import net.rsprot.protocol.loginprot.incoming.util.LoginBlock
@@ -155,20 +161,39 @@ public class Session<R>(
         }
         message.markConsumed()
         if (RSProtFlags.filterMissingPacketsInClient) {
-            if (loginBlock.clientType == LoginClientType.DESKTOP && message is SoundArea) {
-                throw IllegalArgumentException(
-                    "SoundArea packet may only be sent as part of " +
-                        "partial enclosed as of revision 221 on Java clients. Packet: $message",
-                )
-            }
-            if (message is MapProjAnimV2) {
-                throw IllegalArgumentException("MapProjAnimV2 can only be sent as part of UpdateZonePartialEnclosed.")
-            }
+            validateMessage(message)
         }
         val categoryId = category.id
         val queue = outgoingMessageQueues[categoryId]
         queue += message
         checkIdle()
+    }
+
+    /**
+     * Validates the message to ensure the client can actually handle it as a stand-alone packet.
+     * This function should eventually be eliminated and these zone prots should not implement
+     * the base [OutgoingGameMessage] class, so they could never be passed in to begin with.
+     */
+    private fun validateMessage(message: OutgoingGameMessage) {
+        if (loginBlock.clientType == LoginClientType.DESKTOP && message is SoundArea) {
+            throw IllegalArgumentException(
+                "SoundArea packet may only be sent as part of " +
+                    "partial enclosed as of revision 221 on Java clients. Packet: $message",
+            )
+        }
+        if (message is MapProjAnimV2 ||
+            message is ObjAdd ||
+            message is ObjDel ||
+            message is ObjCount ||
+            message is ObjEnabledOps ||
+            message is ObjCustomise ||
+            message is ObjUncustomise
+        ) {
+            throw IllegalArgumentException(
+                "${message.javaClass.simpleName} can only be sent as " +
+                    "part of UpdateZonePartialEnclosed.",
+            )
+        }
     }
 
     /**
