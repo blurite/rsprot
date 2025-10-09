@@ -214,7 +214,7 @@ public class NpcAvatarExtendedInfoDesktopWriter :
         private const val HITS: Int = 0x8
         private const val SAY: Int = 0x10
         private const val OLD_SPOTANIM_UNUSED: Int = 0x20
-        private const val OLD_FACE_COORD: Int = 0x40
+        private const val OLD_FACE_COORD_UNUSED: Int = 0x40
         private const val TRANSFORMATION: Int = 0x80
         private const val OPS: Int = 0x100
         private const val HEAD_CUSTOMISATION: Int = 0x200
