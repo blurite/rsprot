@@ -10,7 +10,7 @@ public class OpWorldEntity6Decoder : MessageDecoder<OpWorldEntity6> {
     override val prot: ClientProt = GameClientProt.OPWORLDENTITY6
 
     override fun decode(buffer: JagByteBuf): OpWorldEntity6 {
-        val id = buffer.g2Alt1()
+        val id = buffer.g2Alt3()
         return OpWorldEntity6(id)
     }
 }
