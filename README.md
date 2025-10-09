@@ -1,7 +1,7 @@
 # RSProt
 
 [![GitHub Actions][actions-badge]][actions] [![MIT license][mit-badge]][mit]
-[![OldSchool - 221 - 233 (Alpha)](https://img.shields.io/badge/OldSchool-221--233_(Alpha)-9a1abd)](https://github.com/blurite/rsprot/tree/master/protocol/osrs-233/osrs-233-api/src/main/kotlin/net/rsprot/protocol/api)
+[![OldSchool - 221 - 234 (Alpha)](https://img.shields.io/badge/OldSchool-221--234_(Alpha)-9a1abd)](https://github.com/blurite/rsprot/tree/master/protocol/osrs-234/osrs-234-api/src/main/kotlin/net/rsprot/protocol/api)
 
 ## Status
 > [!NOTE]
@@ -32,12 +32,12 @@ other revisions are welcome, but will not be provided by default.
 - Java 11
 
 ## Supported Versions
-This library currently supports revision 221-233 OldSchool desktop clients.
+This library currently supports revision 221-234 OldSchool desktop clients.
 
 ## Quick Guide
 This section covers a quick guide for how to use the protocol after implementing
 the base API. It is not a guide for the base API itself, that will come in the
-future. This specific quick guide refers to revision 233.
+future. This specific quick guide refers to revision 234.
 
 #### Player Initialization
 When a player logs in, a new protocol instance must be allocated for
@@ -234,6 +234,23 @@ protocol. This can be done via:
 `service.worldEntityAvatarFactory.release(avatar)`
 
 ## Changes
+
+### Revision 234
+
+#### Additions
+- ZBUF - a server-to-client packet which enables or disables depth buffer in client.
+- Worldentity info's extended info - sequence; allowing server to modify the
+currently playing animation of a worldentity at runtime.
+
+#### Removals
+- The following server prots have been removed (These packets can now only be sent as part of UPDATE_ZONE_PARTIAL_ENCLOSED):
+  - OBJ_ADD
+  - OBJ_DEL
+  - OBJ_COUNT
+  - OBJ_ENABLED_OPS
+  - OBJ_CUSTOMISE
+  - OBJ_UNCUSTOMISE
+- WORLDENTITY_INFO_V5 was removed.
 
 ### Revision 233
 
