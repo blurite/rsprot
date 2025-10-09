@@ -43,7 +43,7 @@ public class WorldEntityAvatarExtendedInfoDesktopWriter :
 
         buffer.p1(clientFlag)
 
-        // unknown
+        // sequence; unused
         outFlag = outFlag or pCached(buffer, clientFlag, VISIBLE_OPS, blocks.visibleOps)
 
         if (outFlag != clientFlag) {
@@ -100,7 +100,7 @@ public class WorldEntityAvatarExtendedInfoDesktopWriter :
     @Suppress("unused")
     private companion object {
         private val logger = InlineLogger()
-        private const val UNKNOWN: Int = 0x1
+        private const val SEQUENCE: Int = 0x1
         private const val VISIBLE_OPS: Int = 0x2
     }
 }

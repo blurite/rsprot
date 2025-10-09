@@ -2,6 +2,7 @@ package net.rsprot.protocol.internal.game.outgoing.info.worldentityinfo.encoder
 
 import net.rsprot.protocol.common.client.OldSchoolClientType
 import net.rsprot.protocol.internal.game.outgoing.info.encoder.PrecomputedExtendedInfoEncoder
+import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.Sequence
 import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.VisibleOps
 
 /**
@@ -11,5 +12,6 @@ import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.Visib
  */
 public data class WorldEntityExtendedInfoEncoders(
     public val oldSchoolClientType: OldSchoolClientType,
+    public val sequence: PrecomputedExtendedInfoEncoder<Sequence>,
     public val visibleOps: PrecomputedExtendedInfoEncoder<VisibleOps>,
 )

@@ -5,6 +5,7 @@ import net.rsprot.protocol.game.outgoing.info.AvatarExtendedInfoWriter
 import net.rsprot.protocol.internal.client.ClientTypeMap
 import net.rsprot.protocol.internal.game.outgoing.info.ExtendedInfo
 import net.rsprot.protocol.internal.game.outgoing.info.encoder.ExtendedInfoEncoder
+import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.Sequence
 import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.VisibleOps
 import net.rsprot.protocol.internal.game.outgoing.info.worldentityinfo.encoder.WorldEntityExtendedInfoEncoders
 
@@ -23,6 +24,7 @@ private typealias WorldEntityExtendedInfoWriters =
 public class WorldEntityAvatarExtendedInfoBlocks(
     writers: WorldEntityExtendedInfoWriters,
 ) {
+    public val sequence: Sequence = Sequence(encoders(writers, WEEnc::sequence))
     public val visibleOps: VisibleOps = VisibleOps(encoders(writers, WEEnc::visibleOps))
 
     private companion object {

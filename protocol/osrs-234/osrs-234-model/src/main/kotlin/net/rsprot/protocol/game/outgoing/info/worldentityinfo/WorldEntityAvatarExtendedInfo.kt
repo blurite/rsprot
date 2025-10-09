@@ -44,6 +44,29 @@ public class WorldEntityAvatarExtendedInfo(
         buildClientWriterArray(extendedInfoWriters)
 
     /**
+     * Sets the sequence for this avatar to play.
+     * @param id the id of the sequence to play, or -1 to stop playing current sequence.
+     * @param delay the delay in client cycles (20ms/cc) until the avatar starts playing this sequence.
+     */
+    public fun setSequence(
+        id: Int,
+        delay: Int,
+    ) {
+        checkCommunicationThread()
+        verify {
+            require(id == -1 || id in UNSIGNED_SHORT_RANGE) {
+                "Unexpected sequence id: $id, expected value -1 or in range $UNSIGNED_SHORT_RANGE"
+            }
+            require(delay in UNSIGNED_BYTE_RANGE) {
+                "Unexpected sequence delay: $delay, expected range: $UNSIGNED_BYTE_RANGE"
+            }
+        }
+        blocks.sequence.id = id.toUShort()
+        blocks.sequence.delay = delay.toUShort()
+        flags = flags or SEQUENCE
+    }
+
+    /**
      * Sets the visible ops flag of this World Entity to the provided value.
      * @param flag the bit flag to set. Only the 5 lowest bits are used,
      * and an enabled bit implies the option at that index should render.
@@ -72,6 +95,7 @@ public class WorldEntityAvatarExtendedInfo(
      */
     internal fun reset() {
         flags = 0
+        blocks.sequence.clear()
         blocks.visibleOps.clear()
     }
 
@@ -91,6 +115,9 @@ public class WorldEntityAvatarExtendedInfo(
      */
     internal fun precompute() {
         precomputeCached()
+        if (flags and SEQUENCE != 0) {
+            blocks.sequence.precompute(allocator, huffmanCodec)
+        }
     }
 
     /**
@@ -154,11 +181,16 @@ public class WorldEntityAvatarExtendedInfo(
     private fun clearTransientExtendedInformation() {
         val flags = this.flags
         if (flags == 0) return
-        // None right now
+        if (flags and SEQUENCE != 0) {
+            blocks.sequence.clear()
+        }
     }
 
     public companion object {
-        public const val UNKNOWN: Int = 0x1
+        private val UNSIGNED_BYTE_RANGE: IntRange = UByte.MIN_VALUE.toInt()..UByte.MAX_VALUE.toInt()
+        private val UNSIGNED_SHORT_RANGE: IntRange = UShort.MIN_VALUE.toInt()..UShort.MAX_VALUE.toInt()
+
+        public const val SEQUENCE: Int = 0x1
         public const val VISIBLE_OPS: Int = 0x2
 
         /**

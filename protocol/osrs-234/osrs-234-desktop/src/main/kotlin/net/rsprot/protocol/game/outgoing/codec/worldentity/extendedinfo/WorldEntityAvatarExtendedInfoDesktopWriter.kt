@@ -18,11 +18,15 @@ public class WorldEntityAvatarExtendedInfoDesktopWriter :
         OldSchoolClientType.DESKTOP,
         WorldEntityExtendedInfoEncoders(
             OldSchoolClientType.DESKTOP,
+            WorldEntitySequenceEncoder(),
             WorldEntityVisibleOpsEncoder(),
         ),
     ) {
     private fun convertFlags(constantFlags: Int): Int {
         var clientFlags = 0
+        if (constantFlags and WorldEntityAvatarExtendedInfo.SEQUENCE != 0) {
+            clientFlags = clientFlags or SEQUENCE
+        }
         if (constantFlags and WorldEntityAvatarExtendedInfo.VISIBLE_OPS != 0) {
             clientFlags = clientFlags or VISIBLE_OPS
         }
@@ -43,7 +47,7 @@ public class WorldEntityAvatarExtendedInfoDesktopWriter :
 
         buffer.p1(clientFlag)
 
-        // unknown
+        outFlag = outFlag or pCached(buffer, clientFlag, SEQUENCE, blocks.sequence)
         outFlag = outFlag or pCached(buffer, clientFlag, VISIBLE_OPS, blocks.visibleOps)
 
         if (outFlag != clientFlag) {
@@ -100,7 +104,7 @@ public class WorldEntityAvatarExtendedInfoDesktopWriter :
     @Suppress("unused")
     private companion object {
         private val logger = InlineLogger()
-        private const val UNKNOWN: Int = 0x1
+        private const val SEQUENCE: Int = 0x1
         private const val VISIBLE_OPS: Int = 0x2
     }
 }
