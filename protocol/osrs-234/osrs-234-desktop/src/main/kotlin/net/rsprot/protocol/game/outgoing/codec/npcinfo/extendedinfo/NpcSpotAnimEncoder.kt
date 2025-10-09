@@ -26,9 +26,9 @@ public class NpcSpotAnimEncoder : PrecomputedExtendedInfoEncoder<SpotAnimList> {
         var slot = changelist.nextSetBit(0)
         while (slot != -1) {
             val spotanim = SpotAnim(spotanims[slot])
-            buffer.p1Alt2(slot)
-            buffer.p2Alt1(spotanim.id)
-            buffer.p4Alt1(spotanim.delay or (spotanim.height shl 16))
+            buffer.p1(slot)
+            buffer.p2(spotanim.id)
+            buffer.p4Alt2(spotanim.delay or (spotanim.height shl 16))
             slot = changelist.nextSetBit(slot + 1)
         }
         return buffer

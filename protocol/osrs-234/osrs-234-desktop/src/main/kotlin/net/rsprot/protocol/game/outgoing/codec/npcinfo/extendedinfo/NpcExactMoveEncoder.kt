@@ -17,13 +17,13 @@ public class NpcExactMoveEncoder : PrecomputedExtendedInfoEncoder<ExactMove> {
             alloc
                 .buffer(10, 10)
                 .toJagByteBuf()
-        buffer.p1Alt2(extendedInfo.deltaX1.toInt())
+        buffer.p1(extendedInfo.deltaX1.toInt())
         buffer.p1(extendedInfo.deltaZ1.toInt())
-        buffer.p1Alt2(extendedInfo.deltaX2.toInt())
-        buffer.p1Alt3(extendedInfo.deltaZ2.toInt())
-        buffer.p2Alt3(extendedInfo.delay1.toInt())
-        buffer.p2Alt1(extendedInfo.delay2.toInt())
-        buffer.p2Alt1(extendedInfo.direction.toInt())
+        buffer.p1(extendedInfo.deltaX2.toInt())
+        buffer.p1(extendedInfo.deltaZ2.toInt())
+        buffer.p2Alt2(extendedInfo.delay1.toInt())
+        buffer.p2Alt3(extendedInfo.delay2.toInt())
+        buffer.p2Alt2(extendedInfo.direction.toInt())
         return buffer
     }
 }

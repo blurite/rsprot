@@ -57,18 +57,18 @@ class NpcInfoClient {
             val index = updatedNpcSlot[i]
             val npc = checkNotNull(cachedNpcs[index])
             var flag = buffer.g1()
-            if ((flag and 0x2) != 0) {
+            if ((flag and 0x4) != 0) {
                 val extra: Int = buffer.g1()
                 flag += extra shl 8
             }
-            if ((flag and 0x800) != 0) {
+            if ((flag and 0x8000) != 0) {
                 val extra: Int = buffer.g1()
                 flag += extra shl 16
             }
-            check(flag and (0x2 or 0x800 or 0x80).inv() == 0) {
+            check(flag and (0x4 or 0x8000 or 0x10).inv() == 0) {
                 "Extended info other than 'say' included!"
             }
-            if (flag and 0x80 != 0) {
+            if (flag and 0x10 != 0) {
                 val text = buffer.gjstr()
                 npc.overheadChat = text
             }
