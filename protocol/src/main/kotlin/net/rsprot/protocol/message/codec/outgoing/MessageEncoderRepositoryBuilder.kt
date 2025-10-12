@@ -31,6 +31,11 @@ public class MessageEncoderRepositoryBuilder<P : ServerProt>(
         check: Boolean = true,
     ) {
         val prot = encoder.prot
+        // Avoid binding prots with opcode -1.
+        // They are a result of Jagex only using enclosed variants for some packets.
+        if (prot.opcode == -1) {
+            return
+        }
         if (check) {
             require(encoders[prot.opcode] == null) {
                 "Encoder for prot $prot is already bound."
