@@ -12,7 +12,7 @@ public class TeleportDecoder : MessageDecoder<Teleport> {
     override fun decode(buffer: JagByteBuf): Teleport {
         val z = buffer.g2Alt3()
         val x = buffer.g2()
-        val oculusSyncValue = buffer.g4Alt1()
+        val oculusSyncValue = buffer.g4Alt3()
         val level = buffer.g1Alt1()
         return Teleport(
             oculusSyncValue,
