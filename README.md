@@ -1,7 +1,7 @@
 # RSProt
 
 [![GitHub Actions][actions-badge]][actions] [![MIT license][mit-badge]][mit]
-[![OldSchool - 221 - 234 (Alpha)](https://img.shields.io/badge/OldSchool-221--234_(Alpha)-9a1abd)](https://github.com/blurite/rsprot/tree/master/protocol/osrs-234/osrs-234-api/src/main/kotlin/net/rsprot/protocol/api)
+[![OldSchool - 221 - 235 (Alpha)](https://img.shields.io/badge/OldSchool-221--235_(Alpha)-9a1abd)](https://github.com/blurite/rsprot/tree/master/protocol/osrs-235/osrs-235-api/src/main/kotlin/net/rsprot/protocol/api)
 
 ## Status
 > [!NOTE]
@@ -16,7 +16,7 @@ In order to add it to your server, add the below line under dependencies
 in your build.gradle.kts.
 
 ```kts
-implementation("net.rsprot:osrs-234-api:1.0.0-ALPHA-20251012")
+implementation("net.rsprot:osrs-235-api:1.0.0-ALPHA-20251027")
 ```
 
 An in-depth tutorial on how to implement it will be added into this read-me
@@ -234,6 +234,11 @@ protocol. This can be done via:
 `service.worldEntityAvatarFactory.release(avatar)`
 
 ## Changes
+
+### Revision 235
+Revision 235 brings no protocol level changes.
+However, as a small side note, OBJ packets are no longer limited to id 32767
+in client.
 
 ### Revision 234
 
