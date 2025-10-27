@@ -15,7 +15,7 @@ public class VarpLargeEncoder : MessageEncoder<VarpLarge> {
         buffer: JagByteBuf,
         message: VarpLarge,
     ) {
-        buffer.p2Alt3(message.id)
-        buffer.p4Alt1(message.value)
+        buffer.p2Alt1(message.id)
+        buffer.p4Alt3(message.value)
     }
 }

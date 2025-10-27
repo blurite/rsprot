@@ -16,7 +16,7 @@ public class IfSetColourEncoder : MessageEncoder<IfSetColour> {
         buffer: JagByteBuf,
         message: IfSetColour,
     ) {
+        buffer.p2Alt2(message.colour15BitPacked)
         buffer.pCombinedIdAlt2(message.combinedId)
-        buffer.p2Alt3(message.colour15BitPacked)
     }
 }

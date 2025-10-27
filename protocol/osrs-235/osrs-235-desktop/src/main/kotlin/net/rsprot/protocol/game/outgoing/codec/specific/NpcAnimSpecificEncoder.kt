@@ -15,8 +15,8 @@ public class NpcAnimSpecificEncoder : MessageEncoder<NpcAnimSpecific> {
         buffer: JagByteBuf,
         message: NpcAnimSpecific,
     ) {
-        buffer.p2Alt2(message.index)
-        buffer.p1Alt1(message.delay)
-        buffer.p2(message.id)
+        buffer.p2Alt3(message.index)
+        buffer.p1Alt3(message.delay)
+        buffer.p2Alt1(message.id)
     }
 }

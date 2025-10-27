@@ -15,6 +15,6 @@ public class UpdateRebootTimerEncoder : MessageEncoder<UpdateRebootTimer> {
         buffer: JagByteBuf,
         message: UpdateRebootTimer,
     ) {
-        buffer.p2Alt1(message.gameCycles)
+        buffer.p2Alt3(message.gameCycles)
     }
 }

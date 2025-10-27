@@ -16,8 +16,8 @@ public class ObjDelEncoder : ZoneProtEncoder<ObjDel> {
         // The function at the bottom of the OBJ_DEL has a consistent order,
         // making it easy to identify all the properties of this packet:
         // obj_del(level, x, z, id, quantity)
-        buffer.p4(message.quantity)
+        buffer.p2(message.id)
         buffer.p1Alt1(message.coordInZonePacked)
-        buffer.p2Alt3(message.id)
+        buffer.p4Alt1(message.quantity)
     }
 }
