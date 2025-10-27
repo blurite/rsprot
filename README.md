@@ -32,12 +32,12 @@ other revisions are welcome, but will not be provided by default.
 - Java 11
 
 ## Supported Versions
-This library currently supports revision 221-234 OldSchool desktop clients.
+This library currently supports revision 221-235 OldSchool desktop clients.
 
 ## Quick Guide
 This section covers a quick guide for how to use the protocol after implementing
 the base API. It is not a guide for the base API itself, that will come in the
-future. This specific quick guide refers to revision 234.
+future. This specific quick guide refers to revision 235.
 
 #### Player Initialization
 When a player logs in, a new protocol instance must be allocated for
