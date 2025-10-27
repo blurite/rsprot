@@ -1835,10 +1835,7 @@ public class PlayerAvatarExtendedInfo(
         if (flag and APPEARANCE != 0) {
             observer.otherAppearanceChangeCycles[localIndex] = lastAppearanceChangeCycle
         }
-        // Note: The order must be as client expects it, in 234 chat is before say
-        if (flag and CHAT != 0) {
-            observer.observedChatStorage.trackChat(this.localIndex, this.blocks.chat)
-        }
+        // Note: The order must be as client expects it, in 235 chat is before say
         if (flag and SAY != 0) {
             val appendToChatbox =
                 this.blocks.say.text
@@ -1846,6 +1843,9 @@ public class PlayerAvatarExtendedInfo(
             if (localIndex == observer.localIndex || appendToChatbox) {
                 observer.observedChatStorage.trackSay(this.localIndex, this.blocks.say)
             }
+        }
+        if (flag and CHAT != 0) {
+            observer.observedChatStorage.trackChat(this.localIndex, this.blocks.chat)
         }
         writer.pExtendedInfo(
             buffer,

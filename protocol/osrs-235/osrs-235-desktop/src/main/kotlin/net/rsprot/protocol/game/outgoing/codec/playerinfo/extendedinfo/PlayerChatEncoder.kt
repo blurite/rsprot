@@ -22,15 +22,15 @@ public class PlayerChatEncoder : PrecomputedExtendedInfoEncoder<Chat> {
             alloc
                 .buffer(capacity)
                 .toJagByteBuf()
-        buffer.p2Alt1(colour shl 8 or extendedInfo.effects.toInt())
-        buffer.p1Alt3(extendedInfo.modicon.toInt())
+        buffer.p2Alt2(colour shl 8 or extendedInfo.effects.toInt())
+        buffer.p1Alt2(extendedInfo.modicon.toInt())
         buffer.p1Alt2(if (extendedInfo.autotyper) 1 else 0)
         val huffmanBuffer =
             alloc
                 .buffer(text.length)
                 .toJagByteBuf()
         codec.encode(huffmanBuffer, text)
-        buffer.p1(huffmanBuffer.readableBytes())
+        buffer.p1Alt3(huffmanBuffer.readableBytes())
         try {
             buffer.pdataAlt1(huffmanBuffer.buffer)
         } finally {

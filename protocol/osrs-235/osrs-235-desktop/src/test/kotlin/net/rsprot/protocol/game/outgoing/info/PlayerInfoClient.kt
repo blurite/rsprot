@@ -178,10 +178,10 @@ class PlayerInfoClient {
             val index = extendedInfoIndices[i]
             val player = checkNotNull(cachedPlayers[index])
             var flag = buffer.g1()
-            if (flag and 0x4 != 0) {
+            if (flag and 0x1 != 0) {
                 flag += buffer.g1() shl 8
             }
-            if (flag and 0x200 != 0) {
+            if (flag and 0x100 != 0) {
                 flag += buffer.g1() shl 16
             }
             decodeExtendedInfoBlocks(buffer, player, flag)
@@ -193,13 +193,13 @@ class PlayerInfoClient {
         player: Player,
         flag: Int,
     ) {
-        if (flag and 0x10 != 0) {
-            val len = buffer.g1Alt3()
+        if (flag and 0x4 != 0) {
+            val len = buffer.g1Alt1()
             val data = ByteArray(len)
-            buffer.gdata(data)
+            buffer.gdataAlt3(data)
             decodeAppearance(Unpooled.wrappedBuffer(data).toJagByteBuf(), player)
         }
-        require(flag and 0x10.inv() == 0)
+        require(flag and 0x4.inv() == 0)
     }
 
     private fun decodeAppearance(

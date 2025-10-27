@@ -106,20 +106,20 @@ public class PlayerAvatarExtendedInfoDesktopWriter :
             buffer.p1(clientFlag shr 16)
         }
 
-        outFlag = outFlag or pCached(buffer, clientFlag, MOVE_SPEED, blocks.moveSpeed)
-        outFlag = outFlag or pCached(buffer, clientFlag, FACE_PATHINGENTITY, blocks.facePathingEntity)
-        outFlag = outFlag or pCached(buffer, clientFlag, EXACT_MOVE, blocks.exactMove)
-        outFlag = outFlag or pOnDemand(buffer, clientFlag, TINTING, blocks.tinting, localIndex, observerIndex)
         outFlag = outFlag or pCached(buffer, clientFlag, APPEARANCE, blocks.appearance)
         outFlag = outFlag or pCached(buffer, clientFlag, TEMP_MOVE_SPEED, blocks.temporaryMoveSpeed)
-        // Old chat
+        outFlag = outFlag or pOnDemand(buffer, clientFlag, TINTING, blocks.tinting, localIndex, observerIndex)
+        outFlag = outFlag or pCached(buffer, clientFlag, FACE_ANGLE, blocks.faceAngle)
         outFlag = outFlag or pCached(buffer, clientFlag, SEQUENCE, blocks.sequence)
-        // Name extras
+        outFlag = outFlag or pCached(buffer, clientFlag, SAY, blocks.say)
         outFlag = outFlag or pCached(buffer, clientFlag, CHAT, blocks.chat)
         outFlag = outFlag or pOnDemand(buffer, clientFlag, HITS, blocks.hit, localIndex, observerIndex)
-        outFlag = outFlag or pCached(buffer, clientFlag, SAY, blocks.say)
+        outFlag = outFlag or pCached(buffer, clientFlag, MOVE_SPEED, blocks.moveSpeed)
+        // Old chat
         outFlag = outFlag or pCached(buffer, clientFlag, SPOTANIM, blocks.spotAnims)
-        outFlag = outFlag or pCached(buffer, clientFlag, FACE_ANGLE, blocks.faceAngle)
+        // Name extras
+        outFlag = outFlag or pCached(buffer, clientFlag, EXACT_MOVE, blocks.exactMove)
+        outFlag = outFlag or pCached(buffer, clientFlag, FACE_PATHINGENTITY, blocks.facePathingEntity)
 
         if (outFlag != clientFlag) {
             val finalPos = buffer.writerIndex()
@@ -180,24 +180,24 @@ public class PlayerAvatarExtendedInfoDesktopWriter :
     @Suppress("unused")
     private companion object {
         private val logger = InlineLogger()
-        private const val EXTENDED_SHORT = 0x4
-        private const val EXTENDED_MEDIUM = 0x200
+        private const val EXTENDED_SHORT = 0x1
+        private const val EXTENDED_MEDIUM = 0x100
 
-        private const val CHAT_OLD = 0x1
-        private const val FACE_PATHINGENTITY = 0x2
-        private const val SAY = 0x8
-        private const val APPEARANCE = 0x10
-        private const val FACE_ANGLE = 0x20
+        private const val CHAT_OLD = 0x2
+        private const val APPEARANCE = 0x4
+        private const val FACE_PATHINGENTITY = 0x8
+        private const val SEQUENCE = 0x10
+        private const val SAY = 0x20
         private const val HITS = 0x40
-        private const val SEQUENCE = 0x80
-        private const val TINTING = 0x400
-        private const val TEMP_MOVE_SPEED = 0x800
+        private const val FACE_ANGLE = 0x80
+        private const val EXACT_MOVE = 0x200
+        private const val MOVE_SPEED = 0x800
         private const val CHAT = 0x1000
-        private const val EXACT_MOVE = 0x2000
-        private const val MOVE_SPEED = 0x4000
+        private const val TINTING = 0x2000
+        private const val TEMP_MOVE_SPEED = 0x4000
         private const val SPOTANIM = 0x10000
 
         // Name extras are part of appearance nowadays, and thus will not be used on their own
-        private const val NAME_EXTRAS = 0x100
+        private const val NAME_EXTRAS = 0x400
     }
 }
