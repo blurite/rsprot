@@ -1139,8 +1139,8 @@ public class PlayerAvatarExtendedInfo(
             require(identKitSlot in 0..6) {
                 "Unexpected wearPos $identKitSlot, expected range 0..6"
             }
-            require(value == -1 || value in UNSIGNED_BYTE_RANGE) {
-                "Unexpected value $value, expected value -1 or in range $UNSIGNED_BYTE_RANGE"
+            require(value == -1 || value in IDENT_KIT_RANGE) {
+                "Unexpected value $value, expected value -1 or in range $IDENT_KIT_RANGE"
             }
         }
         val valueAsShort = value.toShort()
@@ -1171,8 +1171,8 @@ public class PlayerAvatarExtendedInfo(
             require(wearpos in 0..11) {
                 "Unexpected wearPos $wearpos, expected range 0..11"
             }
-            require(id == -1 || id in UNSIGNED_SHORT_RANGE) {
-                "Unexpected id $id, expected value -1 or range $UNSIGNED_SHORT_RANGE"
+            require(id == -1 || id in OBJ_RANGE) {
+                "Unexpected id $id, expected value -1 or range $OBJ_RANGE"
             }
             require(wearpos2 == -1 || wearpos2 in 0..11) {
                 "Unexpected wearpos2 $wearpos2, expected value -1 or in range 0..11"
@@ -1828,6 +1828,8 @@ public class PlayerAvatarExtendedInfo(
         private val SIGNED_BYTE_RANGE: IntRange = Byte.MIN_VALUE.toInt()..Byte.MAX_VALUE.toInt()
         private val UNSIGNED_BYTE_RANGE: IntRange = UByte.MIN_VALUE.toInt()..UByte.MAX_VALUE.toInt()
         private val UNSIGNED_SHORT_RANGE: IntRange = UShort.MIN_VALUE.toInt()..UShort.MAX_VALUE.toInt()
+        private val IDENT_KIT_RANGE: IntRange = 0..<(0x200 - 0x100)
+        private val OBJ_RANGE: IntRange = UShort.MIN_VALUE.toInt()..(UShort.MAX_VALUE.toInt() - 0x200)
         private val UNSIGNED_SMART_1_OR_2_RANGE: IntRange = 0..0x7FFF
         private val HIT_TYPE_RANGE: IntRange = -1..0x7FFD
 
