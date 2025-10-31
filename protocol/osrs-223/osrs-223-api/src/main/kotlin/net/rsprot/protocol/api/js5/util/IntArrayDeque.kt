@@ -600,7 +600,14 @@ public class IntArrayDeque {
             }
         }
 
-        private const val MAX_ARRAY_SIZE = 201
+        /**
+         * The max capacity for this specialized int array deque.
+         * The limit comes from the fact a single queue can only be
+         * up to length 200, as that is the most concurrent requests the
+         * client will ever send out. We keep one for headroom/partial
+         * processing.
+         */
+        private const val MAX_CAPACITY = 201
 
         /** [oldCapacity] and [minCapacity] must be non-negative. */
         internal fun newCapacity(
@@ -612,8 +619,14 @@ public class IntArrayDeque {
             if (newCapacity - minCapacity < 0) {
                 newCapacity = minCapacity
             }
-            if (newCapacity - MAX_ARRAY_SIZE > 0) {
-                newCapacity = if (minCapacity > MAX_ARRAY_SIZE) Int.MAX_VALUE else MAX_ARRAY_SIZE
+            if (newCapacity > MAX_CAPACITY) {
+                if (minCapacity > MAX_CAPACITY) {
+                    throw IllegalStateException(
+                        "Required array size $minCapacity exceeds " +
+                            "max supported capacity ($MAX_CAPACITY).",
+                    )
+                }
+                newCapacity = MAX_CAPACITY
             }
             return newCapacity
         }
