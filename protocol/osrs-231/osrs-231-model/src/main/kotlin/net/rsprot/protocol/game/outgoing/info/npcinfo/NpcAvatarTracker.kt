@@ -129,6 +129,7 @@ public class NpcAvatarTracker {
         val players = this.observingPlayers
         while (true) {
             val cur = players[longIndex]
+            if ((cur and bit) != 0L) return false
             val assigned =
                 players.weakCompareAndSetVolatile(
                     longIndex,
@@ -151,6 +152,7 @@ public class NpcAvatarTracker {
         val players = this.observingPlayers
         while (true) {
             val cur = players[longIndex]
+            if ((cur and bit) == 0L) return false
             val assigned =
                 players.weakCompareAndSetVolatile(
                     longIndex,
