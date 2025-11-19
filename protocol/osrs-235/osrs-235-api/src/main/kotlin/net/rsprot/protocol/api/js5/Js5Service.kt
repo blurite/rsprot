@@ -2,6 +2,7 @@ package net.rsprot.protocol.api.js5
 
 import com.github.michaelbull.logging.InlineLogger
 import io.netty.buffer.ByteBuf
+import net.rsprot.buffer.extensions.toByteArray
 import net.rsprot.protocol.api.NetworkService
 import net.rsprot.protocol.api.js5.util.UniqueQueue
 import net.rsprot.protocol.api.logging.js5Log
@@ -39,6 +40,22 @@ public class Js5Service(
 
     @Volatile
     private var isRunning: Boolean = true
+
+    @Volatile
+    private var cachedMasterIndex: ByteArray? = null
+
+    public fun getMasterIndex(): ByteArray {
+        val cached = cachedMasterIndex
+        if (cached != null) {
+            return cached
+        }
+        val group =
+            provider.provide(0xFF, 0xFF)
+                ?: error("JS5 master index unavailable.")
+        val array = group.toByteArray()
+        this.cachedMasterIndex = array
+        return array
+    }
 
     override fun run() {
         while (true) {

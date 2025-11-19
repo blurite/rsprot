@@ -5,6 +5,7 @@ import net.rsprot.crypto.cipher.StreamCipher
 import net.rsprot.protocol.api.NetworkService
 import net.rsprot.protocol.api.encoder.OutgoingMessageEncoder
 import net.rsprot.protocol.api.handlers.OutgoingMessageSizeEstimator
+import net.rsprot.protocol.channel.binaryStreamOrNull
 import net.rsprot.protocol.channel.hostAddress
 import net.rsprot.protocol.common.client.OldSchoolClientType
 import net.rsprot.protocol.message.codec.outgoing.MessageEncoderRepository
@@ -21,6 +22,10 @@ public class GameMessageEncoder(
         networkService.encoderRepositories.gameMessageEncoderRepositories[client]
     override val validate: Boolean = true
     override val estimator: OutgoingMessageSizeEstimator = networkService.messageSizeEstimator
+
+    override fun handlerAdded(ctx: ChannelHandlerContext) {
+        this.stream = ctx.channel().binaryStreamOrNull()
+    }
 
     override fun onMessageWritten(
         ctx: ChannelHandlerContext,

@@ -20,12 +20,6 @@ public class UrlOpenEncoder : MessageEncoder<UrlOpen> {
         buffer: JagByteBuf,
         message: UrlOpen,
     ) {
-        val marker = buffer.writerIndex()
         buffer.pjstr(message.url)
-
-        // Encrypt the entire buffer with a stream cipher
-        for (i in marker..<buffer.writerIndex()) {
-            buffer.buffer.setByte(i, buffer.buffer.getByte(i) + streamCipher.nextInt())
-        }
     }
 }

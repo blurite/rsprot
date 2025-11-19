@@ -15,6 +15,7 @@ import net.rsprot.buffer.extensions.toJagByteBuf
 import net.rsprot.crypto.cipher.StreamCipher
 import net.rsprot.protocol.Prot
 import net.rsprot.protocol.api.handlers.OutgoingMessageSizeEstimator
+import net.rsprot.protocol.binary.BinaryStream
 import net.rsprot.protocol.game.outgoing.misc.client.PacketGroupStart
 import net.rsprot.protocol.loginprot.outgoing.LoginResponse
 import net.rsprot.protocol.message.ByteBufHolderWrapperFooterMessage
@@ -22,6 +23,7 @@ import net.rsprot.protocol.message.ByteBufHolderWrapperHeaderMessage
 import net.rsprot.protocol.message.OutgoingGameMessage
 import net.rsprot.protocol.message.OutgoingMessage
 import net.rsprot.protocol.message.codec.outgoing.MessageEncoderRepository
+import java.util.function.Consumer
 import kotlin.math.min
 
 /**
@@ -35,6 +37,12 @@ public abstract class OutgoingMessageEncoder : ChannelOutboundHandlerAdapter() {
     protected abstract val repository: MessageEncoderRepository<*>
     protected abstract val validate: Boolean
     protected abstract val estimator: OutgoingMessageSizeEstimator
+    protected var stream: BinaryStream? = null
+
+    private var opcode: Int = -1
+    private var constantSize: Int = Int.MIN_VALUE
+    private var payloadStartIndex: Int = -1
+    private var payloadEndIndex: Int = -1
 
     override fun write(
         ctx: ChannelHandlerContext,
@@ -64,6 +72,44 @@ public abstract class OutgoingMessageEncoder : ChannelOutboundHandlerAdapter() {
         } catch (t: Throwable) {
             throw EncoderException(t)
         }
+    }
+
+    private fun pushPacket(buf: ByteBuf) {
+        val stream = this.stream ?: return
+        check(this.opcode != -1)
+        check(this.constantSize != Int.MIN_VALUE)
+        check(this.payloadStartIndex != -1)
+        check(this.payloadEndIndex != -1)
+        stream.append(
+            serverToClient = true,
+            opcode = this.opcode,
+            size = this.constantSize,
+            payload = buf.retainedSlice(payloadStartIndex, payloadEndIndex - payloadStartIndex),
+        )
+        this.opcode = -1
+        this.constantSize = -1
+        this.payloadStartIndex = -1
+        this.payloadEndIndex = -1
+    }
+
+    private fun pushPacketWithCallback(buf: ByteBuf): Consumer<Int>? {
+        val stream = this.stream ?: return null
+        check(this.opcode != -1)
+        check(this.constantSize != -1)
+        check(this.payloadStartIndex != -1)
+        check(this.payloadEndIndex != -1)
+        val callback =
+            stream.appendWithSizeCallback(
+                serverToClient = true,
+                opcode = this.opcode,
+                size = this.constantSize,
+                payload = buf.retainedSlice(payloadStartIndex, payloadEndIndex - payloadStartIndex),
+            )
+        this.opcode = -1
+        this.constantSize = -1
+        this.payloadStartIndex = -1
+        this.payloadEndIndex = -1
+        return callback
     }
 
     protected open fun mapOpcode(opcode: Int): Int {
@@ -149,9 +195,9 @@ public abstract class OutgoingMessageEncoder : ChannelOutboundHandlerAdapter() {
             return
         }
 
-        writePacketHeader(ctx, msg)
-
+        val payload = writePacketHeader(ctx, msg)
         val bufHolderContent = msg.content().slice()
+        payload?.writeBytes(bufHolderContent.slice())
         // If there are trailing bytes, we need to encode and write those as well
         if (msg is ByteBufHolderWrapperFooterMessage) {
             // If the byte buf holder wrapper is a footer, use void promise as we don't
@@ -168,6 +214,7 @@ public abstract class OutgoingMessageEncoder : ChannelOutboundHandlerAdapter() {
             try {
                 footer = allocateBuffer(ctx, msg.nonByteBufHolderSize())
                 encodePayload(msg, footer)
+                payload?.writeBytes(footer.slice())
                 if (footer.isReadable) {
                     ctx.write(footer, promise)
                 } else {
@@ -186,15 +233,22 @@ public abstract class OutgoingMessageEncoder : ChannelOutboundHandlerAdapter() {
                 ctx.write(Unpooled.EMPTY_BUFFER, promise)
             }
         }
+        if (payload != null) {
+            this.payloadStartIndex = payload.readerIndex()
+            this.payloadEndIndex = payload.writerIndex()
+            pushPacket(payload)
+        }
     }
 
     private fun <T> writePacketHeader(
         ctx: ChannelHandlerContext,
         msg: T,
-    ) where T : OutgoingMessage, T : ByteBufHolder {
+    ): ByteBuf? where T : OutgoingMessage, T : ByteBufHolder {
         val encoder = repository.getEncoder(msg::class.java)
         val prot = encoder.prot
         val sourceOpcode = prot.opcode
+        this.opcode = sourceOpcode
+        this.constantSize = prot.size
         val opcode = mapOpcode(sourceOpcode)
         var headerSize = if (opcode >= 0x80) Short.SIZE_BYTES else Byte.SIZE_BYTES
         when (prot.size) {
@@ -219,12 +273,24 @@ public abstract class OutgoingMessageEncoder : ChannelOutboundHandlerAdapter() {
                 Prot.VAR_BYTE -> buf.p1(bytes)
                 Prot.VAR_SHORT -> buf.p2(bytes)
             }
+            val payloadStartIndex = buf.writerIndex()
             if (msg is ByteBufHolderWrapperHeaderMessage) {
                 encodePayload(msg, buf)
             }
+            val payloadEndIndex = buf.writerIndex()
+            val payloadSlice =
+                if (this.stream != null) {
+                    buf.copy(
+                        payloadStartIndex,
+                        payloadEndIndex - payloadStartIndex,
+                    )
+                } else {
+                    null
+                }
             ctx.write(buf, ctx.voidPromise())
             buf = null
             onMessageWritten(ctx, sourceOpcode, bytes)
+            return payloadSlice
         } finally {
             buf?.release()
         }
@@ -251,6 +317,9 @@ public abstract class OutgoingMessageEncoder : ChannelOutboundHandlerAdapter() {
         val encoder = repository.getEncoder(msg::class.java)
         val prot = encoder.prot
         val sourceOpcode = prot.opcode
+        val isPacketGroup = msg is PacketGroupStart
+        this.opcode = sourceOpcode
+        this.constantSize = prot.size
         val opcode = mapOpcode(sourceOpcode)
         if (encoder.encryptedPayload) {
             pSmart1Or2Enc(out, opcode)
@@ -279,13 +348,29 @@ public abstract class OutgoingMessageEncoder : ChannelOutboundHandlerAdapter() {
             }
 
         val payloadMarker = out.writerIndex()
+        this.payloadStartIndex = payloadMarker
         encoder.encode(
             cipher,
             out.toJagByteBuf(),
             msg,
         )
-
         val endMarker = out.writerIndex()
+        this.payloadEndIndex = endMarker
+        val callback =
+            if (isPacketGroup) {
+                pushPacketWithCallback(out)
+            } else {
+                pushPacket(out)
+                null
+            }
+
+        if (encoder.encryptedPayload) {
+            // Encrypt the entire buffer with a stream cipher
+            for (i in payloadMarker..<endMarker) {
+                out.setByte(i, out.getByte(i) + cipher.nextInt())
+            }
+        }
+
         // Update the size based on the number of bytes written, if it's a var-* packet
         if (sizeMarker != -1) {
             var length = endMarker - payloadMarker
@@ -344,7 +429,8 @@ public abstract class OutgoingMessageEncoder : ChannelOutboundHandlerAdapter() {
             out.writerIndex(endMarker)
         }
         // Special exception here, as this packet essentially encodes all the children as well
-        if (msg is PacketGroupStart) {
+        if (isPacketGroup) {
+            msg as PacketGroupStart
             for (sub in msg.messages) {
                 try {
                     if (sub is ByteBufHolder) {
@@ -368,7 +454,10 @@ public abstract class OutgoingMessageEncoder : ChannelOutboundHandlerAdapter() {
             out.writerIndex(payloadMarker)
             // Note that packet group start reads it as a signed short in the client, so we should
             // cap it.
-            out.p2(min(32767, written))
+            val packetGroupSize = min(32767, written)
+            out.p2(packetGroupSize)
+            // Trigger the callback to update the packet group size in our .bin file, if one exists
+            callback?.accept(packetGroupSize)
             out.writerIndex(finalMarker)
         }
     }
@@ -387,6 +476,8 @@ public abstract class OutgoingMessageEncoder : ChannelOutboundHandlerAdapter() {
         val encoder = repository.getEncoder(message::class.java)
         val prot = encoder.prot
         val sourceOpcode = prot.opcode
+        this.opcode = sourceOpcode
+        this.constantSize = prot.size
         val opcode = mapOpcode(sourceOpcode)
         pSmart1Or2Enc(buf, opcode)
         var bytes = message.content().readableBytes()
@@ -400,6 +491,7 @@ public abstract class OutgoingMessageEncoder : ChannelOutboundHandlerAdapter() {
             Prot.VAR_BYTE -> buf.p1(bytes)
             Prot.VAR_SHORT -> buf.p2(bytes)
         }
+        this.payloadStartIndex = buf.writerIndex()
         if (message is ByteBufHolderWrapperHeaderMessage) {
             encodePayload(message, buf)
         }
@@ -413,6 +505,8 @@ public abstract class OutgoingMessageEncoder : ChannelOutboundHandlerAdapter() {
         if (message is ByteBufHolderWrapperFooterMessage) {
             encodePayload(message, buf)
         }
+        this.payloadEndIndex = buf.writerIndex()
+        pushPacket(buf)
     }
 
     public open fun onMessageWritten(

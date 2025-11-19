@@ -5,6 +5,7 @@ import io.netty.buffer.ByteBufAllocator
 import io.netty.buffer.PooledByteBufAllocator
 import net.rsprot.compression.provider.HuffmanCodecProvider
 import net.rsprot.crypto.rsa.RsaKeyPair
+import net.rsprot.protocol.api.binary.BinaryHeaderProvider
 import net.rsprot.protocol.api.bootstrap.BootstrapBuilder
 import net.rsprot.protocol.api.config.NetworkConfiguration
 import net.rsprot.protocol.api.game.GameDisconnectionReason
@@ -324,6 +325,16 @@ public abstract class AbstractNetworkServiceFactory<R> {
     }
 
     /**
+     * Gets the binary header provider, or null if binary files should
+     * not be written.
+     * The binary header provider fills in the missing gaps that cannot
+     * be inferred within RSProt internally.
+     */
+    public open fun getBinaryHeaderProvider(): BinaryHeaderProvider? {
+        return null
+    }
+
+    /**
      * Gets the [IdleStateHandlerSuppliers] which supply [io.netty.handler.timeout.IdleStateHandler]s for the
      * [NetworkService].
      */
@@ -383,6 +394,7 @@ public abstract class AbstractNetworkServiceFactory<R> {
             getJs5GroupProvider(),
             getIdleStateHandlerSuppliers(),
             haproxyMode,
+            getBinaryHeaderProvider(),
         )
     }
 

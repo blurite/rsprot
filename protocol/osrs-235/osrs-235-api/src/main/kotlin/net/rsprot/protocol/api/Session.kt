@@ -9,6 +9,8 @@ import net.rsprot.protocol.api.game.GameDisconnectionReason
 import net.rsprot.protocol.api.game.GameMessageDecoder
 import net.rsprot.protocol.api.logging.networkLog
 import net.rsprot.protocol.api.metrics.addDisconnectionReason
+import net.rsprot.protocol.binary.BinaryBlob
+import net.rsprot.protocol.channel.getBinaryBlobOrNull
 import net.rsprot.protocol.channel.hostAddress
 import net.rsprot.protocol.game.outgoing.GameServerProtCategory
 import net.rsprot.protocol.game.outgoing.zone.payload.MapProjAnimV2
@@ -110,6 +112,13 @@ public class Session<R>(
 
     private fun updateLastFlush() {
         lastFlush = TimeSource.Monotonic.markNow()
+    }
+
+    /**
+     * Gets the binary blob associated with this channel, or null if one wasn't previously set up.
+     */
+    public fun getBinaryBlobOrNull(): BinaryBlob? {
+        return ctx.channel().getBinaryBlobOrNull()
     }
 
     /**

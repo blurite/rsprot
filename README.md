@@ -16,7 +16,7 @@ In order to add it to your server, add the below line under dependencies
 in your build.gradle.kts.
 
 ```kts
-implementation("net.rsprot:osrs-235-api:1.0.0-ALPHA-20251031")
+implementation("net.rsprot:osrs-235-api:1.0.0-ALPHA-20251118")
 ```
 
 An in-depth tutorial on how to implement it will be added into this read-me
@@ -701,6 +701,92 @@ slicing the buffer and decoding a new data class out of it.
 Any packets for which there has not been registered a consumer will not
 count towards message count thresholds, as the service is not aware of
 the category in which the given packet belongs.
+
+## Binary Files
+As of revision 235 (support for older revisions will be added in the future),
+it is possible to export RSProx-compatible .bin files.
+
+This can be achieved in two steps:
+1. Supply a BinaryHeaderProvider in your AbstractNetworkServiceFactory implementation:
+As an example:
+```kt
+    override fun getBinaryHeaderProvider(): BinaryHeaderProvider {
+        // If the provider returns null, no binary file will be produced
+        // for this user.
+        return BinaryHeaderProvider { index, timestamp, accountHash ->
+            // You can prefix it with the player's name if you'd like
+            val playerName =
+                World.players[index]
+                    ?.name
+                    ?.lowercase()
+                    ?.replace(' ', '_') ?: "unknown_player"
+            val fileNameSuffix = BinaryHeaderProvider.fileName(timestamp, accountHash)
+            val fileName = "$playerName-$fileNameSuffix"
+            // Note: Make sure the folders for the path exist! It will error otherwise.
+            PartialBinaryHeader(
+                path = Path("binary", fileName),
+                worldId = 1,
+                worldFlags = 0x1,
+                worldLocation = 0,
+                worldHost = "localhost",
+                worldActivity = "Development",
+                clientName = "RSProt-MyServer",
+            )
+        }
+    }
+```
+2. Writing the files to disk:
+```kt
+// Define this as static property
+private val writer = BinaryBlobAppendWriter(retryCount = 2)
+
+// Note: writer#write _can_ throw an exception and should safely be handled.
+val blob = player.session.getBinaryBlobOrNull()
+if (blob != null) {
+    val success = writer.write(blob)
+    if (!success) {
+        // Make sure to try again in the future if this is supposed to be
+        // the final write call. This method will return false if there's
+        // a temporary in-memory lock on place, which is necessary for packet
+        // groups.
+        retryNextTick()
+    }
+}
+```
+
+There are two out-of-the-box implementations of BinaryWriter - a non-atomic
+BinaryBlobAppendWriter, and an atomic BinaryBlobAtomicReplacementWriter.
+
+The append writer will continuously append to the same file, keeping only a
+small buffer in memory and resetting it with each successful invocation.
+If users flush it every ~5kb
+(you can check it via `player.session.getBinaryBlobOrNull()?.readableBytes()`),
+there should never be more than ~10MB of heap memory allocated for this.
+The downside of this implementation is that it is not atomic. While you should
+be safe from multiple threads writing onto the same file simultaneously,
+which is illogical given the design, you will encounter data loss and corruption
+on power outages. The upside, however, is that it will only corrupt the ending,
+not the stream that came prior. The non-corrupted parts can still be safely
+transcribed in RSProx.
+
+The atomic replacement writer will always write the full file into a temporary
+file, and then perform an atomic move to the real path. This guarantees that
+no aspect of the file will ever corrupt, but it comes at a steep cost: the buffer
+is never freed in memory while that player is online, which can grow as high as
+~10MB for a single player. With 2,000 players, the number can theoretically grow
+as high as 20GB.
+
+The recommended writer is the appending variant, as the lack of atomicity is
+relatively minor given the circumstances here.
+
+> [!NOTE]
+> Make sure to try-catch the write call, as it will rethrow the error back to
+> the caller after the retry attempts are up.
+>
+> Additionally, make sure to gracefully handle and write call rejections, as
+> the file will temporarily be locked while packet groups are in being appended
+> into the binary, as those require updating a previous section of the blob file.
+
 
 ## Design Choices
 

@@ -15,6 +15,8 @@ import net.rsprot.protocol.api.NetworkService
 import net.rsprot.protocol.api.Session
 import net.rsprot.protocol.api.decoder.DecoderState
 import net.rsprot.protocol.api.logging.networkLog
+import net.rsprot.protocol.binary.BinaryStream
+import net.rsprot.protocol.channel.binaryStreamOrNull
 import net.rsprot.protocol.channel.hostAddress
 import net.rsprot.protocol.common.client.OldSchoolClientType
 import net.rsprot.protocol.internal.RSProtFlags
@@ -51,6 +53,7 @@ public class GameMessageDecoder<R>(
             -1
         }
     private var previousPacketIndex: Int = 0
+    private var stream: BinaryStream? = null
 
     private fun invalidOpcodeException(): Nothing =
         throw IllegalStateException("Invalid opcode received! Previous packets: ${buildPreviousPacketLog()}")
@@ -71,6 +74,10 @@ public class GameMessageDecoder<R>(
     private fun mapOpcode(opcode: Int): Int {
         val mapper = networkService.clientToServerOpcodeMapper ?: return opcode
         return mapper.decode(opcode)
+    }
+
+    override fun handlerAdded(ctx: ChannelHandlerContext) {
+        this.stream = ctx.channel().binaryStreamOrNull()
     }
 
     override fun decode(
@@ -135,6 +142,12 @@ public class GameMessageDecoder<R>(
                         "previous packets: ${buildPreviousPacketLog()}",
                 )
             }
+            this.stream?.append(
+                serverToClient = false,
+                opcode = this.opcode,
+                size = this.decoder.prot.size,
+                payload = input.retainedSlice(input.readerIndex(), length),
+            )
             networkService
                 .trafficMonitor
                 .gameChannelTrafficMonitor

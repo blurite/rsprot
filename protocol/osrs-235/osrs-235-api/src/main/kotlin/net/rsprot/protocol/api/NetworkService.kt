@@ -6,6 +6,7 @@ import io.netty.channel.ChannelFuture
 import io.netty.channel.EventLoopGroup
 import net.rsprot.compression.provider.HuffmanCodecProvider
 import net.rsprot.crypto.rsa.RsaKeyPair
+import net.rsprot.protocol.api.binary.BinaryHeaderProvider
 import net.rsprot.protocol.api.bootstrap.BootstrapBuilder
 import net.rsprot.protocol.api.config.NetworkConfiguration
 import net.rsprot.protocol.api.handlers.ExceptionHandlers
@@ -84,6 +85,8 @@ import net.rsprot.protocol.internal.setCommunicationThread as setInternalCommuni
  * to the NPC info packet for every player
  * @property trafficMonitor a monitor for tracking network traffic, by default a no-op
  * implementation that tracks nothing.
+ * @property binaryHeaderProvider a provider for binary headers. If this is null, or returns a null,
+ * a binary header is not built for the given session.
  */
 @Suppress("MemberVisibilityCanBePrivate")
 public class NetworkService<R>
@@ -111,6 +114,7 @@ public class NetworkService<R>
         js5GroupProvider: Js5GroupProvider,
         public val idleStateHandlerSuppliers: IdleStateHandlerSuppliers,
         public val haProxyMode: HAProxyMode,
+        public val binaryHeaderProvider: BinaryHeaderProvider?,
     ) {
         public var encoderRepositories: MessageEncoderRepositories = MessageEncoderRepositories(huffmanCodecProvider)
         public val js5Authorizer: Js5Authorizer = if (betaWorld) ConcurrentJs5Authorizer() else NoopJs5Authorizer

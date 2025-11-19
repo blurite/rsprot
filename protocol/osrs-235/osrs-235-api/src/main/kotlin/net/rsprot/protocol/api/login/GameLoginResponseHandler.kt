@@ -3,13 +3,19 @@
 package net.rsprot.protocol.api.login
 
 import com.github.michaelbull.logging.InlineLogger
+import io.netty.buffer.Unpooled
+import io.netty.buffer.UnpooledByteBufAllocator
+import io.netty.channel.Channel
 import io.netty.channel.ChannelFutureListener
 import io.netty.channel.ChannelHandlerContext
 import io.netty.channel.ChannelPipeline
 import io.netty.handler.timeout.IdleStateHandler
+import net.rsprot.buffer.extensions.gdata
+import net.rsprot.buffer.extensions.p8
 import net.rsprot.buffer.extensions.toJagByteBuf
 import net.rsprot.crypto.cipher.StreamCipher
 import net.rsprot.crypto.cipher.StreamCipherPair
+import net.rsprot.protocol.Prot
 import net.rsprot.protocol.api.NetworkService
 import net.rsprot.protocol.api.Session
 import net.rsprot.protocol.api.game.GameMessageDecoder
@@ -17,11 +23,17 @@ import net.rsprot.protocol.api.game.GameMessageEncoder
 import net.rsprot.protocol.api.game.GameMessageHandler
 import net.rsprot.protocol.api.logging.networkLog
 import net.rsprot.protocol.api.metrics.addDisconnectionReason
+import net.rsprot.protocol.binary.BinaryBlob
+import net.rsprot.protocol.binary.BinaryStream
+import net.rsprot.protocol.channel.binaryHeaderBuilderOrNull
 import net.rsprot.protocol.channel.hostAddress
 import net.rsprot.protocol.channel.replace
+import net.rsprot.protocol.channel.setBinaryBlob
+import net.rsprot.protocol.channel.setBinaryHeaderBuilder
 import net.rsprot.protocol.common.client.OldSchoolClientType
 import net.rsprot.protocol.loginprot.incoming.util.LoginBlock
 import net.rsprot.protocol.loginprot.outgoing.LoginResponse
+import java.security.MessageDigest
 
 /**
  * A response handler for login requests, allowing the server to write either
@@ -100,7 +112,7 @@ public class GameLoginResponseHandler<R>(
         encoder.encode(cipher.encoderCipher, buffer, response)
 
         val pipeline = ctx.channel().pipeline()
-
+        finalizeBinaryHeader(ctx.channel(), response)
         val session =
             createSession(loginBlock, pipeline, cipher.decodeCipher, oldSchoolClientType, cipher.encoderCipher)
         networkService.js5Authorizer.authorize(ctx.hostAddress())
@@ -114,9 +126,68 @@ public class GameLoginResponseHandler<R>(
         return session
     }
 
+    private fun finalizeBinaryHeader(
+        channel: Channel,
+        response: LoginResponse.Ok,
+    ) {
+        val provider = networkService.binaryHeaderProvider ?: return
+        val builder = channel.binaryHeaderBuilderOrNull() ?: return
+        channel.setBinaryHeaderBuilder(null)
+        val timestamp = System.currentTimeMillis()
+        val accountHash = accountHash(response.userId, response.userHash)
+        val partialHeader =
+            provider.provide(response.index, timestamp, accountHash)
+                ?: return
+        builder.timestamp(timestamp)
+        builder.localPlayerIndex(response.index)
+        builder.accountHash(accountHash)
+        builder.path(partialHeader.path)
+        builder.worldId(partialHeader.worldId)
+        builder.worldProperties(partialHeader.worldFlags)
+        builder.worldLocation(partialHeader.worldLocation)
+        builder.worldHost(partialHeader.worldHost)
+        builder.worldActivity(partialHeader.worldActivity)
+        builder.clientName(partialHeader.clientName)
+        val masterIndex = networkService.js5Service.getMasterIndex()
+        builder.js5MasterIndex(masterIndex)
+        val header = builder.build()
+        channel.setBinaryBlob(
+            BinaryBlob(
+                header,
+                BinaryStream(header.encode(UnpooledByteBufAllocator.DEFAULT)),
+            ),
+        )
+    }
+
+    private fun accountHash(
+        userId: Long,
+        userHash: Long,
+    ): ByteArray {
+        val buffer = Unpooled.buffer(Long.SIZE_BYTES + Long.SIZE_BYTES)
+        // User id is an incrementing value; As of writing this comment, there are somewhere between
+        // 300-400m users, meaning the userId value for any new accounts would be in that range
+        // This value is not sensitive in any way, but it is constant.
+        buffer.p8(userId)
+        // User hash is an actual hash provided by Jagex, unique for a given account regardless of the world.
+        // While hash on its own is not useful, there is a potential security concern in how these hashes
+        // are generated. As such, we take an extra step and salt it with the user id, then hash the
+        // value once more. Due to the function turning 128 bits of data to 256 bits of data,
+        // the probability of collisions is extremely thin.
+        buffer.p8(userHash)
+        val input = ByteArray(buffer.readableBytes())
+        buffer.gdata(input)
+        // Take the combined byte array and hash it with a SHA-256 hashing function.
+        // This effectively ensures no one will be able to reverse the original input values,
+        // while still ensuring we can match multiple play sessions to a single user account.
+        val messageDigest = MessageDigest.getInstance("SHA-256")
+        messageDigest.update(input)
+        return messageDigest.digest()
+    }
+
     public fun writeSuccessfulResponse(
         response: LoginResponse.ReconnectOk,
         loginBlock: LoginBlock<*>,
+        previousSession: Session<R>,
     ): Session<R> {
         // Ensure it isn't null - our decoder pre-validates it long before hitting this function,
         // so this exception should never be hit.
@@ -153,7 +224,16 @@ public class GameLoginResponseHandler<R>(
         buffer.writerIndex(end)
 
         val pipeline = ctx.channel().pipeline()
-
+        val oldBlob = previousSession.getBinaryBlobOrNull()
+        if (oldBlob != null) {
+            this.ctx.channel().setBinaryBlob(oldBlob)
+            oldBlob.stream.append(
+                serverToClient = true,
+                opcode = 0xFF,
+                size = Prot.VAR_SHORT,
+                payload = buffer.buffer.retainedSlice(start, written),
+            )
+        }
         val session =
             createSession(loginBlock, pipeline, decodingCipher, oldSchoolClientType, encodingCipher)
         networkService.js5Authorizer.authorize(ctx.hostAddress())

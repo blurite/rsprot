@@ -1,6 +1,7 @@
 package net.rsprot.protocol.api.login
 
 import com.github.michaelbull.logging.InlineLogger
+import io.netty.channel.Channel
 import io.netty.channel.ChannelFutureListener
 import io.netty.channel.ChannelHandlerContext
 import io.netty.channel.SimpleChannelInboundHandler
@@ -9,7 +10,9 @@ import net.rsprot.buffer.JagByteBuf
 import net.rsprot.protocol.api.NetworkService
 import net.rsprot.protocol.api.logging.networkLog
 import net.rsprot.protocol.api.metrics.addDisconnectionReason
+import net.rsprot.protocol.binary.BinaryHeader
 import net.rsprot.protocol.channel.hostAddress
+import net.rsprot.protocol.channel.setBinaryHeaderBuilder
 import net.rsprot.protocol.common.loginprot.incoming.codec.shared.exceptions.InvalidVersionException
 import net.rsprot.protocol.loginprot.incoming.GameLogin
 import net.rsprot.protocol.loginprot.incoming.GameReconnect
@@ -401,6 +404,7 @@ public class LoginConnectionHandler<R>(
                 networkLog(logger) {
                     "Successful game login from channel '${ctx.channel()}': $block"
                 }
+                setupBinaryHeader(ctx.channel(), block)
                 val executor = networkService.loginHandlers.loginFlowExecutor
                 if (executor != null) {
                     executor.submit {
@@ -427,6 +431,21 @@ public class LoginConnectionHandler<R>(
                 throw t
             }
         }
+    }
+
+    private fun setupBinaryHeader(
+        channel: Channel,
+        loginBlock: LoginBlock<*>,
+    ) {
+        if (networkService.binaryHeaderProvider == null) {
+            return
+        }
+        val builder = BinaryHeader.Builder()
+        channel.setBinaryHeaderBuilder(builder)
+        builder.revision(loginBlock.version)
+        builder.subRevision(loginBlock.subVersion)
+        builder.clientType(loginBlock.clientType.id)
+        builder.platformType(loginBlock.platformType.id)
     }
 
     private fun decodeGameReconnectBuffer(
@@ -482,6 +501,7 @@ public class LoginConnectionHandler<R>(
                 networkLog(logger) {
                     "Successful game reconnection from channel '${ctx.channel()}': $block"
                 }
+                setupBinaryHeader(ctx.channel(), block)
                 val executor = networkService.loginHandlers.loginFlowExecutor
                 if (executor != null) {
                     executor.submit {
