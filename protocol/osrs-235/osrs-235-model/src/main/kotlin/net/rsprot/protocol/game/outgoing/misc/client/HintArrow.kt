@@ -207,7 +207,7 @@ public class HintArrow(
             if (this === other) return true
             if (javaClass != other?.javaClass) return false
 
-            other as PlayerHintArrow
+            other as WorldEntityHintArrow
 
             return index == other.index
         }
