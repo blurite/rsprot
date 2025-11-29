@@ -236,7 +236,11 @@ public abstract class OutgoingMessageEncoder : ChannelOutboundHandlerAdapter() {
         if (payload != null) {
             this.payloadStartIndex = payload.readerIndex()
             this.payloadEndIndex = payload.writerIndex()
-            pushPacket(payload)
+            try {
+                pushPacket(payload)
+            } finally {
+                payload.release()
+            }
         }
     }
 
