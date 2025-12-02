@@ -45,6 +45,8 @@ public class WorldEntityAvatarRepository internal constructor(
      * @param priority the priority in which the world entity will be rendered into the scene.
      * @param sizeX the width of the world entity in zones (8 tiles/zone)
      * @param sizeZ the height of the world entity in zones (8 tiles/zone)
+     * @param southWestZoneX the southwestern zone x of the worldentity instance
+     * @param southWestZoneZ the southwestern zone z of the worldentity instance
      * @param fineX the absolute fine x coordinate of the avatar. This can be calculated
      * by doing x * 128 with absolute coord grid values.
      * @param fineZ the absolute fine x coordinate of the avatar. This can be calculated
@@ -61,6 +63,8 @@ public class WorldEntityAvatarRepository internal constructor(
         priority: WorldEntityPriority,
         sizeX: Int,
         sizeZ: Int,
+        southWestZoneX: Int,
+        southWestZoneZ: Int,
         fineX: Int,
         fineZ: Int,
         projectedLevel: Int,
@@ -74,6 +78,8 @@ public class WorldEntityAvatarRepository internal constructor(
             priority,
             sizeX,
             sizeZ,
+            southWestZoneX,
+            southWestZoneZ,
             fineX,
             0,
             fineZ,
@@ -91,6 +97,8 @@ public class WorldEntityAvatarRepository internal constructor(
      * @param priority the priority in which the world entity will be rendered into the scene.
      * @param sizeX the width of the world entity in zones (8 tiles/zone)
      * @param sizeZ the height of the world entity in zones (8 tiles/zone)
+     * @param southWestZoneX the southwestern zone x of the worldentity instance
+     * @param southWestZoneZ the southwestern zone z of the worldentity instance
      * @param fineX the absolute fine x coordinate of the avatar. This can be calculated
      * by doing x * 128 with absolute coord grid values.
      * @param fineY the fine y coordinate (height) of the avatar. Note that as of revision 226,
@@ -119,6 +127,8 @@ public class WorldEntityAvatarRepository internal constructor(
         priority: WorldEntityPriority,
         sizeX: Int,
         sizeZ: Int,
+        southWestZoneX: Int,
+        southWestZoneZ: Int,
         fineX: Int,
         fineY: Int,
         fineZ: Int,
@@ -145,6 +155,8 @@ public class WorldEntityAvatarRepository internal constructor(
             existing.priority = priority
             existing.projectedLevel = projectedLevel
             existing.activeLevel = activeLevel
+            existing.southWestZoneX = southWestZoneX
+            existing.southWestZoneZ = southWestZoneZ
             zoneIndexStorage.add(index, existing.currentCoordGrid)
             elements[index] = existing
             return existing
@@ -163,6 +175,8 @@ public class WorldEntityAvatarRepository internal constructor(
                 index,
                 sizeX,
                 sizeZ,
+                southWestZoneX,
+                southWestZoneZ,
                 id,
                 priority,
                 projectedLevel,

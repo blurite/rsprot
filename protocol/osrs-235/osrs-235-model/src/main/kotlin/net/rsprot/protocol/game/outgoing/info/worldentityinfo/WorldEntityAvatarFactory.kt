@@ -37,6 +37,8 @@ public class WorldEntityAvatarFactory(
      * @param priority the render priority of the world entity in the scene
      * @param sizeX the width of the world entity in zones (8 tiles/zone)
      * @param sizeZ the height of the world entity in zones (8 tiles/zone)
+     * @param southWestZoneX the southwestern zone x of the worldentity instance
+     * @param southWestZoneZ the southwestern zone z of the worldentity instance
      * @param fineX the absolute fine x coordinate of the avatar. This can be calculated
      * by doing x * 128 with absolute coord grid values.
      * @param fineZ the absolute fine x coordinate of the avatar. This can be calculated
@@ -53,6 +55,8 @@ public class WorldEntityAvatarFactory(
         priority: WorldEntityPriority,
         sizeX: Int,
         sizeZ: Int,
+        southWestZoneX: Int,
+        southWestZoneZ: Int,
         fineX: Int,
         fineZ: Int,
         projectedLevel: Int,
@@ -71,6 +75,12 @@ public class WorldEntityAvatarFactory(
         }
         require(sizeZ in 0..255) {
             "Size z cannot be outside of 0..255 range"
+        }
+        require(southWestZoneX in 0..<2048) {
+            "South west zone X must be in range of 0..<2048"
+        }
+        require(southWestZoneZ in 0..<2048) {
+            "South west zone Z must be in range of 0..<2048"
         }
         require(projectedLevel in 0..3) {
             "Projected level cannot be outside of 0..3 range"
@@ -93,6 +103,8 @@ public class WorldEntityAvatarFactory(
             priority,
             sizeX,
             sizeZ,
+            southWestZoneX,
+            southWestZoneZ,
             fineX,
             fineZ,
             projectedLevel,
@@ -108,6 +120,8 @@ public class WorldEntityAvatarFactory(
      * @param priority the render priority of the world entity in the scene
      * @param sizeX the width of the world entity in zones (8 tiles/zone)
      * @param sizeZ the height of the world entity in zones (8 tiles/zone)
+     * @param southWestZoneX the southwestern zone x of the worldentity instance
+     * @param southWestZoneZ the southwestern zone z of the worldentity instance
      * @param fineX the absolute fine x coordinate of the avatar. This can be calculated
      * by doing x * 128 with absolute coord grid values.
      * @param fineY the fine y coordinate (height) of the avatar. Note that as of revision 226,
@@ -136,6 +150,8 @@ public class WorldEntityAvatarFactory(
         priority: WorldEntityPriority,
         sizeX: Int,
         sizeZ: Int,
+        southWestZoneX: Int,
+        southWestZoneZ: Int,
         fineX: Int,
         fineY: Int,
         fineZ: Int,
@@ -155,6 +171,12 @@ public class WorldEntityAvatarFactory(
         }
         require(sizeZ in 0..255) {
             "Size z cannot be outside of 0..255 range"
+        }
+        require(southWestZoneX in 0..<2048) {
+            "South west zone X must be in range of 0..<2048"
+        }
+        require(southWestZoneZ in 0..<2048) {
+            "South west zone Z must be in range of 0..<2048"
         }
         require(projectedLevel in 0..3) {
             "Projected level cannot be outside of 0..3 range"
@@ -181,6 +203,8 @@ public class WorldEntityAvatarFactory(
             priority,
             sizeX,
             sizeZ,
+            southWestZoneX,
+            southWestZoneZ,
             fineX,
             fineY,
             fineZ,
