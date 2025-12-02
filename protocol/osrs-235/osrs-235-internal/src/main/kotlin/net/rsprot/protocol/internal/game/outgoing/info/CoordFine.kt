@@ -13,7 +13,6 @@ public value class CoordFine(
      * @param y the fine y coordinate (or height) of this avatar.
      * @param z the absolute fine z coordinate of the avatar.
      */
-    @Suppress("ConvertTwoComparisonsToRangeCheck")
     public constructor(
         x: Int,
         y: Int,

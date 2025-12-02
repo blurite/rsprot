@@ -36,7 +36,8 @@ public class WorldEntityAvatar(
     internal var sizeZ: Int,
     internal var id: Int,
     internal var priority: WorldEntityPriority,
-    internal var level: Int,
+    internal var projectedLevel: Int,
+    internal var activeLevel: Int,
     internal var currentCoordFine: CoordFine = CoordFine.INVALID,
     internal var angle: Int,
     public val extendedInfo: WorldEntityAvatarExtendedInfo,
@@ -48,7 +49,7 @@ public class WorldEntityAvatar(
     internal var highResolutionBuffer: ByteBuf? = null
 
     internal val currentCoordGrid: CoordGrid
-        get() = currentCoordFine.toCoordGrid(this.level)
+        get() = currentCoordFine.toCoordGrid(this.projectedLevel)
 
     /**
      * The [WorldEntityProtocol.cycleCount] when this avatar was allocated.
@@ -139,7 +140,7 @@ public class WorldEntityAvatar(
         val coordGrid = coordFine.toCoordGrid(level)
         this.zoneIndexStorage.move(this.index, currentCoordGrid, coordGrid)
         this.currentCoordFine = coordFine
-        this.level = level
+        this.projectedLevel = level
         this.teleport = teleport
     }
 

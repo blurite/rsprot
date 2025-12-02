@@ -52,11 +52,70 @@ public class WorldEntityAvatarRepository internal constructor(
      * height of the world entity.
      * @param fineZ the absolute fine x coordinate of the avatar. This can be calculated
      * by doing z * 128 with absolute coord grid values.
-     * @param level the level of the world entity.
+     * @param projectedLevel the projected root level of the world entity, where it renders.
+     * @param activeLevel the level on which the entities in the world entity (instance) appear.
+     * @param angle the angle to face
      * @return either a new world entity avatar, or a pooled one that has been
      * updated to contain the provided params.
-     * @param angle the angle to face
      */
+    public fun getOrAlloc(
+        index: Int,
+        id: Int,
+        priority: WorldEntityPriority,
+        sizeX: Int,
+        sizeZ: Int,
+        fineX: Int,
+        fineZ: Int,
+        projectedLevel: Int,
+        activeLevel: Int,
+        angle: Int,
+    ): WorldEntityAvatar {
+        @Suppress("DEPRECATION")
+        return getOrAlloc(
+            index,
+            id,
+            priority,
+            sizeX,
+            sizeZ,
+            fineX,
+            0,
+            fineZ,
+            projectedLevel,
+            activeLevel,
+            angle,
+        )
+    }
+
+    /**
+     * Gets an existing world entity avatar from the queue if one is ready, or constructs
+     * a new avatar if not.
+     * @param index the index of the world entity
+     * @param id the id of the world entity
+     * @param priority the priority in which the world entity will be rendered into the scene.
+     * @param sizeX the width of the world entity in zones (8 tiles/zone)
+     * @param sizeZ the height of the world entity in zones (8 tiles/zone)
+     * @param fineX the absolute fine x coordinate of the avatar. This can be calculated
+     * by doing x * 128 with absolute coord grid values.
+     * @param fineY the fine y coordinate (height) of the avatar. Note that as of revision 226,
+     * this property is overwritten by the ground height and has no impact on the perceived
+     * height of the world entity.
+     * @param fineZ the absolute fine x coordinate of the avatar. This can be calculated
+     * by doing z * 128 with absolute coord grid values.
+     * @param projectedLevel the projected root level of the world entity, where it renders.
+     * @param activeLevel the level on which the entities in the world entity (instance) appear.
+     * @param angle the angle to face
+     * @return either a new world entity avatar, or a pooled one that has been
+     * updated to contain the provided params.
+     */
+    @Deprecated(
+        "Deprecated as fineY is no longer utilized by the client.",
+        replaceWith =
+            ReplaceWith(
+                "getOrAlloc(index, id, priority, " +
+                    "sizeX, sizeZ, fineX, fineZ, " +
+                    "projectedLevel, activeLevel, angle)",
+            ),
+    )
     public fun getOrAlloc(
         index: Int,
         id: Int,
@@ -66,7 +125,8 @@ public class WorldEntityAvatarRepository internal constructor(
         fineX: Int,
         fineY: Int,
         fineZ: Int,
-        level: Int,
+        projectedLevel: Int,
+        activeLevel: Int,
         angle: Int,
     ): WorldEntityAvatar {
         val old = this.elements[index]
@@ -86,7 +146,9 @@ public class WorldEntityAvatarRepository internal constructor(
             existing.allocateCycle = WorldEntityProtocol.cycleCount
             existing.id = id
             existing.priority = priority
-            zoneIndexStorage.add(index, existing.currentCoordFine.toCoordGrid(level))
+            existing.projectedLevel = projectedLevel
+            existing.activeLevel = activeLevel
+            zoneIndexStorage.add(index, existing.currentCoordFine.toCoordGrid(projectedLevel))
             elements[index] = existing
             return existing
         }
@@ -106,12 +168,13 @@ public class WorldEntityAvatarRepository internal constructor(
                 sizeZ,
                 id,
                 priority,
-                level,
+                projectedLevel,
+                activeLevel,
                 CoordFine(fineX, fineY, fineZ),
                 angle,
                 extendedInfo,
             )
-        zoneIndexStorage.add(index, avatar.currentCoordFine.toCoordGrid(level))
+        zoneIndexStorage.add(index, avatar.currentCoordFine.toCoordGrid(projectedLevel))
         elements[index] = avatar
         return avatar
     }
@@ -126,7 +189,7 @@ public class WorldEntityAvatarRepository internal constructor(
         require(this.elements[index] === avatar) {
             "Attempting to release an invalid WorldEntity avatar: $avatar, ${this.elements[index]}"
         }
-        zoneIndexStorage.remove(index, avatar.currentCoordFine.toCoordGrid(avatar.level))
+        zoneIndexStorage.remove(index, avatar.currentCoordFine.toCoordGrid(avatar.projectedLevel))
         this.elements[index] = null
         val reference = SoftReference(avatar, queue)
         reference.enqueue()
