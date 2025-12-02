@@ -91,8 +91,27 @@ public class WorldEntityAvatar(
     }
 
     /**
-     * Updates the current coordinate of this world entity, along with a move speed
-     * to reach that coordinate, if applicable.
+     * Updates the current coordinate of this world entity.
+     * @param level the current absolute level of this world entity.
+     * @param fineX the absolute fine x coordinate of this world entity. This coordinate is effectively
+     * absolute coordinate * 128.
+     * @param fineZ the absolute fine z coordinate of this world entity. This coordinate is effectively
+     * absolute coordinate * 128.
+     * @param teleport whether to jump the worldentity to the desired coordinate.
+     */
+    @Throws(IllegalArgumentException::class)
+    public fun updateCoord(
+        level: Int,
+        fineX: Int,
+        fineZ: Int,
+        teleport: Boolean,
+    ) {
+        @Suppress("DEPRECATION")
+        updateCoord(level, fineX, 0, fineZ, teleport)
+    }
+
+    /**
+     * Updates the current coordinate of this world entity.
      * @param level the current absolute level of this world entity.
      * @param fineX the absolute fine x coordinate of this world entity. This coordinate is effectively
      * absolute coordinate * 128.
@@ -104,6 +123,10 @@ public class WorldEntityAvatar(
      * @param teleport whether to jump the worldentity to the desired coordinate.
      */
     @Throws(IllegalArgumentException::class)
+    @Deprecated(
+        "Deprecated as fineY is no longer utilized by the client.",
+        replaceWith = ReplaceWith("updateCoord(level, fineX, fineZ, teleport)"),
+    )
     public fun updateCoord(
         level: Int,
         fineX: Int,
