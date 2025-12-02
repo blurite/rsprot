@@ -9,6 +9,7 @@ dependencies {
     api(projects.protocol)
     api(projects.protocol.osrs235.osrs235Internal)
     api(projects.protocol.osrs235.osrs235Common)
+    implementation(libs.fastutil)
 }
 
 mavenPublishing {

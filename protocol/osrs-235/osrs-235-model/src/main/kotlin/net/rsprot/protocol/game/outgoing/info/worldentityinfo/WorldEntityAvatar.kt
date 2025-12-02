@@ -22,6 +22,8 @@ import net.rsprot.protocol.internal.game.outgoing.info.util.ZoneIndexStorage
  * @property sizeZ the height of the world entity in zones.
  * @property southWestZoneX the south-western zone x of the worldentity instance.
  * @property southWestZoneZ the south-western zone z of the worldentity instance.
+ * @property minLevel the minimum level of the instance being built.
+ * @property maxLevel the maximum level of the instance being built, inclusive.
  * @property id the cache config id
  * @property priority the rendering priority
  * @property currentCoordFine the coordinate that this world entity is being rendered at.
@@ -38,6 +40,8 @@ public class WorldEntityAvatar(
     internal var sizeZ: Int,
     internal var southWestZoneX: Int,
     internal var southWestZoneZ: Int,
+    internal var minLevel: Int,
+    internal var maxLevel: Int,
     internal var id: Int,
     internal var priority: WorldEntityPriority,
     internal var projectedLevel: Int,

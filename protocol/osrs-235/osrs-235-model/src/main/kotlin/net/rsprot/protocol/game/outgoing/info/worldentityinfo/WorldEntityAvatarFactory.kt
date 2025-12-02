@@ -39,6 +39,8 @@ public class WorldEntityAvatarFactory(
      * @param sizeZ the height of the world entity in zones (8 tiles/zone)
      * @param southWestZoneX the southwestern zone x of the worldentity instance
      * @param southWestZoneZ the southwestern zone z of the worldentity instance
+     * @param minLevel the minimum level of the instance.
+     * @param maxLevel the maximum level of the instance, inclusive.
      * @param fineX the absolute fine x coordinate of the avatar. This can be calculated
      * by doing x * 128 with absolute coord grid values.
      * @param fineZ the absolute fine x coordinate of the avatar. This can be calculated
@@ -57,6 +59,8 @@ public class WorldEntityAvatarFactory(
         sizeZ: Int,
         southWestZoneX: Int,
         southWestZoneZ: Int,
+        minLevel: Int,
+        maxLevel: Int,
         fineX: Int,
         fineZ: Int,
         projectedLevel: Int,
@@ -82,6 +86,15 @@ public class WorldEntityAvatarFactory(
         require(southWestZoneZ in 0..<2048) {
             "South west zone Z must be in range of 0..<2048"
         }
+        require(minLevel in 0..<4) {
+            "Min level must be in range of 0..<4"
+        }
+        require(maxLevel in 0..<4) {
+            "Max level must be in range of 0..<4"
+        }
+        require(minLevel <= maxLevel) {
+            "Min level cannot be higher than max level: $minLevel, $maxLevel"
+        }
         require(projectedLevel in 0..3) {
             "Projected level cannot be outside of 0..3 range"
         }
@@ -105,6 +118,8 @@ public class WorldEntityAvatarFactory(
             sizeZ,
             southWestZoneX,
             southWestZoneZ,
+            minLevel,
+            maxLevel,
             fineX,
             fineZ,
             projectedLevel,
@@ -122,6 +137,8 @@ public class WorldEntityAvatarFactory(
      * @param sizeZ the height of the world entity in zones (8 tiles/zone)
      * @param southWestZoneX the southwestern zone x of the worldentity instance
      * @param southWestZoneZ the southwestern zone z of the worldentity instance
+     * @param minLevel the minimum level of the instance.
+     * @param maxLevel the maximum level of the instance, inclusive.
      * @param fineX the absolute fine x coordinate of the avatar. This can be calculated
      * by doing x * 128 with absolute coord grid values.
      * @param fineY the fine y coordinate (height) of the avatar. Note that as of revision 226,
@@ -152,6 +169,8 @@ public class WorldEntityAvatarFactory(
         sizeZ: Int,
         southWestZoneX: Int,
         southWestZoneZ: Int,
+        minLevel: Int,
+        maxLevel: Int,
         fineX: Int,
         fineY: Int,
         fineZ: Int,
@@ -177,6 +196,15 @@ public class WorldEntityAvatarFactory(
         }
         require(southWestZoneZ in 0..<2048) {
             "South west zone Z must be in range of 0..<2048"
+        }
+        require(minLevel in 0..<4) {
+            "Min level must be in range of 0..<4"
+        }
+        require(maxLevel in 0..<4) {
+            "Max level must be in range of 0..<4"
+        }
+        require(minLevel <= maxLevel) {
+            "Min level cannot be higher than max level: $minLevel, $maxLevel"
         }
         require(projectedLevel in 0..3) {
             "Projected level cannot be outside of 0..3 range"
@@ -205,6 +233,8 @@ public class WorldEntityAvatarFactory(
             sizeZ,
             southWestZoneX,
             southWestZoneZ,
+            minLevel,
+            maxLevel,
             fineX,
             fineY,
             fineZ,

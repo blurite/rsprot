@@ -3,6 +3,7 @@ package net.rsprot.protocol.game.outgoing.info.worldentityinfo
 import io.netty.buffer.ByteBufAllocator
 import net.rsprot.compression.provider.HuffmanCodecProvider
 import net.rsprot.protocol.internal.game.outgoing.info.CoordFine
+import net.rsprot.protocol.internal.game.outgoing.info.CoordGrid
 import net.rsprot.protocol.internal.game.outgoing.info.util.ZoneIndexStorage
 import java.lang.ref.ReferenceQueue
 import java.lang.ref.SoftReference
@@ -26,9 +27,19 @@ public class WorldEntityAvatarRepository internal constructor(
     private val zoneIndexStorage: ZoneIndexStorage,
     private val extendedInfoWriter: List<WorldEntityAvatarExtendedInfoWriter>,
     private val huffmanCodec: HuffmanCodecProvider,
+    private val map: WorldEntityMap = WorldEntityMap(),
 ) {
     private val elements: Array<WorldEntityAvatar?> = arrayOfNulls(AVATAR_CAPACITY)
     private val queue: ReferenceQueue<WorldEntityAvatar> = ReferenceQueue<WorldEntityAvatar>()
+
+    /**
+     * Looks up a world entity index based on the [coordGrid] by seeing whichever worldentity owns
+     * the zone at which the coordgrid exists. If no worldentity exists there, -1 is returned.
+     * @return the world entity index that owns the coordgrid, or -1.
+     */
+    public fun getByCoordGrid(coordGrid: CoordGrid): Int {
+        return map.get(coordGrid)
+    }
 
     /**
      * Gets a world entity at the provided [idx], or null if it doesn't exist.
@@ -47,6 +58,8 @@ public class WorldEntityAvatarRepository internal constructor(
      * @param sizeZ the height of the world entity in zones (8 tiles/zone)
      * @param southWestZoneX the southwestern zone x of the worldentity instance
      * @param southWestZoneZ the southwestern zone z of the worldentity instance
+     * @param minLevel the minimum level of the instance.
+     * @param maxLevel the maximum level of the instance, inclusive.
      * @param fineX the absolute fine x coordinate of the avatar. This can be calculated
      * by doing x * 128 with absolute coord grid values.
      * @param fineZ the absolute fine x coordinate of the avatar. This can be calculated
@@ -65,6 +78,8 @@ public class WorldEntityAvatarRepository internal constructor(
         sizeZ: Int,
         southWestZoneX: Int,
         southWestZoneZ: Int,
+        minLevel: Int,
+        maxLevel: Int,
         fineX: Int,
         fineZ: Int,
         projectedLevel: Int,
@@ -80,6 +95,8 @@ public class WorldEntityAvatarRepository internal constructor(
             sizeZ,
             southWestZoneX,
             southWestZoneZ,
+            minLevel,
+            maxLevel,
             fineX,
             0,
             fineZ,
@@ -99,6 +116,8 @@ public class WorldEntityAvatarRepository internal constructor(
      * @param sizeZ the height of the world entity in zones (8 tiles/zone)
      * @param southWestZoneX the southwestern zone x of the worldentity instance
      * @param southWestZoneZ the southwestern zone z of the worldentity instance
+     * @param minLevel the minimum level of the instance.
+     * @param maxLevel the maximum level of the instance, inclusive.
      * @param fineX the absolute fine x coordinate of the avatar. This can be calculated
      * by doing x * 128 with absolute coord grid values.
      * @param fineY the fine y coordinate (height) of the avatar. Note that as of revision 226,
@@ -129,6 +148,8 @@ public class WorldEntityAvatarRepository internal constructor(
         sizeZ: Int,
         southWestZoneX: Int,
         southWestZoneZ: Int,
+        minLevel: Int,
+        maxLevel: Int,
         fineX: Int,
         fineY: Int,
         fineZ: Int,
@@ -140,6 +161,15 @@ public class WorldEntityAvatarRepository internal constructor(
         require(old == null) {
             "WorldEntity avatar with index $index is already allocated: $old"
         }
+        storeInMap(
+            sizeX,
+            sizeZ,
+            southWestZoneX,
+            southWestZoneZ,
+            minLevel,
+            maxLevel,
+            index,
+        )
         val existing = queue.poll()?.get()
         if (existing != null) {
             existing.index = index
@@ -157,6 +187,8 @@ public class WorldEntityAvatarRepository internal constructor(
             existing.activeLevel = activeLevel
             existing.southWestZoneX = southWestZoneX
             existing.southWestZoneZ = southWestZoneZ
+            existing.minLevel = minLevel
+            existing.maxLevel = maxLevel
             zoneIndexStorage.add(index, existing.currentCoordGrid)
             elements[index] = existing
             return existing
@@ -177,6 +209,8 @@ public class WorldEntityAvatarRepository internal constructor(
                 sizeZ,
                 southWestZoneX,
                 southWestZoneZ,
+                minLevel,
+                maxLevel,
                 id,
                 priority,
                 projectedLevel,
@@ -190,6 +224,46 @@ public class WorldEntityAvatarRepository internal constructor(
         return avatar
     }
 
+    private fun storeInMap(
+        sizeX: Int,
+        sizeZ: Int,
+        southWestZoneX: Int,
+        southWestZoneZ: Int,
+        minLevel: Int,
+        maxLevel: Int,
+        index: Int,
+    ) {
+        map.put(
+            southWestZoneX = southWestZoneX,
+            southWestZoneZ = southWestZoneZ,
+            widthInZones = sizeX,
+            lengthInZones = sizeZ,
+            minLevel = minLevel,
+            maxLevel = maxLevel,
+            index = index,
+        )
+    }
+
+    private fun removeFromMap(
+        sizeX: Int,
+        sizeZ: Int,
+        southWestZoneX: Int,
+        southWestZoneZ: Int,
+        minLevel: Int,
+        maxLevel: Int,
+        index: Int,
+    ) {
+        map.remove(
+            southWestZoneX = southWestZoneX,
+            southWestZoneZ = southWestZoneZ,
+            widthInZones = sizeX,
+            lengthInZones = sizeZ,
+            minLevel = minLevel,
+            maxLevel = maxLevel,
+            expectedIndex = index,
+        )
+    }
+
     /**
      * Releases avatar back into the pool for it to be used later in the future, if possible.
      * @param avatar the avatar to release.
@@ -200,6 +274,15 @@ public class WorldEntityAvatarRepository internal constructor(
         require(this.elements[index] === avatar) {
             "Attempting to release an invalid WorldEntity avatar: $avatar, ${this.elements[index]}"
         }
+        removeFromMap(
+            avatar.sizeX,
+            avatar.sizeZ,
+            avatar.southWestZoneX,
+            avatar.southWestZoneZ,
+            avatar.minLevel,
+            avatar.maxLevel,
+            index,
+        )
         zoneIndexStorage.remove(index, avatar.currentCoordGrid)
         this.elements[index] = null
         val reference = SoftReference(avatar, queue)
