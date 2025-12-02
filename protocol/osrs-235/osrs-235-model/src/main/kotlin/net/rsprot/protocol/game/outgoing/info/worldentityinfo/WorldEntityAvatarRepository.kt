@@ -47,9 +47,6 @@ public class WorldEntityAvatarRepository internal constructor(
      * @param sizeZ the height of the world entity in zones (8 tiles/zone)
      * @param fineX the absolute fine x coordinate of the avatar. This can be calculated
      * by doing x * 128 with absolute coord grid values.
-     * @param fineY the fine y coordinate (height) of the avatar. Note that as of revision 226,
-     * this property is overwritten by the ground height and has no impact on the perceived
-     * height of the world entity.
      * @param fineZ the absolute fine x coordinate of the avatar. This can be calculated
      * by doing z * 128 with absolute coord grid values.
      * @param projectedLevel the projected root level of the world entity, where it renders.
@@ -148,7 +145,7 @@ public class WorldEntityAvatarRepository internal constructor(
             existing.priority = priority
             existing.projectedLevel = projectedLevel
             existing.activeLevel = activeLevel
-            zoneIndexStorage.add(index, existing.currentCoordFine.toCoordGrid(projectedLevel))
+            zoneIndexStorage.add(index, existing.currentCoordGrid)
             elements[index] = existing
             return existing
         }
@@ -174,7 +171,7 @@ public class WorldEntityAvatarRepository internal constructor(
                 angle,
                 extendedInfo,
             )
-        zoneIndexStorage.add(index, avatar.currentCoordFine.toCoordGrid(projectedLevel))
+        zoneIndexStorage.add(index, avatar.currentCoordGrid)
         elements[index] = avatar
         return avatar
     }
@@ -189,7 +186,7 @@ public class WorldEntityAvatarRepository internal constructor(
         require(this.elements[index] === avatar) {
             "Attempting to release an invalid WorldEntity avatar: $avatar, ${this.elements[index]}"
         }
-        zoneIndexStorage.remove(index, avatar.currentCoordFine.toCoordGrid(avatar.projectedLevel))
+        zoneIndexStorage.remove(index, avatar.currentCoordGrid)
         this.elements[index] = null
         val reference = SoftReference(avatar, queue)
         reference.enqueue()
