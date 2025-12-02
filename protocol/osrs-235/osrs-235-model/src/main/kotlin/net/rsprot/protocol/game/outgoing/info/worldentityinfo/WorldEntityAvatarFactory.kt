@@ -68,8 +68,8 @@ public class WorldEntityAvatarFactory(
         angle: Int,
     ): WorldEntityAvatar {
         checkCommunicationThread()
-        require(index in 0..2047) {
-            "World entity index cannot be outside of 0..2047"
+        require(index in 0..4095) {
+            "World entity index cannot be outside of 0..4095"
         }
         require(id in 0..65535) {
             "World entity id must be in range of 0..65535"
@@ -179,8 +179,8 @@ public class WorldEntityAvatarFactory(
         angle: Int,
     ): WorldEntityAvatar {
         checkCommunicationThread()
-        require(index in 0..2047) {
-            "World entity index cannot be outside of 0..2047"
+        require(index in 0..4095) {
+            "World entity index cannot be outside of 0..4095"
         }
         require(id in 0..65535) {
             "World entity id must be in range of 0..65535"
