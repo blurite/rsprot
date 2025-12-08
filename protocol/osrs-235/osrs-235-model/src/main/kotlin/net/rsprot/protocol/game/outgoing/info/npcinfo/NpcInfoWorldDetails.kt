@@ -2,7 +2,6 @@ package net.rsprot.protocol.game.outgoing.info.npcinfo
 
 import io.netty.buffer.ByteBuf
 import net.rsprot.protocol.game.outgoing.info.ObserverExtendedInfoFlags
-import net.rsprot.protocol.message.OutgoingGameMessage
 
 /**
  * A world detail implementation for NPC info, tracking local NPCs in a specific world.
@@ -110,7 +109,7 @@ internal class NpcInfoWorldDetails(
      * We ensure that a server hasn't accidentally left a packet unwritten, which would
      * de-synchronize the client and cause errors.
      */
-    internal var previousPacket: OutgoingGameMessage? = null
+    internal var previousPacket: NpcInfoPacket? = null
 
     /**
      * Performs an index defragmentation on the [highResolutionNpcIndices] array.

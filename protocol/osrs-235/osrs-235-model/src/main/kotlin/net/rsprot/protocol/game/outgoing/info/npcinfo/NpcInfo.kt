@@ -19,7 +19,6 @@ import net.rsprot.protocol.internal.game.outgoing.info.CoordGrid
 import net.rsprot.protocol.internal.game.outgoing.info.npcinfo.encoder.NpcResolutionChangeEncoder
 import net.rsprot.protocol.internal.game.outgoing.info.util.ZoneIndexStorage
 import net.rsprot.protocol.message.ConsumableMessage
-import net.rsprot.protocol.message.OutgoingGameMessage
 import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.contract
 
@@ -64,7 +63,7 @@ public class NpcInfo internal constructor(
 
     /**
      * The exception that was caught during the processing of this player's npc info packet.
-     * This exception will be propagated further during the [toPacket] function call,
+     * This exception will be propagated further during the [toPacketResult] function call,
      * allowing the server to handle it properly at a per-player basis.
      */
     @Volatile
@@ -453,31 +452,55 @@ public class NpcInfo internal constructor(
     }
 
     /**
-     * Turns this npc info structure into a respective npc info packet, depending
-     * on the current known view distance.
+     * Synchronizes the worlds based on world entity info, by removing/allocating
+     * world info details depending on which worlds are available.
      */
-    @Deprecated(
-        message = "Deprecated. Prefer toPacket(worldId) function instead for consistency.",
-        replaceWith = ReplaceWith("toPacket(worldId)"),
-    )
-    public fun toNpcInfoPacket(worldId: Int): OutgoingGameMessage = toPacket(worldId)
+    internal fun synchronizeWorlds() {
+        val info =
+            worldEntityInfo
+                ?: error("World entity info not available")
+        for (index in info.getRemovedWorldEntityIndices()) {
+            this.destroyWorld(index)
+        }
+        for (index in info.getAddedWorldEntityIndices()) {
+            this.allocateWorld(index)
+        }
+    }
+
+    @Suppress("NOTHING_TO_INLINE")
+    @JvmSynthetic
+    public inline fun internalPacketResult(worldId: Int): Result<NpcInfoPacket> {
+        return toPacketResult(worldId)
+    }
 
     /**
-     * Turns this npc info structure into a respective npc info packet, depending
-     * on the current known view distance.
+     * Turns the previously-computed npc info into a packet instance
+     * which can be flushed to the client, or an exception if one was thrown while
+     * building the packet.
+     * @return the npc packet instance in a [Result].
      */
-    public fun toPacket(worldId: Int): OutgoingGameMessage {
+    @PublishedApi
+    internal fun toPacketResult(worldId: Int): Result<NpcInfoPacket> {
         val exception = this.exception
         if (exception != null) {
-            throw InfoProcessException(
-                "Exception occurred during npc info processing for index $localPlayerIndex",
-                exception,
+            return Result.failure(
+                InfoProcessException(
+                    "Exception occurred during npc info processing for index $localPlayerIndex",
+                    exception,
+                ),
             )
         }
-        val details = getDetails(worldId)
-        return checkNotNull(details.previousPacket) {
-            "Previous packet has not been calculated."
-        }
+        val details =
+            getDetailsOrNull(worldId)
+                ?: return Result.failure(
+                    IllegalStateException("World $worldId does not exist."),
+                )
+        val previousPacket =
+            details.previousPacket
+                ?: return Result.failure(
+                    IllegalStateException("Previous npc info packet not calculated."),
+                )
+        return Result.success(previousPacket)
     }
 
     /**

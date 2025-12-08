@@ -59,4 +59,8 @@ public class SetNpcUpdateOrigin private constructor(
             "originX=$originX, " +
             "originZ=$originZ" +
             ")"
+
+    public companion object {
+        public val DYNAMIC: SetNpcUpdateOrigin = SetNpcUpdateOrigin(0, 0)
+    }
 }

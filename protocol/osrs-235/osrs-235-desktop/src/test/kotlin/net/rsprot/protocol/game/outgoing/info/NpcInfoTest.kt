@@ -51,7 +51,7 @@ class NpcInfoTest {
     }
 
     private fun backingBuffer(): ByteBuf {
-        val packet = this.localNpcInfo.toPacket(NpcInfo.ROOT_WORLD)
+        val packet = this.localNpcInfo.internalPacketResult(NpcInfo.ROOT_WORLD).getOrNull()!!
         packet.markConsumed()
         return when (packet) {
             is NpcInfoSmallV5 -> packet.content()

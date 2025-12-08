@@ -46,7 +46,7 @@ class PlayerInfoTest {
 
     private fun tick() {
         protocol.update()
-        val packet = localPlayerInfo.toPacket()
+        val packet = localPlayerInfo.internalPacketResult().getOrNull()!!
         packet.consume()
         val buffer = packet.content()
         client.decode(buffer)

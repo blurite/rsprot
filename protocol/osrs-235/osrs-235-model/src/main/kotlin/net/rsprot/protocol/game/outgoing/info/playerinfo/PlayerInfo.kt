@@ -162,7 +162,7 @@ public class PlayerInfo internal constructor(
 
     /**
      * The exception that was caught during the processing of this player's playerinfo packet.
-     * This exception will be propagated further during the [toPacket] function call,
+     * This exception will be propagated further during the [toPacketResult] function call,
      * allowing the server to handle it properly at a per-player basis.
      */
     @Volatile
@@ -326,25 +326,35 @@ public class PlayerInfo internal constructor(
         return collection
     }
 
+    @Suppress("NOTHING_TO_INLINE")
+    @JvmSynthetic
+    public inline fun internalPacketResult(): Result<PlayerInfoPacket> {
+        return toPacketResult()
+    }
+
     /**
-     * Turns the player info object into a wrapped packet.
-     * This is necessary because the encoder itself is only triggered in Netty, and it is possible
-     * that the buffer has already been replaced with a new variant before it gets to that stage.
-     * @return thread-safe player info packet class, wrapping the pre-built buffer.
-     * @throws InfoProcessException if there was an exception during the computation of player info
-     * for this specific playerinfo object,
+     * Turns the previously-computed player info into a packet instance
+     * which can be flushed to the client, or an exception if one was thrown while
+     * building the packet.
+     * @return the player info packet instance in a [Result].
      */
-    public fun toPacket(): PlayerInfoPacket {
+    @PublishedApi
+    internal fun toPacketResult(): Result<PlayerInfoPacket> {
         val exception = this.exception
         if (exception != null) {
-            throw InfoProcessException(
-                "Exception occurred during player info processing for index $localIndex",
-                exception,
+            return Result.failure(
+                InfoProcessException(
+                    "Exception occurred during player info processing for index $localIndex",
+                    exception,
+                ),
             )
         }
-        return checkNotNull(this.previousPacket) {
-            "Previous packet not available."
-        }
+        val previousPacket =
+            previousPacket
+                ?: return Result.failure(
+                    IllegalStateException("Previous packet not available."),
+                )
+        return Result.success(previousPacket)
     }
 
     /**

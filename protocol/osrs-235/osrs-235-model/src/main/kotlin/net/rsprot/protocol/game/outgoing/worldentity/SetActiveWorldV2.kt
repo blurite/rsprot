@@ -123,4 +123,21 @@ public class SetActiveWorldV2(
                 "activeLevel=$activeLevel" +
                 ")"
     }
+
+    public companion object {
+        public val ROOT_ZERO: SetActiveWorldV2 = SetActiveWorldV2(RootWorldType(0))
+        public val ROOT_ONE: SetActiveWorldV2 = SetActiveWorldV2(RootWorldType(1))
+        public val ROOT_TWO: SetActiveWorldV2 = SetActiveWorldV2(RootWorldType(2))
+        public val ROOT_THREE: SetActiveWorldV2 = SetActiveWorldV2(RootWorldType(3))
+
+        public fun getRoot(level: Int): SetActiveWorldV2 {
+            return when (level) {
+                0 -> ROOT_ZERO
+                1 -> ROOT_ONE
+                2 -> ROOT_TWO
+                3 -> ROOT_THREE
+                else -> error("Invalid level: $level")
+            }
+        }
+    }
 }

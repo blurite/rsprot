@@ -48,7 +48,7 @@ import net.rsprot.protocol.internal.game.outgoing.info.util.ZoneIndexStorage
  * protocol to deallocate the instances.
  * @property buffer the buffer for this world entity info packet.
  * @property exception the exception that was caught during the computations
- * of this world entity info, if any. This will be thrown as the [toPacket]
+ * of this world entity info, if any. This will be thrown as the [toPacketResult]
  * function is called, allowing the server to handle it from the correct
  * perspective of the caller, as the protocol itself is computed in for the
  * entire server in one go.
@@ -141,7 +141,7 @@ public class WorldEntityInfo internal constructor(
      * allowing for correct functionality for player and npc infos, as well as zone updates.
      * @return a list of indices of the world entities currently in high resolution.
      */
-    public fun getAllWorldEntityIndices(): List<Int> {
+    internal fun getAllWorldEntityIndices(): List<Int> {
         if (isDestroyed()) return emptyList()
         return this.allWorldEntities
     }
@@ -153,7 +153,7 @@ public class WorldEntityInfo internal constructor(
      * @return a list of all the world entity indices added to the high resolution view in this
      * cycle.
      */
-    public fun getAddedWorldEntityIndices(): List<Int> {
+    internal fun getAddedWorldEntityIndices(): List<Int> {
         if (isDestroyed()) return emptyList()
         return this.addedWorldEntities
     }
@@ -165,7 +165,7 @@ public class WorldEntityInfo internal constructor(
      * @return a list of all the indices of the world entities that were removed from the high
      * resolution view this cycle.
      */
-    public fun getRemovedWorldEntityIndices(): List<Int> {
+    internal fun getRemovedWorldEntityIndices(): List<Int> {
         if (isDestroyed()) return emptyList()
         return this.removedWorldEntities
     }
@@ -191,23 +191,26 @@ public class WorldEntityInfo internal constructor(
 
     /**
      * Turns the previously-computed world entity info into a packet instance
-     * which can be flushed to the client.
-     * If an exception was caught during the computation of this world entity info,
-     * it will be thrown in here, allowing the server to properly handle exceptions
-     * in a per-player perspective.
-     * @return the world entity packet instance.
+     * which can be flushed to the client, or an exception if one was thrown while
+     * building the packet.
+     * @return the world entity packet instance in a [Result].
      */
-    public fun toPacket(): WorldEntityInfoV6Packet {
+    internal fun toPacketResult(): Result<WorldEntityInfoV6Packet> {
         val exception = this.exception
         if (exception != null) {
-            throw InfoProcessException(
-                "Exception occurred during player info processing for index $localIndex",
-                exception,
+            return Result.failure(
+                InfoProcessException(
+                    "Exception occurred during player info processing for index $localIndex",
+                    exception,
+                ),
             )
         }
-        return checkNotNull(previousPacket) {
-            "Previous world entity info packet not calculated."
-        }
+        val previousPacket =
+            previousPacket
+                ?: return Result.failure(
+                    IllegalStateException("Previous world entity info packet not calculated."),
+                )
+        return Result.success(previousPacket)
     }
 
     /**
@@ -518,6 +521,14 @@ public class WorldEntityInfo internal constructor(
      */
     internal fun getWorldEntity(coordGrid: CoordGrid): Int {
         return avatarRepository.getByCoordGrid(coordGrid)
+    }
+
+    /**
+     * Gets the active level of the world [worldId], or -1 if that world cannot be found.
+     */
+    internal fun getActiveLevel(worldId: Int): Int {
+        val avatar = avatarRepository.getOrNull(worldId)
+        return avatar?.activeLevel ?: -1
     }
 
     /**
