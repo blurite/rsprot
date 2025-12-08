@@ -364,7 +364,7 @@ public class WorldEntityInfo internal constructor(
                         } else {
                             avatar.priorityTowards(localIndex).id
                         }
-                    this.unsortedTopKArray.offer(index, (priority.toLong() shl 60) or distanceSquared)
+                    this.unsortedTopKArray.offer(index, (priority.toLong() shl 60) - distanceSquared)
                 }
             }
         }
