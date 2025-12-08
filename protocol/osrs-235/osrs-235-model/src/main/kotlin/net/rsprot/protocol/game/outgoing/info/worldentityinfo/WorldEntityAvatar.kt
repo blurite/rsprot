@@ -25,7 +25,9 @@ import net.rsprot.protocol.internal.game.outgoing.info.util.ZoneIndexStorage
  * @property minLevel the minimum level of the instance being built.
  * @property maxLevel the maximum level of the instance being built, inclusive.
  * @property id the cache config id
- * @property priority the rendering priority
+ * @property ownerIndex the index of the owner of this avatar.
+ * If the index is > 0, a player by that index will own this avatar.
+ * If the index is < 0, a NPC will own the avatar.
  * @property currentCoordFine the coordinate that this world entity is being rendered at.
  * @property angle the current angle of this world entity.
  * @property lastCoordFine the last known coordinate of the world entity by the client.
@@ -43,7 +45,7 @@ public class WorldEntityAvatar(
     internal var minLevel: Int,
     internal var maxLevel: Int,
     internal var id: Int,
-    internal var priority: WorldEntityPriority,
+    internal var ownerIndex: Int,
     internal var projectedLevel: Int,
     internal var activeLevel: Int,
     internal var currentCoordFine: CoordFine = CoordFine.INVALID,
@@ -67,6 +69,26 @@ public class WorldEntityAvatar(
      * this possibility exists, and it could result in some rather odd bugs.
      */
     internal var allocateCycle: Int = WorldEntityProtocol.cycleCount
+
+    /**
+     * Gets the priority of this world entity towards the player with the index [playerIndex].
+     * If the player by the index of [playerIndex] owns this world entity, they receive the highest
+     * priority.
+     * If a NPC owns this world entity, they receive the second-highest priority. NPC-owned entities
+     * are prioritized over other players, as players need to always be able to see ships like
+     * the ones starting/finishing the barracuda trials.
+     * If another player owns the world entity, the lowest priority is provided.
+     */
+    internal fun priorityTowards(playerIndex: Int): WorldEntityPriority {
+        val ownerIndex = this.ownerIndex
+        if (ownerIndex == playerIndex) {
+            return WorldEntityPriority.LOCAL_PLAYER
+        }
+        if (ownerIndex < 0) {
+            return WorldEntityPriority.NPC
+        }
+        return WorldEntityPriority.OTHER_PLAYER
+    }
 
     /**
      * Precomputes the high resolution buffer of this world entity.

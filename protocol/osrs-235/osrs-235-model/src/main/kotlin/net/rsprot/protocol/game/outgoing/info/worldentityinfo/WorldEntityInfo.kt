@@ -353,7 +353,8 @@ public class WorldEntityInfo internal constructor(
                     val dx = (centerFineX - avatarCoord.x).toLong()
                     val dz = (centerFineZ - avatarCoord.z).toLong()
                     val distanceSquared = dx * dx + dz * dz
-                    this.unsortedTopKArray.offer(index, (avatar.priority.id.toLong() shl 60) or distanceSquared)
+                    val priority = avatar.priorityTowards(localIndex)
+                    this.unsortedTopKArray.offer(index, (priority.id.toLong() shl 60) or distanceSquared)
                 }
             }
         }
@@ -398,7 +399,8 @@ public class WorldEntityInfo internal constructor(
                 avatar.currentCoordFine.z - fineZOffset,
                 avatar.angle,
             )
-            buffer.p1(avatar.priority.id)
+            val priority = avatar.priorityTowards(localIndex)
+            buffer.p1(priority.id)
             putWorldEntityExtendedInfo(avatar, buffer)
         }
     }

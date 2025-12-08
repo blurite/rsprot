@@ -7,7 +7,7 @@ package net.rsprot.protocol.game.outgoing.info.worldentityinfo
 public enum class WorldEntityPriority(
     public val id: Int,
 ) {
-    DEFAULT(0),
-    LOW(1),
-    HIGH(2),
+    OTHER_PLAYER(0),
+    NPC(1),
+    LOCAL_PLAYER(2),
 }

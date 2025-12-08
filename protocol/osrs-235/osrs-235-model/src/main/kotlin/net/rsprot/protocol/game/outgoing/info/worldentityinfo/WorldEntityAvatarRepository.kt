@@ -53,7 +53,9 @@ public class WorldEntityAvatarRepository internal constructor(
      * a new avatar if not.
      * @param index the index of the world entity
      * @param id the id of the world entity
-     * @param priority the priority in which the world entity will be rendered into the scene.
+     * @param ownerIndex the index of the owner of this avatar.
+     * If the index is > 0, a player by that index will own this avatar.
+     * If the index is < 0, a NPC will own the avatar.
      * @param sizeX the width of the world entity in zones (8 tiles/zone)
      * @param sizeZ the height of the world entity in zones (8 tiles/zone)
      * @param southWestZoneX the southwestern zone x of the worldentity instance
@@ -73,7 +75,7 @@ public class WorldEntityAvatarRepository internal constructor(
     public fun getOrAlloc(
         index: Int,
         id: Int,
-        priority: WorldEntityPriority,
+        ownerIndex: Int,
         sizeX: Int,
         sizeZ: Int,
         southWestZoneX: Int,
@@ -90,7 +92,7 @@ public class WorldEntityAvatarRepository internal constructor(
         return getOrAlloc(
             index,
             id,
-            priority,
+            ownerIndex,
             sizeX,
             sizeZ,
             southWestZoneX,
@@ -111,7 +113,9 @@ public class WorldEntityAvatarRepository internal constructor(
      * a new avatar if not.
      * @param index the index of the world entity
      * @param id the id of the world entity
-     * @param priority the priority in which the world entity will be rendered into the scene.
+     * @param ownerIndex the index of the owner of this avatar.
+     * If the index is > 0, a player by that index will own this avatar.
+     * If the index is < 0, a NPC will own the avatar.
      * @param sizeX the width of the world entity in zones (8 tiles/zone)
      * @param sizeZ the height of the world entity in zones (8 tiles/zone)
      * @param southWestZoneX the southwestern zone x of the worldentity instance
@@ -135,7 +139,7 @@ public class WorldEntityAvatarRepository internal constructor(
         "Deprecated as fineY is no longer utilized by the client.",
         replaceWith =
             ReplaceWith(
-                "getOrAlloc(index, id, priority, " +
+                "getOrAlloc(index, id, ownerIndex, " +
                     "sizeX, sizeZ, fineX, fineZ, " +
                     "projectedLevel, activeLevel, angle)",
             ),
@@ -143,7 +147,7 @@ public class WorldEntityAvatarRepository internal constructor(
     public fun getOrAlloc(
         index: Int,
         id: Int,
-        priority: WorldEntityPriority,
+        ownerIndex: Int,
         sizeX: Int,
         sizeZ: Int,
         southWestZoneX: Int,
@@ -182,7 +186,7 @@ public class WorldEntityAvatarRepository internal constructor(
             existing.teleport = false
             existing.allocateCycle = WorldEntityProtocol.cycleCount
             existing.id = id
-            existing.priority = priority
+            existing.ownerIndex = ownerIndex
             existing.projectedLevel = projectedLevel
             existing.activeLevel = activeLevel
             existing.southWestZoneX = southWestZoneX
@@ -212,7 +216,7 @@ public class WorldEntityAvatarRepository internal constructor(
                 minLevel,
                 maxLevel,
                 id,
-                priority,
+                ownerIndex,
                 projectedLevel,
                 activeLevel,
                 CoordFine(fineX, fineY, fineZ),

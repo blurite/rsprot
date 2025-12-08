@@ -34,7 +34,9 @@ public class WorldEntityAvatarFactory(
      * Allocates a new world entity with the provided arguments.
      * @param index the index of the world entity
      * @param id the id of the world entity config
-     * @param priority the render priority of the world entity in the scene
+     * @param ownerIndex the index of the owner of this avatar.
+     * If the index is > 0, a player by that index will own this avatar.
+     * If the index is < 0, a NPC will own the avatar.
      * @param sizeX the width of the world entity in zones (8 tiles/zone)
      * @param sizeZ the height of the world entity in zones (8 tiles/zone)
      * @param southWestZoneX the southwestern zone x of the worldentity instance
@@ -54,7 +56,7 @@ public class WorldEntityAvatarFactory(
     public fun alloc(
         index: Int,
         id: Int,
-        priority: WorldEntityPriority,
+        ownerIndex: Int,
         sizeX: Int,
         sizeZ: Int,
         southWestZoneX: Int,
@@ -113,7 +115,7 @@ public class WorldEntityAvatarFactory(
         return avatarRepository.getOrAlloc(
             index,
             id,
-            priority,
+            ownerIndex,
             sizeX,
             sizeZ,
             southWestZoneX,
@@ -132,7 +134,9 @@ public class WorldEntityAvatarFactory(
      * Allocates a new world entity with the provided arguments.
      * @param index the index of the world entity
      * @param id the id of the world entity config
-     * @param priority the render priority of the world entity in the scene
+     * @param ownerIndex the index of the owner of this avatar.
+     * If the index is > 0, a player by that index will own this avatar.
+     * If the index is < 0, a NPC will own the avatar.
      * @param sizeX the width of the world entity in zones (8 tiles/zone)
      * @param sizeZ the height of the world entity in zones (8 tiles/zone)
      * @param southWestZoneX the southwestern zone x of the worldentity instance
@@ -156,7 +160,7 @@ public class WorldEntityAvatarFactory(
         "Deprecated as fineY is no longer utilized by the client.",
         replaceWith =
             ReplaceWith(
-                "alloc(index, id, priority, " +
+                "alloc(index, id, ownerIndex, " +
                     "sizeX, sizeZ, fineX, fineZ, " +
                     "projectedLevel, activeLevel, angle)",
             ),
@@ -164,7 +168,7 @@ public class WorldEntityAvatarFactory(
     public fun alloc(
         index: Int,
         id: Int,
-        priority: WorldEntityPriority,
+        ownerIndex: Int,
         sizeX: Int,
         sizeZ: Int,
         southWestZoneX: Int,
@@ -228,7 +232,7 @@ public class WorldEntityAvatarFactory(
         return avatarRepository.getOrAlloc(
             index,
             id,
-            priority,
+            ownerIndex,
             sizeX,
             sizeZ,
             southWestZoneX,
