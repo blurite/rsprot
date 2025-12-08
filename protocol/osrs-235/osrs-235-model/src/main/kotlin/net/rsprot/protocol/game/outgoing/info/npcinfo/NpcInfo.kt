@@ -982,7 +982,7 @@ public class NpcInfo internal constructor(
     public fun onReconnect() {
         checkCommunicationThread()
         if (isDestroyed()) return
-        onDealloc()
+        releaseAllWorlds()
         // Restore the root world by polling a new one
         val details = detailsStorage.poll(ROOT_WORLD)
         this.details[WORLD_ENTITY_CAPACITY] = details
@@ -1006,6 +1006,10 @@ public class NpcInfo internal constructor(
     override fun onDealloc() {
         checkCommunicationThread()
         this.worldEntityInfo = null
+        releaseAllWorlds()
+    }
+
+    private fun releaseAllWorlds() {
         for (index in this.details.indices) {
             val details = this.details[index] ?: continue
             releaseObservers(details)
