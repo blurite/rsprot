@@ -353,6 +353,14 @@ public class WorldEntityInfo internal constructor(
                     if (!inRange(avatar)) {
                         continue
                     }
+                    val isCurrentWorldEntity = index == currentWorldEntityIndex
+                    if (avatar.specific) {
+                        // Skip the world if it is marked as specific, and we don't own it,
+                        // nor are we currently residing on it.
+                        if (!isCurrentWorldEntity && avatar.ownerIndex != localIndex) {
+                            continue
+                        }
+                    }
                     val avatarCoord = avatar.currentCoordFine
                     val dx = (centerFineX - avatarCoord.x).toLong()
                     val dz = (centerFineZ - avatarCoord.z).toLong()
@@ -362,7 +370,7 @@ public class WorldEntityInfo internal constructor(
                     // the circumstances. This is solely for the purpose of serverside transmission
                     // and client-side priority can differ and be as-is.
                     val priority =
-                        if (index == currentWorldEntityIndex) {
+                        if (isCurrentWorldEntity) {
                             WorldEntityPriority.LOCAL_PLAYER.id + 1
                         } else {
                             avatar.priorityTowards(localIndex).id

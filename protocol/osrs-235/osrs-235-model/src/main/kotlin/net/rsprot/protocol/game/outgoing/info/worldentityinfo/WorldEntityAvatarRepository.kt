@@ -193,6 +193,7 @@ public class WorldEntityAvatarRepository internal constructor(
             existing.southWestZoneZ = southWestZoneZ
             existing.minLevel = minLevel
             existing.maxLevel = maxLevel
+            existing.specific = false
             zoneIndexStorage.add(index, existing.currentCoordGrid)
             elements[index] = existing
             return existing

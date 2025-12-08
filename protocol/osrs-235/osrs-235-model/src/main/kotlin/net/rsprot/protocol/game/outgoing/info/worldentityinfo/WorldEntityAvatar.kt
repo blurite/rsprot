@@ -55,6 +55,7 @@ public class WorldEntityAvatar(
     internal var teleport: Boolean = false
     internal var lastAngle: Int = angle
     internal var lastCoordFine: CoordFine = currentCoordFine
+    internal var specific: Boolean = false
 
     internal var highResolutionBuffer: ByteBuf? = null
 
@@ -69,6 +70,16 @@ public class WorldEntityAvatar(
      * this possibility exists, and it could result in some rather odd bugs.
      */
     internal var allocateCycle: Int = WorldEntityProtocol.cycleCount
+
+    /**
+     * Sets this world entity as specific, meaning it will only render to the players
+     * that own it ([ownerIndex] matches their index), and any players who currently
+     * reside on the world entity. Anyone else will not see it.
+     */
+    public fun setSpecific(specific: Boolean) {
+        checkCommunicationThread()
+        this.specific = specific
+    }
 
     /**
      * Gets the priority of this world entity towards the player with the index [playerIndex].
