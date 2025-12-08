@@ -8,6 +8,7 @@ import net.rsprot.protocol.game.outgoing.info.ByteBufRecycler
 import net.rsprot.protocol.game.outgoing.info.playerinfo.util.LowResolutionPosition
 import net.rsprot.protocol.game.outgoing.info.worker.DefaultProtocolWorker
 import net.rsprot.protocol.game.outgoing.info.worker.ProtocolWorker
+import net.rsprot.protocol.game.outgoing.info.worldentityinfo.WorldEntityInfo
 import net.rsprot.protocol.internal.checkCommunicationThread
 import java.util.concurrent.Callable
 import java.util.concurrent.ForkJoinPool
@@ -51,7 +52,7 @@ public class PlayerInfoProtocol(
      * all the avatars that exist.
      */
     private val playerInfoRepository: PlayerInfoRepository =
-        PlayerInfoRepository { localIndex, clientType ->
+        PlayerInfoRepository { localIndex, clientType, worldEntityInfo ->
             PlayerInfo(
                 this,
                 localIndex,
@@ -60,6 +61,7 @@ public class PlayerInfoProtocol(
                 avatarFactory.alloc(localIndex),
                 recycler,
                 lowResolutionPositionRepository,
+                worldEntityInfo,
             )
         }
 
@@ -92,9 +94,10 @@ public class PlayerInfoProtocol(
         ArrayIndexOutOfBoundsException::class,
         IllegalStateException::class,
     )
-    public fun alloc(
+    internal fun alloc(
         idx: Int,
         oldSchoolClientType: OldSchoolClientType,
+        worldEntityInfo: WorldEntityInfo,
     ): PlayerInfo {
         checkCommunicationThread()
         // Only handle index 0 as a special case, as the protocol
@@ -103,14 +106,14 @@ public class PlayerInfoProtocol(
         if (idx == 0) {
             throw ArrayIndexOutOfBoundsException("Index 0 is not valid for player info protocol.")
         }
-        return playerInfoRepository.alloc(idx, oldSchoolClientType)
+        return playerInfoRepository.alloc(idx, oldSchoolClientType, worldEntityInfo)
     }
 
     /**
      * Deallocates the player info object, releasing it back into the pool to be used by another player.
      * @param info the player info object
      */
-    public fun dealloc(info: PlayerInfo) {
+    internal fun dealloc(info: PlayerInfo) {
         checkCommunicationThread()
         // Prevent returning a destroyed player info object back into the pool
         if (info.isDestroyed()) {

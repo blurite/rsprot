@@ -138,7 +138,7 @@ public class ZoneIndexStorage(
     }
 
     public companion object {
-        public const val WORLDENTITY_CAPACITY: Int = 2048
+        public const val WORLDENTITY_CAPACITY: Int = 4096
         public const val NPC_CAPACITY: Int = 65536
     }
 }

@@ -2,8 +2,6 @@ package net.rsprot.protocol.game.outgoing.info.npcinfo
 
 import io.netty.buffer.ByteBuf
 import net.rsprot.protocol.game.outgoing.info.ObserverExtendedInfoFlags
-import net.rsprot.protocol.game.outgoing.info.util.BuildArea
-import net.rsprot.protocol.internal.game.outgoing.info.CoordGrid
 import net.rsprot.protocol.message.OutgoingGameMessage
 
 /**
@@ -14,27 +12,6 @@ import net.rsprot.protocol.message.OutgoingGameMessage
 internal class NpcInfoWorldDetails(
     internal var worldId: Int,
 ) {
-    /**
-     * The last cycle's coordinate of the local player, used to perform faster npc removal.
-     * If the player moves a greater distance than the [NpcInfo.viewDistance], we can make the assumption
-     * that all the existing high-resolution NPCs need to be removed, and thus remove them
-     * in a simplified manner, rather than applying a coordinate check on each one. This commonly
-     * occurs whenever a player teleports far away.
-     */
-    internal var localPlayerLastCoord: CoordGrid = CoordGrid.INVALID
-
-    /**
-     * The current coordinate of the local player used for the calculations of this npc info
-     * packet. This will be cross-referenced against NPCs to ensure they are within distance.
-     */
-    internal var localPlayerCurrentCoord: CoordGrid = CoordGrid.INVALID
-
-    /**
-     * The entire build area of this world - this effectively caps what we can see
-     * to be within this block of land. Anything outside will be excluded.
-     */
-    internal var buildArea: BuildArea = BuildArea.INVALID
-
     /**
      * The maximum number of NPCs that can render at once in the
      * [net.rsprot.protocol.game.outgoing.info.AvatarPriority.LOW] priority group.
@@ -283,9 +260,6 @@ internal class NpcInfoWorldDetails(
      */
     internal fun onAlloc(worldId: Int) {
         this.worldId = worldId
-        this.localPlayerCurrentCoord = CoordGrid.INVALID
-        this.localPlayerLastCoord = localPlayerCurrentCoord
-        this.buildArea = BuildArea.INVALID
         this.highResolutionNpcIndexCount = 0
         this.highResolutionNpcIndices.fill(0u)
         this.temporaryHighResolutionNpcIndices.fill(0u)

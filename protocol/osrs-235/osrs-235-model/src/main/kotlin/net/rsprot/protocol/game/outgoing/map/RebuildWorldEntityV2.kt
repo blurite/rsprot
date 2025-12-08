@@ -94,8 +94,8 @@ public class RebuildWorldEntityV2 private constructor(
          * looking up the actual zone that was copied for that world entity.
          * In order to calculate the mapsquare id for xtea keys, use [getMapsquareId].
          *
-         * @param zoneX the x coordinate of the region zone
-         * @param zoneZ the z coordinate of the region zone
+         * @param zoneX the zone x coordinate of the region zone, relative to the south-westernmost zone
+         * @param zoneZ the zone z coordinate of the region zone, relative to the south-westernmost zone
          * @param level the level of the region zone
          * @return the zone to be copied, or null if there's no zone to be copied there.
          */

@@ -11,8 +11,8 @@ import net.rsprot.buffer.extensions.toJagByteBuf
 import net.rsprot.protocol.common.client.OldSchoolClientType
 import net.rsprot.protocol.game.outgoing.info.ByteBufRecycler
 import net.rsprot.protocol.game.outgoing.info.exceptions.InfoProcessException
-import net.rsprot.protocol.game.outgoing.info.util.BuildArea
 import net.rsprot.protocol.game.outgoing.info.util.ReferencePooledObject
+import net.rsprot.protocol.game.outgoing.info.worldentityinfo.WorldEntityInfo
 import net.rsprot.protocol.internal.checkCommunicationThread
 import net.rsprot.protocol.internal.client.ClientTypeMap
 import net.rsprot.protocol.internal.game.outgoing.info.CoordGrid
@@ -52,6 +52,7 @@ public class NpcInfo internal constructor(
     private val detailsStorage: NpcInfoWorldDetailsStorage,
     private val recycler: ByteBufRecycler,
     private val filter: NpcAvatarFilter?,
+    private var worldEntityInfo: WorldEntityInfo?,
 ) : ReferencePooledObject {
     /**
      * The maximum view distance how far a player will see other NPCs.
@@ -76,6 +77,21 @@ public class NpcInfo internal constructor(
     internal val details: Array<NpcInfoWorldDetails?> = arrayOfNulls(WORLD_ENTITY_CAPACITY + 1)
 
     /**
+     * The last cycle's coordinate of the local player, used to perform faster npc removal.
+     * If the player moves a greater distance than the [NpcInfo.viewDistance], we can make the assumption
+     * that all the existing high-resolution NPCs need to be removed, and thus remove them
+     * in a simplified manner, rather than applying a coordinate check on each one. This commonly
+     * occurs whenever a player teleports far away.
+     */
+    internal var localPlayerLastCoord: CoordGrid = CoordGrid.INVALID
+
+    /**
+     * The current coordinate of the local player used for the calculations of this npc info
+     * packet. This will be cross-referenced against NPCs to ensure they are within distance.
+     */
+    internal var localPlayerCurrentCoord: CoordGrid = CoordGrid.INVALID
+
+    /**
      * An array of NPCs which are marked as specific-visible. Any NPC avatar that was explicitly marked
      * as visible-to-specific-only will only render to players that mark that avatar's index as specific
      * visible. Anyone else will be unable to see such NPCs.
@@ -83,55 +99,6 @@ public class NpcInfo internal constructor(
     internal val specificVisible: LongArray = LongArray((NPC_INFO_CAPACITY + 1) ushr 6)
 
     override fun isDestroyed(): Boolean = this.exception != null
-
-    /**
-     * Updates the build area of a given world to the specified one.
-     * This will ensure that no NPCs outside of this box will be
-     * added to high resolution view.
-     * @param worldId the id of the world to set the build area of,
-     * with -1 being the root world.
-     * @param buildArea the build area to assign.
-     */
-    public fun updateBuildArea(
-        worldId: Int,
-        buildArea: BuildArea,
-    ) {
-        checkCommunicationThread()
-        if (isDestroyed()) return
-        require(worldId == ROOT_WORLD || worldId in 0..<2048) {
-            "World id must be -1 or in range of 0..<2048"
-        }
-        val details = getDetails(worldId)
-        details.buildArea = buildArea
-    }
-
-    /**
-     * Updates the build area of a given world to the specified one.
-     * This will ensure that no NPCs outside of this box will be
-     * added to high resolution view.
-     * @param worldId the id of the world to set the build area of,
-     * with -1 being the root world.
-     * @param zoneX the south-western zone x coordinate of the build area
-     * @param zoneZ the south-western zone z coordinate of the build area
-     * @param widthInZones the build area width in zones (typically 13, meaning 104 tiles)
-     * @param heightInZones the build area height in zones (typically 13, meaning 104 tiles)
-     */
-    @JvmOverloads
-    public fun updateBuildArea(
-        worldId: Int,
-        zoneX: Int,
-        zoneZ: Int,
-        widthInZones: Int = BuildArea.DEFAULT_BUILD_AREA_SIZE,
-        heightInZones: Int = BuildArea.DEFAULT_BUILD_AREA_SIZE,
-    ) {
-        checkCommunicationThread()
-        if (isDestroyed()) return
-        require(worldId == ROOT_WORLD || worldId in 0..<2048) {
-            "World id must be -1 or in range of 0..<2048"
-        }
-        val details = getDetails(worldId)
-        details.buildArea = BuildArea(zoneX, zoneZ, widthInZones, heightInZones)
-    }
 
     /**
      * Allocates a new NPC info tracking object for the respective [worldId],
@@ -528,28 +495,13 @@ public class NpcInfo internal constructor(
     }
 
     /**
-     * Updates the coordinate of the local player, as this is necessary to know
-     * how far NPCs nearby are to the player, which allows us to remove NPCs that
-     * have gone too far out, and add NPCs that are within certain distance.
-     * @param level the height level of the local player
-     * @param x the x coordinate of the local player
-     * @param z the z coordinate of the local player
+     * Updates the root world coordinate of the local player.
+     * @param coordGrid the coordgrid of the player
      */
-    public fun updateCoord(
-        worldId: Int,
-        level: Int,
-        x: Int,
-        z: Int,
-    ) {
+    internal fun updateRootCoord(coordGrid: CoordGrid) {
         checkCommunicationThread()
         if (isDestroyed()) return
-        val details = getDetails(worldId)
-        details.localPlayerCurrentCoord =
-            CoordGrid(
-                level,
-                x,
-                z,
-            )
+        this.localPlayerCurrentCoord = coordGrid
     }
 
     /**
@@ -565,7 +517,11 @@ public class NpcInfo internal constructor(
             if (fragmented) {
                 details.defragmentIndices()
             }
-            processLowResolution(details, bitBuffer, viewDistance)
+            if (details.worldId == ROOT_WORLD) {
+                processRootWorldLowResolution(details, bitBuffer, viewDistance)
+            } else {
+                processLowResolution(details, bitBuffer, viewDistance)
+            }
             // Terminate the low-resolution processing block if there are extended info
             // blocks after that; if not, the loop ends naturally due to not enough
             // readable bits remaining (at most would have 7 bits remaining due to
@@ -583,11 +539,11 @@ public class NpcInfo internal constructor(
      * NPC, and only do so against the player's last coordinate.
      */
     internal fun afterUpdate() {
+        this.localPlayerLastCoord = this.localPlayerCurrentCoord
         for (details in this.details) {
             if (details == null) {
                 continue
             }
-            details.localPlayerLastCoord = details.localPlayerCurrentCoord
             details.extendedInfoCount = 0
             details.observerExtendedInfoFlags.reset()
 
@@ -662,10 +618,14 @@ public class NpcInfo internal constructor(
             buffer.pBits(8, 0)
             return false
         }
+        val worldEntityInfo =
+            checkNotNull(this.worldEntityInfo) {
+                "World entity info is null"
+            }
         // If our coordinate compared to last cycle changed more than 'viewDistance'
         // tiles, every NPC in our local view would be removed anyhow,
         // so by sending the count as 0, client automatically removes everyone
-        if (isTooFar(details, viewDistance)) {
+        if (!worldEntityInfo.isVisible(localPlayerLastCoord, localPlayerCurrentCoord, viewDistance)) {
             buffer.pBits(8, 0)
             // While it would be more efficient to just... not do this block below,
             // the reality is there are ~25k static npcs in the game alone,
@@ -688,7 +648,13 @@ public class NpcInfo internal constructor(
         for (i in details.highResolutionNpcIndexCount - 1 downTo 0) {
             val npcIndex = details.highResolutionNpcIndices[i].toInt()
             val avatar = repository.getOrNull(npcIndex)
-            if (!removeHighResolutionNpc(details, avatar, viewDistance)) {
+            if (!removeHighResolutionNpc(
+                    worldEntityInfo,
+                    details,
+                    avatar,
+                    viewDistance,
+                )
+            ) {
                 break
             }
             details.highResolutionNpcIndexCount--
@@ -700,7 +666,13 @@ public class NpcInfo internal constructor(
         for (i in 0..<processedCount) {
             val npcIndex = details.highResolutionNpcIndices[i].toInt()
             val avatar = repository.getOrNull(npcIndex)
-            if (removeHighResolutionNpc(details, avatar, viewDistance)) {
+            if (removeHighResolutionNpc(
+                    worldEntityInfo,
+                    details,
+                    avatar,
+                    viewDistance,
+                )
+            ) {
                 buffer.pBits(1, 1)
                 buffer.pBits(2, 3)
                 details.highResolutionNpcIndices[i] = NPC_INDEX_TERMINATOR
@@ -730,6 +702,7 @@ public class NpcInfo internal constructor(
      */
     @OptIn(ExperimentalContracts::class)
     private fun removeHighResolutionNpc(
+        worldEntityInfo: WorldEntityInfo,
         details: NpcInfoWorldDetails,
         avatar: NpcAvatar?,
         viewDistance: Int,
@@ -750,49 +723,18 @@ public class NpcInfo internal constructor(
             }
         }
         val coord = avatar.details.currentCoord
-        if (!withinDistance(details.localPlayerCurrentCoord, coord, viewDistance)) {
-            return true
-        }
-        val buildArea = details.buildArea
-        if (buildArea != BuildArea.INVALID && coord !in buildArea) {
-            return true
+        if (!worldEntityInfo.isVisible(
+                this.localPlayerCurrentCoord,
+                coord,
+                viewDistance,
+            )
+        ) {
+            return false
         }
         val filter = this.filter
         return filter != null &&
             !filter.accept(localPlayerIndex, avatar.details.index)
     }
-
-    /**
-     * Checks whether a given NPC avatar is still within our build area,
-     * before adding it to our high resolution view.
-     * @param details the world info details.
-     * @param avatar the npc avatar to check
-     */
-    private fun isInBuildArea(
-        details: NpcInfoWorldDetails,
-        avatar: NpcAvatar,
-    ): Boolean {
-        val buildArea = details.buildArea
-        return buildArea == BuildArea.INVALID || avatar.details.currentCoord in buildArea
-    }
-
-    /**
-     * Checks if the player has moved a greater distance from their previous coordinate
-     * than the maximum [viewDistance], in which case all existing high resolution NPCs
-     * can be removed in one go in a more efficient manner.
-     * @param viewDistance the maximum view distance how far a player can see other npcs
-     * @return whether the player has moved a greater distance than [viewDistance] since
-     * the last cycle.
-     */
-    private fun isTooFar(
-        details: NpcInfoWorldDetails,
-        viewDistance: Int,
-    ): Boolean =
-        !withinDistance(
-            details.localPlayerLastCoord,
-            details.localPlayerCurrentCoord,
-            viewDistance,
-        )
 
     /**
      * Processes the NPCs that are in low resolution by requesting an iterator of NPC indices
@@ -818,12 +760,122 @@ public class NpcInfo internal constructor(
         ) {
             return
         }
+        val worldEntityInfo =
+            checkNotNull(this.worldEntityInfo) {
+                "World entity info is null"
+            }
+        val avatar = worldEntityInfo.getAvatar(details.worldId) ?: return
         val encoder = lowResolutionToHighResolutionEncoders[oldSchoolClientType]
         val largeDistance = viewDistance > MAX_SMALL_PACKET_DISTANCE
-        val coord = details.localPlayerCurrentCoord
-        val centerX = coord.x
-        val centerZ = coord.z
-        val level = coord.level
+        val coord = localPlayerCurrentCoord
+        // Prefer player's current level if we're updating the world on which they stand
+        val level =
+            if (worldEntityInfo.getWorldEntity(coord) == details.worldId) {
+                coord.level
+            } else {
+                avatar.activeLevel
+            }
+        val startX = avatar.southWestZoneX
+        val startZ = avatar.southWestZoneZ
+        val swCoord = CoordGrid(level, startX shl 3, startZ shl 3)
+        val endX = avatar.southWestZoneX + avatar.sizeX
+        val endZ = avatar.southWestZoneZ + avatar.sizeZ
+        val filter = this.filter
+        loop@for (x in startX..<endX) {
+            for (z in startZ..<endZ) {
+                val npcs = this.zoneIndexStorage.get(level, x, z) ?: continue
+                for (k in 0..<npcs.size) {
+                    val index = npcs[k].toInt() and NPC_INFO_CAPACITY
+                    if (index == NPC_INFO_CAPACITY) {
+                        break
+                    }
+                    if (isHighResolution(details, index)) {
+                        continue
+                    }
+                    val avatar = repository.getOrNull(index) ?: continue
+                    if (avatar.details.inaccessible) {
+                        continue
+                    }
+                    if (avatar.details.priorityBitcode and AVATAR_NORMAL_PRIORITY_FLAG != 0) {
+                        // For normal priority, once both our groups are capped out, we just break out of the loop,
+                        // as neither low nor normal priority NPCs can be added now.
+                        if (details.normalPriorityCount >= normalSoftCap && details.lowPriorityCount >= lowCap) {
+                            break@loop
+                        }
+                    } else {
+                        // For low priority, if we've reached our cap, just move on - there might be normal
+                        // priority NPCs still coming.
+                        if (details.lowPriorityCount >= lowCap) {
+                            continue
+                        }
+                    }
+                    if (!worldEntityInfo.isVisible(
+                            coord,
+                            avatar.details.currentCoord,
+                            viewDistance,
+                        )
+                    ) {
+                        continue
+                    }
+                    if (avatar.details.specific) {
+                        if (!isSpecific(index)) {
+                            continue
+                        }
+                    }
+                    if (filter != null && !filter.accept(localPlayerIndex, index)) {
+                        continue
+                    }
+                    avatar.addObserver(localPlayerIndex)
+                    val i = details.highResolutionNpcIndexCount++
+                    details.incrementPriority(
+                        i,
+                        avatar.details.priorityBitcode and AVATAR_NORMAL_PRIORITY_FLAG == 0,
+                    )
+                    details.highResolutionNpcIndices[i] = index.toUShort()
+                    val observerFlags = avatar.extendedInfo.getLowToHighResChangeExtendedInfoFlags()
+                    if (observerFlags != 0) {
+                        details.observerExtendedInfoFlags.addFlag(details.extendedInfoCount, observerFlags)
+                    }
+                    val extendedInfo = (avatar.extendedInfo.flags or observerFlags) != 0
+                    if (extendedInfo) {
+                        details.extendedInfoIndices[details.extendedInfoCount++] = index.toUShort()
+                    }
+                    encoder.encode(
+                        buffer,
+                        avatar.details,
+                        extendedInfo,
+                        swCoord,
+                        largeDistance,
+                        NpcInfoProtocol.cycleCount,
+                    )
+                }
+            }
+        }
+    }
+
+    private fun processRootWorldLowResolution(
+        details: NpcInfoWorldDetails,
+        buffer: BitBuf,
+        viewDistance: Int,
+    ) {
+        val lowCap = details.lowPriorityCap
+        val normalSoftCap = details.normalPrioritySoftCap
+        // If our local view is already maxed out, don't even bother calculating the below
+        if (details.normalPriorityCount >= normalSoftCap &&
+            details.lowPriorityCount >= lowCap
+        ) {
+            return
+        }
+        val worldEntityInfo =
+            checkNotNull(this.worldEntityInfo) {
+                "World entity info is null"
+            }
+        val encoder = lowResolutionToHighResolutionEncoders[oldSchoolClientType]
+        val largeDistance = viewDistance > MAX_SMALL_PACKET_DISTANCE
+        val rootWorldCoord = worldEntityInfo.getCoordInRootWorld(localPlayerCurrentCoord)
+        val centerX = rootWorldCoord.x
+        val centerZ = rootWorldCoord.z
+        val level = rootWorldCoord.level
         val startX = ((centerX - viewDistance) shr 3).coerceAtLeast(0)
         val startZ = ((centerZ - viewDistance) shr 3).coerceAtLeast(0)
         val endX = ((centerX + viewDistance) shr 3).coerceAtMost(0x7FF)
@@ -857,14 +909,12 @@ public class NpcInfo internal constructor(
                             continue
                         }
                     }
-                    if (!coord.inDistance(
+                    if (!worldEntityInfo.isVisibleInRoot(
+                            rootWorldCoord,
                             avatar.details.currentCoord,
                             viewDistance,
                         )
                     ) {
-                        continue
-                    }
-                    if (!isInBuildArea(details, avatar)) {
                         continue
                     }
                     if (avatar.details.specific) {
@@ -894,7 +944,7 @@ public class NpcInfo internal constructor(
                         buffer,
                         avatar.details,
                         extendedInfo,
-                        coord,
+                        rootWorldCoord,
                         largeDistance,
                         NpcInfoProtocol.cycleCount,
                     )
@@ -924,20 +974,6 @@ public class NpcInfo internal constructor(
     }
 
     /**
-     * Checks whether the [coord] is within [distance] of the [localPlayerCoordGrid].
-     * @return whether the coord is within distance of the local player's current coordinate.
-     */
-    private fun withinDistance(
-        localPlayerCoordGrid: CoordGrid,
-        coord: CoordGrid,
-        distance: Int,
-    ): Boolean =
-        localPlayerCoordGrid.inDistance(
-            coord,
-            distance,
-        )
-
-    /**
      * This function allocates a new clean world details object,
      * as on reconnect, all existing npc info state is lost.
      * This function should be called on the old npc info object
@@ -961,12 +997,15 @@ public class NpcInfo internal constructor(
         this.localPlayerIndex = index
         this.oldSchoolClientType = oldSchoolClientType
         this.viewDistance = DEFAULT_DISTANCE
+        this.localPlayerCurrentCoord = CoordGrid.INVALID
+        this.localPlayerLastCoord = localPlayerCurrentCoord
         // There is always a root world!
         details[WORLD_ENTITY_CAPACITY] = detailsStorage.poll(ROOT_WORLD)
     }
 
     override fun onDealloc() {
         checkCommunicationThread()
+        this.worldEntityInfo = null
         for (index in this.details.indices) {
             val details = this.details[index] ?: continue
             releaseObservers(details)

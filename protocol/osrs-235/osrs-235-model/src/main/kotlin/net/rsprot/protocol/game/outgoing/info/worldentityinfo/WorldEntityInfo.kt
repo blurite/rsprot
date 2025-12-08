@@ -26,10 +26,8 @@ import net.rsprot.protocol.internal.game.outgoing.info.util.ZoneIndexStorage
  * the world entities currently lie.
  * @property renderDistance the render distance in tiles, effectively how far to render
  * world entities from the local player (or the camera pov)
- * @property currentWorldEntityId the id of the world entity on which the local player
- * currently resides.
- * @property currentCoord the current real coordinate of the local player.
- * @property buildArea the current build area of the player, this is the root base
+ * @property coordInRootWorld the current real coordinate of the local player.
+ * @property rootBuildArea the current build area of the player, this is the root base
  * map that's being rendered to the player.
  * @property highResolutionIndicesCount the number of high resolution world entity avatars.
  * @property highResolutionIndices the indices of all the high resolution avatars currently
@@ -53,11 +51,8 @@ import net.rsprot.protocol.internal.game.outgoing.info.util.ZoneIndexStorage
  * function is called, allowing the server to handle it from the correct
  * perspective of the caller, as the protocol itself is computed in for the
  * entire server in one go.
- * @property renderCoord if the player is currently on a world entity, this marks the coordinate
- * at which the world entity is being rendered on the root world. This allows the protocol
- * to still see other world entities nearby despite the player being in an instance.
  */
-@Suppress("MemberVisibilityCanBePrivate", "DuplicatedCode")
+@Suppress("MemberVisibilityCanBePrivate", "DuplicatedCode", "EmptyRange")
 public class WorldEntityInfo internal constructor(
     internal var localIndex: Int,
     internal val allocator: ByteBufAllocator,
@@ -67,9 +62,8 @@ public class WorldEntityInfo internal constructor(
     private val recycler: ByteBufRecycler = ByteBufRecycler(),
 ) : ReferencePooledObject {
     private var renderDistance: Int = DEFAULT_RENDER_DISTANCE
-    private var currentWorldEntityId: Int = ROOT_WORLD
-    private var currentCoord: CoordGrid = CoordGrid.INVALID
-    private var buildArea: BuildArea = BuildArea.INVALID
+    private var coordInRootWorld: CoordGrid = CoordGrid.INVALID
+    private var rootBuildArea: BuildArea = BuildArea.INVALID
     private var highResolutionIndicesCount: Int = 0
     private var highResolutionIndices: ShortArray =
         ShortArray(WorldEntityProtocol.CAPACITY) {
@@ -93,9 +87,15 @@ public class WorldEntityInfo internal constructor(
 
     @Volatile
     internal var exception: Exception? = null
-    private var renderCoord: CoordGrid = CoordGrid.INVALID
 
     override fun isDestroyed(): Boolean = this.exception != null
+
+    /**
+     * Gets the world entity avatar with the provided [index].
+     */
+    internal fun getAvatar(index: Int): WorldEntityAvatar? {
+        return avatarRepository.getOrNull(index)
+    }
 
     /**
      * Updates the render distance for this player, potentially allowing
@@ -117,30 +117,10 @@ public class WorldEntityInfo internal constructor(
      * the actual build area that is sent via REBUILD_NORMAL or REBUILD_REGION packets.
      * @param buildArea the build area in which everything is rendered.
      */
-    public fun updateBuildArea(buildArea: BuildArea) {
+    internal fun updateRootBuildArea(buildArea: BuildArea) {
         checkCommunicationThread()
         if (isDestroyed()) return
-        this.buildArea = buildArea
-    }
-
-    /**
-     * Updates the build area for this player. This should always perfectly correspond to
-     * the actual build area that is sent via REBUILD_NORMAL or REBUILD_REGION packets.
-     * @property zoneX the south-western zone x coordinate of the build area
-     * @property zoneZ the south-western zone z coordinate of the build area
-     * @property widthInZones the build area width in zones (typically 13, meaning 104 tiles)
-     * @property heightInZones the build area height in zones (typically 13, meaning 104 tiles)
-     */
-    @JvmOverloads
-    public fun updateBuildArea(
-        zoneX: Int,
-        zoneZ: Int,
-        widthInZones: Int = BuildArea.DEFAULT_BUILD_AREA_SIZE,
-        heightInZones: Int = BuildArea.DEFAULT_BUILD_AREA_SIZE,
-    ) {
-        checkCommunicationThread()
-        if (isDestroyed()) return
-        this.buildArea = BuildArea(zoneX, zoneZ, widthInZones, heightInZones)
+        this.rootBuildArea = buildArea
     }
 
     /**
@@ -179,52 +159,12 @@ public class WorldEntityInfo internal constructor(
 
     /**
      * Updates the current real absolute coordinate of the local player in the world.
-     * @param worldId the id of the world in which the player currently resides,
-     * if they are inside a world entity, this would be that index. If they are in the
-     * root world, this should be [ROOT_WORLD].
-     * @param level the current height level of the player
-     * @param x the current absolute x coordinate of the player
-     * @param z the current absolute z coordinate of the player
+     * @param coordGrid the root coordgrid of the player.
      */
-    public fun updateCoord(
-        worldId: Int,
-        level: Int,
-        x: Int,
-        z: Int,
-    ) {
+    public fun updateRootCoord(coordGrid: CoordGrid) {
         checkCommunicationThread()
         if (isDestroyed()) return
-        this.currentWorldEntityId = worldId
-        this.currentCoord = CoordGrid(level, x, z)
-    }
-
-    /**
-     * Sets the render coordinate of this player. This function should only be used
-     * when the player is inside one of the world entities. The value should correspond
-     * to the coordinate at which the world entity in which the player resides, in the
-     * root world - not in the instance land.
-     * @param level the level of the render coordinate
-     * @param x the absolute x value of the render coordinate
-     * @param z the absolute z value of the render coordinate
-     */
-    public fun setRenderCoord(
-        level: Int,
-        x: Int,
-        z: Int,
-    ) {
-        checkCommunicationThread()
-        if (isDestroyed()) return
-        this.renderCoord = CoordGrid(level, x, z)
-    }
-
-    /**
-     * Resets the render coordinate. This function should be called when the player
-     * leaves one of the dynamic world entities and moves back onto the root world.
-     */
-    public fun resetRenderCoord() {
-        checkCommunicationThread()
-        if (isDestroyed()) return
-        this.renderCoord = CoordGrid.INVALID
+        this.coordInRootWorld = coordGrid
     }
 
     /**
@@ -327,8 +267,26 @@ public class WorldEntityInfo internal constructor(
      */
     private fun processHighResolution(buffer: JagByteBuf): Boolean {
         val count = this.highResolutionIndicesCount
-        buffer.p1(count)
-        for (i in 0..<count) {
+
+        // Iterate worlds in a backwards order until the first world which should not be removed
+        // everyone else will be automatically dropped off by the client if the count
+        // transmitted is less than what the client currently knows about
+        for (i in count - 1 downTo 0) {
+            val index = this.highResolutionIndices[i].toInt()
+            val avatar = avatarRepository.getOrNull(index)
+            val needsRemoving = avatar == null || !inRange(avatar) || isReallocated(avatar)
+            if (!needsRemoving) {
+                break
+            }
+
+            highResolutionIndices[i] = INDEX_TERMINATOR
+            this.highResolutionIndicesCount--
+            this.removedWorldEntities += index
+            allWorldEntities -= index
+        }
+
+        buffer.p1(this.highResolutionIndicesCount)
+        for (i in 0..<this.highResolutionIndicesCount) {
             val index = this.highResolutionIndices[i].toInt()
             val avatar = avatarRepository.getOrNull(index)
             if (avatar == null || !inRange(avatar) || isReallocated(avatar)) {
@@ -360,15 +318,7 @@ public class WorldEntityInfo internal constructor(
         if (this.highResolutionIndicesCount >= MAX_HIGH_RES_COUNT) {
             return
         }
-        val currentWorld = this.currentWorldEntityId
-        val (level, centerX, centerZ) =
-            if (currentWorld == ROOT_WORLD) {
-                this.currentCoord
-            } else {
-                val worldEntity = checkNotNull(avatarRepository.getOrNull(currentWorld))
-                // Perhaps center coord instead?
-                worldEntity.currentCoordGrid
-            }
+        val (level, centerX, centerZ) = getCoordInRootWorld(this.coordInRootWorld)
         val startX = ((centerX - renderDistance) shr 3).coerceAtLeast(0)
         val startZ = ((centerZ - renderDistance) shr 3).coerceAtLeast(0)
         val endX = ((centerX + renderDistance) shr 3).coerceAtMost(0x7FF)
@@ -400,8 +350,8 @@ public class WorldEntityInfo internal constructor(
                     buffer.p1(avatar.sizeX)
                     buffer.p1(avatar.sizeZ)
                     buffer.p2(avatar.id)
-                    val fineXOffset = buildArea.zoneX shl 10
-                    val fineZOffset = buildArea.zoneZ shl 10
+                    val fineXOffset = rootBuildArea.zoneX shl 10
+                    val fineZOffset = rootBuildArea.zoneZ shl 10
                     buffer.encodeAngledCoordFine(
                         avatar.currentCoordFine.x - fineXOffset,
                         avatar.currentCoordFine.y,
@@ -432,7 +382,7 @@ public class WorldEntityInfo internal constructor(
      * Checks if the world entity at [index] is in high resolution indices.
      * @return whether the world entity is within high resolution.
      */
-    private fun isHighResolution(index: Int): Boolean {
+    internal fun isHighResolution(index: Int): Boolean {
         for (i in 0..<highResolutionIndicesCount) {
             if (highResolutionIndices[i].toInt() == index) {
                 return true
@@ -449,27 +399,160 @@ public class WorldEntityInfo internal constructor(
      * as well as the coordinate at which the camera is placed.
      */
     private fun inRange(avatar: WorldEntityAvatar): Boolean {
-        // Always render the world entity the player is on
-        if (avatar.index == currentWorldEntityId) {
+        return isWorldInRange(
+            source = this.coordInRootWorld,
+            rootWorldBuildArea = this.rootBuildArea,
+            worldCenterCoordGrid = avatar.currentCoordGrid,
+            radius = renderDistance,
+        )
+    }
+
+    /**
+     * @return If the [coordGrid] is on a world entity, returns that world entity's center coord grid in the root
+     * world, otherwise the same input [coordGrid].
+     */
+    internal fun getCoordInRootWorld(coordGrid: CoordGrid): CoordGrid {
+        val index = avatarRepository.getByCoordGrid(coordGrid)
+        if (index == -1) {
+            return coordGrid
+        }
+
+        val worldEntity =
+            avatarRepository.getOrNull(index)
+                ?: return coordGrid
+        return worldEntity.currentCoordGrid
+    }
+
+    /**
+     * Gets the index of the world entity in which the coord grid exists.
+     * @return index of the world entity, or -1 if it's in the root world.
+     */
+    internal fun getWorldEntity(coordGrid: CoordGrid): Int {
+        return avatarRepository.getByCoordGrid(coordGrid)
+    }
+
+    /**
+     * Checks if the [target] is visible to the [source] based within the scope of the root world.
+     * @param source the source player's root coord grid.
+     * @param target the target's root coord grid.
+     * @param radius the radius in tiles to check when a Chebyshev distance check is performed.
+     */
+    internal fun isVisibleInRoot(
+        source: CoordGrid,
+        target: CoordGrid,
+        radius: Int,
+    ): Boolean {
+        // Make sure that the two are within the specified radius distance, and that the target is
+        // contained within the source's root world build area.
+        // Latter is necessary as we may be on the edge of our currently loaded root map,
+        // while the other entity is just outside it - we wouldn't want to include them then.
+        return source.inDistance(target, radius) &&
+            this.rootBuildArea.contains(target)
+    }
+
+    /**
+     * Checks if the [target] is visible to the [source] based on the world info we have.
+     * If both coordinates are in the root world, a simple Chebyshev distance check is performed.
+     * If both coordgrids belong to the same non-root world, the target will be visible.
+     * If the target is in a world entity, they will only be visible if the world entity itself is also.
+     * Lastly, if the source coordgrid is not in root world, the center coordgrid of the world entity is used,
+     * and regular Chebyshev distance check is performed.
+     * @param source the source player's root coord grid.
+     * @param target the target's root coord grid.
+     * @param radius the radius in tiles to check when a Chebyshev distance check is performed (not necessarily always).
+     */
+    internal fun isVisible(
+        source: CoordGrid,
+        target: CoordGrid,
+        radius: Int,
+    ): Boolean {
+        val sourceWorldIndex = avatarRepository.getByCoordGrid(source)
+        val targetWorldIndex = avatarRepository.getByCoordGrid(target)
+        // If both parties are in the root world, just run the usual checks
+        if (sourceWorldIndex == ROOT_WORLD && targetWorldIndex == ROOT_WORLD) {
+            return source.inDistance(target, radius) &&
+                this.rootBuildArea.contains(target)
+        }
+        // If both parties are on the same worldentity, both should always render if they're on the same level.
+        if (sourceWorldIndex == targetWorldIndex) {
+            return source.level == target.level
+        }
+        if (targetWorldIndex != ROOT_WORLD) {
+            // If we can see the target worldentity itself,
+            // we should also be able to see everything and anyone on it.
+            // Similarly, if we cannot see the target worldentity itself, we shouldn't also see
+            // anything on it.
+            if (!isHighResolution(targetWorldIndex)) {
+                return false
+            }
+            val targetWorld = avatarRepository.getOrNull(targetWorldIndex)
+            return targetWorld != null && targetWorld.activeLevel == target.level
+        }
+
+        var sourceCoordInRootWorld = source
+
+        // Since the source is guaranteed to be on a world entity by this section,
+        // get the world entity's center coord grid.
+        val sourceWorld = avatarRepository.getOrNull(sourceWorldIndex)
+        if (sourceWorld != null) {
+            sourceCoordInRootWorld = sourceWorld.currentCoordGrid
+        }
+
+        // Make sure that the two are within the specified radius distance, and that the target is
+        // contained within the source's root world build area.
+        // Latter is necessary as we may be on the edge of our currently loaded root map,
+        // while the other entity is just outside it - we wouldn't want to include them then.
+        return sourceCoordInRootWorld.inDistance(target, radius) &&
+            this.rootBuildArea.contains(target)
+    }
+
+    /**
+     * Checks to see if a worldentity avatar is in range of us.
+     * @param source the real coordinate of the player, be that on a worldentity or in root world
+     * @param rootWorldBuildArea the build area within the root world, to ensure no world entities
+     * get picked up that are in the "void"
+     * @param worldCenterCoordGrid the pivot point of the target world entity in the root world,
+     * not its real coordinate, but rather where it gets projected
+     * @param radius the maximum Chebyshev distance to accept
+     * @return true if the target world is in range
+     */
+    private fun isWorldInRange(
+        source: CoordGrid,
+        rootWorldBuildArea: BuildArea,
+        worldCenterCoordGrid: CoordGrid,
+        radius: Int,
+    ): Boolean {
+        val sourceWorldIndex = avatarRepository.getByCoordGrid(source)
+        val targetWorldIndex = avatarRepository.getByCoordGrid(worldCenterCoordGrid)
+        // If both parties are on the same worldentity, both should always render.
+        if (sourceWorldIndex != ROOT_WORLD && sourceWorldIndex == targetWorldIndex) {
             return true
         }
-        if (avatar !in buildArea) {
-            return false
+        var sourceCoordInRootWorld = source
+        var targetCoordInRootWorld = worldCenterCoordGrid
+
+        // If the source is on a worldentity, use the world entity's coord in root world.
+        if (sourceWorldIndex != ROOT_WORLD) {
+            val sourceWorld = avatarRepository.getOrNull(sourceWorldIndex)
+            if (sourceWorld != null) {
+                sourceCoordInRootWorld = sourceWorld.currentCoordGrid
+            }
         }
-        val avatarCoordGrid = avatar.currentCoordGrid
-        // Potentially make it be based on center coord?
-        // Not sure how nice it looks with just the south-west tile checks
-        return avatarCoordGrid.inDistance(
-            this.currentCoord,
-            renderDistance,
-        ) ||
-            (
-                renderCoord != CoordGrid.INVALID &&
-                    avatarCoordGrid.inDistance(
-                        this.renderCoord,
-                        renderDistance,
-                    )
-            )
+
+        // If the target is on a worldentity, use the world entity's coord in root world.
+        if (targetWorldIndex != ROOT_WORLD) {
+            val targetWorld = avatarRepository.getOrNull(targetWorldIndex)
+            if (targetWorld != null) {
+                targetCoordInRootWorld = targetWorld.currentCoordGrid
+            }
+        }
+
+        // Make sure that the two are within the specified radius distance, and that the target is
+        // contained within the source's root world build area.
+        // Latter is necessary as we may be on the edge of our currently loaded root map,
+        // while the other world entity is just outside it - we wouldn't want to include them then.
+        return sourceCoordInRootWorld.inDistance(targetCoordInRootWorld, radius) &&
+            rootWorldBuildArea.contains(targetCoordInRootWorld)
     }
 
     private fun isReallocated(avatar: WorldEntityAvatar): Boolean {
@@ -488,10 +571,8 @@ public class WorldEntityInfo internal constructor(
         this.localIndex = index
         this.oldSchoolClientType = oldSchoolClientType
         this.renderDistance = DEFAULT_RENDER_DISTANCE
-        this.currentWorldEntityId = ROOT_WORLD
-        this.currentCoord = CoordGrid.INVALID
-        this.buildArea = BuildArea.INVALID
-        this.renderCoord = CoordGrid.INVALID
+        this.coordInRootWorld = CoordGrid.INVALID
+        this.rootBuildArea = BuildArea.INVALID
         this.highResolutionIndicesCount = 0
         this.highResolutionIndices.fill(0)
         this.temporaryHighResolutionIndices.fill(0)

@@ -8,8 +8,12 @@ import java.lang.ref.SoftReference
  * The info repository class is responsible for allocating and re-using various info implementations.
  */
 @Suppress("DuplicatedCode")
-internal abstract class InfoRepository<T>(
-    private val allocator: (index: Int, oldSchoolClientType: OldSchoolClientType) -> T,
+internal abstract class InfoRepository<T, I>(
+    private val allocator: (
+        index: Int,
+        oldSchoolClientType: OldSchoolClientType,
+        info: I,
+    ) -> T,
 ) {
     /**
      * The backing elements array used to store currently-in-use objects.
@@ -70,6 +74,7 @@ internal abstract class InfoRepository<T>(
     fun alloc(
         idx: Int,
         oldSchoolClientType: OldSchoolClientType,
+        info: I,
     ): T {
         val element = elements[idx]
         check(element == null) {
@@ -81,7 +86,12 @@ internal abstract class InfoRepository<T>(
             elements[idx] = cached
             return cached
         }
-        val new = allocator(idx, oldSchoolClientType)
+        val new =
+            allocator(
+                idx,
+                oldSchoolClientType,
+                info,
+            )
         onAlloc(new, idx, oldSchoolClientType, true)
         elements[idx] = new
         return new

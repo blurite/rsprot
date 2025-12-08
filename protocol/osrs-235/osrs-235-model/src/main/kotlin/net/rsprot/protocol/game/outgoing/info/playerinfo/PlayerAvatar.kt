@@ -79,13 +79,6 @@ public class PlayerAvatar internal constructor(
         private set
 
     /**
-     * The current world that the player is on, by default the root world.
-     * When a player moves onto a world entity (a ship), this value must be updated.
-     */
-    public var worldId: Int = PlayerInfo.ROOT_WORLD
-        private set
-
-    /**
      * The default priority for player avatars, defaulting to [AvatarPriority.LOW].
      * If set to [AvatarPriority.NORMAL], this avatar will be rendered to everyone
      * within the [preferredResizeRange], regardless of if [resizeRange] itself
@@ -153,38 +146,16 @@ public class PlayerAvatar internal constructor(
         preferredResizeInterval = DEFAULT_RESIZE_INTERVAL
         currentCoord = CoordGrid.INVALID
         lastCoord = CoordGrid.INVALID
-        worldId = PlayerInfo.ROOT_WORLD
     }
 
     /**
      * Updates the current known coordinate of the given [PlayerAvatar].
      * This function must be called on each avatar before player info is computed.
-     * @param level the current height level of the avatar.
-     * @param x the x coordinate of the avatar.
-     * @param z the z coordinate of the avatar (this is commonly referred to as 'y' coordinate).
-     * @throws IllegalArgumentException if [level] is not in range of 0..<4, or [x]/[z] are
-     * not in range of 0..<16384.
+     * @param coordGrid the root world coordgrid of the player
      */
-    public fun updateCoord(
-        level: Int,
-        x: Int,
-        z: Int,
-    ) {
+    internal fun updateCoord(coordGrid: CoordGrid) {
         checkCommunicationThread()
-        this.currentCoord = CoordGrid(level, x, z)
-    }
-
-    /**
-     * Updates the world id for a given player. Whether a player renders to you is determined
-     * based on the player's distance to that world's render coord, as defined by [PlayerInfo].
-     * @param worldId the new world that the player is on.
-     */
-    public fun updateWorld(worldId: Int) {
-        checkCommunicationThread()
-        require(worldId == PlayerInfo.ROOT_WORLD || worldId in 0..<PlayerInfoProtocol.PROTOCOL_CAPACITY) {
-            "World id must be PlayerInfo.ROOT_WORLD, or in range of 0..<2048."
-        }
-        this.worldId = worldId
+        this.currentCoord = coordGrid
     }
 
     /**
@@ -339,7 +310,6 @@ public class PlayerAvatar internal constructor(
             "preferredPlayerCount=$preferredPlayerCount, " +
             "preferredResizeInterval=$preferredResizeInterval, " +
             "currentCoord=$currentCoord, " +
-            "worldId=$worldId, " +
             "priority=$priority, " +
             "lastCoord=$lastCoord, " +
             "extendedInfo=$extendedInfo, " +

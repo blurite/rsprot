@@ -15,8 +15,8 @@ import net.rsprot.protocol.game.outgoing.info.exceptions.InfoProcessException
 import net.rsprot.protocol.game.outgoing.info.playerinfo.PlayerInfoProtocol.Companion.PROTOCOL_CAPACITY
 import net.rsprot.protocol.game.outgoing.info.playerinfo.util.CellOpcodes
 import net.rsprot.protocol.game.outgoing.info.util.Avatar
-import net.rsprot.protocol.game.outgoing.info.util.BuildArea
 import net.rsprot.protocol.game.outgoing.info.util.ReferencePooledObject
+import net.rsprot.protocol.game.outgoing.info.worldentityinfo.WorldEntityInfo
 import net.rsprot.protocol.internal.checkCommunicationThread
 import net.rsprot.protocol.internal.game.outgoing.info.CoordGrid
 import kotlin.contracts.ExperimentalContracts
@@ -46,7 +46,7 @@ import kotlin.math.abs
  * @param oldSchoolClientType the client on which the player is logging into. This is utilized
  * to determine what encoders to use for extended info blocks.
  */
-@Suppress("DuplicatedCode", "ReplaceUntilWithRangeUntil", "MemberVisibilityCanBePrivate")
+@Suppress("DuplicatedCode", "ReplaceUntilWithRangeUntil", "MemberVisibilityCanBePrivate", "EmptyRange")
 public class PlayerInfo internal constructor(
     private val protocol: PlayerInfoProtocol,
     internal var localIndex: Int,
@@ -55,6 +55,7 @@ public class PlayerInfo internal constructor(
     public val avatar: PlayerAvatar,
     private val recycler: ByteBufRecycler,
     private val globalLowResolutionPositionRepository: GlobalLowResolutionPositionRepository,
+    private var worldEntityInfo: WorldEntityInfo?,
 ) : ReferencePooledObject {
     /**
      * Low resolution indices are tracked together with [lowResolutionCount].
@@ -173,12 +174,6 @@ public class PlayerInfo internal constructor(
      * de-synchronize the client and cause errors.
      */
     internal var previousPacket: PlayerInfoPacket? = null
-
-    /**
-     * An array of world details, containing all the player info properties specific to a single world.
-     * The root world is placed at the end of this array, however id -1 will be treated as the root.
-     */
-    internal val details: Array<PlayerInfoWorldDetails?> = arrayOfNulls(PROTOCOL_CAPACITY + 1)
 
     /**
      * Returns the backing buffer for this cycle.
@@ -300,146 +295,6 @@ public class PlayerInfo internal constructor(
     }
 
     /**
-     * Updates the render coordinate for the provided world id.
-     * This coordinate is what will be used to perform distance checks between the player
-     * and everyone else.
-     * @param worldId the id of the world in which the player resides
-     * @param level the height level at which the player resides
-     * @param x the absolute x coordinate where the player resides
-     * @param z the absolute z coordinate where the player resides
-     */
-    public fun updateRenderCoord(
-        worldId: Int,
-        level: Int,
-        x: Int,
-        z: Int,
-    ) {
-        checkCommunicationThread()
-        if (isDestroyed()) return
-        require(worldId == ROOT_WORLD || worldId in 0..<2048) {
-            "World id must be -1 or in range of 0..<2048"
-        }
-        val details = getDetails(worldId)
-        details.renderCoord = CoordGrid(level, x, z)
-    }
-
-    /**
-     * Updates the build area of a given world to the specified one.
-     * This will ensure that no players outside of this box will be
-     * added to high resolution view.
-     * @param worldId the id of the world to set the build area of,
-     * with -1 being the root world.
-     * @param buildArea the build area to assign.
-     */
-    public fun updateBuildArea(
-        worldId: Int,
-        buildArea: BuildArea,
-    ) {
-        checkCommunicationThread()
-        if (isDestroyed()) return
-        require(worldId == ROOT_WORLD || worldId in 0..<2048) {
-            "World id must be -1 or in range of 0..<2048"
-        }
-        val details = getDetails(worldId)
-        details.buildArea = buildArea
-    }
-
-    /**
-     * Updates the build area of a given world to the specified one.
-     * This will ensure that no players outside of this box will be
-     * added to high resolution view.
-     * @param worldId the id of the world to set the build area of,
-     * with -1 being the root world.
-     * @param zoneX the south-western zone x coordinate of the build area
-     * @param zoneZ the south-western zone z coordinate of the build area
-     * @param widthInZones the build area width in zones (typically 13, meaning 104 tiles)
-     * @param heightInZones the build area height in zones (typically 13, meaning 104 tiles)
-     */
-    @JvmOverloads
-    public fun updateBuildArea(
-        worldId: Int,
-        zoneX: Int,
-        zoneZ: Int,
-        widthInZones: Int = BuildArea.DEFAULT_BUILD_AREA_SIZE,
-        heightInZones: Int = BuildArea.DEFAULT_BUILD_AREA_SIZE,
-    ) {
-        checkCommunicationThread()
-        if (isDestroyed()) return
-        require(worldId == ROOT_WORLD || worldId in 0..<2048) {
-            "World id must be -1 or in range of 0..<2048"
-        }
-        val details = getDetails(worldId)
-        details.buildArea = BuildArea(zoneX, zoneZ, widthInZones, heightInZones)
-    }
-
-    /**
-     * Allocates a new player info tracking object for the respective [worldId],
-     * keeping track of everyone that's within this new world entity.
-     * @param worldId the new world entity id
-     */
-    public fun allocateWorld(worldId: Int) {
-        checkCommunicationThread()
-        if (isDestroyed()) return
-        require(worldId in 0..<PROTOCOL_CAPACITY) {
-            "World id out of bounds: $worldId"
-        }
-        val existing = details[worldId]
-        require(existing == null) {
-            "World $worldId already allocated."
-        }
-        details[worldId] = PlayerInfoWorldDetails(worldId)
-    }
-
-    /**
-     * Destroys player info tracking for the specified [worldId].
-     * This is intended to be used when one of the world entities leaves the render distance.
-     */
-    public fun destroyWorld(worldId: Int) {
-        checkCommunicationThread()
-        if (isDestroyed()) return
-        require(worldId in 0..<PROTOCOL_CAPACITY) {
-            "World id out of bounds: $worldId"
-        }
-        val existing = details[worldId]
-        require(existing != null) {
-            "World $worldId does not exist."
-        }
-        details[worldId] = null
-    }
-
-    /**
-     * Gets the world details implementation of the specified [worldId].
-     */
-    private fun getDetails(worldId: Int): PlayerInfoWorldDetails {
-        val details =
-            if (worldId == ROOT_WORLD) {
-                details[PROTOCOL_CAPACITY]
-            } else {
-                require(worldId in 0..<PROTOCOL_CAPACITY) {
-                    "World id out of bounds: $worldId"
-                }
-                details[worldId]
-            }
-        return checkNotNull(details) {
-            "World info details not allocated for world $worldId"
-        }
-    }
-
-    /**
-     * Gets the world details implementation of the specified [worldId], or null if it doesn't exist.
-     * The [ROOT_WORLD] will always be not-null.
-     */
-    private fun getDetailsOrNull(worldId: Int): PlayerInfoWorldDetails? {
-        val details =
-            if (worldId == ROOT_WORLD) {
-                details[PROTOCOL_CAPACITY]
-            } else {
-                details.getOrNull(worldId)
-            }
-        return details
-    }
-
-    /**
      * Gets the high resolution indices in a new arraylist of integers.
      * The list is initialized to an initial capacity equal to the high resolution player index count.
      * @return the newly created arraylist of indices
@@ -495,21 +350,13 @@ public class PlayerInfo internal constructor(
     /**
      * Updates the current known coordinate of the given [Avatar].
      * This function must be called on each avatar before player info is computed.
-     * @param level the current height level of the avatar.
-     * @param x the x coordinate of the avatar.
-     * @param z the z coordinate of the avatar (this is commonly referred to as 'y' coordinate).
-     * @throws IllegalArgumentException if [level] is not in range of 0 until 4, or [x]/[z] are
-     * not in range of 0 until 16384.
+     * @param coordGrid the root world coordgrid of the player
      */
     @Throws(IllegalArgumentException::class)
-    public fun updateCoord(
-        level: Int,
-        x: Int,
-        z: Int,
-    ) {
+    internal fun updateRootCoord(coordGrid: CoordGrid) {
         checkCommunicationThread()
         if (isDestroyed()) return
-        this.avatar.updateCoord(level, x, z)
+        this.avatar.updateCoord(coordGrid)
     }
 
     /**
@@ -615,17 +462,6 @@ public class PlayerInfo internal constructor(
         buffer = null
         highResMovementBuffer = null
         previousPacket = null
-
-        for (i in this.details.indices) {
-            // Skip the root world, as that still needs to remain
-            if (i == PROTOCOL_CAPACITY) {
-                continue
-            }
-            val world = this.details[i]
-            if (world != null) {
-                this.details[i] = null
-            }
-        }
         lowResolutionIndices.fill(0)
         lowResolutionCount = 0
         highResolutionIndices.fill(0)
@@ -752,6 +588,10 @@ public class PlayerInfo internal constructor(
         buffer: BitBuf,
         skipStationary: Boolean,
     ) {
+        val worldEntityInfo =
+            checkNotNull(this.worldEntityInfo) {
+                "World entity info is null"
+            }
         var skips = -1
         for (i in 0 until lowResolutionCount) {
             val index = lowResolutionIndices[i].toInt()
@@ -775,7 +615,7 @@ public class PlayerInfo internal constructor(
                 stationary[index] = (stationary[index].toInt() or IS_STATIONARY).toByte()
                 continue
             }
-            val visible = shouldMoveToHighResolution(other)
+            val visible = shouldMoveToHighResolution(worldEntityInfo, other)
             if (!visible && lowResolutionMovementBuffer == null) {
                 skips++
                 stationary[index] = (stationary[index].toInt() or IS_STATIONARY).toByte()
@@ -854,6 +694,10 @@ public class PlayerInfo internal constructor(
         buffer: BitBuf,
         skipStationary: Boolean,
     ) {
+        val worldEntityInfo =
+            checkNotNull(this.worldEntityInfo) {
+                "World entity info is null"
+            }
         var skips = -1
         for (i in 0 until highResolutionCount) {
             val index = highResolutionIndices[i].toInt()
@@ -862,7 +706,7 @@ public class PlayerInfo internal constructor(
                 continue
             }
             val other = protocol.getPlayerInfo(index)
-            if (!shouldStayInHighResolution(other)) {
+            if (!shouldStayInHighResolution(worldEntityInfo, other)) {
                 if (skips > -1) {
                     pStationary(buffer, skips)
                     skips = -1
@@ -1006,7 +850,10 @@ public class PlayerInfo internal constructor(
      * @return true if the other should be moved to low resolution.
      */
     @OptIn(ExperimentalContracts::class)
-    private fun shouldStayInHighResolution(other: PlayerInfo?): Boolean {
+    private fun shouldStayInHighResolution(
+        worldEntityInfo: WorldEntityInfo,
+        other: PlayerInfo?,
+    ): Boolean {
         contract {
             returns(true) implies (other != null)
         }
@@ -1027,9 +874,7 @@ public class PlayerInfo internal constructor(
         if (other.avatar.allocateCycle == PlayerInfoProtocol.cycleCount) {
             return false
         }
-        val worldId = other.avatar.worldId
-        val details = getDetailsOrNull(worldId) ?: return false
-        val coord = other.avatar.currentCoord
+        val otherCoordGrid = other.avatar.currentCoord
         val rangeToCheck =
             if (other.avatar.priority == AvatarPriority.NORMAL ||
                 isHighPriority(other.avatar.localPlayerIndex)
@@ -1038,11 +883,11 @@ public class PlayerInfo internal constructor(
             } else {
                 this.avatar.resizeRange
             }
-        if (!coord.inDistance(details.renderCoord, rangeToCheck)) {
-            return false
-        }
-        val buildArea = details.buildArea
-        return buildArea == BuildArea.INVALID || coord in buildArea
+        return worldEntityInfo.isVisible(
+            avatar.currentCoord,
+            otherCoordGrid,
+            rangeToCheck,
+        )
     }
 
     /**
@@ -1053,7 +898,10 @@ public class PlayerInfo internal constructor(
      * @return true if the other player should be moved to high resolution.
      */
     @OptIn(ExperimentalContracts::class)
-    private fun shouldMoveToHighResolution(other: PlayerInfo?): Boolean {
+    private fun shouldMoveToHighResolution(
+        worldEntityInfo: WorldEntityInfo,
+        other: PlayerInfo?,
+    ): Boolean {
         contract {
             returns(true) implies (other != null)
         }
@@ -1064,9 +912,7 @@ public class PlayerInfo internal constructor(
         if (other.avatar.hidden) {
             return false
         }
-        val worldId = other.avatar.worldId
-        val details = getDetailsOrNull(worldId) ?: return false
-        val coord = other.avatar.currentCoord
+        val otherCoordGrid = other.avatar.currentCoord
         val rangeToCheck =
             if (other.avatar.priority == AvatarPriority.NORMAL ||
                 isHighPriority(other.avatar.localPlayerIndex)
@@ -1075,11 +921,11 @@ public class PlayerInfo internal constructor(
             } else {
                 this.avatar.resizeRange
             }
-        if (!coord.inDistance(details.renderCoord, rangeToCheck)) {
-            return false
-        }
-        val buildArea = details.buildArea
-        return buildArea == BuildArea.INVALID || coord in buildArea
+        return worldEntityInfo.isVisible(
+            avatar.currentCoord,
+            otherCoordGrid,
+            rangeToCheck,
+        )
     }
 
     /**
@@ -1154,7 +1000,6 @@ public class PlayerInfo internal constructor(
         extendedInfoIndices.fill(0)
         stationary.fill(0)
         observerExtendedInfoFlags.reset()
-        details[PROTOCOL_CAPACITY] = PlayerInfoWorldDetails(PROTOCOL_CAPACITY)
         buffer = null
         previousPacket = null
     }
@@ -1168,12 +1013,7 @@ public class PlayerInfo internal constructor(
         this.previousPacket = null
         avatar.extendedInfo.reset()
         highResMovementBuffer = null
-        for (i in this.details.indices) {
-            val world = this.details[i]
-            if (world != null) {
-                this.details[i] = null
-            }
-        }
+        this.worldEntityInfo = null
     }
 
     /**

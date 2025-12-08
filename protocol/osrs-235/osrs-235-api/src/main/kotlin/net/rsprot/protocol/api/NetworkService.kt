@@ -27,11 +27,9 @@ import net.rsprot.protocol.api.repositories.MessageEncoderRepositories
 import net.rsprot.protocol.api.util.asCompletableFuture
 import net.rsprot.protocol.common.RSProtConstants
 import net.rsprot.protocol.common.client.OldSchoolClientType
+import net.rsprot.protocol.game.outgoing.info.InfoProtocols
 import net.rsprot.protocol.game.outgoing.info.npcinfo.NpcAvatarFactory
-import net.rsprot.protocol.game.outgoing.info.npcinfo.NpcInfoProtocol
-import net.rsprot.protocol.game.outgoing.info.playerinfo.PlayerInfoProtocol
 import net.rsprot.protocol.game.outgoing.info.worldentityinfo.WorldEntityAvatarFactory
-import net.rsprot.protocol.game.outgoing.info.worldentityinfo.WorldEntityProtocol
 import net.rsprot.protocol.message.codec.incoming.provider.GameMessageConsumerRepositoryProvider
 import net.rsprot.protocol.metrics.NetworkTrafficMonitor
 import net.rsprot.protocol.threads.IllegalThreadAccessException
@@ -58,8 +56,6 @@ import net.rsprot.protocol.internal.setCommunicationThread as setInternalCommuni
  * @property clientTypes the list of client types that were registered
  * @property gameConnectionHandler the handler for game logins and reconnections
  * @property exceptionHandlers the wrapper object for any exception handlers that the server must provide
- * @property hostAddressHandlers the wrapper object to handle anything to do with tracking and rejecting
- * network addresses trying to establish connections
  * @property gameMessageHandlers the wrapper object for anything to do with game packets post-login
  * @property huffmanCodecProvider the provider for Huffman codecs, used to compress the text
  * in some packets
@@ -77,12 +73,9 @@ import net.rsprot.protocol.internal.setCommunicationThread as setInternalCommuni
  * is more than sufficient here. Utilizing more threads makes implementing a fair JS5
  * service significantly more difficult.
  * @property decoderRepositories the repositories for decoding all the incoming client packets
- * @property playerInfoProtocol the protocol responsible for tracking and computing player info
- * for all the players in the game
  * @property npcAvatarFactory the avatar factory for NPCs responsible for tracking anything
  * necessary to represent a NPC to the client
- * @property npcInfoProtocol the protocol responsible for tracking and computing everything related
- * to the NPC info packet for every player
+ * @property infoProtocols a unified class used to allocate and destroy the three protocols.
  * @property trafficMonitor a monitor for tracking network traffic, by default a no-op
  * implementation that tracks nothing.
  * @property binaryHeaderProvider a provider for binary headers. If this is null, or returns a null,
@@ -135,16 +128,16 @@ public class NetworkService<R>
                 rsaKeyPair,
                 huffmanCodecProvider,
             )
-        public val playerInfoProtocol: PlayerInfoProtocol
-            get() = entityInfoProtocols.playerInfoProtocol
+        public val infoProtocols: InfoProtocols =
+            InfoProtocols(
+                entityInfoProtocols.playerInfoProtocol,
+                entityInfoProtocols.npcInfoProtocol,
+                entityInfoProtocols.worldEntityInfoProtocol,
+            )
         public val npcAvatarFactory: NpcAvatarFactory
             get() = entityInfoProtocols.npcAvatarFactory
-        public val npcInfoProtocol: NpcInfoProtocol
-            get() = entityInfoProtocols.npcInfoProtocol
         public val worldEntityAvatarFactory: WorldEntityAvatarFactory
             get() = entityInfoProtocols.worldEntityAvatarFactory
-        public val worldEntityInfoProtocol: WorldEntityProtocol
-            get() = entityInfoProtocols.worldEntityInfoProtocol
         public var messageSizeEstimator: OutgoingMessageSizeEstimator =
             OutgoingMessageSizeEstimator(encoderRepositories)
 

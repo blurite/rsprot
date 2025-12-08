@@ -110,6 +110,15 @@ public value class BuildArea private constructor(
         return dz < (maxDeltaZ - 2)
     }
 
+    override fun toString(): String {
+        return "BuildArea(" +
+            "zoneX=$zoneX, " +
+            "zoneZ=$zoneZ, " +
+            "widthInZones=$widthInZones, " +
+            "heightInZones=$heightInZones" +
+            ")"
+    }
+
     public companion object {
         /**
          * The default build area size in zones.

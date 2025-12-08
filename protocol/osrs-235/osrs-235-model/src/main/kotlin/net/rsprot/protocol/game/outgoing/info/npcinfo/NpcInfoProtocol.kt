@@ -6,6 +6,7 @@ import net.rsprot.protocol.common.client.OldSchoolClientType
 import net.rsprot.protocol.game.outgoing.info.ByteBufRecycler
 import net.rsprot.protocol.game.outgoing.info.worker.DefaultProtocolWorker
 import net.rsprot.protocol.game.outgoing.info.worker.ProtocolWorker
+import net.rsprot.protocol.game.outgoing.info.worldentityinfo.WorldEntityInfo
 import net.rsprot.protocol.internal.checkCommunicationThread
 import net.rsprot.protocol.internal.client.ClientTypeMap
 import net.rsprot.protocol.internal.game.outgoing.info.npcinfo.encoder.NpcResolutionChangeEncoder
@@ -48,7 +49,7 @@ public class NpcInfoProtocol(
      * by players at a 1:1 ratio.
      */
     private val npcInfoRepository: NpcInfoRepository =
-        NpcInfoRepository { localIndex, clientType ->
+        NpcInfoRepository { localIndex, clientType, worldEntityInfo ->
             NpcInfo(
                 allocator,
                 avatarRepository,
@@ -59,6 +60,7 @@ public class NpcInfoProtocol(
                 detailsStorage,
                 recycler,
                 filter,
+                worldEntityInfo,
             )
         }
 
@@ -74,12 +76,13 @@ public class NpcInfoProtocol(
      * @param idx the index of the player allocating the npc info object.
      * @param oldSchoolClientType the client on which the player has logged into.
      */
-    public fun alloc(
+    internal fun alloc(
         idx: Int,
         oldSchoolClientType: OldSchoolClientType,
+        worldEntityInfo: WorldEntityInfo,
     ): NpcInfo {
         checkCommunicationThread()
-        return npcInfoRepository.alloc(idx, oldSchoolClientType)
+        return npcInfoRepository.alloc(idx, oldSchoolClientType, worldEntityInfo)
     }
 
     /**
@@ -87,7 +90,7 @@ public class NpcInfoProtocol(
      * by another player in the future.
      * @param info the npc info object to deallocate
      */
-    public fun dealloc(info: NpcInfo) {
+    internal fun dealloc(info: NpcInfo) {
         checkCommunicationThread()
         // Prevent returning a destroyed npc info object back into the pool
         if (info.isDestroyed()) {

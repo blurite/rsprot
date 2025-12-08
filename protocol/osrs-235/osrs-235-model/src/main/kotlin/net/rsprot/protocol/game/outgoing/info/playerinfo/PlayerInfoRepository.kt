@@ -2,6 +2,7 @@ package net.rsprot.protocol.game.outgoing.info.playerinfo
 
 import net.rsprot.protocol.common.client.OldSchoolClientType
 import net.rsprot.protocol.game.outgoing.info.InfoRepository
+import net.rsprot.protocol.game.outgoing.info.worldentityinfo.WorldEntityInfo
 
 /**
  * An array implementation that utilizes a reference queue to re-use objects created in the past.
@@ -17,8 +18,12 @@ import net.rsprot.protocol.game.outgoing.info.InfoRepository
  */
 @Suppress("unused")
 internal class PlayerInfoRepository(
-    allocator: (index: Int, oldSchoolClientType: OldSchoolClientType) -> PlayerInfo,
-) : InfoRepository<PlayerInfo>(allocator) {
+    allocator: (
+        index: Int,
+        oldSchoolClientType: OldSchoolClientType,
+        worldEntityInfo: WorldEntityInfo,
+    ) -> PlayerInfo,
+) : InfoRepository<PlayerInfo, WorldEntityInfo>(allocator) {
     /**
      * The backing elements array used to store currently-in-use objects.
      */

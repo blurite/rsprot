@@ -1,24 +1,12 @@
 package net.rsprot.protocol.game.outgoing.info
 
 import io.netty.buffer.ByteBuf
-import io.netty.buffer.Unpooled
-import io.netty.buffer.UnpooledByteBufAllocator
-import net.rsprot.compression.HuffmanCodec
-import net.rsprot.compression.provider.DefaultHuffmanCodecProvider
 import net.rsprot.protocol.common.client.OldSchoolClientType
-import net.rsprot.protocol.game.outgoing.codec.npcinfo.DesktopLowResolutionChangeEncoder
-import net.rsprot.protocol.game.outgoing.codec.npcinfo.extendedinfo.writer.NpcAvatarExtendedInfoDesktopWriter
-import net.rsprot.protocol.game.outgoing.info.filter.DefaultExtendedInfoFilter
-import net.rsprot.protocol.game.outgoing.info.npcinfo.DeferredNpcInfoProtocolSupplier
 import net.rsprot.protocol.game.outgoing.info.npcinfo.NpcAvatar
-import net.rsprot.protocol.game.outgoing.info.npcinfo.NpcAvatarExceptionHandler
 import net.rsprot.protocol.game.outgoing.info.npcinfo.NpcAvatarFactory
 import net.rsprot.protocol.game.outgoing.info.npcinfo.NpcInfo
 import net.rsprot.protocol.game.outgoing.info.npcinfo.NpcInfoLargeV5
-import net.rsprot.protocol.game.outgoing.info.npcinfo.NpcInfoProtocol
 import net.rsprot.protocol.game.outgoing.info.npcinfo.NpcInfoSmallV5
-import net.rsprot.protocol.game.outgoing.info.util.BuildArea
-import net.rsprot.protocol.internal.client.ClientTypeMap
 import net.rsprot.protocol.internal.game.outgoing.info.CoordGrid
 import net.rsprot.protocol.internal.game.outgoing.info.util.ZoneIndexStorage
 import org.junit.jupiter.api.BeforeEach
@@ -27,67 +15,39 @@ import kotlin.random.Random
 import kotlin.test.assertEquals
 
 class NpcInfoTest {
-    private lateinit var protocol: NpcInfoProtocol
+    private lateinit var infoProtocols: InfoProtocols
     private lateinit var client: NpcInfoClient
     private val random: Random = Random(0)
     private lateinit var serverNpcs: List<Npc>
     private lateinit var localNpcInfo: NpcInfo
     private var localPlayerCoord = CoordGrid(0, 3207, 3207)
     private lateinit var factory: NpcAvatarFactory
+    private lateinit var infos: Infos
 
     @BeforeEach
     fun initialize() {
-        val allocator = UnpooledByteBufAllocator.DEFAULT
+        this.client = NpcInfoClient()
         val storage =
             ZoneIndexStorage(
                 ZoneIndexStorage.NPC_CAPACITY,
             )
-        val protocolSupplier = DeferredNpcInfoProtocolSupplier()
-        this.factory =
-            NpcAvatarFactory(
-                allocator,
-                DefaultExtendedInfoFilter(),
-                listOf(NpcAvatarExtendedInfoDesktopWriter()),
-                DefaultHuffmanCodecProvider(createHuffmanCodec()),
-                storage,
-                protocolSupplier,
-            )
-
-        val encoders =
-            ClientTypeMap.of(
-                listOf(DesktopLowResolutionChangeEncoder()),
-                OldSchoolClientType.COUNT,
-            ) {
-                it.clientType
-            }
-        protocol =
-            NpcInfoProtocol(
-                allocator,
-                encoders,
-                factory,
-                npcExceptionHandler(),
-                zoneIndexStorage = storage,
-            )
-        protocolSupplier.supply(protocol)
-        this.client = NpcInfoClient()
-        this.localNpcInfo = protocol.alloc(500, OldSchoolClientType.DESKTOP)
+        this.factory = generateNpcAvatarFactory(storage)
+        this.infoProtocols = generateInfoProtocols(this.factory, storage)
+        this.infos = infoProtocols.alloc(500, OldSchoolClientType.DESKTOP)
+        this.localNpcInfo = infos.npcInfo
     }
 
-    private fun npcExceptionHandler(): NpcAvatarExceptionHandler =
-        NpcAvatarExceptionHandler { _, e ->
-            e.printStackTrace()
-        }
-
     private fun tick() {
-        localNpcInfo.updateCoord(NpcInfo.ROOT_WORLD, localPlayerCoord.level, localPlayerCoord.x, localPlayerCoord.z)
-        localNpcInfo.updateBuildArea(
-            NpcInfo.ROOT_WORLD,
-            BuildArea(
-                (localPlayerCoord.x ushr 3) - 6,
-                (localPlayerCoord.z ushr 3) - 6,
-            ),
+        infos.updateRootCoord(
+            localPlayerCoord.level,
+            localPlayerCoord.x,
+            localPlayerCoord.z,
         )
-        protocol.update()
+        infos.updateRootBuildAreaCenteredOnPlayer(
+            localPlayerCoord.x,
+            localPlayerCoord.z,
+        )
+        infoProtocols.npcInfoProtocol.update()
     }
 
     private fun backingBuffer(): ByteBuf {
@@ -122,8 +82,7 @@ class NpcInfoTest {
         client.decode(backingBuffer(), false, localPlayerCoord)
 
         this.localPlayerCoord = CoordGrid(0, 2000, 2000)
-        this.localNpcInfo.updateCoord(
-            NpcInfo.ROOT_WORLD,
+        infos.updateRootCoord(
             localPlayerCoord.level,
             localPlayerCoord.x,
             localPlayerCoord.z,
@@ -336,13 +295,5 @@ class NpcInfoTest {
 
     private companion object {
         private fun NpcAvatar.getCoordGrid(): CoordGrid = CoordGrid(level(), x(), z())
-
-        private fun createHuffmanCodec(): HuffmanCodec {
-            val resource = PlayerInfoTest::class.java.getResourceAsStream("huffman.dat")
-            checkNotNull(resource) {
-                "huffman.dat could not be found"
-            }
-            return HuffmanCodec.create(Unpooled.wrappedBuffer(resource.readBytes()))
-        }
     }
 }

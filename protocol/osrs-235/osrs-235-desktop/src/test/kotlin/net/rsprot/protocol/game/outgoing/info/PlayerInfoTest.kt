@@ -1,17 +1,10 @@
 package net.rsprot.protocol.game.outgoing.info
 
 import io.netty.buffer.Unpooled
-import io.netty.buffer.UnpooledByteBufAllocator
 import net.rsprot.compression.HuffmanCodec
-import net.rsprot.compression.provider.DefaultHuffmanCodecProvider
 import net.rsprot.protocol.common.client.OldSchoolClientType
-import net.rsprot.protocol.game.outgoing.codec.playerinfo.extendedinfo.writer.PlayerAvatarExtendedInfoDesktopWriter
-import net.rsprot.protocol.game.outgoing.info.filter.DefaultExtendedInfoFilter
-import net.rsprot.protocol.game.outgoing.info.playerinfo.PlayerAvatarFactory
 import net.rsprot.protocol.game.outgoing.info.playerinfo.PlayerInfo
 import net.rsprot.protocol.game.outgoing.info.playerinfo.PlayerInfoProtocol
-import net.rsprot.protocol.game.outgoing.info.util.BuildArea
-import net.rsprot.protocol.game.outgoing.info.worker.DefaultProtocolWorker
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
@@ -23,27 +16,19 @@ class PlayerInfoTest {
     private lateinit var localPlayerInfo: PlayerInfo
     private lateinit var client: PlayerInfoClient
     private lateinit var clientLocalPlayer: PlayerInfoClient.Companion.Player
+    private lateinit var infoProtocols: InfoProtocols
+    private lateinit var infos: Infos
 
     @BeforeEach
     fun initialize() {
-        val allocator = UnpooledByteBufAllocator.DEFAULT
-        val factory =
-            PlayerAvatarFactory(
-                allocator,
-                DefaultExtendedInfoFilter(),
-                listOf(PlayerAvatarExtendedInfoDesktopWriter()),
-                DefaultHuffmanCodecProvider(createHuffmanCodec()),
-            )
-        protocol =
-            PlayerInfoProtocol(
-                allocator,
-                DefaultProtocolWorker(),
-                factory,
-            )
-        localPlayerInfo = protocol.alloc(LOCAL_PLAYER_INDEX, OldSchoolClientType.DESKTOP)
+        this.infoProtocols = generateInfoProtocols()
+        this.infos = infoProtocols.alloc(LOCAL_PLAYER_INDEX, OldSchoolClientType.DESKTOP)
+        protocol = infoProtocols.playerInfoProtocol
+        localPlayerInfo = infos.playerInfo
         updateCoord(0, 3200, 3220)
         localPlayerInfo.avatar.postUpdate()
         client = PlayerInfoClient()
+        infos.updateRootBuildAreaCenteredOnPlayer(3200, 3220)
         gpiInit()
     }
 
@@ -96,24 +81,22 @@ class PlayerInfoTest {
         x: Int,
         z: Int,
     ) {
-        localPlayerInfo.updateCoord(level, x, z)
-        localPlayerInfo.updateRenderCoord(PlayerInfo.ROOT_WORLD, level, x, z)
-        localPlayerInfo.updateBuildArea(PlayerInfo.ROOT_WORLD, BuildArea((x ushr 3) - 6, (z ushr 3) - 6))
+        infos.updateRootCoord(level, x, z)
     }
 
     @Test
     fun `test multi player movements`() {
         val otherPlayerIndices = (1..280)
-        val otherPlayers = arrayOfNulls<PlayerInfo>(2048)
+        val otherPlayers = arrayOfNulls<Infos>(2048)
         for (index in otherPlayerIndices) {
-            val otherPlayer = protocol.alloc(index, OldSchoolClientType.DESKTOP)
+            val otherPlayer = infoProtocols.alloc(index, OldSchoolClientType.DESKTOP)
             otherPlayers[index] = otherPlayer
-            otherPlayer.updateCoord(0, 3205, 3220)
+            otherPlayer.updateRootCoord(0, 3205, 3220)
         }
         tick()
         assertAllCoordsEqual(otherPlayers)
         for (player in otherPlayers.filterNotNull()) {
-            player.updateCoord(0, 3204, 3220)
+            player.updateRootCoord(0, 3204, 3220)
         }
         tick()
         assertAllCoordsEqual(otherPlayers)
@@ -143,19 +126,27 @@ class PlayerInfoTest {
     @Test
     fun `test multi player appearance extended info`() {
         val otherPlayerIndices = (1..280)
-        val otherPlayers = arrayOfNulls<PlayerInfo>(2048)
+        val otherPlayers = arrayOfNulls<Infos>(2048)
         for (index in otherPlayerIndices) {
-            val otherPlayer = protocol.alloc(index, OldSchoolClientType.DESKTOP)
+            val otherPlayer = infoProtocols.alloc(index, OldSchoolClientType.DESKTOP)
             otherPlayers[index] = otherPlayer
-            otherPlayer.updateCoord(0, 3205, 3220)
-            otherPlayer.avatar.extendedInfo.setName("Player $index")
-            otherPlayer.avatar.extendedInfo.setCombatLevel(126)
-            otherPlayer.avatar.extendedInfo.setSkillLevel(index)
-            otherPlayer.avatar.extendedInfo.setHidden(false)
-            otherPlayer.avatar.extendedInfo.setBodyType(1)
-            otherPlayer.avatar.extendedInfo.setPronoun(2)
-            otherPlayer.avatar.extendedInfo.setSkullIcon(-1)
-            otherPlayer.avatar.extendedInfo.setOverheadIcon(-1)
+            otherPlayer.updateRootCoord(0, 3205, 3220)
+            otherPlayer.playerInfo.avatar.extendedInfo
+                .setName("Player $index")
+            otherPlayer.playerInfo.avatar.extendedInfo
+                .setCombatLevel(126)
+            otherPlayer.playerInfo.avatar.extendedInfo
+                .setSkillLevel(index)
+            otherPlayer.playerInfo.avatar.extendedInfo
+                .setHidden(false)
+            otherPlayer.playerInfo.avatar.extendedInfo
+                .setBodyType(1)
+            otherPlayer.playerInfo.avatar.extendedInfo
+                .setPronoun(2)
+            otherPlayer.playerInfo.avatar.extendedInfo
+                .setSkullIcon(-1)
+            otherPlayer.playerInfo.avatar.extendedInfo
+                .setOverheadIcon(-1)
         }
         tick()
         for (index in otherPlayerIndices) {
@@ -172,11 +163,11 @@ class PlayerInfoTest {
         }
     }
 
-    private fun assertAllCoordsEqual(otherPlayers: Array<PlayerInfo?>) {
+    private fun assertAllCoordsEqual(otherPlayers: Array<Infos?>) {
         for (i in otherPlayers.indices) {
             val otherPlayer = otherPlayers[i] ?: continue
             val clientPlayer = client.cachedPlayers[i]!!
-            assertEquals(otherPlayer.avatar.currentCoord, clientPlayer.coord)
+            assertEquals(otherPlayer.playerInfo.avatar.currentCoord, clientPlayer.coord)
         }
     }
 

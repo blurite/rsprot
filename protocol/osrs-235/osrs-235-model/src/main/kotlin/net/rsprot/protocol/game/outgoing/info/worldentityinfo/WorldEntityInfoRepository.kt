@@ -10,8 +10,12 @@ import net.rsprot.protocol.game.outgoing.info.InfoRepository
  * @property elements the array of currently in used world entity info objects.
  */
 internal class WorldEntityInfoRepository(
-    allocator: (index: Int, oldSchoolClientType: OldSchoolClientType) -> WorldEntityInfo,
-) : InfoRepository<WorldEntityInfo>(allocator) {
+    allocator: (
+        index: Int,
+        oldSchoolClientType: OldSchoolClientType,
+        unit: Unit,
+    ) -> WorldEntityInfo,
+) : InfoRepository<WorldEntityInfo, Unit>(allocator) {
     override val elements: Array<WorldEntityInfo?> = arrayOfNulls(WorldEntityProtocol.CAPACITY)
 
     override fun informDeallocation(idx: Int) {

@@ -34,7 +34,7 @@ public class WorldEntityProtocol(
     private val recycler: ByteBufRecycler = ByteBufRecycler()
     private val avatarRepository = factory.avatarRepository
     private val worldEntityInfoRepository: WorldEntityInfoRepository =
-        WorldEntityInfoRepository { localIndex, clientType ->
+        WorldEntityInfoRepository { localIndex, clientType, _ ->
             WorldEntityInfo(
                 localIndex,
                 allocator,
@@ -58,19 +58,19 @@ public class WorldEntityProtocol(
      * @param oldSchoolClientType the client type on which the player has logged in.
      * @return an instance of the world entity info.
      */
-    public fun alloc(
+    internal fun alloc(
         idx: Int,
         oldSchoolClientType: OldSchoolClientType,
     ): WorldEntityInfo {
         checkCommunicationThread()
-        return worldEntityInfoRepository.alloc(idx, oldSchoolClientType)
+        return worldEntityInfoRepository.alloc(idx, oldSchoolClientType, Unit)
     }
 
     /**
      * Deallocates the world entity info, allowing for it to be re-used in the future.
      * @param info the world entity info to be deallocated.
      */
-    public fun dealloc(info: WorldEntityInfo) {
+    internal fun dealloc(info: WorldEntityInfo) {
         checkCommunicationThread()
         // Prevent returning a destroyed worldentity info object back into the pool
         if (info.isDestroyed()) {

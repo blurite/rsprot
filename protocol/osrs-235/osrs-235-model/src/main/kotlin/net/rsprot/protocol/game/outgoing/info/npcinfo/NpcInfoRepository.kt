@@ -2,6 +2,7 @@ package net.rsprot.protocol.game.outgoing.info.npcinfo
 
 import net.rsprot.protocol.common.client.OldSchoolClientType
 import net.rsprot.protocol.game.outgoing.info.InfoRepository
+import net.rsprot.protocol.game.outgoing.info.worldentityinfo.WorldEntityInfo
 
 /**
  * An array implementation that utilizes a reference queue to re-use objects created in the past.
@@ -16,8 +17,8 @@ import net.rsprot.protocol.game.outgoing.info.InfoRepository
  * are available within the reference queue.
  */
 internal class NpcInfoRepository(
-    allocator: (index: Int, oldSchoolClientType: OldSchoolClientType) -> NpcInfo,
-) : InfoRepository<NpcInfo>(allocator) {
+    allocator: (index: Int, oldSchoolClientType: OldSchoolClientType, worldEntityInfo: WorldEntityInfo) -> NpcInfo,
+) : InfoRepository<NpcInfo, WorldEntityInfo>(allocator) {
     override val elements: Array<NpcInfo?> = arrayOfNulls(NpcInfoProtocol.PROTOCOL_CAPACITY)
 
     override fun informDeallocation(idx: Int) {
