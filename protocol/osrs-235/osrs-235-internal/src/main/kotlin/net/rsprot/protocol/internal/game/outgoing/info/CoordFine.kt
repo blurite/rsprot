@@ -33,6 +33,18 @@ public value class CoordFine(
         }
     }
 
+    public fun copy(
+        x: Int = this.x,
+        y: Int = this.y,
+        z: Int = this.z,
+    ): CoordFine {
+        return CoordFine(
+            x,
+            y,
+            z,
+        )
+    }
+
     public val x: Int
         get() = (packed ushr 21 and 0x1FFFFF).toInt()
     public val y: Int

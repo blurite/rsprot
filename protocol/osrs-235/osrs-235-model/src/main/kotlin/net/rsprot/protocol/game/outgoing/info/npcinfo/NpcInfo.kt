@@ -872,7 +872,7 @@ public class NpcInfo internal constructor(
             }
         val encoder = lowResolutionToHighResolutionEncoders[oldSchoolClientType]
         val largeDistance = viewDistance > MAX_SMALL_PACKET_DISTANCE
-        val rootWorldCoord = worldEntityInfo.getCoordInRootWorld(localPlayerCurrentCoord)
+        val rootWorldCoord = worldEntityInfo.getCoordGridInRootWorld(localPlayerCurrentCoord)
         val centerX = rootWorldCoord.x
         val centerZ = rootWorldCoord.z
         val level = rootWorldCoord.level

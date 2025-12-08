@@ -11,6 +11,7 @@ import net.rsprot.protocol.game.outgoing.info.exceptions.InfoProcessException
 import net.rsprot.protocol.game.outgoing.info.util.BuildArea
 import net.rsprot.protocol.game.outgoing.info.util.ReferencePooledObject
 import net.rsprot.protocol.internal.checkCommunicationThread
+import net.rsprot.protocol.internal.game.outgoing.info.CoordFine
 import net.rsprot.protocol.internal.game.outgoing.info.CoordGrid
 import net.rsprot.protocol.internal.game.outgoing.info.util.ZoneIndexStorage
 
@@ -74,6 +75,7 @@ public class WorldEntityInfo internal constructor(
         ShortArray(WorldEntityProtocol.CAPACITY) {
             INDEX_TERMINATOR
         }
+    private val unsortedTopKArray: WorldEntityUnsortedTopKArray = WorldEntityUnsortedTopKArray(MAX_HIGH_RES_COUNT)
     private val allWorldEntities = ArrayList<Int>()
     private val addedWorldEntities = ArrayList<Int>()
     private val removedWorldEntities = ArrayList<Int>()
@@ -249,6 +251,7 @@ public class WorldEntityInfo internal constructor(
      */
     internal fun updateWorldEntities() {
         val buffer = allocBuffer().toJagByteBuf()
+        search()
         val fragmented = processHighResolution(buffer)
         if (fragmented) {
             defragmentIndices()
@@ -285,7 +288,7 @@ public class WorldEntityInfo internal constructor(
         for (i in count - 1 downTo 0) {
             val index = this.highResolutionIndices[i].toInt()
             val avatar = avatarRepository.getOrNull(index)
-            val needsRemoving = avatar == null || !inRange(avatar) || isReallocated(avatar)
+            val needsRemoving = avatar == null || !this.unsortedTopKArray.contains(index) || isReallocated(avatar)
             if (!needsRemoving) {
                 break
             }
@@ -300,7 +303,7 @@ public class WorldEntityInfo internal constructor(
         for (i in 0..<this.highResolutionIndicesCount) {
             val index = this.highResolutionIndices[i].toInt()
             val avatar = avatarRepository.getOrNull(index)
-            if (avatar == null || !inRange(avatar) || isReallocated(avatar)) {
+            if (avatar == null || !this.unsortedTopKArray.contains(index) || isReallocated(avatar)) {
                 highResolutionIndices[i] = INDEX_TERMINATOR
                 this.highResolutionIndicesCount--
                 this.removedWorldEntities += index
@@ -320,6 +323,43 @@ public class WorldEntityInfo internal constructor(
     }
 
     /**
+     * Performs a search to find the indices of the world entities that are the closest to the player,
+     * while also prioritizing higher priority ones.
+     */
+    private fun search() {
+        this.unsortedTopKArray.reset()
+        val coordFineInRootWorld = getCoordFineInRootWorld(this.coordInRootWorld)
+        val level = coordFineInRootWorld.y
+        val centerFineX = coordFineInRootWorld.x
+        val centerFineZ = coordFineInRootWorld.z
+        val startZoneX = ((centerFineX shr 10) - zoneSeekRadius).coerceAtLeast(0)
+        val startZoneZ = ((centerFineZ shr 10) - zoneSeekRadius).coerceAtLeast(0)
+        val endZoneX = ((centerFineX shr 10) + zoneSeekRadius).coerceAtMost(0x7FF)
+        val endZoneZ = ((centerFineZ shr 10) + zoneSeekRadius).coerceAtMost(0x7FF)
+        for (x in startZoneX..endZoneX) {
+            for (z in startZoneZ..endZoneZ) {
+                val npcs = this.zoneIndexStorage.get(level, x, z) ?: continue
+                for (k in 0..<npcs.size) {
+                    val index = npcs[k].toInt() and WORLDENTITY_LOOKUP_TERMINATOR
+                    if (index == WORLDENTITY_LOOKUP_TERMINATOR) {
+                        break
+                    }
+                    val avatar = avatarRepository.getOrNull(index) ?: continue
+                    // Secondary build-area distance check
+                    if (!inRange(avatar)) {
+                        continue
+                    }
+                    val avatarCoord = avatar.currentCoordFine
+                    val dx = (centerFineX - avatarCoord.x).toLong()
+                    val dz = (centerFineZ - avatarCoord.z).toLong()
+                    val distanceSquared = dx * dx + dz * dz
+                    this.unsortedTopKArray.offer(index, (avatar.priority.id.toLong() shl 60) or distanceSquared)
+                }
+            }
+        }
+    }
+
+    /**
      * Processes the low resolution update for this world entity info,
      * adding any currently untracked world entities which are close enough
      * to high resolution.
@@ -329,50 +369,37 @@ public class WorldEntityInfo internal constructor(
         if (this.highResolutionIndicesCount >= MAX_HIGH_RES_COUNT) {
             return
         }
-        val (level, centerX, centerZ) = getCoordInRootWorld(this.coordInRootWorld)
-        val startX = ((centerX shr 3) - zoneSeekRadius).coerceAtLeast(0)
-        val startZ = ((centerZ shr 3) - zoneSeekRadius).coerceAtLeast(0)
-        val endX = ((centerX shr 3) + zoneSeekRadius).coerceAtMost(0x7FF)
-        val endZ = ((centerZ shr 3) + zoneSeekRadius).coerceAtMost(0x7FF)
-        for (x in startX..endX) {
-            for (z in startZ..endZ) {
-                val npcs = this.zoneIndexStorage.get(level, x, z) ?: continue
-                for (k in 0..<npcs.size) {
-                    val index = npcs[k].toInt() and WORLDENTITY_LOOKUP_TERMINATOR
-                    if (index == WORLDENTITY_LOOKUP_TERMINATOR) {
-                        break
-                    }
-                    if (isHighResolution(index)) {
-                        continue
-                    }
-                    if (this.highResolutionIndicesCount >= MAX_HIGH_RES_COUNT) {
-                        break
-                    }
-                    val avatar = avatarRepository.getOrNull(index) ?: continue
-                    // Secondary build-area distance check
-                    if (!inRange(avatar)) {
-                        continue
-                    }
-                    addedWorldEntities += index
-                    allWorldEntities += index
-                    val i = highResolutionIndicesCount++
-                    highResolutionIndices[i] = index.toShort()
-                    buffer.p2(avatar.index)
-                    buffer.p1(avatar.sizeX)
-                    buffer.p1(avatar.sizeZ)
-                    buffer.p2(avatar.id)
-                    val fineXOffset = rootBuildArea.zoneX shl 10
-                    val fineZOffset = rootBuildArea.zoneZ shl 10
-                    buffer.encodeAngledCoordFine(
-                        avatar.currentCoordFine.x - fineXOffset,
-                        avatar.currentCoordFine.y,
-                        avatar.currentCoordFine.z - fineZOffset,
-                        avatar.angle,
-                    )
-                    buffer.p1(avatar.priority.id)
-                    putWorldEntityExtendedInfo(avatar, buffer)
-                }
+        val topKArray = this.unsortedTopKArray
+        val indices = topKArray.indices
+        val length = topKArray.size
+        for (k in 0..<length) {
+            val index = indices[k]
+            if (isHighResolution(index)) {
+                continue
             }
+            // Fail-safe, should never be hit unless one function is refactored without the other.
+            if (this.highResolutionIndicesCount >= MAX_HIGH_RES_COUNT) {
+                break
+            }
+            val avatar = avatarRepository.getOrNull(index) ?: continue
+            addedWorldEntities += index
+            allWorldEntities += index
+            val i = highResolutionIndicesCount++
+            highResolutionIndices[i] = index.toShort()
+            buffer.p2(avatar.index)
+            buffer.p1(avatar.sizeX)
+            buffer.p1(avatar.sizeZ)
+            buffer.p2(avatar.id)
+            val fineXOffset = rootBuildArea.zoneX shl 10
+            val fineZOffset = rootBuildArea.zoneZ shl 10
+            buffer.encodeAngledCoordFine(
+                avatar.currentCoordFine.x - fineXOffset,
+                avatar.currentCoordFine.y,
+                avatar.currentCoordFine.z - fineZOffset,
+                avatar.angle,
+            )
+            buffer.p1(avatar.priority.id)
+            putWorldEntityExtendedInfo(avatar, buffer)
         }
     }
 
@@ -422,7 +449,7 @@ public class WorldEntityInfo internal constructor(
      * @return If the [coordGrid] is on a world entity, returns that world entity's center coord grid in the root
      * world, otherwise the same input [coordGrid].
      */
-    internal fun getCoordInRootWorld(coordGrid: CoordGrid): CoordGrid {
+    internal fun getCoordGridInRootWorld(coordGrid: CoordGrid): CoordGrid {
         val index = avatarRepository.getByCoordGrid(coordGrid)
         if (index == -1) {
             return coordGrid
@@ -432,6 +459,37 @@ public class WorldEntityInfo internal constructor(
             avatarRepository.getOrNull(index)
                 ?: return coordGrid
         return worldEntity.currentCoordGrid
+    }
+
+    /**
+     * Gets the coord fine value in the root world. If the coord grid is inside a world entity,
+     * returns the world entity's own coord fine, otherwise converts the coordgrid into a centered coord fine.
+     * Note that the y coordinate is set to the level of where the coord is, or is projected into.
+     * @param coordGrid the absolute coord grid in the root world
+     */
+    private fun getCoordFineInRootWorld(coordGrid: CoordGrid): CoordFine {
+        val index = avatarRepository.getByCoordGrid(coordGrid)
+        if (index == -1) {
+            return coordGrid.toCenterCoordFine()
+        }
+
+        val worldEntity =
+            avatarRepository.getOrNull(index)
+                ?: return coordGrid.toCenterCoordFine()
+        return worldEntity.currentCoordFine.copy(y = worldEntity.currentCoordGrid.level)
+    }
+
+    /**
+     * Converts the coord grid to a centered coord fine.
+     * Note that the y coordinate is set to the level of the coord grid.
+     * @return CoordFine representing the center of the coord grid.
+     */
+    private fun CoordGrid.toCenterCoordFine(): CoordFine {
+        return CoordFine(
+            (x shl 7) or 0x40,
+            level,
+            (z shl 7) or 0x40,
+        )
     }
 
     /**
@@ -633,7 +691,7 @@ public class WorldEntityInfo internal constructor(
         /**
          * The maximum number of high resolution world entities that could be sent.
          */
-        private const val MAX_HIGH_RES_COUNT: Int = 255
+        private const val MAX_HIGH_RES_COUNT: Int = 25
 
         /**
          * The id of the root world.
