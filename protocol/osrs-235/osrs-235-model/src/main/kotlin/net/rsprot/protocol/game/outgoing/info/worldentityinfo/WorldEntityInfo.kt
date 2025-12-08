@@ -328,6 +328,7 @@ public class WorldEntityInfo internal constructor(
      */
     private fun search() {
         this.unsortedTopKArray.reset()
+        val currentWorldEntityIndex = getWorldEntityIndex(this.coordInRootWorld)
         val coordFineInRootWorld = getCoordFineInRootWorld(this.coordInRootWorld)
         val level = coordFineInRootWorld.y
         val centerFineX = coordFineInRootWorld.x
@@ -353,8 +354,17 @@ public class WorldEntityInfo internal constructor(
                     val dx = (centerFineX - avatarCoord.x).toLong()
                     val dz = (centerFineZ - avatarCoord.z).toLong()
                     val distanceSquared = dx * dx + dz * dz
-                    val priority = avatar.priorityTowards(localIndex)
-                    this.unsortedTopKArray.offer(index, (priority.id.toLong() shl 60) or distanceSquared)
+                    // We have to always consider the world on which the player currently is as
+                    // the highest priority possible, to ensure that it renders that world no matter
+                    // the circumstances. This is solely for the purpose of serverside transmission
+                    // and client-side priority can differ and be as-is.
+                    val priority =
+                        if (index == currentWorldEntityIndex) {
+                            WorldEntityPriority.LOCAL_PLAYER.id + 1
+                        } else {
+                            avatar.priorityTowards(localIndex).id
+                        }
+                    this.unsortedTopKArray.offer(index, (priority.toLong() shl 60) or distanceSquared)
                 }
             }
         }
@@ -479,6 +489,14 @@ public class WorldEntityInfo internal constructor(
             avatarRepository.getOrNull(index)
                 ?: return coordGrid.toCenterCoordFine()
         return worldEntity.currentCoordFine.copy(y = worldEntity.currentCoordGrid.level)
+    }
+
+    /**
+     * Gets the index of the world entity which contains the provided [coordGrid].
+     * @return index of the world entity containing the coord grid, or -1.
+     */
+    private fun getWorldEntityIndex(coordGrid: CoordGrid): Int {
+        return avatarRepository.getByCoordGrid(coordGrid)
     }
 
     /**
