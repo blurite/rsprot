@@ -62,6 +62,7 @@ public class WorldEntityInfo internal constructor(
     private val recycler: ByteBufRecycler = ByteBufRecycler(),
 ) : ReferencePooledObject {
     private var renderDistance: Int = DEFAULT_RENDER_DISTANCE
+    private var zoneSeekRadius: Int = DEFAULT_ZONE_SEEK_RADIUS
     private var coordInRootWorld: CoordGrid = CoordGrid.INVALID
     private var rootBuildArea: BuildArea = BuildArea.INVALID
     private var highResolutionIndicesCount: Int = 0
@@ -105,11 +106,21 @@ public class WorldEntityInfo internal constructor(
      * put into high resolution view.
      * @param distance the distance in tiles how far the world entities should
      * be rendered from the player (or the camera's POV)
+     * @param zoneSeekRadius the radius in zones to search around the center point.
+     * By default, it will match old school which divides the distance by 8 and floors.
+     * This has a side effect of often searching a smaller distance than what it should.
+     * For example, a distance of 31 requires a zone seek radius of 4 to fully satisfy
+     * the distance, as the player can be in various positions within their current zone.
      */
-    public fun updateRenderDistance(distance: Int) {
+    @JvmOverloads
+    public fun updateRenderDistance(
+        distance: Int,
+        zoneSeekRadius: Int = distance ushr 3,
+    ) {
         checkCommunicationThread()
         if (isDestroyed()) return
         this.renderDistance = distance
+        this.zoneSeekRadius = zoneSeekRadius
     }
 
     /**
@@ -319,10 +330,10 @@ public class WorldEntityInfo internal constructor(
             return
         }
         val (level, centerX, centerZ) = getCoordInRootWorld(this.coordInRootWorld)
-        val startX = ((centerX - renderDistance) shr 3).coerceAtLeast(0)
-        val startZ = ((centerZ - renderDistance) shr 3).coerceAtLeast(0)
-        val endX = ((centerX + renderDistance) shr 3).coerceAtMost(0x7FF)
-        val endZ = ((centerZ + renderDistance) shr 3).coerceAtMost(0x7FF)
+        val startX = ((centerX shr 3) - zoneSeekRadius).coerceAtLeast(0)
+        val startZ = ((centerZ shr 3) - zoneSeekRadius).coerceAtLeast(0)
+        val endX = ((centerX shr 3) + zoneSeekRadius).coerceAtMost(0x7FF)
+        val endZ = ((centerZ shr 3) + zoneSeekRadius).coerceAtMost(0x7FF)
         for (x in startX..endX) {
             for (z in startZ..endZ) {
                 val npcs = this.zoneIndexStorage.get(level, x, z) ?: continue
@@ -632,7 +643,12 @@ public class WorldEntityInfo internal constructor(
         /**
          * The default render distance for world entities.
          */
-        private const val DEFAULT_RENDER_DISTANCE: Int = 15
+        private const val DEFAULT_RENDER_DISTANCE: Int = 31
+
+        /**
+         * The default radius to seek zones from around the center point.
+         */
+        private const val DEFAULT_ZONE_SEEK_RADIUS: Int = 3
 
         /**
          * The default capacity of the backing byte buffer into which all world info is written.
