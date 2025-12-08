@@ -50,7 +50,12 @@ internal class ZoneIndexArray(
         val indexAsShort = index.toShort()
         for (i in 0..<size) {
             if (indexAsShort == array[i]) {
-                array.copyInto(array, i, i + 1, size--)
+                val newSize = size - 1
+                if (i < newSize) {
+                    array.copyInto(array, i, i + 1, size)
+                }
+                size = newSize
+                array[size] = FREE_INDEX
                 return
             }
         }
