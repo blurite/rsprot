@@ -107,7 +107,7 @@ if (!rootNpcInfoEmpty) {
 // The active world is already set to the root world, so it is just a matter
 // of sending packets like UpdateZoneFullFollows, UpdateZonePartialEnclosed
 // and so on.
-buildAreaManager.sendRootZoneUpdates()
+buildAreaManager.sendRootZoneUpdates(rootPackets.activeLevel)
 
 // When a world entity is removed from high resolution, stop tracking it
 // for zone updates. If it is re-added, a full zone synchronization should
