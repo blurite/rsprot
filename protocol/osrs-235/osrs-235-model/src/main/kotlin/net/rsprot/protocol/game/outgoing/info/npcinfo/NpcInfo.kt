@@ -752,7 +752,7 @@ public class NpcInfo internal constructor(
                 viewDistance,
             )
         ) {
-            return false
+            return true
         }
         val filter = this.filter
         return filter != null &&
