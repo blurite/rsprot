@@ -57,7 +57,7 @@ reallocated by someone else.
 
 #### Updating Infos
 At the end of a game cycle, you'll want to invoke `infos.updateRootCoord(level, x, z)`.
-Additionally, whenever the root world map updates (via RebuildLogin, RebuildNormal or RebuildRegion),
+Additionally, on login, reconnect, and whenever the root world map updates (via RebuildLogin, RebuildNormal or RebuildRegion),
 you'll want to invoke `infos.updateRootBuildAreaCenteredOnPlayer(playerX, playerZ)`. There are alternative
 methods available too, however the centered method does all the math for you, as well as any
 boundary checks.
