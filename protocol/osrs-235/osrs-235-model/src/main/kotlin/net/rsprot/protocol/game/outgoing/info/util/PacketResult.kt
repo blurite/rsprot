@@ -1,5 +1,6 @@
 package net.rsprot.protocol.game.outgoing.info.util
 
+import net.rsprot.protocol.game.outgoing.info.npcinfo.NpcInfoPacket
 import net.rsprot.protocol.message.OutgoingGameMessage
 import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.InvocationKind
@@ -296,4 +297,21 @@ public inline fun <T : OutgoingGameMessage> PacketResult<T>.onSuccess(action: (v
     @Suppress("UNCHECKED_CAST")
     if (isSuccess) action(value as T)
     return this
+}
+
+/**
+ * Checks if the NPC info packet is empty, meaning it can be dropped by calling [safeReleaseOrThrow].
+ * This is only the case if there were no high resolution NPCs to update in previous cycle, nor in
+ * this cycle, and the packet's length is 1 (which is just the indicator for number of NPCs to update).
+ * In these scenarios, OSRS seems to simply drop the packet and never send it to the client.
+ */
+public fun PacketResult<NpcInfoPacket>.isEmpty(): Boolean {
+    return getOrNull()?.empty ?: return false
+}
+
+/**
+ * Safely releases the npc info packet, or throws an exception if the result is an error instead.
+ */
+public fun PacketResult<NpcInfoPacket>.safeReleaseOrThrow() {
+    getOrThrow().safeRelease()
 }

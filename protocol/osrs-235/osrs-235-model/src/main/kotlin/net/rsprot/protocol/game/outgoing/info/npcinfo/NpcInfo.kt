@@ -501,6 +501,7 @@ public class NpcInfo internal constructor(
                 ?: return PacketResult.failure(
                     IllegalStateException("Previous npc info packet not calculated."),
                 )
+
         return PacketResult.success(previousPacket)
     }
 
@@ -514,6 +515,7 @@ public class NpcInfo internal constructor(
         // Acquire a new buffer with each cycle, in case the previous one isn't fully written out yet
         val buffer = allocator.buffer(BUF_CAPACITY, BUF_CAPACITY)
         details.buffer = buffer
+        details.lastCycleHighResolutionNpcIndexCount = details.highResolutionNpcIndexCount
         recycler += buffer
         return buffer
     }
@@ -580,13 +582,42 @@ public class NpcInfo internal constructor(
                     }
                 }
             }
+            val buffer = backingBuffer(details.worldId)
+            val isEmpty = isEmptyPacket(details, buffer)
             details.previousPacket =
                 if (this.viewDistance > MAX_SMALL_PACKET_DISTANCE) {
-                    NpcInfoLargeV5(backingBuffer(details.worldId))
+                    NpcInfoLargeV5(buffer, isEmpty)
                 } else {
-                    NpcInfoSmallV5(backingBuffer(details.worldId))
+                    NpcInfoSmallV5(buffer, isEmpty)
                 }
         }
+    }
+
+    /**
+     * Checks if the NPC info packet can be considered as fully empty.
+     * This means there were no high resolution NPCs in the last cycle,
+     * nor are there any in this cycle.
+     * @param details
+     */
+    private fun isEmptyPacket(
+        details: NpcInfoWorldDetails,
+        buffer: ByteBuf,
+    ): Boolean {
+        // If there were any high resolution NPCs in the last cycle, it cannot be considered empty,
+        // as it is possible for us to just send the new count as 0 that tells the client to
+        // clear all high resolution NPCs.
+        if (details.lastCycleHighResolutionNpcIndexCount != 0) {
+            return false
+        }
+        val readableBytes = buffer.readableBytes()
+        if (readableBytes == 0) {
+            return true
+        }
+        if (readableBytes > 1) {
+            return false
+        }
+        // Only return true if the new high resolution NPC count is also zero.
+        return buffer.getByte(buffer.readerIndex()).toInt() == 0
     }
 
     /**

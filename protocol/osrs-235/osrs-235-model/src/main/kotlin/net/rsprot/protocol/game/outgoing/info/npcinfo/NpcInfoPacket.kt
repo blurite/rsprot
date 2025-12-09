@@ -9,6 +9,7 @@ import net.rsprot.protocol.message.OutgoingGameMessage
 
 public abstract class NpcInfoPacket(
     buffer: ByteBuf,
+    public val empty: Boolean,
 ) : DefaultByteBufHolder(buffer),
     OutgoingGameMessage,
     ConsumableMessage {

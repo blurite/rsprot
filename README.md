@@ -100,9 +100,7 @@ if (!rootNpcInfoEmpty) {
         .onSuccess(packets::send)
         .onFailure(::onUpdateException)
 } else {
-    rootPackets.npcInfo
-        .getOrNull()
-        ?.safeRelease()
+	rootPackets.npcInfo.safeReleaseOrThrow()
 }
 
 // At this stage, you should submit all the zone packets from your server.
@@ -119,7 +117,6 @@ infoPackets.removedWorldIndices.forEach(buildAreaManager::destroyWorld)
 // Now go over every world entity that is still in high resolution
 for (worldInfoPackets in infoPackets.activeWorlds) {
     packets.send(worldInfoPackets.activeWorld)
-    packets.send(worldInfoPackets.npcUpdateOrigin)
 
 	// If the world entity is newly added in this cycle, make sure to send the
 	// RebuildWorldEntityV2 packet for this world, to actually build the
@@ -132,13 +129,12 @@ for (worldInfoPackets in infoPackets.activeWorlds) {
 	// and instead release safely.
     val worldNpcInfoEmpty = worldInfoPackets.npcInfo.isEmpty()
     if (!worldNpcInfoEmpty) {
+		packets.send(worldInfoPackets.npcUpdateOrigin)
         worldInfoPackets.npcInfo
             .onSuccess(packets::send)
             .onFailure(::onUpdateException)
     } else {
-        worldInfoPackets.npcInfo
-            .getOrNull()
-            ?.safeRelease()
+        worldInfoPackets.npcInfo.safeReleaseOrThrow()
     }
 
 	// Update the zones for the world entity. As before, the active world

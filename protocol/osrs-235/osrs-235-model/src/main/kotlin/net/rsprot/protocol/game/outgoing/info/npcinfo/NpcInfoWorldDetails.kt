@@ -105,6 +105,11 @@ internal class NpcInfoWorldDetails(
     internal var buffer: ByteBuf? = null
 
     /**
+     * The number of high resolution NPCs in the last cycle.
+     */
+    internal var lastCycleHighResolutionNpcIndexCount: Int = 0
+
+    /**
      * The previous npc info packet that was created.
      * We ensure that a server hasn't accidentally left a packet unwritten, which would
      * de-synchronize the client and cause errors.
@@ -273,6 +278,7 @@ internal class NpcInfoWorldDetails(
         this.normalPriorityCount = 0
         this.buffer = null
         this.previousPacket = null
+        this.lastCycleHighResolutionNpcIndexCount = 0
     }
 
     internal fun onDealloc() {

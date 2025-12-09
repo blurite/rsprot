@@ -7,7 +7,8 @@ import io.netty.buffer.ByteBuf
  */
 public class NpcInfoSmallV5(
     buffer: ByteBuf,
-) : NpcInfoPacket(buffer) {
+    empty: Boolean,
+) : NpcInfoPacket(buffer, empty) {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (javaClass != other?.javaClass) return false
