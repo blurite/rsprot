@@ -2,6 +2,7 @@ package net.rsprot.protocol.game.outgoing.info
 
 import net.rsprot.protocol.game.outgoing.info.npcinfo.NpcInfoPacket
 import net.rsprot.protocol.game.outgoing.info.npcinfo.SetNpcUpdateOrigin
+import net.rsprot.protocol.game.outgoing.info.util.PacketResult
 import net.rsprot.protocol.game.outgoing.worldentity.SetActiveWorldV2
 
 /**
@@ -25,5 +26,5 @@ public class WorldInfoPackets(
     public val added: Boolean,
     public val activeWorld: SetActiveWorldV2,
     public val npcUpdateOrigin: SetNpcUpdateOrigin,
-    public val npcInfo: Result<NpcInfoPacket>,
+    public val npcInfo: PacketResult<NpcInfoPacket>,
 )

@@ -11,6 +11,7 @@ import net.rsprot.buffer.extensions.toJagByteBuf
 import net.rsprot.protocol.common.client.OldSchoolClientType
 import net.rsprot.protocol.game.outgoing.info.ByteBufRecycler
 import net.rsprot.protocol.game.outgoing.info.exceptions.InfoProcessException
+import net.rsprot.protocol.game.outgoing.info.util.PacketResult
 import net.rsprot.protocol.game.outgoing.info.util.ReferencePooledObject
 import net.rsprot.protocol.game.outgoing.info.worldentityinfo.WorldEntityInfo
 import net.rsprot.protocol.internal.checkCommunicationThread
@@ -469,7 +470,7 @@ public class NpcInfo internal constructor(
 
     @Suppress("NOTHING_TO_INLINE")
     @JvmSynthetic
-    public inline fun internalPacketResult(worldId: Int): Result<NpcInfoPacket> {
+    public inline fun internalPacketResult(worldId: Int): PacketResult<NpcInfoPacket> {
         return toPacketResult(worldId)
     }
 
@@ -477,13 +478,13 @@ public class NpcInfo internal constructor(
      * Turns the previously-computed npc info into a packet instance
      * which can be flushed to the client, or an exception if one was thrown while
      * building the packet.
-     * @return the npc packet instance in a [Result].
+     * @return the npc packet instance in a [PacketResult].
      */
     @PublishedApi
-    internal fun toPacketResult(worldId: Int): Result<NpcInfoPacket> {
+    internal fun toPacketResult(worldId: Int): PacketResult<NpcInfoPacket> {
         val exception = this.exception
         if (exception != null) {
-            return Result.failure(
+            return PacketResult.failure(
                 InfoProcessException(
                     "Exception occurred during npc info processing for index $localPlayerIndex",
                     exception,
@@ -492,15 +493,15 @@ public class NpcInfo internal constructor(
         }
         val details =
             getDetailsOrNull(worldId)
-                ?: return Result.failure(
+                ?: return PacketResult.failure(
                     IllegalStateException("World $worldId does not exist."),
                 )
         val previousPacket =
             details.previousPacket
-                ?: return Result.failure(
+                ?: return PacketResult.failure(
                     IllegalStateException("Previous npc info packet not calculated."),
                 )
-        return Result.success(previousPacket)
+        return PacketResult.success(previousPacket)
     }
 
     /**

@@ -15,6 +15,7 @@ import net.rsprot.protocol.game.outgoing.info.exceptions.InfoProcessException
 import net.rsprot.protocol.game.outgoing.info.playerinfo.PlayerInfoProtocol.Companion.PROTOCOL_CAPACITY
 import net.rsprot.protocol.game.outgoing.info.playerinfo.util.CellOpcodes
 import net.rsprot.protocol.game.outgoing.info.util.Avatar
+import net.rsprot.protocol.game.outgoing.info.util.PacketResult
 import net.rsprot.protocol.game.outgoing.info.util.ReferencePooledObject
 import net.rsprot.protocol.game.outgoing.info.worldentityinfo.WorldEntityInfo
 import net.rsprot.protocol.internal.checkCommunicationThread
@@ -328,7 +329,7 @@ public class PlayerInfo internal constructor(
 
     @Suppress("NOTHING_TO_INLINE")
     @JvmSynthetic
-    public inline fun internalPacketResult(): Result<PlayerInfoPacket> {
+    public inline fun internalPacketResult(): PacketResult<PlayerInfoPacket> {
         return toPacketResult()
     }
 
@@ -336,13 +337,13 @@ public class PlayerInfo internal constructor(
      * Turns the previously-computed player info into a packet instance
      * which can be flushed to the client, or an exception if one was thrown while
      * building the packet.
-     * @return the player info packet instance in a [Result].
+     * @return the player info packet instance in a [PacketResult].
      */
     @PublishedApi
-    internal fun toPacketResult(): Result<PlayerInfoPacket> {
+    internal fun toPacketResult(): PacketResult<PlayerInfoPacket> {
         val exception = this.exception
         if (exception != null) {
-            return Result.failure(
+            return PacketResult.failure(
                 InfoProcessException(
                     "Exception occurred during player info processing for index $localIndex",
                     exception,
@@ -351,10 +352,10 @@ public class PlayerInfo internal constructor(
         }
         val previousPacket =
             previousPacket
-                ?: return Result.failure(
+                ?: return PacketResult.failure(
                     IllegalStateException("Previous packet not available."),
                 )
-        return Result.success(previousPacket)
+        return PacketResult.success(previousPacket)
     }
 
     /**

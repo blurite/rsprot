@@ -3,6 +3,7 @@ package net.rsprot.protocol.game.outgoing.info
 import net.rsprot.protocol.game.outgoing.info.npcinfo.NpcInfoPacket
 import net.rsprot.protocol.game.outgoing.info.npcinfo.SetNpcUpdateOrigin
 import net.rsprot.protocol.game.outgoing.info.playerinfo.PlayerInfoPacket
+import net.rsprot.protocol.game.outgoing.info.util.PacketResult
 import net.rsprot.protocol.game.outgoing.info.worldentityinfo.WorldEntityInfoV6Packet
 import net.rsprot.protocol.game.outgoing.worldentity.SetActiveWorldV2
 
@@ -26,9 +27,9 @@ public class RootWorldInfoPackets(
     public val activeLevel: Int,
     public val activeWorld: SetActiveWorldV2,
     public val npcUpdateOrigin: SetNpcUpdateOrigin,
-    public val worldEntityInfo: Result<WorldEntityInfoV6Packet>,
-    public val playerInfo: Result<PlayerInfoPacket>,
-    public val npcInfo: Result<NpcInfoPacket>,
+    public val worldEntityInfo: PacketResult<WorldEntityInfoV6Packet>,
+    public val playerInfo: PacketResult<PlayerInfoPacket>,
+    public val npcInfo: PacketResult<NpcInfoPacket>,
 ) {
     public val worldId: Int
         get() = -1

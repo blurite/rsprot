@@ -9,6 +9,7 @@ import net.rsprot.protocol.common.client.OldSchoolClientType
 import net.rsprot.protocol.game.outgoing.info.ByteBufRecycler
 import net.rsprot.protocol.game.outgoing.info.exceptions.InfoProcessException
 import net.rsprot.protocol.game.outgoing.info.util.BuildArea
+import net.rsprot.protocol.game.outgoing.info.util.PacketResult
 import net.rsprot.protocol.game.outgoing.info.util.ReferencePooledObject
 import net.rsprot.protocol.internal.checkCommunicationThread
 import net.rsprot.protocol.internal.game.outgoing.info.CoordFine
@@ -193,12 +194,12 @@ public class WorldEntityInfo internal constructor(
      * Turns the previously-computed world entity info into a packet instance
      * which can be flushed to the client, or an exception if one was thrown while
      * building the packet.
-     * @return the world entity packet instance in a [Result].
+     * @return the world entity packet instance in a [PacketResult].
      */
-    internal fun toPacketResult(): Result<WorldEntityInfoV6Packet> {
+    internal fun toPacketResult(): PacketResult<WorldEntityInfoV6Packet> {
         val exception = this.exception
         if (exception != null) {
-            return Result.failure(
+            return PacketResult.failure(
                 InfoProcessException(
                     "Exception occurred during player info processing for index $localIndex",
                     exception,
@@ -207,10 +208,10 @@ public class WorldEntityInfo internal constructor(
         }
         val previousPacket =
             previousPacket
-                ?: return Result.failure(
+                ?: return PacketResult.failure(
                     IllegalStateException("Previous world entity info packet not calculated."),
                 )
-        return Result.success(previousPacket)
+        return PacketResult.success(previousPacket)
     }
 
     /**
