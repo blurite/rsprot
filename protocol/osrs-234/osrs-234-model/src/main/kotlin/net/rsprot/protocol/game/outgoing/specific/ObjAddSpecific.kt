@@ -64,6 +64,28 @@ public class ObjAddSpecific private constructor(
         neverBecomesPublic,
     )
 
+    public constructor(
+        id: Int,
+        quantity: Int,
+        level: Int,
+        x: Int,
+        z: Int,
+        opFlags: Byte,
+        timeUntilPublic: Int,
+        timeUntilDespawn: Int,
+        ownershipType: Int,
+        neverBecomesPublic: Boolean,
+    ) : this(
+        id.toUShort(),
+        quantity,
+        CoordGrid(level, x, z),
+        opFlags,
+        timeUntilPublic.toUShort(),
+        timeUntilDespawn.toUShort(),
+        ownershipType.toUByte(),
+        neverBecomesPublic,
+    )
+
     public val id: Int
         get() = _id.toInt()
     public val timeUntilPublic: Int

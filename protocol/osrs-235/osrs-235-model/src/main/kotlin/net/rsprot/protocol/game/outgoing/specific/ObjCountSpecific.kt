@@ -34,6 +34,20 @@ public class ObjCountSpecific private constructor(
         coordGrid,
     )
 
+    public constructor(
+        id: Int,
+        oldQuantity: Int,
+        newQuantity: Int,
+        level: Int,
+        x: Int,
+        z: Int,
+    ) : this(
+        id.toUShort(),
+        oldQuantity,
+        newQuantity,
+        CoordGrid(level, x, z),
+    )
+
     public val id: Int
         get() = _id.toInt()
     override val category: ServerProtCategory

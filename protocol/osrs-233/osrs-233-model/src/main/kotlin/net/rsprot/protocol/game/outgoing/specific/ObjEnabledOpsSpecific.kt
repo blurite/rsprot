@@ -31,6 +31,18 @@ public class ObjEnabledOpsSpecific private constructor(
         coordGrid,
     )
 
+    public constructor(
+        id: Int,
+        opFlags: Byte,
+        level: Int,
+        x: Int,
+        z: Int,
+    ) : this(
+        id.toUShort(),
+        opFlags,
+        CoordGrid(level, x, z),
+    )
+
     public val id: Int
         get() = _id.toInt()
     override val category: ServerProtCategory

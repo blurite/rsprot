@@ -48,6 +48,28 @@ public class ObjCustomiseSpecific private constructor(
         coordGrid,
     )
 
+    public constructor(
+        id: Int,
+        quantity: Int,
+        model: Int,
+        recolIndex: Int,
+        recol: Int,
+        retexIndex: Int,
+        retex: Int,
+        level: Int,
+        x: Int,
+        z: Int,
+    ) : this(
+        id.toUShort(),
+        quantity,
+        model.toUShort(),
+        recolIndex.toShort(),
+        recol.toShort(),
+        retexIndex.toShort(),
+        retex.toShort(),
+        CoordGrid(level, x, z),
+    )
+
     public val id: Int
         get() = _id.toInt()
     public val model: Int

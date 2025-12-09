@@ -30,6 +30,18 @@ public class ObjDelSpecific private constructor(
         coordGrid,
     )
 
+    public constructor(
+        id: Int,
+        quantity: Int,
+        level: Int,
+        x: Int,
+        z: Int,
+    ) : this(
+        id.toUShort(),
+        quantity,
+        CoordGrid(level, x, z),
+    )
+
     public val id: Int
         get() = _id.toInt()
     override val category: ServerProtCategory
