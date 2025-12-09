@@ -42,10 +42,12 @@ public class Infos(
      * Updates the build area for this player. This should always perfectly correspond to
      * the actual build area that is sent via REBUILD_NORMAL or REBUILD_REGION packets.
      * This method takes the player's own absolute coordinates at the time of the map reload,
-     * and picks the coordinate as 6 zones to the south-west of them.
+     * and picks the coordinate as 6 zones to the south-west of them. Note that if the player
+     * is on a world entity at the time, it should correspond to the world entity's coordgrid
+     * in the root world.
      * This function will furthermore cap the coordinate to not go outside the usable map space.
-     * @param playerAbsoluteX the absolute x coordinate of the player in the root world
-     * @param playerAbsoluteZ the absolute z coordinate of the player in the root world
+     * @param playerAbsoluteX the absolute x coordinate in the root world
+     * @param playerAbsoluteZ the absolute z coordinate in the root world
      */
     public fun updateRootBuildAreaCenteredOnPlayer(
         playerAbsoluteX: Int,
