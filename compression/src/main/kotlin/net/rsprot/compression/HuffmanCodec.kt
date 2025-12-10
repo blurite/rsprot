@@ -138,6 +138,7 @@ public data class HuffmanCodec(
         }
 
         @Throws(IOException::class)
+        @JvmSynthetic
         public fun create(buffer: JagByteBuf): HuffmanCodec {
             // Read the number of bits used to encode each character from the cache.
             if (buffer.readableBytes() != CODEWORDS_LENGTH) {
