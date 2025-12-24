@@ -186,7 +186,7 @@ internal class WorldEntityMap(
                         )
                     val existing = map.get(zoneCoord.packed)
                     if (existing == index) {
-                        map.remove(index)
+                        map.remove(zoneCoord.packed)
                     }
                 }
             }
