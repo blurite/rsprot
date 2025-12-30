@@ -493,6 +493,16 @@ relatively minor given the circumstances here.
 Benchmarks can be found [here](BENCHMARKS.md). Only performance-critical
 aspects of the application will be benchmarked.
 
+## Acknowledgements
+YourKit supports open source projects with innovative and intelligent tools
+for monitoring and profiling Java and .NET applications.
+YourKit is the creator of
+[YourKit Java Profiler](https://www.yourkit.com/java/profiler/),
+[YourKit .NET Profiler](https://www.yourkit.com/.net/profiler/),
+and [YourKit YouMonitor](https://www.yourkit.com/youmonitor/).
+
+![YourKit-Logo](https://www.yourkit.com/images/yklogo.png)
+
 [actions-badge]: https://github.com/blurite/rsprot/actions/workflows/ci.yml/badge.svg
 [actions]: https://github.com/blurite/rsprot/actions
 [mit-badge]: https://img.shields.io/badge/license-MIT-informational
