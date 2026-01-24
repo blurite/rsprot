@@ -167,6 +167,8 @@ public interface ChannelTrafficMonitor {
      * before the result would now be unknown. If any of those channels would disconnect after,
      * the counter would go negative.
      * @return a snapshot of the channel's traffic since the last reset, or when it first began measuring.
+     * @throws ConcurrentModificationException a very rare potential due to our naive, but fast implementation
+     * of atomicity. In these cases, simply retry the method - no harm is done.
      */
     public fun resetTransient(): ChannelTrafficSnapshot
 

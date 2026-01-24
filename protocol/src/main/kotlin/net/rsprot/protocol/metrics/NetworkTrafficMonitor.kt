@@ -48,6 +48,8 @@ public interface NetworkTrafficMonitor<in LoginBlock> {
      * synchronization block to ensure consistency in the data captured.
      * @return a full network traffic snapshot, covering any activity in all three channels
      * since it was last reset (or began monitoring).
+     * @throws ConcurrentModificationException a very rare potential due to our naive, but fast implementation
+     * of atomicity. In these cases, simply retry the method - no harm is done.
      */
     public fun resetTransient(): NetworkTrafficSnapshot
 

@@ -1,5 +1,6 @@
 package net.rsprot.protocol.metrics.lock
 
+import java.util.concurrent.locks.LockSupport
 import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.InvocationKind
 import kotlin.contracts.contract
@@ -29,12 +30,34 @@ public class TrafficMonitorLock {
         }
         val lock = Any()
         this.lock = lock
-        synchronized(lock) {
-            try {
+
+        // Because the #use method may take a bit of time to execute, we need to wait for any work to be done.
+        // While this could be done with more expensive locks, or an atomic integer counter for fast path users,
+        // that ends up with a fairly significant overhead, given how much the #use method actually ends up
+        // getting called (every connection, every packet in all directions, every dc reason and so on).
+        // Rather than give up so much performance at all times, especially on Netty's event loop, we make the
+        // assumption that all invocations of #use are relatively cheap and finish in well under a millisecond.
+        // As such, we set up the lock so any calls from here on out synchronize in #use, and we wait
+        // for that one millisecond to clear up any existing non-synchronized #use calls currently running.
+        // In the worst case scenario if this fails, a concurrent modification exception gets thrown due to the
+        // logic that invokes the transfer, and no harm is done (as it copies all the memory upfront
+        // before resetting any variables).
+
+        // Use a deadline based implementation where any thread interruptions or attempts to wake up
+        // don't end up interrupting this "wait for at least 1 millisecond" requirement.
+        val deadline = System.nanoTime() + 1_000_000
+        while (true) {
+            val remaining = deadline - System.nanoTime()
+            if (remaining <= 0) break
+            LockSupport.parkNanos(remaining)
+        }
+
+        try {
+            synchronized(lock) {
                 block()
-            } finally {
-                this.lock = null
             }
+        } finally {
+            this.lock = null
         }
     }
 
@@ -48,10 +71,7 @@ public class TrafficMonitorLock {
         contract {
             callsInPlace(block, InvocationKind.EXACTLY_ONCE)
         }
-        val lock = this.lock
-        if (lock == null) {
-            return block()
-        }
+        val lock = this.lock ?: return block()
         return synchronized(lock) {
             block()
         }
