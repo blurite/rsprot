@@ -89,6 +89,11 @@ internal class NpcAvatarRepository(
      * @param specific if true, the NPC will only render to players that have explicitly marked this
      * NPC's index as specific-visible, anyone else will be unable to see it. If it's false, anyone can
      * see the NPC regardless.
+     * @param renderDistance the distance from which the NPC will render by default.
+     * Note that for larger distances, the search radius in zones must also be increased
+     * to allow it to even find the NPC. The actual distance to compare ends up being
+     * max(npc.renderDistance, npcinfo.renderDistance) - picking the highest of the two,
+     * while still constraining it to the zone search range.
      * @return a npc avatar with the above provided details.
      */
     fun getOrAlloc(
@@ -101,6 +106,7 @@ internal class NpcAvatarRepository(
         direction: Int = 0,
         priority: AvatarPriority = AvatarPriority.NORMAL,
         specific: Boolean = false,
+        renderDistance: Int = 15,
     ): NpcAvatar {
         val old = this.elements[index]
         require(old == null) {
@@ -119,6 +125,7 @@ internal class NpcAvatarRepository(
             details.allocateCycle = NpcInfoProtocol.cycleCount
             details.priorityBitcode = priority.bitcode
             details.specific = specific
+            details.renderDistance = renderDistance
             zoneIndexStorage.add(index, details.currentCoord)
             elements[index] = existing
             if (id > 16383) {
@@ -146,6 +153,7 @@ internal class NpcAvatarRepository(
                 priority,
                 specific,
                 NpcInfoProtocol.cycleCount,
+                renderDistance,
                 extendedInfo,
                 zoneIndexStorage,
             )

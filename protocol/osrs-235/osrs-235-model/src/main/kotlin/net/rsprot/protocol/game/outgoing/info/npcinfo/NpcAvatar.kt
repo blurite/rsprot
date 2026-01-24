@@ -68,6 +68,7 @@ public class NpcAvatar internal constructor(
     priority: AvatarPriority = AvatarPriority.NORMAL,
     specific: Boolean,
     allocateCycle: Int,
+    renderDistance: Int,
     public val extendedInfo: NpcAvatarExtendedInfo,
     internal val zoneIndexStorage: ZoneIndexStorage,
 ) : Avatar {
@@ -87,6 +88,7 @@ public class NpcAvatar internal constructor(
             priority.bitcode,
             specific,
             allocateCycle,
+            renderDistance,
         )
 
     private val tracker: NpcAvatarTracker = NpcAvatarTracker()

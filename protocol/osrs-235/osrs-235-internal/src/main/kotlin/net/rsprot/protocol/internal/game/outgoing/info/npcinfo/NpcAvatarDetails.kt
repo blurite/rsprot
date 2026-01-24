@@ -39,6 +39,7 @@ public class NpcAvatarDetails internal constructor(
     public var priorityBitcode: Int = 0,
     public var specific: Boolean = false,
     public var allocateCycle: Int,
+    public var renderDistance: Int,
 ) {
     public constructor(
         index: Int,
@@ -51,6 +52,7 @@ public class NpcAvatarDetails internal constructor(
         priorityBitcode: Int = 0,
         specific: Boolean = false,
         allocateCycle: Int,
+        renderDistance: Int,
     ) : this(
         index,
         id,
@@ -60,6 +62,7 @@ public class NpcAvatarDetails internal constructor(
         priorityBitcode = priorityBitcode,
         specific = specific,
         allocateCycle = allocateCycle,
+        renderDistance = renderDistance,
     )
 
     /**
@@ -102,7 +105,8 @@ public class NpcAvatarDetails internal constructor(
             "inaccessible=$inaccessible, " +
             "priorityBitcode=$priorityBitcode, " +
             "specific=$specific, " +
-            "allocateCycle=$allocateCycle" +
+            "allocateCycle=$allocateCycle, " +
+            "renderDistance=$renderDistance" +
             ")"
 
     public companion object {

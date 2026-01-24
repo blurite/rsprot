@@ -77,6 +77,11 @@ public class NpcAvatarFactory(
      * @param specific if true, the NPC will only render to players that have explicitly marked this
      * NPC's index as specific-visible, anyone else will be unable to see it. If it's false, anyone can
      * see the NPC regardless.
+     * @param renderDistance the distance from which the NPC will render by default.
+     * Note that for larger distances, the search radius in zones must also be increased
+     * to allow it to even find the NPC. The actual distance to compare ends up being
+     * max(npc.renderDistance, npcinfo.renderDistance) - picking the highest of the two,
+     * while still constraining it to the zone search range.
      * @return a npc avatar with the above provided details.
      */
     @JvmOverloads
@@ -90,6 +95,7 @@ public class NpcAvatarFactory(
         direction: Int = 0,
         priority: AvatarPriority = AvatarPriority.NORMAL,
         specific: Boolean = false,
+        renderDistance: Int = 15,
     ): NpcAvatar {
         checkCommunicationThread()
         require(index in 0..65534) {
@@ -110,6 +116,9 @@ public class NpcAvatarFactory(
         require(direction in 0..7) {
             "Direction must be in range of 0..7"
         }
+        require(renderDistance >= 0) {
+            "Render distance cannot be negative."
+        }
         return avatarRepository.getOrAlloc(
             index,
             id,
@@ -120,6 +129,7 @@ public class NpcAvatarFactory(
             direction,
             priority,
             specific,
+            renderDistance,
         )
     }
 

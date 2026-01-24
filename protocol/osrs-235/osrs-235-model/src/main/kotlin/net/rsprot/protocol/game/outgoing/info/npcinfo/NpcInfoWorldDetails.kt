@@ -110,6 +110,11 @@ internal class NpcInfoWorldDetails(
     internal var lastCycleHighResolutionNpcIndexCount: Int = 0
 
     /**
+     * Whether the packet carries a large npc info update.
+     */
+    internal var largeUpdate: Boolean = false
+
+    /**
      * The previous npc info packet that was created.
      * We ensure that a server hasn't accidentally left a packet unwritten, which would
      * de-synchronize the client and cause errors.
@@ -279,6 +284,7 @@ internal class NpcInfoWorldDetails(
         this.buffer = null
         this.previousPacket = null
         this.lastCycleHighResolutionNpcIndexCount = 0
+        this.largeUpdate = false
     }
 
     internal fun onDealloc() {
