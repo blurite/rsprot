@@ -894,11 +894,12 @@ public class PlayerInfo internal constructor(
             } else {
                 this.avatar.resizeRange
             }
-        return worldEntityInfo.isVisible(
-            avatar.currentCoord,
-            otherCoordGrid,
-            rangeToCheck,
-        )
+        return rangeToCheck == Int.MAX_VALUE ||
+            worldEntityInfo.isVisible(
+                avatar.currentCoord,
+                otherCoordGrid,
+                rangeToCheck,
+            )
     }
 
     /**
@@ -932,11 +933,12 @@ public class PlayerInfo internal constructor(
             } else {
                 this.avatar.resizeRange
             }
-        return worldEntityInfo.isVisible(
-            avatar.currentCoord,
-            otherCoordGrid,
-            rangeToCheck,
-        )
+        return rangeToCheck == Int.MAX_VALUE ||
+            worldEntityInfo.isVisible(
+                avatar.currentCoord,
+                otherCoordGrid,
+                rangeToCheck,
+            )
     }
 
     /**

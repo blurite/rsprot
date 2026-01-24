@@ -174,12 +174,18 @@ public class PlayerAvatar internal constructor(
      */
     public fun setPreferredResizeRange(range: Int) {
         checkCommunicationThread()
+        require(range < Int.MAX_VALUE) {
+            "Cannot set preferred resize range to max int (special behaviour) - use #forceResizeRange."
+        }
         this.preferredResizeRange = range
         this.resizeRange = range
     }
 
     /**
      * Forces the resize range to [range] while disabling the auto resizing feature.
+     * Note that if the value is [Int.MAX_VALUE], all distance checks will be disabled.
+     * This is intended for heatmaps, where you'd need all players regardless of where they
+     * are to be transmitted to your client.
      * @param range the range from which to render other players.
      */
     public fun forceResizeRange(range: Int) {
