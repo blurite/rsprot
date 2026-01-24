@@ -128,9 +128,6 @@ internal class NpcAvatarRepository(
             details.renderDistance = renderDistance
             zoneIndexStorage.add(index, details.currentCoord)
             elements[index] = existing
-            if (id > 16383) {
-                existing.extendedInfo.setTransmogrification(id)
-            }
             return existing
         }
         val extendedInfo =
@@ -157,9 +154,6 @@ internal class NpcAvatarRepository(
                 extendedInfo,
                 zoneIndexStorage,
             )
-        if (id > 16383) {
-            extendedInfo.setTransmogrification(id)
-        }
         zoneIndexStorage.add(index, avatar.details.currentCoord)
         elements[index] = avatar
         return avatar

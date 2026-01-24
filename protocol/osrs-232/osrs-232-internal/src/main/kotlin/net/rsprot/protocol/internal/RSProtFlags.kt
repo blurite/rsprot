@@ -89,13 +89,6 @@ public object RSProtFlags {
         )
 
     @JvmStatic
-    public val npcAvatarMaxId: Int =
-        getInt(
-            "npcAvatarMaxId",
-            16383,
-        )
-
-    @JvmStatic
     public val spotanimListCapacity: Int =
         getInt(
             "spotanimListCapacity",
@@ -165,12 +158,21 @@ public object RSProtFlags {
         log("js5Logging", js5LoggingString)
         log("npcPlayerAvatarTracking", npcPlayerAvatarTracking)
         log("filterMissingPacketsInClient", filterMissingPacketsInClient)
-        log("npcAvatarMaxId", npcAvatarMaxId)
         log("spotanimListCapacity", spotanimListCapacity)
         log("captureChat", captureChat)
         log("captureSay", captureSay)
         log("singleVarShortPacketMaxAcceptedLength", singleVarShortPacketMaxAcceptedLength)
-        require(npcAvatarMaxId == -1 || npcAvatarMaxId <= 65534)
+
+        if (SystemPropertyUtil
+                .get(
+                    PREFIX + "npcAvatarMaxId",
+                ) != null
+        ) {
+            logger.warn {
+                "Flag -D${PREFIX}npcAvatarMaxId is no longer supported!"
+            }
+        }
+
         require(spotanimListCapacity in 0..256)
         require(singleVarShortPacketMaxAcceptedLength <= 5_000) {
             "Single var-short packet max accepted length cannot exceed 5,000 bytes."

@@ -4,7 +4,6 @@ import net.rsprot.buffer.bitbuffer.UnsafeLongBackedBitBuf
 import net.rsprot.protocol.game.outgoing.info.AvatarPriority
 import net.rsprot.protocol.game.outgoing.info.npcinfo.util.NpcCellOpcodes
 import net.rsprot.protocol.game.outgoing.info.util.Avatar
-import net.rsprot.protocol.internal.RSProtFlags
 import net.rsprot.protocol.internal.checkCommunicationThread
 import net.rsprot.protocol.internal.game.outgoing.info.CoordGrid
 import net.rsprot.protocol.internal.game.outgoing.info.npcinfo.NpcAvatarDetails
@@ -196,13 +195,10 @@ public class NpcAvatar internal constructor(
      */
     public fun setId(id: Int) {
         checkCommunicationThread()
-        require(id in 0..RSProtFlags.npcAvatarMaxId) {
-            "Id must be a value in range of 0..${RSProtFlags.npcAvatarMaxId}. Value: $id"
+        require(id in 0..16383) {
+            "Id must be a value in range of 0..16383. Value: $id"
         }
         this.details.id = id
-        if (id > 16383) {
-            extendedInfo.setTransmogrification(id)
-        }
     }
 
     /**

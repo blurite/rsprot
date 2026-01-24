@@ -5,7 +5,6 @@ import net.rsprot.protocol.common.client.OldSchoolClientType
 import net.rsprot.protocol.internal.game.outgoing.info.CoordGrid
 import net.rsprot.protocol.internal.game.outgoing.info.npcinfo.NpcAvatarDetails
 import net.rsprot.protocol.internal.game.outgoing.info.npcinfo.encoder.NpcResolutionChangeEncoder
-import kotlin.math.min
 
 public class DesktopLowResolutionChangeEncoder : NpcResolutionChangeEncoder {
     override val clientType: OldSchoolClientType = OldSchoolClientType.DESKTOP
@@ -34,7 +33,7 @@ public class DesktopLowResolutionChangeEncoder : NpcResolutionChangeEncoder {
             bitBuffer.pBits(1, 0)
         }
         bitBuffer.pBits(1, if (extendedInfo) 1 else 0)
-        bitBuffer.pBits(14, min(16383, details.id))
+        bitBuffer.pBits(14, details.id)
         // New NPCs should always be marked as "jumping" unless they explicitly only teleported without a jump
         val noJump = details.isTeleWithoutJump() && details.allocateCycle != cycleCount
         bitBuffer.pBits(1, if (noJump) 0 else 1)

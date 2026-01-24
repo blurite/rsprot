@@ -4,7 +4,6 @@ import io.netty.buffer.ByteBufAllocator
 import net.rsprot.compression.provider.HuffmanCodecProvider
 import net.rsprot.protocol.game.outgoing.info.AvatarPriority
 import net.rsprot.protocol.game.outgoing.info.filter.ExtendedInfoFilter
-import net.rsprot.protocol.internal.RSProtFlags
 import net.rsprot.protocol.internal.checkCommunicationThread
 import net.rsprot.protocol.internal.game.outgoing.info.util.ZoneIndexStorage
 
@@ -101,8 +100,8 @@ public class NpcAvatarFactory(
         require(index in 0..65534) {
             "Npc avatar index out of bounds: $index"
         }
-        require(id in 0..RSProtFlags.npcAvatarMaxId) {
-            "Npc id cannot be outside of 0..${RSProtFlags.npcAvatarMaxId} range"
+        require(id in 0..16383) {
+            "Npc id cannot be outside of 0..16383 range"
         }
         require(level in 0..3) {
             "Level cannot be outside of 0..3 range"
