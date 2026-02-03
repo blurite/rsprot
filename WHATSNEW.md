@@ -1,5 +1,28 @@
 ## What's New?
 
+### Revision 236
+Revision 236 brings a handful of new variants of existing packets.
+
+New features:
+- UPDATE_REBOOT_TIMER_V2
+  - Adds a 'message' field to show alongside the update timer.
+
+The below packets all went through the same change - they now take absolute
+coordinates relative to root world (not active!), rather than the previous
+relative-to-build-area coordinates. Furthermore, all these packets are now
+obfuscated, unlike their V1 counterparts.
+- SET_MAP_FLAG_V2
+- CAM_MOVETO_V2
+- CAM_LOOKAT_V2
+- CAM_MOVETO_CYCLES_V2
+- CAM_LOOKAT_EASED_COORD_V2
+- CAM_MOVETO_ARC_V2
+
+Changes:
+- WORLDENTITY_INFO_V7
+  - Bitpacks the width and length of the world entity sent in the add block into one byte.
+  - Extension info is now scrambled, bringing it in line with NPC and Player info packets.
+
 ### Revision 235
 Revision 235 brings no protocol level changes.
 However, as a small side note, OBJ packets are no longer limited to id 32767
