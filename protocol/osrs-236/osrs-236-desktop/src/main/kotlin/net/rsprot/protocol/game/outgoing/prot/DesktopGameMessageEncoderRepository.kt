@@ -86,6 +86,7 @@ import net.rsprot.protocol.game.outgoing.codec.misc.player.ChatFilterSettingsPri
 import net.rsprot.protocol.game.outgoing.codec.misc.player.MessageGameEncoder
 import net.rsprot.protocol.game.outgoing.codec.misc.player.RunClientScriptEncoder
 import net.rsprot.protocol.game.outgoing.codec.misc.player.SetMapFlagV1Encoder
+import net.rsprot.protocol.game.outgoing.codec.misc.player.SetMapFlagV2Encoder
 import net.rsprot.protocol.game.outgoing.codec.misc.player.SetPlayerOpEncoder
 import net.rsprot.protocol.game.outgoing.codec.misc.player.TriggerOnDialogAbortEncoder
 import net.rsprot.protocol.game.outgoing.codec.misc.player.UpdateRunEnergyEncoder
@@ -270,6 +271,7 @@ public object DesktopGameMessageEncoderRepository {
                 bind(UpdateRunWeightEncoder())
                 bind(UpdateRunEnergyEncoder())
                 bind(SetMapFlagV1Encoder())
+                bind(SetMapFlagV2Encoder())
                 bind(SetPlayerOpEncoder())
                 bind(UpdateStatV2Encoder())
 
