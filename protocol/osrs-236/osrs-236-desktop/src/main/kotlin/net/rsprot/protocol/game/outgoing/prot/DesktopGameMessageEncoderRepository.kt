@@ -76,6 +76,7 @@ import net.rsprot.protocol.game.outgoing.codec.misc.client.SetHeatmapEnabledEnco
 import net.rsprot.protocol.game.outgoing.codec.misc.client.SetInteractionModeEncoder
 import net.rsprot.protocol.game.outgoing.codec.misc.client.SiteSettingsEncoder
 import net.rsprot.protocol.game.outgoing.codec.misc.client.UpdateRebootTimerV1Encoder
+import net.rsprot.protocol.game.outgoing.codec.misc.client.UpdateRebootTimerV2Encoder
 import net.rsprot.protocol.game.outgoing.codec.misc.client.UpdateUid192Encoder
 import net.rsprot.protocol.game.outgoing.codec.misc.client.UrlOpenEncoder
 import net.rsprot.protocol.game.outgoing.codec.misc.client.ZBufEncoder
@@ -284,6 +285,7 @@ public object DesktopGameMessageEncoderRepository {
                 bind(HintArrowEncoder())
                 bind(ResetAnimsEncoder())
                 bind(UpdateRebootTimerV1Encoder())
+                bind(UpdateRebootTimerV2Encoder())
                 bind(SetHeatmapEnabledEncoder())
                 bind(MinimapToggleEncoder())
                 bind(ServerTickEndEncoder())
