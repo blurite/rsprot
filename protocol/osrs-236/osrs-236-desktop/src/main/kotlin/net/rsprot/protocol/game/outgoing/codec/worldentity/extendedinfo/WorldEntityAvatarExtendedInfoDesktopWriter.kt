@@ -40,22 +40,18 @@ public class WorldEntityAvatarExtendedInfoDesktopWriter :
         observerIndex: Int,
         flag: Int,
         blocks: WorldEntityAvatarExtendedInfoBlocks,
+        flagWriteIndex: Int,
     ) {
         val clientFlag = convertFlags(flag)
         var outFlag = clientFlag
-        val flagIndex = buffer.writerIndex()
-
-        buffer.p1(clientFlag)
 
         outFlag = outFlag or pCached(buffer, clientFlag, SEQUENCE, blocks.sequence)
         outFlag = outFlag or pCached(buffer, clientFlag, VISIBLE_OPS, blocks.visibleOps)
 
-        if (outFlag != clientFlag) {
-            val finalPos = buffer.writerIndex()
-            buffer.writerIndex(flagIndex)
-            buffer.p1(outFlag)
-            buffer.writerIndex(finalPos)
-        }
+        val finalPos = buffer.writerIndex()
+        buffer.writerIndex(flagWriteIndex)
+        buffer.p1(outFlag)
+        buffer.writerIndex(finalPos)
     }
 
     private fun <T : ExtendedInfo<T, E>, E : PrecomputedExtendedInfoEncoder<T>> pCached(
@@ -104,7 +100,7 @@ public class WorldEntityAvatarExtendedInfoDesktopWriter :
     @Suppress("unused")
     private companion object {
         private val logger = InlineLogger()
-        private const val SEQUENCE: Int = 0x1
-        private const val VISIBLE_OPS: Int = 0x2
+        private const val VISIBLE_OPS: Int = 0x1
+        private const val SEQUENCE: Int = 0x2
     }
 }

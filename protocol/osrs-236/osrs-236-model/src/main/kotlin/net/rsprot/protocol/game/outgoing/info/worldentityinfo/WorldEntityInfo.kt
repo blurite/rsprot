@@ -54,7 +54,7 @@ import net.rsprot.protocol.internal.game.outgoing.info.util.ZoneIndexStorage
  * perspective of the caller, as the protocol itself is computed in for the
  * entire server in one go.
  */
-@Suppress("MemberVisibilityCanBePrivate", "DuplicatedCode", "EmptyRange")
+@Suppress("MemberVisibilityCanBePrivate", "DuplicatedCode")
 public class WorldEntityInfo internal constructor(
     internal var localIndex: Int,
     internal val allocator: ByteBufAllocator,
@@ -321,7 +321,8 @@ public class WorldEntityInfo internal constructor(
                 precomputedBuffer.readerIndex(),
                 precomputedBuffer.readableBytes(),
             )
-            putWorldEntityExtendedInfo(avatar, buffer)
+            val placeholderFlag = pPlaceholderExtendedInfoFlag(buffer)
+            putWorldEntityExtendedInfo(avatar, buffer, placeholderFlag)
         }
         return count != this.highResolutionIndicesCount
     }
@@ -409,27 +410,35 @@ public class WorldEntityInfo internal constructor(
             allWorldEntities += index
             val i = highResolutionIndicesCount++
             highResolutionIndices[i] = index.toShort()
-            buffer.p2(avatar.index)
-            buffer.p1(avatar.sizeX)
-            buffer.p1(avatar.sizeZ)
-            buffer.p2(avatar.id)
+            val priority = avatar.priorityTowards(localIndex)
             val fineXOffset = rootBuildArea.zoneX shl 10
             val fineZOffset = rootBuildArea.zoneZ shl 10
+
+            buffer.p2(avatar.index)
+            buffer.p1((avatar.sizeX shl 4) or avatar.sizeZ)
+            val placeholderFlag = pPlaceholderExtendedInfoFlag(buffer)
+            buffer.p1(priority.id)
+            buffer.p2(avatar.id)
             buffer.encodeAngledCoordFine(
                 avatar.currentCoordFine.x - fineXOffset,
                 avatar.currentCoordFine.y,
                 avatar.currentCoordFine.z - fineZOffset,
                 avatar.angle,
             )
-            val priority = avatar.priorityTowards(localIndex)
-            buffer.p1(priority.id)
-            putWorldEntityExtendedInfo(avatar, buffer)
+            putWorldEntityExtendedInfo(avatar, buffer, placeholderFlag)
         }
+    }
+
+    private fun pPlaceholderExtendedInfoFlag(buffer: JagByteBuf): Int {
+        val index = buffer.writerIndex()
+        buffer.p1(0)
+        return index
     }
 
     private fun putWorldEntityExtendedInfo(
         avatar: WorldEntityAvatar,
         buffer: JagByteBuf,
+        flagWriteIndex: Int,
     ) {
         // No extra flags right now as the extended info system is still primitive
         avatar.extendedInfo.pExtendedInfo(
@@ -437,6 +446,7 @@ public class WorldEntityInfo internal constructor(
             buffer,
             localIndex,
             0,
+            flagWriteIndex,
         )
     }
 

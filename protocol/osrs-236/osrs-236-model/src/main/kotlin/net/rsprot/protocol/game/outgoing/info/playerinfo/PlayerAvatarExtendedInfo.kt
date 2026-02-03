@@ -1853,6 +1853,7 @@ public class PlayerAvatarExtendedInfo(
             observer.localIndex,
             flag,
             blocks,
+            flagWriteIndex = -1,
         )
         return true
     }

@@ -34,6 +34,7 @@ public abstract class AvatarExtendedInfoWriter<E, B>(
         observerIndex: Int,
         flag: Int,
         blocks: B,
+        flagWriteIndex: Int,
     )
 
     /**

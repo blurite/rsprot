@@ -1435,6 +1435,7 @@ public class NpcAvatarExtendedInfo(
             observerIndex,
             flag,
             blocks,
+            flagWriteIndex = -1,
         )
     }
 

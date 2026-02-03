@@ -91,6 +91,7 @@ public class PlayerAvatarExtendedInfoDesktopWriter :
         observerIndex: Int,
         flag: Int,
         blocks: PlayerAvatarExtendedInfoBlocks,
+        flagWriteIndex: Int,
     ) {
         var clientFlag = convertFlags(flag)
         if (clientFlag and 0xFF.inv() != 0) clientFlag = clientFlag or EXTENDED_SHORT

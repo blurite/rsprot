@@ -112,6 +112,7 @@ public class NpcAvatarExtendedInfoDesktopWriter :
         observerIndex: Int,
         flag: Int,
         blocks: NpcAvatarExtendedInfoBlocks,
+        flagWriteIndex: Int,
     ) {
         var clientFlag = convertFlags(flag)
         if (clientFlag and 0xFF.inv() != 0) clientFlag = clientFlag or EXTENDED_SHORT

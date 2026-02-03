@@ -144,6 +144,7 @@ public class WorldEntityAvatarExtendedInfo(
         buffer: JagByteBuf,
         observerIndex: Int,
         extraFlag: Int,
+        flagWriteIndex: Int,
     ) {
         val flag = this.flags or extraFlag
         val writer =
@@ -157,6 +158,7 @@ public class WorldEntityAvatarExtendedInfo(
             observerIndex,
             flag,
             blocks,
+            flagWriteIndex,
         )
     }
 

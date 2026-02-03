@@ -189,11 +189,11 @@ public class WorldEntityAvatarFactory(
         require(id in 0..65535) {
             "World entity id must be in range of 0..65535"
         }
-        require(sizeX in 0..255) {
-            "Size x cannot be outside of 0..255 range"
+        require(sizeX in 0..15) {
+            "Size x cannot be outside of 0..15 range"
         }
-        require(sizeZ in 0..255) {
-            "Size z cannot be outside of 0..255 range"
+        require(sizeZ in 0..15) {
+            "Size z cannot be outside of 0..15 range"
         }
         require(southWestZoneX in 0..<2048) {
             "South west zone X must be in range of 0..<2048"
