@@ -17,7 +17,7 @@ public class NpcVisibleOpsEncoder : PrecomputedExtendedInfoEncoder<VisibleOps> {
             alloc
                 .buffer(1, 1)
                 .toJagByteBuf()
-        buffer.p1Alt3(extendedInfo.ops.toInt())
+        buffer.p1(extendedInfo.ops.toInt())
         return buffer
     }
 }
