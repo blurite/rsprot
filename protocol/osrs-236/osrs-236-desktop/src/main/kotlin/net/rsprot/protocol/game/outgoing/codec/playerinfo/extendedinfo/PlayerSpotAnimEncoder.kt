@@ -21,14 +21,14 @@ public class PlayerSpotAnimEncoder : PrecomputedExtendedInfoEncoder<SpotAnimList
             alloc
                 .buffer(capacity, capacity)
                 .toJagByteBuf()
-        buffer.p1(count)
+        buffer.p1Alt2(count)
         val spotanims = extendedInfo.spotanims
         var slot = changelist.nextSetBit(0)
         while (slot != -1) {
             val spotanim = SpotAnim(spotanims[slot])
-            buffer.p1(slot)
+            buffer.p1Alt2(slot)
             buffer.p2Alt3(spotanim.id)
-            buffer.p4Alt3(spotanim.delay or (spotanim.height shl 16))
+            buffer.p4Alt1(spotanim.delay or (spotanim.height shl 16))
             slot = changelist.nextSetBit(slot + 1)
         }
         return buffer
