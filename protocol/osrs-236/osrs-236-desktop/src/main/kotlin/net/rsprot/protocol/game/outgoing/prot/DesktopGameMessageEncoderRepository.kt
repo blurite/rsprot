@@ -4,6 +4,7 @@ import net.rsprot.compression.provider.HuffmanCodecProvider
 import net.rsprot.protocol.ProtRepository
 import net.rsprot.protocol.game.outgoing.codec.camera.CamLookAtEasedCoordV1Encoder
 import net.rsprot.protocol.game.outgoing.codec.camera.CamLookAtV1Encoder
+import net.rsprot.protocol.game.outgoing.codec.camera.CamLookAtV2Encoder
 import net.rsprot.protocol.game.outgoing.codec.camera.CamModeEncoder
 import net.rsprot.protocol.game.outgoing.codec.camera.CamMoveToArcV1Encoder
 import net.rsprot.protocol.game.outgoing.codec.camera.CamMoveToCyclesV1Encoder
@@ -235,6 +236,7 @@ public object DesktopGameMessageEncoderRepository {
                 bind(CamMoveToCyclesV1Encoder())
                 bind(CamMoveToArcV1Encoder())
                 bind(CamLookAtV1Encoder())
+                bind(CamLookAtV2Encoder())
                 bind(CamLookAtEasedCoordV1Encoder())
                 bind(CamRotateByEncoder())
                 bind(CamRotateToEncoder())
