@@ -1,0 +1,26 @@
+package net.rsprot.protocol.game.outgoing.info.npcinfo
+
+import io.netty.buffer.ByteBuf
+
+/**
+ * A small npc info wrapper packet, used to wrap the pre-built buffer from the npc info class.
+ */
+public class NpcInfoSmallV5(
+    buffer: ByteBuf,
+    empty: Boolean,
+) : NpcInfoPacket(buffer, empty) {
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+        if (!super.equals(other)) return false
+        return true
+    }
+
+    override fun hashCode(): Int {
+        return super.hashCode()
+    }
+
+    override fun toString(): String {
+        return "NpcInfoSmallV5()"
+    }
+}

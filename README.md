@@ -1,7 +1,7 @@
 # RSProt
 
 [![GitHub Actions][actions-badge]][actions] [![MIT license][mit-badge]][mit]
-[![OldSchool - 221 - 235 (Alpha)](https://img.shields.io/badge/OldSchool-221--235_(Alpha)-9a1abd)](https://github.com/blurite/rsprot/tree/master/protocol/osrs-235/osrs-235-api/src/main/kotlin/net/rsprot/protocol/api)
+[![OldSchool - 221 - 236 (Alpha)](https://img.shields.io/badge/OldSchool-221--236_(Alpha)-9a1abd)](https://github.com/blurite/rsprot/tree/master/protocol/osrs-236/osrs-236-api/src/main/kotlin/net/rsprot/protocol/api)
 
 ## Status
 > [!NOTE]
@@ -16,7 +16,7 @@ In order to add it to your server, add the below line under dependencies
 in your build.gradle.kts.
 
 ```kts
-implementation("net.rsprot:osrs-235-api:1.0.0-ALPHA-20250124")
+implementation("net.rsprot:osrs-236-api:1.0.0-ALPHA-20250203")
 ```
 
 An in-depth tutorial on how to implement it will be added into this read-me
@@ -32,12 +32,12 @@ other revisions are welcome, but will not be provided by default.
 - Java 11
 
 ## Supported Versions
-This library currently supports revision 221-235 OldSchool desktop clients.
+This library currently supports revision 221-236 OldSchool desktop clients.
 
 ## Quick Guide
 This section covers a quick guide for how to use the protocol after implementing
 the base API. It is not a guide for the base API itself, that will come in the
-future. This specific quick guide refers to revision 235. Revisions older
+future. This specific quick guide refers to revision 236. Revisions older
 than 235 have a significantly different API and will not be explored here.
 It is recommented you upgrade to latest, or view an older readme in history.
 

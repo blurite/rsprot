@@ -15,6 +15,7 @@ import net.rsprot.protocol.internal.checkCommunicationThread
 import net.rsprot.protocol.internal.game.outgoing.info.CoordFine
 import net.rsprot.protocol.internal.game.outgoing.info.CoordGrid
 import net.rsprot.protocol.internal.game.outgoing.info.util.ZoneIndexStorage
+import java.util.Collections
 
 /**
  * The world entity info class tracks everything about the world entities that
@@ -78,8 +79,11 @@ public class WorldEntityInfo internal constructor(
         }
     private val unsortedTopKArray: WorldEntityUnsortedTopKArray = WorldEntityUnsortedTopKArray(MAX_HIGH_RES_COUNT)
     private val allWorldEntities = ArrayList<Int>()
+    private val allWorldEntitiesUnmodifiable: List<Int> = Collections.unmodifiableList(allWorldEntities)
     private val addedWorldEntities = ArrayList<Int>()
+    private val addedWorldEntitiesUnmodifiable: List<Int> = Collections.unmodifiableList(addedWorldEntities)
     private val removedWorldEntities = ArrayList<Int>()
+    private val removedWorldEntitiesUnmodifiable: List<Int> = Collections.unmodifiableList(removedWorldEntities)
     private var buffer: ByteBuf? = null
 
     /**
@@ -142,9 +146,9 @@ public class WorldEntityInfo internal constructor(
      * allowing for correct functionality for player and npc infos, as well as zone updates.
      * @return a list of indices of the world entities currently in high resolution.
      */
-    internal fun getAllWorldEntityIndices(): List<Int> {
+    public fun getAllWorldEntityIndices(): List<Int> {
         if (isDestroyed()) return emptyList()
-        return this.allWorldEntities
+        return this.allWorldEntitiesUnmodifiable
     }
 
     /**
@@ -154,9 +158,9 @@ public class WorldEntityInfo internal constructor(
      * @return a list of all the world entity indices added to the high resolution view in this
      * cycle.
      */
-    internal fun getAddedWorldEntityIndices(): List<Int> {
+    public fun getAddedWorldEntityIndices(): List<Int> {
         if (isDestroyed()) return emptyList()
-        return this.addedWorldEntities
+        return this.addedWorldEntitiesUnmodifiable
     }
 
     /**
@@ -166,9 +170,9 @@ public class WorldEntityInfo internal constructor(
      * @return a list of all the indices of the world entities that were removed from the high
      * resolution view this cycle.
      */
-    internal fun getRemovedWorldEntityIndices(): List<Int> {
+    public fun getRemovedWorldEntityIndices(): List<Int> {
         if (isDestroyed()) return emptyList()
-        return this.removedWorldEntities
+        return this.removedWorldEntitiesUnmodifiable
     }
 
     /**
