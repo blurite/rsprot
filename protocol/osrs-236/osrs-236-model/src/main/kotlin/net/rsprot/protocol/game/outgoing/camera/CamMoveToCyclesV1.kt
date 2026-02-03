@@ -23,7 +23,7 @@ import net.rsprot.protocol.message.OutgoingGameMessage
  * control over the way it moves from the start coordinate to the end.
  */
 @Suppress("DuplicatedCode")
-public class CamMoveToCycles private constructor(
+public class CamMoveToCyclesV1 private constructor(
     private val destinationCoordInBuildArea: CoordInBuildArea,
     private val _height: UShort,
     private val _cycles: UShort,
@@ -62,7 +62,7 @@ public class CamMoveToCycles private constructor(
         if (this === other) return true
         if (javaClass != other?.javaClass) return false
 
-        other as CamMoveToCycles
+        other as CamMoveToCyclesV1
 
         if (destinationCoordInBuildArea != other.destinationCoordInBuildArea) return false
         if (_height != other._height) return false
@@ -83,7 +83,7 @@ public class CamMoveToCycles private constructor(
     }
 
     override fun toString(): String =
-        "CamMoveToCycles(" +
+        "CamMoveToCyclesV1(" +
             "destinationXInBuildArea=$destinationXInBuildArea, " +
             "destinationZInBuildArea=$destinationZInBuildArea, " +
             "height=$height, " +

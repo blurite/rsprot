@@ -22,7 +22,7 @@ import net.rsprot.protocol.message.OutgoingGameMessage
  * @property rate2 the speed increase as the camera moves
  * towards the end coordinate.
  */
-public class CamMoveTo private constructor(
+public class CamMoveToV1 private constructor(
     private val destinationCoordInBuildArea: CoordInBuildArea,
     private val _height: UShort,
     private val _rate: UByte,
@@ -58,7 +58,7 @@ public class CamMoveTo private constructor(
         if (this === other) return true
         if (javaClass != other?.javaClass) return false
 
-        other as CamMoveTo
+        other as CamMoveToV1
 
         if (destinationCoordInBuildArea != other.destinationCoordInBuildArea) return false
         if (_height != other._height) return false
@@ -77,7 +77,7 @@ public class CamMoveTo private constructor(
     }
 
     override fun toString(): String =
-        "CamMoveTo(" +
+        "CamMoveToV1(" +
             "destinationXInBuildArea=$destinationXInBuildArea, " +
             "destinationZInBuildArea=$destinationZInBuildArea, " +
             "height=$height, " +

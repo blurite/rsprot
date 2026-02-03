@@ -14,7 +14,7 @@ import net.rsprot.protocol.message.OutgoingGameMessage
  * The maximum possible value is 65535, which is equal to just
  * below 11 hours.
  */
-public class UpdateRebootTimer(
+public class UpdateRebootTimerV1(
     public val gameCycles: Int,
 ) : OutgoingGameMessage {
     override val category: ServerProtCategory
@@ -24,7 +24,7 @@ public class UpdateRebootTimer(
         if (this === other) return true
         if (javaClass != other?.javaClass) return false
 
-        other as UpdateRebootTimer
+        other as UpdateRebootTimerV1
 
         return gameCycles == other.gameCycles
     }
@@ -32,7 +32,7 @@ public class UpdateRebootTimer(
     override fun hashCode(): Int = gameCycles
 
     override fun toString(): String =
-        "UpdateRebootTimer(" +
+        "UpdateRebootTimerV1(" +
             "gameCycles=$gameCycles" +
             ")"
 }

@@ -87,7 +87,7 @@ public class WorldEntityInfo internal constructor(
      * We ensure that a server hasn't accidentally left a packet unwritten, which would
      * de-synchronize the client and cause errors.
      */
-    internal var previousPacket: WorldEntityInfoV6Packet? = null
+    internal var previousPacket: WorldEntityInfoV7Packet? = null
 
     @Volatile
     internal var exception: Exception? = null
@@ -196,7 +196,7 @@ public class WorldEntityInfo internal constructor(
      * building the packet.
      * @return the world entity packet instance in a [PacketResult].
      */
-    internal fun toPacketResult(): PacketResult<WorldEntityInfoV6Packet> {
+    internal fun toPacketResult(): PacketResult<WorldEntityInfoV7Packet> {
         val exception = this.exception
         if (exception != null) {
             return PacketResult.failure(
@@ -273,7 +273,7 @@ public class WorldEntityInfo internal constructor(
                     "not sent out to the client for player index $localIndex!"
             }
         }
-        val packet = WorldEntityInfoV6Packet(backingBuffer())
+        val packet = WorldEntityInfoV7Packet(backingBuffer())
         this.previousPacket = packet
     }
 
