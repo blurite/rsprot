@@ -6,7 +6,7 @@ import net.rsprot.protocol.ServerProt
 import net.rsprot.protocol.game.outgoing.interfaces.IfSetPlayerModelBaseColour
 import net.rsprot.protocol.game.outgoing.prot.GameServerProt
 import net.rsprot.protocol.message.codec.MessageEncoder
-import net.rsprot.protocol.util.pCombinedIdAlt2
+import net.rsprot.protocol.util.pCombinedIdAlt3
 
 public class IfSetPlayerModelBaseColourEncoder : MessageEncoder<IfSetPlayerModelBaseColour> {
     override val prot: ServerProt = GameServerProt.IF_SETPLAYERMODEL_BASECOLOUR
@@ -17,7 +17,7 @@ public class IfSetPlayerModelBaseColourEncoder : MessageEncoder<IfSetPlayerModel
         message: IfSetPlayerModelBaseColour,
     ) {
         buffer.p1(message.index)
-        buffer.pCombinedIdAlt2(message.combinedId)
+        buffer.pCombinedIdAlt3(message.combinedId)
         buffer.p1Alt1(message.colour)
     }
 }

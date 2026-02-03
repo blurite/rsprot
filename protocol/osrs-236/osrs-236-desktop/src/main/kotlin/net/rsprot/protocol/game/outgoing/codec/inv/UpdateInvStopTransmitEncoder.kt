@@ -15,6 +15,6 @@ public class UpdateInvStopTransmitEncoder : MessageEncoder<UpdateInvStopTransmit
         buffer: JagByteBuf,
         message: UpdateInvStopTransmit,
     ) {
-        buffer.p2Alt1(message.inventoryId)
+        buffer.p2(message.inventoryId)
     }
 }

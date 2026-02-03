@@ -16,9 +16,9 @@ public class IfSetAngleEncoder : MessageEncoder<IfSetAngle> {
         buffer: JagByteBuf,
         message: IfSetAngle,
     ) {
-        buffer.p2Alt1(message.zoom)
         buffer.p2Alt2(message.angleY)
-        buffer.p2Alt1(message.angleX)
+        buffer.p2(message.angleX)
+        buffer.p2Alt1(message.zoom)
         buffer.pCombinedIdAlt3(message.combinedId)
     }
 }

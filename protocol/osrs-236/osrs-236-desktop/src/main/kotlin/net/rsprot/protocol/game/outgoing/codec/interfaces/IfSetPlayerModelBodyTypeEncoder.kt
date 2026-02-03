@@ -17,6 +17,6 @@ public class IfSetPlayerModelBodyTypeEncoder : MessageEncoder<IfSetPlayerModelBo
         message: IfSetPlayerModelBodyType,
     ) {
         buffer.pCombinedId(message.combinedId)
-        buffer.p1Alt3(message.bodyType)
+        buffer.p1Alt2(message.bodyType)
     }
 }

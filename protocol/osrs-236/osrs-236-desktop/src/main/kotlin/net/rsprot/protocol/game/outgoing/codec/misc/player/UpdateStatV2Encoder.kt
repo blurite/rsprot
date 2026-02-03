@@ -15,9 +15,9 @@ public class UpdateStatV2Encoder : MessageEncoder<UpdateStatV2> {
         buffer: JagByteBuf,
         message: UpdateStatV2,
     ) {
-        buffer.p1Alt1(message.currentLevel)
+        buffer.p4Alt1(message.experience)
         buffer.p1Alt3(message.invisibleBoostedLevel)
         buffer.p1Alt1(message.stat)
-        buffer.p4(message.experience)
+        buffer.p1Alt1(message.currentLevel)
     }
 }

@@ -10,8 +10,8 @@ public class OpWorldEntity1Decoder : MessageDecoder<OpWorldEntity> {
     override val prot: ClientProt = GameClientProt.OPWORLDENTITY1
 
     override fun decode(buffer: JagByteBuf): OpWorldEntity {
-        val controlKey = buffer.g1Alt2() == 1
-        val index = buffer.g2Alt2()
+        val controlKey = buffer.g1() == 1
+        val index = buffer.g2Alt1()
         return OpWorldEntity(
             index,
             controlKey,

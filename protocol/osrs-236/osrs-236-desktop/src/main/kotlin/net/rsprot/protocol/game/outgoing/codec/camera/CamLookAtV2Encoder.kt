@@ -16,7 +16,7 @@ public class CamLookAtV2Encoder : MessageEncoder<CamLookAtV2> {
         message: CamLookAtV2,
     ) {
         buffer.p2Alt2(message.z)
-        buffer.p1Alt1(message.rate2)
+        buffer.p1Alt3(message.rate2)
         buffer.p1(message.rate)
         buffer.p2(message.x)
         buffer.p2(message.height)
