@@ -8,6 +8,7 @@ import net.rsprot.protocol.game.outgoing.codec.camera.CamLookAtV1Encoder
 import net.rsprot.protocol.game.outgoing.codec.camera.CamLookAtV2Encoder
 import net.rsprot.protocol.game.outgoing.codec.camera.CamModeEncoder
 import net.rsprot.protocol.game.outgoing.codec.camera.CamMoveToArcV1Encoder
+import net.rsprot.protocol.game.outgoing.codec.camera.CamMoveToArcV2Encoder
 import net.rsprot.protocol.game.outgoing.codec.camera.CamMoveToCyclesV1Encoder
 import net.rsprot.protocol.game.outgoing.codec.camera.CamMoveToCyclesV2Encoder
 import net.rsprot.protocol.game.outgoing.codec.camera.CamMoveToV1Encoder
@@ -238,6 +239,7 @@ public object DesktopGameMessageEncoderRepository {
                 bind(CamMoveToCyclesV1Encoder())
                 bind(CamMoveToCyclesV2Encoder())
                 bind(CamMoveToArcV1Encoder())
+                bind(CamMoveToArcV2Encoder())
                 bind(CamLookAtV1Encoder())
                 bind(CamLookAtV2Encoder())
                 bind(CamLookAtEasedCoordV1Encoder())
