@@ -421,8 +421,8 @@ public class WorldEntityInfo internal constructor(
             buffer.p2(avatar.index)
             buffer.p1((avatar.sizeX shl 4) or avatar.sizeZ)
             val placeholderFlag = pPlaceholderExtendedInfoFlag(buffer)
-            buffer.p1(priority.id)
-            buffer.p2(avatar.id)
+            buffer.p1Alt2(priority.id)
+            buffer.p2Alt2(avatar.id)
             buffer.encodeAngledCoordFine(
                 avatar.currentCoordFine.x - fineXOffset,
                 avatar.currentCoordFine.y,
