@@ -6,33 +6,45 @@ import java.util.SplittableRandom
 
 /**
  * An opcode mapper implementation, allowing for simple obfuscation of opcodes.
- * @property sourceOpcodes the original input opcodes (ones found in client by default)
- * @property obfuscatedOpcodes the modified opcodes for obfuscation
+ * @property opcodes the array of opcodes, going in either direction (conditional).
+ *
+ * For server-to-client, this builds an array
+ * where the index is the source opcode and the value is the obfuscated opcode.
+ *
+ * For client-to-server, this builds an array where the index of the obfuscated opcode and the
+ * value is the source opcode.
  */
 @OptIn(ExperimentalUnsignedTypes::class)
 public class OpcodeMapper private constructor(
     @PublishedApi
-    internal val sourceOpcodes: UByteArray,
-    @PublishedApi
-    internal val obfuscatedOpcodes: UByteArray,
+    internal val opcodes: UByteArray,
 ) {
-    @Suppress("NOTHING_TO_INLINE")
-    public inline fun encode(opcode: Int): Int {
-        return sourceOpcodes[opcode].toInt()
-    }
+    public val length: Int
+        get() = opcodes.size
 
     @Suppress("NOTHING_TO_INLINE")
-    public inline fun decode(opcode: Int): Int {
-        return obfuscatedOpcodes[opcode].toInt()
+    public inline fun map(opcode: Int): Int {
+        return opcodes[opcode].toInt()
     }
 
     /**
-     * Builds a source -> obfuscated hashmap of the opcodes.
+     * Builds an inverted array for client-sided use.
+     *
+     * The **index** in the array will be the value that client has available:
+     * - For client-to-server packets in client, this is the original opcode.
+     * - For server-to-client packets in client, this is the obfuscated opcode.
+     *
+     * The **value** from the array corresponds to the inverse:
+     * - For client-to-server packets in client, this is the obfuscated opcode.
+     * - For server-to-client packets in client, this is the original opcode.
      */
-    public fun toMap(): Map<Int, Int> {
-        val source = sourceOpcodes.map { it.toInt() }
-        val obfuscated = obfuscatedOpcodes.map { it.toInt() }
-        return (source zip obfuscated).toMap()
+    public fun toInvertedIntArray(): IntArray {
+        val arr = IntArray(length)
+        for (src in arr.indices) {
+            val dest = opcodes[src].toInt()
+            arr[dest] = src
+        }
+        return arr
     }
 
     override fun equals(other: Any?): Boolean {
@@ -41,43 +53,20 @@ public class OpcodeMapper private constructor(
 
         other as OpcodeMapper
 
-        if (!sourceOpcodes.contentEquals(other.sourceOpcodes)) return false
-        if (!obfuscatedOpcodes.contentEquals(other.obfuscatedOpcodes)) return false
-
-        return true
+        return opcodes.contentEquals(other.opcodes)
     }
 
     override fun hashCode(): Int {
-        var result = sourceOpcodes.contentHashCode()
-        result = 31 * result + obfuscatedOpcodes.contentHashCode()
-        return result
+        return opcodes.contentHashCode()
     }
 
     override fun toString(): String {
         return "OpcodeMapper(" +
-            "sourceOpcodes=${sourceOpcodes.contentToString()}, " +
-            "obfuscatedOpcodes=${obfuscatedOpcodes.contentToString()}" +
+            "mappedOpcodes=${opcodes.contentToString()}" +
             ")"
     }
 
     public companion object {
-        /**
-         * Builds an opcode mapper of input and output opcodes, with no modifications applied.
-         * @param inputOpcodes the real opcodes used
-         * @param outputOpcodes the obfuscated opcodes used
-         * @return an instance of an opcode mapper.
-         */
-        @JvmStatic
-        public fun of(
-            inputOpcodes: ByteArray,
-            outputOpcodes: ByteArray,
-        ): OpcodeMapper {
-            return OpcodeMapper(
-                inputOpcodes.toUByteArray(),
-                outputOpcodes.toUByteArray(),
-            )
-        }
-
         /**
          * Builds an opcode mapper for server-to-client packets out of the provided [seed].
          */
@@ -88,7 +77,7 @@ public class OpcodeMapper private constructor(
                     .filter { it.opcode >= 0 }
                     .map { it.opcode }
                     .toIntArray()
-            return fromSeed(seed, opcodes)
+            return fromSeedEncoding(seed, opcodes)
         }
 
         /**
@@ -101,7 +90,7 @@ public class OpcodeMapper private constructor(
                     .filter { it.opcode >= 0 }
                     .map { it.opcode }
                     .toIntArray()
-            return fromSeed(seed, opcodes)
+            return fromSeedDecoding(seed, opcodes)
         }
 
         /**
@@ -114,7 +103,7 @@ public class OpcodeMapper private constructor(
          * @return an instance of an opcode mapper.
          */
         @JvmStatic
-        public fun fromSeed(
+        public fun fromSeedEncoding(
             seed: Long,
             inputs: IntArray,
         ): OpcodeMapper {
@@ -134,14 +123,50 @@ public class OpcodeMapper private constructor(
             // Compress the data to an unsigned byte array for better memory footprint
             // which also makes it more likely to get inlined by JIT.
             val enc = UByteArray(count)
-            val dec = UByteArray(count)
             for (x in 0 until count) {
                 val y = permutated[x]
                 enc[x] = y.toUByte()
+            }
+
+            return OpcodeMapper(enc)
+        }
+
+        /**
+         * Builds an opcode mapper from a specific seed, for an int array of opcodes.
+         * @param seed the input seed to use. The same seed will always generate the same
+         * values for a given array of [inputs].
+         * @param inputs the source opcodes to remap.
+         * @throws IllegalArgumentException if inputs don't meet our requirements
+         * (consecutive values of 0..n with no gaps)
+         * @return an instance of an opcode mapper.
+         */
+        @JvmStatic
+        public fun fromSeedDecoding(
+            seed: Long,
+            inputs: IntArray,
+        ): OpcodeMapper {
+            validate(inputs)
+
+            val count = inputs.size
+            // Fisher–Yates permutation
+            val permutated = IntArray(count) { it }
+            val random = SplittableRandom(seed)
+            for (index in count - 1 downTo 1) {
+                val obfuscated = random.nextInt(index + 1)
+                val original = permutated[index]
+                permutated[index] = permutated[obfuscated]
+                permutated[obfuscated] = original
+            }
+
+            // Compress the data to an unsigned byte array for better memory footprint
+            // which also makes it more likely to get inlined by JIT.
+            val dec = UByteArray(count)
+            for (x in 0 until count) {
+                val y = permutated[x]
                 dec[y] = x.toUByte()
             }
 
-            return OpcodeMapper(enc, dec)
+            return OpcodeMapper(dec)
         }
 
         /**

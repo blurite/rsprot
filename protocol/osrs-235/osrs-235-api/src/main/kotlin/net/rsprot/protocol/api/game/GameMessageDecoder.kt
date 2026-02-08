@@ -73,7 +73,7 @@ public class GameMessageDecoder<R>(
 
     private fun mapOpcode(opcode: Int): Int {
         val mapper = networkService.clientToServerOpcodeMapper ?: return opcode
-        return mapper.decode(opcode)
+        return mapper.map(opcode)
     }
 
     override fun handlerAdded(ctx: ChannelHandlerContext) {

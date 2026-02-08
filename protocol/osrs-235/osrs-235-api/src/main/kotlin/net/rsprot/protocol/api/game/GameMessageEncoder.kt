@@ -40,6 +40,6 @@ public class GameMessageEncoder(
 
     override fun mapOpcode(opcode: Int): Int {
         val mapper = networkService.serverToClientOpcodeMapper ?: return opcode
-        return mapper.encode(opcode)
+        return mapper.map(opcode)
     }
 }
