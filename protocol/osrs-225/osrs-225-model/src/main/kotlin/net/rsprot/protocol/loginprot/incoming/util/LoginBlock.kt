@@ -31,8 +31,8 @@ public class LoginBlock<T>(
         get() = header.clientType
     public val platformType: LoginPlatformType
         get() = header.platformType
-    public val hasExternalAuthenticator: Boolean
-        get() = header.hasExternalAuthenticator
+    public val externalAuthenticatorType: Int
+        get() = header.externalAuthenticatorType.toInt()
 
     public val width: Int
         get() = _width.toInt()
@@ -52,7 +52,7 @@ public class LoginBlock<T>(
         public val subVersion: Int,
         private val _clientType: UByte,
         private val _platformType: UByte,
-        public val hasExternalAuthenticator: Boolean,
+        public val externalAuthenticatorType: UByte,
     ) {
         public val clientType: LoginClientType
             get() = LoginClientType[_clientType.toInt()]
@@ -67,7 +67,7 @@ public class LoginBlock<T>(
 
             if (version != other.version) return false
             if (subVersion != other.subVersion) return false
-            if (hasExternalAuthenticator != other.hasExternalAuthenticator) return false
+            if (externalAuthenticatorType != other.externalAuthenticatorType) return false
             if (_clientType != other._clientType) return false
             if (_platformType != other._platformType) return false
 
@@ -77,7 +77,7 @@ public class LoginBlock<T>(
         override fun hashCode(): Int {
             var result = version
             result = 31 * result + subVersion
-            result = 31 * result + hasExternalAuthenticator.hashCode()
+            result = 31 * result + externalAuthenticatorType.hashCode()
             result = 31 * result + _clientType.hashCode()
             result = 31 * result + _platformType.hashCode()
             return result
@@ -87,7 +87,7 @@ public class LoginBlock<T>(
             return "Header(" +
                 "version=$version, " +
                 "subVersion=$subVersion, " +
-                "hasExternalAuthenticator=$hasExternalAuthenticator, " +
+                "externalAuthenticatorType=$externalAuthenticatorType, " +
                 "clientType=$clientType, " +
                 "platformType=$platformType" +
                 ")"

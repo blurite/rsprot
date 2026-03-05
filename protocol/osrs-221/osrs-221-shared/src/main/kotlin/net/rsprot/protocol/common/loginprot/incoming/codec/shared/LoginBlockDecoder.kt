@@ -39,7 +39,7 @@ public abstract class LoginBlockDecoder<T>(
                 throw UnsupportedClientException
             }
             val platformType = buffer.g1()
-            val hasExternalAuthenticator = buffer.g1() == 1
+            val externalAuthenticatorType = buffer.g1()
             val rsaSize = buffer.g2()
             if (!buffer.isReadable(rsaSize)) {
                 throw IllegalStateException("RSA buffer not readable: $rsaSize, ${buffer.readableBytes()}")
@@ -103,7 +103,7 @@ public abstract class LoginBlockDecoder<T>(
                         subVersion,
                         firstClientType.toUByte(),
                         platformType.toUByte(),
-                        hasExternalAuthenticator,
+                        externalAuthenticatorType.toUByte(),
                         seed,
                         sessionId,
                         username,

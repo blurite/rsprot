@@ -37,13 +37,13 @@ public abstract class LoginBlockDecoder<T>(
             throw UnsupportedClientException
         }
         val platformType = buffer.g1()
-        val hasExternalAuthenticator = buffer.g1() == 1
+        val externalAuthenticatorType = buffer.g1()
         return LoginBlock.Header(
             version,
             subVersion,
             firstClientType.toUByte(),
             platformType.toUByte(),
-            hasExternalAuthenticator,
+            externalAuthenticatorType.toUByte(),
         )
     }
 

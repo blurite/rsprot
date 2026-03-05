@@ -8,7 +8,7 @@ public class LoginBlock<T>(
     public val subVersion: Int,
     private val _clientType: UByte,
     private val _platformType: UByte,
-    public val hasExternalAuthenticator: Boolean,
+    private val _externalAuthenticatorType: UByte,
     public val seed: IntArray,
     public val sessionId: Long,
     public val username: String,
@@ -36,6 +36,8 @@ public class LoginBlock<T>(
         get() = _height.toInt()
     public val validationClientType: LoginClientType
         get() = LoginClientType[_validationClientType.toInt()]
+    public val externalAuthenticatorType: Int
+        get() = _externalAuthenticatorType.toInt()
 
     public fun mergeBetaCrcs(remainingBetaArchives: RemainingBetaArchives) {
         for (i in RemainingBetaArchives.protectedArchives) {
@@ -53,7 +55,7 @@ public class LoginBlock<T>(
         if (subVersion != other.subVersion) return false
         if (_clientType != other._clientType) return false
         if (_platformType != other._platformType) return false
-        if (hasExternalAuthenticator != other.hasExternalAuthenticator) return false
+        if (_externalAuthenticatorType != other._externalAuthenticatorType) return false
         if (!seed.contentEquals(other.seed)) return false
         if (sessionId != other.sessionId) return false
         if (username != other.username) return false
@@ -79,7 +81,7 @@ public class LoginBlock<T>(
         result = 31 * result + subVersion
         result = 31 * result + _clientType.hashCode()
         result = 31 * result + _platformType.hashCode()
-        result = 31 * result + hasExternalAuthenticator.hashCode()
+        result = 31 * result + externalAuthenticatorType.hashCode()
         result = 31 * result + seed.contentHashCode()
         result = 31 * result + sessionId.hashCode()
         result = 31 * result + username.hashCode()
@@ -115,7 +117,7 @@ public class LoginBlock<T>(
             "crc=$crc, " +
             "clientType=$clientType, " +
             "platformType=$platformType, " +
-            "hasExternalAuthenticator=$hasExternalAuthenticator, " +
+            "externalAuthenticatorType=$externalAuthenticatorType, " +
             "deepLinks=$deepLinks, " +
             "width=$width, " +
             "height=$height, " +
