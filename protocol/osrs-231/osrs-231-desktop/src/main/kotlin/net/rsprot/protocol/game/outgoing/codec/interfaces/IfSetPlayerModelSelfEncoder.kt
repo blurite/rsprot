@@ -16,8 +16,7 @@ public class IfSetPlayerModelSelfEncoder : MessageEncoder<IfSetPlayerModelSelf> 
         buffer: JagByteBuf,
         message: IfSetPlayerModelSelf,
     ) {
-        // The boolean is inverted client-sided, it's more of a "skip copying"
-        buffer.p1(if (message.copyObjs) 0 else 1)
+        buffer.p1(if (message.copyObjs) 1 else 0)
         buffer.pCombinedId(message.combinedId)
     }
 }
