@@ -2,19 +2,19 @@ package net.rsprot.protocol.game.incoming.codec.objs
 
 import net.rsprot.buffer.JagByteBuf
 import net.rsprot.protocol.ClientProt
-import net.rsprot.protocol.game.incoming.objs.OpObj
+import net.rsprot.protocol.game.incoming.objs.OpObjV1
 import net.rsprot.protocol.game.incoming.prot.GameClientProt
 import net.rsprot.protocol.message.codec.MessageDecoder
 
-public class OpObj1Decoder : MessageDecoder<OpObj> {
-    override val prot: ClientProt = GameClientProt.OPOBJ1
+public class OpObj1V1Decoder : MessageDecoder<OpObjV1> {
+    override val prot: ClientProt = GameClientProt.OPOBJ1_V1
 
-    override fun decode(buffer: JagByteBuf): OpObj {
+    override fun decode(buffer: JagByteBuf): OpObjV1 {
         val id = buffer.g2()
         val x = buffer.g2Alt1()
         val z = buffer.g2()
         val controlKey = buffer.g1Alt3() == 1
-        return OpObj(
+        return OpObjV1(
             id,
             x,
             z,

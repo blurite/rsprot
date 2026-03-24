@@ -24,11 +24,11 @@ import net.rsprot.protocol.game.incoming.codec.events.EventNativeMouseMoveDecode
 import net.rsprot.protocol.game.incoming.codec.friendchat.FriendChatJoinLeaveDecoder
 import net.rsprot.protocol.game.incoming.codec.friendchat.FriendChatKickDecoder
 import net.rsprot.protocol.game.incoming.codec.friendchat.FriendChatSetRankDecoder
-import net.rsprot.protocol.game.incoming.codec.locs.OpLoc1Decoder
-import net.rsprot.protocol.game.incoming.codec.locs.OpLoc2Decoder
-import net.rsprot.protocol.game.incoming.codec.locs.OpLoc3Decoder
-import net.rsprot.protocol.game.incoming.codec.locs.OpLoc4Decoder
-import net.rsprot.protocol.game.incoming.codec.locs.OpLoc5Decoder
+import net.rsprot.protocol.game.incoming.codec.locs.OpLoc1V1Decoder
+import net.rsprot.protocol.game.incoming.codec.locs.OpLoc2V1Decoder
+import net.rsprot.protocol.game.incoming.codec.locs.OpLoc3V1Decoder
+import net.rsprot.protocol.game.incoming.codec.locs.OpLoc4V1Decoder
+import net.rsprot.protocol.game.incoming.codec.locs.OpLoc5V1Decoder
 import net.rsprot.protocol.game.incoming.codec.locs.OpLoc6Decoder
 import net.rsprot.protocol.game.incoming.codec.locs.OpLocTDecoder
 import net.rsprot.protocol.game.incoming.codec.messaging.MessagePrivateDecoder
@@ -57,18 +57,18 @@ import net.rsprot.protocol.game.incoming.codec.misc.user.SendSnapshotDecoder
 import net.rsprot.protocol.game.incoming.codec.misc.user.SetChatFilterSettingsDecoder
 import net.rsprot.protocol.game.incoming.codec.misc.user.SetHeadingDecoder
 import net.rsprot.protocol.game.incoming.codec.misc.user.TeleportDecoder
-import net.rsprot.protocol.game.incoming.codec.npcs.OpNpc1Decoder
-import net.rsprot.protocol.game.incoming.codec.npcs.OpNpc2Decoder
-import net.rsprot.protocol.game.incoming.codec.npcs.OpNpc3Decoder
-import net.rsprot.protocol.game.incoming.codec.npcs.OpNpc4Decoder
-import net.rsprot.protocol.game.incoming.codec.npcs.OpNpc5Decoder
+import net.rsprot.protocol.game.incoming.codec.npcs.OpNpc1V1Decoder
+import net.rsprot.protocol.game.incoming.codec.npcs.OpNpc2V1Decoder
+import net.rsprot.protocol.game.incoming.codec.npcs.OpNpc3V1Decoder
+import net.rsprot.protocol.game.incoming.codec.npcs.OpNpc4V1Decoder
+import net.rsprot.protocol.game.incoming.codec.npcs.OpNpc5V1Decoder
 import net.rsprot.protocol.game.incoming.codec.npcs.OpNpc6Decoder
 import net.rsprot.protocol.game.incoming.codec.npcs.OpNpcTDecoder
-import net.rsprot.protocol.game.incoming.codec.objs.OpObj1Decoder
-import net.rsprot.protocol.game.incoming.codec.objs.OpObj2Decoder
-import net.rsprot.protocol.game.incoming.codec.objs.OpObj3Decoder
-import net.rsprot.protocol.game.incoming.codec.objs.OpObj4Decoder
-import net.rsprot.protocol.game.incoming.codec.objs.OpObj5Decoder
+import net.rsprot.protocol.game.incoming.codec.objs.OpObj1V1Decoder
+import net.rsprot.protocol.game.incoming.codec.objs.OpObj2V1Decoder
+import net.rsprot.protocol.game.incoming.codec.objs.OpObj3V1Decoder
+import net.rsprot.protocol.game.incoming.codec.objs.OpObj4V1Decoder
+import net.rsprot.protocol.game.incoming.codec.objs.OpObj5V1Decoder
 import net.rsprot.protocol.game.incoming.codec.objs.OpObj6Decoder
 import net.rsprot.protocol.game.incoming.codec.objs.OpObjTDecoder
 import net.rsprot.protocol.game.incoming.codec.players.OpPlayer1Decoder
@@ -114,27 +114,27 @@ public object DesktopGameMessageDecoderRepository {
                 bind(IfButtonTDecoder())
                 bind(IfRunScriptDecoder())
 
-                bind(OpNpc1Decoder())
-                bind(OpNpc2Decoder())
-                bind(OpNpc3Decoder())
-                bind(OpNpc4Decoder())
-                bind(OpNpc5Decoder())
+                bind(OpNpc1V1Decoder())
+                bind(OpNpc2V1Decoder())
+                bind(OpNpc3V1Decoder())
+                bind(OpNpc4V1Decoder())
+                bind(OpNpc5V1Decoder())
                 bind(OpNpc6Decoder())
                 bind(OpNpcTDecoder())
 
-                bind(OpLoc1Decoder())
-                bind(OpLoc2Decoder())
-                bind(OpLoc3Decoder())
-                bind(OpLoc4Decoder())
-                bind(OpLoc5Decoder())
+                bind(OpLoc1V1Decoder())
+                bind(OpLoc2V1Decoder())
+                bind(OpLoc3V1Decoder())
+                bind(OpLoc4V1Decoder())
+                bind(OpLoc5V1Decoder())
                 bind(OpLoc6Decoder())
                 bind(OpLocTDecoder())
 
-                bind(OpObj1Decoder())
-                bind(OpObj2Decoder())
-                bind(OpObj3Decoder())
-                bind(OpObj4Decoder())
-                bind(OpObj5Decoder())
+                bind(OpObj1V1Decoder())
+                bind(OpObj2V1Decoder())
+                bind(OpObj3V1Decoder())
+                bind(OpObj4V1Decoder())
+                bind(OpObj5V1Decoder())
                 bind(OpObj6Decoder())
                 bind(OpObjTDecoder())
 

@@ -2,20 +2,20 @@ package net.rsprot.protocol.game.incoming.codec.npcs
 
 import net.rsprot.buffer.JagByteBuf
 import net.rsprot.protocol.ClientProt
-import net.rsprot.protocol.game.incoming.npcs.OpNpc
+import net.rsprot.protocol.game.incoming.npcs.OpNpcV1
 import net.rsprot.protocol.game.incoming.prot.GameClientProt
 import net.rsprot.protocol.message.codec.MessageDecoder
 
-public class OpNpc5Decoder : MessageDecoder<OpNpc> {
-    override val prot: ClientProt = GameClientProt.OPNPC5
+public class OpNpc3V1Decoder : MessageDecoder<OpNpcV1> {
+    override val prot: ClientProt = GameClientProt.OPNPC3_V1
 
-    override fun decode(buffer: JagByteBuf): OpNpc {
+    override fun decode(buffer: JagByteBuf): OpNpcV1 {
         val index = buffer.g2Alt1()
-        val controlKey = buffer.g1Alt3() == 1
-        return OpNpc(
+        val controlKey = buffer.g1Alt1() == 1
+        return OpNpcV1(
             index,
             controlKey,
-            5,
+            3,
         )
     }
 }
