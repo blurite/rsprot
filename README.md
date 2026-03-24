@@ -119,7 +119,7 @@ for (worldInfoPackets in infoPackets.activeWorlds) {
     packets.send(worldInfoPackets.activeWorld)
 
 	// If the world entity is newly added in this cycle, make sure to send the
-	// RebuildWorldEntityV2 packet for this world, to actually build the
+	// RebuildWorldEntityV3 packet for this world, to actually build the
 	// map behind the world entity.
     if (worldInfoPackets.added) {
         rebuildWorldEntity(worldInfoPackets.worldId)

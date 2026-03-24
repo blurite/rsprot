@@ -59,7 +59,7 @@ import net.rsprot.protocol.game.outgoing.codec.logout.LogoutTransferEncoder
 import net.rsprot.protocol.game.outgoing.codec.logout.LogoutWithReasonEncoder
 import net.rsprot.protocol.game.outgoing.codec.map.RebuildNormalEncoder
 import net.rsprot.protocol.game.outgoing.codec.map.RebuildRegionEncoder
-import net.rsprot.protocol.game.outgoing.codec.map.RebuildWorldEntityV2Encoder
+import net.rsprot.protocol.game.outgoing.codec.map.RebuildWorldEntityV3Encoder
 import net.rsprot.protocol.game.outgoing.codec.misc.client.HideLocOpsEncoder
 import net.rsprot.protocol.game.outgoing.codec.misc.client.HideNpcOpsEncoder
 import net.rsprot.protocol.game.outgoing.codec.misc.client.HideObjOpsEncoder
@@ -221,7 +221,7 @@ public object DesktopGameMessageEncoderRepository {
 
                 bindWithAlts(RebuildNormalEncoder(), RebuildLogin::class.java, RebuildNormal::class.java)
                 bind(RebuildRegionEncoder())
-                bind(RebuildWorldEntityV2Encoder())
+                bind(RebuildWorldEntityV3Encoder())
 
                 bind(VarpSmallEncoder())
                 bind(VarpLargeEncoder())

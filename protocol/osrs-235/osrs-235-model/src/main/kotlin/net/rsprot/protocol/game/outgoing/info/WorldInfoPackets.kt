@@ -11,7 +11,7 @@ import net.rsprot.protocol.game.outgoing.worldentity.SetActiveWorldV2
  * @property activeLevel the level of the world that is being updated. This will be equal
  * to player's current level if this is the world on which the player currently resides,
  * otherwise it is the world's own active level.
- * @property added whether this world was freshly added (and [net.rsprot.protocol.game.outgoing.map.RebuildWorldEntityV2]
+ * @property added whether this world was freshly added (and [net.rsprot.protocol.game.outgoing.map.RebuildWorldEntityV3]
  * should be performed on it, along with a full zone synchronization).
  * @property activeWorld the active world packet necessary to inform the client of the coming update.
  * @property npcUpdateOrigin the offsets for npc info packet in this world. This is a cached packet

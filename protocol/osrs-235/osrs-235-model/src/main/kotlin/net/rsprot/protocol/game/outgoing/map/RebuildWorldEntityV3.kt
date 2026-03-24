@@ -12,7 +12,7 @@ import net.rsprot.protocol.message.OutgoingGameMessage
  * @property baseZ the absolute base z coordinate of the world entity in the instance land
  * @property zones the list of zones that will be built into the root world
  */
-public class RebuildWorldEntityV2 private constructor(
+public class RebuildWorldEntityV3 private constructor(
     private val _baseX: UShort,
     private val _baseZ: UShort,
     public val zones: List<RebuildRegionZone?>,
@@ -73,7 +73,7 @@ public class RebuildWorldEntityV2 private constructor(
     }
 
     override fun toString(): String {
-        return "RebuildWorldEntityV2(" +
+        return "RebuildWorldEntityV3(" +
             "zones=$zones, " +
             "baseX=$baseX, " +
             "baseZ=$baseZ" +
@@ -94,8 +94,8 @@ public class RebuildWorldEntityV2 private constructor(
          * looking up the actual zone that was copied for that world entity.
          * In order to calculate the mapsquare id for xtea keys, use [getMapsquareId].
          *
-         * @param zoneX the x coordinate of the region zone
-         * @param zoneZ the z coordinate of the region zone
+         * @param zoneX the zone x coordinate of the region zone, relative to the south-westernmost zone
+         * @param zoneZ the zone z coordinate of the region zone, relative to the south-westernmost zone
          * @param level the level of the region zone
          * @return the zone to be copied, or null if there's no zone to be copied there.
          */

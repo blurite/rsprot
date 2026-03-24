@@ -60,7 +60,7 @@ internal object GameServerProtId {
     const val VARP_SMALL = 56
     const val CAM_SMOOTHRESET = 57
     const val FRIENDLIST_LOADED = 58
-    const val REBUILD_WORLDENTITY_V2 = 59
+    const val REBUILD_WORLDENTITY_V3 = 59
     const val UPDATE_TRADINGPOST = 60
     const val CAM_MOVETO_CYCLES_V1 = 61
     const val RESET_INTERACTION_MODE = 62
