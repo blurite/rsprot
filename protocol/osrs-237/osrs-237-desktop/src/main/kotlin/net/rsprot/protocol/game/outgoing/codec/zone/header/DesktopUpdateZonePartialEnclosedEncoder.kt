@@ -37,8 +37,8 @@ public class DesktopUpdateZonePartialEnclosedEncoder : MessageEncoder<UpdateZone
         buffer: JagByteBuf,
         message: UpdateZonePartialEnclosed,
     ) {
-        buffer.p1(message.zoneX)
-        buffer.p1Alt3(message.zoneZ)
+        buffer.p1Alt3(message.zoneX)
+        buffer.p1Alt1(message.zoneZ)
         buffer.p1Alt2(message.level)
         // Special handling in our Netty encoder for the payload
         // buffer.buffer.writeBytes(

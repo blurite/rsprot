@@ -10,10 +10,10 @@ public class OpObj1V1Decoder : MessageDecoder<OpObjV1> {
     override val prot: ClientProt = GameClientProt.OPOBJ1_V1
 
     override fun decode(buffer: JagByteBuf): OpObjV1 {
-        val id = buffer.g2()
-        val x = buffer.g2Alt1()
-        val z = buffer.g2()
-        val controlKey = buffer.g1Alt3() == 1
+        val x = buffer.g2Alt3()
+        val z = buffer.g2Alt2()
+        val id = buffer.g2Alt2()
+        val controlKey = buffer.g1Alt2() == 1
         return OpObjV1(
             id,
             x,

@@ -4,6 +4,7 @@ import net.rsprot.buffer.JagByteBuf
 import net.rsprot.buffer.bitbuffer.toBitBuf
 import net.rsprot.crypto.xtea.XteaKey
 import net.rsprot.protocol.game.outgoing.map.util.RebuildRegionZone
+import net.rsprot.protocol.game.outgoing.map.util.ReferenceZone
 
 /**
  * The maximum theoretical number of mapsquares that can be sent in a single
@@ -27,7 +28,7 @@ private val distinctMapsquares =
             }
     }
 
-internal fun encodeRegion(
+internal fun encodeRegionV1(
     buffer: JagByteBuf,
     zones: List<RebuildRegionZone?>,
 ) {
@@ -72,6 +73,44 @@ internal fun encodeRegion(
             buffer.p4(intKey)
         }
     }
+}
+
+internal fun encodeRegionV2(
+    buffer: JagByteBuf,
+    zones: List<ReferenceZone?>,
+) {
+    // Mapsquare count, temporary value
+    val marker = buffer.writerIndex()
+    buffer.p2(0)
+
+    var distinctMapsquareCount = 0
+    val (mapsquares, _) = distinctMapsquares.get()
+    val maxBitBufByteCount = ((27 * zones.size) + 32) ushr 5
+    // Ensure the correct number of writable bytes ahead of time for the worst case scenario
+    // This is due to our bit buffer implementation by default not ensuring this
+    buffer.buffer.ensureWritable(maxBitBufByteCount + 2)
+    val bitbuf = buffer.buffer.toBitBuf()
+    bitbuf.use {
+        for (zone in zones) {
+            if (zone == null) {
+                bitbuf.pBits(1, 0)
+                continue
+            }
+            bitbuf.pBits(1, 1)
+            bitbuf.pBits(26, zone.packed)
+            val mapsquareId = zone.mapsquareId
+            if (contains(mapsquares, distinctMapsquareCount, mapsquareId)) {
+                continue
+            }
+            mapsquares[distinctMapsquareCount] = mapsquareId
+            distinctMapsquareCount++
+        }
+    }
+    // Write the real mapsquare count
+    val writerIndex = buffer.writerIndex()
+    buffer.writerIndex(marker)
+    buffer.p2(distinctMapsquareCount)
+    buffer.writerIndex(writerIndex)
 }
 
 /**

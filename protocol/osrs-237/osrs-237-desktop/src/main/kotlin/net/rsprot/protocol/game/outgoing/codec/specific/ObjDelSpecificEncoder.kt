@@ -19,7 +19,7 @@ public class ObjDelSpecificEncoder : MessageEncoder<ObjDelSpecific> {
         // making it easy to identify all the properties of this packet:
         // obj_del(world, level, x, z, id, quantity)
         buffer.p4Alt2(message.quantity)
-        buffer.p4Alt3(message.coordGrid.packed)
-        buffer.p2Alt1(message.id)
+        buffer.p4Alt2(message.coordGrid.packed)
+        buffer.p2Alt3(message.id)
     }
 }

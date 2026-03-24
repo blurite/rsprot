@@ -17,7 +17,7 @@ public class IfOpenSubEncoder : MessageEncoder<IfOpenSub> {
         message: IfOpenSub,
     ) {
         buffer.pCombinedIdAlt3(message.destinationCombinedId)
-        buffer.p1Alt3(message.type)
+        buffer.p1Alt2(message.type)
         buffer.p2(message.interfaceId)
     }
 }

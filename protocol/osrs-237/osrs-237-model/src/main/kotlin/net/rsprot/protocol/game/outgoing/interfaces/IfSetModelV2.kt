@@ -13,9 +13,9 @@ import net.rsprot.protocol.util.CombinedId
  * @property componentId the component on that interface to set the events on
  * @property model the id of the model to render.
  */
-public class IfSetModel private constructor(
+public class IfSetModelV2(
     public val combinedId: Int,
-    private val _model: UShort,
+    public val model: Int,
 ) : OutgoingGameMessage {
     public constructor(
         interfaceId: Int,
@@ -23,15 +23,7 @@ public class IfSetModel private constructor(
         model: Int,
     ) : this(
         CombinedId(interfaceId, componentId).combinedId,
-        model.toUShort(),
-    )
-
-    public constructor(
-        combinedId: Int,
-        model: Int,
-    ) : this(
-        combinedId,
-        model.toUShort(),
+        model,
     )
 
     private val _combinedId: CombinedId
@@ -40,8 +32,6 @@ public class IfSetModel private constructor(
         get() = _combinedId.interfaceId
     public val componentId: Int
         get() = _combinedId.componentId
-    public val model: Int
-        get() = _model.toInt()
     override val category: ServerProtCategory
         get() = GameServerProtCategory.LOW_PRIORITY_PROT
 
@@ -49,22 +39,22 @@ public class IfSetModel private constructor(
         if (this === other) return true
         if (javaClass != other?.javaClass) return false
 
-        other as IfSetModel
+        other as IfSetModelV2
 
         if (combinedId != other.combinedId) return false
-        if (_model != other._model) return false
+        if (model != other.model) return false
 
         return true
     }
 
     override fun hashCode(): Int {
         var result = combinedId.hashCode()
-        result = 31 * result + _model.hashCode()
+        result = 31 * result + model.hashCode()
         return result
     }
 
     override fun toString(): String =
-        "IfSetModel(" +
+        "IfSetModelV2(" +
             "interfaceId=$interfaceId, " +
             "componentId=$componentId, " +
             "model=$model" +

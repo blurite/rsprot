@@ -26,7 +26,7 @@ public class UpdateRebootTimerV2Encoder : MessageEncoder<UpdateRebootTimerV2> {
                 buffer.pjstr(mes.message)
             }
         }
-        buffer.p2Alt2(message.gameCycles)
+        buffer.p2Alt3(message.gameCycles)
     }
 
     private companion object {

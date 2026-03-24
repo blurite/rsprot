@@ -6,7 +6,7 @@ import net.rsprot.protocol.ServerProt
 import net.rsprot.protocol.game.outgoing.interfaces.IfSetPlayerModelSelf
 import net.rsprot.protocol.game.outgoing.prot.GameServerProt
 import net.rsprot.protocol.message.codec.MessageEncoder
-import net.rsprot.protocol.util.pCombinedIdAlt2
+import net.rsprot.protocol.util.pCombinedIdAlt1
 
 public class IfSetPlayerModelSelfEncoder : MessageEncoder<IfSetPlayerModelSelf> {
     override val prot: ServerProt = GameServerProt.IF_SETPLAYERMODEL_SELF
@@ -16,7 +16,7 @@ public class IfSetPlayerModelSelfEncoder : MessageEncoder<IfSetPlayerModelSelf> 
         buffer: JagByteBuf,
         message: IfSetPlayerModelSelf,
     ) {
-        buffer.pCombinedIdAlt2(message.combinedId)
-        buffer.p1Alt2(if (message.copyObjs) 1 else 0)
+        buffer.p1Alt1(if (message.copyObjs) 1 else 0)
+        buffer.pCombinedIdAlt1(message.combinedId)
     }
 }

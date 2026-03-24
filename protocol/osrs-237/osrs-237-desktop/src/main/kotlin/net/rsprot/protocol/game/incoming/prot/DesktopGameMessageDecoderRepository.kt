@@ -25,10 +25,15 @@ import net.rsprot.protocol.game.incoming.codec.friendchat.FriendChatJoinLeaveDec
 import net.rsprot.protocol.game.incoming.codec.friendchat.FriendChatKickDecoder
 import net.rsprot.protocol.game.incoming.codec.friendchat.FriendChatSetRankDecoder
 import net.rsprot.protocol.game.incoming.codec.locs.OpLoc1V1Decoder
+import net.rsprot.protocol.game.incoming.codec.locs.OpLoc1V2Decoder
 import net.rsprot.protocol.game.incoming.codec.locs.OpLoc2V1Decoder
+import net.rsprot.protocol.game.incoming.codec.locs.OpLoc2V2Decoder
 import net.rsprot.protocol.game.incoming.codec.locs.OpLoc3V1Decoder
+import net.rsprot.protocol.game.incoming.codec.locs.OpLoc3V2Decoder
 import net.rsprot.protocol.game.incoming.codec.locs.OpLoc4V1Decoder
+import net.rsprot.protocol.game.incoming.codec.locs.OpLoc4V2Decoder
 import net.rsprot.protocol.game.incoming.codec.locs.OpLoc5V1Decoder
+import net.rsprot.protocol.game.incoming.codec.locs.OpLoc5V2Decoder
 import net.rsprot.protocol.game.incoming.codec.locs.OpLoc6Decoder
 import net.rsprot.protocol.game.incoming.codec.locs.OpLocTDecoder
 import net.rsprot.protocol.game.incoming.codec.messaging.MessagePrivateDecoder
@@ -58,17 +63,27 @@ import net.rsprot.protocol.game.incoming.codec.misc.user.SetChatFilterSettingsDe
 import net.rsprot.protocol.game.incoming.codec.misc.user.SetHeadingDecoder
 import net.rsprot.protocol.game.incoming.codec.misc.user.TeleportDecoder
 import net.rsprot.protocol.game.incoming.codec.npcs.OpNpc1V1Decoder
+import net.rsprot.protocol.game.incoming.codec.npcs.OpNpc1V2Decoder
 import net.rsprot.protocol.game.incoming.codec.npcs.OpNpc2V1Decoder
+import net.rsprot.protocol.game.incoming.codec.npcs.OpNpc2V2Decoder
 import net.rsprot.protocol.game.incoming.codec.npcs.OpNpc3V1Decoder
+import net.rsprot.protocol.game.incoming.codec.npcs.OpNpc3V2Decoder
 import net.rsprot.protocol.game.incoming.codec.npcs.OpNpc4V1Decoder
+import net.rsprot.protocol.game.incoming.codec.npcs.OpNpc4V2Decoder
 import net.rsprot.protocol.game.incoming.codec.npcs.OpNpc5V1Decoder
+import net.rsprot.protocol.game.incoming.codec.npcs.OpNpc5V2Decoder
 import net.rsprot.protocol.game.incoming.codec.npcs.OpNpc6Decoder
 import net.rsprot.protocol.game.incoming.codec.npcs.OpNpcTDecoder
 import net.rsprot.protocol.game.incoming.codec.objs.OpObj1V1Decoder
+import net.rsprot.protocol.game.incoming.codec.objs.OpObj1V2Decoder
 import net.rsprot.protocol.game.incoming.codec.objs.OpObj2V1Decoder
+import net.rsprot.protocol.game.incoming.codec.objs.OpObj2V2Decoder
 import net.rsprot.protocol.game.incoming.codec.objs.OpObj3V1Decoder
+import net.rsprot.protocol.game.incoming.codec.objs.OpObj3V2Decoder
 import net.rsprot.protocol.game.incoming.codec.objs.OpObj4V1Decoder
+import net.rsprot.protocol.game.incoming.codec.objs.OpObj4V2Decoder
 import net.rsprot.protocol.game.incoming.codec.objs.OpObj5V1Decoder
+import net.rsprot.protocol.game.incoming.codec.objs.OpObj5V2Decoder
 import net.rsprot.protocol.game.incoming.codec.objs.OpObj6Decoder
 import net.rsprot.protocol.game.incoming.codec.objs.OpObjTDecoder
 import net.rsprot.protocol.game.incoming.codec.players.OpPlayer1Decoder
@@ -81,6 +96,7 @@ import net.rsprot.protocol.game.incoming.codec.players.OpPlayer7Decoder
 import net.rsprot.protocol.game.incoming.codec.players.OpPlayer8Decoder
 import net.rsprot.protocol.game.incoming.codec.players.OpPlayerTDecoder
 import net.rsprot.protocol.game.incoming.codec.resumed.ResumePCountDialogDecoder
+import net.rsprot.protocol.game.incoming.codec.resumed.ResumePCountDialogLongDecoder
 import net.rsprot.protocol.game.incoming.codec.resumed.ResumePNameDialogDecoder
 import net.rsprot.protocol.game.incoming.codec.resumed.ResumePObjDialogDecoder
 import net.rsprot.protocol.game.incoming.codec.resumed.ResumePStringDialogDecoder
@@ -119,6 +135,11 @@ public object DesktopGameMessageDecoderRepository {
                 bind(OpNpc3V1Decoder())
                 bind(OpNpc4V1Decoder())
                 bind(OpNpc5V1Decoder())
+                bind(OpNpc1V2Decoder())
+                bind(OpNpc2V2Decoder())
+                bind(OpNpc3V2Decoder())
+                bind(OpNpc4V2Decoder())
+                bind(OpNpc5V2Decoder())
                 bind(OpNpc6Decoder())
                 bind(OpNpcTDecoder())
 
@@ -127,6 +148,11 @@ public object DesktopGameMessageDecoderRepository {
                 bind(OpLoc3V1Decoder())
                 bind(OpLoc4V1Decoder())
                 bind(OpLoc5V1Decoder())
+                bind(OpLoc1V2Decoder())
+                bind(OpLoc2V2Decoder())
+                bind(OpLoc3V2Decoder())
+                bind(OpLoc4V2Decoder())
+                bind(OpLoc5V2Decoder())
                 bind(OpLoc6Decoder())
                 bind(OpLocTDecoder())
 
@@ -135,6 +161,11 @@ public object DesktopGameMessageDecoderRepository {
                 bind(OpObj3V1Decoder())
                 bind(OpObj4V1Decoder())
                 bind(OpObj5V1Decoder())
+                bind(OpObj1V2Decoder())
+                bind(OpObj2V2Decoder())
+                bind(OpObj3V2Decoder())
+                bind(OpObj4V2Decoder())
+                bind(OpObj5V2Decoder())
                 bind(OpObj6Decoder())
                 bind(OpObjTDecoder())
 
@@ -169,6 +200,7 @@ public object DesktopGameMessageDecoderRepository {
                 bind(ResumePNameDialogDecoder())
                 bind(ResumePStringDialogDecoder())
                 bind(ResumePCountDialogDecoder())
+                bind(ResumePCountDialogLongDecoder())
                 bind(ResumePObjDialogDecoder())
 
                 bind(FriendChatKickDecoder())

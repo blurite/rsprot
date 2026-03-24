@@ -3,7 +3,7 @@ package net.rsprot.protocol.game.outgoing.codec.map
 import net.rsprot.buffer.JagByteBuf
 import net.rsprot.crypto.cipher.StreamCipher
 import net.rsprot.protocol.ServerProt
-import net.rsprot.protocol.game.outgoing.codec.map.util.encodeRegion
+import net.rsprot.protocol.game.outgoing.codec.map.util.encodeRegionV1
 import net.rsprot.protocol.game.outgoing.map.RebuildRegionV1
 import net.rsprot.protocol.game.outgoing.prot.GameServerProt
 import net.rsprot.protocol.message.codec.MessageEncoder
@@ -16,10 +16,10 @@ public class RebuildRegionV1Encoder : MessageEncoder<RebuildRegionV1> {
         buffer: JagByteBuf,
         message: RebuildRegionV1,
     ) {
-        buffer.p2(message.zoneZ)
+        buffer.p2Alt1(message.zoneZ)
         buffer.p2Alt3(message.zoneX)
-        buffer.p1Alt3(if (message.reload) 1 else 0)
+        buffer.p1(if (message.reload) 1 else 0)
 
-        encodeRegion(buffer, message.zones)
+        encodeRegionV1(buffer, message.zones)
     }
 }

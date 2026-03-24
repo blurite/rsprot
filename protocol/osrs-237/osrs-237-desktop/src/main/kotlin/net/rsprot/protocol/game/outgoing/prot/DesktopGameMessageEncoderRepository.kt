@@ -2,16 +2,11 @@ package net.rsprot.protocol.game.outgoing.prot
 
 import net.rsprot.compression.provider.HuffmanCodecProvider
 import net.rsprot.protocol.ProtRepository
-import net.rsprot.protocol.game.outgoing.codec.camera.CamLookAtEasedCoordV1Encoder
 import net.rsprot.protocol.game.outgoing.codec.camera.CamLookAtEasedCoordV2Encoder
-import net.rsprot.protocol.game.outgoing.codec.camera.CamLookAtV1Encoder
 import net.rsprot.protocol.game.outgoing.codec.camera.CamLookAtV2Encoder
 import net.rsprot.protocol.game.outgoing.codec.camera.CamModeEncoder
-import net.rsprot.protocol.game.outgoing.codec.camera.CamMoveToArcV1Encoder
 import net.rsprot.protocol.game.outgoing.codec.camera.CamMoveToArcV2Encoder
-import net.rsprot.protocol.game.outgoing.codec.camera.CamMoveToCyclesV1Encoder
 import net.rsprot.protocol.game.outgoing.codec.camera.CamMoveToCyclesV2Encoder
-import net.rsprot.protocol.game.outgoing.codec.camera.CamMoveToV1Encoder
 import net.rsprot.protocol.game.outgoing.codec.camera.CamMoveToV2Encoder
 import net.rsprot.protocol.game.outgoing.codec.camera.CamResetEncoder
 import net.rsprot.protocol.game.outgoing.codec.camera.CamRotateByEncoder
@@ -43,7 +38,8 @@ import net.rsprot.protocol.game.outgoing.codec.interfaces.IfSetAnimEncoder
 import net.rsprot.protocol.game.outgoing.codec.interfaces.IfSetColourEncoder
 import net.rsprot.protocol.game.outgoing.codec.interfaces.IfSetEventsV2Encoder
 import net.rsprot.protocol.game.outgoing.codec.interfaces.IfSetHideEncoder
-import net.rsprot.protocol.game.outgoing.codec.interfaces.IfSetModelEncoder
+import net.rsprot.protocol.game.outgoing.codec.interfaces.IfSetModelV1Encoder
+import net.rsprot.protocol.game.outgoing.codec.interfaces.IfSetModelV2Encoder
 import net.rsprot.protocol.game.outgoing.codec.interfaces.IfSetNpcHeadActiveEncoder
 import net.rsprot.protocol.game.outgoing.codec.interfaces.IfSetNpcHeadEncoder
 import net.rsprot.protocol.game.outgoing.codec.interfaces.IfSetObjectEncoder
@@ -63,7 +59,9 @@ import net.rsprot.protocol.game.outgoing.codec.logout.LogoutEncoder
 import net.rsprot.protocol.game.outgoing.codec.logout.LogoutTransferEncoder
 import net.rsprot.protocol.game.outgoing.codec.logout.LogoutWithReasonEncoder
 import net.rsprot.protocol.game.outgoing.codec.map.RebuildNormalV1Encoder
+import net.rsprot.protocol.game.outgoing.codec.map.RebuildNormalV2Encoder
 import net.rsprot.protocol.game.outgoing.codec.map.RebuildRegionV1Encoder
+import net.rsprot.protocol.game.outgoing.codec.map.RebuildRegionV2Encoder
 import net.rsprot.protocol.game.outgoing.codec.map.RebuildWorldEntityV3Encoder
 import net.rsprot.protocol.game.outgoing.codec.misc.client.HideLocOpsEncoder
 import net.rsprot.protocol.game.outgoing.codec.misc.client.HideNpcOpsEncoder
@@ -80,7 +78,6 @@ import net.rsprot.protocol.game.outgoing.codec.misc.client.ServerTickEndEncoder
 import net.rsprot.protocol.game.outgoing.codec.misc.client.SetHeatmapEnabledEncoder
 import net.rsprot.protocol.game.outgoing.codec.misc.client.SetInteractionModeEncoder
 import net.rsprot.protocol.game.outgoing.codec.misc.client.SiteSettingsEncoder
-import net.rsprot.protocol.game.outgoing.codec.misc.client.UpdateRebootTimerV1Encoder
 import net.rsprot.protocol.game.outgoing.codec.misc.client.UpdateRebootTimerV2Encoder
 import net.rsprot.protocol.game.outgoing.codec.misc.client.UpdateUid192Encoder
 import net.rsprot.protocol.game.outgoing.codec.misc.client.UrlOpenEncoder
@@ -90,7 +87,6 @@ import net.rsprot.protocol.game.outgoing.codec.misc.player.ChatFilterSettingsEnc
 import net.rsprot.protocol.game.outgoing.codec.misc.player.ChatFilterSettingsPrivateChatEncoder
 import net.rsprot.protocol.game.outgoing.codec.misc.player.MessageGameEncoder
 import net.rsprot.protocol.game.outgoing.codec.misc.player.RunClientScriptEncoder
-import net.rsprot.protocol.game.outgoing.codec.misc.player.SetMapFlagV1Encoder
 import net.rsprot.protocol.game.outgoing.codec.misc.player.SetMapFlagV2Encoder
 import net.rsprot.protocol.game.outgoing.codec.misc.player.SetPlayerOpEncoder
 import net.rsprot.protocol.game.outgoing.codec.misc.player.TriggerOnDialogAbortEncoder
@@ -144,7 +140,9 @@ import net.rsprot.protocol.game.outgoing.codec.zone.payload.LocMergeEncoder
 import net.rsprot.protocol.game.outgoing.codec.zone.payload.MapAnimEncoder
 import net.rsprot.protocol.game.outgoing.codec.zone.payload.SoundAreaEncoder
 import net.rsprot.protocol.game.outgoing.map.RebuildLoginV1
+import net.rsprot.protocol.game.outgoing.map.RebuildLoginV2
 import net.rsprot.protocol.game.outgoing.map.RebuildNormalV1
+import net.rsprot.protocol.game.outgoing.map.RebuildNormalV2
 import net.rsprot.protocol.message.codec.outgoing.MessageEncoderRepository
 import net.rsprot.protocol.message.codec.outgoing.MessageEncoderRepositoryBuilder
 
@@ -175,7 +173,8 @@ public object DesktopGameMessageEncoderRepository {
                 bind(IfSetNpcHeadEncoder())
                 bind(IfSetNpcHeadActiveEncoder())
                 bind(IfSetPlayerHeadEncoder())
-                bind(IfSetModelEncoder())
+                bind(IfSetModelV1Encoder())
+                bind(IfSetModelV2Encoder())
                 bind(IfSetPlayerModelBaseColourEncoder())
                 bind(IfSetPlayerModelBodyTypeEncoder())
                 bind(IfSetPlayerModelObjEncoder())
@@ -223,7 +222,10 @@ public object DesktopGameMessageEncoderRepository {
                 bind(WorldEntityInfoV7Encoder())
 
                 bindWithAlts(RebuildNormalV1Encoder(), RebuildLoginV1::class.java, RebuildNormalV1::class.java)
+                bindWithAlts(RebuildNormalV2Encoder(), RebuildLoginV2::class.java, RebuildNormalV2::class.java)
+
                 bind(RebuildRegionV1Encoder())
+                bind(RebuildRegionV2Encoder())
                 bind(RebuildWorldEntityV3Encoder())
 
                 bind(VarpSmallEncoder())
@@ -234,15 +236,10 @@ public object DesktopGameMessageEncoderRepository {
                 bind(CamShakeEncoder())
                 bind(CamResetEncoder())
                 bind(CamSmoothResetEncoder())
-                bind(CamMoveToV1Encoder())
                 bind(CamMoveToV2Encoder())
-                bind(CamMoveToCyclesV1Encoder())
                 bind(CamMoveToCyclesV2Encoder())
-                bind(CamMoveToArcV1Encoder())
                 bind(CamMoveToArcV2Encoder())
-                bind(CamLookAtV1Encoder())
                 bind(CamLookAtV2Encoder())
-                bind(CamLookAtEasedCoordV1Encoder())
                 bind(CamLookAtEasedCoordV2Encoder())
                 bind(CamRotateByEncoder())
                 bind(CamRotateToEncoder())
@@ -280,7 +277,6 @@ public object DesktopGameMessageEncoderRepository {
 
                 bind(UpdateRunWeightEncoder())
                 bind(UpdateRunEnergyEncoder())
-                bind(SetMapFlagV1Encoder())
                 bind(SetMapFlagV2Encoder())
                 bind(SetPlayerOpEncoder())
                 bind(UpdateStatV2Encoder())
@@ -296,7 +292,6 @@ public object DesktopGameMessageEncoderRepository {
 
                 bind(HintArrowEncoder())
                 bind(ResetAnimsEncoder())
-                bind(UpdateRebootTimerV1Encoder())
                 bind(UpdateRebootTimerV2Encoder())
                 bind(SetHeatmapEnabledEncoder())
                 bind(MinimapToggleEncoder())
