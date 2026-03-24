@@ -3,17 +3,17 @@ package net.rsprot.protocol.game.outgoing.codec.map
 import net.rsprot.buffer.JagByteBuf
 import net.rsprot.crypto.cipher.StreamCipher
 import net.rsprot.protocol.ServerProt
-import net.rsprot.protocol.game.outgoing.map.StaticRebuildMessage
+import net.rsprot.protocol.game.outgoing.map.StaticRebuildMessageV1
 import net.rsprot.protocol.game.outgoing.prot.GameServerProt
 import net.rsprot.protocol.message.codec.MessageEncoder
 
-public class RebuildNormalEncoder : MessageEncoder<StaticRebuildMessage> {
-    override val prot: ServerProt = GameServerProt.REBUILD_NORMAL
+public class RebuildNormalV1Encoder : MessageEncoder<StaticRebuildMessageV1> {
+    override val prot: ServerProt = GameServerProt.REBUILD_NORMAL_V1
 
     override fun encode(
         streamCipher: StreamCipher,
         buffer: JagByteBuf,
-        message: StaticRebuildMessage,
+        message: StaticRebuildMessageV1,
     ) {
         // We have to use the same encoder as it relies on the prot
         // under the hood to map the encoders down

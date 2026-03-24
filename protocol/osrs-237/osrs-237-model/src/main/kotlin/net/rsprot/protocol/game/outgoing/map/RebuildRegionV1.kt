@@ -19,7 +19,7 @@ import net.rsprot.protocol.message.OutgoingGameMessage
  * than this one.
  * @property zones the list of zones to build, in a specific order.
  */
-public class RebuildRegion private constructor(
+public class RebuildRegionV1 private constructor(
     private val _zoneX: UShort,
     private val _zoneZ: UShort,
     public val reload: Boolean,
@@ -74,7 +74,7 @@ public class RebuildRegion private constructor(
         if (this === other) return true
         if (javaClass != other?.javaClass) return false
 
-        other as RebuildRegion
+        other as RebuildRegionV1
 
         if (_zoneX != other._zoneX) return false
         if (_zoneZ != other._zoneZ) return false
@@ -93,7 +93,7 @@ public class RebuildRegion private constructor(
     }
 
     override fun toString(): String =
-        "RebuildRegion(" +
+        "RebuildRegionV1(" +
             "zoneX=$zoneX, " +
             "zoneZ=$zoneZ, " +
             "reload=$reload, " +

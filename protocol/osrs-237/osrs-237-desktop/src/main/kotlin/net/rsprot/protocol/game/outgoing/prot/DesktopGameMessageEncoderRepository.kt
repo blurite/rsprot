@@ -62,8 +62,8 @@ import net.rsprot.protocol.game.outgoing.codec.inv.UpdateInvStopTransmitEncoder
 import net.rsprot.protocol.game.outgoing.codec.logout.LogoutEncoder
 import net.rsprot.protocol.game.outgoing.codec.logout.LogoutTransferEncoder
 import net.rsprot.protocol.game.outgoing.codec.logout.LogoutWithReasonEncoder
-import net.rsprot.protocol.game.outgoing.codec.map.RebuildNormalEncoder
-import net.rsprot.protocol.game.outgoing.codec.map.RebuildRegionEncoder
+import net.rsprot.protocol.game.outgoing.codec.map.RebuildNormalV1Encoder
+import net.rsprot.protocol.game.outgoing.codec.map.RebuildRegionV1Encoder
 import net.rsprot.protocol.game.outgoing.codec.map.RebuildWorldEntityV2Encoder
 import net.rsprot.protocol.game.outgoing.codec.misc.client.HideLocOpsEncoder
 import net.rsprot.protocol.game.outgoing.codec.misc.client.HideNpcOpsEncoder
@@ -143,8 +143,8 @@ import net.rsprot.protocol.game.outgoing.codec.zone.payload.LocDelEncoder
 import net.rsprot.protocol.game.outgoing.codec.zone.payload.LocMergeEncoder
 import net.rsprot.protocol.game.outgoing.codec.zone.payload.MapAnimEncoder
 import net.rsprot.protocol.game.outgoing.codec.zone.payload.SoundAreaEncoder
-import net.rsprot.protocol.game.outgoing.map.RebuildLogin
-import net.rsprot.protocol.game.outgoing.map.RebuildNormal
+import net.rsprot.protocol.game.outgoing.map.RebuildLoginV1
+import net.rsprot.protocol.game.outgoing.map.RebuildNormalV1
 import net.rsprot.protocol.message.codec.outgoing.MessageEncoderRepository
 import net.rsprot.protocol.message.codec.outgoing.MessageEncoderRepositoryBuilder
 
@@ -222,8 +222,8 @@ public object DesktopGameMessageEncoderRepository {
                 bind(SetActiveWorldV2Encoder())
                 bind(WorldEntityInfoV7Encoder())
 
-                bindWithAlts(RebuildNormalEncoder(), RebuildLogin::class.java, RebuildNormal::class.java)
-                bind(RebuildRegionEncoder())
+                bindWithAlts(RebuildNormalV1Encoder(), RebuildLoginV1::class.java, RebuildNormalV1::class.java)
+                bind(RebuildRegionV1Encoder())
                 bind(RebuildWorldEntityV2Encoder())
 
                 bind(VarpSmallEncoder())
