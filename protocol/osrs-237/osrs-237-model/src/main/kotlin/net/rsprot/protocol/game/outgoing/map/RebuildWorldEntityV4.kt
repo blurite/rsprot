@@ -2,7 +2,7 @@ package net.rsprot.protocol.game.outgoing.map
 
 import net.rsprot.protocol.ServerProtCategory
 import net.rsprot.protocol.game.outgoing.GameServerProtCategory
-import net.rsprot.protocol.game.outgoing.map.util.RebuildRegionZone
+import net.rsprot.protocol.game.outgoing.map.util.ReferenceZone
 import net.rsprot.protocol.message.OutgoingGameMessage
 
 /**
@@ -12,15 +12,10 @@ import net.rsprot.protocol.message.OutgoingGameMessage
  * @property baseZ the absolute base z coordinate of the world entity in the instance land
  * @property zones the list of zones that will be built into the root world
  */
-
-@Deprecated(
-    message = "Deprecated. Use RebuildWorldEntityV4.",
-    replaceWith = ReplaceWith("RebuildWorldEntityV4"),
-)
-public class RebuildWorldEntityV3 private constructor(
+public class RebuildWorldEntityV4 private constructor(
     private val _baseX: UShort,
     private val _baseZ: UShort,
-    public val zones: List<RebuildRegionZone?>,
+    public val zones: List<ReferenceZone?>,
 ) : OutgoingGameMessage {
     public constructor(
         baseX: Int,
@@ -64,21 +59,13 @@ public class RebuildWorldEntityV3 private constructor(
         val notNullCount = zones.count { zone -> zone != null }
         val bitCount = (27 * notNullCount) + (zones.size - notNullCount)
         val bitBufByteCount = (bitCount + 7) ushr 3
-        // While a little wasteful, it is expensive to determine the true
-        // number of bytes necessary since we only transmit xteas for
-        // each referenced mapsquare at most one time
-        // In here, we just assume each zone belongs in a unique mapsquare
-        // The buffers are pooled anyway so it isn't like we're typically
-        // allocating a ton here, just picking a larger buffer out of the pool.
-        val xteaSize = notNullCount * (4 * Int.SIZE_BYTES)
         return header +
             Short.SIZE_BYTES +
-            bitBufByteCount +
-            xteaSize
+            bitBufByteCount
     }
 
     override fun toString(): String {
-        return "RebuildWorldEntityV3(" +
+        return "RebuildWorldEntityV4(" +
             "zones=$zones, " +
             "baseX=$baseX, " +
             "baseZ=$baseZ" +
@@ -97,7 +84,6 @@ public class RebuildWorldEntityV3 private constructor(
          * This 'provide' function will be called with the relative-to-worldentity zone coordinates,
          * so starting with 0,0 and ending before sizeX,sizeZ. The server is responsible for
          * looking up the actual zone that was copied for that world entity.
-         * In order to calculate the mapsquare id for xtea keys, use [getMapsquareId].
          *
          * @param zoneX the zone x coordinate of the region zone, relative to the south-westernmost zone
          * @param zoneZ the zone z coordinate of the region zone, relative to the south-westernmost zone
@@ -108,18 +94,7 @@ public class RebuildWorldEntityV3 private constructor(
             zoneX: Int,
             zoneZ: Int,
             level: Int,
-        ): RebuildRegionZone?
-
-        /**
-         * Calculates the mapsquare id based on the **absolute** zone coordinates,
-         * not the relative ones to the worldentity.
-         * @param zoneX the x coordinate of the zone
-         * @param zoneZ the z coordinate of the zone
-         */
-        public fun getMapsquareId(
-            zoneX: Int,
-            zoneZ: Int,
-        ): Int = (zoneX and 0x7FF ushr 3 shl 8) or (zoneZ and 0x7FF ushr 3)
+        ): ReferenceZone?
     }
 
     private companion object {
@@ -136,8 +111,8 @@ public class RebuildWorldEntityV3 private constructor(
             sizeX: Int,
             sizeZ: Int,
             zoneProvider: RebuildWorldEntityZoneProvider,
-        ): List<RebuildRegionZone?> {
-            val zones = ArrayList<RebuildRegionZone?>(4 * sizeX * sizeZ)
+        ): List<ReferenceZone?> {
+            val zones = ArrayList<ReferenceZone?>(4 * sizeX * sizeZ)
             for (level in 0..<4) {
                 for (zoneX in 0..<sizeX) {
                     for (zoneZ in 0..<sizeZ) {

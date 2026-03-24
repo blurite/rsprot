@@ -19,6 +19,10 @@ import net.rsprot.protocol.message.OutgoingGameMessage
  * than this one.
  * @property zones the list of zones to build, in a specific order.
  */
+@Deprecated(
+    message = "Deprecated. Use RebuildRegionV2.",
+    replaceWith = ReplaceWith("RebuildRegionV2"),
+)
 public class RebuildRegionV1 private constructor(
     private val _zoneX: UShort,
     private val _zoneZ: UShort,

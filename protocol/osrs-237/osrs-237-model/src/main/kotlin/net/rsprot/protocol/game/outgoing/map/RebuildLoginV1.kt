@@ -21,6 +21,10 @@ import net.rsprot.protocol.message.ByteBufHolderWrapperFooterMessage
  * @property gpiInitBlock the initialization block of the player info protocol,
  * used to inform the client of all the low resolution coordinates of everyone in the game.
  */
+@Deprecated(
+    message = "Deprecated. Use RebuildLoginV2.",
+    replaceWith = ReplaceWith("RebuildLoginV2"),
+)
 public class RebuildLoginV1 private constructor(
     private val _zoneX: UShort,
     private val _zoneZ: UShort,

@@ -13,6 +13,10 @@ import net.rsprot.protocol.game.outgoing.map.util.buildXteaKeyList
  * @property worldArea the current world area in which the player resides.
  * @property keys the list of xtea keys needed to decrypt the map.
  */
+@Deprecated(
+    message = "Deprecated. Use RebuildNormalV2.",
+    replaceWith = ReplaceWith("RebuildNormalV2"),
+)
 public class RebuildNormalV1 private constructor(
     private val _zoneX: UShort,
     private val _zoneZ: UShort,
