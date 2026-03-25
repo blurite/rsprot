@@ -25,7 +25,7 @@ public class NpcHeadCustomisationEncoder : PrecomputedExtendedInfoEncoder<HeadCu
         }
         val capacity =
             3 + (customisation.models.size * 2) +
-                (customisation.recolours.size * 2) +
+                (customisation.recolours.size * 4) +
                 (customisation.retexture.size * 2)
         val buffer =
             alloc

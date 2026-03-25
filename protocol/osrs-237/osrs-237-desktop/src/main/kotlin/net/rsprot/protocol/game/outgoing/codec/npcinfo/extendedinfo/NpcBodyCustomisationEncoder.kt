@@ -24,7 +24,7 @@ public class NpcBodyCustomisationEncoder : PrecomputedExtendedInfoEncoder<BodyCu
             return buffer
         }
         val capacity =
-            3 + (customisation.models.size * 2) +
+            3 + (customisation.models.size * 4) +
                 (customisation.recolours.size * 2) +
                 (customisation.retexture.size * 2)
         val buffer =
