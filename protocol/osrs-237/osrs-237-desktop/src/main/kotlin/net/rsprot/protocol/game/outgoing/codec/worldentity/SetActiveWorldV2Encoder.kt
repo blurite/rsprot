@@ -3,6 +3,7 @@ package net.rsprot.protocol.game.outgoing.codec.worldentity
 import net.rsprot.buffer.JagByteBuf
 import net.rsprot.crypto.cipher.StreamCipher
 import net.rsprot.protocol.ServerProt
+import net.rsprot.protocol.game.outgoing.info.worldentityinfo.WorldEntityInfo
 import net.rsprot.protocol.game.outgoing.prot.GameServerProt
 import net.rsprot.protocol.game.outgoing.worldentity.SetActiveWorldV2
 import net.rsprot.protocol.message.codec.MessageEncoder
@@ -20,7 +21,7 @@ public class SetActiveWorldV2Encoder : MessageEncoder<SetActiveWorldV2> {
         when (val type = message.worldType) {
             is SetActiveWorldV2.RootWorldType -> {
                 // The slot is ignored for root world updates
-                buffer.p2(-1)
+                buffer.p2(WorldEntityInfo.ROOT_WORLD)
                 buffer.p1(type.activeLevel)
             }
             is SetActiveWorldV2.DynamicWorldType -> {
