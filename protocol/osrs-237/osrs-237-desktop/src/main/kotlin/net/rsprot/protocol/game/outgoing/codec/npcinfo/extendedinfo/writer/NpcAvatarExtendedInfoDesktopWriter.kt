@@ -159,7 +159,6 @@ public class NpcAvatarExtendedInfoDesktopWriter :
         outFlag = outFlag or pCached(buffer, clientFlag, TINTING, blocks.tinting)
         // old face coord
         outFlag = outFlag or pCached(buffer, clientFlag, HEAD_CUSTOMISATION, blocks.headCustomisation)
-        // LINE
 
         if (outFlag != clientFlag) {
             val finalPos = buffer.writerIndex()

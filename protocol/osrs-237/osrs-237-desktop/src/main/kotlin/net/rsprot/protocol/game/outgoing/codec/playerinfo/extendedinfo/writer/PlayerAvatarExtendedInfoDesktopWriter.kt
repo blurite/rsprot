@@ -113,6 +113,7 @@ public class PlayerAvatarExtendedInfoDesktopWriter :
         }
 
         outFlag = outFlag or pCached(buffer, clientFlag, APPEARANCE, blocks.appearance)
+        // old hits
         outFlag = outFlag or pCached(buffer, clientFlag, TEMP_MOVE_SPEED, blocks.temporaryMoveSpeed)
         outFlag = outFlag or pCached(buffer, clientFlag, EXACT_MOVE, blocks.exactMove)
         outFlag = outFlag or pCached(buffer, clientFlag, SEQUENCE, blocks.sequence)
