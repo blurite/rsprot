@@ -236,6 +236,7 @@ public class NpcAvatarExtendedInfo(
      * a [sourceIndex] being defined, the one who dealt the hit)
      * @param value the value to show over the hitmark.
      * @param delay the delay in client cycles (20ms/cc) until the hitmark renders.
+     * @param limit the maximum number of hitmarks that may render at this stage.
      */
     public fun addHitMark(
         sourceIndex: Int,
@@ -243,9 +244,10 @@ public class NpcAvatarExtendedInfo(
         otherType: Int = sourceType,
         value: Int,
         delay: Int = 0,
+        limit: Int = 4,
     ) {
         checkCommunicationThread()
-        if (blocks.hit.hitMarkList.size >= 0xFF) {
+        if (blocks.hitmarkList.size >= 0xFF) {
             return
         }
         verify {
@@ -253,6 +255,9 @@ public class NpcAvatarExtendedInfo(
             require(sourceIndex == -1 || sourceIndex in 0..0x107FF) {
                 "Unexpected source index: $sourceIndex, expected values: -1 to reset, " +
                     "0-65535 for NPCs, 65536-67583 for players"
+            }
+            require(limit in 1..20) {
+                "Limit must be in range of 1..20"
             }
         }
 
@@ -269,7 +274,7 @@ public class NpcAvatarExtendedInfo(
         require(delay in UNSIGNED_SMART_1_OR_2_RANGE) {
             "Unexpected delay: $delay, expected range $UNSIGNED_SMART_1_OR_2_RANGE"
         }
-        blocks.hit.hitMarkList +=
+        blocks.hitmarkList.add(
             HitMark(
                 sourceIndex,
                 sourceType.toUShort(),
@@ -277,112 +282,10 @@ public class NpcAvatarExtendedInfo(
                 otherType.toUShort(),
                 value.toUShort(),
                 delay.toUShort(),
-            )
-        flags = flags or HITS
-    }
-
-    /**
-     * Removes the oldest currently showing hitmark on this avatar,
-     * if one exists.
-     * @param delay the delay in client cycles (20ms/cc) until the hitmark is removed.
-     */
-    public fun removeHitMark(delay: Int = 0) {
-        checkCommunicationThread()
-        if (blocks.hit.hitMarkList.size >= 0xFF) {
-            return
-        }
-        require(delay in UNSIGNED_SMART_1_OR_2_RANGE) {
-            "Unexpected delay: $delay, expected range $UNSIGNED_SMART_1_OR_2_RANGE"
-        }
-        blocks.hit.hitMarkList += HitMark(0x7FFEu, delay.toUShort())
-        flags = flags or HITS
-    }
-
-    /**
-     * Adds a simple hitmark on this avatar.
-     * @param sourceIndex the index of the character that dealt the hit.
-     * If the target avatar is a player, add 0x10000 to the real index value (0-2048).
-     * If the target avatar is a NPC, set the index as it is.
-     * If there is no source, set the index to -1.
-     * The index will be used for tinting purposes, as both the player who dealt
-     * the hit, and the recipient will see a tinted variant.
-     * Everyone else, however, will see a regular darkened hit mark.
-     * @param sourceType the multi hitmark id that supports tinted and darkened variants.
-     * If the value is -1, the hitmark will not render to the player with the source index,
-     * only everyone else.
-     * @param otherType the hitmark id to render to anyone that isn't the recipient,
-     * or the one who dealt the hit. This will generally be a darkened variant.
-     * If the hitmark should only render to the local player, set the [otherType]
-     * value to -1, forcing it to only render to the recipient (and in the case of
-     * a [sourceIndex] being defined, the one who dealt the hit)
-     * @param value the value to show over the hitmark.
-     * @param selfSoakType the multi hitmark id that supports tinted and darkened variants,
-     * shown as soaking next to the normal hitmark.
-     * @param otherSoakType the hitmark id to render to anyone that isn't the recipient,
-     * or the one who dealt the hit. This will generally be a darkened variant.
-     * Unlike the [otherType], this does not support -1, as it is not possible to show partial
-     * soaked hitmarks.
-     * @param delay the delay in client cycles (20ms/cc) until the hitmark renders.
-     */
-    @JvmOverloads
-    public fun addSoakedHitMark(
-        sourceIndex: Int,
-        sourceType: Int,
-        otherType: Int = sourceType,
-        value: Int,
-        selfSoakType: Int,
-        otherSoakType: Int = selfSoakType,
-        soakValue: Int,
-        delay: Int = 0,
-    ) {
-        checkCommunicationThread()
-        if (blocks.hit.hitMarkList.size >= 0xFF) {
-            return
-        }
-        verify {
-            // Index being incorrect would not lead to a crash
-            require(sourceIndex == -1 || sourceIndex in 0..0x107FF) {
-                "Unexpected source index: $sourceIndex, expected values: -1 to reset, " +
-                    "0-65535 for NPCs, 65536-67583 for players"
-            }
-        }
-
-        // All the properties below here would result in a crash if an invalid input was provided.
-        require(sourceType in HIT_TYPE_RANGE) {
-            "Unexpected sourceType: $sourceType, expected range $HIT_TYPE_RANGE"
-        }
-        require(otherType in HIT_TYPE_RANGE) {
-            "Unexpected otherType: $otherType, expected range $HIT_TYPE_RANGE"
-        }
-        require(value in UNSIGNED_SMART_1_OR_2_RANGE) {
-            "Unexpected value: $value, expected range $UNSIGNED_SMART_1_OR_2_RANGE"
-        }
-        require(selfSoakType in UNSIGNED_SMART_1_OR_2_RANGE) {
-            "Unexpected selfSoakType: $selfSoakType, expected range $UNSIGNED_SMART_1_OR_2_RANGE"
-        }
-        require(otherSoakType in UNSIGNED_SMART_1_OR_2_RANGE) {
-            "Unexpected otherSoakType: $otherSoakType, expected range $UNSIGNED_SMART_1_OR_2_RANGE"
-        }
-        require(soakValue in UNSIGNED_SMART_1_OR_2_RANGE) {
-            "Unexpected soakValue: $soakValue, expected range $UNSIGNED_SMART_1_OR_2_RANGE"
-        }
-        require(delay in UNSIGNED_SMART_1_OR_2_RANGE) {
-            "Unexpected delay: $delay, expected range $UNSIGNED_SMART_1_OR_2_RANGE"
-        }
-        blocks.hit.hitMarkList +=
-            HitMark(
-                sourceIndex,
-                sourceType.toUShort(),
-                sourceType.toUShort(),
-                otherType.toUShort(),
-                value.toUShort(),
-                selfSoakType.toUShort(),
-                selfSoakType.toUShort(),
-                otherSoakType.toUShort(),
-                soakValue.toUShort(),
-                delay.toUShort(),
-            )
-        flags = flags or HITS
+                limit.toUByte(),
+            ),
+        )
+        flags = flags or HITMARKS
     }
 
     /**
@@ -418,7 +321,7 @@ public class NpcAvatarExtendedInfo(
         endTime: Int = 0,
     ) {
         checkCommunicationThread()
-        if (blocks.hit.headBarList.size >= 0xFF) {
+        if (blocks.headbarList.size >= 0xFF) {
             return
         }
         verify {
@@ -449,7 +352,7 @@ public class NpcAvatarExtendedInfo(
         require(endTime in UNSIGNED_SMART_1_OR_2_RANGE) {
             "Unexpected endTime: $endTime, expected range $UNSIGNED_SMART_1_OR_2_RANGE"
         }
-        blocks.hit.headBarList +=
+        blocks.headbarList.add(
             HeadBar(
                 sourceIndex,
                 sourceType.toUShort(),
@@ -458,8 +361,9 @@ public class NpcAvatarExtendedInfo(
                 endFill.toUByte(),
                 startTime.toUShort(),
                 endTime.toUShort(),
-            )
-        flags = flags or HITS
+            ),
+        )
+        flags = flags or HEADBARS
     }
 
     /**
@@ -1298,7 +1202,7 @@ public class NpcAvatarExtendedInfo(
         blocks.say.clear()
         blocks.exactMove.clear()
         blocks.spotAnims.clear()
-        blocks.hit.clear()
+        blocks.hitmarkList.clear()
         blocks.tinting.clear()
         blocks.faceAngle.clear()
         blocks.transformation.clear()
@@ -1513,8 +1417,11 @@ public class NpcAvatarExtendedInfo(
         if (flags and SPOTANIM != 0) {
             blocks.spotAnims.clear()
         }
-        if (flags and HITS != 0) {
-            blocks.hit.clear()
+        if (flags and HITMARKS != 0) {
+            blocks.hitmarkList.clear()
+        }
+        if (flags and HEADBARS != 0) {
+            blocks.headbarList.clear()
         }
         if (flags and TINTING != 0) {
             blocks.tinting.clear()
@@ -1571,12 +1478,13 @@ public class NpcAvatarExtendedInfo(
         // "Static" flags, the bit values here are irrelevant
         public const val TINTING: Int = 0x100
         public const val SAY: Int = 0x200
-        public const val HITS: Int = 0x400
+        public const val HITMARKS: Int = 0x400
         public const val TRANSFORMATION: Int = 0x1000
         public const val SEQUENCE: Int = 0x2000
         public const val EXACT_MOVE: Int = 0x4000
         public const val SPOTANIM: Int = 0x8000
         public const val FACE_ANGLE: Int = 0x10000
+        public const val HEADBARS: Int = 0x20000
 
         /**
          * Executes the [block] if input verification is enabled,

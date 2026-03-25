@@ -14,7 +14,8 @@ import net.rsprot.protocol.internal.game.outgoing.info.npcinfo.extendedinfo.Tran
 import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.ExactMove
 import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.FaceAngle
 import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.FacePathingEntity
-import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.Hit
+import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.HeadbarList
+import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.HitmarkList
 import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.Say
 import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.Sequence
 import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.SpotAnimList
@@ -38,7 +39,8 @@ public data class NpcExtendedInfoEncoders(
     public val bodyCustomisation: PrecomputedExtendedInfoEncoder<BodyCustomisation>,
     public val transformation: PrecomputedExtendedInfoEncoder<Transformation>,
     public val combatLevelChange: PrecomputedExtendedInfoEncoder<CombatLevelChange>,
-    public val hit: OnDemandExtendedInfoEncoder<Hit>,
+    public val hitmarkList: OnDemandExtendedInfoEncoder<HitmarkList>,
+    public val headbarList: OnDemandExtendedInfoEncoder<HeadbarList>,
     public val faceAngle: PrecomputedExtendedInfoEncoder<FaceAngle>,
     public val facePathingEntity: PrecomputedExtendedInfoEncoder<FacePathingEntity>,
     public val baseAnimationSet: PrecomputedExtendedInfoEncoder<BaseAnimationSet>,

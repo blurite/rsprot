@@ -1,11 +1,11 @@
-package net.rsprot.protocol.game.outgoing.codec.playerinfo.extendedinfo
+package net.rsprot.protocol.game.outgoing.codec.npcinfo.extendedinfo
 
 import net.rsprot.buffer.JagByteBuf
 import net.rsprot.protocol.internal.game.outgoing.info.encoder.OnDemandExtendedInfoEncoder
 import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.HitmarkList
 
 @Suppress("DuplicatedCode")
-public class PlayerHitEncoder : OnDemandExtendedInfoEncoder<HitmarkList> {
+public class NpcHitmarkEncoder : OnDemandExtendedInfoEncoder<HitmarkList> {
     override fun encode(
         buffer: JagByteBuf,
         localPlayerIndex: Int,
@@ -16,18 +16,12 @@ public class PlayerHitEncoder : OnDemandExtendedInfoEncoder<HitmarkList> {
         buffer.skipWrite(1)
         var count = 0
         for (hit in extendedInfo.elements) {
-            // If the hit appears on us, or we were the source of the hit in the first place
-            val type =
-                when (localPlayerIndex) {
-                    (hit.sourceIndex - 0x10_000) -> hit.sourceType
-                    updatedAvatarIndex -> hit.selfType
-                    else -> hit.otherType
-                }
+            // If we were the source of the hit in the first place
+            val tinted = localPlayerIndex == (hit.sourceIndex - 0x10_000)
+            val type = if (tinted) hit.selfType else hit.otherType
             // Skip the hitsplat if it isn't meant to render to us
             // Should be noted that we only check this on the main types, and not soak ones
-            if (type == UShort.MAX_VALUE) {
-                continue
-            }
+            if (type == UShort.MAX_VALUE) continue
             buffer.pSmart1or2(type.toInt())
             buffer.pSmart1or2(hit.value.toInt())
             buffer.pSmart1or2(hit.delay.toInt())

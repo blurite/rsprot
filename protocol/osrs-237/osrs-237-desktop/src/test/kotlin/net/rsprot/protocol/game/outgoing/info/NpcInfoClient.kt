@@ -57,18 +57,22 @@ class NpcInfoClient {
             val index = updatedNpcSlot[i]
             val npc = checkNotNull(cachedNpcs[index])
             var flag = buffer.g1()
-            if ((flag and 0x20) != 0) {
+            if ((flag and 0x4) != 0) {
                 val extra: Int = buffer.g1()
                 flag += extra shl 8
             }
-            if ((flag and 0x100) != 0) {
+            if ((flag and 0x4000) != 0) {
                 val extra: Int = buffer.g1()
                 flag += extra shl 16
             }
-            check(flag and (0x20 or 0x100 or 0x10).inv() == 0) {
+            if ((flag and 0x80000) != 0) {
+                val extra: Int = buffer.g1()
+                flag += extra shl 24
+            }
+            check(flag and (0x4 or 0x4000 or 0x80000 or 0x20).inv() == 0) {
                 "Extended info other than 'say' included!"
             }
-            if (flag and 0x10 != 0) {
+            if (flag and 0x20 != 0) {
                 val text = buffer.gjstr()
                 npc.overheadChat = text
             }
@@ -151,23 +155,24 @@ class NpcInfoClient {
                     npcSlot[npcSlotCount++] = index
                     npc.lastUpdateCycle = cycle
 
-                    npc.id = buffer.gBits(14)
-                    val deltaX = decodeDelta(large, buffer)
-                    val deltaZ = decodeDelta(large, buffer)
-                    val jump = buffer.gBits(1)
-                    val hasSpawnCycle = buffer.gBits(1) == 1
-                    if (hasSpawnCycle) {
-                        npc.spawnCycle = buffer.gBits(32)
-                    }
-                    val angle = NPC_TURN_ANGLES[buffer.gBits(3)]
+                    // aa
                     val extendedInfo = buffer.gBits(1)
                     if (extendedInfo == 1) {
                         updatedNpcSlot[updatedNpcSlotCount++] = index
                     }
+                    val angle = NPC_TURN_ANGLES[buffer.gBits(3)]
                     if (isNew) {
                         npc.turnAngle = angle
                         npc.angle = angle
                     }
+                    val deltaZ = decodeDelta(large, buffer)
+                    val deltaX = decodeDelta(large, buffer)
+                    val hasSpawnCycle = buffer.gBits(1) == 1
+                    if (hasSpawnCycle) {
+                        npc.spawnCycle = buffer.gBits(32)
+                    }
+                    val jump = buffer.gBits(1)
+                    npc.id = buffer.gBits(14)
                     // reset bas
                     if (npc.turnSpeed == 0) {
                         npc.angle = 0

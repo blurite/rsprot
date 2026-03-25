@@ -14,7 +14,8 @@ import net.rsprot.protocol.internal.game.outgoing.info.playerinfo.extendedinfo.T
 import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.ExactMove
 import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.FaceAngle
 import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.FacePathingEntity
-import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.Hit
+import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.HeadbarList
+import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.HitmarkList
 import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.Say
 import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.Sequence
 import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.SpotAnimList
@@ -50,7 +51,8 @@ public class PlayerAvatarExtendedInfoBlocks(
             ),
         )
     public val spotAnims: SpotAnimList = SpotAnimList(encoders(writers, PEnc::spotAnim))
-    public val hit: Hit = Hit(encoders(writers, PEnc::hit))
+    public val hitmarkList: HitmarkList = HitmarkList(encoders(writers, PEnc::hitmarkList))
+    public val headbarList: HeadbarList = HeadbarList(encoders(writers, PEnc::headbarList))
     public val tinting: PlayerTintingList = PlayerTintingList(encoders(writers, PEnc::tinting))
 
     private companion object {

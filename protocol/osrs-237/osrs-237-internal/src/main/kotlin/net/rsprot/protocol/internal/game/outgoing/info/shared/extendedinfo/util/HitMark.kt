@@ -19,16 +19,8 @@ package net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.util
  * value to -1, forcing it to only render to the recipient (and in the case of
  * a [sourceIndex] being defined, the one who dealt the hit)
  * @param value the value to show over the hitmark.
- * @param sourceSoakType the multi hitmark id that supports tinted and darkened variants,
- * shown as soaking next to the normal hitmark. This one renders to the one who dealt the hit.
- * @param selfSoakType the multi hitmark id that supports tinted and darkened variants,
- * shown as soaking next to the normal hitmark. This one renders to the recipient of the hit.
- * @param otherSoakType the hitmark id to render to anyone that isn't the recipient,
- * or the one who dealt the hit. This will generally be a darkened variant. This one renders to
- * everyone but the source and recipient of the hit.
- * Unlike the [otherType], this does not support -1, as it is not possible to show partial
- * soaked hitmarks.
  * @param delay the delay in client cycles (20ms/cc) until the hitmark renders.
+ * @param limit the maximum number of hitmarks that may render at the time of posting this hitmark.
  */
 public class HitMark(
     public var sourceIndex: Int,
@@ -36,32 +28,9 @@ public class HitMark(
     public var selfType: UShort,
     public var otherType: UShort,
     public var value: UShort,
-    public var sourceSoakType: UShort,
-    public var selfSoakType: UShort,
-    public var otherSoakType: UShort,
-    public var soakValue: UShort,
     public var delay: UShort,
+    public var limit: UByte,
 ) {
-    public constructor(
-        sourceIndex: Int,
-        sourceType: UShort,
-        selfType: UShort,
-        otherType: UShort,
-        value: UShort,
-        delay: UShort,
-    ) : this(
-        sourceIndex = sourceIndex,
-        sourceType = sourceType,
-        selfType = selfType,
-        otherType = otherType,
-        value = value,
-        sourceSoakType = UShort.MAX_VALUE,
-        selfSoakType = UShort.MAX_VALUE,
-        otherSoakType = UShort.MAX_VALUE,
-        soakValue = UShort.MAX_VALUE,
-        delay = delay,
-    )
-
     public constructor(
         selfType: UShort,
         delay: UShort,
@@ -71,10 +40,7 @@ public class HitMark(
         selfType = selfType,
         otherType = selfType,
         value = UShort.MAX_VALUE,
-        sourceSoakType = UShort.MAX_VALUE,
-        selfSoakType = UShort.MAX_VALUE,
-        otherSoakType = UShort.MAX_VALUE,
-        soakValue = UShort.MAX_VALUE,
         delay = delay,
+        limit = 4.toUByte(),
     )
 }

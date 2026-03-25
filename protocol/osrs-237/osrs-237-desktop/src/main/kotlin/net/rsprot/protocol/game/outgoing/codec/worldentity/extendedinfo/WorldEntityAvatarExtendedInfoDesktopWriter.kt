@@ -45,12 +45,12 @@ public class WorldEntityAvatarExtendedInfoDesktopWriter :
         val clientFlag = convertFlags(flag)
         var outFlag = clientFlag
 
-        outFlag = outFlag or pCached(buffer, clientFlag, SEQUENCE, blocks.sequence)
         outFlag = outFlag or pCached(buffer, clientFlag, VISIBLE_OPS, blocks.visibleOps)
+        outFlag = outFlag or pCached(buffer, clientFlag, SEQUENCE, blocks.sequence)
 
         val finalPos = buffer.writerIndex()
         buffer.writerIndex(flagWriteIndex)
-        buffer.p1(outFlag)
+        buffer.p1Alt3(outFlag)
         buffer.writerIndex(finalPos)
     }
 
@@ -100,7 +100,7 @@ public class WorldEntityAvatarExtendedInfoDesktopWriter :
     @Suppress("unused")
     private companion object {
         private val logger = InlineLogger()
-        private const val VISIBLE_OPS: Int = 0x1
-        private const val SEQUENCE: Int = 0x2
+        private const val SEQUENCE: Int = 0x1
+        private const val VISIBLE_OPS: Int = 0x2
     }
 }

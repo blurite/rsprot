@@ -8,7 +8,7 @@ import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.Tinti
 /**
  * The tinting extended info block.
  * This is a rather special case as tinting is one of the two observer-dependent extended info blocks,
- * along with [net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.Hit].
+ * along with [net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.HitmarkList].
  * It is possible for the server to mark tinting for only a single avatar to see.
  * In order to achieve this, we utilize [observerDependent] tinting, indexed by the observer's id.
  * @param encoders the array of client-specific encoders for tinting.

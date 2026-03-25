@@ -17,7 +17,7 @@ public class WorldEntityVisibleOpsEncoder : PrecomputedExtendedInfoEncoder<Visib
             alloc
                 .buffer(1, 1)
                 .toJagByteBuf()
-        buffer.p1(extendedInfo.ops.toInt())
+        buffer.p1Alt2(extendedInfo.ops.toInt())
         return buffer
     }
 }

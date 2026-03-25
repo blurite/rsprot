@@ -48,12 +48,12 @@ public class NpcBodyCustomisationEncoder : PrecomputedExtendedInfoEncoder<BodyCu
         if (flag and FLAG_REMODEL != 0) {
             buffer.p1Alt3(customisation.models.size)
             for (model in customisation.models) {
-                buffer.p2(model)
+                buffer.p4Alt2(model)
             }
         }
         if (flag and FLAG_RECOLOUR != 0) {
             for (recol in customisation.recolours) {
-                buffer.p2(recol)
+                buffer.p2Alt3(recol)
             }
         }
         if (flag and FLAG_RETEXTURE != 0) {
@@ -62,7 +62,7 @@ public class NpcBodyCustomisationEncoder : PrecomputedExtendedInfoEncoder<BodyCu
             }
         }
         if (flag and FLAG_MIRROR_LOCAL_PLAYER != 0) {
-            buffer.p1Alt2(if (customisation.mirror == true) 1 else 0)
+            buffer.p1(if (customisation.mirror == true) 1 else 0)
         }
         return buffer
     }

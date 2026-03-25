@@ -232,15 +232,15 @@ public class PlayerAppearanceEncoder : PrecomputedExtendedInfoEncoder<Appearance
         intermediate: JagByteBuf,
         customisation: ObjTypeCustomisation,
     ) {
-        intermediate.p2(customisation.manWear.toInt())
-        intermediate.p2(customisation.womanWear.toInt())
+        intermediate.p4(customisation.manWear)
+        intermediate.p4(customisation.womanWear)
     }
 
     private fun pObjTypeHeadModels(
         intermediate: JagByteBuf,
         customisation: ObjTypeCustomisation,
     ) {
-        intermediate.p2(customisation.manHead.toInt())
-        intermediate.p2(customisation.womanHead.toInt())
+        intermediate.p4(customisation.manHead)
+        intermediate.p4(customisation.womanHead)
     }
 }

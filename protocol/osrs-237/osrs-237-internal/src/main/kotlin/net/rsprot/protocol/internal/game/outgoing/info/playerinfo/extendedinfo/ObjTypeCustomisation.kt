@@ -20,10 +20,10 @@ public class ObjTypeCustomisation(
     public var retexIndices: UByte,
     public var retex1: UShort,
     public var retex2: UShort,
-    public var manWear: UShort,
-    public var womanWear: UShort,
-    public var manHead: UShort,
-    public var womanHead: UShort,
+    public var manWear: Int,
+    public var womanWear: Int,
+    public var manHead: Int,
+    public var womanHead: Int,
 ) {
     public constructor() : this(
         recolIndices = 0xFFu,
@@ -39,6 +39,6 @@ public class ObjTypeCustomisation(
     )
 
     public companion object {
-        public const val DEFAULT_MODEL: UShort = 0xFFFFU
+        public const val DEFAULT_MODEL: Int = -1
     }
 }

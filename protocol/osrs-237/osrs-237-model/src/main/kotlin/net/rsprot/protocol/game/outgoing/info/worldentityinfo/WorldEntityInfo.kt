@@ -419,10 +419,10 @@ public class WorldEntityInfo internal constructor(
             val fineZOffset = rootBuildArea.zoneZ shl 10
 
             buffer.p2(avatar.index)
-            buffer.p1((avatar.sizeX shl 4) or avatar.sizeZ)
+            buffer.p2Alt1(avatar.id)
+            buffer.p1Alt3(priority.id)
+            buffer.p1Alt3((avatar.sizeX shl 4) or avatar.sizeZ)
             val placeholderFlag = pPlaceholderExtendedInfoFlag(buffer)
-            buffer.p1Alt2(priority.id)
-            buffer.p2Alt2(avatar.id)
             buffer.encodeAngledCoordFine(
                 avatar.currentCoordFine.x - fineXOffset,
                 avatar.currentCoordFine.y,

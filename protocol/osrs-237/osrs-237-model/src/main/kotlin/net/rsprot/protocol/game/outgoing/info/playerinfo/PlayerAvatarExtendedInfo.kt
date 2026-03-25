@@ -418,6 +418,7 @@ public class PlayerAvatarExtendedInfo(
      * a [sourceIndex] being defined, the one who dealt the hit)
      * @param value the value to show over the hitmark.
      * @param delay the delay in client cycles (20ms/cc) until the hitmark renders.
+     * @param limit the maximum number of hitmarks that may render at this stage.
      */
     public fun addHitMark(
         sourceIndex: Int,
@@ -425,6 +426,7 @@ public class PlayerAvatarExtendedInfo(
         otherType: Int = selfType,
         value: Int,
         delay: Int = 0,
+        limit: Int = 4,
     ) {
         addHitMark(
             sourceIndex,
@@ -433,6 +435,7 @@ public class PlayerAvatarExtendedInfo(
             otherType,
             value,
             delay,
+            limit,
         )
     }
 
@@ -456,6 +459,7 @@ public class PlayerAvatarExtendedInfo(
      * a [sourceIndex] being defined with the respective [sourceType], the one who dealt the hit)
      * @param value the value to show over the hitmark.
      * @param delay the delay in client cycles (20ms/cc) until the hitmark renders.
+     * @param limit the maximum number of hitmarks that may render at this stage.
      */
     public fun addHitMark(
         sourceIndex: Int,
@@ -464,9 +468,10 @@ public class PlayerAvatarExtendedInfo(
         otherType: Int,
         value: Int,
         delay: Int = 0,
+        limit: Int = 4,
     ) {
         checkCommunicationThread()
-        if (blocks.hit.hitMarkList.size >= 0xFF) {
+        if (blocks.hitmarkList.size >= 0xFF) {
             return
         }
         verify {
@@ -474,6 +479,9 @@ public class PlayerAvatarExtendedInfo(
             require(sourceIndex == -1 || sourceIndex in 0..0x107FF) {
                 "Unexpected source index: $sourceIndex, expected values: -1 to reset, " +
                     "0-65535 for NPCs, 65536-67583 for players"
+            }
+            require(limit in 1..20) {
+                "Limit must be in range of 1..20"
             }
         }
 
@@ -493,7 +501,7 @@ public class PlayerAvatarExtendedInfo(
         require(delay in UNSIGNED_SMART_1_OR_2_RANGE) {
             "Unexpected delay: $delay, expected range $UNSIGNED_SMART_1_OR_2_RANGE"
         }
-        blocks.hit.hitMarkList +=
+        blocks.hitmarkList.add(
             HitMark(
                 sourceIndex,
                 sourceType.toUShort(),
@@ -501,177 +509,10 @@ public class PlayerAvatarExtendedInfo(
                 otherType.toUShort(),
                 value.toUShort(),
                 delay.toUShort(),
-            )
-        flags = flags or HITS
-    }
-
-    /**
-     * Removes the oldest currently showing hitmark on this avatar,
-     * if one exists.
-     * @param delay the delay in client cycles (20ms/cc) until the hitmark is removed.
-     */
-    public fun removeHitMark(delay: Int = 0) {
-        checkCommunicationThread()
-        if (blocks.hit.hitMarkList.size >= 0xFF) {
-            return
-        }
-        require(delay in UNSIGNED_SMART_1_OR_2_RANGE) {
-            "Unexpected delay: $delay, expected range $UNSIGNED_SMART_1_OR_2_RANGE"
-        }
-        blocks.hit.hitMarkList += HitMark(0x7FFEu, delay.toUShort())
-        flags = flags or HITS
-    }
-
-    /**
-     * Adds a simple hitmark on this avatar.
-     * @param sourceIndex the index of the character that dealt the hit.
-     * If the target avatar is a player, add 0x10000 to the real index value (0-2048).
-     * If the target avatar is a NPC, set the index as it is.
-     * If there is no source, set the index to -1.
-     * The index will be used for tinting purposes, as both the player who dealt
-     * the hit, and the recipient will see a tinted variant.
-     * Everyone else, however, will see a regular darkened hit mark.
-     * @param selfType the multi hitmark id that supports tinted and darkened variants.
-     * This is the one that renders to the one who receives the hit, as well as the
-     * one who dealt it.
-     * @param otherType the hitmark id to render to anyone that isn't the recipient,
-     * or the one who dealt the hit. This will generally be a darkened variant.
-     * If the hitmark should only render to the local player, set the [otherType]
-     * value to -1, forcing it to only render to the recipient (and in the case of
-     * a [sourceIndex] being defined, the one who dealt the hit)
-     * @param value the value to show over the hitmark.
-     * @param selfSoakType the multi hitmark id that supports tinted and darkened variants,
-     * shown as soaking next to the normal hitmark. This one renders to the one who receives
-     * the hit, as well as the one who dealt the hit.
-     * @param otherSoakType the hitmark id to render to anyone that isn't the recipient,
-     * or the one who dealt the hit. This will generally be a darkened variant.
-     * Unlike the [otherType], this does not support -1, as it is not possible to show partial
-     * soaked hitmarks.
-     * @param delay the delay in client cycles (20ms/cc) until the hitmark renders.
-     */
-    @JvmOverloads
-    public fun addSoakedHitMark(
-        sourceIndex: Int,
-        selfType: Int,
-        otherType: Int = selfType,
-        value: Int,
-        selfSoakType: Int,
-        otherSoakType: Int = selfSoakType,
-        soakValue: Int,
-        delay: Int = 0,
-    ) {
-        addSoakedHitMark(
-            sourceIndex,
-            selfType,
-            selfType,
-            otherType,
-            value,
-            selfSoakType,
-            selfSoakType,
-            otherSoakType,
-            soakValue,
-            delay,
+                limit.toUByte(),
+            ),
         )
-    }
-
-    /**
-     * Adds a simple hitmark on this avatar.
-     * @param sourceIndex the index of the character that dealt the hit.
-     * If the target avatar is a player, add 0x10000 to the real index value (0-2048).
-     * If the target avatar is a NPC, set the index as it is.
-     * If there is no source, set the index to -1.
-     * The index will be used for tinting purposes, as both the player who dealt
-     * the hit, and the recipient will see a tinted variant.
-     * Everyone else, however, will see a regular darkened hit mark.
-     * @param selfType the multi hitmark id that supports tinted and darkened variants.
-     * This is the one that renders to the one who receives the hit.
-     * @param sourceSoakType This is the one that renders to the one who dealt the hit,
-     * defined according to [sourceIndex].
-     * @param otherType the hitmark id to render to anyone that isn't the recipient,
-     * or the one who dealt the hit. This will generally be a darkened variant.
-     * If the hitmark should only render to the local player, set the [otherType]
-     * value to -1, forcing it to only render to the recipient (and in the case of
-     * a [sourceIndex] being defined with the respective [sourceType], the one who dealt the hit)
-     * @param value the value to show over the hitmark.
-     * @param selfSoakType the multi hitmark id that supports tinted and darkened variants,
-     * shown as soaking next to the normal hitmark. This one renders to the one who receives
-     * the hit.
-     * @param sourceSoakType the multi hitmark id that supports tinted and darkened variants,
-     * shown as soaking next to the normal hitmark. This one renders to the one who dealt
-     * the hit.
-     * @param otherSoakType the hitmark id to render to anyone that isn't the recipient,
-     * or the one who dealt the hit. This will generally be a darkened variant.
-     * Unlike the [otherType], this does not support -1, as it is not possible to show partial
-     * soaked hitmarks.
-     * @param delay the delay in client cycles (20ms/cc) until the hitmark renders.
-     */
-    @JvmOverloads
-    public fun addSoakedHitMark(
-        sourceIndex: Int,
-        selfType: Int,
-        sourceType: Int,
-        otherType: Int,
-        value: Int,
-        selfSoakType: Int,
-        sourceSoakType: Int,
-        otherSoakType: Int,
-        soakValue: Int,
-        delay: Int = 0,
-    ) {
-        checkCommunicationThread()
-        if (blocks.hit.hitMarkList.size >= 0xFF) {
-            return
-        }
-        verify {
-            // Index being incorrect would not lead to a crash
-            require(sourceIndex == -1 || sourceIndex in 0..0x107FF) {
-                "Unexpected source index: $sourceIndex, expected values: -1 to reset, " +
-                    "0-65535 for NPCs, 65536-67583 for players"
-            }
-        }
-
-        // All the properties below here would result in a crash if an invalid input was provided.
-        require(selfType in HIT_TYPE_RANGE) {
-            "Unexpected selfType: $selfType, expected range $HIT_TYPE_RANGE"
-        }
-        require(sourceType in HIT_TYPE_RANGE) {
-            "Unexpected sourceType: $sourceType, expected range $HIT_TYPE_RANGE"
-        }
-        require(otherType in HIT_TYPE_RANGE) {
-            "Unexpected otherType: $otherType, expected range $HIT_TYPE_RANGE"
-        }
-        require(value in UNSIGNED_SMART_1_OR_2_RANGE) {
-            "Unexpected value: $value, expected range $UNSIGNED_SMART_1_OR_2_RANGE"
-        }
-        require(selfSoakType in UNSIGNED_SMART_1_OR_2_RANGE) {
-            "Unexpected selfSoakType: $selfSoakType, expected range $UNSIGNED_SMART_1_OR_2_RANGE"
-        }
-        require(sourceSoakType in UNSIGNED_SMART_1_OR_2_RANGE) {
-            "Unexpected sourceSoakType: $sourceSoakType, expected range $UNSIGNED_SMART_1_OR_2_RANGE"
-        }
-        require(otherSoakType in UNSIGNED_SMART_1_OR_2_RANGE) {
-            "Unexpected otherSoakType: $otherSoakType, expected range $UNSIGNED_SMART_1_OR_2_RANGE"
-        }
-        require(soakValue in UNSIGNED_SMART_1_OR_2_RANGE) {
-            "Unexpected soakValue: $soakValue, expected range $UNSIGNED_SMART_1_OR_2_RANGE"
-        }
-        require(delay in UNSIGNED_SMART_1_OR_2_RANGE) {
-            "Unexpected delay: $delay, expected range $UNSIGNED_SMART_1_OR_2_RANGE"
-        }
-        blocks.hit.hitMarkList +=
-            HitMark(
-                sourceIndex,
-                sourceType.toUShort(),
-                selfType.toUShort(),
-                otherType.toUShort(),
-                value.toUShort(),
-                sourceSoakType.toUShort(),
-                selfSoakType.toUShort(),
-                otherSoakType.toUShort(),
-                soakValue.toUShort(),
-                delay.toUShort(),
-            )
-        flags = flags or HITS
+        flags = flags or HITMARKS
     }
 
     /**
@@ -708,7 +549,7 @@ public class PlayerAvatarExtendedInfo(
         endTime: Int = 0,
     ) {
         checkCommunicationThread()
-        if (blocks.hit.headBarList.size >= 0xFF) {
+        if (blocks.headbarList.size >= 0xFF) {
             return
         }
         verify {
@@ -739,7 +580,7 @@ public class PlayerAvatarExtendedInfo(
         require(endTime in UNSIGNED_SMART_1_OR_2_RANGE) {
             "Unexpected endTime: $endTime, expected range $UNSIGNED_SMART_1_OR_2_RANGE"
         }
-        blocks.hit.headBarList +=
+        blocks.headbarList.add(
             HeadBar(
                 sourceIndex,
                 selfType.toUShort(),
@@ -748,8 +589,9 @@ public class PlayerAvatarExtendedInfo(
                 endFill.toUByte(),
                 startTime.toUShort(),
                 endTime.toUShort(),
-            )
-        flags = flags or HITS
+            ),
+        )
+        flags = flags or HEADBARS
     }
 
     /**
@@ -1611,16 +1453,16 @@ public class PlayerAvatarExtendedInfo(
             require(wearpos in 0..11) {
                 "Unexpected wearpos $wearpos, expected range 0..11"
             }
-            require(manWear == -1 || manWear in UNSIGNED_SHORT_RANGE) {
-                "Invalid man wear model $manWear, expected value -1 or in range $UNSIGNED_SHORT_RANGE"
+            require(manWear in -1..Int.MAX_VALUE) {
+                "Invalid man wear model $manWear, expected in range -1..Int.MAX_VALUE"
             }
-            require(womanWear == -1 || womanWear in UNSIGNED_SHORT_RANGE) {
-                "Invalid man wear model $womanWear, expected value -1 or in range $UNSIGNED_SHORT_RANGE"
+            require(womanWear in -1..Int.MAX_VALUE) {
+                "Invalid man wear model $womanWear, expected in range -1..Int.MAX_VALUE"
             }
         }
         val customisation = allocObjCustomisation(wearpos)
-        customisation.manWear = manWear.toUShort()
-        customisation.womanWear = womanWear.toUShort()
+        customisation.manWear = manWear
+        customisation.womanWear = womanWear
         flagAppearance()
     }
 
@@ -1639,16 +1481,16 @@ public class PlayerAvatarExtendedInfo(
             require(wearpos in 0..11) {
                 "Unexpected wearpos $wearpos, expected range 0..11"
             }
-            require(manHead == -1 || manHead in UNSIGNED_SHORT_RANGE) {
-                "Invalid man wear model $manHead, expected value -1 or in range $UNSIGNED_SHORT_RANGE"
+            require(manHead in -1..Int.MAX_VALUE) {
+                "Invalid man wear model $manHead, expected value in range of -1..Int.MAX_VALUE"
             }
-            require(womanHead == -1 || womanHead in UNSIGNED_SHORT_RANGE) {
-                "Invalid man wear model $womanHead, expected value -1 or in range $UNSIGNED_SHORT_RANGE"
+            require(womanHead in -1..Int.MAX_VALUE) {
+                "Invalid man wear model $womanHead, expected value in range of -1..Int.MAX_VALUE"
             }
         }
         val customisation = allocObjCustomisation(wearpos)
-        customisation.manHead = manHead.toUShort()
-        customisation.womanHead = womanHead.toUShort()
+        customisation.manHead = manHead
+        customisation.womanHead = womanHead
         flagAppearance()
     }
 
@@ -1687,7 +1529,7 @@ public class PlayerAvatarExtendedInfo(
         blocks.chat.clear()
         blocks.exactMove.clear()
         blocks.spotAnims.clear()
-        blocks.hit.clear()
+        blocks.hitmarkList.clear()
         blocks.tinting.clear()
         observedChatStorage.reset()
     }
@@ -1835,10 +1677,7 @@ public class PlayerAvatarExtendedInfo(
         if (flag and APPEARANCE != 0) {
             observer.otherAppearanceChangeCycles[localIndex] = lastAppearanceChangeCycle
         }
-        // Note: The order must be as client expects it, in 236 chat is before say
-        if (flag and CHAT != 0) {
-            observer.observedChatStorage.trackChat(this.localIndex, this.blocks.chat)
-        }
+        // Note: The order must be as client expects it, in 237 chat is after say
         if (flag and SAY != 0) {
             val appendToChatbox =
                 this.blocks.say.text
@@ -1846,6 +1685,9 @@ public class PlayerAvatarExtendedInfo(
             if (localIndex == observer.localIndex || appendToChatbox) {
                 observer.observedChatStorage.trackSay(this.localIndex, this.blocks.say)
             }
+        }
+        if (flag and CHAT != 0) {
+            observer.observedChatStorage.trackChat(this.localIndex, this.blocks.chat)
         }
         writer.pExtendedInfo(
             buffer,
@@ -1880,8 +1722,11 @@ public class PlayerAvatarExtendedInfo(
         if (flags and SPOTANIM != 0) {
             blocks.spotAnims.clear()
         }
-        if (flags and HITS != 0) {
-            blocks.hit.clear()
+        if (flags and HITMARKS != 0) {
+            blocks.hitmarkList.clear()
+        }
+        if (flags and HEADBARS != 0) {
+            blocks.headbarList.clear()
         }
         if (flags and TINTING != 0) {
             blocks.tinting.clear()
@@ -1906,12 +1751,13 @@ public class PlayerAvatarExtendedInfo(
 
         // "Static" flags, the bit values here are irrelevant
         public const val SAY: Int = 0x20
-        public const val HITS: Int = 0x40
+        public const val HITMARKS: Int = 0x40
         public const val SEQUENCE: Int = 0x80
         public const val CHAT: Int = 0x100
         public const val TEMP_MOVE_SPEED: Int = 0x200
         public const val EXACT_MOVE: Int = 0x400
         public const val SPOTANIM: Int = 0x800
+        public const val HEADBARS: Int = 0x1000
 
         private val SIGNED_BYTE_RANGE: IntRange = Byte.MIN_VALUE.toInt()..Byte.MAX_VALUE.toInt()
         private val UNSIGNED_BYTE_RANGE: IntRange = UByte.MIN_VALUE.toInt()..UByte.MAX_VALUE.toInt()

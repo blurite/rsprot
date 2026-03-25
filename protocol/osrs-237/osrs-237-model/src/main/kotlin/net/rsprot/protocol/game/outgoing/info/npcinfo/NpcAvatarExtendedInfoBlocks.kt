@@ -17,7 +17,8 @@ import net.rsprot.protocol.internal.game.outgoing.info.npcinfo.extendedinfo.Tran
 import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.ExactMove
 import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.FaceAngle
 import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.FacePathingEntity
-import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.Hit
+import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.HeadbarList
+import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.HitmarkList
 import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.Say
 import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.Sequence
 import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.SpotAnimList
@@ -76,7 +77,8 @@ public class NpcAvatarExtendedInfoBlocks(
                 NEnc::combatLevelChange,
             ),
         )
-    public val hit: Hit = Hit(encoders(writers, NEnc::hit))
+    public val hitmarkList: HitmarkList = HitmarkList(encoders(writers, NEnc::hitmarkList))
+    public val headbarList: HeadbarList = HeadbarList(encoders(writers, NEnc::headbarList))
     public val faceAngle: FaceAngle = FaceAngle(encoders(writers, NEnc::faceAngle))
     public val facePathingEntity: FacePathingEntity = FacePathingEntity(encoders(writers, NEnc::facePathingEntity))
     public val baseAnimationSet: BaseAnimationSet = BaseAnimationSet(encoders(writers, NEnc::baseAnimationSet))

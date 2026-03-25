@@ -17,8 +17,8 @@ public class NpcSequenceEncoder : PrecomputedExtendedInfoEncoder<Sequence> {
             alloc
                 .buffer(3, 3)
                 .toJagByteBuf()
-        buffer.p2Alt1(extendedInfo.id.toInt())
-        buffer.p1Alt3(extendedInfo.delay.toInt())
+        buffer.p2Alt3(extendedInfo.id.toInt())
+        buffer.p1Alt2(extendedInfo.delay.toInt())
         return buffer
     }
 }

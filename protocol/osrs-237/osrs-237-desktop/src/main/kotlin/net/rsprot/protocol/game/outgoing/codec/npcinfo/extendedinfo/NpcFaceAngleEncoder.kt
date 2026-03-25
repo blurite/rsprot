@@ -18,7 +18,7 @@ public class NpcFaceAngleEncoder : PrecomputedExtendedInfoEncoder<FaceAngle> {
                 .buffer(3, 3)
                 .toJagByteBuf()
         buffer.p2(extendedInfo.angle.toInt())
-        buffer.p1(if (extendedInfo.instant) 1 else 0)
+        buffer.p1Alt3(if (extendedInfo.instant) 1 else 0)
         return buffer
     }
 }
