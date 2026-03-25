@@ -33,7 +33,7 @@ internal object GameServerProtId {
     const val MESSAGE_PRIVATE = 29
     const val CAM_LOOKAT = 30
     const val UPDATE_FRIENDCHAT_CHANNEL_FULL_V2 = 31
-    const val REBUILD_WORLDENTITY_V2 = 32
+    const val REBUILD_WORLDENTITY_V3 = 32
     const val HISCORE_REPLY = 33
     const val CHAT_FILTER_SETTINGS = 34
     const val VARP_SMALL = 35

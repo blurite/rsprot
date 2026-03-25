@@ -1,5 +1,38 @@
 ## What's New?
 
+### Revision 237
+
+> [!IMPORTANT]
+> Root/toplevel world id changed from -1 to 0 in this revision.
+> Users must make sure their serverside code is using the new constant.
+> If you relied on any of the ROOT_WORLD constants in classes such as
+> WorldEntityInfo, you should be fine as-is.
+
+#### Additions
+- RESUME_P_COUNTDIALOG_LONG added.
+- RUNCLIENTSCRIPT supports `long` data type via 'Ï' char code.
+- IF_SETMODEL_V2 added, supporting g4() for models.
+- Obj customisation section in appearance extended info uses g4() for models.
+- Hitmarks and headbars separated into two individual extended infos.
+  - Hitmarks no longer support soaking.
+  - Hitmarks now have a 'limit' property, defining the maximum number of hitmarks that can render at once. The default is 4, the upper limit is 20.
+- NPC head and body customisation new variants that use g4() for models.
+- OPLOC*_V2 packets, supporting subops.
+- OPNPC*_V2 packets, supporting subops.
+- OPOBJ*_V2 packets, supporting subops.
+- REBUILD_NORMAL_V2 which removes XTEA support.
+- REBUILD_REGION_V2 which removes XTEA support.
+- REBUILD_WORLDENTITY_V4 which removes XTEA support.
+
+#### Removals
+- UPDATE_REBOOT_TIMER_V1
+- SET_MAP_FLAG_V1
+- CAM_MOVETO_V1
+- CAM_LOOKAT_V1
+- CAM_MOVETO_CYCLES_V1
+- CAM_MOVETO_ARC_V1
+- WORLDENTITY_INFO_V6
+
 ### Revision 236
 Revision 236 brings a handful of new variants of existing packets.
 

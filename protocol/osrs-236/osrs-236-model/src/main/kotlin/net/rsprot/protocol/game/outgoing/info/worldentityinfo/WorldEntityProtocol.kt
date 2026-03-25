@@ -187,7 +187,7 @@ public class WorldEntityProtocol(
         /**
          * The maximum number of world entities that can exist in the world.
          */
-        public const val CAPACITY: Int = 2048
+        public const val CAPACITY: Int = 4096
 
         /**
          * The logger used to notify about exceptions that may otherwise be lost.

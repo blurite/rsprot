@@ -3,7 +3,7 @@
 package net.rsprot.protocol.game.outgoing.map
 
 @Deprecated(
-    message = "Deprecated. Use RebuildWorldEntityV2.",
-    replaceWith = ReplaceWith("RebuildWorldEntityV2"),
+    message = "Deprecated. Use RebuildWorldEntityV3.",
+    replaceWith = ReplaceWith("RebuildWorldEntityV3"),
 )
-public typealias RebuildWorldEntity = RebuildWorldEntityV2
+public typealias RebuildWorldEntity = RebuildWorldEntityV3

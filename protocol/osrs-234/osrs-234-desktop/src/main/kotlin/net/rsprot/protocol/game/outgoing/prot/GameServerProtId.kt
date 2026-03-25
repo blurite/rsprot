@@ -5,7 +5,7 @@ internal object GameServerProtId {
     const val NPC_INFO_SMALL_V5 = 1
     const val LOGOUT = 2
     const val LOC_ANIM = 3
-    const val REBUILD_WORLDENTITY_V2 = 4
+    const val REBUILD_WORLDENTITY_V3 = 4
     const val LOC_MERGE = 5
     const val NPC_HEADICON_SPECIFIC = 6
     const val IF_OPENTOP = 7

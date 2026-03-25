@@ -48,7 +48,7 @@ internal object GameServerProtId {
     const val NPC_SPOTANIM_SPECIFIC = 44
     const val NPC_ANIM_SPECIFIC = 45
     const val CHAT_FILTER_SETTINGS_PRIVATECHAT = 46
-    const val REBUILD_WORLDENTITY_V2 = 47
+    const val REBUILD_WORLDENTITY_V3 = 47
     const val LOGOUT_TRANSFER = 48
     const val IF_SETANGLE = 49
     const val IF_SETOBJECT = 50

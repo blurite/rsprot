@@ -89,7 +89,7 @@ internal object GameServerProtId {
     const val IF_SETOBJECT = 85
     const val LOC_ANIM = 86
     const val IF_SETPLAYERMODEL_SELF = 87
-    const val REBUILD_WORLDENTITY_V2 = 88
+    const val REBUILD_WORLDENTITY_V3 = 88
     const val OBJ_DEL_SPECIFIC = 89
     const val VARCLAN_DISABLE = 90
     const val LOC_ANIM_SPECIFIC = 91

@@ -94,7 +94,7 @@ internal object GameServerProtId {
     const val PLAYER_ANIM_SPECIFIC = 90
     const val CAM_ROTATEBY = 91
     const val MAP_ANIM_SPECIFIC = 92
-    const val REBUILD_WORLDENTITY_V2 = 93
+    const val REBUILD_WORLDENTITY_V3 = 93
     const val NPC_INFO_LARGE_V5 = 94
     const val UPDATE_ZONE_PARTIAL_ENCLOSED = 95
     const val REFLECTION_CHECKER = 96

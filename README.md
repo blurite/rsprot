@@ -1,7 +1,7 @@
 # RSProt
 
 [![GitHub Actions][actions-badge]][actions] [![MIT license][mit-badge]][mit]
-[![OldSchool - 221 - 236 (Alpha)](https://img.shields.io/badge/OldSchool-221--236_(Alpha)-9a1abd)](https://github.com/blurite/rsprot/tree/master/protocol/osrs-236/osrs-236-api/src/main/kotlin/net/rsprot/protocol/api)
+[![OldSchool - 221 - 237 (Alpha)](https://img.shields.io/badge/OldSchool-221--237_(Alpha)-9a1abd)](https://github.com/blurite/rsprot/tree/master/protocol/osrs-237/osrs-237-api/src/main/kotlin/net/rsprot/protocol/api)
 
 ## Status
 > [!NOTE]
@@ -16,7 +16,7 @@ In order to add it to your server, add the below line under dependencies
 in your build.gradle.kts.
 
 ```kts
-implementation("net.rsprot:osrs-236-api:1.0.0-ALPHA-20260315")
+implementation("net.rsprot:osrs-237-api:1.0.0-ALPHA-20260325")
 ```
 
 An in-depth tutorial on how to implement it will be added into this read-me
@@ -32,12 +32,12 @@ other revisions are welcome, but will not be provided by default.
 - Java 11
 
 ## Supported Versions
-This library currently supports revision 221-236 OldSchool desktop clients.
+This library currently supports revision 221-237 OldSchool desktop clients.
 
 ## Quick Guide
 This section covers a quick guide for how to use the protocol after implementing
 the base API. It is not a guide for the base API itself, that will come in the
-future. This specific quick guide refers to revision 236. Revisions older
+future. This specific quick guide refers to revision 237. Revisions older
 than 235 have a significantly different API and will not be explored here.
 It is recommented you upgrade to latest, or view an older readme in history.
 
@@ -119,7 +119,7 @@ for (worldInfoPackets in infoPackets.activeWorlds) {
     packets.send(worldInfoPackets.activeWorld)
 
 	// If the world entity is newly added in this cycle, make sure to send the
-	// RebuildWorldEntityV2 packet for this world, to actually build the
+	// RebuildWorldEntityV3 packet for this world, to actually build the
 	// map behind the world entity.
     if (worldInfoPackets.added) {
         rebuildWorldEntity(worldInfoPackets.worldId)

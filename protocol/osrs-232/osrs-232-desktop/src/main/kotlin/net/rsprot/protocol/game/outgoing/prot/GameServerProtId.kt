@@ -57,7 +57,7 @@ internal object GameServerProtId {
     const val MESSAGE_CLANCHANNEL_SYSTEM = 53
     const val IF_MOVESUB = 54
     const val VARP_SYNC = 55
-    const val REBUILD_WORLDENTITY_V2 = 56
+    const val REBUILD_WORLDENTITY_V3 = 56
     const val OBJ_DEL_SPECIFIC = 57
     const val IF_CLEARINV = 58
     const val UPDATE_ZONE_FULL_FOLLOWS = 59
