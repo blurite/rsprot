@@ -63,6 +63,7 @@ import net.rsprot.protocol.game.outgoing.codec.map.RebuildNormalV2Encoder
 import net.rsprot.protocol.game.outgoing.codec.map.RebuildRegionV1Encoder
 import net.rsprot.protocol.game.outgoing.codec.map.RebuildRegionV2Encoder
 import net.rsprot.protocol.game.outgoing.codec.map.RebuildWorldEntityV3Encoder
+import net.rsprot.protocol.game.outgoing.codec.map.RebuildWorldEntityV4Encoder
 import net.rsprot.protocol.game.outgoing.codec.misc.client.HideLocOpsEncoder
 import net.rsprot.protocol.game.outgoing.codec.misc.client.HideNpcOpsEncoder
 import net.rsprot.protocol.game.outgoing.codec.misc.client.HideObjOpsEncoder
@@ -227,6 +228,7 @@ public object DesktopGameMessageEncoderRepository {
                 bind(RebuildRegionV1Encoder())
                 bind(RebuildRegionV2Encoder())
                 bind(RebuildWorldEntityV3Encoder())
+                bind(RebuildWorldEntityV4Encoder())
 
                 bind(VarpSmallEncoder())
                 bind(VarpLargeEncoder())
