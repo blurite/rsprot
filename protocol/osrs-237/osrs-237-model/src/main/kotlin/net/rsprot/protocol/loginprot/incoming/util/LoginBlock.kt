@@ -17,7 +17,7 @@ public class LoginBlock<T>(
     public val affiliate: Int,
     public val deepLinks: List<Int>,
     public val hostPlatformStats: HostPlatformStats,
-    private val _validationClientType: UByte,
+    private val _deprecatedClientType: UByte,
     public val reflectionCheckerConst: Int,
     public val crc: CyclicRedundancyCheckBlock,
     public val authentication: T,
@@ -40,8 +40,8 @@ public class LoginBlock<T>(
         get() = _width.toInt()
     public val height: Int
         get() = _height.toInt()
-    public val validationClientType: LoginClientType
-        get() = LoginClientType[_validationClientType.toInt()]
+    public val deprecatedClientType: Int
+        get() = _deprecatedClientType.toInt()
 
     public fun mergeBetaCrcs(remainingBetaArchives: RemainingBetaArchives) {
         for (i in RemainingBetaArchives.protectedArchives) {
@@ -119,7 +119,7 @@ public class LoginBlock<T>(
         if (affiliate != other.affiliate) return false
         if (deepLinks != other.deepLinks) return false
         if (hostPlatformStats != other.hostPlatformStats) return false
-        if (_validationClientType != other._validationClientType) return false
+        if (_deprecatedClientType != other._deprecatedClientType) return false
         if (reflectionCheckerConst != other.reflectionCheckerConst) return false
         if (crc != other.crc) return false
         if (authentication != other.authentication) return false
@@ -141,7 +141,7 @@ public class LoginBlock<T>(
         result = 31 * result + affiliate
         result = 31 * result + deepLinks.hashCode()
         result = 31 * result + hostPlatformStats.hashCode()
-        result = 31 * result + _validationClientType.hashCode()
+        result = 31 * result + _deprecatedClientType.hashCode()
         result = 31 * result + reflectionCheckerConst
         result = 31 * result + crc.hashCode()
         result = 31 * result + (authentication?.hashCode() ?: 0)
@@ -164,7 +164,7 @@ public class LoginBlock<T>(
             "deepLinks=$deepLinks, " +
             "width=$width, " +
             "height=$height, " +
-            "validationClientType=$validationClientType, " +
+            "deprecatedClientType=$deprecatedClientType, " +
             "reflectionCheckerConst=$reflectionCheckerConst, " +
             "authentication=$authentication" +
             ")"

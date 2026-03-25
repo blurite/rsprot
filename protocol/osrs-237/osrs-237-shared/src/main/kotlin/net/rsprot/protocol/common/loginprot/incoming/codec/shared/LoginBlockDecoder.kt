@@ -103,9 +103,10 @@ public abstract class LoginBlockDecoder<T>(
                         }
                     val hostPlatformStats = decodeHostPlatformStats(xteaBuffer)
                     val secondClientType = xteaBuffer.g1()
-                    if (secondClientType != header.clientType.id) {
-                        throw UnsupportedClientException
-                    }
+                    // Since 237, the two no longer match on any client.
+                    // if (secondClientType != header.clientType.id) {
+                    //     throw UnsupportedClientException
+                    // }
                     val reflectionCheckerConst = xteaBuffer.g4()
                     val crc =
                         if (betaWorld) {
