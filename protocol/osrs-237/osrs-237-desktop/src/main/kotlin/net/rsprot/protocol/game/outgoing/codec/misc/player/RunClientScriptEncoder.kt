@@ -45,6 +45,9 @@ public class RunClientScriptEncoder : MessageEncoder<RunClientScript> {
                 's' -> {
                     buffer.pjstr(value as String)
                 }
+                'Ï' -> {
+                    buffer.p8(value as Long)
+                }
                 else -> {
                     buffer.p4(value as Int)
                 }

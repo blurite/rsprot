@@ -12,7 +12,7 @@ import net.rsprot.protocol.message.util.estimateTextSize
  * @property id the id of the script to invoke
  * @property types the array of characters representing the clientscript types
  * to send to the client.
- * The supported types are IntArray('W'), Array<String>('X'), String('s') and Int ('i').
+ * The supported types are IntArray('W'), Array<String>('X'), String('s'), Long('Ï') and Int ('i').
  * Note that IntArray(int[] in Java) specifically must be passed in,
  * and not an Array<Integer>(Integer[] in Java). Latter will throw an exception.
  * Any char code not in the aforementioned list will be treated as an int.
@@ -59,6 +59,11 @@ public class RunClientScript : OutgoingGameMessage {
                             "Expected string value at index $i for char $type, got: $value"
                         }
                     }
+                    'Ï' -> {
+                        require(value is Long) {
+                            "Expected long value at index $i for char type $type, got: $value"
+                        }
+                    }
                     else -> {
                         require(value is Int) {
                             "Expected int value at index $i for char $type, got: $value"
@@ -88,6 +93,7 @@ public class RunClientScript : OutgoingGameMessage {
                     is Array<*> -> 'X'
                     is Int -> 'i'
                     is String -> 's'
+                    is Long -> 'Ï'
                     else -> throw IllegalArgumentException(
                         "Unknown clientscript value type: " +
                             "${value.javaClass} @ $value, " +
@@ -121,6 +127,9 @@ public class RunClientScript : OutgoingGameMessage {
                 }
                 's' -> {
                     payloadSize += estimateTextSize(values[i] as String)
+                }
+                'Ï' -> {
+                    payloadSize += Long.SIZE_BYTES
                 }
                 else -> {
                     payloadSize += Int.SIZE_BYTES
