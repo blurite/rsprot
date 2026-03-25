@@ -126,19 +126,19 @@ public class DesktopUpdateZonePartialEnclosedEncoder : MessageEncoder<UpdateZone
             private val protId: Int,
             val encoder: ZoneProtEncoder<*>,
         ) {
-            OBJ_DEL(OldSchoolZoneProt.OBJ_DEL, ObjDelEncoder()),
             MAP_ANIM(OldSchoolZoneProt.MAP_ANIM, MapAnimEncoder()),
-            OBJ_COUNT(OldSchoolZoneProt.OBJ_COUNT, ObjCountEncoder()),
-            LOC_DEL(OldSchoolZoneProt.LOC_DEL, LocDelEncoder()),
-            MAP_PROJANIM_V2(OldSchoolZoneProt.MAP_PROJANIM_V2, MapProjAnimV2Encoder()),
-            OBJ_ENABLED_OPS(OldSchoolZoneProt.OBJ_ENABLED_OPS, ObjEnabledOpsEncoder()),
-            OBJ_ADD(OldSchoolZoneProt.OBJ_ADD, ObjAddEncoder()),
-            OBJ_CUSTOMISE(OldSchoolZoneProt.OBJ_CUSTOMISE, ObjCustomiseEncoder()),
-            LOC_ANIM(OldSchoolZoneProt.LOC_ANIM, LocAnimEncoder()),
-            OBJ_UNCUSTOMISE(OldSchoolZoneProt.OBJ_UNCUSTOMISE, ObjUncustomiseEncoder()),
             LOC_MERGE(OldSchoolZoneProt.LOC_MERGE, LocMergeEncoder()),
+            LOC_DEL(OldSchoolZoneProt.LOC_DEL, LocDelEncoder()),
+            OBJ_DEL(OldSchoolZoneProt.OBJ_DEL, ObjDelEncoder()),
+            OBJ_ENABLED_OPS(OldSchoolZoneProt.OBJ_ENABLED_OPS, ObjEnabledOpsEncoder()),
+            OBJ_COUNT(OldSchoolZoneProt.OBJ_COUNT, ObjCountEncoder()),
+            MAP_PROJANIM_V2(OldSchoolZoneProt.MAP_PROJANIM_V2, MapProjAnimV2Encoder()),
+            LOC_ANIM(OldSchoolZoneProt.LOC_ANIM, LocAnimEncoder()),
             LOC_ADD_CHANGE_V2(OldSchoolZoneProt.LOC_ADD_CHANGE_V2, LocAddChangeV2Encoder()),
+            OBJ_CUSTOMISE(OldSchoolZoneProt.OBJ_CUSTOMISE, ObjCustomiseEncoder()),
+            OBJ_UNCUSTOMISE(OldSchoolZoneProt.OBJ_UNCUSTOMISE, ObjUncustomiseEncoder()),
             SOUND_AREA(OldSchoolZoneProt.SOUND_AREA, SoundAreaEncoder()),
+            OBJ_ADD(OldSchoolZoneProt.OBJ_ADD, ObjAddEncoder()),
             ;
 
             companion object {
