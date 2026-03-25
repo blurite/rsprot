@@ -2,7 +2,6 @@ package net.rsprot.protocol.game.outgoing.info.worldentityinfo
 
 import it.unimi.dsi.fastutil.ints.Int2IntMap
 import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap
-import net.rsprot.protocol.game.outgoing.info.worldentityinfo.WorldEntityInfo
 import net.rsprot.protocol.internal.game.outgoing.info.CoordGrid
 
 /**
