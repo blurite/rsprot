@@ -50,12 +50,10 @@ public class RebuildLoginV2 private constructor(
         Short.SIZE_BYTES +
             Short.SIZE_BYTES +
             Short.SIZE_BYTES +
-            Short.SIZE_BYTES +
             gpiInitBlock.readableBytes()
 
     override fun nonByteBufHolderSize(): Int {
         return Short.SIZE_BYTES +
-            Short.SIZE_BYTES +
             Short.SIZE_BYTES +
             Short.SIZE_BYTES
     }

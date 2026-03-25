@@ -36,7 +36,6 @@ public class RebuildNormalV2 private constructor(
     override fun estimateSize(): Int =
         Short.SIZE_BYTES +
             Short.SIZE_BYTES +
-            Short.SIZE_BYTES +
             Short.SIZE_BYTES
 
     override fun equals(other: Any?): Boolean {
