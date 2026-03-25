@@ -298,6 +298,6 @@ public class WorldEntityAvatarRepository internal constructor(
         /**
          * The maximum number of world entity avatars.
          */
-        internal const val AVATAR_CAPACITY = 2048
+        internal const val AVATAR_CAPACITY = 4096
     }
 }

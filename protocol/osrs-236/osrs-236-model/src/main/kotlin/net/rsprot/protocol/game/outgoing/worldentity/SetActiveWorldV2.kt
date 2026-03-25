@@ -71,7 +71,7 @@ public class SetActiveWorldV2(
      * A dynamic world type is used to mark one of the world entities' worlds as
      * the active world, allowing for changes to be sent to that world entity.
      * @property index the index of the world entity whose world is about to be updated,
-     * in range of 0..<2048.
+     * in range of 0..<4096.
      * @property activeLevel the level at which various events will take place, such as
      * zone updates.
      */
@@ -86,8 +86,8 @@ public class SetActiveWorldV2(
             index.toUShort(),
             activeLevel.toUByte(),
         ) {
-            require(index in 0..<2048) {
-                "Index must be in range of 0..<2048"
+            require(index in 0..<4096) {
+                "Index must be in range of 0..<4096"
             }
             require(activeLevel in 0..<4) {
                 "Active level must be in range of 0..<4"
