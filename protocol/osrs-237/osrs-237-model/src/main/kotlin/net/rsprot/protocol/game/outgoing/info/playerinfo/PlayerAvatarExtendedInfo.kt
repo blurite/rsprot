@@ -410,45 +410,6 @@ public class PlayerAvatarExtendedInfo(
      * the hit, and the recipient will see a tinted variant.
      * Everyone else, however, will see a regular darkened hit mark.
      * @param selfType the multi hitmark id that supports tinted and darkened variants. This one renders
-     * to the player who received the hit, as well as the one who dealt it.
-     * @param otherType the hitmark id to render to anyone that isn't the recipient,
-     * or the one who dealt the hit. This will generally be a darkened variant.
-     * If the hitmark should only render to the local player, set the [otherType]
-     * value to -1, forcing it to only render to the recipient (and in the case of
-     * a [sourceIndex] being defined, the one who dealt the hit)
-     * @param value the value to show over the hitmark.
-     * @param delay the delay in client cycles (20ms/cc) until the hitmark renders.
-     * @param limit the maximum number of hitmarks that may render at this stage.
-     */
-    public fun addHitMark(
-        sourceIndex: Int,
-        selfType: Int,
-        otherType: Int = selfType,
-        value: Int,
-        delay: Int = 0,
-        limit: Int = 4,
-    ) {
-        addHitMark(
-            sourceIndex,
-            selfType,
-            selfType,
-            otherType,
-            value,
-            delay,
-            limit,
-        )
-    }
-
-    /**
-     * Adds a simple hitmark on this avatar.
-     * @param sourceIndex the index of the character that dealt the hit.
-     * If the target avatar is a player, add 0x10000 to the real index value (0-2048).
-     * If the target avatar is a NPC, set the index as it is.
-     * If there is no source, set the index to -1.
-     * The index will be used for tinting purposes, as both the player who dealt
-     * the hit, and the recipient will see a tinted variant.
-     * Everyone else, however, will see a regular darkened hit mark.
-     * @param selfType the multi hitmark id that supports tinted and darkened variants. This one renders
      * to the player who received the hit.
      * @param sourceType the multi hitmark id that supports tinted and darkened variants. This one renders
      * to the player who dealt the hit, as defined according to [sourceIndex].
