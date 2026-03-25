@@ -13,6 +13,10 @@ import net.rsprot.protocol.message.IncomingGameMessage
  * @property op the option clicked, ranging from 1 to 5(inclusive).
  */
 @Suppress("MemberVisibilityCanBePrivate")
+@Deprecated(
+    message = "Deprecated. Use OpNpcV2.",
+    replaceWith = ReplaceWith("OpNpcV2"),
+)
 public class OpNpcV1 private constructor(
     private val _index: UShort,
     public val controlKey: Boolean,

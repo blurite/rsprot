@@ -14,6 +14,10 @@ import net.rsprot.protocol.message.IncomingGameMessage
  * @property op the option clicked, ranging from 1 to 5 (inclusive)
  */
 @Suppress("DuplicatedCode", "MemberVisibilityCanBePrivate")
+@Deprecated(
+    message = "Deprecated. Use OpObjV2.",
+    replaceWith = ReplaceWith("OpObjV2"),
+)
 public class OpObjV1 private constructor(
     private val _id: UShort,
     private val _x: UShort,

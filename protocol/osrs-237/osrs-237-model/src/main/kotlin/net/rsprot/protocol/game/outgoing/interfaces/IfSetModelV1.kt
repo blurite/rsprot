@@ -13,6 +13,10 @@ import net.rsprot.protocol.util.CombinedId
  * @property componentId the component on that interface to set the events on
  * @property model the id of the model to render.
  */
+@Deprecated(
+    message = "Deprecated. Use IfSetModelV2.",
+    replaceWith = ReplaceWith("IfSetModelV2"),
+)
 public class IfSetModelV1 private constructor(
     public val combinedId: Int,
     private val _model: UShort,
