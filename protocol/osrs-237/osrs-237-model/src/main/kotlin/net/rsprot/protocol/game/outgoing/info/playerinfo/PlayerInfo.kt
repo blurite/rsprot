@@ -1158,7 +1158,7 @@ public class PlayerInfo internal constructor(
         /**
          * The constant id for the root world.
          */
-        public const val ROOT_WORLD: Int = -1
+        public const val ROOT_WORLD: Int = 0
 
         private val logger = InlineLogger()
     }

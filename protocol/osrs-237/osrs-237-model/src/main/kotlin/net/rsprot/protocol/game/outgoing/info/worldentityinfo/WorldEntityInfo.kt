@@ -11,6 +11,7 @@ import net.rsprot.protocol.game.outgoing.info.exceptions.InfoProcessException
 import net.rsprot.protocol.game.outgoing.info.util.BuildArea
 import net.rsprot.protocol.game.outgoing.info.util.PacketResult
 import net.rsprot.protocol.game.outgoing.info.util.ReferencePooledObject
+import net.rsprot.protocol.game.outgoing.info.worldentityinfo.WorldEntityInfo
 import net.rsprot.protocol.internal.checkCommunicationThread
 import net.rsprot.protocol.internal.game.outgoing.info.CoordFine
 import net.rsprot.protocol.internal.game.outgoing.info.CoordGrid
@@ -489,7 +490,7 @@ public class WorldEntityInfo internal constructor(
      */
     internal fun getCoordGridInRootWorld(coordGrid: CoordGrid): CoordGrid {
         val index = avatarRepository.getByCoordGrid(coordGrid)
-        if (index == -1) {
+        if (index == ROOT_WORLD) {
             return coordGrid
         }
 
@@ -507,7 +508,7 @@ public class WorldEntityInfo internal constructor(
      */
     private fun getCoordFineInRootWorld(coordGrid: CoordGrid): CoordFine {
         val index = avatarRepository.getByCoordGrid(coordGrid)
-        if (index == -1) {
+        if (index == ROOT_WORLD) {
             return coordGrid.toCenterCoordFine()
         }
 
@@ -519,7 +520,7 @@ public class WorldEntityInfo internal constructor(
 
     /**
      * Gets the index of the world entity which contains the provided [coordGrid].
-     * @return index of the world entity containing the coord grid, or -1.
+     * @return index of the world entity containing the coord grid, or WorldEntityInfo.ROOT_WORLD.
      */
     private fun getWorldEntityIndex(coordGrid: CoordGrid): Int {
         return avatarRepository.getByCoordGrid(coordGrid)
@@ -540,7 +541,7 @@ public class WorldEntityInfo internal constructor(
 
     /**
      * Gets the index of the world entity in which the coord grid exists.
-     * @return index of the world entity, or -1 if it's in the root world.
+     * @return index of the world entity, or [WorldEntityInfo.ROOT_WORLD] if it's in the root world.
      */
     internal fun getWorldEntity(coordGrid: CoordGrid): Int {
         return avatarRepository.getByCoordGrid(coordGrid)
@@ -750,7 +751,7 @@ public class WorldEntityInfo internal constructor(
         /**
          * The id of the root world.
          */
-        public const val ROOT_WORLD: Int = -1
+        public const val ROOT_WORLD: Int = 0
 
         /**
          * The default render distance for world entities.

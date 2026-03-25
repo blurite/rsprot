@@ -2,6 +2,7 @@ package net.rsprot.protocol.game.outgoing.info.worldentityinfo
 
 import it.unimi.dsi.fastutil.ints.Int2IntMap
 import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap
+import net.rsprot.protocol.game.outgoing.info.worldentityinfo.WorldEntityInfo
 import net.rsprot.protocol.internal.game.outgoing.info.CoordGrid
 
 /**
@@ -15,7 +16,7 @@ internal class WorldEntityMap(
 ) {
     private val map: Int2IntMap =
         Int2IntOpenHashMap(initialCapacity).apply {
-            defaultReturnValue(-1)
+            defaultReturnValue(WorldEntityInfo.ROOT_WORLD)
         }
 
     /**
@@ -102,8 +103,9 @@ internal class WorldEntityMap(
     }
 
     /**
-     * Gets the world entity index that owns the zone that the [coordGrid] belongs in, or -1 if none is present.
-     * @return world entity id that owns the zone, or -1.
+     * Gets the world entity index that owns the zone that the [coordGrid] belongs in,
+     * or [WorldEntityInfo.ROOT_WORLD] if none is present.
+     * @return world entity id that owns the zone, or [WorldEntityInfo.ROOT_WORLD].
      */
     fun get(coordGrid: CoordGrid): Int {
         return map.get(coordGrid.toZoneCoord().packed)
@@ -145,7 +147,7 @@ internal class WorldEntityMap(
                             zoneCoord.packed,
                             index,
                         )
-                    if (old != -1) {
+                    if (old != 0) {
                         throw IllegalStateException("World entity already exists at $zoneCoord")
                     }
                 }

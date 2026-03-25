@@ -2,6 +2,7 @@ package net.rsprot.protocol.game.outgoing.info.worldentityinfo
 
 import io.netty.buffer.ByteBufAllocator
 import net.rsprot.compression.provider.HuffmanCodecProvider
+import net.rsprot.protocol.game.outgoing.info.worldentityinfo.WorldEntityInfo
 import net.rsprot.protocol.internal.game.outgoing.info.CoordFine
 import net.rsprot.protocol.internal.game.outgoing.info.CoordGrid
 import net.rsprot.protocol.internal.game.outgoing.info.util.ZoneIndexStorage
@@ -34,8 +35,8 @@ public class WorldEntityAvatarRepository internal constructor(
 
     /**
      * Looks up a world entity index based on the [coordGrid] by seeing whichever worldentity owns
-     * the zone at which the coordgrid exists. If no worldentity exists there, -1 is returned.
-     * @return the world entity index that owns the coordgrid, or -1.
+     * the zone at which the coordgrid exists. If no worldentity exists there, [WorldEntityInfo.ROOT_WORLD] is returned.
+     * @return the world entity index that owns the coordgrid, or [WorldEntityInfo.ROOT_WORLD].
      */
     public fun getByCoordGrid(coordGrid: CoordGrid): Int {
         return map.get(coordGrid)
@@ -298,6 +299,6 @@ public class WorldEntityAvatarRepository internal constructor(
         /**
          * The maximum number of world entity avatars.
          */
-        internal const val AVATAR_CAPACITY = 2048
+        internal const val AVATAR_CAPACITY = 4096
     }
 }

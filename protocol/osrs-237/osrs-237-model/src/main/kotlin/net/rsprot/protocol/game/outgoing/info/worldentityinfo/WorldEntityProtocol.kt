@@ -95,7 +95,7 @@ public class WorldEntityProtocol(
      * Pre-computes the high resolution block of world entities that exist.
      */
     private fun prepareHighResolutionBuffers() {
-        for (i in 0..<CAPACITY) {
+        for (i in 1..<CAPACITY) {
             val avatar = avatarRepository.getOrNull(i) ?: continue
             try {
                 avatar.precompute()
@@ -123,7 +123,7 @@ public class WorldEntityProtocol(
      * Cleans up all the temporary state after world entity buffers have been computed.
      */
     private fun postUpdate() {
-        for (i in 0..<CAPACITY) {
+        for (i in 1..<CAPACITY) {
             val avatar = avatarRepository.getOrNull(i) ?: continue
             try {
                 avatar.postUpdate()
@@ -187,7 +187,7 @@ public class WorldEntityProtocol(
         /**
          * The maximum number of world entities that can exist in the world.
          */
-        public const val CAPACITY: Int = 2048
+        public const val CAPACITY: Int = 4096
 
         /**
          * The logger used to notify about exceptions that may otherwise be lost.

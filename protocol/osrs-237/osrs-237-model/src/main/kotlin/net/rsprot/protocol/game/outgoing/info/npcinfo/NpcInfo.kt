@@ -149,15 +149,11 @@ public class NpcInfo internal constructor(
      * Gets the world details implementation of the specified [worldId].
      */
     private fun getDetails(worldId: Int): NpcInfoWorldDetails {
-        val details =
-            if (worldId == ROOT_WORLD) {
-                details[WORLD_ENTITY_CAPACITY]
-            } else {
-                require(worldId in 0..<WORLD_ENTITY_CAPACITY) {
-                    "World id out of bounds: $worldId"
-                }
-                details[worldId]
-            }
+        require(worldId in 0..<WORLD_ENTITY_CAPACITY) {
+            "World id out of bounds: $worldId"
+        }
+
+        val details = details[worldId]
         return checkNotNull(details) {
             "World info details not allocated for world $worldId"
         }
@@ -169,15 +165,10 @@ public class NpcInfo internal constructor(
      * as it will then be deallocated.
      */
     private fun getDetailsOrNull(worldId: Int): NpcInfoWorldDetails? {
-        val details =
-            if (worldId == ROOT_WORLD) {
-                details[WORLD_ENTITY_CAPACITY]
-            } else {
-                if (worldId !in 0..<WORLD_ENTITY_CAPACITY) {
-                    return null
-                }
-                details[worldId]
-            }
+        if (worldId !in 0..<WORLD_ENTITY_CAPACITY) {
+            return null
+        }
+        val details = details[worldId]
         return details
     }
 
@@ -185,7 +176,7 @@ public class NpcInfo internal constructor(
      * Gets the high resolution indices of the given [worldId] in a new arraylist of integers.
      * The list is initialized to an initial capacity equal to the high resolution npc index count.
      * @param worldId the worldId to collect the indices from. For root world, use [ROOT_WORLD].
-     * @throws IllegalArgumentException if the world id is not in range of 0..<2048, or [ROOT_WORLD].
+     * @throws IllegalArgumentException if the world id is not in range of 0..<2048.
      * @throws IllegalStateException if the provided world has not been allocated. It is up to the
      * caller to ensure the world they're accessible is available. Root world will always be available
      * as long as the given info object is allocated.
@@ -208,7 +199,7 @@ public class NpcInfo internal constructor(
      * if the provided world does not exist.
      * The list is initialized to an initial capacity equal to the high resolution npc index count.
      * @param worldId the worldId to collect the indices from. For root world, use [ROOT_WORLD].
-     * @throws IllegalArgumentException if the world id is not in range of 0..<2048, or [ROOT_WORLD].
+     * @throws IllegalArgumentException if the world id is not in range of 0..<2048.
      * @throws IllegalStateException if the provided world has not been allocated. It is up to the
      * caller to ensure the world they're accessible is available. Root world will always be available
      * as long as the given info object is allocated.
@@ -234,7 +225,7 @@ public class NpcInfo internal constructor(
      * @param worldId the worldId to collect the indices from. For root world, use [ROOT_WORLD].
      * @param collection the mutable collection of integer indices to append the indices into.
      * @param throwExceptionIfNoWorld whether to throw an exception if the world does not exist.
-     * @throws IllegalArgumentException if the world id is not in range of 0..<2048, or [ROOT_WORLD],
+     * @throws IllegalArgumentException if the world id is not in range of 0..<2048,
      * as long as [throwExceptionIfNoWorld] is true.
      * @throws IllegalStateException if the provided world has not been allocated. It is up to the
      * caller to ensure the world they're accessible is available. Root world will always be available
@@ -1106,7 +1097,7 @@ public class NpcInfo internal constructor(
         this.localPlayerCurrentCoord = CoordGrid.INVALID
         this.localPlayerLastCoord = localPlayerCurrentCoord
         // There is always a root world!
-        details[WORLD_ENTITY_CAPACITY] = detailsStorage.poll(ROOT_WORLD)
+        details[ROOT_WORLD] = detailsStorage.poll(ROOT_WORLD)
     }
 
     override fun onDealloc() {
@@ -1136,7 +1127,7 @@ public class NpcInfo internal constructor(
         /**
          * The root world id, tracking the primary game map.
          */
-        public const val ROOT_WORLD: Int = -1
+        public const val ROOT_WORLD: Int = 0
 
         /**
          * The maximum number of dynamic world entities that can exist.
