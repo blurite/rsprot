@@ -14,24 +14,24 @@ import net.rsprot.protocol.message.toIntOrMinusOne
 import net.rsprot.protocol.util.CombinedId
 
 /**
- * IfRunScript is used by the client to run a server script that is associated with the component.
+ * IfScriptTrigger is used by the client to run a server script that is associated with the component.
  * @property combinedId the bitpacked combination of [interfaceId] and [componentId].
  * @property interfaceId the interface id the player interacted with
  * @property componentId the component id on that interface the script is associated to
  * @property sub the subcomponent within that component if it has one, otherwise -1
  * @property obj the obj in that subcomponent, or -1
- * @property script the id of the server script to invoke
+ * @property crc the crc of the script serverside (not confirmed*)
  * @property buffer the byte buffer containing the values sent by the packet.
  * As the packet itself does not define the types, it isn't possible to immediately decode the
  * buffer as with most packets. We require the server to provide the instructions on how the
  * buffer should be decoded for the provided server script id.
  */
 @Suppress("MemberVisibilityCanBePrivate")
-public class IfRunScript private constructor(
+public class IfScriptTrigger private constructor(
     private val _combinedId: CombinedId,
     private val _sub: UShort,
     private val _obj: UShort,
-    public val script: Int,
+    public val crc: Int,
     public val buffer: ByteBuf,
 ) : DefaultByteBufHolder(buffer),
     IncomingGameMessage {
@@ -39,13 +39,13 @@ public class IfRunScript private constructor(
         combinedId: CombinedId,
         sub: Int,
         obj: Int,
-        script: Int,
+        crc: Int,
         buffer: ByteBuf,
     ) : this(
         combinedId,
         sub.toUShort(),
         obj.toUShort(),
-        script,
+        crc,
         buffer,
     )
 
@@ -166,12 +166,12 @@ public class IfRunScript private constructor(
         if (this === other) return true
         if (javaClass != other?.javaClass) return false
 
-        other as IfRunScript
+        other as IfScriptTrigger
 
         if (_combinedId != other._combinedId) return false
         if (_sub != other._sub) return false
         if (_obj != other._obj) return false
-        if (script != other.script) return false
+        if (crc != other.crc) return false
         if (buffer != other.buffer) return false
 
         return true
@@ -181,17 +181,17 @@ public class IfRunScript private constructor(
         var result = _combinedId.hashCode()
         result = 31 * result + _sub.hashCode()
         result = 31 * result + _obj.hashCode()
-        result = 31 * result + script.hashCode()
+        result = 31 * result + crc.hashCode()
         result = 31 * result + buffer.hashCode()
         return result
     }
 
     override fun toString(): String =
-        "IfRunScript(" +
+        "IfScriptTrigger(" +
             "interfaceId=$interfaceId, " +
             "componentId=$componentId, " +
             "sub=$sub, " +
             "obj=$obj, " +
-            "script=$script" +
+            "crc=$crc" +
             ")"
 }

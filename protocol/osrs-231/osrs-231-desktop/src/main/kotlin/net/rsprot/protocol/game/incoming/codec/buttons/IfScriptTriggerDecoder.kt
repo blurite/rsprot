@@ -2,30 +2,29 @@ package net.rsprot.protocol.game.incoming.codec.buttons
 
 import net.rsprot.buffer.JagByteBuf
 import net.rsprot.protocol.ClientProt
-import net.rsprot.protocol.game.incoming.buttons.IfRunScript
+import net.rsprot.protocol.game.incoming.buttons.IfScriptTrigger
 import net.rsprot.protocol.game.incoming.prot.GameClientProt
 import net.rsprot.protocol.message.codec.MessageDecoder
 import net.rsprot.protocol.util.gCombinedIdAlt3
 
-public class IfRunScriptDecoder : MessageDecoder<IfRunScript> {
-    override val prot: ClientProt = GameClientProt.IF_RUNSCRIPT
+public class IfScriptTriggerDecoder : MessageDecoder<IfScriptTrigger> {
+    override val prot: ClientProt = GameClientProt.IF_SCRIPT_TRIGGER
 
-    override fun decode(buffer: JagByteBuf): IfRunScript {
-        // Function is method(int combinedId, int sub, int obj, int script, Object[] args)
-        // The order of argument does not seem to change (based on two revisions)
-        val obj = buffer.g2Alt1()
+    override fun decode(buffer: JagByteBuf): IfScriptTrigger {
+        // Function is method(int combinedId, int sub, int obj, int crc, Object[] args)
+        val sub = buffer.g2()
         val combinedId = buffer.gCombinedIdAlt3()
-        val script = buffer.g4Alt2()
-        val sub = buffer.g2Alt2()
+        val obj = buffer.g2Alt3()
+        val crc = buffer.g4Alt1()
 
         val copy = buffer.buffer.copy()
         // Mark the buffer as "read" as copy function doesn't do it automatically.
         buffer.buffer.readerIndex(buffer.buffer.writerIndex())
-        return IfRunScript(
+        return IfScriptTrigger(
             combinedId,
             sub,
             obj,
-            script,
+            crc,
             copy,
         )
     }

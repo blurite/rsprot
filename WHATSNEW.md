@@ -155,9 +155,7 @@ Below is a list of additions to __server__ prots.
 Below is a list of additions to __client__ prots.
 - IF_BUTTONX - A new variant of IF_BUTTON(1-10) that sends the button id
   inside the packet. It now supports button ids 1 through 32.
-- IF_RUNSCRIPT - A way of invoking a serverscript in the server, by the client.
-  The exact usages of it are currently unknown, but it effectively works the same
-  way as RUN_CLIENTSCRIPT does for server -> client.
+- IF_SCRIPT_TRIGGER - A way of invoking a serverscript in the server, by the client.
 
 #### Removals
 - SET_ACTIVE_WORLD_V1
