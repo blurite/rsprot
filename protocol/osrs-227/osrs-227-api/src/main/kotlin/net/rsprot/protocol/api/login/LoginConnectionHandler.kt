@@ -292,6 +292,22 @@ public class LoginConnectionHandler<R>(
         ctx: ChannelHandlerContext,
         cause: Throwable,
     ) {
+        // Special case for when the header fails to decode - this happens directly inside Netty's event loop.
+        if (cause == InvalidVersionException) {
+            // Write a message indicating client is outdated
+            ctx
+                .writeAndFlush(LoginResponse.ClientOutOfDate)
+                .addListener(ChannelFutureListener.CLOSE)
+
+            networkService
+                .trafficMonitor
+                .loginChannelTrafficMonitor
+                .addDisconnectionReason(
+                    ctx.hostAddress(),
+                    LoginDisconnectionReason.GAME_CLIENT_OUT_OF_DATE,
+                )
+            return
+        }
         networkService
             .exceptionHandlers
             .channelExceptionHandler
