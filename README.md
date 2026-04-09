@@ -16,7 +16,7 @@ In order to add it to your server, add the below line under dependencies
 in your build.gradle.kts.
 
 ```kts
-implementation("net.rsprot:osrs-237-api:1.0.0-ALPHA-20260331")
+implementation("net.rsprot:osrs-237-api:1.0.0-ALPHA-20260409")
 ```
 
 An in-depth tutorial on how to implement it will be added into this read-me
