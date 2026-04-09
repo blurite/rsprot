@@ -33,8 +33,8 @@ internal class NpcInfoRepository(
         element: NpcInfo,
         idx: Int,
         oldSchoolClientType: OldSchoolClientType,
-        newInstance: Boolean,
+        info: WorldEntityInfo?,
     ) {
-        element.onAlloc(idx, oldSchoolClientType, newInstance)
+        element.onAlloc(idx, oldSchoolClientType, info)
     }
 }

@@ -63,7 +63,7 @@ public class WorldEntityInfo internal constructor(
     private val avatarRepository: WorldEntityAvatarRepository,
     private val zoneIndexStorage: ZoneIndexStorage,
     private val recycler: ByteBufRecycler = ByteBufRecycler(),
-) : ReferencePooledObject {
+) : ReferencePooledObject<Unit> {
     private var renderDistance: Int = DEFAULT_RENDER_DISTANCE
     private var zoneSeekRadius: Int = DEFAULT_ZONE_SEEK_RADIUS
     private var coordInRootWorld: CoordGrid = CoordGrid.INVALID
@@ -688,7 +688,7 @@ public class WorldEntityInfo internal constructor(
     override fun onAlloc(
         index: Int,
         oldSchoolClientType: OldSchoolClientType,
-        newInstance: Boolean,
+        info: Unit?,
     ) {
         checkCommunicationThread()
         this.localIndex = index

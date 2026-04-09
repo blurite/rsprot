@@ -82,7 +82,8 @@ internal abstract class InfoRepository<T, I>(
         }
         val cached = queue.poll()?.get()
         if (cached != null) {
-            onAlloc(cached, idx, oldSchoolClientType, false)
+            // Pass the worldentity info to the cached ones so it gets correctly assigned
+            onAlloc(cached, idx, oldSchoolClientType, info)
             elements[idx] = cached
             return cached
         }
@@ -92,7 +93,9 @@ internal abstract class InfoRepository<T, I>(
                 oldSchoolClientType,
                 info,
             )
-        onAlloc(new, idx, oldSchoolClientType, true)
+        // Don't pass it to the non-cached ones as the allocator already sets it.
+        // It being null also acts as an indicator for "this is a new info".
+        onAlloc(new, idx, oldSchoolClientType, null)
         elements[idx] = new
         return new
     }
@@ -108,7 +111,7 @@ internal abstract class InfoRepository<T, I>(
         element: T,
         idx: Int,
         oldSchoolClientType: OldSchoolClientType,
-        newInstance: Boolean,
+        info: I?,
     )
 
     /**

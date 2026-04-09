@@ -8,7 +8,7 @@ import net.rsprot.protocol.common.client.OldSchoolClientType
  * the object itself might become too costly, so we utilize a soft reference pool to retrieve older
  * objects and re-use them in the future.
  */
-public interface ReferencePooledObject {
+public interface ReferencePooledObject<T> {
     /**
      * Invoked whenever a previously pooled object is re-allocated.
      * This function will be responsible for restoring state to be equivalent to newly
@@ -19,7 +19,7 @@ public interface ReferencePooledObject {
     public fun onAlloc(
         index: Int,
         oldSchoolClientType: OldSchoolClientType,
-        newInstance: Boolean,
+        info: T?,
     )
 
     /**

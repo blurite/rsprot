@@ -46,8 +46,8 @@ internal class PlayerInfoRepository(
         element: PlayerInfo,
         idx: Int,
         oldSchoolClientType: OldSchoolClientType,
-        newInstance: Boolean,
+        info: WorldEntityInfo?,
     ) {
-        element.onAlloc(idx, oldSchoolClientType, newInstance)
+        element.onAlloc(idx, oldSchoolClientType, info)
     }
 }

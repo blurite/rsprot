@@ -30,8 +30,8 @@ internal class WorldEntityInfoRepository(
         element: WorldEntityInfo,
         idx: Int,
         oldSchoolClientType: OldSchoolClientType,
-        newInstance: Boolean,
+        info: Unit?,
     ) {
-        element.onAlloc(idx, oldSchoolClientType, newInstance)
+        element.onAlloc(idx, oldSchoolClientType, info)
     }
 }

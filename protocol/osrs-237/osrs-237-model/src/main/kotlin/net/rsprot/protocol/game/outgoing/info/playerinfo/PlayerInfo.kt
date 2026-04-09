@@ -57,7 +57,7 @@ public class PlayerInfo internal constructor(
     private val recycler: ByteBufRecycler,
     private val globalLowResolutionPositionRepository: GlobalLowResolutionPositionRepository,
     private var worldEntityInfo: WorldEntityInfo?,
-) : ReferencePooledObject {
+) : ReferencePooledObject<WorldEntityInfo> {
     /**
      * Low resolution indices are tracked together with [lowResolutionCount].
      * Whenever a player enters the low resolution view, their index
@@ -994,7 +994,7 @@ public class PlayerInfo internal constructor(
     override fun onAlloc(
         index: Int,
         oldSchoolClientType: OldSchoolClientType,
-        newInstance: Boolean,
+        info: WorldEntityInfo?,
     ) {
         this.localIndex = index
         avatar.localPlayerIndex = index
@@ -1002,6 +1002,9 @@ public class PlayerInfo internal constructor(
         this.oldSchoolClientType = oldSchoolClientType
         avatar.reset()
         this.avatar.allocateCycle = PlayerInfoProtocol.cycleCount
+        if (info != null) {
+            this.worldEntityInfo = info
+        }
         lowResolutionIndices.fill(0)
         lowResolutionCount = 0
         highResolutionIndices.fill(0)

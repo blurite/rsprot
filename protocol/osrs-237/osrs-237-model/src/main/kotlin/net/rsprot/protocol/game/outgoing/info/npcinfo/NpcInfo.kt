@@ -54,7 +54,7 @@ public class NpcInfo internal constructor(
     private val recycler: ByteBufRecycler,
     private val filter: NpcAvatarFilter?,
     private var worldEntityInfo: WorldEntityInfo?,
-) : ReferencePooledObject {
+) : ReferencePooledObject<WorldEntityInfo> {
     /**
      * The maximum render distance how far a player will see other NPCs.
      * Unlike with player info, this does not automatically resize to accommodate for nearby NPCs,
@@ -1088,7 +1088,7 @@ public class NpcInfo internal constructor(
     override fun onAlloc(
         index: Int,
         oldSchoolClientType: OldSchoolClientType,
-        newInstance: Boolean,
+        info: WorldEntityInfo?,
     ) {
         checkCommunicationThread()
         this.localPlayerIndex = index
@@ -1096,6 +1096,9 @@ public class NpcInfo internal constructor(
         this.renderDistance = DEFAULT_DISTANCE
         this.localPlayerCurrentCoord = CoordGrid.INVALID
         this.localPlayerLastCoord = localPlayerCurrentCoord
+        if (info != null) {
+            this.worldEntityInfo = info
+        }
         // There is always a root world!
         details[ROOT_WORLD] = detailsStorage.poll(ROOT_WORLD)
     }
