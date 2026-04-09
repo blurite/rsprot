@@ -352,6 +352,9 @@ public class LoginConnectionHandler<R>(
                     "Fatal error in handling decoded login block."
                 }
                 throw t
+            } finally {
+                val buf = packet.buffer.buffer
+                if (buf.refCnt() > 0) buf.release()
             }
         }
     }
@@ -422,6 +425,9 @@ public class LoginConnectionHandler<R>(
                     "Fatal error in handling decoded login block."
                 }
                 throw t
+            } finally {
+                val buf = packet.buffer.buffer
+                if (buf.refCnt() > 0) buf.release()
             }
         }
     }
