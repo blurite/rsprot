@@ -2,11 +2,11 @@ package net.rsprot.protocol.game.outgoing.info.worldentityinfo
 
 import io.netty.buffer.ByteBufAllocator
 import net.rsprot.compression.provider.HuffmanCodecProvider
+import net.rsprot.protocol.game.outgoing.info.util.SoftReferencePool
+import net.rsprot.protocol.internal.RSProtFlags
 import net.rsprot.protocol.internal.game.outgoing.info.CoordFine
 import net.rsprot.protocol.internal.game.outgoing.info.CoordGrid
 import net.rsprot.protocol.internal.game.outgoing.info.util.ZoneIndexStorage
-import java.lang.ref.ReferenceQueue
-import java.lang.ref.SoftReference
 
 /**
  * An avatar repository for world entities, keeping track of every current avatar,
@@ -17,8 +17,8 @@ import java.lang.ref.SoftReference
  * world entities across zones.
  * @property extendedInfoWriter the client-specific extended info writers for World Entity information.
  * @property elements the array of existing world entity avatars, currently in use.
- * @property queue the soft reference queue of world avatars that were previously in use.
- * As a soft reference queue, it will hold on-to the unused references until the JVM
+ * @property pool the soft reference pool of world avatars that were previously in use.
+ * As a soft reference pool, it will hold on-to the unused references until the JVM
  * absolutely needs the memory - before that, these can be reused, making it a perfect
  * use case for the pooling mechanism.
  */
@@ -30,7 +30,10 @@ public class WorldEntityAvatarRepository internal constructor(
     private val map: WorldEntityMap = WorldEntityMap(),
 ) {
     private val elements: Array<WorldEntityAvatar?> = arrayOfNulls(AVATAR_CAPACITY)
-    private val queue: ReferenceQueue<WorldEntityAvatar> = ReferenceQueue<WorldEntityAvatar>()
+    private val pool: SoftReferencePool<WorldEntityAvatar> =
+        SoftReferencePool(
+            if (RSProtFlags.infoPooling) AVATAR_CAPACITY else 0,
+        )
 
     /**
      * Looks up a world entity index based on the [coordGrid] by seeing whichever worldentity owns
@@ -174,7 +177,7 @@ public class WorldEntityAvatarRepository internal constructor(
             maxLevel,
             index,
         )
-        val existing = queue.poll()?.get()
+        val existing = pool.poll()
         if (existing != null) {
             existing.index = index
             existing.sizeX = sizeX
@@ -290,8 +293,7 @@ public class WorldEntityAvatarRepository internal constructor(
         )
         zoneIndexStorage.remove(index, avatar.currentCoordGrid)
         this.elements[index] = null
-        val reference = SoftReference(avatar, queue)
-        reference.enqueue()
+        pool.push(avatar)
     }
 
     internal companion object {

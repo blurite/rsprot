@@ -1,16 +1,19 @@
 package net.rsprot.protocol.game.outgoing.info.npcinfo
 
-import java.lang.ref.ReferenceQueue
-import java.lang.ref.SoftReference
+import net.rsprot.protocol.game.outgoing.info.util.SoftReferencePool
+import net.rsprot.protocol.internal.RSProtFlags
 
 /**
  * A storage object for npc info world details.
  * As these detail objects are fairly large, with each one making several arrays
  * that are thousands in length, it is preferred to pool and re-use these whenever possible.
- * @property queue the soft reference queue holding these objects.
+ * @property pool the soft reference pool holding these objects.
  */
 internal class NpcInfoWorldDetailsStorage {
-    private val queue: ReferenceQueue<NpcInfoWorldDetails> = ReferenceQueue<NpcInfoWorldDetails>()
+    private val pool: SoftReferencePool<NpcInfoWorldDetails> =
+        SoftReferencePool(
+            if (RSProtFlags.infoPooling) NpcAvatarRepository.AVATAR_CAPACITY else 0,
+        )
 
     /**
      * Polls a world from the queue, or creates a new one.
@@ -18,7 +21,7 @@ internal class NpcInfoWorldDetailsStorage {
      * @return an unused world details implementation.
      */
     internal fun poll(worldId: Int): NpcInfoWorldDetails {
-        val next = queue.poll()?.get()
+        val next = pool.poll()
         if (next != null) {
             next.onAlloc(worldId)
             return next
@@ -33,7 +36,6 @@ internal class NpcInfoWorldDetailsStorage {
      */
     internal fun push(details: NpcInfoWorldDetails) {
         details.onDealloc()
-        val reference = SoftReference(details, queue)
-        reference.enqueue()
+        pool.push(details)
     }
 }

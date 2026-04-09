@@ -18,7 +18,7 @@ import net.rsprot.protocol.game.outgoing.info.worldentityinfo.WorldEntityInfo
  */
 internal class NpcInfoRepository(
     allocator: (index: Int, oldSchoolClientType: OldSchoolClientType, worldEntityInfo: WorldEntityInfo) -> NpcInfo,
-) : InfoRepository<NpcInfo, WorldEntityInfo>(allocator) {
+) : InfoRepository<NpcInfo, WorldEntityInfo>(allocator, NpcInfoProtocol.PROTOCOL_CAPACITY) {
     override val elements: Array<NpcInfo?> = arrayOfNulls(NpcInfoProtocol.PROTOCOL_CAPACITY)
 
     override fun informDeallocation(idx: Int) {

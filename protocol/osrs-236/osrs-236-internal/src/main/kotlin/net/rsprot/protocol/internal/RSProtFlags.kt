@@ -114,6 +114,13 @@ public object RSProtFlags {
         getInt("singleVarShortPacketMaxAcceptedLength", 1_600)
 
     @JvmStatic
+    public val infoPooling: Boolean =
+        getBoolean(
+            "infoPooling",
+            false,
+        )
+
+    @JvmStatic
     public val networkLogging: LogLevel =
         when (networkLoggingString) {
             "off" -> LogLevel.OFF
@@ -162,6 +169,7 @@ public object RSProtFlags {
         log("captureChat", captureChat)
         log("captureSay", captureSay)
         log("singleVarShortPacketMaxAcceptedLength", singleVarShortPacketMaxAcceptedLength)
+        log("infoPooling", infoPooling)
 
         if (SystemPropertyUtil
                 .get(

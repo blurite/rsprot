@@ -4,11 +4,11 @@ import io.netty.buffer.ByteBufAllocator
 import net.rsprot.compression.provider.HuffmanCodecProvider
 import net.rsprot.protocol.game.outgoing.info.AvatarPriority
 import net.rsprot.protocol.game.outgoing.info.filter.ExtendedInfoFilter
+import net.rsprot.protocol.game.outgoing.info.util.SoftReferencePool
+import net.rsprot.protocol.internal.RSProtFlags
 import net.rsprot.protocol.internal.game.outgoing.info.CoordGrid
 import net.rsprot.protocol.internal.game.outgoing.info.npcinfo.NpcAvatarDetails
 import net.rsprot.protocol.internal.game.outgoing.info.util.ZoneIndexStorage
-import java.lang.ref.ReferenceQueue
-import java.lang.ref.SoftReference
 
 /**
  * The NPC avatar repository is a class responsible for keeping track of all the avatars
@@ -41,13 +41,14 @@ internal class NpcAvatarRepository(
     private val elements: Array<NpcAvatar?> = arrayOfNulls(AVATAR_CAPACITY)
 
     /**
-     * A soft-reference queue of avatars that are no longer in use.
+     * A soft-reference pool of avatars that are no longer in use.
      * If the server requires the memory, these references will be freed up, but this is
      * only as a last resort. Other than that, these instances should remain available
      * for a long period of time - rightfully so as extended info blocks primarily
      * are the heavy part.
      */
-    private val queue: ReferenceQueue<NpcAvatar> = ReferenceQueue<NpcAvatar>()
+    private val pool: SoftReferencePool<NpcAvatar> =
+        SoftReferencePool(if (RSProtFlags.infoPooling) AVATAR_CAPACITY else 0)
 
     /**
      * Gets a npc avatar at the provided index, or null if it doesn't exist yet.
@@ -112,7 +113,7 @@ internal class NpcAvatarRepository(
         require(old == null) {
             "NPC Avatar with index $index is already allocated: $old"
         }
-        val existing = queue.poll()?.get()
+        val existing = pool.poll()
         if (existing != null) {
             existing.resetObservers()
             val details = existing.details
@@ -179,8 +180,7 @@ internal class NpcAvatarRepository(
         zoneIndexStorage.remove(index, avatar.details.currentCoord)
         this.elements[index] = null
         avatar.extendedInfo.reset()
-        val reference = SoftReference(avatar, queue)
-        reference.enqueue()
+        pool.push(avatar)
     }
 
     /**

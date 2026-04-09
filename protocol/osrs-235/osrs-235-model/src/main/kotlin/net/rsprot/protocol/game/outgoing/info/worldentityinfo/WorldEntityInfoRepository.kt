@@ -15,7 +15,7 @@ internal class WorldEntityInfoRepository(
         oldSchoolClientType: OldSchoolClientType,
         unit: Unit,
     ) -> WorldEntityInfo,
-) : InfoRepository<WorldEntityInfo, Unit>(allocator) {
+) : InfoRepository<WorldEntityInfo, Unit>(allocator, WorldEntityProtocol.CAPACITY) {
     override val elements: Array<WorldEntityInfo?> = arrayOfNulls(WorldEntityProtocol.CAPACITY)
 
     override fun informDeallocation(idx: Int) {
