@@ -82,7 +82,7 @@ public class NpcInfo internal constructor(
      * An array of world details, containing all the player info properties specific to a single world.
      * The root world is placed at the end of this array, however id -1 will be treated as the root.
      */
-    internal val details: Array<NpcInfoWorldDetails?> = arrayOfNulls(WORLD_ENTITY_CAPACITY + 1)
+    internal val details: Array<NpcInfoWorldDetails?> = arrayOfNulls(WORLD_ENTITY_CAPACITY)
 
     /**
      * The last cycle's coordinate of the local player, used to perform faster npc removal.
@@ -1082,7 +1082,7 @@ public class NpcInfo internal constructor(
         releaseAllWorlds()
         // Restore the root world by polling a new one
         val details = detailsStorage.poll(ROOT_WORLD)
-        this.details[WORLD_ENTITY_CAPACITY] = details
+        this.details[ROOT_WORLD] = details
     }
 
     override fun onAlloc(
