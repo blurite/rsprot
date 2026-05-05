@@ -10,7 +10,7 @@ public class EventCameraPositionDecoder : MessageDecoder<EventCameraPosition> {
     override val prot: ClientProt = GameClientProt.EVENT_CAMERA_POSITION
 
     override fun decode(buffer: JagByteBuf): EventCameraPosition {
-        val angleX = buffer.g2Alt1()
+        val angleX = buffer.g2()
         val angleY = buffer.g2Alt1()
         return EventCameraPosition(
             angleX,

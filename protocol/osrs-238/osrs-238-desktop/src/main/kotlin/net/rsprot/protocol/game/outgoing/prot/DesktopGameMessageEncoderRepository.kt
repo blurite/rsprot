@@ -38,7 +38,6 @@ import net.rsprot.protocol.game.outgoing.codec.interfaces.IfSetAnimEncoder
 import net.rsprot.protocol.game.outgoing.codec.interfaces.IfSetColourEncoder
 import net.rsprot.protocol.game.outgoing.codec.interfaces.IfSetEventsV2Encoder
 import net.rsprot.protocol.game.outgoing.codec.interfaces.IfSetHideEncoder
-import net.rsprot.protocol.game.outgoing.codec.interfaces.IfSetModelV1Encoder
 import net.rsprot.protocol.game.outgoing.codec.interfaces.IfSetModelV2Encoder
 import net.rsprot.protocol.game.outgoing.codec.interfaces.IfSetNpcHeadActiveEncoder
 import net.rsprot.protocol.game.outgoing.codec.interfaces.IfSetNpcHeadEncoder
@@ -58,11 +57,8 @@ import net.rsprot.protocol.game.outgoing.codec.inv.UpdateInvStopTransmitEncoder
 import net.rsprot.protocol.game.outgoing.codec.logout.LogoutEncoder
 import net.rsprot.protocol.game.outgoing.codec.logout.LogoutTransferEncoder
 import net.rsprot.protocol.game.outgoing.codec.logout.LogoutWithReasonEncoder
-import net.rsprot.protocol.game.outgoing.codec.map.RebuildNormalV1Encoder
 import net.rsprot.protocol.game.outgoing.codec.map.RebuildNormalV2Encoder
-import net.rsprot.protocol.game.outgoing.codec.map.RebuildRegionV1Encoder
 import net.rsprot.protocol.game.outgoing.codec.map.RebuildRegionV2Encoder
-import net.rsprot.protocol.game.outgoing.codec.map.RebuildWorldEntityV3Encoder
 import net.rsprot.protocol.game.outgoing.codec.map.RebuildWorldEntityV4Encoder
 import net.rsprot.protocol.game.outgoing.codec.misc.client.HideLocOpsEncoder
 import net.rsprot.protocol.game.outgoing.codec.misc.client.HideNpcOpsEncoder
@@ -82,7 +78,6 @@ import net.rsprot.protocol.game.outgoing.codec.misc.client.SiteSettingsEncoder
 import net.rsprot.protocol.game.outgoing.codec.misc.client.UpdateRebootTimerV2Encoder
 import net.rsprot.protocol.game.outgoing.codec.misc.client.UpdateUid192Encoder
 import net.rsprot.protocol.game.outgoing.codec.misc.client.UrlOpenEncoder
-import net.rsprot.protocol.game.outgoing.codec.misc.client.ZBufEncoder
 import net.rsprot.protocol.game.outgoing.codec.misc.player.AccountFlagsEncoder
 import net.rsprot.protocol.game.outgoing.codec.misc.player.ChatFilterSettingsEncoder
 import net.rsprot.protocol.game.outgoing.codec.misc.player.ChatFilterSettingsPrivateChatEncoder
@@ -140,9 +135,7 @@ import net.rsprot.protocol.game.outgoing.codec.zone.payload.LocDelEncoder
 import net.rsprot.protocol.game.outgoing.codec.zone.payload.LocMergeEncoder
 import net.rsprot.protocol.game.outgoing.codec.zone.payload.MapAnimEncoder
 import net.rsprot.protocol.game.outgoing.codec.zone.payload.SoundAreaEncoder
-import net.rsprot.protocol.game.outgoing.map.RebuildLoginV1
 import net.rsprot.protocol.game.outgoing.map.RebuildLoginV2
-import net.rsprot.protocol.game.outgoing.map.RebuildNormalV1
 import net.rsprot.protocol.game.outgoing.map.RebuildNormalV2
 import net.rsprot.protocol.message.codec.outgoing.MessageEncoderRepository
 import net.rsprot.protocol.message.codec.outgoing.MessageEncoderRepositoryBuilder
@@ -174,7 +167,6 @@ public object DesktopGameMessageEncoderRepository {
                 bind(IfSetNpcHeadEncoder())
                 bind(IfSetNpcHeadActiveEncoder())
                 bind(IfSetPlayerHeadEncoder())
-                bind(IfSetModelV1Encoder())
                 bind(IfSetModelV2Encoder())
                 bind(IfSetPlayerModelBaseColourEncoder())
                 bind(IfSetPlayerModelBodyTypeEncoder())
@@ -222,12 +214,9 @@ public object DesktopGameMessageEncoderRepository {
                 bind(SetActiveWorldV2Encoder())
                 bind(WorldEntityInfoV7Encoder())
 
-                bindWithAlts(RebuildNormalV1Encoder(), RebuildLoginV1::class.java, RebuildNormalV1::class.java)
                 bindWithAlts(RebuildNormalV2Encoder(), RebuildLoginV2::class.java, RebuildNormalV2::class.java)
 
-                bind(RebuildRegionV1Encoder())
                 bind(RebuildRegionV2Encoder())
-                bind(RebuildWorldEntityV3Encoder())
                 bind(RebuildWorldEntityV4Encoder())
 
                 bind(VarpSmallEncoder())
@@ -304,7 +293,6 @@ public object DesktopGameMessageEncoderRepository {
                 bind(SetInteractionModeEncoder())
                 bind(ResetInteractionModeEncoder())
                 bind(PacketGroupStartEncoder())
-                bind(ZBufEncoder())
 
                 bind(UrlOpenEncoder())
                 bind(SiteSettingsEncoder())

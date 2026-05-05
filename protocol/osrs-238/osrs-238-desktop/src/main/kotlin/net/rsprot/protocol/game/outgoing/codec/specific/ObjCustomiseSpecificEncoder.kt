@@ -19,12 +19,12 @@ public class ObjCustomiseSpecificEncoder : MessageEncoder<ObjCustomiseSpecific> 
         // making it easy to identify all the properties of this packet:
         // objCustomise(world, level, x, z, id, count, recol, recolIndex, retex, retexIndex, model);
         buffer.p2Alt3(message.recolIndex)
-        buffer.p4Alt3(message.quantity)
-        buffer.p2(message.retexIndex)
-        buffer.p2Alt1(message.model)
-        buffer.p2Alt3(message.recol)
-        buffer.p2(message.retex)
+        buffer.p2(message.recol)
         buffer.p4(message.coordGrid.packed)
+        buffer.p4Alt1(message.quantity)
+        buffer.p2Alt2(message.retex)
+        buffer.p2Alt2(message.model)
         buffer.p2Alt1(message.id)
+        buffer.p2Alt1(message.retexIndex)
     }
 }

@@ -15,10 +15,10 @@ public class CamLookAtEasedCoordV2Encoder : MessageEncoder<CamLookAtEasedCoordV2
         buffer: JagByteBuf,
         message: CamLookAtEasedCoordV2,
     ) {
-        buffer.p2Alt1(message.height)
-        buffer.p2Alt1(message.z)
-        buffer.p1(message.easing.id)
+        buffer.p2Alt3(message.height)
         buffer.p2(message.x)
-        buffer.p2(message.cycles)
+        buffer.p1Alt1(message.easing.id)
+        buffer.p2Alt3(message.z)
+        buffer.p2Alt2(message.cycles)
     }
 }

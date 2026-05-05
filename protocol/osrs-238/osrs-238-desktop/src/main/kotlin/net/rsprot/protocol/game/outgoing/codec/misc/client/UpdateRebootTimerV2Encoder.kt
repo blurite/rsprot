@@ -15,6 +15,7 @@ public class UpdateRebootTimerV2Encoder : MessageEncoder<UpdateRebootTimerV2> {
         buffer: JagByteBuf,
         message: UpdateRebootTimerV2,
     ) {
+        buffer.p2Alt2(message.gameCycles)
         when (val mes = message.messageType) {
             UpdateRebootTimerV2.ClearUpdateMessage -> {
                 buffer.pjstr(CANCEL)
@@ -26,7 +27,6 @@ public class UpdateRebootTimerV2Encoder : MessageEncoder<UpdateRebootTimerV2> {
                 buffer.pjstr(mes.message)
             }
         }
-        buffer.p2Alt3(message.gameCycles)
     }
 
     private companion object {
