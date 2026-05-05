@@ -43,6 +43,7 @@ public enum class GameServerProt(
     MIDI_JINGLE(GameServerProtId.MIDI_JINGLE, 5),
     SYNTH_SOUND(GameServerProtId.SYNTH_SOUND, 5),
     AMBIENCE_START(GameServerProtId.AMBIENCE_START, 3),
+    AMBIENCE_STOP(GameServerProtId.AMBIENCE_STOP, 1),
 
     // Zone header packets
     UPDATE_ZONE_FULL_FOLLOWS(GameServerProtId.UPDATE_ZONE_FULL_FOLLOWS, 3),

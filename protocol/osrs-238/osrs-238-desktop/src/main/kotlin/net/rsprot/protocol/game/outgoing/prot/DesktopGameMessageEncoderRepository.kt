@@ -101,6 +101,7 @@ import net.rsprot.protocol.game.outgoing.codec.social.MessagePrivateEncoder
 import net.rsprot.protocol.game.outgoing.codec.social.UpdateFriendListEncoder
 import net.rsprot.protocol.game.outgoing.codec.social.UpdateIgnoreListEncoder
 import net.rsprot.protocol.game.outgoing.codec.sound.AmbienceStartEncoder
+import net.rsprot.protocol.game.outgoing.codec.sound.AmbienceStopEncoder
 import net.rsprot.protocol.game.outgoing.codec.sound.MidiJingleEncoder
 import net.rsprot.protocol.game.outgoing.codec.sound.MidiSongStopEncoder
 import net.rsprot.protocol.game.outgoing.codec.sound.MidiSongV2Encoder
@@ -181,6 +182,7 @@ public object DesktopGameMessageEncoderRepository {
                 bind(MidiJingleEncoder())
                 bind(SynthSoundEncoder())
                 bind(AmbienceStartEncoder())
+                bind(AmbienceStopEncoder())
 
                 bind(UpdateZoneFullFollowsEncoder())
                 bind(UpdateZonePartialFollowsEncoder())
