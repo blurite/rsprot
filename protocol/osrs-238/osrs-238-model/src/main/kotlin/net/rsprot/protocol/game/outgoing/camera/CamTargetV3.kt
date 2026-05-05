@@ -12,6 +12,10 @@ import net.rsprot.protocol.message.OutgoingGameMessage
  * is used. Other types will use the traditional priority system.
  * @property type the camera target type to focus on.
  */
+@Deprecated(
+    "Deprecated. Use CamTargetV4.",
+    replaceWith = ReplaceWith("CamTargetV4"),
+)
 public class CamTargetV3(
     public val type: CamTargetType,
 ) : OutgoingGameMessage {

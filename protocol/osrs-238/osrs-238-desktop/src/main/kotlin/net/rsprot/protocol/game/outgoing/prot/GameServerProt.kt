@@ -118,6 +118,7 @@ public enum class GameServerProt(
     CAM_ROTATETO(GameServerProtId.CAM_ROTATETO, 7),
     CAM_MODE(GameServerProtId.CAM_MODE, 1),
     CAM_TARGET_V3(GameServerProtId.CAM_TARGET_V3, 5),
+    CAM_TARGET_V4(GameServerProtId.CAM_TARGET_V4, 5),
     OCULUS_SYNC(GameServerProtId.OCULUS_SYNC, 4),
     CAM_UNLOCK(GameServerProtId.CAM_UNLOCK, 1),
     CAM_SKYBOX(GameServerProtId.CAM_SKYBOX, 4),
