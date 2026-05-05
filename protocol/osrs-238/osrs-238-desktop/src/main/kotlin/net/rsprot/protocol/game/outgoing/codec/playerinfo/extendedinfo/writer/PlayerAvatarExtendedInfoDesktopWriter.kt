@@ -55,13 +55,13 @@ public class PlayerAvatarExtendedInfoDesktopWriter :
             clientFlags = clientFlags or MOVE_SPEED
         }
         if (constantFlags and PlayerAvatarExtendedInfo.FACE_PATHINGENTITY != 0) {
-            clientFlags = clientFlags or FACE_PATHINGENTITY
+            clientFlags = clientFlags or FACE_PATHINGENTITY_OLD
         }
         if (constantFlags and PlayerAvatarExtendedInfo.TINTING != 0) {
             clientFlags = clientFlags or TINTING
         }
         if (constantFlags and PlayerAvatarExtendedInfo.FACE_ANGLE != 0) {
-            clientFlags = clientFlags or FACE_ANGLE
+            clientFlags = clientFlags or FACE_ANGLE_OLD
         }
         if (constantFlags and PlayerAvatarExtendedInfo.SAY != 0) {
             clientFlags = clientFlags or SAY
@@ -112,22 +112,22 @@ public class PlayerAvatarExtendedInfoDesktopWriter :
             buffer.p1(clientFlag shr 16)
         }
 
-        outFlag = outFlag or pCached(buffer, clientFlag, APPEARANCE, blocks.appearance)
-        // old hits
-        outFlag = outFlag or pCached(buffer, clientFlag, TEMP_MOVE_SPEED, blocks.temporaryMoveSpeed)
-        outFlag = outFlag or pCached(buffer, clientFlag, EXACT_MOVE, blocks.exactMove)
-        outFlag = outFlag or pCached(buffer, clientFlag, SEQUENCE, blocks.sequence)
         outFlag = outFlag or pOnDemand(buffer, clientFlag, HEADBARS, blocks.headbarList, localIndex, observerIndex)
-        // Old chat
-        outFlag = outFlag or pOnDemand(buffer, clientFlag, HITMARKS, blocks.hitmarkList, localIndex, observerIndex)
-        outFlag = outFlag or pCached(buffer, clientFlag, FACE_ANGLE, blocks.faceAngle)
-        outFlag = outFlag or pOnDemand(buffer, clientFlag, TINTING, blocks.tinting, localIndex, observerIndex)
-        // Name extras
-        outFlag = outFlag or pCached(buffer, clientFlag, FACE_PATHINGENTITY, blocks.facePathingEntity)
-        outFlag = outFlag or pCached(buffer, clientFlag, MOVE_SPEED, blocks.moveSpeed)
-        outFlag = outFlag or pCached(buffer, clientFlag, SAY, blocks.say)
-        outFlag = outFlag or pCached(buffer, clientFlag, SPOTANIM, blocks.spotAnims)
         outFlag = outFlag or pCached(buffer, clientFlag, CHAT, blocks.chat)
+        // TODO: New face
+        outFlag = outFlag or pCached(buffer, clientFlag, SAY, blocks.say)
+        outFlag = outFlag or pCached(buffer, clientFlag, MOVE_SPEED, blocks.moveSpeed)
+        outFlag = outFlag or pCached(buffer, clientFlag, SPOTANIM, blocks.spotAnims)
+        outFlag = outFlag or pCached(buffer, clientFlag, TEMP_MOVE_SPEED, blocks.temporaryMoveSpeed)
+        outFlag = outFlag or pOnDemand(buffer, clientFlag, TINTING, blocks.tinting, localIndex, observerIndex)
+        // chat (old)
+        // minimenu strings (unused; done through appearance)
+        outFlag = outFlag or pOnDemand(buffer, clientFlag, HITMARKS, blocks.hitmarkList, localIndex, observerIndex)
+        // face pathingentity (old)
+        outFlag = outFlag or pCached(buffer, clientFlag, SEQUENCE, blocks.sequence)
+        outFlag = outFlag or pCached(buffer, clientFlag, APPEARANCE, blocks.appearance)
+        outFlag = outFlag or pCached(buffer, clientFlag, FACE_ANGLE_OLD, blocks.faceAngle)
+        outFlag = outFlag or pCached(buffer, clientFlag, EXACT_MOVE, blocks.exactMove)
 
         if (outFlag != clientFlag) {
             val finalPos = buffer.writerIndex()
@@ -188,26 +188,26 @@ public class PlayerAvatarExtendedInfoDesktopWriter :
     @Suppress("unused")
     private companion object {
         private val logger = InlineLogger()
-        private const val EXTENDED_SHORT = 0x10
-        private const val EXTENDED_MEDIUM = 0x100
+        private const val EXTENDED_SHORT = 0x2
+        private const val EXTENDED_MEDIUM = 0x4000
 
-        private const val CHAT_OLD = 0x1
-        private const val APPEARANCE = 0x2
-        private const val FACE_PATHINGENTITY = 0x4
-        private const val HITS_OLD = 0x8
-        private const val SAY = 0x20
-        private const val SEQUENCE = 0x40
-        private const val FACE_ANGLE = 0x80
-        private const val EXACT_MOVE = 0x200
-        private const val TEMP_MOVE_SPEED = 0x800
-        private const val MOVE_SPEED = 0x1000
-        private const val TINTING = 0x2000
-        private const val CHAT = 0x4000
-        private const val HEADBARS = 0x10000
-        private const val HITMARKS = 0x20000
-        private const val SPOTANIM = 0x40000
+        private const val SEQUENCE = 0x1
+        private const val APPEARANCE = 0x4
+        private const val FACE = 0x8
+        private const val SAY = 0x10
+        private const val FACE_ANGLE_OLD = 0x20
+        private const val FACE_PATHINGENTITY_OLD = 0x40
+        private const val CHAT_OLD = 0x80
+        private const val CHAT = 0x100
+        private const val MOVE_SPEED = 0x800
+        private const val TINTING = 0x1000
+        private const val EXACT_MOVE = 0x2000
+        private const val TEMP_MOVE_SPEED = 0x8000
+        private const val SPOTANIM = 0x10000
+        private const val HEADBARS = 0x20000
+        private const val HITMARKS = 0x40000
 
         // Name extras are part of appearance nowadays, and thus will not be used on their own
-        private const val NAME_EXTRAS = 0x8000
+        private const val NAME_EXTRAS = 0x400
     }
 }

@@ -34,9 +34,9 @@ public class PlayerHeadbarEncoder : OnDemandExtendedInfoEncoder<HeadbarList> {
             buffer.pSmart1or2(endTime)
             if (endTime != 0x7FFF) {
                 buffer.pSmart1or2(headBar.startTime.toInt())
-                buffer.p1Alt1(headBar.startFill.toInt())
+                buffer.p1(headBar.startFill.toInt())
                 if (endTime > 0) {
-                    buffer.p1(headBar.endFill.toInt())
+                    buffer.p1Alt2(headBar.endFill.toInt())
                 }
             }
             // Exit out of the loop if there are more than 255 head bars,
@@ -47,7 +47,7 @@ public class PlayerHeadbarEncoder : OnDemandExtendedInfoEncoder<HeadbarList> {
         }
         val writerIndex = buffer.writerIndex()
         buffer.writerIndex(countMarker)
-        buffer.p1(count)
+        buffer.p1Alt1(count)
         buffer.writerIndex(writerIndex)
     }
 }
