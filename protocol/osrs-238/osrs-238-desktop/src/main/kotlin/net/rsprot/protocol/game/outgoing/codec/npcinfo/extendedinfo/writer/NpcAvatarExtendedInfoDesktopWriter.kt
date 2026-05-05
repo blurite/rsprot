@@ -223,31 +223,28 @@ public class NpcAvatarExtendedInfoDesktopWriter :
     @Suppress("unused")
     private companion object {
         private val logger = InlineLogger()
-        private const val EXTENDED_SHORT: Int = 0x4
-        private const val EXTENDED_MEDIUM: Int = 0x4_000
-        private const val EXTENDED_INT: Int = 0x80_000
+        private const val EXTENDED_SHORT: Int = 0x2
+        private const val EXTENDED_MEDIUM: Int = 0x100
+        private const val EXTENDED_INT: Int = 0x20_000
 
-        private const val FACE_PATHINGENTITY: Int = 0x1
-        private const val OLD_SPOTANIM_UNUSED: Int = 0x2
-        private const val OLD_FACE_COORD_UNUSED: Int = 0x8
-        private const val TRANSFORMATION: Int = 0x10
-        private const val SAY: Int = 0x20
-        private const val SEQUENCE: Int = 0x40
-        private const val HITS_OLD: Int = 0x80
-        private const val EXACT_MOVE: Int = 0x100
-        private const val TINTING: Int = 0x200
-        private const val OLD_HEAD_CUSTOMISATION: Int = 0x400
-        private const val OPS: Int = 0x800
-        private const val OLD_BODY_CUSTOMISATION: Int = 0x1_000
-        private const val NAME_CHANGE: Int = 0x2_000
-        private const val LEVEL_CHANGE: Int = 0x8_000
-        private const val FACE_ANGLE: Int = 0x10_000
-        private const val BODY_CUSTOMISATION: Int = 0x20_000
-        private const val HEADICON_CUSTOMISATION: Int = 0x40_000
-        private const val SPOTANIM: Int = 0x100_000
-        private const val BAS_CHANGE: Int = 0x200_000
-        private const val HEAD_CUSTOMISATION: Int = 0x400_000
-        private const val HITMARKS: Int = 0x800_000
+        private const val FACE_PATHINGENTITY: Int = 0x10
+        private const val LEVEL_CHANGE: Int = 0x2_000
+        private const val FACE_ANGLE: Int = 0x400_000
+        private const val SEQUENCE: Int = 0x8
+        private const val NAME_CHANGE: Int = 0x800
+        private const val OPS: Int = 0x8_000
+        private const val SPOTANIM: Int = 0x200_000
         private const val HEADBARS: Int = 0x1_000_000
+        private const val BAS_CHANGE: Int = 0x40_000
+        private const val SAY: Int = 0x20
+        private const val EXACT_MOVE: Int = 0x400
+        private const val HITMARKS: Int = 0x10_000
+        private const val TRANSFORMATION: Int = 0x1
+
+        // TODO: New face
+        private const val HEADICON_CUSTOMISATION: Int = 0x100_000
+        private const val BODY_CUSTOMISATION: Int = 0x800_000
+        private const val HEAD_CUSTOMISATION: Int = 0x80_000
+        private const val TINTING: Int = 0x4_000
     }
 }

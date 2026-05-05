@@ -34,7 +34,7 @@ public class NpcHitmarkEncoder : OnDemandExtendedInfoEncoder<HitmarkList> {
         }
         val writerIndex = buffer.writerIndex()
         buffer.writerIndex(countMarker)
-        buffer.p1Alt2(count)
+        buffer.p1(count)
         buffer.writerIndex(writerIndex)
     }
 }
