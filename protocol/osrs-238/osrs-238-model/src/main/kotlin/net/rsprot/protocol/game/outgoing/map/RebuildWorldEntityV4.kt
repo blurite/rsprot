@@ -26,7 +26,13 @@ public class RebuildWorldEntityV4 private constructor(
     ) : this(
         baseX.toUShort(),
         baseZ.toUShort(),
-        buildRebuildWorldEntityZones(sizeX, sizeZ, zoneProvider),
+        buildRebuildWorldEntityZones(
+            baseX ushr 3,
+            baseZ ushr 3,
+            sizeX,
+            sizeZ,
+            zoneProvider,
+        ),
     ) {
         require(sizeX in 0..<13) {
             "Size x must be in range of 0..<13: $sizeX"
@@ -81,12 +87,9 @@ public class RebuildWorldEntityV4 private constructor(
     public fun interface RebuildWorldEntityZoneProvider {
         /**
          * Provides a zone that the client must copy based on the parameters.
-         * This 'provide' function will be called with the relative-to-worldentity zone coordinates,
-         * so starting with 0,0 and ending before sizeX,sizeZ. The server is responsible for
-         * looking up the actual zone that was copied for that world entity.
          *
-         * @param zoneX the zone x coordinate of the region zone, relative to the south-westernmost zone
-         * @param zoneZ the zone z coordinate of the region zone, relative to the south-westernmost zone
+         * @param zoneX the x coordinate of the region zone
+         * @param zoneZ the z coordinate of the region zone
          * @param level the level of the region zone
          * @return the zone to be copied, or null if there's no zone to be copied there.
          */
@@ -101,6 +104,8 @@ public class RebuildWorldEntityV4 private constructor(
         /**
          * Builds a list of rebuild region zones to be written to the client,
          * in order as the client expects them.
+         * @param baseZoneX the south-western zone x coordinate
+         * @param baseZoneZ the south-western zone z coordinate
          * @param sizeX the width of the worldentity
          * @param sizeZ the length of the worldentity
          * @param zoneProvider the functional interface providing the necessary information
@@ -108,6 +113,8 @@ public class RebuildWorldEntityV4 private constructor(
          * @return a list of rebuild region zones (or nulls) for each zone in the build area.
          */
         private fun buildRebuildWorldEntityZones(
+            baseZoneX: Int,
+            baseZoneZ: Int,
             sizeX: Int,
             sizeZ: Int,
             zoneProvider: RebuildWorldEntityZoneProvider,
@@ -118,8 +125,8 @@ public class RebuildWorldEntityV4 private constructor(
                     for (zoneZ in 0..<sizeZ) {
                         zones +=
                             zoneProvider.provide(
-                                zoneX,
-                                zoneZ,
+                                baseZoneX + zoneX,
+                                baseZoneZ + zoneZ,
                                 level,
                             )
                     }
