@@ -2,7 +2,7 @@ package net.rsprot.protocol.game.outgoing.map
 
 import net.rsprot.protocol.ServerProtCategory
 import net.rsprot.protocol.game.outgoing.GameServerProtCategory
-import net.rsprot.protocol.game.outgoing.map.util.ReferenceZone
+import net.rsprot.protocol.game.outgoing.map.util.RebuildRegionZone
 import net.rsprot.protocol.message.OutgoingGameMessage
 
 /**
@@ -15,7 +15,7 @@ import net.rsprot.protocol.message.OutgoingGameMessage
 public class RebuildWorldEntityV4 private constructor(
     private val _baseX: UShort,
     private val _baseZ: UShort,
-    public val zones: List<ReferenceZone?>,
+    public val zones: List<RebuildRegionZone?>,
 ) : OutgoingGameMessage {
     public constructor(
         baseX: Int,
@@ -94,7 +94,7 @@ public class RebuildWorldEntityV4 private constructor(
             zoneX: Int,
             zoneZ: Int,
             level: Int,
-        ): ReferenceZone?
+        ): RebuildRegionZone?
     }
 
     private companion object {
@@ -111,8 +111,8 @@ public class RebuildWorldEntityV4 private constructor(
             sizeX: Int,
             sizeZ: Int,
             zoneProvider: RebuildWorldEntityZoneProvider,
-        ): List<ReferenceZone?> {
-            val zones = ArrayList<ReferenceZone?>(4 * sizeX * sizeZ)
+        ): List<RebuildRegionZone?> {
+            val zones = ArrayList<RebuildRegionZone?>(4 * sizeX * sizeZ)
             for (level in 0..<4) {
                 for (zoneX in 0..<sizeX) {
                     for (zoneZ in 0..<sizeZ) {
