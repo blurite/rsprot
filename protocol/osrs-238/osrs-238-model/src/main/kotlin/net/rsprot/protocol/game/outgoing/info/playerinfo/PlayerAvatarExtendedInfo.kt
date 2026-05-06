@@ -8,14 +8,14 @@ import net.rsprot.compression.provider.HuffmanCodecProvider
 import net.rsprot.protocol.common.client.OldSchoolClientType
 import net.rsprot.protocol.game.outgoing.info.AvatarExtendedInfoWriter
 import net.rsprot.protocol.game.outgoing.info.filter.ExtendedInfoFilter
+import net.rsprot.protocol.game.outgoing.info.npcinfo.NpcAvatarExtendedInfo
 import net.rsprot.protocol.internal.RSProtFlags
 import net.rsprot.protocol.internal.checkCommunicationThread
 import net.rsprot.protocol.internal.game.outgoing.info.playerinfo.encoder.PlayerExtendedInfoEncoders
 import net.rsprot.protocol.internal.game.outgoing.info.playerinfo.extendedinfo.MoveSpeed
 import net.rsprot.protocol.internal.game.outgoing.info.playerinfo.extendedinfo.ObjTypeCustomisation
 import net.rsprot.protocol.internal.game.outgoing.info.precompute
-import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.FaceAngle
-import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.FacePathingEntity
+import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.Face
 import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.Tinting
 import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.util.HeadBar
 import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.util.HitMark
@@ -173,6 +173,7 @@ public class PlayerAvatarExtendedInfo(
      * In order to stop facing an entity, set the index value to -1.
      * @param index the index of the target to face-lock onto (read above)
      */
+    @Deprecated("Deprecated. Use entity-specific methods.")
     public fun setFacePathingEntity(index: Int) {
         checkCommunicationThread()
         verify {
@@ -181,25 +182,254 @@ public class PlayerAvatarExtendedInfo(
                     "0-65535 for NPCs, 65536-67583 for players"
             }
         }
-        blocks.facePathingEntity.index = index
-        flags = flags or FACE_PATHINGENTITY
+        when (index) {
+            -1 -> {
+                blocks.face.kind = Face.Kind.Reset
+            }
+            in 0..65535 -> {
+                blocks.face.kind = Face.Kind.Entity
+                blocks.face.entityType = Face.EntityType.Npc
+                blocks.face.index = index
+                blocks.face.instant = false
+                blocks.face.walkMode = 0
+            }
+            else -> {
+                blocks.face.kind = Face.Kind.Entity
+                blocks.face.entityType = Face.EntityType.Player
+                blocks.face.index = index - 65536
+                blocks.face.instant = false
+                blocks.face.walkMode = 0
+            }
+        }
+        flags = flags or NpcAvatarExtendedInfo.FACE
     }
 
     /**
+     * Walk mode table:
+     * ```
+     * | Id | Behaviour         |
+     * |----|-------------------|
+     * | 0  | Cancel on walk    |
+     * | 1  | Turn when walking |
+     * ```
+     * Sets the avatar to face-lock onto a NPC with the provided [index].
+     * @param index the index of the npc to face, 0-65535.
+     * @param instant whether to instantly turn towards the npc without animations.
+     * @param walkMode the behaviour when walking (see table above).
+     * @param entityFallbackAngle if the avatar is not known to the client,
+     * falls back to using this angle instead.
+     */
+    public fun setFaceNpc(
+        index: Int,
+        instant: Boolean,
+        walkMode: Int,
+        entityFallbackAngle: Int,
+    ) {
+        checkCommunicationThread()
+        verify {
+            require(index in 0..65535) {
+                "Unexpected npc index: $index, expected values 0-65535"
+            }
+        }
+        blocks.face.kind = Face.Kind.Entity
+        blocks.face.entityType = Face.EntityType.Npc
+        blocks.face.index = index
+        blocks.face.instant = instant
+        blocks.face.walkMode = walkMode
+        blocks.face.entityFallbackAngle = entityFallbackAngle
+        flags = flags or NpcAvatarExtendedInfo.FACE
+    }
+
+    /**
+     * Walk mode table:
+     * ```
+     * | Id | Behaviour         |
+     * |----|-------------------|
+     * | 0  | Cancel on walk    |
+     * | 1  | Turn when walking |
+     * ```
+     * Sets the avatar to face-lock onto a player with the provided [index].
+     * @param index the index of the player to face, 1-2047.
+     * @param instant whether to instantly turn towards the player without animations.
+     * @param walkMode the behaviour when walking (see table above).
+     * @param entityFallbackAngle if the avatar is not known to the client,
+     * falls back to using this angle instead.
+     */
+    public fun setFacePlayer(
+        index: Int,
+        instant: Boolean,
+        walkMode: Int,
+        entityFallbackAngle: Int,
+    ) {
+        checkCommunicationThread()
+        verify {
+            require(index in 1..2047) {
+                "Unexpected player index: $index, expected values 1-2047"
+            }
+        }
+        blocks.face.kind = Face.Kind.Entity
+        blocks.face.entityType = Face.EntityType.Player
+        blocks.face.index = index
+        blocks.face.instant = instant
+        blocks.face.walkMode = walkMode
+        blocks.face.entityFallbackAngle = entityFallbackAngle
+        flags = flags or NpcAvatarExtendedInfo.FACE
+    }
+
+    /**
+     * Walk mode table:
+     * ```
+     * | Id | Behaviour         |
+     * |----|-------------------|
+     * | 0  | Cancel on walk    |
+     * | 1  | Turn when walking |
+     * ```
+     * Sets the avatar to face-lock onto a world entity with the provided [index].
+     * @param index the index of the world entity to face, 1-4095.
+     * @param instant whether to instantly turn towards the world entity without animations.
+     * @param walkMode the behaviour when walking (see table above).
+     * @param entityFallbackAngle if the avatar is not known to the client,
+     * falls back to using this angle instead.
+     */
+    public fun setFaceWorldEntity(
+        index: Int,
+        instant: Boolean,
+        walkMode: Int,
+        entityFallbackAngle: Int,
+    ) {
+        checkCommunicationThread()
+        verify {
+            require(index in 1..4095) {
+                "Unexpected world entity index: $index, expected values 1-4095"
+            }
+        }
+        blocks.face.kind = Face.Kind.Entity
+        blocks.face.entityType = Face.EntityType.WorldEntity
+        blocks.face.index = index
+        blocks.face.instant = instant
+        blocks.face.walkMode = walkMode
+        blocks.face.entityFallbackAngle = entityFallbackAngle
+        flags = flags or NpcAvatarExtendedInfo.FACE
+    }
+
+    /**
+     * Walk mode table:
+     * ```
+     * | Id | Behaviour         |
+     * |----|-------------------|
+     * | 0  | Cancel on walk    |
+     * | 1  | Turn when walking |
+     * ```
+     * Sets the avatar to face a coord.
+     * @param x the absolute x coordinate to turn towards.
+     * @param z the absolute z coordinate to turn towards.
+     * @param instant whether to instantly turn towards the coord grid without animations.
+     * @param walkMode the behaviour when walking (see table above).
+     */
+    public fun setFaceCoordGrid(
+        x: Int,
+        z: Int,
+        instant: Boolean,
+        walkMode: Int,
+    ) {
+        setFaceLoc(
+            x,
+            z,
+            sizeX = 1,
+            sizeZ = 1,
+            instant,
+            walkMode,
+        )
+    }
+
+    /**
+     * Walk mode table:
+     * ```
+     * | Id | Behaviour         |
+     * |----|-------------------|
+     * | 0  | Cancel on walk    |
+     * | 1  | Turn when walking |
+     * ```
+     * Sets the avatar to face a loc.
+     * @param x the absolute south-west x coordinate of the loc.
+     * @param z the absolute south-west z coordinate of the loc.
+     * @param sizeX the width of the loc.
+     * @param sizeZ the length of the loc.
+     * @param instant whether to instantly turn towards the loc without animations.
+     * @param walkMode the behaviour when walking (see table above).
+     */
+    public fun setFaceLoc(
+        x: Int,
+        z: Int,
+        sizeX: Int,
+        sizeZ: Int,
+        instant: Boolean,
+        walkMode: Int,
+    ) {
+        checkCommunicationThread()
+        verify {
+            require(x in 0..16383) {
+                "Unexpected x coordinate: $x, expected in range 0..16383"
+            }
+            require(z in 0..16383) {
+                "Unexpected z coordinate: $z, expected in range 0..16383"
+            }
+            require(sizeX in 1..15) {
+                "Unexpected size-x: $sizeX, expected in range 1..15"
+            }
+            require(sizeZ in 1..15) {
+                "Unexpected size-z: $sizeZ, expected in range 1..15"
+            }
+        }
+        blocks.face.kind = Face.Kind.Loc
+        blocks.face.instant = instant
+        blocks.face.walkMode = walkMode
+        blocks.face.x = x
+        blocks.face.z = z
+        blocks.face.sizeX = sizeX
+        blocks.face.sizeZ = sizeZ
+        flags = flags or NpcAvatarExtendedInfo.FACE
+    }
+
+    /**
+     * Walk mode table:
+     * ```
+     * | Id | Behaviour         |
+     * |----|-------------------|
+     * | 0  | Cancel on walk    |
+     * | 1  | Turn when walking |
+     * ```
      * Sets the angle for this avatar to face.
      * @param angle the angle to face, value range is 0..<2048,
      * with 0 implying south, 512 west, 1024 north and 1536 east; interpolate
      * between to get finer directions.
+     * @param instant whether to instantly turn towards the loc without animations.
+     * @param walkMode the behaviour when walking (see table above).
      */
-    public fun setFaceAngle(angle: Int) {
+    public fun setFaceAngle(
+        angle: Int,
+        instant: Boolean,
+        walkMode: Int,
+    ) {
         checkCommunicationThread()
         verify {
             require(angle in 0..2047) {
                 "Unexpected angle: $angle, expected range: 0-2047"
             }
         }
-        blocks.faceAngle.angle = angle.toUShort()
-        flags = flags or FACE_ANGLE
+        blocks.face.kind = Face.Kind.Angle
+        blocks.face.angle = angle
+        blocks.face.instant = instant
+        blocks.face.walkMode = walkMode
+        flags = flags or NpcAvatarExtendedInfo.FACE
+    }
+
+    /**
+     * Resets any facing previously set.
+     */
+    public fun resetFacing() {
+        blocks.face.kind = Face.Kind.Reset
+        flags = flags or NpcAvatarExtendedInfo.FACE
     }
 
     /**
@@ -1484,8 +1714,7 @@ public class PlayerAvatarExtendedInfo(
         blocks.moveSpeed.clear()
         blocks.temporaryMoveSpeed.clear()
         blocks.sequence.clear()
-        blocks.facePathingEntity.clear()
-        blocks.faceAngle.clear()
+        blocks.face.clear()
         blocks.say.clear()
         blocks.chat.clear()
         blocks.exactMove.clear()
@@ -1528,17 +1757,11 @@ public class PlayerAvatarExtendedInfo(
         ) {
             flag = flag or MOVE_SPEED
         }
-        if (this.flags and FACE_PATHINGENTITY == 0 &&
-            (blocks.facePathingEntity.index != FacePathingEntity.DEFAULT_VALUE || lastObservation != -1) &&
-            blocks.facePathingEntity.isPrecomputed(oldSchoolClientType)
+        if (this.flags and FACE == 0 &&
+            (blocks.face.hasPersistentTarget() || lastObservation != -1) &&
+            blocks.face.isPrecomputed(oldSchoolClientType)
         ) {
-            flag = flag or FACE_PATHINGENTITY
-        }
-        if (this.flags and FACE_ANGLE == 0 &&
-            (blocks.faceAngle.angle != FaceAngle.DEFAULT_VALUE || lastObservation != -1) &&
-            blocks.faceAngle.isPrecomputed(oldSchoolClientType)
-        ) {
-            flag = flag or FACE_ANGLE
+            flag = flag or FACE
         }
         return flag
     }
@@ -1550,7 +1773,7 @@ public class PlayerAvatarExtendedInfo(
      */
     public fun syncAngle(angle: Int) {
         checkCommunicationThread()
-        this.blocks.faceAngle.syncAngle(angle)
+        this.blocks.face.syncAngle(angle)
     }
 
     /**
@@ -1570,9 +1793,9 @@ public class PlayerAvatarExtendedInfo(
         if (flags and SEQUENCE != 0) {
             blocks.sequence.precompute(allocator, huffmanCodec)
         }
-        if (flags and FACE_ANGLE != 0 || blocks.faceAngle.outOfDate) {
-            blocks.faceAngle.markUpToDate()
-            blocks.faceAngle.precompute(allocator, huffmanCodec)
+        if (flags and FACE != 0 || blocks.face.outOfDate) {
+            blocks.face.markUpToDate()
+            blocks.face.precompute(allocator, huffmanCodec)
         }
         if (flags and SAY != 0) {
             blocks.say.precompute(allocator, huffmanCodec)
@@ -1585,9 +1808,6 @@ public class PlayerAvatarExtendedInfo(
         }
         if (flags and SPOTANIM != 0) {
             blocks.spotAnims.precompute(allocator, huffmanCodec)
-        }
-        if (flags and FACE_PATHINGENTITY != 0) {
-            blocks.facePathingEntity.precompute(allocator, huffmanCodec)
         }
         if (flags and MOVE_SPEED != 0) {
             blocks.moveSpeed.precompute(allocator, huffmanCodec)
@@ -1706,9 +1926,8 @@ public class PlayerAvatarExtendedInfo(
         // Observer-dependent flags, utilizing the lowest bits as we store observer flags in a byte array
         public const val APPEARANCE: Int = 0x1
         public const val MOVE_SPEED: Int = 0x2
-        public const val FACE_PATHINGENTITY: Int = 0x4
+        public const val FACE: Int = 0x4
         public const val TINTING: Int = 0x8
-        public const val FACE_ANGLE: Int = 0x10
 
         // "Static" flags, the bit values here are irrelevant
         public const val SAY: Int = 0x20

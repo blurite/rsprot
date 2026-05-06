@@ -5,20 +5,29 @@ import net.rsprot.buffer.JagByteBuf
 import net.rsprot.buffer.extensions.toJagByteBuf
 import net.rsprot.compression.provider.HuffmanCodecProvider
 import net.rsprot.protocol.internal.game.outgoing.info.encoder.PrecomputedExtendedInfoEncoder
-import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.FaceAngle
+import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.Face
 
-public class NpcFaceAngleEncoder : PrecomputedExtendedInfoEncoder<FaceAngle> {
+public class NpcFaceEncoder : PrecomputedExtendedInfoEncoder<Face> {
     override fun precompute(
         alloc: ByteBufAllocator,
         huffmanCodecProvider: HuffmanCodecProvider,
-        extendedInfo: FaceAngle,
+        extendedInfo: Face,
     ): JagByteBuf {
         val buffer =
             alloc
-                .buffer(3, 3)
+                .buffer(9, 9)
                 .toJagByteBuf()
-        buffer.p2Alt1(extendedInfo.angle.toInt())
-        buffer.p1Alt2(if (extendedInfo.instant) 1 else 0)
+        buffer.p1Alt3(buildFlag(extendedInfo))
+        extendedInfo.encode(buffer)
         return buffer
+    }
+
+    private fun buildFlag(extendedInfo: Face): Int {
+        var flag = extendedInfo.walkMode
+        flag = flag or (extendedInfo.kind.value shl 3)
+        if (extendedInfo.instant) {
+            flag = flag or (1 shl 6)
+        }
+        return flag
     }
 }

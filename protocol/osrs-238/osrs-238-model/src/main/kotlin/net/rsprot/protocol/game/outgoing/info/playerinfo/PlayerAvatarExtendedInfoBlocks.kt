@@ -12,8 +12,7 @@ import net.rsprot.protocol.internal.game.outgoing.info.playerinfo.extendedinfo.M
 import net.rsprot.protocol.internal.game.outgoing.info.playerinfo.extendedinfo.PlayerTintingList
 import net.rsprot.protocol.internal.game.outgoing.info.playerinfo.extendedinfo.TemporaryMoveSpeed
 import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.ExactMove
-import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.FaceAngle
-import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.FacePathingEntity
+import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.Face
 import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.HeadbarList
 import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.HitmarkList
 import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.Say
@@ -39,8 +38,7 @@ public class PlayerAvatarExtendedInfoBlocks(
     public val temporaryMoveSpeed: TempMoveSpeed = TempMoveSpeed(encoders(writers, PEnc::temporaryMoveSpeed))
     public val sequence: Sequence =
         Sequence(encoders(writers, PEnc::sequence))
-    public val facePathingEntity: FacePathingEntity = FacePathingEntity(encoders(writers, PEnc::facePathingEntity))
-    public val faceAngle: FaceAngle = FaceAngle(encoders(writers, PEnc::faceAngle))
+    public val face: Face = Face(encoders(writers, PEnc::face))
     public val say: Say = Say(encoders(writers, PEnc::say))
     public val chat: Chat = Chat(encoders(writers, PEnc::chat))
     public val exactMove: ExactMove =

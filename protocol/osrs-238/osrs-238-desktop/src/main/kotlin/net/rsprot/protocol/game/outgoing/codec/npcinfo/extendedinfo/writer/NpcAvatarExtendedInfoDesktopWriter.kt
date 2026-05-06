@@ -9,8 +9,7 @@ import net.rsprot.protocol.game.outgoing.codec.npcinfo.extendedinfo.NpcBaseAnima
 import net.rsprot.protocol.game.outgoing.codec.npcinfo.extendedinfo.NpcBodyCustomisationEncoder
 import net.rsprot.protocol.game.outgoing.codec.npcinfo.extendedinfo.NpcCombatLevelChangeEncoder
 import net.rsprot.protocol.game.outgoing.codec.npcinfo.extendedinfo.NpcExactMoveEncoder
-import net.rsprot.protocol.game.outgoing.codec.npcinfo.extendedinfo.NpcFaceAngleEncoder
-import net.rsprot.protocol.game.outgoing.codec.npcinfo.extendedinfo.NpcFacePathingEntityEncoder
+import net.rsprot.protocol.game.outgoing.codec.npcinfo.extendedinfo.NpcFaceEncoder
 import net.rsprot.protocol.game.outgoing.codec.npcinfo.extendedinfo.NpcHeadCustomisationEncoder
 import net.rsprot.protocol.game.outgoing.codec.npcinfo.extendedinfo.NpcHeadIconCustomisationEncoder
 import net.rsprot.protocol.game.outgoing.codec.npcinfo.extendedinfo.NpcHeadbarEncoder
@@ -50,16 +49,12 @@ public class NpcAvatarExtendedInfoDesktopWriter :
             NpcCombatLevelChangeEncoder(),
             NpcHitmarkEncoder(),
             NpcHeadbarEncoder(),
-            NpcFaceAngleEncoder(),
-            NpcFacePathingEntityEncoder(),
+            NpcFaceEncoder(),
             NpcBaseAnimationSetEncoder(),
         ),
     ) {
     private fun convertFlags(constantFlags: Int): Int {
         var clientFlags = 0
-        if (constantFlags and NpcAvatarExtendedInfo.FACE_PATHINGENTITY != 0) {
-            clientFlags = clientFlags or FACE_PATHINGENTITY
-        }
         if (constantFlags and NpcAvatarExtendedInfo.TINTING != 0) {
             clientFlags = clientFlags or TINTING
         }
@@ -105,8 +100,8 @@ public class NpcAvatarExtendedInfoDesktopWriter :
         if (constantFlags and NpcAvatarExtendedInfo.BAS_CHANGE != 0) {
             clientFlags = clientFlags or BAS_CHANGE
         }
-        if (constantFlags and NpcAvatarExtendedInfo.FACE_ANGLE != 0) {
-            clientFlags = clientFlags or FACE_ANGLE
+        if (constantFlags and NpcAvatarExtendedInfo.FACE != 0) {
+            clientFlags = clientFlags or FACING
         }
         return clientFlags
     }
@@ -137,28 +132,22 @@ public class NpcAvatarExtendedInfoDesktopWriter :
             buffer.p1(clientFlag shr 24)
         }
 
-        outFlag = outFlag or pOnDemand(buffer, clientFlag, HITMARKS, blocks.hitmarkList, localIndex, observerIndex)
-        outFlag = outFlag or pCached(buffer, clientFlag, NAME_CHANGE, blocks.nameChange)
-        // old hits
         outFlag = outFlag or pCached(buffer, clientFlag, LEVEL_CHANGE, blocks.combatLevelChange)
-        outFlag = outFlag or pCached(buffer, clientFlag, SPOTANIM, blocks.spotAnims)
-        outFlag = outFlag or pCached(buffer, clientFlag, HEADICON_CUSTOMISATION, blocks.headIconCustomisation)
-        // old chathead customisation
-        outFlag = outFlag or pCached(buffer, clientFlag, EXACT_MOVE, blocks.exactMove)
-        outFlag = outFlag or pCached(buffer, clientFlag, OPS, blocks.visibleOps)
-        outFlag = outFlag or pCached(buffer, clientFlag, BAS_CHANGE, blocks.baseAnimationSet)
-        // old body customisation
         outFlag = outFlag or pCached(buffer, clientFlag, SEQUENCE, blocks.sequence)
-        // old spotanim
-        outFlag = outFlag or pCached(buffer, clientFlag, FACE_PATHINGENTITY, blocks.facePathingEntity)
-        outFlag = outFlag or pCached(buffer, clientFlag, FACE_ANGLE, blocks.faceAngle)
-        outFlag = outFlag or pCached(buffer, clientFlag, SAY, blocks.say)
+        outFlag = outFlag or pCached(buffer, clientFlag, NAME_CHANGE, blocks.nameChange)
+        outFlag = outFlag or pCached(buffer, clientFlag, OPS, blocks.visibleOps)
+        outFlag = outFlag or pCached(buffer, clientFlag, SPOTANIM, blocks.spotAnims)
         outFlag = outFlag or pOnDemand(buffer, clientFlag, HEADBARS, blocks.headbarList, localIndex, observerIndex)
-        outFlag = outFlag or pCached(buffer, clientFlag, BODY_CUSTOMISATION, blocks.bodyCustomisation)
+        outFlag = outFlag or pCached(buffer, clientFlag, BAS_CHANGE, blocks.baseAnimationSet)
+        outFlag = outFlag or pCached(buffer, clientFlag, SAY, blocks.say)
+        outFlag = outFlag or pCached(buffer, clientFlag, EXACT_MOVE, blocks.exactMove)
+        outFlag = outFlag or pOnDemand(buffer, clientFlag, HITMARKS, blocks.hitmarkList, localIndex, observerIndex)
         outFlag = outFlag or pCached(buffer, clientFlag, TRANSFORMATION, blocks.transformation)
-        outFlag = outFlag or pCached(buffer, clientFlag, TINTING, blocks.tinting)
-        // old face coord
+        outFlag = outFlag or pCached(buffer, clientFlag, FACING, blocks.face)
+        outFlag = outFlag or pCached(buffer, clientFlag, HEADICON_CUSTOMISATION, blocks.headIconCustomisation)
+        outFlag = outFlag or pCached(buffer, clientFlag, BODY_CUSTOMISATION, blocks.bodyCustomisation)
         outFlag = outFlag or pCached(buffer, clientFlag, HEAD_CUSTOMISATION, blocks.headCustomisation)
+        outFlag = outFlag or pCached(buffer, clientFlag, TINTING, blocks.tinting)
 
         if (outFlag != clientFlag) {
             val finalPos = buffer.writerIndex()
@@ -227,9 +216,7 @@ public class NpcAvatarExtendedInfoDesktopWriter :
         private const val EXTENDED_MEDIUM: Int = 0x100
         private const val EXTENDED_INT: Int = 0x20_000
 
-        private const val FACE_PATHINGENTITY: Int = 0x10
         private const val LEVEL_CHANGE: Int = 0x2_000
-        private const val FACE_ANGLE: Int = 0x400_000
         private const val SEQUENCE: Int = 0x8
         private const val NAME_CHANGE: Int = 0x800
         private const val OPS: Int = 0x8_000
@@ -241,7 +228,7 @@ public class NpcAvatarExtendedInfoDesktopWriter :
         private const val HITMARKS: Int = 0x10_000
         private const val TRANSFORMATION: Int = 0x1
 
-        // TODO: New face
+        private const val FACING: Int = 0x80
         private const val HEADICON_CUSTOMISATION: Int = 0x100_000
         private const val BODY_CUSTOMISATION: Int = 0x800_000
         private const val HEAD_CUSTOMISATION: Int = 0x80_000

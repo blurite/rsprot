@@ -9,7 +9,6 @@ import net.rsprot.protocol.game.outgoing.codec.playerinfo.extendedinfo.PlayerApp
 import net.rsprot.protocol.game.outgoing.codec.playerinfo.extendedinfo.PlayerChatEncoder
 import net.rsprot.protocol.game.outgoing.codec.playerinfo.extendedinfo.PlayerExactMoveEncoder
 import net.rsprot.protocol.game.outgoing.codec.playerinfo.extendedinfo.PlayerFaceAngleEncoder
-import net.rsprot.protocol.game.outgoing.codec.playerinfo.extendedinfo.PlayerFacePathingEntityEncoder
 import net.rsprot.protocol.game.outgoing.codec.playerinfo.extendedinfo.PlayerHeadbarEncoder
 import net.rsprot.protocol.game.outgoing.codec.playerinfo.extendedinfo.PlayerHitEncoder
 import net.rsprot.protocol.game.outgoing.codec.playerinfo.extendedinfo.PlayerMoveSpeedEncoder
@@ -35,7 +34,6 @@ public class PlayerAvatarExtendedInfoDesktopWriter :
             PlayerChatEncoder(),
             PlayerExactMoveEncoder(),
             PlayerFaceAngleEncoder(),
-            PlayerFacePathingEntityEncoder(),
             PlayerHitEncoder(),
             PlayerHeadbarEncoder(),
             PlayerMoveSpeedEncoder(),
@@ -54,14 +52,11 @@ public class PlayerAvatarExtendedInfoDesktopWriter :
         if (constantFlags and PlayerAvatarExtendedInfo.MOVE_SPEED != 0) {
             clientFlags = clientFlags or MOVE_SPEED
         }
-        if (constantFlags and PlayerAvatarExtendedInfo.FACE_PATHINGENTITY != 0) {
-            clientFlags = clientFlags or FACE_PATHINGENTITY_OLD
-        }
         if (constantFlags and PlayerAvatarExtendedInfo.TINTING != 0) {
             clientFlags = clientFlags or TINTING
         }
-        if (constantFlags and PlayerAvatarExtendedInfo.FACE_ANGLE != 0) {
-            clientFlags = clientFlags or FACE_ANGLE_OLD
+        if (constantFlags and PlayerAvatarExtendedInfo.FACE != 0) {
+            clientFlags = clientFlags or FACE
         }
         if (constantFlags and PlayerAvatarExtendedInfo.SAY != 0) {
             clientFlags = clientFlags or SAY
@@ -114,19 +109,16 @@ public class PlayerAvatarExtendedInfoDesktopWriter :
 
         outFlag = outFlag or pOnDemand(buffer, clientFlag, HEADBARS, blocks.headbarList, localIndex, observerIndex)
         outFlag = outFlag or pCached(buffer, clientFlag, CHAT, blocks.chat)
-        // TODO: New face
+        outFlag = outFlag or pCached(buffer, clientFlag, FACE, blocks.face)
         outFlag = outFlag or pCached(buffer, clientFlag, SAY, blocks.say)
         outFlag = outFlag or pCached(buffer, clientFlag, MOVE_SPEED, blocks.moveSpeed)
         outFlag = outFlag or pCached(buffer, clientFlag, SPOTANIM, blocks.spotAnims)
         outFlag = outFlag or pCached(buffer, clientFlag, TEMP_MOVE_SPEED, blocks.temporaryMoveSpeed)
         outFlag = outFlag or pOnDemand(buffer, clientFlag, TINTING, blocks.tinting, localIndex, observerIndex)
-        // chat (old)
         // minimenu strings (unused; done through appearance)
         outFlag = outFlag or pOnDemand(buffer, clientFlag, HITMARKS, blocks.hitmarkList, localIndex, observerIndex)
-        // face pathingentity (old)
         outFlag = outFlag or pCached(buffer, clientFlag, SEQUENCE, blocks.sequence)
         outFlag = outFlag or pCached(buffer, clientFlag, APPEARANCE, blocks.appearance)
-        outFlag = outFlag or pCached(buffer, clientFlag, FACE_ANGLE_OLD, blocks.faceAngle)
         outFlag = outFlag or pCached(buffer, clientFlag, EXACT_MOVE, blocks.exactMove)
 
         if (outFlag != clientFlag) {
@@ -195,9 +187,6 @@ public class PlayerAvatarExtendedInfoDesktopWriter :
         private const val APPEARANCE = 0x4
         private const val FACE = 0x8
         private const val SAY = 0x10
-        private const val FACE_ANGLE_OLD = 0x20
-        private const val FACE_PATHINGENTITY_OLD = 0x40
-        private const val CHAT_OLD = 0x80
         private const val CHAT = 0x100
         private const val MOVE_SPEED = 0x800
         private const val TINTING = 0x1000

@@ -9,8 +9,7 @@ import net.rsprot.protocol.internal.game.outgoing.info.playerinfo.extendedinfo.M
 import net.rsprot.protocol.internal.game.outgoing.info.playerinfo.extendedinfo.PlayerTintingList
 import net.rsprot.protocol.internal.game.outgoing.info.playerinfo.extendedinfo.TemporaryMoveSpeed
 import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.ExactMove
-import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.FaceAngle
-import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.FacePathingEntity
+import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.Face
 import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.HeadbarList
 import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.HitmarkList
 import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.Say
@@ -26,8 +25,7 @@ public data class PlayerExtendedInfoEncoders(
     public val appearance: PrecomputedExtendedInfoEncoder<Appearance>,
     public val chat: PrecomputedExtendedInfoEncoder<Chat>,
     public val exactMove: PrecomputedExtendedInfoEncoder<ExactMove>,
-    public val faceAngle: PrecomputedExtendedInfoEncoder<FaceAngle>,
-    public val facePathingEntity: PrecomputedExtendedInfoEncoder<FacePathingEntity>,
+    public val face: PrecomputedExtendedInfoEncoder<Face>,
     public val hitmarkList: OnDemandExtendedInfoEncoder<HitmarkList>,
     public val headbarList: OnDemandExtendedInfoEncoder<HeadbarList>,
     public val moveSpeed: PrecomputedExtendedInfoEncoder<MoveSpeed>,
