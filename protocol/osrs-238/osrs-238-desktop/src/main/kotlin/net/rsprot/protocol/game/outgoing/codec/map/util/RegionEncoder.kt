@@ -3,7 +3,6 @@ package net.rsprot.protocol.game.outgoing.codec.map.util
 import net.rsprot.buffer.JagByteBuf
 import net.rsprot.buffer.bitbuffer.toBitBuf
 import net.rsprot.crypto.xtea.XteaKey
-import net.rsprot.protocol.game.outgoing.map.util.RebuildRegionZone
 import net.rsprot.protocol.game.outgoing.map.util.ReferenceZone
 
 /**
@@ -27,53 +26,6 @@ private val distinctMapsquares =
                 XteaKey.ZERO
             }
     }
-
-internal fun encodeRegionV1(
-    buffer: JagByteBuf,
-    zones: List<RebuildRegionZone?>,
-) {
-    // Xtea count, temporary value
-    val marker = buffer.writerIndex()
-    buffer.p2(0)
-
-    var xteaCount = 0
-    val (mapsquares, xteas) = distinctMapsquares.get()
-    val maxBitBufByteCount = ((27 * zones.size) + 32) ushr 5
-    val maxXteaByteCount = 2 + (4 * 4 * zones.size)
-    // Ensure the correct number of writable bytes ahead of time for the worst case scenario
-    // This is due to our bit buffer implementation by default not ensuring this
-    buffer.buffer.ensureWritable(maxBitBufByteCount + maxXteaByteCount)
-    val bitbuf = buffer.buffer.toBitBuf()
-    bitbuf.use {
-        for (zone in zones) {
-            if (zone == null) {
-                bitbuf.pBits(1, 0)
-                continue
-            }
-            bitbuf.pBits(1, 1)
-            bitbuf.pBits(26, zone.referenceZone.packed)
-            val mapsquareId = zone.referenceZone.mapsquareId
-            if (contains(mapsquares, xteaCount, mapsquareId)) {
-                continue
-            }
-            mapsquares[xteaCount] = mapsquareId
-            xteas[xteaCount] = zone.key
-            xteaCount++
-        }
-    }
-    // Write the real xtea count
-    val writerIndex = buffer.writerIndex()
-    buffer.writerIndex(marker)
-    buffer.p2(xteaCount)
-    buffer.writerIndex(writerIndex)
-
-    for (i in 0..<xteaCount) {
-        val xteaKey = xteas[i]
-        for (intKey in xteaKey.key) {
-            buffer.p4(intKey)
-        }
-    }
-}
 
 internal fun encodeRegionV2(
     buffer: JagByteBuf,
