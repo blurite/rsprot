@@ -8,7 +8,7 @@ import net.rsprot.protocol.game.outgoing.prot.GameServerProt
 import net.rsprot.protocol.message.codec.MessageEncoder
 
 public class CamUnlockEncoder : MessageEncoder<CamUnlock> {
-    override val prot: ServerProt = GameServerProt.CAM_SHAKE
+    override val prot: ServerProt = GameServerProt.CAM_UNLOCK
 
     override fun encode(
         streamCipher: StreamCipher,
