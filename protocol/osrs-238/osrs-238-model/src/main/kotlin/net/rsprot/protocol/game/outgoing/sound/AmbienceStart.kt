@@ -5,9 +5,10 @@ import net.rsprot.protocol.game.outgoing.GameServerProtCategory
 import net.rsprot.protocol.message.OutgoingGameMessage
 
 /**
- * Ambience start is used to set a looping background ambience sound effect.
+ * Ambience start is used to set a looping background
+ * ambience sound effect (not to be confused with regular sound effects).
  * This will continue looping until stopped or overwritten.
- * @property id the id of the sound effect to use for the ambience.
+ * @property id the id of the ambience sound effect to use.
  * @property fade whether to fade the existing ambience out, if one is currently playing.
  */
 public class AmbienceStart private constructor(
