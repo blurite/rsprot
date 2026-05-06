@@ -8,7 +8,7 @@ import net.rsprot.protocol.common.client.OldSchoolClientType
 import net.rsprot.protocol.game.outgoing.codec.playerinfo.extendedinfo.PlayerAppearanceEncoder
 import net.rsprot.protocol.game.outgoing.codec.playerinfo.extendedinfo.PlayerChatEncoder
 import net.rsprot.protocol.game.outgoing.codec.playerinfo.extendedinfo.PlayerExactMoveEncoder
-import net.rsprot.protocol.game.outgoing.codec.playerinfo.extendedinfo.PlayerFaceAngleEncoder
+import net.rsprot.protocol.game.outgoing.codec.playerinfo.extendedinfo.PlayerFacingEncoder
 import net.rsprot.protocol.game.outgoing.codec.playerinfo.extendedinfo.PlayerHeadbarEncoder
 import net.rsprot.protocol.game.outgoing.codec.playerinfo.extendedinfo.PlayerHitEncoder
 import net.rsprot.protocol.game.outgoing.codec.playerinfo.extendedinfo.PlayerMoveSpeedEncoder
@@ -33,7 +33,7 @@ public class PlayerAvatarExtendedInfoDesktopWriter :
             PlayerAppearanceEncoder(),
             PlayerChatEncoder(),
             PlayerExactMoveEncoder(),
-            PlayerFaceAngleEncoder(),
+            PlayerFacingEncoder(),
             PlayerHitEncoder(),
             PlayerHeadbarEncoder(),
             PlayerMoveSpeedEncoder(),

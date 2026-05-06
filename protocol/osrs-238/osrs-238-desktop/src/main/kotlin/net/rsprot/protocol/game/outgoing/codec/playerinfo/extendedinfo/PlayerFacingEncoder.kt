@@ -7,7 +7,7 @@ import net.rsprot.compression.provider.HuffmanCodecProvider
 import net.rsprot.protocol.internal.game.outgoing.info.encoder.PrecomputedExtendedInfoEncoder
 import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.Face
 
-public class PlayerFaceAngleEncoder : PrecomputedExtendedInfoEncoder<Face> {
+public class PlayerFacingEncoder : PrecomputedExtendedInfoEncoder<Face> {
     override fun precompute(
         alloc: ByteBufAllocator,
         huffmanCodecProvider: HuffmanCodecProvider,

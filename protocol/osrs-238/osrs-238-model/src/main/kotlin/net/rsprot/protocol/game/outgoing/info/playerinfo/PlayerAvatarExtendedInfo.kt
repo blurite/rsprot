@@ -8,7 +8,6 @@ import net.rsprot.compression.provider.HuffmanCodecProvider
 import net.rsprot.protocol.common.client.OldSchoolClientType
 import net.rsprot.protocol.game.outgoing.info.AvatarExtendedInfoWriter
 import net.rsprot.protocol.game.outgoing.info.filter.ExtendedInfoFilter
-import net.rsprot.protocol.game.outgoing.info.npcinfo.NpcAvatarExtendedInfo
 import net.rsprot.protocol.internal.RSProtFlags
 import net.rsprot.protocol.internal.checkCommunicationThread
 import net.rsprot.protocol.internal.game.outgoing.info.playerinfo.encoder.PlayerExtendedInfoEncoders
@@ -201,7 +200,7 @@ public class PlayerAvatarExtendedInfo(
                 blocks.face.walkMode = 0
             }
         }
-        flags = flags or NpcAvatarExtendedInfo.FACE
+        flags = flags or FACE
     }
 
     /**
@@ -237,7 +236,7 @@ public class PlayerAvatarExtendedInfo(
         blocks.face.instant = instant
         blocks.face.walkMode = walkMode
         blocks.face.entityFallbackAngle = entityFallbackAngle
-        flags = flags or NpcAvatarExtendedInfo.FACE
+        flags = flags or FACE
     }
 
     /**
@@ -273,7 +272,7 @@ public class PlayerAvatarExtendedInfo(
         blocks.face.instant = instant
         blocks.face.walkMode = walkMode
         blocks.face.entityFallbackAngle = entityFallbackAngle
-        flags = flags or NpcAvatarExtendedInfo.FACE
+        flags = flags or FACE
     }
 
     /**
@@ -309,7 +308,7 @@ public class PlayerAvatarExtendedInfo(
         blocks.face.instant = instant
         blocks.face.walkMode = walkMode
         blocks.face.entityFallbackAngle = entityFallbackAngle
-        flags = flags or NpcAvatarExtendedInfo.FACE
+        flags = flags or FACE
     }
 
     /**
@@ -388,7 +387,7 @@ public class PlayerAvatarExtendedInfo(
         blocks.face.z = z
         blocks.face.sizeX = sizeX
         blocks.face.sizeZ = sizeZ
-        flags = flags or NpcAvatarExtendedInfo.FACE
+        flags = flags or FACE
     }
 
     /**
@@ -421,7 +420,7 @@ public class PlayerAvatarExtendedInfo(
         blocks.face.angle = angle
         blocks.face.instant = instant
         blocks.face.walkMode = walkMode
-        flags = flags or NpcAvatarExtendedInfo.FACE
+        flags = flags or FACE
     }
 
     /**
@@ -429,7 +428,7 @@ public class PlayerAvatarExtendedInfo(
      */
     public fun resetFacing() {
         blocks.face.kind = Face.Kind.Reset
-        flags = flags or NpcAvatarExtendedInfo.FACE
+        flags = flags or FACE
     }
 
     /**
