@@ -1,5 +1,35 @@
 ## What's New?
 
+### Revision 238
+
+> [!IMPORTANT]
+> Rebuild WorldEntity V4 now uses absolute zone coordinates in the provider
+> interface.
+
+#### Additions
+- AMBIENCE_START packet. Loops an ambience sound effect indefinitely.
+NOTE: Ambience sound effects are their own cache archive, not to be confused
+with regular sound effects.
+- AMBIENCE_STOP packet.
+- CAM_UNLOCK packet. Uncaps the pitch min and max values of the camera.
+- CAM_SKYBOX packet. Sets a skybox model at 0,0 coordinate. Currently only
+works on native - java has not fully been wired up.
+- CAM_TARGET_V4 packet. No longer takes world entity id with every type,
+the client simply infers it based on context. Additionally now supports a
+coordinate target.
+
+#### Changes
+- Face angle & face pathingentity have been merged into a single
+extended info for players and NPCs. It now supports more properties,
+and the ability to face a world entity.
+
+#### Removals
+- REBUILD_NORMAL_V1
+- REBUILD_REGION_V1
+- IF_SETMODEL_V1
+- ZBUF
+- OP{LOC,NPC,OBJ}1..5
+
 ### Revision 237
 
 > [!IMPORTANT]

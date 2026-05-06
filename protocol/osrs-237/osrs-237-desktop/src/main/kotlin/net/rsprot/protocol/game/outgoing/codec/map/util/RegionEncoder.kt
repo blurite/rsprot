@@ -4,7 +4,6 @@ import net.rsprot.buffer.JagByteBuf
 import net.rsprot.buffer.bitbuffer.toBitBuf
 import net.rsprot.crypto.xtea.XteaKey
 import net.rsprot.protocol.game.outgoing.map.util.RebuildRegionZone
-import net.rsprot.protocol.game.outgoing.map.util.ReferenceZone
 
 /**
  * The maximum theoretical number of mapsquares that can be sent in a single
@@ -77,7 +76,7 @@ internal fun encodeRegionV1(
 
 internal fun encodeRegionV2(
     buffer: JagByteBuf,
-    zones: List<ReferenceZone?>,
+    zones: List<RebuildRegionZone?>,
 ) {
     // Mapsquare count, temporary value
     val marker = buffer.writerIndex()
@@ -97,7 +96,7 @@ internal fun encodeRegionV2(
                 continue
             }
             bitbuf.pBits(1, 1)
-            bitbuf.pBits(26, zone.packed)
+            bitbuf.pBits(26, zone.referenceZone.packed)
             val mapsquareId = zone.mapsquareId
             if (contains(mapsquares, distinctMapsquareCount, mapsquareId)) {
                 continue
