@@ -323,10 +323,11 @@ public class NpcAvatarExtendedInfo(
      * @param instant whether to instantly turn towards the loc without animations.
      * @param walkMode the behaviour when walking (see table above).
      */
+    @JvmOverloads
     public fun setFaceAngle(
         angle: Int,
-        instant: Boolean,
-        walkMode: Int,
+        instant: Boolean = false,
+        walkMode: Int = 0,
     ) {
         checkCommunicationThread()
         verify {
