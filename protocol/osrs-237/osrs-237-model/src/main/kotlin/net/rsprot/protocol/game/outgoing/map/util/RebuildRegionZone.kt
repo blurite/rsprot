@@ -10,14 +10,15 @@ import net.rsprot.crypto.xtea.XteaKey
  */
 public class RebuildRegionZone public constructor(
     public val referenceZone: ReferenceZone,
-    public val key: XteaKey,
+    public val key: XteaKey = XteaKey.ZERO,
 ) {
+    @JvmOverloads
     public constructor(
         zoneX: Int,
         zoneZ: Int,
         level: Int,
         rotation: Int,
-        key: XteaKey,
+        key: XteaKey = XteaKey.ZERO,
     ) : this(
         ReferenceZone(
             zoneX,
