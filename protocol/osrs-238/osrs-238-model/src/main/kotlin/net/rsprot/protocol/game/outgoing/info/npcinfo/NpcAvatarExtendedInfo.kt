@@ -504,9 +504,6 @@ public class NpcAvatarExtendedInfo(
                 "Unexpected source index: $sourceIndex, expected values: -1 to reset, " +
                     "0-65535 for NPCs, 65536-67583 for players"
             }
-            require(limit in 1..20) {
-                "Limit must be in range of 1..20"
-            }
         }
 
         // All the properties below here would result in a crash if an invalid input was provided.
@@ -521,6 +518,9 @@ public class NpcAvatarExtendedInfo(
         }
         require(delay in UNSIGNED_SMART_1_OR_2_RANGE) {
             "Unexpected delay: $delay, expected range $UNSIGNED_SMART_1_OR_2_RANGE"
+        }
+        require(limit in HIT_LIMIT_RANGE) {
+            "Limit must be in range of $HIT_LIMIT_RANGE"
         }
         blocks.hitmarkList.add(
             HitMark(
@@ -1672,6 +1672,7 @@ public class NpcAvatarExtendedInfo(
         private val UNSIGNED_SMART_1_OR_2_RANGE: IntRange = 0..0x7FFF
         private val EXTENDED_NPC_ID_RANGE: IntRange = 16384..65534
         private val HIT_TYPE_RANGE: IntRange = -1..0x7FFD
+        private val HIT_LIMIT_RANGE: IntRange = 1..100
 
         // Observer-dependent flags, utilizing the lowest bits as we store observer flags in a byte array
         // IMPORTANT: As we store it in a byte array, we currently only support 8 blocks

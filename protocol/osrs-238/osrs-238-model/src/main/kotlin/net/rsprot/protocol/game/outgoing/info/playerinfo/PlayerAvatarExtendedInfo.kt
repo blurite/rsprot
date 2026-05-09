@@ -671,9 +671,6 @@ public class PlayerAvatarExtendedInfo(
                 "Unexpected source index: $sourceIndex, expected values: -1 to reset, " +
                     "0-65535 for NPCs, 65536-67583 for players"
             }
-            require(limit in 1..20) {
-                "Limit must be in range of 1..20"
-            }
         }
 
         // All the properties below here would result in a crash if an invalid input was provided.
@@ -691,6 +688,9 @@ public class PlayerAvatarExtendedInfo(
         }
         require(delay in UNSIGNED_SMART_1_OR_2_RANGE) {
             "Unexpected delay: $delay, expected range $UNSIGNED_SMART_1_OR_2_RANGE"
+        }
+        require(limit in HIT_LIMIT_RANGE) {
+            "Limit must be in range of $HIT_LIMIT_RANGE"
         }
         blocks.hitmarkList.add(
             HitMark(
@@ -1946,6 +1946,7 @@ public class PlayerAvatarExtendedInfo(
         private val OBJ_RANGE: IntRange = UShort.MIN_VALUE.toInt()..(UShort.MAX_VALUE.toInt() - 0x800)
         private val UNSIGNED_SMART_1_OR_2_RANGE: IntRange = 0..0x7FFF
         private val HIT_TYPE_RANGE: IntRange = -1..0x7FFD
+        private val HIT_LIMIT_RANGE: IntRange = 1..100
 
         /**
          * Executes the [block] if input verification is enabled,
