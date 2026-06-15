@@ -58,7 +58,7 @@ public class NpcBodyCustomisationEncoder : PrecomputedExtendedInfoEncoder<BodyCu
         }
         if (flag and FLAG_RETEXTURE != 0) {
             for (retex in customisation.retexture) {
-                buffer.p2Alt1(retex)
+                buffer.p2(retex)
             }
         }
         if (flag and FLAG_MIRROR_LOCAL_PLAYER != 0) {
