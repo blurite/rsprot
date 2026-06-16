@@ -198,5 +198,6 @@ public class PlayerAvatarExtendedInfoDesktopWriter :
 
         // Name extras are part of appearance nowadays, and thus will not be used on their own
         private const val NAME_EXTRAS = 0x400
+        private const val CHAT_OLD = 0x80
     }
 }
