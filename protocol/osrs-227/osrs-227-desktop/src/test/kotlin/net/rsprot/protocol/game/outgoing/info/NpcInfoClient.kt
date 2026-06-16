@@ -160,10 +160,10 @@ class NpcInfoClient {
                         npc.spawnCycle = buffer.gBits(32)
                     }
                     val extendedInfo = buffer.gBits(1)
+                    val angle = NPC_TURN_ANGLES[buffer.gBits(3)]
                     if (extendedInfo == 1) {
                         updatedNpcSlot[updatedNpcSlotCount++] = index
                     }
-                    val angle = NPC_TURN_ANGLES[buffer.gBits(3)]
                     if (isNew) {
                         npc.turnAngle = angle
                         npc.angle = angle

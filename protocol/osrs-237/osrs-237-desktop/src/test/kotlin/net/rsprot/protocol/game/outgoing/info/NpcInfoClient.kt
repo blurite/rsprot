@@ -155,16 +155,8 @@ class NpcInfoClient {
                     npcSlot[npcSlotCount++] = index
                     npc.lastUpdateCycle = cycle
 
-                    // aa
                     val extendedInfo = buffer.gBits(1)
-                    if (extendedInfo == 1) {
-                        updatedNpcSlot[updatedNpcSlotCount++] = index
-                    }
                     val angle = NPC_TURN_ANGLES[buffer.gBits(3)]
-                    if (isNew) {
-                        npc.turnAngle = angle
-                        npc.angle = angle
-                    }
                     val deltaZ = decodeDelta(large, buffer)
                     val deltaX = decodeDelta(large, buffer)
                     val hasSpawnCycle = buffer.gBits(1) == 1
@@ -173,6 +165,13 @@ class NpcInfoClient {
                     }
                     val jump = buffer.gBits(1)
                     npc.id = buffer.gBits(14)
+                    if (extendedInfo == 1) {
+                        updatedNpcSlot[updatedNpcSlotCount++] = index
+                    }
+                    if (isNew) {
+                        npc.turnAngle = angle
+                        npc.angle = angle
+                    }
                     // reset bas
                     if (npc.turnSpeed == 0) {
                         npc.angle = 0
