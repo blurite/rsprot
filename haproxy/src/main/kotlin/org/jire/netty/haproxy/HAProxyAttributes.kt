@@ -18,6 +18,13 @@ public object HAProxyAttributes {
         AttributeKey.valueOf(HAProxyAttribute::class.qualifiedName!!)
 
     /**
+     * The Netty lookup [AttributeKey] for the cached non-proxied host address.
+     */
+    @JvmStatic
+    private val SOURCE_ADDRESS_KEY: AttributeKey<String> =
+        AttributeKey.valueOf("SOURCE_ADDRESS")
+
+    /**
      * The [HAProxyAttribute] from the channel if present.
      *
      * If the connection is not proxied through [HAProxy](https://en.wikipedia.org/wiki/HAProxy),
@@ -40,6 +47,13 @@ public object HAProxyAttributes {
         set(value) {
             channel().haproxyAttribute = value
         }
+
+    /**
+     * The non-proxied host address from the channel if present (cached on first retrieval).
+     */
+    private var Channel.cachedSourceAddress: String?
+        get() = attr(SOURCE_ADDRESS_KEY).get()
+        set(value) = attr(SOURCE_ADDRESS_KEY).set(value)
 
     /**
      * Gets the real source address of the channel.
@@ -94,7 +108,25 @@ public object HAProxyAttributes {
      */
     @JvmStatic
     public val Channel.sourceHost: String
-        get() = haproxyAttribute?.sourceHost ?: (remoteAddress() as InetSocketAddress).hostString
+        get() = getOrCacheSourceHost()
+
+    /**
+     * Gets the real source host of the channel, preferring cached variant to avoid
+     * allocations if possible.
+     */
+    private fun Channel.getOrCacheSourceHost(): String {
+        val proxyAttribute = this.haproxyAttribute
+        if (proxyAttribute != null) {
+            return proxyAttribute.sourceHost
+        }
+        val cachedHost = this.cachedSourceAddress
+        if (cachedHost != null) {
+            return cachedHost
+        }
+        val hostString = (remoteAddress() as InetSocketAddress).hostString
+        this.cachedSourceAddress = hostString
+        return hostString
+    }
 
     /**
      * Gets the real source host of the channel.
