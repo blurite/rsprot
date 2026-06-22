@@ -17,13 +17,13 @@ public class ObjAddEncoder : ZoneProtEncoder<ObjAdd> {
         // making it easy to identify all the properties of this packet:
         // obj_add(level, x, z, id, quantity, opFlags,
         // timeUntilPublic, timeUntilDespawn, ownershipType, neverBecomesPublic)
-        buffer.p2Alt2(message.timeUntilDespawn)
-        buffer.p1Alt1(message.opFlags.toInt())
-        buffer.p2(message.id)
-        buffer.p1(if (message.neverBecomesPublic) 1 else 0)
-        buffer.p2(message.timeUntilPublic)
-        buffer.p4Alt2(message.quantity)
         buffer.p1Alt1(message.coordInZonePacked)
-        buffer.p1Alt2(message.ownershipType)
+        buffer.p2(message.timeUntilPublic)
+        buffer.p1(message.ownershipType)
+        buffer.p2Alt2(message.id)
+        buffer.p1(if (message.neverBecomesPublic) 1 else 0)
+        buffer.p1Alt2(message.opFlags.toInt())
+        buffer.p2Alt3(message.timeUntilDespawn)
+        buffer.p4Alt1(message.quantity)
     }
 }

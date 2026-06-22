@@ -12,7 +12,7 @@ public class ResumePauseButtonDecoder : MessageDecoder<ResumePauseButton> {
 
     override fun decode(buffer: JagByteBuf): ResumePauseButton {
         val combinedId = buffer.gCombinedIdAlt3()
-        val sub = buffer.g2Alt3()
+        val sub = buffer.g2()
         return ResumePauseButton(
             combinedId,
             sub,

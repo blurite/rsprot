@@ -15,13 +15,13 @@ public class CamMoveToArcV2Encoder : MessageEncoder<CamMoveToArcV2> {
         buffer: JagByteBuf,
         message: CamMoveToArcV2,
     ) {
-        buffer.p1(if (message.ignoreTerrain) 1 else 0)
+        buffer.p2Alt3(message.cycles)
         buffer.p2Alt2(message.destinationZ)
-        buffer.p2Alt2(message.cycles)
-        buffer.p2Alt1(message.height)
-        buffer.p2Alt1(message.centerX)
-        buffer.p2Alt1(message.destinationX)
         buffer.p2Alt2(message.centerZ)
-        buffer.p1Alt3(message.easing.id)
+        buffer.p2(message.height)
+        buffer.p1Alt2(message.easing.id)
+        buffer.p2Alt2(message.destinationX)
+        buffer.p1Alt3(if (message.ignoreTerrain) 1 else 0)
+        buffer.p2Alt1(message.centerX)
     }
 }

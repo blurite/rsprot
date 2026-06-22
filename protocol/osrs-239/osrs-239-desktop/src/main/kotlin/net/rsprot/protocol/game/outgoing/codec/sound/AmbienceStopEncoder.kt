@@ -15,6 +15,6 @@ public class AmbienceStopEncoder : MessageEncoder<AmbienceStop> {
         buffer: JagByteBuf,
         message: AmbienceStop,
     ) {
-        buffer.p1Alt3(if (message.fade) 1 else 0)
+        buffer.p1(if (message.fade) 1 else 0)
     }
 }

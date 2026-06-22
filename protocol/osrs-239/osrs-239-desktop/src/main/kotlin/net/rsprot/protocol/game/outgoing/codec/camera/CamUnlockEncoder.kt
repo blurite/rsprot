@@ -15,6 +15,6 @@ public class CamUnlockEncoder : MessageEncoder<CamUnlock> {
         buffer: JagByteBuf,
         message: CamUnlock,
     ) {
-        buffer.p1Alt1(if (message.unlock) 1 else 0)
+        buffer.p1(if (message.unlock) 1 else 0)
     }
 }

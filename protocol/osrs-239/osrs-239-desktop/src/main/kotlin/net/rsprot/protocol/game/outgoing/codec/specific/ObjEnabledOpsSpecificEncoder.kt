@@ -18,8 +18,8 @@ public class ObjEnabledOpsSpecificEncoder : MessageEncoder<ObjEnabledOpsSpecific
         // The function at the bottom of the OBJ_ENABLED_OPS_SPECIFIC has a consistent order,
         // making it easy to identify all the properties of this packet:
         // obj_enabledops(world, level, x, z, id, opFlags)
-        buffer.p1Alt1(message.opFlags.toInt())
-        buffer.p2(message.id)
-        buffer.p4(message.coordGrid.packed)
+        buffer.p2Alt2(message.id)
+        buffer.p1Alt3(message.opFlags.toInt())
+        buffer.p4Alt2(message.coordGrid.packed)
     }
 }

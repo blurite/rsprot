@@ -15,10 +15,10 @@ public class CamRotateToCoordinateV2Encoder : MessageEncoder<CamRotateToCoordina
         buffer: JagByteBuf,
         message: CamRotateToCoordinateV2,
     ) {
-        buffer.p2Alt3(message.height)
-        buffer.p2(message.x)
+        buffer.p2(message.cycles)
+        buffer.p2(message.z)
+        buffer.p2(message.height)
         buffer.p1Alt1(message.easing.id)
-        buffer.p2Alt3(message.z)
-        buffer.p2Alt2(message.cycles)
+        buffer.p2Alt3(message.x)
     }
 }

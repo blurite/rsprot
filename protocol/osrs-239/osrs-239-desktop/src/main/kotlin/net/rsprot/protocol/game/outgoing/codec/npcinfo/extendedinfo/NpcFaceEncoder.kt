@@ -17,7 +17,7 @@ public class NpcFaceEncoder : PrecomputedExtendedInfoEncoder<Face> {
             alloc
                 .buffer(9, 9)
                 .toJagByteBuf()
-        buffer.p1Alt3(buildFlag(extendedInfo))
+        buffer.p1Alt1(buildFlag(extendedInfo))
         extendedInfo.encode(buffer)
         return buffer
     }

@@ -16,7 +16,7 @@ public class IfSetPlayerModelSelfEncoder : MessageEncoder<IfSetPlayerModelSelf> 
         buffer: JagByteBuf,
         message: IfSetPlayerModelSelf,
     ) {
+        buffer.p1Alt3(if (message.copyObjs) 1 else 0)
         buffer.pCombinedId(message.combinedId)
-        buffer.p1Alt1(if (message.copyObjs) 1 else 0)
     }
 }

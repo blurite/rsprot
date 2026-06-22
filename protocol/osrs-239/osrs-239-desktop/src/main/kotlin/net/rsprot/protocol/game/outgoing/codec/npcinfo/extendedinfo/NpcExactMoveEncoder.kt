@@ -19,10 +19,10 @@ public class NpcExactMoveEncoder : PrecomputedExtendedInfoEncoder<ExactMove> {
                 .toJagByteBuf()
         buffer.p1Alt3(extendedInfo.deltaX1.toInt())
         buffer.p1(extendedInfo.deltaZ1.toInt())
-        buffer.p1Alt2(extendedInfo.deltaX2.toInt())
-        buffer.p1Alt1(extendedInfo.deltaZ2.toInt())
+        buffer.p1Alt1(extendedInfo.deltaX2.toInt())
+        buffer.p1(extendedInfo.deltaZ2.toInt())
         buffer.p2Alt3(extendedInfo.delay1.toInt())
-        buffer.p2(extendedInfo.delay2.toInt())
+        buffer.p2Alt2(extendedInfo.delay2.toInt())
         buffer.p2Alt2(extendedInfo.direction.toInt())
         return buffer
     }
