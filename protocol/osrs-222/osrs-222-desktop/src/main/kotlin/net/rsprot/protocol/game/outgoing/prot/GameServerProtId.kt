@@ -16,7 +16,7 @@ internal object GameServerProtId {
     const val IF_SETHIDE = 12
     const val SYNTH_SOUND = 13
     const val UPDATE_FRIENDCHAT_CHANNEL_SINGLEUSER = 14
-    const val CAM_LOOKAT_EASED_COORD = 15
+    const val CAM_ROTATETO_COORDINATE = 15
     const val CAM_MOVETO = 16
     const val IF_OPENTOP = 17
     const val MESSAGE_PRIVATE_ECHO = 18

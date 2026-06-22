@@ -2,8 +2,6 @@ package net.rsprot.protocol.game.outgoing.prot
 
 import net.rsprot.compression.provider.HuffmanCodecProvider
 import net.rsprot.protocol.ProtRepository
-import net.rsprot.protocol.game.outgoing.codec.camera.CamLookAtEasedCoordV1Encoder
-import net.rsprot.protocol.game.outgoing.codec.camera.CamLookAtEasedCoordV2Encoder
 import net.rsprot.protocol.game.outgoing.codec.camera.CamLookAtV1Encoder
 import net.rsprot.protocol.game.outgoing.codec.camera.CamLookAtV2Encoder
 import net.rsprot.protocol.game.outgoing.codec.camera.CamModeEncoder
@@ -15,6 +13,8 @@ import net.rsprot.protocol.game.outgoing.codec.camera.CamMoveToV1Encoder
 import net.rsprot.protocol.game.outgoing.codec.camera.CamMoveToV2Encoder
 import net.rsprot.protocol.game.outgoing.codec.camera.CamResetEncoder
 import net.rsprot.protocol.game.outgoing.codec.camera.CamRotateByEncoder
+import net.rsprot.protocol.game.outgoing.codec.camera.CamRotateToCoordinateV1Encoder
+import net.rsprot.protocol.game.outgoing.codec.camera.CamRotateToCoordinateV2Encoder
 import net.rsprot.protocol.game.outgoing.codec.camera.CamRotateToEncoder
 import net.rsprot.protocol.game.outgoing.codec.camera.CamShakeEncoder
 import net.rsprot.protocol.game.outgoing.codec.camera.CamSmoothResetEncoder
@@ -242,8 +242,8 @@ public object DesktopGameMessageEncoderRepository {
                 bind(CamMoveToArcV2Encoder())
                 bind(CamLookAtV1Encoder())
                 bind(CamLookAtV2Encoder())
-                bind(CamLookAtEasedCoordV1Encoder())
-                bind(CamLookAtEasedCoordV2Encoder())
+                bind(CamRotateToCoordinateV1Encoder())
+                bind(CamRotateToCoordinateV2Encoder())
                 bind(CamRotateByEncoder())
                 bind(CamRotateToEncoder())
                 bind(CamModeEncoder())

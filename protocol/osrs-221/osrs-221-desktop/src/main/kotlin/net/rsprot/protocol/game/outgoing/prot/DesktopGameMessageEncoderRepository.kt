@@ -4,13 +4,13 @@ import net.rsprot.compression.provider.HuffmanCodecProvider
 import net.rsprot.protocol.ProtRepository
 import net.rsprot.protocol.game.outgoing.codec.camera.CamLookAtEasedAngleAbsoluteEncoder
 import net.rsprot.protocol.game.outgoing.codec.camera.CamLookAtEasedAngleRelativeEncoder
-import net.rsprot.protocol.game.outgoing.codec.camera.CamLookAtEasedCoordEncoder
 import net.rsprot.protocol.game.outgoing.codec.camera.CamLookAtEncoder
 import net.rsprot.protocol.game.outgoing.codec.camera.CamModeEncoder
 import net.rsprot.protocol.game.outgoing.codec.camera.CamMoveToEasedCircularEncoder
 import net.rsprot.protocol.game.outgoing.codec.camera.CamMoveToEasedEncoder
 import net.rsprot.protocol.game.outgoing.codec.camera.CamMoveToEncoder
 import net.rsprot.protocol.game.outgoing.codec.camera.CamResetEncoder
+import net.rsprot.protocol.game.outgoing.codec.camera.CamRotateToCoordinateEncoder
 import net.rsprot.protocol.game.outgoing.codec.camera.CamShakeEncoder
 import net.rsprot.protocol.game.outgoing.codec.camera.CamSmoothResetEncoder
 import net.rsprot.protocol.game.outgoing.codec.camera.OculusSyncEncoder
@@ -215,7 +215,7 @@ public object DesktopGameMessageEncoderRepository {
                 bind(CamMoveToEasedEncoder())
                 bind(CamMoveToEasedCircularEncoder())
                 bind(CamLookAtEncoder())
-                bind(CamLookAtEasedCoordEncoder())
+                bind(CamRotateToCoordinateEncoder())
                 bind(CamLookAtEasedAngleRelativeEncoder())
                 bind(CamLookAtEasedAngleAbsoluteEncoder())
                 bind(CamModeEncoder())
