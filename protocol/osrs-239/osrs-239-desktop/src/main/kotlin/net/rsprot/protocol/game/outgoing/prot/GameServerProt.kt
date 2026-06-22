@@ -110,10 +110,16 @@ public enum class GameServerProt(
     CAM_RESET(GameServerProtId.CAM_RESET, 0),
     CAM_SMOOTHRESET(GameServerProtId.CAM_SMOOTHRESET, 4),
     CAM_MOVETO_V2(GameServerProtId.CAM_MOVETO_V2, 8),
+    CAM_MOVETO_V3(GameServerProtId.CAM_MOVETO_V3, 9),
     CAM_MOVETO_CYCLES_V2(GameServerProtId.CAM_MOVETO_CYCLES_V2, 10),
+    CAM_MOVETO_CYCLES_V3(GameServerProtId.CAM_MOVETO_CYCLES_V3, 11),
     CAM_MOVETO_ARC_V2(GameServerProtId.CAM_MOVETO_ARC_V2, 14),
+    CAM_MOVETO_ARC_V3(GameServerProtId.CAM_MOVETO_ARC_V3, 15),
     CAM_LOOKAT_V2(GameServerProtId.CAM_LOOKAT_V2, 8),
+    CAM_LOOKAT_V3(GameServerProtId.CAM_LOOKAT_V3, 9),
+    CAM_LOOKAT_CYCLES(GameServerProtId.CAM_LOOKAT_CYCLES, 10),
     CAM_ROTATETO_COORDINATE_V2(GameServerProtId.CAM_ROTATETO_COORDINATE_V2, 9),
+    CAM_ROTATETO_COORDINATE_V3(GameServerProtId.CAM_ROTATETO_COORDINATE_V3, 11),
     CAM_ROTATEBY(GameServerProtId.CAM_ROTATEBY, 7),
     CAM_ROTATETO(GameServerProtId.CAM_ROTATETO, 7),
     CAM_MODE(GameServerProtId.CAM_MODE, 1),
@@ -122,6 +128,12 @@ public enum class GameServerProt(
     OCULUS_SYNC(GameServerProtId.OCULUS_SYNC, 4),
     CAM_UNLOCK(GameServerProtId.CAM_UNLOCK, 1),
     CAM_SKYBOX(GameServerProtId.CAM_SKYBOX, 4),
+
+    // Group packets
+    GROUP_FULL(GameServerProtId.GROUP_FULL, Prot.VAR_SHORT),
+    GROUP_VAR(GameServerProtId.GROUP_VAR, Prot.VAR_SHORT),
+    GROUP_VAR_INT(GameServerProtId.GROUP_VAR_INT, 9),
+    GROUP_VAR_LONG(GameServerProtId.GROUP_VAR_LONG, 13),
 
     // Inventory packets
     UPDATE_INV_FULL(GameServerProtId.UPDATE_INV_FULL, Prot.VAR_SHORT),
