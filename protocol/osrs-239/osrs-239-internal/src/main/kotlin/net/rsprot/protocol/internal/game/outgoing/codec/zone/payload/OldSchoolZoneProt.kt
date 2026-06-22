@@ -14,4 +14,6 @@ public object OldSchoolZoneProt {
     public const val OBJ_CUSTOMISE: Int = 10
     public const val OBJ_UNCUSTOMISE: Int = 11
     public const val MAP_PROJANIM_V2: Int = 12
+    public const val SCRIPTEDPROJ_ADD: Int = 13
+    public const val SCRIPTEDPROJ_CHANGE: Int = 14
 }

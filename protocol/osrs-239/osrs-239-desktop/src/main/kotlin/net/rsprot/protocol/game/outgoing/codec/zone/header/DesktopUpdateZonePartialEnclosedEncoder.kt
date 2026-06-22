@@ -19,6 +19,8 @@ import net.rsprot.protocol.game.outgoing.codec.zone.payload.ObjCustomiseEncoder
 import net.rsprot.protocol.game.outgoing.codec.zone.payload.ObjDelEncoder
 import net.rsprot.protocol.game.outgoing.codec.zone.payload.ObjEnabledOpsEncoder
 import net.rsprot.protocol.game.outgoing.codec.zone.payload.ObjUncustomiseEncoder
+import net.rsprot.protocol.game.outgoing.codec.zone.payload.ScriptedProjAddEncoder
+import net.rsprot.protocol.game.outgoing.codec.zone.payload.ScriptedProjChangeEncoder
 import net.rsprot.protocol.game.outgoing.codec.zone.payload.SoundAreaEncoder
 import net.rsprot.protocol.game.outgoing.prot.GameServerProt
 import net.rsprot.protocol.game.outgoing.zone.header.UpdateZonePartialEnclosed
@@ -127,8 +129,7 @@ public class DesktopUpdateZonePartialEnclosedEncoder : MessageEncoder<UpdateZone
             val encoder: ZoneProtEncoder<*>,
         ) {
             LOC_DEL(OldSchoolZoneProt.LOC_DEL, LocDelEncoder()),
-
-            // TODO: SCRIPTEDPROJ_CHANGE
+            SCRIPTEDPROJ_CHANGE(OldSchoolZoneProt.SCRIPTEDPROJ_CHANGE, ScriptedProjChangeEncoder()),
             LOC_MERGE(OldSchoolZoneProt.LOC_MERGE, LocMergeEncoder()),
             OBJ_CUSTOMISE(OldSchoolZoneProt.OBJ_CUSTOMISE, ObjCustomiseEncoder()),
             OBJ_COUNT(OldSchoolZoneProt.OBJ_COUNT, ObjCountEncoder()),
@@ -139,8 +140,7 @@ public class DesktopUpdateZonePartialEnclosedEncoder : MessageEncoder<UpdateZone
             LOC_ANIM(OldSchoolZoneProt.LOC_ANIM, LocAnimEncoder()),
             OBJ_DEL(OldSchoolZoneProt.OBJ_DEL, ObjDelEncoder()),
             OBJ_ENABLED_OPS(OldSchoolZoneProt.OBJ_ENABLED_OPS, ObjEnabledOpsEncoder()),
-
-            // TODO: SCRIPTEDPROJ_ADD
+            SCRIPTEDPROJ_ADD(OldSchoolZoneProt.SCRIPTEDPROJ_ADD, ScriptedProjAddEncoder()),
             MAP_PROJANIM_V2(OldSchoolZoneProt.MAP_PROJANIM_V2, MapProjAnimV2Encoder()),
             SOUND_AREA(OldSchoolZoneProt.SOUND_AREA, SoundAreaEncoder()),
             ;

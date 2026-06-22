@@ -66,6 +66,8 @@ public enum class GameServerProt(
     // MAP_PROJANIM_V2 has no packet of its own. It can only be transmitted via the partial enclosed packet.
     MAP_PROJANIM_V2(-1, 24),
     SOUND_AREA(GameServerProtId.SOUND_AREA, 7),
+    SCRIPTEDPROJ_ADD(-1, 37),
+    SCRIPTEDPROJ_CHANGE(-1, 18),
 
     // Specific packets
     PROJANIM_SPECIFIC_V4(GameServerProtId.PROJANIM_SPECIFIC_V4, 27),
