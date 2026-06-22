@@ -1404,6 +1404,50 @@ public class NpcAvatarExtendedInfo(
     }
 
     /**
+     * Sets the NPC to mimic a player by utilizing the player rendering path in the client.
+     * @param bodyType the body type to use for this NPC.
+     * @param skinColour a list of skin colour values.
+     * @param identKit a list of ident kit pieces to render for this NPC.
+     * Note that the server is responsible for filtering out ident kit and worn obj clashes unlike for
+     * player appearance, where RSProt handles it for them.
+     * @param wornObj a list of worn objs
+     */
+    public fun setBodyCustomisationPlayerComposition(
+        bodyType: Int,
+        skinColour: List<Int>,
+        identKit: List<Int>,
+        wornObj: List<Int>,
+    ) {
+        checkCommunicationThread()
+        check(skinColour.isEmpty() || skinColour.size == 5) {
+            "Skin colour must either be empty or of length 5."
+        }
+        // Note: The client treats these fields differently if it is transmitted as player composition.
+        // The models field becomes a combination of ident kit and worn objs.
+        // Recolours get repurposed as skin colour and must be either size 0 or size 5.
+        val identKitWithWornObj =
+            buildList(identKit.size + wornObj.size) {
+                addAll(identKit)
+                for (element in wornObj) {
+                    add(0x800 + element)
+                }
+            }
+        blocks.bodyCustomisation.customisation =
+            TypeCustomisation(
+                models = identKitWithWornObj,
+                recolours = skinColour,
+                retexture = emptyList(),
+                mirror = false,
+                playerComposition =
+                    TypeCustomisation.PlayerComposition(
+                        bodyType,
+                        identKit,
+                    ),
+            )
+        flags = flags or BODY_CUSTOMISATION
+    }
+
+    /**
      * Clears any transient information and resets the flag to zero at the end of the cycle.
      */
     internal fun postUpdate() {

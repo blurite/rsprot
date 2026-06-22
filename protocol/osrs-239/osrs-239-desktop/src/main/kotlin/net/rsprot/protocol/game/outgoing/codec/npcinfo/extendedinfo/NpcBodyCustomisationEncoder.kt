@@ -41,34 +41,44 @@ public class NpcBodyCustomisationEncoder : PrecomputedExtendedInfoEncoder<BodyCu
         if (customisation.retexture.isNotEmpty()) {
             flag = flag or FLAG_RETEXTURE
         }
-        if (customisation.mirror != null) {
+        if (customisation.mirror == true) {
             flag = flag or FLAG_MIRROR_LOCAL_PLAYER
+        }
+        val playerComposition = customisation.playerComposition
+        if (playerComposition != null) {
+            flag = flag or FLAG_PLAYER_COMPOSITION
         }
         buffer.pFlag(flag)
         if (flag and FLAG_REMODEL != 0) {
-            buffer.p1(customisation.models.size)
+            buffer.p1Alt1(customisation.models.size)
             for (model in customisation.models) {
-                buffer.p4Alt1(model)
+                buffer.p4(model)
             }
         }
         if (flag and FLAG_RECOLOUR != 0) {
+            buffer.p1Alt2(customisation.recolours.size)
             for (recol in customisation.recolours) {
-                buffer.p2(recol)
+                buffer.p2Alt1(recol)
             }
         }
         if (flag and FLAG_RETEXTURE != 0) {
+            buffer.p1Alt2(customisation.retexture.size)
             for (retex in customisation.retexture) {
-                buffer.p2Alt1(retex)
+                buffer.p2Alt3(retex)
             }
         }
-        if (flag and FLAG_MIRROR_LOCAL_PLAYER != 0) {
-            buffer.p1(if (customisation.mirror == true) 1 else 0)
+        if (playerComposition != null) {
+            buffer.p1Alt1(playerComposition.bodyType)
+            buffer.p1Alt1(playerComposition.identKit.size)
+            for (worn in playerComposition.identKit) {
+                buffer.p2(worn)
+            }
         }
         return buffer
     }
 
     private fun JagByteBuf.pFlag(value: Int) {
-        p1(value)
+        p1Alt2(value)
     }
 
     private companion object {
@@ -77,5 +87,6 @@ public class NpcBodyCustomisationEncoder : PrecomputedExtendedInfoEncoder<BodyCu
         private const val FLAG_RECOLOUR: Int = 0x4
         private const val FLAG_RETEXTURE: Int = 0x8
         private const val FLAG_MIRROR_LOCAL_PLAYER: Int = 0x10
+        private const val FLAG_PLAYER_COMPOSITION = 0x20
     }
 }

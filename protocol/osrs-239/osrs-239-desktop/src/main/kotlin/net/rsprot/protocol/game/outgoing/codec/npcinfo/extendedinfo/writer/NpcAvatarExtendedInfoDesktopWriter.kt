@@ -132,12 +132,12 @@ public class NpcAvatarExtendedInfoDesktopWriter :
             buffer.p1(clientFlag shr 24)
         }
 
-        outFlag = outFlag or pCached(buffer, clientFlag, BODY_CUSTOMISATION, blocks.bodyCustomisation)
         outFlag = outFlag or pCached(buffer, clientFlag, LEVEL_CHANGE, blocks.combatLevelChange)
         outFlag = outFlag or pCached(buffer, clientFlag, HEADICON_CUSTOMISATION, blocks.headIconCustomisation)
         outFlag = outFlag or pCached(buffer, clientFlag, OPS, blocks.visibleOps)
         outFlag = outFlag or pOnDemand(buffer, clientFlag, HITMARKS, blocks.hitmarkList, localIndex, observerIndex)
         outFlag = outFlag or pCached(buffer, clientFlag, EXACT_MOVE, blocks.exactMove)
+        outFlag = outFlag or pCached(buffer, clientFlag, BODY_CUSTOMISATION, blocks.bodyCustomisation)
         outFlag = outFlag or pOnDemand(buffer, clientFlag, HEADBARS, blocks.headbarList, localIndex, observerIndex)
         outFlag = outFlag or pCached(buffer, clientFlag, SEQUENCE, blocks.sequence)
         outFlag = outFlag or pCached(buffer, clientFlag, SAY, blocks.say)
@@ -230,7 +230,7 @@ public class NpcAvatarExtendedInfoDesktopWriter :
 
         private const val FACING: Int = 0x8
         private const val HEADICON_CUSTOMISATION: Int = 0x400_000
-        private const val BODY_CUSTOMISATION: Int = 0x800_000
+        private const val BODY_CUSTOMISATION: Int = 0x2_000_000
         private const val HEAD_CUSTOMISATION: Int = 0x20_000
         private const val TINTING: Int = 0x100
     }

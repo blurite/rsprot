@@ -5,4 +5,10 @@ public class TypeCustomisation(
     public val recolours: List<Int>,
     public val retexture: List<Int>,
     public val mirror: Boolean?,
-)
+    public val playerComposition: PlayerComposition? = null,
+) {
+    public class PlayerComposition(
+        public val bodyType: Int,
+        public val identKit: List<Int>,
+    )
+}
