@@ -3,45 +3,54 @@ package net.rsprot.protocol.game.outgoing.camera
 import net.rsprot.protocol.ServerProtCategory
 import net.rsprot.protocol.game.outgoing.GameServerProtCategory
 import net.rsprot.protocol.game.outgoing.camera.util.CameraEaseFunction
-import net.rsprot.protocol.game.outgoing.zone.payload.util.CoordInBuildArea
 import net.rsprot.protocol.message.OutgoingGameMessage
 
 /**
  * Cam rotate to coordinate is used to make the camera look towards
  * a certain coordinate with various easing functions.
  *
- * @property destinationXInBuildArea the dest x coordinate within the build area,
- * in range of 0 to 103 (inclusive)
- * @property destinationZInBuildArea the dest z coordinate within the build area,
- * in range of 0 to 103 (inclusive)
+ * @property x the absolute x coordinate to look at.
+ * @property z the absolute z coordinate to look at.
  * @property height the height of the camera
  * @property cycles the duration of the movement in client cycles (20ms/cc)
  * @property easing the camera easing function, allowing for finer
  * control over the way it moves from the start coordinate to the end.
+ * @property heightRelative whether the height is relative to the
+ * previous camera look-at packet's height.
+ * @property trackTarget whether to track the target coordinate,
+ * if it moves on the screen.
  */
-public class CamRotateToCoordinate private constructor(
-    private val destinationCoordInBuildArea: CoordInBuildArea,
-    private val _height: UShort,
+public class CamRotateToCoordinateV3 private constructor(
+    private val _x: UShort,
+    private val _z: UShort,
+    private val _height: Short,
     private val _cycles: UShort,
     private val _easing: UByte,
+    public val heightRelative: Boolean,
+    public val trackTarget: Boolean,
 ) : OutgoingGameMessage {
     public constructor(
-        xInBuildArea: Int,
-        zInBuildArea: Int,
+        x: Int,
+        z: Int,
         height: Int,
         cycles: Int,
         easing: Int,
+        heightRelative: Boolean,
+        trackTarget: Boolean,
     ) : this(
-        CoordInBuildArea(xInBuildArea, zInBuildArea),
-        height.toUShort(),
+        x.toUShort(),
+        z.toUShort(),
+        height.toShort(),
         cycles.toUShort(),
         easing.toUByte(),
+        heightRelative,
+        trackTarget,
     )
 
-    public val destinationXInBuildArea: Int
-        get() = destinationCoordInBuildArea.xInBuildArea
-    public val destinationZInBuildArea: Int
-        get() = destinationCoordInBuildArea.zInBuildArea
+    public val x: Int
+        get() = _x.toInt()
+    public val z: Int
+        get() = _z.toInt()
     public val height: Int
         get() = _height.toInt()
     public val cycles: Int
@@ -55,10 +64,13 @@ public class CamRotateToCoordinate private constructor(
         if (this === other) return true
         if (javaClass != other?.javaClass) return false
 
-        other as CamRotateToCoordinate
+        other as CamRotateToCoordinateV3
 
-        if (destinationCoordInBuildArea != other.destinationCoordInBuildArea) return false
         if (_height != other._height) return false
+        if (heightRelative != other.heightRelative) return false
+        if (trackTarget != other.trackTarget) return false
+        if (_x != other._x) return false
+        if (_z != other._z) return false
         if (_cycles != other._cycles) return false
         if (_easing != other._easing) return false
 
@@ -66,19 +78,25 @@ public class CamRotateToCoordinate private constructor(
     }
 
     override fun hashCode(): Int {
-        var result = destinationCoordInBuildArea.hashCode()
-        result = 31 * result + _height.hashCode()
+        var result = _height.toInt()
+        result = 31 * result + heightRelative.hashCode()
+        result = 31 * result + trackTarget.hashCode()
+        result = 31 * result + _x.hashCode()
+        result = 31 * result + _z.hashCode()
         result = 31 * result + _cycles.hashCode()
         result = 31 * result + _easing.hashCode()
         return result
     }
 
-    override fun toString(): String =
-        "CamRotateToCoordinate(" +
-            "destinationXInBuildArea=$destinationXInBuildArea, " +
-            "destinationZInBuildArea=$destinationZInBuildArea, " +
+    override fun toString(): String {
+        return "CamRotateToCoordinateV3(" +
+            "x=$x, " +
+            "z=$z, " +
             "height=$height, " +
             "cycles=$cycles, " +
-            "easing=$easing" +
+            "easing=$easing, " +
+            "heightRelative=$heightRelative, " +
+            "trackTarget=$trackTarget" +
             ")"
+    }
 }

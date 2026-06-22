@@ -6,7 +6,7 @@ import net.rsprot.protocol.game.outgoing.camera.util.CameraEaseFunction
 import net.rsprot.protocol.message.OutgoingGameMessage
 
 /**
- * Cam look at eased coord is used to make the camera look towards
+ * Cam rotate to coordinate is used to make the camera look towards
  * a certain coordinate with various easing functions.
  *
  * @property x the absolute x coordinate to look at.

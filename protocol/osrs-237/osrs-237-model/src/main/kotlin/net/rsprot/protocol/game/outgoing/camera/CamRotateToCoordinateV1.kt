@@ -7,7 +7,7 @@ import net.rsprot.protocol.game.outgoing.zone.payload.util.CoordInBuildArea
 import net.rsprot.protocol.message.OutgoingGameMessage
 
 /**
- * Cam look at eased coord is used to make the camera look towards
+ * Cam rotate to coordinate is used to make the camera look towards
  * a certain coordinate with various easing functions.
  *
  * @property destinationXInBuildArea the dest x coordinate within the build area,
