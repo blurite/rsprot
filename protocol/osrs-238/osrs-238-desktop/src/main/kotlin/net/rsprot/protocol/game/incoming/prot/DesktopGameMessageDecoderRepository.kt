@@ -49,7 +49,7 @@ import net.rsprot.protocol.game.incoming.codec.misc.user.ClickWorldMapDecoder
 import net.rsprot.protocol.game.incoming.codec.misc.user.ClientCheatDecoder
 import net.rsprot.protocol.game.incoming.codec.misc.user.CloseModalDecoder
 import net.rsprot.protocol.game.incoming.codec.misc.user.HiscoreRequestDecoder
-import net.rsprot.protocol.game.incoming.codec.misc.user.IfCrmViewClickDecoder
+import net.rsprot.protocol.game.incoming.codec.misc.user.IfCrmViewOpDecoder
 import net.rsprot.protocol.game.incoming.codec.misc.user.MoveGameClickDecoder
 import net.rsprot.protocol.game.incoming.codec.misc.user.MoveMinimapClickDecoder
 import net.rsprot.protocol.game.incoming.codec.misc.user.OculusLeaveDecoder
@@ -203,7 +203,7 @@ public object DesktopGameMessageDecoderRepository {
                 bind(BugReportDecoder())
                 bind(SendSnapshotDecoder())
                 bind(HiscoreRequestDecoder())
-                bind(IfCrmViewClickDecoder())
+                bind(IfCrmViewOpDecoder())
 
                 bind(ConnectionTelemetryDecoder())
                 bind(SendPingReplyDecoder())
