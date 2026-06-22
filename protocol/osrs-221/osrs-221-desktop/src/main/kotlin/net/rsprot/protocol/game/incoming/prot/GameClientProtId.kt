@@ -40,7 +40,7 @@ internal object GameClientProtId {
     const val OPOBJ4 = 36
     const val MESSAGE_PUBLIC = 37
     const val AFFINEDCLANSETTINGS_ADDBANNED_FROMCHANNEL = 38
-    const val OCULUS_LEAVE = 39
+    const val EXIT_FREECAM = 39
     const val RESUME_PAUSEBUTTON = 40
     const val EVENT_CAMERA_POSITION = 41
     const val OPLOC5 = 42

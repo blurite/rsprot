@@ -47,11 +47,11 @@ import net.rsprot.protocol.game.incoming.codec.misc.user.BugReportDecoder
 import net.rsprot.protocol.game.incoming.codec.misc.user.ClickWorldMapDecoder
 import net.rsprot.protocol.game.incoming.codec.misc.user.ClientCheatDecoder
 import net.rsprot.protocol.game.incoming.codec.misc.user.CloseModalDecoder
+import net.rsprot.protocol.game.incoming.codec.misc.user.ExitFreecamDecoder
 import net.rsprot.protocol.game.incoming.codec.misc.user.HiscoreRequestDecoder
 import net.rsprot.protocol.game.incoming.codec.misc.user.IfCrmViewOpDecoder
 import net.rsprot.protocol.game.incoming.codec.misc.user.MoveGameClickDecoder
 import net.rsprot.protocol.game.incoming.codec.misc.user.MoveMinimapClickDecoder
-import net.rsprot.protocol.game.incoming.codec.misc.user.OculusLeaveDecoder
 import net.rsprot.protocol.game.incoming.codec.misc.user.SendSnapshotDecoder
 import net.rsprot.protocol.game.incoming.codec.misc.user.SetChatFilterSettingsDecoder
 import net.rsprot.protocol.game.incoming.codec.misc.user.SetHeadingDecoder
@@ -187,7 +187,7 @@ public object DesktopGameMessageDecoderRepository {
                 bind(SetChatFilterSettingsDecoder())
                 bind(SetHeadingDecoder())
                 bind(ClickWorldMapDecoder())
-                bind(OculusLeaveDecoder())
+                bind(ExitFreecamDecoder())
                 bind(CloseModalDecoder())
                 bind(TeleportDecoder())
                 bind(BugReportDecoder())
