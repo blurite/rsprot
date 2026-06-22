@@ -87,7 +87,7 @@ internal object GameServerProtId {
     const val IF_CLEARINV = 83
     const val LOGOUT_TRANSFER = 84
     const val HEATMAP_TOGGLE = 85
-    const val PLAYER_ANIM_SPECIFIC = 86
+    const val ANIM_SPECIFIC = 86
     const val CAM_LOOKAT = 87
     const val LOC_ADD_CHANGE = 88
     const val VARCLAN_DISABLE = 89

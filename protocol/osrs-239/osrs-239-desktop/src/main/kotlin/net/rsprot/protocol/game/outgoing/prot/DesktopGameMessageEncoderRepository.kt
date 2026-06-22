@@ -111,6 +111,7 @@ import net.rsprot.protocol.game.outgoing.codec.sound.MidiSongV2Encoder
 import net.rsprot.protocol.game.outgoing.codec.sound.MidiSongWithSecondaryEncoder
 import net.rsprot.protocol.game.outgoing.codec.sound.MidiSwapEncoder
 import net.rsprot.protocol.game.outgoing.codec.sound.SynthSoundEncoder
+import net.rsprot.protocol.game.outgoing.codec.specific.AnimSpecificEncoder
 import net.rsprot.protocol.game.outgoing.codec.specific.LocAnimSpecificEncoder
 import net.rsprot.protocol.game.outgoing.codec.specific.MapAnimSpecificEncoder
 import net.rsprot.protocol.game.outgoing.codec.specific.NpcAnimSpecificEncoder
@@ -122,7 +123,6 @@ import net.rsprot.protocol.game.outgoing.codec.specific.ObjCustomiseSpecificEnco
 import net.rsprot.protocol.game.outgoing.codec.specific.ObjDelSpecificEncoder
 import net.rsprot.protocol.game.outgoing.codec.specific.ObjEnabledOpsSpecificEncoder
 import net.rsprot.protocol.game.outgoing.codec.specific.ObjUncustomiseSpecificEncoder
-import net.rsprot.protocol.game.outgoing.codec.specific.PlayerAnimSpecificEncoder
 import net.rsprot.protocol.game.outgoing.codec.specific.PlayerSpotAnimSpecificEncoder
 import net.rsprot.protocol.game.outgoing.codec.specific.ProjAnimSpecificV4Encoder
 import net.rsprot.protocol.game.outgoing.codec.varp.VarpLargeEncoder
@@ -204,7 +204,7 @@ public object DesktopGameMessageEncoderRepository {
                 bind(NpcHeadIconSpecificEncoder())
                 bind(NpcSpotAnimSpecificEncoder())
                 bind(NpcAnimSpecificEncoder())
-                bind(PlayerAnimSpecificEncoder())
+                bind(AnimSpecificEncoder())
                 bind(PlayerSpotAnimSpecificEncoder())
                 bind(ObjAddSpecificEncoder())
                 bind(ObjDelSpecificEncoder())

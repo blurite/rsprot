@@ -73,7 +73,7 @@ internal object GameServerProtId {
     const val UPDATE_IGNORELIST = 69
     const val HEATMAP_TOGGLE = 70
     const val CHAT_FILTER_SETTINGS_PRIVATECHAT = 71
-    const val PLAYER_ANIM_SPECIFIC = 72
+    const val ANIM_SPECIFIC = 72
     const val UPDATE_SITESETTINGS = 73
     const val MINIMAP_TOGGLE = 74
     const val VARP_RESET = 75

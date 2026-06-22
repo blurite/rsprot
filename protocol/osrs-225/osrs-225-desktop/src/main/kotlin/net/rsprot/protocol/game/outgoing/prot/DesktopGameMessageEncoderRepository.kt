@@ -106,12 +106,12 @@ import net.rsprot.protocol.game.outgoing.codec.sound.MidiSongStopEncoder
 import net.rsprot.protocol.game.outgoing.codec.sound.MidiSongWithSecondaryEncoder
 import net.rsprot.protocol.game.outgoing.codec.sound.MidiSwapEncoder
 import net.rsprot.protocol.game.outgoing.codec.sound.SynthSoundEncoder
+import net.rsprot.protocol.game.outgoing.codec.specific.AnimSpecificEncoder
 import net.rsprot.protocol.game.outgoing.codec.specific.LocAnimSpecificEncoder
 import net.rsprot.protocol.game.outgoing.codec.specific.MapAnimSpecificEncoder
 import net.rsprot.protocol.game.outgoing.codec.specific.NpcAnimSpecificEncoder
 import net.rsprot.protocol.game.outgoing.codec.specific.NpcHeadIconSpecificEncoder
 import net.rsprot.protocol.game.outgoing.codec.specific.NpcSpotAnimSpecificEncoder
-import net.rsprot.protocol.game.outgoing.codec.specific.PlayerAnimSpecificEncoder
 import net.rsprot.protocol.game.outgoing.codec.specific.PlayerSpotAnimSpecificEncoder
 import net.rsprot.protocol.game.outgoing.codec.specific.ProjAnimSpecificEncoder
 import net.rsprot.protocol.game.outgoing.codec.varp.VarpLargeEncoder
@@ -203,7 +203,7 @@ public object DesktopGameMessageEncoderRepository {
                 bind(NpcHeadIconSpecificEncoder())
                 bind(NpcSpotAnimSpecificEncoder())
                 bind(NpcAnimSpecificEncoder())
-                bind(PlayerAnimSpecificEncoder())
+                bind(AnimSpecificEncoder())
                 bind(PlayerSpotAnimSpecificEncoder())
 
                 bind(PlayerInfoEncoder())
