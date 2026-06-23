@@ -39,6 +39,7 @@ import net.rsprot.protocol.game.outgoing.codec.friendchat.UpdateFriendChatChanne
 import net.rsprot.protocol.game.outgoing.codec.group.GroupFullEncoder
 import net.rsprot.protocol.game.outgoing.codec.group.GroupVarEncoder
 import net.rsprot.protocol.game.outgoing.codec.group.GroupVarIntEncoder
+import net.rsprot.protocol.game.outgoing.codec.group.GroupVarLongEncoder
 import net.rsprot.protocol.game.outgoing.codec.interfaces.IfClearInvEncoder
 import net.rsprot.protocol.game.outgoing.codec.interfaces.IfCloseSubEncoder
 import net.rsprot.protocol.game.outgoing.codec.interfaces.IfMoveSubEncoder
@@ -280,6 +281,7 @@ public object DesktopGameMessageEncoderRepository {
                 bind(GroupFullEncoder())
                 bind(GroupVarEncoder())
                 bind(GroupVarIntEncoder())
+                bind(GroupVarLongEncoder())
 
                 bind(VarClanEncoder())
                 bind(VarClanEnableEncoder())
