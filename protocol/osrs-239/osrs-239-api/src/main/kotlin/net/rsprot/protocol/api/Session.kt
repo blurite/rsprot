@@ -20,6 +20,8 @@ import net.rsprot.protocol.game.outgoing.zone.payload.ObjCustomise
 import net.rsprot.protocol.game.outgoing.zone.payload.ObjDel
 import net.rsprot.protocol.game.outgoing.zone.payload.ObjEnabledOps
 import net.rsprot.protocol.game.outgoing.zone.payload.ObjUncustomise
+import net.rsprot.protocol.game.outgoing.zone.payload.ScriptedProjAdd
+import net.rsprot.protocol.game.outgoing.zone.payload.ScriptedProjChange
 import net.rsprot.protocol.game.outgoing.zone.payload.SoundArea
 import net.rsprot.protocol.internal.RSProtFlags
 import net.rsprot.protocol.loginprot.incoming.util.LoginBlock
@@ -196,7 +198,9 @@ public class Session<R>(
             message is ObjCount ||
             message is ObjEnabledOps ||
             message is ObjCustomise ||
-            message is ObjUncustomise
+            message is ObjUncustomise ||
+            message is ScriptedProjAdd ||
+            message is ScriptedProjChange
         ) {
             throw IllegalArgumentException(
                 "${message.javaClass.simpleName} can only be sent as " +
