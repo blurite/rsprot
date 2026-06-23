@@ -1012,6 +1012,45 @@ public class PlayerAvatarExtendedInfo(
     }
 
     /**
+     * Applies a freeze on the player, keeping them stuck at the current animation frame.
+     * @param delay the delay in client cycles (20ms/cc) until the freeze begins.
+     * A value of 0xFFFF will reset freeze.
+     * @param duration the duration in client cycles (20ms/cc) after [delay] until the freeze ends.
+     * A value of 0xFFFF will reset freeze.
+     * @param cancelSequence whether to cancel a currently-playing sequence alongside.
+     * Note that it only resets temporary sequences, not base animations.
+     */
+    public fun setFreeze(
+        delay: Int,
+        duration: Int,
+        cancelSequence: Boolean,
+    ) {
+        checkCommunicationThread()
+        verify {
+            require(delay in UNSIGNED_SHORT_RANGE) {
+                "Delay must be in range of $UNSIGNED_SHORT_RANGE"
+            }
+            require(duration in UNSIGNED_SHORT_RANGE) {
+                "Duration must be in range of $UNSIGNED_SHORT_RANGE"
+            }
+        }
+        val freeze = blocks.freeze
+        freeze.delay = delay.toUShort()
+        freeze.duration = duration.toUShort()
+        freeze.cancelSequence = cancelSequence
+        flags = flags or FREEZE
+    }
+
+    /**
+     * Resets a freeze previously applied onto this player.
+     * @param cancelSequence whether to cancel a currently-playing sequence alongside.
+     * Note that it only resets temporary sequences, not base animations.
+     */
+    public fun resetFreeze(cancelSequence: Boolean) {
+        setFreeze(0xFFFF, 0xFFFF, cancelSequence)
+    }
+
+    /**
      * Sets the name of the avatar.
      * @param name the name to assign.
      */
@@ -1862,6 +1901,9 @@ public class PlayerAvatarExtendedInfo(
         if (flags and CONTRAST != 0) {
             blocks.contrast.precompute(allocator, huffmanCodec)
         }
+        if (flags and FREEZE != 0) {
+            blocks.freeze.precompute(allocator, huffmanCodec)
+        }
     }
 
     /**
@@ -1965,6 +2007,9 @@ public class PlayerAvatarExtendedInfo(
         if (flags and CONTRAST != 0) {
             blocks.contrast.clear()
         }
+        if (flags and FREEZE != 0) {
+            blocks.freeze.clear()
+        }
     }
 
     /**
@@ -1992,6 +2037,7 @@ public class PlayerAvatarExtendedInfo(
         public const val SPOTANIM: Int = 0x800
         public const val HEADBARS: Int = 0x1000
         public const val CONTRAST: Int = 0x2000
+        public const val FREEZE: Int = 0x4000
 
         private val SIGNED_BYTE_RANGE: IntRange = Byte.MIN_VALUE.toInt()..Byte.MAX_VALUE.toInt()
         private val UNSIGNED_BYTE_RANGE: IntRange = UByte.MIN_VALUE.toInt()..UByte.MAX_VALUE.toInt()

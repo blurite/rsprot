@@ -11,6 +11,7 @@ import net.rsprot.protocol.game.outgoing.codec.npcinfo.extendedinfo.NpcCombatLev
 import net.rsprot.protocol.game.outgoing.codec.npcinfo.extendedinfo.NpcContrastEncoder
 import net.rsprot.protocol.game.outgoing.codec.npcinfo.extendedinfo.NpcExactMoveEncoder
 import net.rsprot.protocol.game.outgoing.codec.npcinfo.extendedinfo.NpcFaceEncoder
+import net.rsprot.protocol.game.outgoing.codec.npcinfo.extendedinfo.NpcFreezeEncoder
 import net.rsprot.protocol.game.outgoing.codec.npcinfo.extendedinfo.NpcHeadCustomisationEncoder
 import net.rsprot.protocol.game.outgoing.codec.npcinfo.extendedinfo.NpcHeadIconCustomisationEncoder
 import net.rsprot.protocol.game.outgoing.codec.npcinfo.extendedinfo.NpcHeadbarEncoder
@@ -53,6 +54,7 @@ public class NpcAvatarExtendedInfoDesktopWriter :
             NpcFaceEncoder(),
             NpcBaseAnimationSetEncoder(),
             NpcContrastEncoder(),
+            NpcFreezeEncoder(),
         ),
     ) {
     private fun convertFlags(constantFlags: Int): Int {
@@ -108,6 +110,9 @@ public class NpcAvatarExtendedInfoDesktopWriter :
         if (constantFlags and NpcAvatarExtendedInfo.CONTRAST != 0) {
             clientFlags = clientFlags or CONTRAST
         }
+        if (constantFlags and NpcAvatarExtendedInfo.FREEZE != 0) {
+            clientFlags = clientFlags or FREEZE
+        }
         return clientFlags
     }
 
@@ -149,6 +154,7 @@ public class NpcAvatarExtendedInfoDesktopWriter :
         outFlag = outFlag or pCached(buffer, clientFlag, TINTING, blocks.tinting)
         outFlag = outFlag or pCached(buffer, clientFlag, CONTRAST, blocks.contrast)
         outFlag = outFlag or pCached(buffer, clientFlag, BAS_CHANGE, blocks.baseAnimationSet)
+        outFlag = outFlag or pCached(buffer, clientFlag, FREEZE, blocks.freeze)
         outFlag = outFlag or pCached(buffer, clientFlag, HEAD_CUSTOMISATION, blocks.headCustomisation)
         outFlag = outFlag or pCached(buffer, clientFlag, SPOTANIM, blocks.spotAnims)
         outFlag = outFlag or pCached(buffer, clientFlag, NAME_CHANGE, blocks.nameChange)
@@ -239,5 +245,6 @@ public class NpcAvatarExtendedInfoDesktopWriter :
         private const val HEAD_CUSTOMISATION: Int = 0x20_000
         private const val TINTING: Int = 0x100
         private const val CONTRAST: Int = 0x400
+        private const val FREEZE: Int = 0x20
     }
 }

@@ -11,6 +11,7 @@ import net.rsprot.protocol.internal.game.outgoing.info.playerinfo.extendedinfo.T
 import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.Contrast
 import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.ExactMove
 import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.Face
+import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.Freeze
 import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.HeadbarList
 import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.HitmarkList
 import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.Say
@@ -36,4 +37,5 @@ public data class PlayerExtendedInfoEncoders(
     public val temporaryMoveSpeed: PrecomputedExtendedInfoEncoder<TemporaryMoveSpeed>,
     public val tinting: OnDemandExtendedInfoEncoder<PlayerTintingList>,
     public val contrast: PrecomputedExtendedInfoEncoder<Contrast>,
+    public val freeze: PrecomputedExtendedInfoEncoder<Freeze>,
 )

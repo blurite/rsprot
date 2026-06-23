@@ -757,6 +757,45 @@ public class NpcAvatarExtendedInfo(
     }
 
     /**
+     * Applies a freeze on the NPC, keeping them stuck at the current animation frame.
+     * @param delay the delay in client cycles (20ms/cc) until the freeze begins.
+     * A value of 0xFFFF will reset freeze.
+     * @param duration the duration in client cycles (20ms/cc) after [delay] until the freeze ends.
+     * A value of 0xFFFF will reset freeze.
+     * @param cancelSequence whether to cancel a currently-playing sequence alongside.
+     * Note that it only resets temporary sequences, not base animations.
+     */
+    public fun setFreeze(
+        delay: Int,
+        duration: Int,
+        cancelSequence: Boolean,
+    ) {
+        checkCommunicationThread()
+        verify {
+            require(delay in UNSIGNED_SHORT_RANGE) {
+                "Delay must be in range of $UNSIGNED_SHORT_RANGE"
+            }
+            require(duration in UNSIGNED_SHORT_RANGE) {
+                "Duration must be in range of $UNSIGNED_SHORT_RANGE"
+            }
+        }
+        val freeze = blocks.freeze
+        freeze.delay = delay.toUShort()
+        freeze.duration = duration.toUShort()
+        freeze.cancelSequence = cancelSequence
+        flags = flags or FREEZE
+    }
+
+    /**
+     * Resets a freeze previously applied onto this NPC.
+     * @param cancelSequence whether to cancel a currently-playing sequence alongside.
+     * Note that it only resets temporary sequences, not base animations.
+     */
+    public fun resetFreeze(cancelSequence: Boolean) {
+        setFreeze(0xFFFF, 0xFFFF, cancelSequence)
+    }
+
+    /**
      * Transforms this NPC into the [id] provided.
      * It should be noted that this extended info block is transient and only applies to one cycle.
      * The server is expected to additionally change the id of the avatar itself, otherwise
@@ -1564,6 +1603,9 @@ public class NpcAvatarExtendedInfo(
         if (flags and CONTRAST != 0) {
             blocks.contrast.precompute(allocator, huffmanCodec)
         }
+        if (flags and FREEZE != 0) {
+            blocks.freeze.precompute(allocator, huffmanCodec)
+        }
     }
 
     /**
@@ -1754,6 +1796,9 @@ public class NpcAvatarExtendedInfo(
         if (flags and CONTRAST != 0) {
             blocks.contrast.clear()
         }
+        if (flags and FREEZE != 0) {
+            blocks.freeze.clear()
+        }
     }
 
     override fun toString(): String =
@@ -1795,6 +1840,7 @@ public class NpcAvatarExtendedInfo(
         public const val SPOTANIM: Int = 0x8000
         public const val HEADBARS: Int = 0x20000
         public const val CONTRAST: Int = 0x40000
+        public const val FREEZE: Int = 0x80000
 
         /**
          * Executes the [block] if input verification is enabled,

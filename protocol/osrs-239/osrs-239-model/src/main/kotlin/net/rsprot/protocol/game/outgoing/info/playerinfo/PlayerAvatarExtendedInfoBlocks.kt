@@ -14,6 +14,7 @@ import net.rsprot.protocol.internal.game.outgoing.info.playerinfo.extendedinfo.T
 import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.Contrast
 import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.ExactMove
 import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.Face
+import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.Freeze
 import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.HeadbarList
 import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.HitmarkList
 import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.Say
@@ -54,6 +55,7 @@ public class PlayerAvatarExtendedInfoBlocks(
     public val headbarList: HeadbarList = HeadbarList(encoders(writers, PEnc::headbarList))
     public val tinting: PlayerTintingList = PlayerTintingList(encoders(writers, PEnc::tinting))
     public val contrast: Contrast = Contrast(encoders(writers, PEnc::contrast))
+    public val freeze: Freeze = Freeze(encoders(writers, PEnc::freeze))
 
     private companion object {
         /**

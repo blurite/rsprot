@@ -17,6 +17,7 @@ import net.rsprot.protocol.internal.game.outgoing.info.npcinfo.extendedinfo.Tran
 import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.Contrast
 import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.ExactMove
 import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.Face
+import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.Freeze
 import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.HeadbarList
 import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.HitmarkList
 import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.Say
@@ -82,6 +83,7 @@ public class NpcAvatarExtendedInfoBlocks(
     public val face: Face = Face(encoders(writers, NEnc::face))
     public val baseAnimationSet: BaseAnimationSet = BaseAnimationSet(encoders(writers, NEnc::baseAnimationSet))
     public val contrast: Contrast = Contrast(encoders(writers, NEnc::contrast))
+    public val freeze: Freeze = Freeze(encoders(writers, NEnc::freeze))
 
     private companion object {
         /**

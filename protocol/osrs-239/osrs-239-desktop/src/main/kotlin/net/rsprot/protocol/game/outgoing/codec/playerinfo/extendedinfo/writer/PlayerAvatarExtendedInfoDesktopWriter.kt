@@ -10,6 +10,7 @@ import net.rsprot.protocol.game.outgoing.codec.playerinfo.extendedinfo.PlayerCha
 import net.rsprot.protocol.game.outgoing.codec.playerinfo.extendedinfo.PlayerContrastEncoder
 import net.rsprot.protocol.game.outgoing.codec.playerinfo.extendedinfo.PlayerExactMoveEncoder
 import net.rsprot.protocol.game.outgoing.codec.playerinfo.extendedinfo.PlayerFacingEncoder
+import net.rsprot.protocol.game.outgoing.codec.playerinfo.extendedinfo.PlayerFreezeEncoder
 import net.rsprot.protocol.game.outgoing.codec.playerinfo.extendedinfo.PlayerHeadbarEncoder
 import net.rsprot.protocol.game.outgoing.codec.playerinfo.extendedinfo.PlayerHitEncoder
 import net.rsprot.protocol.game.outgoing.codec.playerinfo.extendedinfo.PlayerMoveSpeedEncoder
@@ -44,6 +45,7 @@ public class PlayerAvatarExtendedInfoDesktopWriter :
             PlayerTemporaryMoveSpeedEncoder(),
             PlayerTintingEncoder(),
             PlayerContrastEncoder(),
+            PlayerFreezeEncoder(),
         ),
     ) {
     private fun convertFlags(constantFlags: Int): Int {
@@ -87,6 +89,9 @@ public class PlayerAvatarExtendedInfoDesktopWriter :
         if (constantFlags and PlayerAvatarExtendedInfo.CONTRAST != 0) {
             clientFlags = clientFlags or CONTRAST
         }
+        if (constantFlags and PlayerAvatarExtendedInfo.FREEZE != 0) {
+            clientFlags = clientFlags or FREEZE
+        }
         return clientFlags
     }
 
@@ -126,6 +131,7 @@ public class PlayerAvatarExtendedInfoDesktopWriter :
         outFlag = outFlag or pCached(buffer, clientFlag, TEMP_MOVE_SPEED, blocks.temporaryMoveSpeed)
         outFlag = outFlag or pCached(buffer, clientFlag, APPEARANCE, blocks.appearance)
         outFlag = outFlag or pCached(buffer, clientFlag, EXACT_MOVE, blocks.exactMove)
+        outFlag = outFlag or pCached(buffer, clientFlag, FREEZE, blocks.freeze)
 
         if (outFlag != clientFlag) {
             val finalPos = buffer.writerIndex()
@@ -201,6 +207,7 @@ public class PlayerAvatarExtendedInfoDesktopWriter :
         private const val SPOTANIM = 0x20000
         private const val HEADBARS = 0x10000
         private const val HITMARKS = 0x40000
+        private const val FREEZE = 0x80000
         private const val CONTRAST = 0x100000
 
         // Name extras are part of appearance nowadays, and thus will not be used on their own

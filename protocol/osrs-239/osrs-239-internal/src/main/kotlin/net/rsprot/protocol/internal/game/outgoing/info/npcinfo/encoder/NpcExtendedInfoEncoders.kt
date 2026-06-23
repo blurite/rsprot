@@ -14,6 +14,7 @@ import net.rsprot.protocol.internal.game.outgoing.info.npcinfo.extendedinfo.Tran
 import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.Contrast
 import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.ExactMove
 import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.Face
+import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.Freeze
 import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.HeadbarList
 import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.HitmarkList
 import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.Say
@@ -44,4 +45,5 @@ public data class NpcExtendedInfoEncoders(
     public val face: PrecomputedExtendedInfoEncoder<Face>,
     public val baseAnimationSet: PrecomputedExtendedInfoEncoder<BaseAnimationSet>,
     public val contrast: PrecomputedExtendedInfoEncoder<Contrast>,
+    public val freeze: PrecomputedExtendedInfoEncoder<Freeze>,
 )
