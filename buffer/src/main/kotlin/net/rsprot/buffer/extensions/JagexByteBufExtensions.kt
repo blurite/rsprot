@@ -649,6 +649,28 @@ public fun ByteBuf.pVarInt2s(value: Int): ByteBuf {
     return this
 }
 
+public fun ByteBuf.gType(): Int {
+    val type = g1()
+    return if (type < 252) {
+        type
+    } else {
+        ((type - 252) shl 8) + g1()
+    }
+}
+
+public fun ByteBuf.pType(value: Int): ByteBuf {
+    require(value in 0..<1024) {
+        "Type out of range: $value"
+    }
+    if (value < 252) {
+        p1(value)
+    } else {
+        p1(252 + (value ushr 8))
+        p1(value and 0xFF)
+    }
+    return this
+}
+
 public fun ByteBuf.gdata(
     dest: ByteArray,
     offset: Int = 0,

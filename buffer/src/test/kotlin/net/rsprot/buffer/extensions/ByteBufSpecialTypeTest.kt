@@ -132,6 +132,11 @@ class ByteBufSpecialTypeTest {
         buffer.pVarInt2s(-1)
         buffer.pVarInt2s(-0xFFFFFF)
         buffer.pVarInt2s(-0x7FFFFFFF)
+        buffer.pType(1)
+        buffer.pType(250)
+        buffer.pType(252)
+        buffer.pType(253)
+        buffer.pType(1000)
         assertEquals(0, buffer.gVarInt2s())
         assertEquals(0xF, buffer.gVarInt2s())
         assertEquals(0xFF, buffer.gVarInt2s())
@@ -141,6 +146,11 @@ class ByteBufSpecialTypeTest {
         assertEquals(-1, buffer.gVarInt2s())
         assertEquals(-0xFFFFFF, buffer.gVarInt2s())
         assertEquals(-0x7FFFFFFF, buffer.gVarInt2s())
+        assertEquals(1, buffer.gType())
+        assertEquals(250, buffer.gType())
+        assertEquals(252, buffer.gType())
+        assertEquals(253, buffer.gType())
+        assertEquals(1000, buffer.gType())
         assertTrue(!buffer.isReadable)
     }
 }

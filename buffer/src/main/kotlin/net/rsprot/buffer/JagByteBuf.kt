@@ -39,6 +39,7 @@ import net.rsprot.buffer.extensions.gSmart1or2null
 import net.rsprot.buffer.extensions.gSmart1or2s
 import net.rsprot.buffer.extensions.gSmart2or4
 import net.rsprot.buffer.extensions.gSmart2or4null
+import net.rsprot.buffer.extensions.gType
 import net.rsprot.buffer.extensions.gVarInt
 import net.rsprot.buffer.extensions.gVarInt2
 import net.rsprot.buffer.extensions.gVarInt2s
@@ -75,6 +76,7 @@ import net.rsprot.buffer.extensions.pSmart1or2null
 import net.rsprot.buffer.extensions.pSmart1or2s
 import net.rsprot.buffer.extensions.pSmart2or4
 import net.rsprot.buffer.extensions.pSmart2or4null
+import net.rsprot.buffer.extensions.pType
 import net.rsprot.buffer.extensions.pVarInt
 import net.rsprot.buffer.extensions.pVarInt2
 import net.rsprot.buffer.extensions.pVarInt2s
@@ -491,6 +493,15 @@ public value class JagByteBuf(
 
     public inline fun pVarInt2s(value: Int): JagByteBuf {
         buffer.pVarInt2s(value)
+        return this
+    }
+
+    public inline fun gType(): Int {
+        return buffer.gType()
+    }
+
+    public inline fun pType(value: Int): JagByteBuf {
+        buffer.pType(value)
         return this
     }
 
