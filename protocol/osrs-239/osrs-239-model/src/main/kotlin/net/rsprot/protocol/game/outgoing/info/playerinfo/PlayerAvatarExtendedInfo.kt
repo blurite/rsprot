@@ -1051,6 +1051,34 @@ public class PlayerAvatarExtendedInfo(
     }
 
     /**
+     * Resets all the state client has for the given player.
+     * Note that the reset always happens at the very top of extended
+     * info handling, even if the obfuscated byte reading is further below.
+     * Some of the things reset (this list may not be exhaustive):
+     * - Contrast
+     * - Tinting
+     * - Appearance
+     * - Move speed (set back to walk)
+     * - Facing
+     * - Mini menu strings
+     * - Animations
+     * @param value an unknown unsigned byte value transmitted alongside.
+     * Current purpose is unknown, though it is possible it is required
+     * due to protocol needing some bytes to be transmitted.
+     */
+    @JvmOverloads
+    public fun resetPlayer(value: Int = 0) {
+        checkCommunicationThread()
+        verify {
+            require(value in UNSIGNED_BYTE_RANGE) {
+                "Value must be in range of $UNSIGNED_BYTE_RANGE"
+            }
+        }
+        this.blocks.playerReset.value = value.toUByte()
+        flags = flags or PLAYER_RESET
+    }
+
+    /**
      * Sets the name of the avatar.
      * @param name the name to assign.
      */
@@ -1904,6 +1932,9 @@ public class PlayerAvatarExtendedInfo(
         if (flags and FREEZE != 0) {
             blocks.freeze.precompute(allocator, huffmanCodec)
         }
+        if (flags and PLAYER_RESET != 0) {
+            blocks.playerReset.precompute(allocator, huffmanCodec)
+        }
     }
 
     /**
@@ -2010,6 +2041,9 @@ public class PlayerAvatarExtendedInfo(
         if (flags and FREEZE != 0) {
             blocks.freeze.clear()
         }
+        if (flags and PLAYER_RESET != 0) {
+            blocks.playerReset.clear()
+        }
     }
 
     /**
@@ -2038,6 +2072,7 @@ public class PlayerAvatarExtendedInfo(
         public const val HEADBARS: Int = 0x1000
         public const val CONTRAST: Int = 0x2000
         public const val FREEZE: Int = 0x4000
+        public const val PLAYER_RESET: Int = 0x8000
 
         private val SIGNED_BYTE_RANGE: IntRange = Byte.MIN_VALUE.toInt()..Byte.MAX_VALUE.toInt()
         private val UNSIGNED_BYTE_RANGE: IntRange = UByte.MIN_VALUE.toInt()..UByte.MAX_VALUE.toInt()

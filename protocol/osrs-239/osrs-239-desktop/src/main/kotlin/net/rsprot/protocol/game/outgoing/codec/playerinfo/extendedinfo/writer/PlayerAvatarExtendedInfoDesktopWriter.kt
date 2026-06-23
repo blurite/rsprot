@@ -14,6 +14,7 @@ import net.rsprot.protocol.game.outgoing.codec.playerinfo.extendedinfo.PlayerFre
 import net.rsprot.protocol.game.outgoing.codec.playerinfo.extendedinfo.PlayerHeadbarEncoder
 import net.rsprot.protocol.game.outgoing.codec.playerinfo.extendedinfo.PlayerHitEncoder
 import net.rsprot.protocol.game.outgoing.codec.playerinfo.extendedinfo.PlayerMoveSpeedEncoder
+import net.rsprot.protocol.game.outgoing.codec.playerinfo.extendedinfo.PlayerResetEncoder
 import net.rsprot.protocol.game.outgoing.codec.playerinfo.extendedinfo.PlayerSayEncoder
 import net.rsprot.protocol.game.outgoing.codec.playerinfo.extendedinfo.PlayerSequenceEncoder
 import net.rsprot.protocol.game.outgoing.codec.playerinfo.extendedinfo.PlayerSpotAnimEncoder
@@ -46,6 +47,7 @@ public class PlayerAvatarExtendedInfoDesktopWriter :
             PlayerTintingEncoder(),
             PlayerContrastEncoder(),
             PlayerFreezeEncoder(),
+            PlayerResetEncoder(),
         ),
     ) {
     private fun convertFlags(constantFlags: Int): Int {
@@ -92,6 +94,9 @@ public class PlayerAvatarExtendedInfoDesktopWriter :
         if (constantFlags and PlayerAvatarExtendedInfo.FREEZE != 0) {
             clientFlags = clientFlags or FREEZE
         }
+        if (constantFlags and PlayerAvatarExtendedInfo.PLAYER_RESET != 0) {
+            clientFlags = clientFlags or PLAYER_RESET
+        }
         return clientFlags
     }
 
@@ -119,6 +124,7 @@ public class PlayerAvatarExtendedInfoDesktopWriter :
 
         // minimenu strings (unused; done through appearance)
         outFlag = outFlag or pOnDemand(buffer, clientFlag, HITMARKS, blocks.hitmarkList, localIndex, observerIndex)
+        outFlag = outFlag or pCached(buffer, clientFlag, PLAYER_RESET, blocks.playerReset)
         outFlag = outFlag or pCached(buffer, clientFlag, FACE, blocks.face)
         outFlag = outFlag or pCached(buffer, clientFlag, MOVE_SPEED, blocks.moveSpeed)
         outFlag = outFlag or pCached(buffer, clientFlag, SPOTANIM, blocks.spotAnims)
@@ -198,6 +204,7 @@ public class PlayerAvatarExtendedInfoDesktopWriter :
         private const val SEQUENCE = 0x40
         private const val APPEARANCE = 0x20
         private const val FACE = 0x1
+        private const val PLAYER_RESET = 0x2
         private const val SAY = 0x4
         private const val CHAT = 0x100
         private const val MOVE_SPEED = 0x400

@@ -9,6 +9,7 @@ import net.rsprot.protocol.internal.game.outgoing.info.playerinfo.encoder.Player
 import net.rsprot.protocol.internal.game.outgoing.info.playerinfo.extendedinfo.Appearance
 import net.rsprot.protocol.internal.game.outgoing.info.playerinfo.extendedinfo.Chat
 import net.rsprot.protocol.internal.game.outgoing.info.playerinfo.extendedinfo.MoveSpeed
+import net.rsprot.protocol.internal.game.outgoing.info.playerinfo.extendedinfo.PlayerReset
 import net.rsprot.protocol.internal.game.outgoing.info.playerinfo.extendedinfo.PlayerTintingList
 import net.rsprot.protocol.internal.game.outgoing.info.playerinfo.extendedinfo.TemporaryMoveSpeed
 import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.Contrast
@@ -56,6 +57,7 @@ public class PlayerAvatarExtendedInfoBlocks(
     public val tinting: PlayerTintingList = PlayerTintingList(encoders(writers, PEnc::tinting))
     public val contrast: Contrast = Contrast(encoders(writers, PEnc::contrast))
     public val freeze: Freeze = Freeze(encoders(writers, PEnc::freeze))
+    public val playerReset: PlayerReset = PlayerReset(encoders(writers, PEnc::playerReset))
 
     private companion object {
         /**

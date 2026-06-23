@@ -6,6 +6,7 @@ import net.rsprot.protocol.internal.game.outgoing.info.encoder.PrecomputedExtend
 import net.rsprot.protocol.internal.game.outgoing.info.playerinfo.extendedinfo.Appearance
 import net.rsprot.protocol.internal.game.outgoing.info.playerinfo.extendedinfo.Chat
 import net.rsprot.protocol.internal.game.outgoing.info.playerinfo.extendedinfo.MoveSpeed
+import net.rsprot.protocol.internal.game.outgoing.info.playerinfo.extendedinfo.PlayerReset
 import net.rsprot.protocol.internal.game.outgoing.info.playerinfo.extendedinfo.PlayerTintingList
 import net.rsprot.protocol.internal.game.outgoing.info.playerinfo.extendedinfo.TemporaryMoveSpeed
 import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.Contrast
@@ -38,4 +39,5 @@ public data class PlayerExtendedInfoEncoders(
     public val tinting: OnDemandExtendedInfoEncoder<PlayerTintingList>,
     public val contrast: PrecomputedExtendedInfoEncoder<Contrast>,
     public val freeze: PrecomputedExtendedInfoEncoder<Freeze>,
+    public val playerReset: PrecomputedExtendedInfoEncoder<PlayerReset>,
 )
