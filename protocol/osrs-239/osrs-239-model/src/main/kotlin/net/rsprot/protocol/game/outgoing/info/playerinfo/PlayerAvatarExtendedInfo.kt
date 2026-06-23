@@ -966,6 +966,52 @@ public class PlayerAvatarExtendedInfo(
     }
 
     /**
+     * Sets the contrast override on the player. The contrast value is linearly interpolated
+     * between either [startContrast] or current contrast, up to [endContrast].
+     * Note that this extended info is only shown to anyone that is around to witness
+     * at the time of it being transmitted. It will not retroactively apply.
+     * @param startTime the starting timestamp to use in interpolation calculations for
+     * [startContrast], or current contrast.
+     * @param endTime the ending timestamp when the current contrast value on the player
+     * reaches [endContrast]. This value can be negative.
+     * @param startContrast the starting contrast value to begin at.
+     * @param endContrast the ending contrast value to stop at.
+     * @param useStartContrast whether to use start contrast value.
+     * Note that if this is false, start contrast will still be used if
+     * [startTime] is negative.
+     */
+    public fun setContrast(
+        startTime: Int,
+        endTime: Int,
+        startContrast: Int,
+        endContrast: Int,
+        useStartContrast: Boolean,
+    ) {
+        checkCommunicationThread()
+        verify {
+            require(startTime in SIGNED_SHORT_RANGE) {
+                "Start time must be in range of $SIGNED_SHORT_RANGE"
+            }
+            require(endTime in SIGNED_SHORT_RANGE) {
+                "End time must be in range of $SIGNED_SHORT_RANGE"
+            }
+            require(startContrast in SIGNED_BYTE_RANGE) {
+                "Start contrast must be in range of $SIGNED_BYTE_RANGE"
+            }
+            require(endContrast in SIGNED_BYTE_RANGE) {
+                "End contrast must be in range of $SIGNED_BYTE_RANGE"
+            }
+        }
+        val contrast = blocks.contrast
+        contrast.start = startTime.toShort()
+        contrast.end = endTime.toShort()
+        contrast.startContrast = startContrast.toByte()
+        contrast.endContrast = endContrast.toByte()
+        contrast.useStartContrast = useStartContrast
+        flags = flags or CONTRAST
+    }
+
+    /**
      * Sets the name of the avatar.
      * @param name the name to assign.
      */
@@ -1721,6 +1767,7 @@ public class PlayerAvatarExtendedInfo(
         blocks.spotAnims.clear()
         blocks.hitmarkList.clear()
         blocks.tinting.clear()
+        blocks.contrast.clear()
         observedChatStorage.reset()
     }
 
@@ -1811,6 +1858,9 @@ public class PlayerAvatarExtendedInfo(
         }
         if (flags and MOVE_SPEED != 0) {
             blocks.moveSpeed.precompute(allocator, huffmanCodec)
+        }
+        if (flags and CONTRAST != 0) {
+            blocks.contrast.precompute(allocator, huffmanCodec)
         }
     }
 
@@ -1912,6 +1962,9 @@ public class PlayerAvatarExtendedInfo(
         if (flags and TINTING != 0) {
             blocks.tinting.clear()
         }
+        if (flags and CONTRAST != 0) {
+            blocks.contrast.clear()
+        }
     }
 
     /**
@@ -1938,9 +1991,11 @@ public class PlayerAvatarExtendedInfo(
         public const val EXACT_MOVE: Int = 0x400
         public const val SPOTANIM: Int = 0x800
         public const val HEADBARS: Int = 0x1000
+        public const val CONTRAST: Int = 0x2000
 
         private val SIGNED_BYTE_RANGE: IntRange = Byte.MIN_VALUE.toInt()..Byte.MAX_VALUE.toInt()
         private val UNSIGNED_BYTE_RANGE: IntRange = UByte.MIN_VALUE.toInt()..UByte.MAX_VALUE.toInt()
+        private val SIGNED_SHORT_RANGE: IntRange = Short.MIN_VALUE..Short.MAX_VALUE
         private val UNSIGNED_SHORT_RANGE: IntRange = UShort.MIN_VALUE.toInt()..UShort.MAX_VALUE.toInt()
         private val IDENT_KIT_RANGE: IntRange = 0..<(0x800 - 0x100)
         private val OBJ_RANGE: IntRange = UShort.MIN_VALUE.toInt()..(UShort.MAX_VALUE.toInt() - 0x800)

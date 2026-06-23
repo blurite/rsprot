@@ -8,6 +8,7 @@ import net.rsprot.protocol.common.client.OldSchoolClientType
 import net.rsprot.protocol.game.outgoing.codec.npcinfo.extendedinfo.NpcBaseAnimationSetEncoder
 import net.rsprot.protocol.game.outgoing.codec.npcinfo.extendedinfo.NpcBodyCustomisationEncoder
 import net.rsprot.protocol.game.outgoing.codec.npcinfo.extendedinfo.NpcCombatLevelChangeEncoder
+import net.rsprot.protocol.game.outgoing.codec.npcinfo.extendedinfo.NpcContrastEncoder
 import net.rsprot.protocol.game.outgoing.codec.npcinfo.extendedinfo.NpcExactMoveEncoder
 import net.rsprot.protocol.game.outgoing.codec.npcinfo.extendedinfo.NpcFaceEncoder
 import net.rsprot.protocol.game.outgoing.codec.npcinfo.extendedinfo.NpcHeadCustomisationEncoder
@@ -51,6 +52,7 @@ public class NpcAvatarExtendedInfoDesktopWriter :
             NpcHeadbarEncoder(),
             NpcFaceEncoder(),
             NpcBaseAnimationSetEncoder(),
+            NpcContrastEncoder(),
         ),
     ) {
     private fun convertFlags(constantFlags: Int): Int {
@@ -103,6 +105,9 @@ public class NpcAvatarExtendedInfoDesktopWriter :
         if (constantFlags and NpcAvatarExtendedInfo.FACE != 0) {
             clientFlags = clientFlags or FACING
         }
+        if (constantFlags and NpcAvatarExtendedInfo.CONTRAST != 0) {
+            clientFlags = clientFlags or CONTRAST
+        }
         return clientFlags
     }
 
@@ -142,6 +147,7 @@ public class NpcAvatarExtendedInfoDesktopWriter :
         outFlag = outFlag or pCached(buffer, clientFlag, SEQUENCE, blocks.sequence)
         outFlag = outFlag or pCached(buffer, clientFlag, SAY, blocks.say)
         outFlag = outFlag or pCached(buffer, clientFlag, TINTING, blocks.tinting)
+        outFlag = outFlag or pCached(buffer, clientFlag, CONTRAST, blocks.contrast)
         outFlag = outFlag or pCached(buffer, clientFlag, BAS_CHANGE, blocks.baseAnimationSet)
         outFlag = outFlag or pCached(buffer, clientFlag, HEAD_CUSTOMISATION, blocks.headCustomisation)
         outFlag = outFlag or pCached(buffer, clientFlag, SPOTANIM, blocks.spotAnims)
@@ -227,11 +233,11 @@ public class NpcAvatarExtendedInfoDesktopWriter :
         private const val EXACT_MOVE: Int = 0x200
         private const val HITMARKS: Int = 0x80_000
         private const val TRANSFORMATION: Int = 0x1
-
         private const val FACING: Int = 0x8
         private const val HEADICON_CUSTOMISATION: Int = 0x400_000
         private const val BODY_CUSTOMISATION: Int = 0x2_000_000
         private const val HEAD_CUSTOMISATION: Int = 0x20_000
         private const val TINTING: Int = 0x100
+        private const val CONTRAST: Int = 0x400
     }
 }

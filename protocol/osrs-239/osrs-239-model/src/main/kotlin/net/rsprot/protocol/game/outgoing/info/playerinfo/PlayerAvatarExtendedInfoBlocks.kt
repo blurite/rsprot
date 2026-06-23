@@ -11,6 +11,7 @@ import net.rsprot.protocol.internal.game.outgoing.info.playerinfo.extendedinfo.C
 import net.rsprot.protocol.internal.game.outgoing.info.playerinfo.extendedinfo.MoveSpeed
 import net.rsprot.protocol.internal.game.outgoing.info.playerinfo.extendedinfo.PlayerTintingList
 import net.rsprot.protocol.internal.game.outgoing.info.playerinfo.extendedinfo.TemporaryMoveSpeed
+import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.Contrast
 import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.ExactMove
 import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.Face
 import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.HeadbarList
@@ -52,6 +53,7 @@ public class PlayerAvatarExtendedInfoBlocks(
     public val hitmarkList: HitmarkList = HitmarkList(encoders(writers, PEnc::hitmarkList))
     public val headbarList: HeadbarList = HeadbarList(encoders(writers, PEnc::headbarList))
     public val tinting: PlayerTintingList = PlayerTintingList(encoders(writers, PEnc::tinting))
+    public val contrast: Contrast = Contrast(encoders(writers, PEnc::contrast))
 
     private companion object {
         /**

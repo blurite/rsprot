@@ -711,6 +711,52 @@ public class NpcAvatarExtendedInfo(
     }
 
     /**
+     * Sets the contrast override on the NPC. The contrast value is linearly interpolated
+     * between either [startContrast] or current contrast, up to [endContrast].
+     * Note that this extended info is only shown to anyone that is around to witness
+     * at the time of it being transmitted. It will not retroactively apply.
+     * @param startTime the starting timestamp to use in interpolation calculations for
+     * [startContrast], or current contrast.
+     * @param endTime the ending timestamp when the current contrast value on the NPC
+     * reaches [endContrast]. This value can be negative.
+     * @param startContrast the starting contrast value to begin at.
+     * @param endContrast the ending contrast value to stop at.
+     * @param useStartContrast whether to use start contrast value.
+     * Note that if this is false, start contrast will still be used if
+     * [startTime] is negative.
+     */
+    public fun setContrast(
+        startTime: Int,
+        endTime: Int,
+        startContrast: Int,
+        endContrast: Int,
+        useStartContrast: Boolean,
+    ) {
+        checkCommunicationThread()
+        verify {
+            require(startTime in SIGNED_SHORT_RANGE) {
+                "Start time must be in range of $SIGNED_SHORT_RANGE"
+            }
+            require(endTime in SIGNED_SHORT_RANGE) {
+                "End time must be in range of $SIGNED_SHORT_RANGE"
+            }
+            require(startContrast in SIGNED_BYTE_RANGE) {
+                "Start contrast must be in range of $SIGNED_BYTE_RANGE"
+            }
+            require(endContrast in SIGNED_BYTE_RANGE) {
+                "End contrast must be in range of $SIGNED_BYTE_RANGE"
+            }
+        }
+        val contrast = blocks.contrast
+        contrast.start = startTime.toShort()
+        contrast.end = endTime.toShort()
+        contrast.startContrast = startContrast.toByte()
+        contrast.endContrast = endContrast.toByte()
+        contrast.useStartContrast = useStartContrast
+        flags = flags or CONTRAST
+    }
+
+    /**
      * Transforms this NPC into the [id] provided.
      * It should be noted that this extended info block is transient and only applies to one cycle.
      * The server is expected to additionally change the id of the avatar itself, otherwise
@@ -1476,6 +1522,7 @@ public class NpcAvatarExtendedInfo(
         blocks.nameChange.clear()
         blocks.headIconCustomisation.clear()
         blocks.baseAnimationSet.clear()
+        blocks.contrast.clear()
     }
 
     /**
@@ -1513,6 +1560,9 @@ public class NpcAvatarExtendedInfo(
         }
         if (flags and TRANSFORMATION != 0) {
             blocks.transformation.precompute(allocator, huffmanCodec)
+        }
+        if (flags and CONTRAST != 0) {
+            blocks.contrast.precompute(allocator, huffmanCodec)
         }
     }
 
@@ -1701,6 +1751,9 @@ public class NpcAvatarExtendedInfo(
                 headIcons.flag = headIcons.flag and (1 shl i).inv()
             }
         }
+        if (flags and CONTRAST != 0) {
+            blocks.contrast.clear()
+        }
     }
 
     override fun toString(): String =
@@ -1712,6 +1765,7 @@ public class NpcAvatarExtendedInfo(
     public companion object {
         private val SIGNED_BYTE_RANGE: IntRange = Byte.MIN_VALUE.toInt()..Byte.MAX_VALUE.toInt()
         private val UNSIGNED_BYTE_RANGE: IntRange = UByte.MIN_VALUE.toInt()..UByte.MAX_VALUE.toInt()
+        private val SIGNED_SHORT_RANGE: IntRange = Short.MIN_VALUE..Short.MAX_VALUE
         private val UNSIGNED_SHORT_RANGE: IntRange = UShort.MIN_VALUE.toInt()..UShort.MAX_VALUE.toInt()
         private val UNSIGNED_SMART_1_OR_2_RANGE: IntRange = 0..0x7FFF
         private val EXTENDED_NPC_ID_RANGE: IntRange = 16384..65534
@@ -1740,6 +1794,7 @@ public class NpcAvatarExtendedInfo(
         public const val EXACT_MOVE: Int = 0x4000
         public const val SPOTANIM: Int = 0x8000
         public const val HEADBARS: Int = 0x20000
+        public const val CONTRAST: Int = 0x40000
 
         /**
          * Executes the [block] if input verification is enabled,

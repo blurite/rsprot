@@ -14,6 +14,7 @@ import net.rsprot.protocol.internal.game.outgoing.info.npcinfo.extendedinfo.Head
 import net.rsprot.protocol.internal.game.outgoing.info.npcinfo.extendedinfo.NameChange
 import net.rsprot.protocol.internal.game.outgoing.info.npcinfo.extendedinfo.NpcTinting
 import net.rsprot.protocol.internal.game.outgoing.info.npcinfo.extendedinfo.Transformation
+import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.Contrast
 import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.ExactMove
 import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.Face
 import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.HeadbarList
@@ -80,6 +81,7 @@ public class NpcAvatarExtendedInfoBlocks(
     public val headbarList: HeadbarList = HeadbarList(encoders(writers, NEnc::headbarList))
     public val face: Face = Face(encoders(writers, NEnc::face))
     public val baseAnimationSet: BaseAnimationSet = BaseAnimationSet(encoders(writers, NEnc::baseAnimationSet))
+    public val contrast: Contrast = Contrast(encoders(writers, NEnc::contrast))
 
     private companion object {
         /**
