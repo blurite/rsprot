@@ -1981,7 +1981,7 @@ public class PlayerAvatarExtendedInfo(
         if (flag and APPEARANCE != 0) {
             observer.otherAppearanceChangeCycles[localIndex] = lastAppearanceChangeCycle
         }
-        // Note: The order must be as client expects it, in 238 chat is before say
+        // Note: The order must be as client expects it, in 239 chat is before say
         if (flag and CHAT != 0) {
             observer.observedChatStorage.trackChat(this.localIndex, this.blocks.chat)
         }
