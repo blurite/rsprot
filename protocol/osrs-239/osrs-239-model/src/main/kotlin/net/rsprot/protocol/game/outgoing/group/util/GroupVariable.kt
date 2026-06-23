@@ -1,12 +1,14 @@
 package net.rsprot.protocol.game.outgoing.group.util
 
-public sealed interface GroupVariable {
+public sealed interface GroupVariable<out T> {
+    public val value: T
+
     /**
      * Sets the value of the group variable to the provided integer [value].
      */
     public class IntGroupVariable(
-        public val value: Int,
-    ) : GroupVariable {
+        override val value: Int,
+    ) : GroupVariable<Int> {
         override fun equals(other: Any?): Boolean {
             if (this === other) return true
             if (javaClass != other?.javaClass) return false
@@ -31,8 +33,8 @@ public sealed interface GroupVariable {
      * Sets the value of the group variable to the provided long [value].
      */
     public class LongGroupVariable(
-        public val value: Long,
-    ) : GroupVariable {
+        override val value: Long,
+    ) : GroupVariable<Long> {
         override fun equals(other: Any?): Boolean {
             if (this === other) return true
             if (javaClass != other?.javaClass) return false
@@ -57,8 +59,8 @@ public sealed interface GroupVariable {
      * Sets the value of the group variable to the provided string [value].
      */
     public class StringGroupVariable(
-        public val value: String,
-    ) : GroupVariable {
+        override val value: String,
+    ) : GroupVariable<String> {
         override fun equals(other: Any?): Boolean {
             if (this === other) return true
             if (javaClass != other?.javaClass) return false

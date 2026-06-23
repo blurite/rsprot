@@ -89,8 +89,8 @@ public class GroupFull(
         public val index: Int,
         public val id: Int,
         public val uid: Long,
-        public val groupVariables: List<GroupVariable>,
-        public val groupMemberVariables: List<GroupVariable>,
+        public val groupVariables: List<GroupVariable<*>>,
+        public val groupMemberVariables: List<GroupVariable<*>>,
     ) : GroupUpdate {
         init {
             require(index in 0..255) {
