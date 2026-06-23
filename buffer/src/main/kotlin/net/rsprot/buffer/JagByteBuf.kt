@@ -33,6 +33,7 @@ import net.rsprot.buffer.extensions.g4Alt3
 import net.rsprot.buffer.extensions.g4f
 import net.rsprot.buffer.extensions.g8
 import net.rsprot.buffer.extensions.g8d
+import net.rsprot.buffer.extensions.gMidiVarLen
 import net.rsprot.buffer.extensions.gSmart1or2
 import net.rsprot.buffer.extensions.gSmart1or2extended
 import net.rsprot.buffer.extensions.gSmart1or2null
@@ -40,7 +41,6 @@ import net.rsprot.buffer.extensions.gSmart1or2s
 import net.rsprot.buffer.extensions.gSmart2or4
 import net.rsprot.buffer.extensions.gSmart2or4null
 import net.rsprot.buffer.extensions.gType
-import net.rsprot.buffer.extensions.gVarInt
 import net.rsprot.buffer.extensions.gVarInt2
 import net.rsprot.buffer.extensions.gVarInt2s
 import net.rsprot.buffer.extensions.gboolean
@@ -70,6 +70,7 @@ import net.rsprot.buffer.extensions.p4Alt3
 import net.rsprot.buffer.extensions.p4f
 import net.rsprot.buffer.extensions.p8
 import net.rsprot.buffer.extensions.p8d
+import net.rsprot.buffer.extensions.pMidiVarLen
 import net.rsprot.buffer.extensions.pSmart1or2
 import net.rsprot.buffer.extensions.pSmart1or2extended
 import net.rsprot.buffer.extensions.pSmart1or2null
@@ -77,7 +78,6 @@ import net.rsprot.buffer.extensions.pSmart1or2s
 import net.rsprot.buffer.extensions.pSmart2or4
 import net.rsprot.buffer.extensions.pSmart2or4null
 import net.rsprot.buffer.extensions.pType
-import net.rsprot.buffer.extensions.pVarInt
 import net.rsprot.buffer.extensions.pVarInt2
 import net.rsprot.buffer.extensions.pVarInt2s
 import net.rsprot.buffer.extensions.pboolean
@@ -470,11 +470,11 @@ public value class JagByteBuf(
     }
 
     public inline fun gVarInt(): Int {
-        return buffer.gVarInt()
+        return buffer.gMidiVarLen()
     }
 
     public inline fun pVarInt(value: Int): JagByteBuf {
-        buffer.pVarInt(value)
+        buffer.pMidiVarLen(value)
         return this
     }
 

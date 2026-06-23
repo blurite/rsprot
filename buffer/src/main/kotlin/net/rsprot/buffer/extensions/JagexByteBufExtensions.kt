@@ -587,7 +587,7 @@ public fun ByteBuf.pSmart2or4null(value: Int): ByteBuf {
     return this
 }
 
-public fun ByteBuf.gVarInt(): Int {
+public fun ByteBuf.gMidiVarLen(): Int {
     var value = 0
 
     var byte: Int
@@ -599,7 +599,7 @@ public fun ByteBuf.gVarInt(): Int {
     return value
 }
 
-public fun ByteBuf.pVarInt(v: Int): ByteBuf {
+public fun ByteBuf.pMidiVarLen(v: Int): ByteBuf {
     if ((v and 0x7F.inv()) != 0) {
         if ((v and 0x3FFF.inv()) != 0) {
             if ((v and 0x1FFFFF.inv()) != 0) {
