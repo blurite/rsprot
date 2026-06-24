@@ -33,10 +33,10 @@ public typealias CamLookAt = CamLookAtV1
 public typealias CamMoveToCycles = CamMoveToCyclesV1
 
 @Deprecated(
-    message = "Deprecated. Use CamLookAtEasedCoordV2.",
-    replaceWith = ReplaceWith("CamLookAtEasedCoordV2"),
+    message = "Deprecated. Use CamRotateToCoordinateV2.",
+    replaceWith = ReplaceWith("CamRotateToCoordinateV2"),
 )
-public typealias CamLookAtEasedCoord = CamLookAtEasedCoordV1
+public typealias CamRotateToCoordinate = CamRotateToCoordinateV1
 
 @Deprecated(
     message = "Deprecated. Use CamMoveToArcV2.",

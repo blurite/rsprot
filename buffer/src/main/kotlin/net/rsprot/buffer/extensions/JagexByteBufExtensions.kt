@@ -587,7 +587,7 @@ public fun ByteBuf.pSmart2or4null(value: Int): ByteBuf {
     return this
 }
 
-public fun ByteBuf.gVarInt(): Int {
+public fun ByteBuf.gMidiVarLen(): Int {
     var value = 0
 
     var byte: Int
@@ -599,7 +599,7 @@ public fun ByteBuf.gVarInt(): Int {
     return value
 }
 
-public fun ByteBuf.pVarInt(v: Int): ByteBuf {
+public fun ByteBuf.pMidiVarLen(v: Int): ByteBuf {
     if ((v and 0x7F.inv()) != 0) {
         if ((v and 0x3FFF.inv()) != 0) {
             if ((v and 0x1FFFFF.inv()) != 0) {
@@ -646,6 +646,28 @@ public fun ByteBuf.pVarInt2(value: Int): ByteBuf {
 public fun ByteBuf.pVarInt2s(value: Int): ByteBuf {
     val signed = (value shl 1) xor (value shr 31)
     pVarInt2(signed)
+    return this
+}
+
+public fun ByteBuf.gType(): Int {
+    val type = g1()
+    return if (type < 252) {
+        type
+    } else {
+        ((type - 252) shl 8) + g1()
+    }
+}
+
+public fun ByteBuf.pType(value: Int): ByteBuf {
+    require(value in 0..<1024) {
+        "Type out of range: $value"
+    }
+    if (value < 252) {
+        p1(value)
+    } else {
+        p1(252 + (value ushr 8))
+        p1(value and 0xFF)
+    }
     return this
 }
 

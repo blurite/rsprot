@@ -35,7 +35,7 @@ internal object GameServerProtId {
     const val CAM_SHAKE = 31
     const val IF_SETCOLOUR = 32
     const val MIDI_SONG_OLD = 33
-    const val CAM_LOOKAT_EASED_COORD = 34
+    const val CAM_ROTATETO_COORDINATE = 34
     const val PLAYER_INFO = 35
     const val HISCORE_REPLY = 36
     const val CLANSETTINGS_FULL = 37
@@ -87,7 +87,7 @@ internal object GameServerProtId {
     const val IF_CLEARINV = 83
     const val LOGOUT_TRANSFER = 84
     const val HEATMAP_TOGGLE = 85
-    const val PLAYER_ANIM_SPECIFIC = 86
+    const val ANIM_SPECIFIC = 86
     const val CAM_LOOKAT = 87
     const val LOC_ADD_CHANGE = 88
     const val VARCLAN_DISABLE = 89

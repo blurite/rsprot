@@ -76,13 +76,13 @@ internal object GameServerProtId {
     const val LOGOUT_TRANSFER = 72
     const val VARCLAN_ENABLE = 73
     const val MIDI_SONG_OLD = 74
-    const val PLAYER_ANIM_SPECIFIC = 75
+    const val ANIM_SPECIFIC = 75
     const val CAM_TARGET = 76
     const val MINIMAP_TOGGLE = 77
     const val SET_PLAYER_OP = 78
     const val RESET_ANIMS = 79
     const val OCULUS_SYNC = 80
-    const val CAM_LOOKAT_EASED_COORD = 81
+    const val CAM_ROTATETO_COORDINATE = 81
     const val MIDI_SWAP = 82
     const val IF_SETPLAYERHEAD = 83
     const val URL_OPEN = 84

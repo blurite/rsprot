@@ -41,7 +41,7 @@ internal object GameClientProtId {
     const val AFFINEDCLANSETTINGS_ADDBANNED_FROMCHANNEL = 37
     const val IF_BUTTON9 = 38
     const val OPLOC2 = 39
-    const val OCULUS_LEAVE = 40
+    const val EXIT_FREECAM = 40
     const val EVENT_NATIVE_MOUSE_CLICK = 41
     const val EVENT_CAMERA_POSITION = 42
     const val OPLOCU = 43
@@ -93,7 +93,7 @@ internal object GameClientProtId {
     const val IF_BUTTON5 = 89
     const val EVENT_MOUSE_SCROLL = 90
     const val OPPLAYERT = 91
-    const val IF_CRMVIEW_CLICK = 92
+    const val IF_CRMVIEW_OP = 92
     const val IF_BUTTON6 = 93
     const val MESSAGE_PRIVATE = 94
     const val OPNPC3 = 95

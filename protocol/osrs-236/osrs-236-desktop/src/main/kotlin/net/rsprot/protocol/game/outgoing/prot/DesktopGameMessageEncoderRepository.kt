@@ -2,8 +2,6 @@ package net.rsprot.protocol.game.outgoing.prot
 
 import net.rsprot.compression.provider.HuffmanCodecProvider
 import net.rsprot.protocol.ProtRepository
-import net.rsprot.protocol.game.outgoing.codec.camera.CamLookAtEasedCoordV1Encoder
-import net.rsprot.protocol.game.outgoing.codec.camera.CamLookAtEasedCoordV2Encoder
 import net.rsprot.protocol.game.outgoing.codec.camera.CamLookAtV1Encoder
 import net.rsprot.protocol.game.outgoing.codec.camera.CamLookAtV2Encoder
 import net.rsprot.protocol.game.outgoing.codec.camera.CamModeEncoder
@@ -15,6 +13,8 @@ import net.rsprot.protocol.game.outgoing.codec.camera.CamMoveToV1Encoder
 import net.rsprot.protocol.game.outgoing.codec.camera.CamMoveToV2Encoder
 import net.rsprot.protocol.game.outgoing.codec.camera.CamResetEncoder
 import net.rsprot.protocol.game.outgoing.codec.camera.CamRotateByEncoder
+import net.rsprot.protocol.game.outgoing.codec.camera.CamRotateToCoordinateV1Encoder
+import net.rsprot.protocol.game.outgoing.codec.camera.CamRotateToCoordinateV2Encoder
 import net.rsprot.protocol.game.outgoing.codec.camera.CamRotateToEncoder
 import net.rsprot.protocol.game.outgoing.codec.camera.CamShakeEncoder
 import net.rsprot.protocol.game.outgoing.codec.camera.CamSmoothResetEncoder
@@ -114,6 +114,7 @@ import net.rsprot.protocol.game.outgoing.codec.sound.MidiSongV2Encoder
 import net.rsprot.protocol.game.outgoing.codec.sound.MidiSongWithSecondaryEncoder
 import net.rsprot.protocol.game.outgoing.codec.sound.MidiSwapEncoder
 import net.rsprot.protocol.game.outgoing.codec.sound.SynthSoundEncoder
+import net.rsprot.protocol.game.outgoing.codec.specific.AnimSpecificEncoder
 import net.rsprot.protocol.game.outgoing.codec.specific.LocAnimSpecificEncoder
 import net.rsprot.protocol.game.outgoing.codec.specific.MapAnimSpecificEncoder
 import net.rsprot.protocol.game.outgoing.codec.specific.NpcAnimSpecificEncoder
@@ -125,7 +126,6 @@ import net.rsprot.protocol.game.outgoing.codec.specific.ObjCustomiseSpecificEnco
 import net.rsprot.protocol.game.outgoing.codec.specific.ObjDelSpecificEncoder
 import net.rsprot.protocol.game.outgoing.codec.specific.ObjEnabledOpsSpecificEncoder
 import net.rsprot.protocol.game.outgoing.codec.specific.ObjUncustomiseSpecificEncoder
-import net.rsprot.protocol.game.outgoing.codec.specific.PlayerAnimSpecificEncoder
 import net.rsprot.protocol.game.outgoing.codec.specific.PlayerSpotAnimSpecificEncoder
 import net.rsprot.protocol.game.outgoing.codec.specific.ProjAnimSpecificV4Encoder
 import net.rsprot.protocol.game.outgoing.codec.varp.VarpLargeEncoder
@@ -205,7 +205,7 @@ public object DesktopGameMessageEncoderRepository {
                 bind(NpcHeadIconSpecificEncoder())
                 bind(NpcSpotAnimSpecificEncoder())
                 bind(NpcAnimSpecificEncoder())
-                bind(PlayerAnimSpecificEncoder())
+                bind(AnimSpecificEncoder())
                 bind(PlayerSpotAnimSpecificEncoder())
                 bind(ObjAddSpecificEncoder())
                 bind(ObjDelSpecificEncoder())
@@ -242,8 +242,8 @@ public object DesktopGameMessageEncoderRepository {
                 bind(CamMoveToArcV2Encoder())
                 bind(CamLookAtV1Encoder())
                 bind(CamLookAtV2Encoder())
-                bind(CamLookAtEasedCoordV1Encoder())
-                bind(CamLookAtEasedCoordV2Encoder())
+                bind(CamRotateToCoordinateV1Encoder())
+                bind(CamRotateToCoordinateV2Encoder())
                 bind(CamRotateByEncoder())
                 bind(CamRotateToEncoder())
                 bind(CamModeEncoder())

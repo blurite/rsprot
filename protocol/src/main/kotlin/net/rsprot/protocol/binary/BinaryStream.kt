@@ -3,7 +3,7 @@ package net.rsprot.protocol.binary
 import io.netty.buffer.ByteBuf
 import net.rsprot.buffer.extensions.p1
 import net.rsprot.buffer.extensions.p2
-import net.rsprot.buffer.extensions.pVarInt
+import net.rsprot.buffer.extensions.pMidiVarLen
 import net.rsprot.buffer.extensions.pdata
 import net.rsprot.buffer.extensions.toByteArray
 import net.rsprot.protocol.Prot
@@ -100,7 +100,7 @@ public class BinaryStream(
         val millisecondDelta = nanoDelta / NANOSECONDS_IN_MILLISECOND
         val delta = min(MAX_31BIT_INT, millisecondDelta).toInt()
         val bitpacked = directionOpcode or (delta shl 1)
-        this.buffer.pVarInt(bitpacked)
+        this.buffer.pMidiVarLen(bitpacked)
         if (opcode < 0x80) {
             this.buffer.p1(opcode)
         } else {
