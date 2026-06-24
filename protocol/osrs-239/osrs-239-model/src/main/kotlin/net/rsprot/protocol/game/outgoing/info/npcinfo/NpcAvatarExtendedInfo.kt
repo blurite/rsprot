@@ -1442,6 +1442,7 @@ public class NpcAvatarExtendedInfo(
      */
     public fun resetBodyCustomisations() {
         checkCommunicationThread()
+        blocks.bodyCustomisation.composition = null
         blocks.bodyCustomisation.customisation = null
         flags = flags or BODY_CUSTOMISATION
     }
@@ -1451,6 +1452,7 @@ public class NpcAvatarExtendedInfo(
      */
     public fun setBodyCustomisationMirrored() {
         checkCommunicationThread()
+        blocks.bodyCustomisation.composition = null
         blocks.bodyCustomisation.customisation =
             TypeCustomisation(
                 emptyList(),
@@ -1479,6 +1481,7 @@ public class NpcAvatarExtendedInfo(
         retextures: List<Int>,
     ) {
         checkCommunicationThread()
+        blocks.bodyCustomisation.composition = null
         blocks.bodyCustomisation.customisation =
             TypeCustomisation(
                 models,
@@ -1490,46 +1493,133 @@ public class NpcAvatarExtendedInfo(
     }
 
     /**
-     * Sets the NPC to mimic a player by utilizing the player rendering path in the client.
-     * @param bodyType the body type to use for this NPC.
-     * @param skinColour a list of skin colour values.
-     * @param identKit a list of ident kit pieces to render for this NPC.
-     * Note that the server is responsible for filtering out ident kit and worn obj clashes unlike for
-     * player appearance, where RSProt handles it for them.
-     * @param wornObj a list of worn objs
+     * Sets the body type of the character.
+     * @param type the body type of the character.
      */
-    public fun setBodyCustomisationPlayerComposition(
-        bodyType: Int,
-        skinColour: List<Int>,
-        identKit: List<Int>,
-        wornObj: List<Int>,
+    public fun setBodyCustomisationBodyType(type: Int) {
+        checkCommunicationThread()
+        val composition = blocks.bodyCustomisation.getOrCreateComposition()
+        if (composition.bodyType == type.toUByte()) {
+            return
+        }
+        composition.bodyType = type.toUByte()
+        flags = flags or BODY_CUSTOMISATION
+    }
+
+    /**
+     * Sets an ident kit. Note that this function does not rely on wearpos values,
+     * as those range from 0 to 11. Ident kit values only range from 0 to 6, which would
+     * result in some wasted memory.
+     * A list of wearpos to ident kit can also be found in
+     * [net.rsprot.protocol.internal.game.outgoing.info.playerinfo.extendedinfo.Appearance.identKitSlotList]
+     *
+     * Ident kit table:
+     * ```kt
+     * | Id |  Slot  |
+     * |:--:|:------:|
+     * |  0 |  Hair  |
+     * |  1 |  Beard |
+     * |  2 |  Body  |
+     * |  3 |  Arms  |
+     * |  4 | Gloves |
+     * |  5 |  Legs  |
+     * |  6 |  Boots |
+     * ```
+     *
+     * @param identKitSlot the position in which to set this ident kit.
+     * @param value the value of the ident kit config, or -1 if hidden.
+     */
+    public fun setBodyCustomisationIdentKit(
+        identKitSlot: Int,
+        value: Int,
     ) {
         checkCommunicationThread()
-        check(skinColour.isEmpty() || skinColour.size == 5) {
-            "Skin colour must either be empty or of length 5."
-        }
-        // Note: The client treats these fields differently if it is transmitted as player composition.
-        // The models field becomes a combination of ident kit and worn objs.
-        // Recolours get repurposed as skin colour and must be either size 0 or size 5.
-        val identKitWithWornObj =
-            buildList(identKit.size + wornObj.size) {
-                addAll(identKit)
-                for (element in wornObj) {
-                    add(0x800 + element)
-                }
+        verify {
+            require(identKitSlot in 0..6) {
+                "Unexpected wearPos $identKitSlot, expected range 0..6"
             }
-        blocks.bodyCustomisation.customisation =
-            TypeCustomisation(
-                models = identKitWithWornObj,
-                recolours = skinColour,
-                retexture = emptyList(),
-                mirror = false,
-                playerComposition =
-                    TypeCustomisation.PlayerComposition(
-                        bodyType,
-                        identKit,
-                    ),
-            )
+            require(value == -1 || value in IDENT_KIT_RANGE) {
+                "Unexpected value $value, expected value -1 or in range $IDENT_KIT_RANGE"
+            }
+        }
+        val composition = blocks.bodyCustomisation.getOrCreateComposition()
+        val valueAsShort = value.toShort()
+        val cur = composition.identKit[identKitSlot]
+        if (cur == valueAsShort) {
+            return
+        }
+        composition.identKit[identKitSlot] = valueAsShort
+        flags = flags or BODY_CUSTOMISATION
+    }
+
+    /**
+     * Sets a worn object in the given [wearpos].
+     * @param wearpos the main wearpos in which the obj equips.
+     * @param id the obj id to set in that wearpos, or -1 to not have anything.
+     * @param wearpos2 the secondary wearpos that this obj utilizes, hiding whatever
+     * ident kit was in that specific wearpos (e.g. hair, beard), or -1 to not use any.
+     * @param wearpos3 the tertiary wearpos that this obj utilizes, hiding whatever
+     * ident kit was in that specific wearpos (e.g. hair, beard), or -1 to not use any.
+     */
+    public fun setBodyCustomisationWornObj(
+        wearpos: Int,
+        id: Int,
+        wearpos2: Int,
+        wearpos3: Int,
+    ) {
+        checkCommunicationThread()
+        verify {
+            require(wearpos in 0..11) {
+                "Unexpected wearPos $wearpos, expected range 0..11"
+            }
+            require(id == -1 || id in OBJ_RANGE) {
+                "Unexpected id $id, expected value -1 or range $OBJ_RANGE"
+            }
+            require(wearpos2 == -1 || wearpos2 in 0..11) {
+                "Unexpected wearpos2 $wearpos2, expected value -1 or in range 0..11"
+            }
+            require(wearpos3 == -1 || wearpos3 in 0..11) {
+                "Unexpected wearpos3 $wearpos3, expected value -1 or in range 0..11"
+            }
+        }
+        val composition = blocks.bodyCustomisation.getOrCreateComposition()
+        val valueAsShort = id.toShort()
+        val cur = composition.wornObjs[wearpos]
+        if (cur == valueAsShort) {
+            return
+        }
+        composition.wornObjs[wearpos] = valueAsShort
+        val hiddenSlotsBitpacked = (wearpos2 and 0xF shl 4) or (wearpos3 and 0xF)
+        composition.hiddenWearPos[wearpos] = hiddenSlotsBitpacked.toByte()
+        flags = flags or BODY_CUSTOMISATION
+    }
+
+    /**
+     * Sets the colour of this player composition.
+     * @param slot the slot of the element to colour
+     * @param value the colour value
+     */
+    public fun setBodyCustomisationColour(
+        slot: Int,
+        value: Int,
+    ) {
+        checkCommunicationThread()
+        verify {
+            require(slot in 0..<5) {
+                "Unexpected slot $slot, expected range 0..<5"
+            }
+            require(value in UNSIGNED_BYTE_RANGE) {
+                "Unexpected value $value, expected range $UNSIGNED_BYTE_RANGE"
+            }
+        }
+        val composition = blocks.bodyCustomisation.getOrCreateComposition()
+        val valueAsByte = value.toByte()
+        val colours = composition.getOrCreateColoursArray()
+        val cur = colours[slot]
+        if (cur == valueAsByte) {
+            return
+        }
+        colours[slot] = valueAsByte
         flags = flags or BODY_CUSTOMISATION
     }
 
@@ -1724,7 +1814,7 @@ public class NpcAvatarExtendedInfo(
             flag = flag or HEAD_CUSTOMISATION
         }
         if (this.flags and BODY_CUSTOMISATION == 0 &&
-            blocks.bodyCustomisation.customisation != null
+            blocks.bodyCustomisation.isPresent()
         ) {
             flag = flag or BODY_CUSTOMISATION
         }
@@ -1817,6 +1907,8 @@ public class NpcAvatarExtendedInfo(
         private val EXTENDED_NPC_ID_RANGE: IntRange = 16384..65534
         private val HIT_TYPE_RANGE: IntRange = -1..0x7FFD
         private val HIT_LIMIT_RANGE: IntRange = 1..100
+        private val IDENT_KIT_RANGE: IntRange = 0..<(0x800 - 0x100)
+        private val OBJ_RANGE: IntRange = UShort.MIN_VALUE.toInt()..(UShort.MAX_VALUE.toInt() - 0x800)
 
         // Observer-dependent flags, utilizing the lowest bits as we store observer flags in a byte array
         // IMPORTANT: As we store it in a byte array, we currently only support 8 blocks

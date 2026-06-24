@@ -183,12 +183,12 @@ public class Appearance(
         /**
          * The number of wearpos that the client will track.
          */
-        private const val SLOT_COUNT: Int = 12
+        public const val SLOT_COUNT: Int = 12
 
         /**
          * The number of colours that the client tracks.
          */
-        private const val COLOUR_COUNT: Int = 5
+        public const val COLOUR_COUNT: Int = 5
 
         /**
          * A constant for max unsigned byte, frequently used as the "default, not initialized" value.
