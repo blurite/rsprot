@@ -763,7 +763,7 @@ public class NpcAvatarExtendedInfo(
      * A value of 0xFFFF will reset freeze.
      * @param duration the duration in client cycles (20ms/cc) after [delay] until the freeze ends.
      * A value of 0xFFFF will reset freeze.
-     * @param cancelSequence whether to cancel a currently-playing sequence alongside.
+     * @param cancelSequence whether to cancel a currently-playing sequence when the freeze ends.
      * Note that it only resets temporary sequences, not base animations.
      */
     public fun setFreeze(
