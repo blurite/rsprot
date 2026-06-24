@@ -11,7 +11,6 @@ import net.rsprot.protocol.internal.game.outgoing.info.npcinfo.extendedinfo.Head
 import net.rsprot.protocol.internal.game.outgoing.info.npcinfo.extendedinfo.NameChange
 import net.rsprot.protocol.internal.game.outgoing.info.npcinfo.extendedinfo.NpcTinting
 import net.rsprot.protocol.internal.game.outgoing.info.npcinfo.extendedinfo.Transformation
-import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.Contrast
 import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.ExactMove
 import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.Face
 import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.Freeze
@@ -20,6 +19,7 @@ import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.Hitma
 import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.Say
 import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.Sequence
 import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.SpotAnimList
+import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.Transparency
 import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.VisibleOps
 
 /**
@@ -44,6 +44,6 @@ public data class NpcExtendedInfoEncoders(
     public val headbarList: OnDemandExtendedInfoEncoder<HeadbarList>,
     public val face: PrecomputedExtendedInfoEncoder<Face>,
     public val baseAnimationSet: PrecomputedExtendedInfoEncoder<BaseAnimationSet>,
-    public val contrast: PrecomputedExtendedInfoEncoder<Contrast>,
+    public val transparency: PrecomputedExtendedInfoEncoder<Transparency>,
     public val freeze: PrecomputedExtendedInfoEncoder<Freeze>,
 )

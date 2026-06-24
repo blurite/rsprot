@@ -14,7 +14,6 @@ import net.rsprot.protocol.internal.game.outgoing.info.npcinfo.extendedinfo.Head
 import net.rsprot.protocol.internal.game.outgoing.info.npcinfo.extendedinfo.NameChange
 import net.rsprot.protocol.internal.game.outgoing.info.npcinfo.extendedinfo.NpcTinting
 import net.rsprot.protocol.internal.game.outgoing.info.npcinfo.extendedinfo.Transformation
-import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.Contrast
 import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.ExactMove
 import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.Face
 import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.Freeze
@@ -23,6 +22,7 @@ import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.Hitma
 import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.Say
 import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.Sequence
 import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.SpotAnimList
+import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.Transparency
 import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.VisibleOps
 
 private typealias NEnc = NpcExtendedInfoEncoders
@@ -82,7 +82,7 @@ public class NpcAvatarExtendedInfoBlocks(
     public val headbarList: HeadbarList = HeadbarList(encoders(writers, NEnc::headbarList))
     public val face: Face = Face(encoders(writers, NEnc::face))
     public val baseAnimationSet: BaseAnimationSet = BaseAnimationSet(encoders(writers, NEnc::baseAnimationSet))
-    public val contrast: Contrast = Contrast(encoders(writers, NEnc::contrast))
+    public val transparency: Transparency = Transparency(encoders(writers, NEnc::transparency))
     public val freeze: Freeze = Freeze(encoders(writers, NEnc::freeze))
 
     private companion object {

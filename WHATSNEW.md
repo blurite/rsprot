@@ -1,5 +1,53 @@
 ## What's New?
 
+### Revision 239
+
+> [!NOTE]
+> Four packets were renamed in a breaking manner with the release of
+> 1.0.0-ALPHA-20260624. These packets are:
+> PlayerAnimSpecific → AnimSpecific
+> CamLookAtEasedCoord → CamRotateToCoordinate
+> IfCrmViewClick → IfCrmViewOp
+> OculusLeave → ExitFreecam
+
+#### Additions
+- CAM_MOVETO_V3: Adds support for heightRelative boolean, which makes the height
+variable relative to the previous move-to cam packet's height, rather than absolute.
+- CAM_LOOKAT_V3: Adds support for heightRelative boolean, which makes the height
+variable relative to the previous look-at cam packet's height, rather than absolute.
+- CAM_MOVETO_CYCLES_V3: Adds support for heightRelative boolean, which makes the height
+variable relative to the previous move-to cam packet's height, rather than absolute.
+- CAM_ROTATETO_COORDINATE_V3: Adds support for heightRelative boolean, which makes the height
+variable relative to the previous look-at cam packet's height, rather than absolute.
+Additionally, adds support for trackTarget variable, which makes the client track
+the specific coordinate if it happens to move in the client.
+- CAM_MOVETO_ARC_V3: Adds support for heightRelative boolean, which makes the height
+variable relative to the previous move-to cam packet's height, rather than absolute.
+- CAM_LOOKAT_CYCLES: New variant of camera packets, similar to cam look-at, but
+tweened linearly between coordinates.
+- SCRIPTEDPROJ_ADD zone packet. This can only be transmitted as part of the
+partial enclosed packet. It is a new variant of projectiles where the server can
+supply a more precise start/end coordinate, and can adjust the path mid-flight,
+as well as freeze it altogether and delete, if desired.
+In the Java client, it is currently bugged to only
+support a single scripted projectile, as all scripted projectiles share variables.
+- SCRIPTEDPROJ_CHANGE zone packet. This can only be transmitted as part of the
+partial enclosed packet. Used to modify the target, freeze the projectile,
+or delete it mid-flight. In the Java client, it is currently bugged to only
+support a single scripted projectile, as all scripted projectiles share variables.
+- GROUP_FULL packet. Exact purpose is unknown at this stage, but it is likely
+for the upcoming bingo feature. Allows the server to essentially transmit a
+dynamic database table to the client.
+- GROUP_VAR packet. Used to update the values of one or many group vars.
+- GROUP_VAR_INT packet. Used to update the value of a single int-based var.
+- GROUP_VAR_LONG packet. Used to update the value of a single long-based var.
+- Player & NPC transparency extended info. Allows the server to modify the transparency
+gradually on a given entity.
+- Player & Npc freeze extended info. Freezes the given entity on-spot, pausing
+any animation that might be ongoing.
+- Npc body customisation V3 extended info. Adds support for turning a NPC into
+a player by supplying the identkit, worn equipment, body type and colours.
+
 ### Revision 238
 
 > [!IMPORTANT]

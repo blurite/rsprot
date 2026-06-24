@@ -7,7 +7,6 @@ import net.rsprot.buffer.JagByteBuf
 import net.rsprot.protocol.common.client.OldSchoolClientType
 import net.rsprot.protocol.game.outgoing.codec.playerinfo.extendedinfo.PlayerAppearanceEncoder
 import net.rsprot.protocol.game.outgoing.codec.playerinfo.extendedinfo.PlayerChatEncoder
-import net.rsprot.protocol.game.outgoing.codec.playerinfo.extendedinfo.PlayerContrastEncoder
 import net.rsprot.protocol.game.outgoing.codec.playerinfo.extendedinfo.PlayerExactMoveEncoder
 import net.rsprot.protocol.game.outgoing.codec.playerinfo.extendedinfo.PlayerFacingEncoder
 import net.rsprot.protocol.game.outgoing.codec.playerinfo.extendedinfo.PlayerFreezeEncoder
@@ -20,6 +19,7 @@ import net.rsprot.protocol.game.outgoing.codec.playerinfo.extendedinfo.PlayerSeq
 import net.rsprot.protocol.game.outgoing.codec.playerinfo.extendedinfo.PlayerSpotAnimEncoder
 import net.rsprot.protocol.game.outgoing.codec.playerinfo.extendedinfo.PlayerTemporaryMoveSpeedEncoder
 import net.rsprot.protocol.game.outgoing.codec.playerinfo.extendedinfo.PlayerTintingEncoder
+import net.rsprot.protocol.game.outgoing.codec.playerinfo.extendedinfo.PlayerTransparencyEncoder
 import net.rsprot.protocol.game.outgoing.info.AvatarExtendedInfoWriter
 import net.rsprot.protocol.game.outgoing.info.playerinfo.PlayerAvatarExtendedInfo
 import net.rsprot.protocol.game.outgoing.info.playerinfo.PlayerAvatarExtendedInfoBlocks
@@ -45,7 +45,7 @@ public class PlayerAvatarExtendedInfoDesktopWriter :
             PlayerSpotAnimEncoder(),
             PlayerTemporaryMoveSpeedEncoder(),
             PlayerTintingEncoder(),
-            PlayerContrastEncoder(),
+            PlayerTransparencyEncoder(),
             PlayerFreezeEncoder(),
             PlayerResetEncoder(),
         ),
@@ -88,8 +88,8 @@ public class PlayerAvatarExtendedInfoDesktopWriter :
         if (constantFlags and PlayerAvatarExtendedInfo.SPOTANIM != 0) {
             clientFlags = clientFlags or SPOTANIM
         }
-        if (constantFlags and PlayerAvatarExtendedInfo.CONTRAST != 0) {
-            clientFlags = clientFlags or CONTRAST
+        if (constantFlags and PlayerAvatarExtendedInfo.TRANSPARENCY != 0) {
+            clientFlags = clientFlags or TRANSPARENCY
         }
         if (constantFlags and PlayerAvatarExtendedInfo.FREEZE != 0) {
             clientFlags = clientFlags or FREEZE
@@ -129,7 +129,7 @@ public class PlayerAvatarExtendedInfoDesktopWriter :
         outFlag = outFlag or pCached(buffer, clientFlag, MOVE_SPEED, blocks.moveSpeed)
         outFlag = outFlag or pCached(buffer, clientFlag, SPOTANIM, blocks.spotAnims)
         outFlag = outFlag or pCached(buffer, clientFlag, CHAT, blocks.chat)
-        outFlag = outFlag or pCached(buffer, clientFlag, CONTRAST, blocks.contrast)
+        outFlag = outFlag or pCached(buffer, clientFlag, TRANSPARENCY, blocks.transparency)
         outFlag = outFlag or pOnDemand(buffer, clientFlag, TINTING, blocks.tinting, localIndex, observerIndex)
         outFlag = outFlag or pOnDemand(buffer, clientFlag, HEADBARS, blocks.headbarList, localIndex, observerIndex)
         outFlag = outFlag or pCached(buffer, clientFlag, SAY, blocks.say)
@@ -215,7 +215,7 @@ public class PlayerAvatarExtendedInfoDesktopWriter :
         private const val HEADBARS = 0x10000
         private const val HITMARKS = 0x40000
         private const val FREEZE = 0x80000
-        private const val CONTRAST = 0x100000
+        private const val TRANSPARENCY = 0x100000
 
         // Name extras are part of appearance nowadays, and thus will not be used on their own
         private const val NAME_EXTRAS = 0x2000

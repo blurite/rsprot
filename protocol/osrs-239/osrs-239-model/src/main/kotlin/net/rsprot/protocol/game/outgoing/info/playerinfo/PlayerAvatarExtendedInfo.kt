@@ -966,26 +966,26 @@ public class PlayerAvatarExtendedInfo(
     }
 
     /**
-     * Sets the contrast override on the player. The contrast value is linearly interpolated
-     * between either [startContrast] or current contrast, up to [endContrast].
+     * Sets the transparency override on the player. The transparency value is linearly interpolated
+     * between either [startTransparency] or current transparency, up to [endTransparency].
      * Note that this extended info is only shown to anyone that is around to witness
      * at the time of it being transmitted. It will not retroactively apply.
      * @param startTime the starting timestamp to use in interpolation calculations for
-     * [startContrast], or current contrast.
-     * @param endTime the ending timestamp when the current contrast value on the player
-     * reaches [endContrast]. This value can be negative.
-     * @param startContrast the starting contrast value to begin at.
-     * @param endContrast the ending contrast value to stop at.
-     * @param useStartContrast whether to use start contrast value.
-     * Note that if this is false, start contrast will still be used if
+     * [startTransparency], or current transparency.
+     * @param endTime the ending timestamp when the current transparency value on the player
+     * reaches [endTransparency]. This value can be negative.
+     * @param startTransparency the starting transparency value to begin at.
+     * @param endTransparency the ending transparency value to stop at.
+     * @param useStartTransparency whether to use start transparency value.
+     * Note that if this is false, start transparency will still be used if
      * [startTime] is negative.
      */
-    public fun setContrast(
+    public fun setTransparency(
         startTime: Int,
         endTime: Int,
-        startContrast: Int,
-        endContrast: Int,
-        useStartContrast: Boolean,
+        startTransparency: Int,
+        endTransparency: Int,
+        useStartTransparency: Boolean,
     ) {
         checkCommunicationThread()
         verify {
@@ -995,20 +995,21 @@ public class PlayerAvatarExtendedInfo(
             require(endTime in SIGNED_SHORT_RANGE) {
                 "End time must be in range of $SIGNED_SHORT_RANGE"
             }
-            require(startContrast in SIGNED_BYTE_RANGE) {
-                "Start contrast must be in range of $SIGNED_BYTE_RANGE"
+            // Client uses signed bytes, but the actual value range is 0-255
+            require(startTransparency in UNSIGNED_BYTE_RANGE) {
+                "Start transparency must be in range of $UNSIGNED_BYTE_RANGE"
             }
-            require(endContrast in SIGNED_BYTE_RANGE) {
-                "End contrast must be in range of $SIGNED_BYTE_RANGE"
+            require(endTransparency in UNSIGNED_BYTE_RANGE) {
+                "End transparency must be in range of $UNSIGNED_BYTE_RANGE"
             }
         }
-        val contrast = blocks.contrast
-        contrast.start = startTime.toShort()
-        contrast.end = endTime.toShort()
-        contrast.startContrast = startContrast.toByte()
-        contrast.endContrast = endContrast.toByte()
-        contrast.useStartContrast = useStartContrast
-        flags = flags or CONTRAST
+        val transparency = blocks.transparency
+        transparency.start = startTime.toShort()
+        transparency.end = endTime.toShort()
+        transparency.startTransparency = startTransparency.toByte()
+        transparency.endTransparency = endTransparency.toByte()
+        transparency.useStartTransparency = useStartTransparency
+        flags = flags or TRANSPARENCY
     }
 
     /**
@@ -1055,7 +1056,7 @@ public class PlayerAvatarExtendedInfo(
      * Note that the reset always happens at the very top of extended
      * info handling, even if the obfuscated byte reading is further below.
      * Some of the things reset (this list may not be exhaustive):
-     * - Contrast
+     * - Transparency
      * - Tinting
      * - Appearance
      * - Move speed (set back to walk)
@@ -1834,7 +1835,7 @@ public class PlayerAvatarExtendedInfo(
         blocks.spotAnims.clear()
         blocks.hitmarkList.clear()
         blocks.tinting.clear()
-        blocks.contrast.clear()
+        blocks.transparency.clear()
         observedChatStorage.reset()
     }
 
@@ -1926,8 +1927,8 @@ public class PlayerAvatarExtendedInfo(
         if (flags and MOVE_SPEED != 0) {
             blocks.moveSpeed.precompute(allocator, huffmanCodec)
         }
-        if (flags and CONTRAST != 0) {
-            blocks.contrast.precompute(allocator, huffmanCodec)
+        if (flags and TRANSPARENCY != 0) {
+            blocks.transparency.precompute(allocator, huffmanCodec)
         }
         if (flags and FREEZE != 0) {
             blocks.freeze.precompute(allocator, huffmanCodec)
@@ -2035,8 +2036,8 @@ public class PlayerAvatarExtendedInfo(
         if (flags and TINTING != 0) {
             blocks.tinting.clear()
         }
-        if (flags and CONTRAST != 0) {
-            blocks.contrast.clear()
+        if (flags and TRANSPARENCY != 0) {
+            blocks.transparency.clear()
         }
         if (flags and FREEZE != 0) {
             blocks.freeze.clear()
@@ -2070,7 +2071,7 @@ public class PlayerAvatarExtendedInfo(
         public const val EXACT_MOVE: Int = 0x400
         public const val SPOTANIM: Int = 0x800
         public const val HEADBARS: Int = 0x1000
-        public const val CONTRAST: Int = 0x2000
+        public const val TRANSPARENCY: Int = 0x2000
         public const val FREEZE: Int = 0x4000
         public const val PLAYER_RESET: Int = 0x8000
 

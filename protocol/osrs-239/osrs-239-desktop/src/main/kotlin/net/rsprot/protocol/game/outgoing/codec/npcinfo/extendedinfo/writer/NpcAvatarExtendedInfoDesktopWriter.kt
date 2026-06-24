@@ -8,7 +8,6 @@ import net.rsprot.protocol.common.client.OldSchoolClientType
 import net.rsprot.protocol.game.outgoing.codec.npcinfo.extendedinfo.NpcBaseAnimationSetEncoder
 import net.rsprot.protocol.game.outgoing.codec.npcinfo.extendedinfo.NpcBodyCustomisationEncoder
 import net.rsprot.protocol.game.outgoing.codec.npcinfo.extendedinfo.NpcCombatLevelChangeEncoder
-import net.rsprot.protocol.game.outgoing.codec.npcinfo.extendedinfo.NpcContrastEncoder
 import net.rsprot.protocol.game.outgoing.codec.npcinfo.extendedinfo.NpcExactMoveEncoder
 import net.rsprot.protocol.game.outgoing.codec.npcinfo.extendedinfo.NpcFaceEncoder
 import net.rsprot.protocol.game.outgoing.codec.npcinfo.extendedinfo.NpcFreezeEncoder
@@ -22,6 +21,7 @@ import net.rsprot.protocol.game.outgoing.codec.npcinfo.extendedinfo.NpcSequenceE
 import net.rsprot.protocol.game.outgoing.codec.npcinfo.extendedinfo.NpcSpotAnimEncoder
 import net.rsprot.protocol.game.outgoing.codec.npcinfo.extendedinfo.NpcTintingEncoder
 import net.rsprot.protocol.game.outgoing.codec.npcinfo.extendedinfo.NpcTransformationEncoder
+import net.rsprot.protocol.game.outgoing.codec.npcinfo.extendedinfo.NpcTransparencyEncoder
 import net.rsprot.protocol.game.outgoing.codec.npcinfo.extendedinfo.NpcVisibleOpsEncoder
 import net.rsprot.protocol.game.outgoing.info.AvatarExtendedInfoWriter
 import net.rsprot.protocol.game.outgoing.info.npcinfo.NpcAvatarExtendedInfo
@@ -53,7 +53,7 @@ public class NpcAvatarExtendedInfoDesktopWriter :
             NpcHeadbarEncoder(),
             NpcFaceEncoder(),
             NpcBaseAnimationSetEncoder(),
-            NpcContrastEncoder(),
+            NpcTransparencyEncoder(),
             NpcFreezeEncoder(),
         ),
     ) {
@@ -107,8 +107,8 @@ public class NpcAvatarExtendedInfoDesktopWriter :
         if (constantFlags and NpcAvatarExtendedInfo.FACE != 0) {
             clientFlags = clientFlags or FACING
         }
-        if (constantFlags and NpcAvatarExtendedInfo.CONTRAST != 0) {
-            clientFlags = clientFlags or CONTRAST
+        if (constantFlags and NpcAvatarExtendedInfo.TRANSPARENCY != 0) {
+            clientFlags = clientFlags or TRANSPARENCY
         }
         if (constantFlags and NpcAvatarExtendedInfo.FREEZE != 0) {
             clientFlags = clientFlags or FREEZE
@@ -152,7 +152,7 @@ public class NpcAvatarExtendedInfoDesktopWriter :
         outFlag = outFlag or pCached(buffer, clientFlag, SEQUENCE, blocks.sequence)
         outFlag = outFlag or pCached(buffer, clientFlag, SAY, blocks.say)
         outFlag = outFlag or pCached(buffer, clientFlag, TINTING, blocks.tinting)
-        outFlag = outFlag or pCached(buffer, clientFlag, CONTRAST, blocks.contrast)
+        outFlag = outFlag or pCached(buffer, clientFlag, TRANSPARENCY, blocks.transparency)
         outFlag = outFlag or pCached(buffer, clientFlag, BAS_CHANGE, blocks.baseAnimationSet)
         outFlag = outFlag or pCached(buffer, clientFlag, FREEZE, blocks.freeze)
         outFlag = outFlag or pCached(buffer, clientFlag, HEAD_CUSTOMISATION, blocks.headCustomisation)
@@ -244,7 +244,7 @@ public class NpcAvatarExtendedInfoDesktopWriter :
         private const val BODY_CUSTOMISATION: Int = 0x2_000_000
         private const val HEAD_CUSTOMISATION: Int = 0x20_000
         private const val TINTING: Int = 0x100
-        private const val CONTRAST: Int = 0x400
+        private const val TRANSPARENCY: Int = 0x400
         private const val FREEZE: Int = 0x20
     }
 }

@@ -12,7 +12,6 @@ import net.rsprot.protocol.internal.game.outgoing.info.playerinfo.extendedinfo.M
 import net.rsprot.protocol.internal.game.outgoing.info.playerinfo.extendedinfo.PlayerReset
 import net.rsprot.protocol.internal.game.outgoing.info.playerinfo.extendedinfo.PlayerTintingList
 import net.rsprot.protocol.internal.game.outgoing.info.playerinfo.extendedinfo.TemporaryMoveSpeed
-import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.Contrast
 import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.ExactMove
 import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.Face
 import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.Freeze
@@ -21,6 +20,7 @@ import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.Hitma
 import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.Say
 import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.Sequence
 import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.SpotAnimList
+import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.Transparency
 
 private typealias PEnc = PlayerExtendedInfoEncoders
 private typealias TempMoveSpeed = TemporaryMoveSpeed
@@ -55,7 +55,7 @@ public class PlayerAvatarExtendedInfoBlocks(
     public val hitmarkList: HitmarkList = HitmarkList(encoders(writers, PEnc::hitmarkList))
     public val headbarList: HeadbarList = HeadbarList(encoders(writers, PEnc::headbarList))
     public val tinting: PlayerTintingList = PlayerTintingList(encoders(writers, PEnc::tinting))
-    public val contrast: Contrast = Contrast(encoders(writers, PEnc::contrast))
+    public val transparency: Transparency = Transparency(encoders(writers, PEnc::transparency))
     public val freeze: Freeze = Freeze(encoders(writers, PEnc::freeze))
     public val playerReset: PlayerReset = PlayerReset(encoders(writers, PEnc::playerReset))
 
