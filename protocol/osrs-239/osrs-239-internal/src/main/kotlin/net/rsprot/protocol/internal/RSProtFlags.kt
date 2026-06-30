@@ -121,6 +121,13 @@ public object RSProtFlags {
         )
 
     @JvmStatic
+    public val npcInfoBitCount: Int =
+        getInt(
+            "npcInfoBitCount",
+            14,
+        )
+
+    @JvmStatic
     public val networkLogging: LogLevel =
         when (networkLoggingString) {
             "off" -> LogLevel.OFF
@@ -170,6 +177,7 @@ public object RSProtFlags {
         log("captureSay", captureSay)
         log("singleVarShortPacketMaxAcceptedLength", singleVarShortPacketMaxAcceptedLength)
         log("infoPooling", infoPooling)
+        log("npcInfoBitCount", npcInfoBitCount)
 
         if (SystemPropertyUtil
                 .get(

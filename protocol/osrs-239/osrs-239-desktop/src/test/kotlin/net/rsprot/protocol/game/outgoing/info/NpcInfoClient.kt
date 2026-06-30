@@ -5,6 +5,7 @@ import net.rsprot.buffer.JagByteBuf
 import net.rsprot.buffer.bitbuffer.BitBuf
 import net.rsprot.buffer.bitbuffer.toBitBuf
 import net.rsprot.buffer.extensions.toJagByteBuf
+import net.rsprot.protocol.internal.RSProtFlags
 import net.rsprot.protocol.internal.game.outgoing.info.CoordGrid
 
 @Suppress("MemberVisibilityCanBePrivate")
@@ -164,7 +165,7 @@ class NpcInfoClient {
                     val angle = NPC_TURN_ANGLES[buffer.gBits(3)]
                     val deltaZ = decodeDelta(large, buffer)
                     val jump = buffer.gBits(1)
-                    npc.id = buffer.gBits(14)
+                    npc.id = buffer.gBits(RSProtFlags.npcInfoBitCount)
                     if (extendedInfo == 1) {
                         updatedNpcSlot[updatedNpcSlotCount++] = index
                     }

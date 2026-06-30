@@ -64,7 +64,7 @@ public class NpcAvatarFactory(
      * ```
      *
      * @param index the index of the npc in the world
-     * @param id the id of the npc in the world, limited to range of 0..16383
+     * @param id the id of the npc in the world.
      * @param level the height level of the npc
      * @param x the absolute x coordinate of the npc
      * @param z the absolute z coordinate of the npc
@@ -100,8 +100,8 @@ public class NpcAvatarFactory(
         require(index in 0..65534) {
             "Npc avatar index out of bounds: $index"
         }
-        require(id in 0..16383) {
-            "Npc id cannot be outside of 0..16383 range"
+        require(id in 0..NpcAvatar.maxNpcId) {
+            "Npc id cannot be outside of 0..${NpcAvatar.maxNpcId} range"
         }
         require(level in 0..3) {
             "Level cannot be outside of 0..3 range"
