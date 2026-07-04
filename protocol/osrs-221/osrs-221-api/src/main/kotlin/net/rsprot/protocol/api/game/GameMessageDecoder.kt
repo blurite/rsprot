@@ -143,6 +143,7 @@ public class GameMessageDecoder<R>(
                 }
                 input.skipBytes(length)
                 state = DecoderState.READ_OPCODE
+                session.incrementDiscardedPacketCount()
                 return
             }
             val payload = input.readSlice(length)
