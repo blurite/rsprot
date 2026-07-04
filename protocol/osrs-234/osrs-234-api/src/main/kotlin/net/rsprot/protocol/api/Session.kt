@@ -53,7 +53,7 @@ import kotlin.time.TimeSource
  * @property outgoingMessageQueues the array of outgoing game messages, categorized based
  * on the server prots. This is because some packets are given priority and written
  * to the client first, despite often being computed near the end of the cycle.
- * @property hostAddress the inet address behind this connection
+ * @property inetAddress the inet address behind this connection
  * @property disconnectionHook the disconnection hook to trigger if the channel happens
  * to disconnect. It should be noted that it is the server's responsibility to set
  * the hook after a successful login.
