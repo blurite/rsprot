@@ -425,10 +425,26 @@ public class PlayerAvatarExtendedInfo(
     }
 
     /**
+     * Walk mode table:
+     * ```
+     * | Id | Behaviour         |
+     * |----|-------------------|
+     * | 0  | Cancel on walk    |
+     * | 1  | Turn when walking |
+     * ```
      * Resets any facing previously set.
+     * @param instant whether to instantly turn towards the loc without animations.
+     * @param walkMode the behaviour when walking (see table above).
      */
-    public fun resetFacing() {
+    @JvmOverloads
+    public fun resetFacing(
+        instant: Boolean = false,
+        walkMode: Int = 0,
+    ) {
+        checkCommunicationThread()
         blocks.face.kind = Face.Kind.Reset
+        blocks.face.instant = instant
+        blocks.face.walkMode = walkMode
         flags = flags or FACE
     }
 
