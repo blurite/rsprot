@@ -1,26 +1,13 @@
 package net.rsprot.protocol.game.outgoing.info
 
-import io.netty.buffer.Unpooled
-import io.netty.buffer.UnpooledByteBufAllocator
-import net.rsprot.compression.HuffmanCodec
-import net.rsprot.compression.provider.DefaultHuffmanCodecProvider
 import net.rsprot.protocol.common.client.OldSchoolClientType
-import net.rsprot.protocol.game.outgoing.codec.npcinfo.DesktopLowResolutionChangeEncoder
-import net.rsprot.protocol.game.outgoing.codec.npcinfo.extendedinfo.writer.NpcAvatarExtendedInfoDesktopWriter
-import net.rsprot.protocol.game.outgoing.info.filter.DefaultExtendedInfoFilter
-import net.rsprot.protocol.game.outgoing.info.npcinfo.DeferredNpcInfoProtocolSupplier
 import net.rsprot.protocol.game.outgoing.info.npcinfo.NpcAvatar
-import net.rsprot.protocol.game.outgoing.info.npcinfo.NpcAvatarExceptionHandler
 import net.rsprot.protocol.game.outgoing.info.npcinfo.NpcAvatarFactory
 import net.rsprot.protocol.game.outgoing.info.npcinfo.NpcInfo
 import net.rsprot.protocol.game.outgoing.info.npcinfo.NpcInfoLargeV5
-import net.rsprot.protocol.game.outgoing.info.npcinfo.NpcInfoProtocol
 import net.rsprot.protocol.game.outgoing.info.npcinfo.NpcInfoSmallV5
-import net.rsprot.protocol.game.outgoing.info.util.BuildArea
 import net.rsprot.protocol.game.outgoing.info.worker.DefaultProtocolWorker
-import net.rsprot.protocol.internal.client.ClientTypeMap
 import net.rsprot.protocol.internal.game.outgoing.info.CoordGrid
-import net.rsprot.protocol.internal.game.outgoing.info.util.ZoneIndexStorage
 import org.openjdk.jmh.annotations.Benchmark
 import org.openjdk.jmh.annotations.BenchmarkMode
 import org.openjdk.jmh.annotations.Fork
@@ -46,69 +33,37 @@ class NpcInfoBenchmark {
         System.setProperty("net.rsprot.protocol.internal.npcPlayerAvatarTracking", "true")
     }
 
-    private lateinit var protocol: NpcInfoProtocol
+    private lateinit var protocols: InfoProtocols
     private val random: Random = Random(0)
     private lateinit var serverNpcs: List<Npc>
-    private lateinit var localNpcInfo: NpcInfo
-    private lateinit var otherNpcInfos: List<NpcInfo>
+    private lateinit var infos: List<Infos>
     private var localPlayerCoord = CoordGrid(0, 3207, 3207)
     private lateinit var factory: NpcAvatarFactory
 
     @Setup
     fun setup() {
-        val allocator = UnpooledByteBufAllocator.DEFAULT
-        val storage =
-            ZoneIndexStorage(
-                ZoneIndexStorage.NPC_CAPACITY,
+        val context =
+            generateBenchmarkInfoProtocols(
+                npcProtocolWorker = DefaultProtocolWorker(1, ForkJoinPool.commonPool()),
             )
-        val protocolSupplier = DeferredNpcInfoProtocolSupplier()
-        this.factory =
-            NpcAvatarFactory(
-                allocator,
-                DefaultExtendedInfoFilter(),
-                listOf(NpcAvatarExtendedInfoDesktopWriter()),
-                DefaultHuffmanCodecProvider(createHuffmanCodec()),
-                storage,
-                protocolSupplier,
-            )
+        this.protocols = context.protocols
+        this.factory = context.npcAvatarFactory
         this.serverNpcs = createPhantomNpcs(factory)
-
-        val encoders =
-            ClientTypeMap.of(
-                listOf(DesktopLowResolutionChangeEncoder()),
-                OldSchoolClientType.COUNT,
-            ) {
-                it.clientType
+        this.infos =
+            (1..2046).map { index ->
+                protocols.alloc(index, OldSchoolClientType.DESKTOP).also { infos ->
+                    infos.updateRootCoord(
+                        localPlayerCoord.level,
+                        localPlayerCoord.x,
+                        localPlayerCoord.z,
+                    )
+                    infos.updateRootBuildAreaCenteredOnPlayer(
+                        localPlayerCoord.x,
+                        localPlayerCoord.z,
+                    )
+                }
             }
-        protocol =
-            NpcInfoProtocol(
-                allocator,
-                encoders,
-                factory,
-                npcExceptionHandler(),
-                DefaultProtocolWorker(1, ForkJoinPool.commonPool()),
-                storage,
-            )
-        protocolSupplier.supply(protocol)
-        this.localNpcInfo = protocol.alloc(1, OldSchoolClientType.DESKTOP)
-        otherNpcInfos = (2..2046).map { protocol.alloc(it, OldSchoolClientType.DESKTOP) }
-        val infos = otherNpcInfos + localNpcInfo
-        for (info in infos) {
-            info.updateCoord(NpcInfo.ROOT_WORLD, localPlayerCoord.level, localPlayerCoord.x, localPlayerCoord.z)
-            info.updateBuildArea(
-                NpcInfo.ROOT_WORLD,
-                BuildArea(
-                    (localPlayerCoord.x ushr 3) - 6,
-                    (localPlayerCoord.z ushr 3) - 6,
-                ),
-            )
-        }
     }
-
-    private fun npcExceptionHandler(): NpcAvatarExceptionHandler =
-        NpcAvatarExceptionHandler { _, e ->
-            e.printStackTrace()
-        }
 
     @Benchmark
     fun benchmark() {
@@ -125,10 +80,9 @@ class NpcInfoBenchmark {
                 true,
             )
         }
-        protocol.update()
-        for (i in 1..2046) {
-            val info = protocol[i]
-            val packet = info.toPacket(NpcInfo.ROOT_WORLD)
+        protocols.npcInfoProtocol.update()
+        for (infos in infos) {
+            val packet = checkNotNull(infos.npcInfo.internalPacketResult(NpcInfo.ROOT_WORLD).getOrNull())
             packet.markConsumed()
             when (packet) {
                 is NpcInfoSmallV5 -> packet.release()
@@ -179,13 +133,5 @@ class NpcInfoBenchmark {
 
     private companion object {
         private fun NpcAvatar.getCoordGrid(): CoordGrid = CoordGrid(level(), x(), z())
-
-        private fun createHuffmanCodec(): HuffmanCodec {
-            val resource = PlayerInfoTest::class.java.getResourceAsStream("huffman.dat")
-            checkNotNull(resource) {
-                "huffman.dat could not be found"
-            }
-            return HuffmanCodec.create(Unpooled.wrappedBuffer(resource.readBytes()))
-        }
     }
 }
