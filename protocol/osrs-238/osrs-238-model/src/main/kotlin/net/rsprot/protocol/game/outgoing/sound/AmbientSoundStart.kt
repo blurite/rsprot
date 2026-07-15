@@ -5,12 +5,26 @@ import net.rsprot.protocol.game.outgoing.GameServerProtCategory
 import net.rsprot.protocol.message.OutgoingGameMessage
 
 /**
- * Ambience stop is used to stop any looping background ambience sound effect.
+ * Ambient sound start is used to set a looping background
+ * ambience sound effect (not to be confused with regular sound effects).
+ * This will continue looping until stopped or overwritten.
+ * @property id the id of the ambience sound effect to use.
  * @property fade whether to fade the existing ambience out, if one is currently playing.
  */
-public class AmbienceStop(
+public class AmbientSoundStart private constructor(
+    private val _id: UShort,
     public val fade: Boolean,
 ) : OutgoingGameMessage {
+    public constructor(
+        id: Int,
+        fade: Boolean,
+    ) : this(
+        id.toUShort(),
+        fade,
+    )
+
+    public val id: Int
+        get() = _id.toInt()
     override val category: ServerProtCategory
         get() = GameServerProtCategory.LOW_PRIORITY_PROT
 
@@ -18,19 +32,23 @@ public class AmbienceStop(
         if (this === other) return true
         if (javaClass != other?.javaClass) return false
 
-        other as AmbienceStop
+        other as AmbientSoundStart
 
+        if (_id != other._id) return false
         if (fade != other.fade) return false
 
         return true
     }
 
     override fun hashCode(): Int {
-        return fade.hashCode()
+        var result = _id.hashCode()
+        result = 31 * result + fade.hashCode()
+        return result
     }
 
     override fun toString(): String =
-        "AmbienceStop(" +
+        "AmbientSoundStart(" +
+            "id=$id, " +
             "fade=$fade" +
             ")"
 }

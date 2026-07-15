@@ -4,16 +4,16 @@ import net.rsprot.buffer.JagByteBuf
 import net.rsprot.crypto.cipher.StreamCipher
 import net.rsprot.protocol.ServerProt
 import net.rsprot.protocol.game.outgoing.prot.GameServerProt
-import net.rsprot.protocol.game.outgoing.sound.AmbienceStart
+import net.rsprot.protocol.game.outgoing.sound.AmbientSoundStart
 import net.rsprot.protocol.message.codec.MessageEncoder
 
-public class AmbienceStartEncoder : MessageEncoder<AmbienceStart> {
-    override val prot: ServerProt = GameServerProt.AMBIENCE_START
+public class AmbientSoundStartEncoder : MessageEncoder<AmbientSoundStart> {
+    override val prot: ServerProt = GameServerProt.AMBIENTSOUND_START
 
     override fun encode(
         streamCipher: StreamCipher,
         buffer: JagByteBuf,
-        message: AmbienceStart,
+        message: AmbientSoundStart,
     ) {
         buffer.p1Alt1(if (message.fade) 1 else 0)
         buffer.p2(message.id)
