@@ -1,4 +1,4 @@
-package net.rsprot.protocol.game.outgoing.info.worldentityinfo
+package net.rsprot.protocol.game.outgoing.info.util
 
 /**
  * A class that keeps the top-k results offered to it.
@@ -11,7 +11,7 @@ package net.rsprot.protocol.game.outgoing.info.worldentityinfo
  * @property worstIndex the index of the worst element for a quick comparison/eviction.
  * @property worstWeight the weight of the worst element for quick comparison/eviction.
  */
-internal class WorldEntityUnsortedTopKArray(
+internal class UnsortedTopKArray(
     maxResults: Int,
 ) {
     val indices = IntArray(maxResults)
@@ -21,11 +21,14 @@ internal class WorldEntityUnsortedTopKArray(
 
     private var worstIndex: Int = -1
     private var worstWeight: Long = Long.MAX_VALUE
+    private var maxSize: Int = indices.size
 
     /**
      * Resets the search results, allowing for a clean slate.
      */
-    fun reset() {
+    fun reset(maxSize: Int = indices.size) {
+        require(maxSize in 0..indices.size)
+        this.maxSize = maxSize
         size = 0
         worstIndex = -1
         worstWeight = Long.MAX_VALUE
@@ -45,6 +48,22 @@ internal class WorldEntityUnsortedTopKArray(
     }
 
     /**
+     * Trims the collection to [maxSize] if it exceeds the size, by evicting worst-weight entities.
+     */
+    fun trimToSize(maxSize: Int) {
+        require(maxSize in 0..indices.size) {
+            "Max size out of boundaries of 0..${indices.size}: $maxSize"
+        }
+        this.maxSize = maxSize
+        while (size > maxSize) {
+            size--
+            indices[worstIndex] = indices[size]
+            weights[worstIndex] = weights[size]
+            findWorst()
+        }
+    }
+
+    /**
      * Insert a candidate if it belongs in the top-K set.
      * @param index entity index to offer
      * @param weight value, higher is better, lower is evicted if full.
@@ -53,7 +72,7 @@ internal class WorldEntityUnsortedTopKArray(
         index: Int,
         weight: Long,
     ) {
-        if (size < indices.size) {
+        if (size < maxSize) {
             val idx = size
             indices[idx] = index
             weights[idx] = weight
@@ -73,6 +92,16 @@ internal class WorldEntityUnsortedTopKArray(
         val idx = worstIndex
         indices[idx] = index
         weights[idx] = weight
+
+        findWorst()
+    }
+
+    private fun findWorst() {
+        if (size == 0) {
+            worstIndex = -1
+            worstWeight = Long.MAX_VALUE
+            return
+        }
 
         var wi = 0
         var wk = weights[0]

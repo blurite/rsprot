@@ -11,6 +11,7 @@ import net.rsprot.protocol.game.outgoing.info.exceptions.InfoProcessException
 import net.rsprot.protocol.game.outgoing.info.util.BuildArea
 import net.rsprot.protocol.game.outgoing.info.util.PacketResult
 import net.rsprot.protocol.game.outgoing.info.util.ReferencePooledObject
+import net.rsprot.protocol.game.outgoing.info.util.UnsortedTopKArray
 import net.rsprot.protocol.internal.checkCommunicationThread
 import net.rsprot.protocol.internal.game.outgoing.info.CoordFine
 import net.rsprot.protocol.internal.game.outgoing.info.CoordGrid
@@ -77,7 +78,7 @@ public class WorldEntityInfo internal constructor(
         ShortArray(WorldEntityProtocol.CAPACITY) {
             INDEX_TERMINATOR
         }
-    private val unsortedTopKArray: WorldEntityUnsortedTopKArray = WorldEntityUnsortedTopKArray(MAX_HIGH_RES_COUNT)
+    private val unsortedTopKArray: UnsortedTopKArray = UnsortedTopKArray(MAX_HIGH_RES_COUNT)
     private val allWorldEntities = ArrayList<Int>()
     private val allWorldEntitiesUnmodifiable: List<Int> = Collections.unmodifiableList(allWorldEntities)
     private val addedWorldEntities = ArrayList<Int>()

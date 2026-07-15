@@ -13,7 +13,9 @@ import net.rsprot.protocol.game.outgoing.info.ByteBufRecycler
 import net.rsprot.protocol.game.outgoing.info.exceptions.InfoProcessException
 import net.rsprot.protocol.game.outgoing.info.util.PacketResult
 import net.rsprot.protocol.game.outgoing.info.util.ReferencePooledObject
+import net.rsprot.protocol.game.outgoing.info.util.UnsortedTopKArray
 import net.rsprot.protocol.game.outgoing.info.worldentityinfo.WorldEntityInfo
+import net.rsprot.protocol.internal.RSProtFlags
 import net.rsprot.protocol.internal.checkCommunicationThread
 import net.rsprot.protocol.internal.client.ClientTypeMap
 import net.rsprot.protocol.internal.game.outgoing.info.CoordGrid
@@ -105,6 +107,8 @@ public class NpcInfo internal constructor(
      * visible. Anyone else will be unable to see such NPCs.
      */
     internal val specificVisible: LongArray = LongArray((NPC_INFO_CAPACITY + 1) ushr 6)
+    private val normalPriorityTopKArray = UnsortedTopKArray(MAX_HIGH_RESOLUTION_NPCS)
+    private val lowPriorityTopKArray = UnsortedTopKArray(MAX_HIGH_RESOLUTION_NPCS)
 
     override fun isDestroyed(): Boolean = this.exception != null
 
@@ -331,27 +335,6 @@ public class NpcInfo internal constructor(
      * Sets the priority threshold caps for how many NPCs can render at once in
      * either of the priority groups.
      *
-     * It is important to note that if the priority caps are modified at "runtime" (as in, once NPCs
-     * are already being tracked), any existing NPCs which are being tracked will not be cleared out
-     * by calling this function. It will only prevent new additions from taking place beyond the new
-     * limits, but one would have to wait until the counts naturally decrement down in order to hit
-     * the desired limits.
-     *
-     * The intended use-case here is to deprioritize dynamic NPCs such as pets which could fill up
-     * the entire high resolution with just pets, preventing more important NPCs, such as shopkeepers
-     * from rendering to the player. By restricting low priority to say 50 NPCs, and normal priority
-     * to 99, as long as we correctly flag the pet NPCs as low priority, we ensure that no more than
-     * 50 pets can ever render at once, leaving those 99 remaining slots for any NPCs that are deemed
-     * more important.
-     *
-     * Due to the structure of the NPC info protocol, it is not viable to do an implementation where
-     * the high resolution is consistently capped out (e.g. allow up to 149 pets, but if more important
-     * NPCs come into range, drop some pets and render the higher resolution NPCs instead). This would
-     * be computationally heavy to check as the protocol first goes over any existing high resolution
-     * NPCs, which means we lack any context over how many higher resolution NPCs in need of rendering.
-     * Even if we allow the one tick delay to occur here, the implementation would be quite tricky and
-     * is not worth the headache it causes.
-     *
      * @param worldId the world id to set the caps for.
      * @param lowPriorityCap the maximum number of NPCs that can render at once with the low priority.
      * If the low priority cap has been reached, no more NPCs with the low priority will be able to be
@@ -576,13 +559,15 @@ public class NpcInfo internal constructor(
         val renderDistance = this.renderDistance
         val zoneSearchRadius = this.zoneSearchRadius
         val buffer = allocBuffer(details.worldId)
+        search(details, renderDistance, zoneSearchRadius)
         buffer.toBitBuf().use { bitBuffer ->
             val fragmented = processHighResolution(details, bitBuffer, renderDistance, zoneSearchRadius)
             if (fragmented) {
                 details.defragmentIndices()
             }
+            rebuildPriorities(details)
             if (details.worldId == ROOT_WORLD) {
-                processRootWorldLowResolution(details, bitBuffer, renderDistance, zoneSearchRadius)
+                processRootWorldLowResolution(details, bitBuffer, zoneSearchRadius)
             } else {
                 processLowResolution(details, bitBuffer)
             }
@@ -811,6 +796,7 @@ public class NpcInfo internal constructor(
             returns(false) implies (avatar != null)
         }
         if (avatar == null ||
+            !isSelected(avatar) ||
             avatar.details.inaccessible ||
             avatar.details.isTeleporting() ||
             avatar.details.allocateCycle == NpcInfoProtocol.cycleCount
@@ -836,52 +822,82 @@ public class NpcInfo internal constructor(
             !filter.accept(localPlayerIndex, avatar.details.index)
     }
 
-    /**
-     * Processes the NPCs that are in low resolution by requesting an iterator of NPC indices
-     * within [renderDistance] of the local player's current coordinate.
-     * This function is responsible for deciding which NPCs to move to high resolution,
-     * and ignore which ones are already in high resolution. It is the server's duty to always
-     * return all the NPCs that should be added, regardless of if they were previously already
-     * added.
-     * @param buffer the primary buffer into which to write the bitcode information
-     */
-    private fun processLowResolution(
+    private fun search(
         details: NpcInfoWorldDetails,
-        buffer: BitBuf,
+        renderDistance: Int,
+        zoneSearchRadius: Int,
     ) {
-        val lowCap = details.lowPriorityCap
-        val normalSoftCap = details.normalPrioritySoftCap
-        // If our local view is already maxed out, don't even bother calculating the below
-        if (details.normalPriorityCount >= normalSoftCap &&
-            details.lowPriorityCount >= lowCap
-        ) {
-            return
+        val maxSize = details.normalPrioritySoftCap + details.lowPriorityCap
+        normalPriorityTopKArray.reset(maxSize)
+        lowPriorityTopKArray.reset(details.lowPriorityCap)
+        if (details.worldId == ROOT_WORLD) {
+            searchRootWorld(details, renderDistance, zoneSearchRadius)
+        } else {
+            searchWorld(details)
         }
-        val worldEntityInfo =
-            checkNotNull(this.worldEntityInfo) {
-                "World entity info is null"
-            }
+        val normalSpill = (normalPriorityTopKArray.size - details.normalPrioritySoftCap).coerceAtLeast(0)
+        lowPriorityTopKArray.trimToSize((details.lowPriorityCap - normalSpill).coerceAtLeast(0))
+    }
+
+    private fun searchWorld(details: NpcInfoWorldDetails) {
+        val worldEntityInfo = checkNotNull(this.worldEntityInfo) { "World entity info is null" }
         val world = worldEntityInfo.getAvatar(details.worldId) ?: return
-        val encoder = lowResolutionToHighResolutionEncoders[oldSchoolClientType]
-        val largeDistance = max(world.sizeX, world.sizeZ) > 3
-        if (largeDistance) {
-            details.largeUpdate = true
-        }
         val coord = localPlayerCurrentCoord
-        // Prefer player's current level if we're updating the world on which they stand
+        val currentWorld = worldEntityInfo.getWorldEntity(coord) == details.worldId
         val level =
-            if (worldEntityInfo.getWorldEntity(coord) == details.worldId) {
+            if (currentWorld) {
                 coord.level
             } else {
                 world.activeLevel
             }
         val startX = world.southWestZoneX
         val startZ = world.southWestZoneZ
-        val swCoord = CoordGrid(level, startX shl 3, startZ shl 3)
-        val endX = world.southWestZoneX + world.sizeX
-        val endZ = world.southWestZoneZ + world.sizeZ
+        val endX = startX + world.sizeX
+        val endZ = startZ + world.sizeZ
+        val center =
+            if (currentWorld) {
+                coord
+            } else {
+                // Use the centre of the worldentity as they're on different world spaces
+                CoordGrid(level, (startX + endX) shl 2, (startZ + endZ) shl 2)
+            }
+        searchZones(details, level, startX, startZ, endX, endZ, center, false, 0)
+    }
+
+    private fun searchRootWorld(
+        details: NpcInfoWorldDetails,
+        renderDistance: Int,
+        zoneSearchRadius: Int,
+    ) {
+        if (zoneSearchRadius < 0) {
+            return
+        }
+        val worldEntityInfo = checkNotNull(this.worldEntityInfo) { "World entity info is null" }
+        val center = worldEntityInfo.getCoordGridInRootWorld(localPlayerCurrentCoord)
+        val startX = ((center.x shr 3) - zoneSearchRadius).coerceAtLeast(0)
+        val startZ = ((center.z shr 3) - zoneSearchRadius).coerceAtLeast(0)
+        val endX = ((center.x shr 3) + zoneSearchRadius).coerceAtMost(0x7FF) + 1
+        val endZ = ((center.z shr 3) + zoneSearchRadius).coerceAtMost(0x7FF) + 1
+        searchZones(details, center.level, startX, startZ, endX, endZ, center, true, renderDistance)
+    }
+
+    private fun searchZones(
+        details: NpcInfoWorldDetails,
+        level: Int,
+        startX: Int,
+        startZ: Int,
+        endX: Int,
+        endZ: Int,
+        center: CoordGrid,
+        checkDistance: Boolean,
+        renderDistance: Int,
+    ) {
+        val worldEntityInfo =
+            checkNotNull(this.worldEntityInfo) {
+                "World entity info is null"
+            }
         val filter = this.filter
-        loop@for (x in startX..<endX) {
+        for (x in startX..<endX) {
             for (z in startZ..<endZ) {
                 val npcs = this.zoneIndexStorage.get(level, x, z) ?: continue
                 for (k in 0..<npcs.size) {
@@ -889,165 +905,154 @@ public class NpcInfo internal constructor(
                     if (index == NPC_INFO_CAPACITY) {
                         break
                     }
-                    if (isHighResolution(details, index)) {
-                        continue
-                    }
                     val avatar = repository.getOrNull(index) ?: continue
                     if (avatar.details.inaccessible) {
                         continue
                     }
-                    if (avatar.details.priorityBitcode and AVATAR_NORMAL_PRIORITY_FLAG != 0) {
-                        // For normal priority, once both our groups are capped out, we just break out of the loop,
-                        // as neither low nor normal priority NPCs can be added now.
-                        if (details.normalPriorityCount >= normalSoftCap && details.lowPriorityCount >= lowCap) {
-                            break@loop
-                        }
-                    } else {
-                        // For low priority, if we've reached our cap, just move on - there might be normal
-                        // priority NPCs still coming.
-                        if (details.lowPriorityCount >= lowCap) {
-                            continue
-                        }
-                    }
-                    if (avatar.details.specific) {
-                        if (!isSpecific(index)) {
-                            continue
-                        }
-                    }
-                    if (filter != null && !filter.accept(localPlayerIndex, index)) {
-                        continue
-                    }
-                    avatar.addObserver(localPlayerIndex)
-                    val i = details.highResolutionNpcIndexCount++
-                    details.incrementPriority(
-                        i,
-                        avatar.details.priorityBitcode and AVATAR_NORMAL_PRIORITY_FLAG == 0,
-                    )
-                    details.highResolutionNpcIndices[i] = index.toUShort()
-                    val observerFlags = avatar.extendedInfo.getLowToHighResChangeExtendedInfoFlags()
-                    if (observerFlags != 0) {
-                        details.observerExtendedInfoFlags.addFlag(details.extendedInfoCount, observerFlags)
-                    }
-                    val extendedInfo = (avatar.extendedInfo.flags or observerFlags) != 0
-                    if (extendedInfo) {
-                        details.extendedInfoIndices[details.extendedInfoCount++] = index.toUShort()
-                    }
-                    encoder.encode(
-                        buffer,
-                        avatar.details,
-                        extendedInfo,
-                        swCoord,
-                        largeDistance,
-                        NpcInfoProtocol.cycleCount,
-                    )
-                }
-            }
-        }
-    }
-
-    private fun processRootWorldLowResolution(
-        details: NpcInfoWorldDetails,
-        buffer: BitBuf,
-        renderDistance: Int,
-        zoneSearchRadius: Int,
-    ) {
-        val lowCap = details.lowPriorityCap
-        val normalSoftCap = details.normalPrioritySoftCap
-        // If our local view is already maxed out, don't even bother calculating the below
-        if (details.normalPriorityCount >= normalSoftCap &&
-            details.lowPriorityCount >= lowCap ||
-            zoneSearchRadius < 0
-        ) {
-            return
-        }
-        val worldEntityInfo =
-            checkNotNull(this.worldEntityInfo) {
-                "World entity info is null"
-            }
-        val encoder = lowResolutionToHighResolutionEncoders[oldSchoolClientType]
-        val largeDistance = zoneSearchRadius > 3
-        if (largeDistance) {
-            details.largeUpdate = true
-        }
-        val rootWorldCoord = worldEntityInfo.getCoordGridInRootWorld(localPlayerCurrentCoord)
-        val centerX = rootWorldCoord.x
-        val centerZ = rootWorldCoord.z
-        val level = rootWorldCoord.level
-        val startX = ((centerX shr 3) - zoneSearchRadius).coerceAtLeast(0)
-        val startZ = ((centerZ shr 3) - zoneSearchRadius).coerceAtLeast(0)
-        val endX = ((centerX shr 3) + zoneSearchRadius).coerceAtMost(0x7FF)
-        val endZ = ((centerZ shr 3) + zoneSearchRadius).coerceAtMost(0x7FF)
-        val filter = this.filter
-        loop@for (x in startX..endX) {
-            for (z in startZ..endZ) {
-                val npcs = this.zoneIndexStorage.get(level, x, z) ?: continue
-                for (k in 0..<npcs.size) {
-                    val index = npcs[k].toInt() and NPC_INFO_CAPACITY
-                    if (index == NPC_INFO_CAPACITY) {
-                        break
-                    }
-                    if (isHighResolution(details, index)) {
-                        continue
-                    }
-                    val avatar = repository.getOrNull(index) ?: continue
-                    if (avatar.details.inaccessible) {
-                        continue
-                    }
-                    if (avatar.details.priorityBitcode and AVATAR_NORMAL_PRIORITY_FLAG != 0) {
-                        // For normal priority, once both our groups are capped out, we just break out of the loop,
-                        // as neither low nor normal priority NPCs can be added now.
-                        if (details.normalPriorityCount >= normalSoftCap && details.lowPriorityCount >= lowCap) {
-                            break@loop
-                        }
-                    } else {
-                        // For low priority, if we've reached our cap, just move on - there might be normal
-                        // priority NPCs still coming.
-                        if (details.lowPriorityCount >= lowCap) {
-                            continue
-                        }
-                    }
-                    if (!worldEntityInfo.isVisibleInRoot(
-                            rootWorldCoord,
+                    if (checkDistance &&
+                        !worldEntityInfo.isVisibleInRoot(
+                            center,
                             avatar.details.currentCoord,
                             max(renderDistance, avatar.details.renderDistance),
                         )
                     ) {
                         continue
                     }
-                    if (avatar.details.specific) {
-                        if (!isSpecific(index)) {
-                            continue
-                        }
+                    if (avatar.details.specific && !isSpecific(index)) {
+                        continue
                     }
                     if (filter != null && !filter.accept(localPlayerIndex, index)) {
                         continue
                     }
-                    avatar.addObserver(localPlayerIndex)
-                    val i = details.highResolutionNpcIndexCount++
-                    details.incrementPriority(
-                        i,
-                        avatar.details.priorityBitcode and AVATAR_NORMAL_PRIORITY_FLAG == 0,
-                    )
-                    details.highResolutionNpcIndices[i] = index.toUShort()
-                    val observerFlags = avatar.extendedInfo.getLowToHighResChangeExtendedInfoFlags()
-                    if (observerFlags != 0) {
-                        details.observerExtendedInfoFlags.addFlag(details.extendedInfoCount, observerFlags)
+                    val weight =
+                        if (RSProtFlags.npcInfoPreferClosestNpcs) {
+                            val coord = avatar.details.currentCoord
+                            val dx = center.x.toLong() - coord.x
+                            val dz = center.z.toLong() - coord.z
+                            -(((dx * dx + dz * dz) shl 16) + index.toLong())
+                        } else if (isHighResolution(details, index)) {
+                            1L
+                        } else {
+                            0L
+                        }
+                    if (avatar.details.priorityBitcode and AVATAR_NORMAL_PRIORITY_FLAG != 0) {
+                        normalPriorityTopKArray.offer(index, weight)
+                    } else {
+                        lowPriorityTopKArray.offer(index, weight)
                     }
-                    val extendedInfo = (avatar.extendedInfo.flags or observerFlags) != 0
-                    if (extendedInfo) {
-                        details.extendedInfoIndices[details.extendedInfoCount++] = index.toUShort()
-                    }
-                    encoder.encode(
-                        buffer,
-                        avatar.details,
-                        extendedInfo,
-                        rootWorldCoord,
-                        largeDistance,
-                        NpcInfoProtocol.cycleCount,
-                    )
                 }
             }
         }
+    }
+
+    private fun rebuildPriorities(details: NpcInfoWorldDetails) {
+        details.clearPriorities()
+        for (i in 0..<details.highResolutionNpcIndexCount) {
+            val index = details.highResolutionNpcIndices[i].toInt()
+            val avatar = repository.getOrNull(index) ?: continue
+            details.incrementPriority(
+                i,
+                avatar.details.priorityBitcode and AVATAR_NORMAL_PRIORITY_FLAG == 0,
+            )
+        }
+    }
+
+    private fun processLowResolution(
+        details: NpcInfoWorldDetails,
+        buffer: BitBuf,
+    ) {
+        val worldEntityInfo = checkNotNull(this.worldEntityInfo) { "World entity info is null" }
+        val world = worldEntityInfo.getAvatar(details.worldId) ?: return
+        val largeDistance = max(world.sizeX, world.sizeZ) > 3
+        if (largeDistance) {
+            details.largeUpdate = true
+        }
+        val level =
+            if (worldEntityInfo.getWorldEntity(localPlayerCurrentCoord) == details.worldId) {
+                localPlayerCurrentCoord.level
+            } else {
+                world.activeLevel
+            }
+        val origin = CoordGrid(level, world.southWestZoneX shl 3, world.southWestZoneZ shl 3)
+        processSelectedLowResolution(details, buffer, origin, largeDistance)
+    }
+
+    private fun processRootWorldLowResolution(
+        details: NpcInfoWorldDetails,
+        buffer: BitBuf,
+        zoneSearchRadius: Int,
+    ) {
+        val worldEntityInfo =
+            checkNotNull(this.worldEntityInfo) {
+                "World entity info is null"
+            }
+        val origin = worldEntityInfo.getCoordGridInRootWorld(localPlayerCurrentCoord)
+        val largeDistance = zoneSearchRadius > 3
+        if (largeDistance) {
+            details.largeUpdate = true
+        }
+        processSelectedLowResolution(details, buffer, origin, largeDistance)
+    }
+
+    private fun processSelectedLowResolution(
+        details: NpcInfoWorldDetails,
+        buffer: BitBuf,
+        origin: CoordGrid,
+        largeDistance: Boolean,
+    ) {
+        val encoder = lowResolutionToHighResolutionEncoders[oldSchoolClientType]
+        processSelectedLowResolution(details, buffer, encoder, origin, largeDistance, normalPriorityTopKArray)
+        processSelectedLowResolution(details, buffer, encoder, origin, largeDistance, lowPriorityTopKArray)
+    }
+
+    private fun processSelectedLowResolution(
+        details: NpcInfoWorldDetails,
+        buffer: BitBuf,
+        encoder: NpcResolutionChangeEncoder,
+        origin: CoordGrid,
+        largeDistance: Boolean,
+        topKArray: UnsortedTopKArray,
+    ) {
+        for (k in 0..<topKArray.size) {
+            val index = topKArray.indices[k]
+            if (isHighResolution(details, index)) {
+                continue
+            }
+            val avatar = repository.getOrNull(index) ?: continue
+            avatar.addObserver(localPlayerIndex)
+            val i = details.highResolutionNpcIndexCount++
+            details.incrementPriority(
+                i,
+                avatar.details.priorityBitcode and AVATAR_NORMAL_PRIORITY_FLAG == 0,
+            )
+            details.highResolutionNpcIndices[i] = index.toUShort()
+            val observerFlags = avatar.extendedInfo.getLowToHighResChangeExtendedInfoFlags()
+            if (observerFlags != 0) {
+                details.observerExtendedInfoFlags.addFlag(details.extendedInfoCount, observerFlags)
+            }
+            val extendedInfo = (avatar.extendedInfo.flags or observerFlags) != 0
+            if (extendedInfo) {
+                details.extendedInfoIndices[details.extendedInfoCount++] = index.toUShort()
+            }
+            encoder.encode(
+                buffer,
+                avatar.details,
+                extendedInfo,
+                origin,
+                largeDistance,
+                NpcInfoProtocol.cycleCount,
+            )
+        }
+    }
+
+    private fun isSelected(avatar: NpcAvatar): Boolean {
+        val topKArray =
+            if (avatar.details.priorityBitcode and AVATAR_NORMAL_PRIORITY_FLAG != 0) {
+                normalPriorityTopKArray
+            } else {
+                lowPriorityTopKArray
+            }
+        return topKArray.contains(avatar.details.index)
     }
 
     /**
