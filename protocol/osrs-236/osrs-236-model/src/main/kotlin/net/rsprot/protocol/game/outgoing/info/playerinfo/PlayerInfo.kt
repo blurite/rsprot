@@ -305,7 +305,7 @@ public class PlayerInfo internal constructor(
         if (isDestroyed()) return ArrayList(0)
         val collection = ArrayList<Int>(highResolutionCount)
         for (i in 0..<highResolutionCount) {
-            val index = highResolutionIndices[i].toInt()
+            val index = highResolutionIndices[i].toInt() and INDEX_MASK
             collection.add(index)
         }
         return collection
@@ -321,7 +321,7 @@ public class PlayerInfo internal constructor(
         checkCommunicationThread()
         if (isDestroyed()) return collection
         for (i in 0..<highResolutionCount) {
-            val index = highResolutionIndices[i].toInt()
+            val index = highResolutionIndices[i].toInt() and INDEX_MASK
             collection.add(index)
         }
         return collection
@@ -610,8 +610,9 @@ public class PlayerInfo internal constructor(
     ) {
         var skips = -1
         for (i in 0 until lowResolutionCount) {
-            val index = lowResolutionIndices[i].toInt()
-            val wasStationary = stationary[index].toInt() and WAS_STATIONARY != 0
+            val packedIndex = lowResolutionIndices[i].toInt()
+            val index = packedIndex and INDEX_MASK
+            val wasStationary = packedIndex < 0
             if (skipStationary == wasStationary) {
                 continue
             }
@@ -715,8 +716,9 @@ public class PlayerInfo internal constructor(
     ) {
         var skips = -1
         for (i in 0 until highResolutionCount) {
-            val index = highResolutionIndices[i].toInt()
-            val wasStationary = (stationary[index].toInt() and WAS_STATIONARY) != 0
+            val packedIndex = highResolutionIndices[i].toInt()
+            val index = packedIndex and INDEX_MASK
+            val wasStationary = packedIndex < 0
             if (skipStationary == wasStationary) {
                 continue
             }
@@ -984,11 +986,13 @@ public class PlayerInfo internal constructor(
         // Only need to reset the count here, the actual numbers don't matter.
         extendedInfoCount = 0
         for (i in 1 until PROTOCOL_CAPACITY) {
-            stationary[i] = (stationary[i].toInt() shr 1).toByte()
+            val stationaryState = (stationary[i].toInt() shr 1).toByte()
+            stationary[i] = stationaryState
+            val packedIndex = i or ((stationaryState.toInt() and WAS_STATIONARY) shl STATIONARY_INDEX_SHIFT)
             if (isHighResolution(i)) {
-                highResolutionIndices[highResolutionCount++] = i.toShort()
+                highResolutionIndices[highResolutionCount++] = packedIndex.toShort()
             } else {
-                lowResolutionIndices[lowResolutionCount++] = i.toShort()
+                lowResolutionIndices[lowResolutionCount++] = packedIndex.toShort()
             }
         }
         observerExtendedInfoFlags.reset()
@@ -1167,6 +1171,11 @@ public class PlayerInfo internal constructor(
          * The default capacity of the backing byte buffer into which all player info is written.
          */
         private const val BUF_CAPACITY: Int = 40_000
+
+        // Player indices only use 11 bits. The sign bit stores the WAS_STATIONARY snapshot
+        // alongside each resolution-list entry so both protocol passes avoid a dependent array read.
+        private const val INDEX_MASK: Int = 0x7FFF
+        private const val STATIONARY_INDEX_SHIFT: Int = 15
 
         /**
          * The flag indicating that a player was stationary in the previous cycle.

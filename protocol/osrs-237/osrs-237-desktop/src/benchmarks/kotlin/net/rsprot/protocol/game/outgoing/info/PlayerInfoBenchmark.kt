@@ -30,9 +30,13 @@ class PlayerInfoBenchmark {
     private lateinit var players: Array<Infos?>
     private lateinit var positions: Array<PlayerPosition?>
     private val random: Random = Random(0)
+    private var tickCycle: Int = 0
 
     @Param
     private lateinit var scenario: Scenario
+
+    @Param
+    private lateinit var activity: Activity
 
     @Setup
     fun setup() {
@@ -161,8 +165,17 @@ class PlayerInfoBenchmark {
     private fun tick() {
         for (i in 1..<MAX_IDX) {
             val infos = checkNotNull(players[i])
-            updateCoord(infos, checkNotNull(positions[i]))
+            val position = checkNotNull(positions[i])
+            val x =
+                if (activity == Activity.ALTERNATING_HALF && i and 1 == 0) {
+                    position.x xor (tickCycle and 1)
+                } else {
+                    position.x
+                }
+            infos.updateRootCoord(position.level, x, position.z)
+            infos.updateRootBuildAreaCenteredOnPlayer(position.buildAreaCenterX, position.buildAreaCenterZ)
         }
+        tickCycle++
         protocols.playerInfoProtocol.update()
         for (i in 1..<MAX_IDX) {
             val player = checkNotNull(players[i]).playerInfo
@@ -199,5 +212,10 @@ class PlayerInfoBenchmark {
         DENSE_ROOT,
         DISTRIBUTED_ROOT,
         MIXED_WORLD_ENTITIES,
+    }
+
+    enum class Activity {
+        STATIONARY,
+        ALTERNATING_HALF,
     }
 }

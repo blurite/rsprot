@@ -115,6 +115,32 @@ class PlayerInfoWorldMembershipTest {
     }
 
     @Test
+    fun `stationary snapshots preserve baseline packet bytes`() {
+        val fixture = StationarySnapshotFixture()
+        val packets = ArrayList<String>()
+
+        fixture.updateTarget(10, near = true)
+        fixture.updateTarget(11, near = true)
+        fixture.updateTarget(20, near = false)
+        fixture.updateTarget(21, near = false)
+        packets += fixture.tick()
+
+        fixture.updateTarget(10, near = true, xOffset = 2)
+        fixture.updateTarget(11, near = true)
+        fixture.updateTarget(20, near = false, xOffset = 2)
+        fixture.updateTarget(21, near = false)
+        packets += fixture.tick()
+
+        fixture.updateTarget(10, near = false)
+        fixture.updateTarget(11, near = false)
+        fixture.updateTarget(20, near = true)
+        fixture.updateTarget(21, near = true)
+        packets += fixture.tick()
+
+        assertEquals(EXPECTED_STATIONARY_SNAPSHOT_PACKET_HEX, packets)
+    }
+
+    @Test
     fun `stationary player membership is rebuilt after world entity allocation removal and index reuse`() {
         val fixture = PlayerFixture()
 
@@ -316,6 +342,50 @@ class PlayerInfoWorldMembershipTest {
         fun targetIsHighResolution(): Boolean = TARGET_INDEX in observer.playerInfo.getHighResolutionIndices()
     }
 
+    private class StationarySnapshotFixture {
+        private val context = generateInfoProtocolContext()
+        private val protocols = context.protocols
+        private val observer: Infos = protocols.alloc(OBSERVER_INDEX, OldSchoolClientType.DESKTOP)
+        private val targets: Map<Int, Infos>
+
+        init {
+            observer.updateRootCoord(0, ROOT_X, ROOT_Z)
+            observer.updateRootBuildAreaCenteredOnPlayer(ROOT_X, ROOT_Z)
+            val gpiBuffer = Unpooled.buffer(5000)
+            observer.playerInfo.handleAbsolutePlayerPositions(gpiBuffer)
+            gpiBuffer.release()
+            targets =
+                listOf(10, 11, 20, 21).associateWith { index ->
+                    protocols.alloc(index, OldSchoolClientType.DESKTOP).also { initializeAppearance(it.playerInfo) }
+                }
+        }
+
+        fun updateTarget(
+            index: Int,
+            near: Boolean,
+            xOffset: Int = 1,
+        ) {
+            val target = checkNotNull(targets[index])
+            val x = if (near) ROOT_X + xOffset else ROOT_X + 104 + xOffset
+            target.updateRootCoord(0, x, ROOT_Z)
+            target.updateRootBuildAreaCenteredOnPlayer(ROOT_X, ROOT_Z)
+        }
+
+        fun tick(): String {
+            protocols.worldEntityInfoProtocol.update()
+            protocols.playerInfoProtocol.update()
+            val observerBytes = packetHex(observer.playerInfo)
+            for (target in targets.values) {
+                packetHex(target.playerInfo)
+            }
+            releaseWorldEntityPacket(observer)
+            for (target in targets.values) {
+                releaseWorldEntityPacket(target)
+            }
+            return observerBytes
+        }
+    }
+
     private companion object {
         private const val OBSERVER_INDEX = 500
         private const val TARGET_INDEX = 10
@@ -336,6 +406,20 @@ class PlayerInfoWorldMembershipTest {
                 "807ff0",
                 "b8640190007ff08c80e400",
                 "008a807ff0",
+            )
+
+        // Captured from the same scenario on unmodified upstream revision 237 at 7fa6050a.
+        private val EXPECTED_STATIONARY_SNAPSHOT_PACKET_HEX =
+            listOf(
+                "00288640b2030c816405ff20023f00ffff000000000000000000000000000000000000000000000000" +
+                    "0000000000ffffffffffffffffffffffffffff546172676574007e000000000000000000023f00ffff0000" +
+                    "000000000000000000000000000000000000000000000000000000ffffffffffffffffffffffffffff54" +
+                    "6172676574007e000000000000000000",
+                "98427fec",
+                "8080308640b2030c816405fe80023f00ffff000000000000000000000000000000000000000000000000" +
+                    "0000000000ffffffffffffffffffffffffffff546172676574007e000000000000000000023f00ffff0000" +
+                    "000000000000000000000000000000000000000000000000000000ffffffffffffffffffffffffffff54" +
+                    "6172676574007e000000000000000000",
             )
 
         private fun instanceCoord(
