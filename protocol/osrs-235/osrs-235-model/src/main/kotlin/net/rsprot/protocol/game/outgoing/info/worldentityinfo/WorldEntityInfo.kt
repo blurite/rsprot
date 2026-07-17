@@ -594,6 +594,20 @@ public class WorldEntityInfo internal constructor(
         radius: Int,
     ): Boolean {
         val targetWorldIndex = avatarRepository.getByCoordGrid(target)
+        return isVisible(source, sourceWorldIndex, target, targetWorldIndex, radius)
+    }
+
+    /**
+     * Checks if the [target] is visible to the [source] with precomputed world entity indices.
+     * The indices may be reused across every observer update in the same protocol cycle.
+     */
+    internal fun isVisible(
+        source: CoordGrid,
+        sourceWorldIndex: Int,
+        target: CoordGrid,
+        targetWorldIndex: Int,
+        radius: Int,
+    ): Boolean {
         // If both parties are in the root world, just run the usual checks
         if (sourceWorldIndex == ROOT_WORLD && targetWorldIndex == ROOT_WORLD) {
             return source.inDistance(target, radius) &&

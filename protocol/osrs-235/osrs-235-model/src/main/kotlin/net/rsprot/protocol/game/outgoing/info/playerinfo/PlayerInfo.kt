@@ -586,12 +586,7 @@ public class PlayerInfo internal constructor(
                 "World entity info is null"
             }
         val sourceCoord = avatar.currentCoord
-        val sourceWorldIndex =
-            if (avatar.resizeRange == Int.MAX_VALUE && avatar.preferredResizeRange == Int.MAX_VALUE) {
-                WorldEntityInfo.ROOT_WORLD
-            } else {
-                worldEntityInfo.getWorldEntity(sourceCoord)
-            }
+        val sourceWorldIndex = protocol.getWorldEntityIndex(localIndex)
         val buffer = allocBuffer()
         val bitBuf = buffer.toBitBuf()
         bitBuf.use { processHighResolution(worldEntityInfo, sourceCoord, sourceWorldIndex, it, skipStationary = true) }
@@ -910,6 +905,7 @@ public class PlayerInfo internal constructor(
                 sourceCoord,
                 sourceWorldIndex,
                 otherCoordGrid,
+                protocol.getWorldEntityIndex(other.localIndex),
                 rangeToCheck,
             )
     }
@@ -952,9 +948,18 @@ public class PlayerInfo internal constructor(
                 sourceCoord,
                 sourceWorldIndex,
                 otherCoordGrid,
+                protocol.getWorldEntityIndex(other.localIndex),
                 rangeToCheck,
             )
     }
+
+    /**
+     * Resolves the world entity containing this player for the current protocol cycle.
+     */
+    internal fun resolveWorldEntityIndex(): Int =
+        checkNotNull(worldEntityInfo) {
+            "World entity info is null"
+        }.getWorldEntity(avatar.currentCoord)
 
     /**
      * Allocates a new buffer from the [allocator] with a capacity of [BUF_CAPACITY].

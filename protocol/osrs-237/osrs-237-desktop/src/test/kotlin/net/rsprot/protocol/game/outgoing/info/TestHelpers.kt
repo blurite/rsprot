@@ -16,6 +16,7 @@ import net.rsprot.protocol.game.outgoing.info.npcinfo.NpcInfoProtocol
 import net.rsprot.protocol.game.outgoing.info.playerinfo.PlayerAvatarFactory
 import net.rsprot.protocol.game.outgoing.info.playerinfo.PlayerInfoProtocol
 import net.rsprot.protocol.game.outgoing.info.worker.DefaultProtocolWorker
+import net.rsprot.protocol.game.outgoing.info.worker.ProtocolWorker
 import net.rsprot.protocol.game.outgoing.info.worldentityinfo.WorldEntityAvatarFactory
 import net.rsprot.protocol.game.outgoing.info.worldentityinfo.WorldEntityProtocol
 import net.rsprot.protocol.internal.client.ClientTypeMap
@@ -49,6 +50,7 @@ internal data class TestInfoProtocolContext(
 internal fun generateInfoProtocolContext(
     npcAvatarFactory: NpcAvatarFactory = generateNpcAvatarFactory(),
     npcIndexStorage: ZoneIndexStorage = ZoneIndexStorage(ZoneIndexStorage.NPC_CAPACITY),
+    playerProtocolWorker: ProtocolWorker = DefaultProtocolWorker(),
 ): TestInfoProtocolContext {
     val allocator = UnpooledByteBufAllocator.DEFAULT
     val protocolSupplier = DeferredNpcInfoProtocolSupplier()
@@ -98,7 +100,7 @@ internal fun generateInfoProtocolContext(
     val playerInfoProtocol =
         PlayerInfoProtocol(
             allocator,
-            DefaultProtocolWorker(),
+            playerProtocolWorker,
             playerAvatarFactory,
         )
     return TestInfoProtocolContext(

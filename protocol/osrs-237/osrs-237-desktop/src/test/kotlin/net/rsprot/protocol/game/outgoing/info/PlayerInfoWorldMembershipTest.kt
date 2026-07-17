@@ -3,6 +3,8 @@ package net.rsprot.protocol.game.outgoing.info
 import io.netty.buffer.Unpooled
 import net.rsprot.protocol.common.client.OldSchoolClientType
 import net.rsprot.protocol.game.outgoing.info.playerinfo.PlayerInfo
+import net.rsprot.protocol.game.outgoing.info.worker.ForkJoinMultiThreadProtocolWorker
+import net.rsprot.protocol.game.outgoing.info.worker.ProtocolWorker
 import net.rsprot.protocol.game.outgoing.info.worldentityinfo.WorldEntityAvatar
 import net.rsprot.protocol.game.outgoing.info.worldentityinfo.WorldEntityAvatarFactory
 import net.rsprot.protocol.internal.game.outgoing.info.CoordGrid
@@ -112,8 +114,139 @@ class PlayerInfoWorldMembershipTest {
         assertEquals(EXPECTED_PACKET_HEX, packets)
     }
 
-    private class PlayerFixture {
-        private val context = generateInfoProtocolContext()
+    @Test
+    fun `stationary player membership is rebuilt after world entity allocation removal and index reuse`() {
+        val fixture = PlayerFixture()
+
+        fixture.updateObserver(0, ROOT_X + 7, ROOT_Z)
+        fixture.updateTarget(0, ROOT_X + 8, ROOT_Z)
+        fixture.tick()
+        assertTrue(fixture.targetIsHighResolution())
+
+        val coveringWorld =
+            fixture.allocWorld(
+                index = 1,
+                zoneX = (ROOT_X + 8) ushr 3,
+                activeLevel = 0,
+                projectedX = ROOT_X + 104,
+                zoneZ = ROOT_Z ushr 3,
+            )
+        fixture.tick()
+        assertFalse(fixture.targetIsHighResolution())
+
+        fixture.releaseWorld(coveringWorld)
+        fixture.tick()
+        assertTrue(fixture.targetIsHighResolution())
+
+        fixture.allocWorld(
+            index = 1,
+            zoneX = INSTANCE_ZONE_X,
+            activeLevel = 0,
+            projectedX = ROOT_X + 104,
+        )
+        fixture.tick()
+        assertTrue(fixture.targetIsHighResolution())
+    }
+
+    @Test
+    fun `parallel observer updates retain baseline packet bytes`() {
+        repeat(10) {
+            val fixture = PlayerFixture(ForkJoinMultiThreadProtocolWorker())
+            val packets = ArrayList<String>()
+
+            fixture.updateObserver(0, ROOT_X, ROOT_Z)
+            fixture.updateTarget(0, ROOT_X + 1, ROOT_Z)
+            packets += fixture.tick()
+
+            fixture.target.playerInfo.avatar.hidden = true
+            packets += fixture.tick()
+            fixture.target.playerInfo.avatar.hidden = false
+            packets += fixture.tick()
+
+            val coveringWorld = fixture.allocWorld(1, ROOT_X ushr 3, activeLevel = 0, ROOT_X + 4)
+            packets += fixture.tick()
+            fixture.releaseWorld(coveringWorld)
+            packets += fixture.tick()
+
+            fixture.updateTarget(0, ROOT_X + 104, ROOT_Z)
+            packets += fixture.tick()
+
+            fixture.allocWorld(2, INSTANCE_ZONE_X, activeLevel = 0, ROOT_X + 4)
+            fixture.updateObserver(instanceCoord(0, 0))
+            fixture.updateTarget(instanceCoord(0, 1))
+            packets += fixture.tick()
+            fixture.updateTarget(instanceCoord(1, 1))
+            packets += fixture.tick()
+
+            assertEquals(EXPECTED_PACKET_HEX, packets)
+        }
+    }
+
+    @Test
+    fun `final movement and player index reuse replace cached membership`() {
+        val fixture = PlayerFixture()
+        fixture.allocWorld(1, INSTANCE_ZONE_X, activeLevel = 0, ROOT_X + 104)
+
+        fixture.updateObserver(0, ROOT_X, ROOT_Z)
+        fixture.updateTarget(instanceCoord(0, 1))
+        fixture.tick()
+        assertFalse(fixture.targetIsHighResolution())
+
+        fixture.updateTarget(0, ROOT_X + 1, ROOT_Z)
+        fixture.updateTarget(instanceCoord(0, 1))
+        fixture.updateTarget(0, ROOT_X + 1, ROOT_Z)
+        fixture.tick()
+        assertTrue(fixture.targetIsHighResolution())
+
+        fixture.reallocateTarget(instanceCoord(0, 1))
+        fixture.tick()
+        assertFalse(fixture.targetIsHighResolution())
+        fixture.tick()
+        assertFalse(fixture.targetIsHighResolution())
+
+        fixture.reallocateTarget(CoordGrid(0, ROOT_X + 1, ROOT_Z))
+        fixture.tick()
+        assertTrue(fixture.targetIsHighResolution())
+    }
+
+    @Test
+    fun `world entity projection movement uses current root coordinate`() {
+        val fixture = PlayerFixture()
+        val world = fixture.allocWorld(1, INSTANCE_ZONE_X, activeLevel = 0, ROOT_X + 104)
+
+        fixture.updateObserver(instanceCoord(0, 0))
+        fixture.updateTarget(0, ROOT_X + 1, ROOT_Z)
+        fixture.tick()
+        assertFalse(fixture.targetIsHighResolution())
+
+        world.updateCoord(0, ROOT_X * 128 + 64, ROOT_Z * 128 + 64, teleport = true)
+        fixture.tick()
+        assertTrue(fixture.targetIsHighResolution())
+
+        world.updateCoord(0, (ROOT_X + 104) * 128 + 64, ROOT_Z * 128 + 64, teleport = true)
+        fixture.tick()
+        assertFalse(fixture.targetIsHighResolution())
+    }
+
+    @Test
+    fun `unlimited resize range preserves visibility bypass`() {
+        val fixture = PlayerFixture()
+
+        fixture.updateObserver(0, ROOT_X, ROOT_Z)
+        fixture.updateTarget(3, ROOT_X + 104, ROOT_Z + 104)
+        fixture.observer.playerInfo.avatar.forceResizeRange(Int.MAX_VALUE)
+        fixture.tick()
+
+        assertTrue(fixture.targetIsHighResolution())
+    }
+
+    private class PlayerFixture(playerProtocolWorker: ProtocolWorker? = null) {
+        private val context =
+            if (playerProtocolWorker == null) {
+                generateInfoProtocolContext()
+            } else {
+                generateInfoProtocolContext(playerProtocolWorker = playerProtocolWorker)
+            }
         private val protocols = context.protocols
         val observer: Infos = protocols.alloc(OBSERVER_INDEX, OldSchoolClientType.DESKTOP)
         var target: Infos
@@ -155,16 +288,18 @@ class PlayerInfoWorldMembershipTest {
             zoneX: Int,
             activeLevel: Int,
             projectedX: Int,
-        ): WorldEntityAvatar = allocWorld(context.worldEntityAvatarFactory, index, zoneX, activeLevel, projectedX)
+            zoneZ: Int = if (zoneX == ROOT_X ushr 3) ROOT_Z ushr 3 else INSTANCE_ZONE_Z,
+        ): WorldEntityAvatar =
+            allocWorld(context.worldEntityAvatarFactory, index, zoneX, zoneZ, activeLevel, projectedX)
 
         fun releaseWorld(world: WorldEntityAvatar) {
             context.worldEntityAvatarFactory.release(world)
         }
 
-        fun reallocateTarget() {
+        fun reallocateTarget(coord: CoordGrid = CoordGrid(0, ROOT_X + 1, ROOT_Z)) {
             protocols.dealloc(target)
             target = protocols.alloc(TARGET_INDEX, OldSchoolClientType.DESKTOP)
-            updateTarget(0, ROOT_X + 1, ROOT_Z)
+            updateTarget(coord)
             initializeAppearance(target.playerInfo)
         }
 
@@ -213,6 +348,7 @@ class PlayerInfoWorldMembershipTest {
             factory: WorldEntityAvatarFactory,
             index: Int,
             zoneX: Int,
+            zoneZ: Int,
             activeLevel: Int,
             projectedX: Int,
         ): WorldEntityAvatar =
@@ -223,7 +359,7 @@ class PlayerInfoWorldMembershipTest {
                 sizeX = 1,
                 sizeZ = 1,
                 southWestZoneX = zoneX,
-                southWestZoneZ = if (zoneX == ROOT_X ushr 3) ROOT_Z ushr 3 else INSTANCE_ZONE_Z,
+                southWestZoneZ = zoneZ,
                 minLevel = 0,
                 maxLevel = 1,
                 fineX = projectedX * 128 + 64,
