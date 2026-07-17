@@ -581,12 +581,23 @@ public class PlayerInfo internal constructor(
      */
     internal fun pBitcodes() {
         avatar.resize(highResolutionCount)
+        val worldEntityInfo =
+            checkNotNull(this.worldEntityInfo) {
+                "World entity info is null"
+            }
+        val sourceCoord = avatar.currentCoord
+        val sourceWorldIndex =
+            if (avatar.resizeRange == Int.MAX_VALUE && avatar.preferredResizeRange == Int.MAX_VALUE) {
+                WorldEntityInfo.ROOT_WORLD
+            } else {
+                worldEntityInfo.getWorldEntity(sourceCoord)
+            }
         val buffer = allocBuffer()
         val bitBuf = buffer.toBitBuf()
-        bitBuf.use { processHighResolution(it, skipStationary = true) }
-        bitBuf.use { processHighResolution(it, skipStationary = false) }
-        bitBuf.use { processLowResolution(it, skipStationary = false) }
-        bitBuf.use { processLowResolution(it, skipStationary = true) }
+        bitBuf.use { processHighResolution(worldEntityInfo, sourceCoord, sourceWorldIndex, it, skipStationary = true) }
+        bitBuf.use { processHighResolution(worldEntityInfo, sourceCoord, sourceWorldIndex, it, skipStationary = false) }
+        bitBuf.use { processLowResolution(worldEntityInfo, sourceCoord, sourceWorldIndex, it, skipStationary = false) }
+        bitBuf.use { processLowResolution(worldEntityInfo, sourceCoord, sourceWorldIndex, it, skipStationary = true) }
     }
 
     /**
@@ -596,13 +607,12 @@ public class PlayerInfo internal constructor(
      * @param skipStationary whether to skip any players who were marked as stationary last cycle.
      */
     private fun processLowResolution(
+        worldEntityInfo: WorldEntityInfo,
+        sourceCoord: CoordGrid,
+        sourceWorldIndex: Int,
         buffer: BitBuf,
         skipStationary: Boolean,
     ) {
-        val worldEntityInfo =
-            checkNotNull(this.worldEntityInfo) {
-                "World entity info is null"
-            }
         var skips = -1
         for (i in 0 until lowResolutionCount) {
             val index = lowResolutionIndices[i].toInt()
@@ -626,7 +636,7 @@ public class PlayerInfo internal constructor(
                 stationary[index] = (stationary[index].toInt() or IS_STATIONARY).toByte()
                 continue
             }
-            val visible = shouldMoveToHighResolution(worldEntityInfo, other)
+            val visible = shouldMoveToHighResolution(worldEntityInfo, sourceCoord, sourceWorldIndex, other)
             if (!visible && lowResolutionMovementBuffer == null) {
                 skips++
                 stationary[index] = (stationary[index].toInt() or IS_STATIONARY).toByte()
@@ -702,13 +712,12 @@ public class PlayerInfo internal constructor(
      * @param skipStationary whether to skip any players who were marked as stationary last cycle.
      */
     private fun processHighResolution(
+        worldEntityInfo: WorldEntityInfo,
+        sourceCoord: CoordGrid,
+        sourceWorldIndex: Int,
         buffer: BitBuf,
         skipStationary: Boolean,
     ) {
-        val worldEntityInfo =
-            checkNotNull(this.worldEntityInfo) {
-                "World entity info is null"
-            }
         var skips = -1
         for (i in 0 until highResolutionCount) {
             val index = highResolutionIndices[i].toInt()
@@ -717,7 +726,7 @@ public class PlayerInfo internal constructor(
                 continue
             }
             val other = protocol.getPlayerInfo(index)
-            if (!shouldStayInHighResolution(worldEntityInfo, other)) {
+            if (!shouldStayInHighResolution(worldEntityInfo, sourceCoord, sourceWorldIndex, other)) {
                 if (skips > -1) {
                     pStationary(buffer, skips)
                     skips = -1
@@ -863,6 +872,8 @@ public class PlayerInfo internal constructor(
     @OptIn(ExperimentalContracts::class)
     private fun shouldStayInHighResolution(
         worldEntityInfo: WorldEntityInfo,
+        sourceCoord: CoordGrid,
+        sourceWorldIndex: Int,
         other: PlayerInfo?,
     ): Boolean {
         contract {
@@ -896,7 +907,8 @@ public class PlayerInfo internal constructor(
             }
         return rangeToCheck == Int.MAX_VALUE ||
             worldEntityInfo.isVisible(
-                avatar.currentCoord,
+                sourceCoord,
+                sourceWorldIndex,
                 otherCoordGrid,
                 rangeToCheck,
             )
@@ -912,6 +924,8 @@ public class PlayerInfo internal constructor(
     @OptIn(ExperimentalContracts::class)
     private fun shouldMoveToHighResolution(
         worldEntityInfo: WorldEntityInfo,
+        sourceCoord: CoordGrid,
+        sourceWorldIndex: Int,
         other: PlayerInfo?,
     ): Boolean {
         contract {
@@ -935,7 +949,8 @@ public class PlayerInfo internal constructor(
             }
         return rangeToCheck == Int.MAX_VALUE ||
             worldEntityInfo.isVisible(
-                avatar.currentCoord,
+                sourceCoord,
+                sourceWorldIndex,
                 otherCoordGrid,
                 rangeToCheck,
             )
