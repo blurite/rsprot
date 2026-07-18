@@ -16,6 +16,7 @@ import net.rsprot.protocol.game.outgoing.info.npcinfo.NpcInfoProtocol
 import net.rsprot.protocol.game.outgoing.info.playerinfo.PlayerAvatarFactory
 import net.rsprot.protocol.game.outgoing.info.playerinfo.PlayerInfoProtocol
 import net.rsprot.protocol.game.outgoing.info.worker.DefaultProtocolWorker
+import net.rsprot.protocol.game.outgoing.info.worker.ProtocolWorker
 import net.rsprot.protocol.game.outgoing.info.worldentityinfo.WorldEntityAvatarFactory
 import net.rsprot.protocol.game.outgoing.info.worldentityinfo.WorldEntityProtocol
 import net.rsprot.protocol.internal.client.ClientTypeMap
@@ -39,7 +40,18 @@ internal fun generateNpcAvatarFactory(
 internal fun generateInfoProtocols(
     npcAvatarFactory: NpcAvatarFactory = generateNpcAvatarFactory(),
     npcIndexStorage: ZoneIndexStorage = ZoneIndexStorage(ZoneIndexStorage.NPC_CAPACITY),
-): InfoProtocols {
+): InfoProtocols = generateInfoProtocolContext(npcAvatarFactory, npcIndexStorage).protocols
+
+internal data class TestInfoProtocolContext(
+    val protocols: InfoProtocols,
+    val worldEntityAvatarFactory: WorldEntityAvatarFactory,
+)
+
+internal fun generateInfoProtocolContext(
+    npcAvatarFactory: NpcAvatarFactory = generateNpcAvatarFactory(),
+    npcIndexStorage: ZoneIndexStorage = ZoneIndexStorage(ZoneIndexStorage.NPC_CAPACITY),
+    playerProtocolWorker: ProtocolWorker = DefaultProtocolWorker(),
+): TestInfoProtocolContext {
     val allocator = UnpooledByteBufAllocator.DEFAULT
     val protocolSupplier = DeferredNpcInfoProtocolSupplier()
     val encoders =
@@ -62,18 +74,19 @@ internal fun generateInfoProtocols(
     protocolSupplier.supply(npcInfoProtocol)
 
     val worldEntityStorage = ZoneIndexStorage(ZoneIndexStorage.WORLDENTITY_CAPACITY)
+    val worldEntityAvatarFactory =
+        WorldEntityAvatarFactory(
+            allocator,
+            worldEntityStorage,
+            listOf(WorldEntityAvatarExtendedInfoDesktopWriter()),
+            DefaultHuffmanCodecProvider(createHuffmanCodec()),
+        )
     val worldEntityInfoProtocol =
         WorldEntityProtocol(
             allocator,
             exceptionHandler = { _, _ ->
             },
-            factory =
-                WorldEntityAvatarFactory(
-                    allocator,
-                    worldEntityStorage,
-                    listOf(WorldEntityAvatarExtendedInfoDesktopWriter()),
-                    DefaultHuffmanCodecProvider(createHuffmanCodec()),
-                ),
+            factory = worldEntityAvatarFactory,
             zoneIndexStorage = worldEntityStorage,
         )
 
@@ -87,13 +100,17 @@ internal fun generateInfoProtocols(
     val playerInfoProtocol =
         PlayerInfoProtocol(
             allocator,
-            DefaultProtocolWorker(),
+            playerProtocolWorker,
             playerAvatarFactory,
         )
-    return InfoProtocols(
-        playerInfoProtocol,
-        npcInfoProtocol,
-        worldEntityInfoProtocol,
+    return TestInfoProtocolContext(
+        protocols =
+            InfoProtocols(
+                playerInfoProtocol,
+                npcInfoProtocol,
+                worldEntityInfoProtocol,
+            ),
+        worldEntityAvatarFactory = worldEntityAvatarFactory,
     )
 }
 

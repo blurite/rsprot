@@ -305,7 +305,7 @@ public class PlayerInfo internal constructor(
         if (isDestroyed()) return ArrayList(0)
         val collection = ArrayList<Int>(highResolutionCount)
         for (i in 0..<highResolutionCount) {
-            val index = highResolutionIndices[i].toInt()
+            val index = highResolutionIndices[i].toInt() and INDEX_MASK
             collection.add(index)
         }
         return collection
@@ -321,7 +321,7 @@ public class PlayerInfo internal constructor(
         checkCommunicationThread()
         if (isDestroyed()) return collection
         for (i in 0..<highResolutionCount) {
-            val index = highResolutionIndices[i].toInt()
+            val index = highResolutionIndices[i].toInt() and INDEX_MASK
             collection.add(index)
         }
         return collection
@@ -581,12 +581,18 @@ public class PlayerInfo internal constructor(
      */
     internal fun pBitcodes() {
         avatar.resize(highResolutionCount)
+        val worldEntityInfo =
+            checkNotNull(this.worldEntityInfo) {
+                "World entity info is null"
+            }
+        val sourceCoord = avatar.currentCoord
+        val sourceWorldIndex = protocol.getWorldEntityIndex(localIndex)
         val buffer = allocBuffer()
         val bitBuf = buffer.toBitBuf()
-        bitBuf.use { processHighResolution(it, skipStationary = true) }
-        bitBuf.use { processHighResolution(it, skipStationary = false) }
-        bitBuf.use { processLowResolution(it, skipStationary = false) }
-        bitBuf.use { processLowResolution(it, skipStationary = true) }
+        bitBuf.use { processHighResolution(worldEntityInfo, sourceCoord, sourceWorldIndex, it, skipStationary = true) }
+        bitBuf.use { processHighResolution(worldEntityInfo, sourceCoord, sourceWorldIndex, it, skipStationary = false) }
+        bitBuf.use { processLowResolution(worldEntityInfo, sourceCoord, sourceWorldIndex, it, skipStationary = false) }
+        bitBuf.use { processLowResolution(worldEntityInfo, sourceCoord, sourceWorldIndex, it, skipStationary = true) }
     }
 
     /**
@@ -596,17 +602,17 @@ public class PlayerInfo internal constructor(
      * @param skipStationary whether to skip any players who were marked as stationary last cycle.
      */
     private fun processLowResolution(
+        worldEntityInfo: WorldEntityInfo,
+        sourceCoord: CoordGrid,
+        sourceWorldIndex: Int,
         buffer: BitBuf,
         skipStationary: Boolean,
     ) {
-        val worldEntityInfo =
-            checkNotNull(this.worldEntityInfo) {
-                "World entity info is null"
-            }
         var skips = -1
         for (i in 0 until lowResolutionCount) {
-            val index = lowResolutionIndices[i].toInt()
-            val wasStationary = stationary[index].toInt() and WAS_STATIONARY != 0
+            val packedIndex = lowResolutionIndices[i].toInt()
+            val index = packedIndex and INDEX_MASK
+            val wasStationary = packedIndex < 0
             if (skipStationary == wasStationary) {
                 continue
             }
@@ -626,7 +632,7 @@ public class PlayerInfo internal constructor(
                 stationary[index] = (stationary[index].toInt() or IS_STATIONARY).toByte()
                 continue
             }
-            val visible = shouldMoveToHighResolution(worldEntityInfo, other)
+            val visible = shouldMoveToHighResolution(worldEntityInfo, sourceCoord, sourceWorldIndex, other)
             if (!visible && lowResolutionMovementBuffer == null) {
                 skips++
                 stationary[index] = (stationary[index].toInt() or IS_STATIONARY).toByte()
@@ -702,22 +708,22 @@ public class PlayerInfo internal constructor(
      * @param skipStationary whether to skip any players who were marked as stationary last cycle.
      */
     private fun processHighResolution(
+        worldEntityInfo: WorldEntityInfo,
+        sourceCoord: CoordGrid,
+        sourceWorldIndex: Int,
         buffer: BitBuf,
         skipStationary: Boolean,
     ) {
-        val worldEntityInfo =
-            checkNotNull(this.worldEntityInfo) {
-                "World entity info is null"
-            }
         var skips = -1
         for (i in 0 until highResolutionCount) {
-            val index = highResolutionIndices[i].toInt()
-            val wasStationary = (stationary[index].toInt() and WAS_STATIONARY) != 0
+            val packedIndex = highResolutionIndices[i].toInt()
+            val index = packedIndex and INDEX_MASK
+            val wasStationary = packedIndex < 0
             if (skipStationary == wasStationary) {
                 continue
             }
             val other = protocol.getPlayerInfo(index)
-            if (!shouldStayInHighResolution(worldEntityInfo, other)) {
+            if (!shouldStayInHighResolution(worldEntityInfo, sourceCoord, sourceWorldIndex, other)) {
                 if (skips > -1) {
                     pStationary(buffer, skips)
                     skips = -1
@@ -863,6 +869,8 @@ public class PlayerInfo internal constructor(
     @OptIn(ExperimentalContracts::class)
     private fun shouldStayInHighResolution(
         worldEntityInfo: WorldEntityInfo,
+        sourceCoord: CoordGrid,
+        sourceWorldIndex: Int,
         other: PlayerInfo?,
     ): Boolean {
         contract {
@@ -896,8 +904,10 @@ public class PlayerInfo internal constructor(
             }
         return rangeToCheck == Int.MAX_VALUE ||
             worldEntityInfo.isVisible(
-                avatar.currentCoord,
+                sourceCoord,
+                sourceWorldIndex,
                 otherCoordGrid,
+                protocol.getWorldEntityIndex(other.localIndex),
                 rangeToCheck,
             )
     }
@@ -912,6 +922,8 @@ public class PlayerInfo internal constructor(
     @OptIn(ExperimentalContracts::class)
     private fun shouldMoveToHighResolution(
         worldEntityInfo: WorldEntityInfo,
+        sourceCoord: CoordGrid,
+        sourceWorldIndex: Int,
         other: PlayerInfo?,
     ): Boolean {
         contract {
@@ -935,11 +947,21 @@ public class PlayerInfo internal constructor(
             }
         return rangeToCheck == Int.MAX_VALUE ||
             worldEntityInfo.isVisible(
-                avatar.currentCoord,
+                sourceCoord,
+                sourceWorldIndex,
                 otherCoordGrid,
+                protocol.getWorldEntityIndex(other.localIndex),
                 rangeToCheck,
             )
     }
+
+    /**
+     * Resolves the world entity containing this player at its current coordinate.
+     */
+    internal fun resolveWorldEntityIndex(): Int =
+        checkNotNull(worldEntityInfo) {
+            "World entity info is null"
+        }.getWorldEntity(avatar.currentCoord)
 
     /**
      * Allocates a new buffer from the [allocator] with a capacity of [BUF_CAPACITY].
@@ -964,11 +986,13 @@ public class PlayerInfo internal constructor(
         // Only need to reset the count here, the actual numbers don't matter.
         extendedInfoCount = 0
         for (i in 1 until PROTOCOL_CAPACITY) {
-            stationary[i] = (stationary[i].toInt() shr 1).toByte()
+            val stationaryState = (stationary[i].toInt() shr 1).toByte()
+            stationary[i] = stationaryState
+            val packedIndex = i or ((stationaryState.toInt() and WAS_STATIONARY) shl STATIONARY_INDEX_SHIFT)
             if (isHighResolution(i)) {
-                highResolutionIndices[highResolutionCount++] = i.toShort()
+                highResolutionIndices[highResolutionCount++] = packedIndex.toShort()
             } else {
-                lowResolutionIndices[lowResolutionCount++] = i.toShort()
+                lowResolutionIndices[lowResolutionCount++] = packedIndex.toShort()
             }
         }
         observerExtendedInfoFlags.reset()
@@ -1147,6 +1171,11 @@ public class PlayerInfo internal constructor(
          * The default capacity of the backing byte buffer into which all player info is written.
          */
         private const val BUF_CAPACITY: Int = 40_000
+
+        // Player indices only use 11 bits. The sign bit stores the WAS_STATIONARY snapshot
+        // alongside each resolution-list entry so both protocol passes avoid a dependent array read.
+        private const val INDEX_MASK: Int = 0x7FFF
+        private const val STATIONARY_INDEX_SHIFT: Int = 15
 
         /**
          * The flag indicating that a player was stationary in the previous cycle.

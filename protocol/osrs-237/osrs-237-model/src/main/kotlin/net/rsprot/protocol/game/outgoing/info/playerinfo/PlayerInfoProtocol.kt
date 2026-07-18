@@ -48,6 +48,12 @@ public class PlayerInfoProtocol(
         GlobalLowResolutionPositionRepository()
 
     /**
+     * The world entity index containing each active player for the current protocol cycle.
+     * This is rebuilt before any player update jobs are submitted to the worker.
+     */
+    private val worldEntityIndices: IntArray = IntArray(PROTOCOL_CAPACITY) { WorldEntityInfo.ROOT_WORLD }
+
+    /**
      * The repository responsible for allocating and storing player info instances of
      * all the avatars that exist.
      */
@@ -138,6 +144,11 @@ public class PlayerInfoProtocol(
     internal fun getLowResolutionPosition(idx: Int): LowResolutionPosition =
         lowResolutionPositionRepository.getCurrentLowResolutionPosition(idx)
 
+    /**
+     * Gets the world entity index containing the player at [idx] in the current protocol cycle.
+     */
+    internal fun getWorldEntityIndex(idx: Int): Int = worldEntityIndices[idx]
+
     public fun update() {
         checkCommunicationThread()
         prepare()
@@ -160,6 +171,7 @@ public class PlayerInfoProtocol(
         // Synchronize the known low res positions of everyone for this cycle
         for (i in 1..<PROTOCOL_CAPACITY) {
             val info = playerInfoRepository.getOrNull(i)
+            worldEntityIndices[i] = WorldEntityInfo.ROOT_WORLD
             if (info == null) {
                 lowResolutionPositionRepository.markUnused(i)
             } else {
@@ -167,8 +179,12 @@ public class PlayerInfoProtocol(
             }
             lowResolutionPositionRepository.prepareLowResBuffer(i)
             try {
-                info?.prepareBitcodes()
+                if (info != null) {
+                    worldEntityIndices[i] = info.resolveWorldEntityIndex()
+                    info.prepareBitcodes()
+                }
             } catch (e: Exception) {
+                worldEntityIndices[i] = WorldEntityInfo.ROOT_WORLD
                 catchException(i, e)
             } catch (t: Throwable) {
                 logger.error(t) {

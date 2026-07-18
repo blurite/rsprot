@@ -27,6 +27,7 @@ import net.rsprot.protocol.internal.game.outgoing.info.util.ZoneIndexStorage
 internal data class BenchmarkInfoProtocolContext(
     val protocols: InfoProtocols,
     val npcAvatarFactory: NpcAvatarFactory,
+    val worldEntityAvatarFactory: WorldEntityAvatarFactory,
 )
 
 internal fun generateBenchmarkInfoProtocols(
@@ -64,17 +65,18 @@ internal fun generateBenchmarkInfoProtocols(
     npcProtocolSupplier.supply(npcInfoProtocol)
 
     val worldEntityStorage = ZoneIndexStorage(ZoneIndexStorage.WORLDENTITY_CAPACITY)
+    val worldEntityAvatarFactory =
+        WorldEntityAvatarFactory(
+            allocator,
+            worldEntityStorage,
+            listOf(WorldEntityAvatarExtendedInfoDesktopWriter()),
+            DefaultHuffmanCodecProvider(createHuffmanCodec()),
+        )
     val worldEntityInfoProtocol =
         WorldEntityProtocol(
             allocator,
             exceptionHandler = { _, _ -> },
-            factory =
-                WorldEntityAvatarFactory(
-                    allocator,
-                    worldEntityStorage,
-                    listOf(WorldEntityAvatarExtendedInfoDesktopWriter()),
-                    DefaultHuffmanCodecProvider(createHuffmanCodec()),
-                ),
+            factory = worldEntityAvatarFactory,
             zoneIndexStorage = worldEntityStorage,
         )
     val playerInfoProtocol =
@@ -95,6 +97,7 @@ internal fun generateBenchmarkInfoProtocols(
             worldEntityInfoProtocol,
         ),
         npcAvatarFactory,
+        worldEntityAvatarFactory,
     )
 }
 

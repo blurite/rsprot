@@ -94,6 +94,11 @@ class PlayerInfoTest {
             otherPlayer.updateRootCoord(0, 3205, 3220)
         }
         tick()
+        val expectedHighResolutionIndices = otherPlayerIndices.toList() + LOCAL_PLAYER_INDEX
+        assertEquals(expectedHighResolutionIndices, localPlayerInfo.getHighResolutionIndices())
+        val appendedHighResolutionIndices = mutableListOf(-1)
+        localPlayerInfo.appendHighResolutionIndices(appendedHighResolutionIndices)
+        assertEquals(listOf(-1) + expectedHighResolutionIndices, appendedHighResolutionIndices)
         assertAllCoordsEqual(otherPlayers)
         for (player in otherPlayers.filterNotNull()) {
             player.updateRootCoord(0, 3204, 3220)
