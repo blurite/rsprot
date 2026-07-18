@@ -956,7 +956,7 @@ public class PlayerInfo internal constructor(
     }
 
     /**
-     * Resolves the world entity containing this player for the current protocol cycle.
+     * Resolves the world entity containing this player at its current coordinate.
      */
     internal fun resolveWorldEntityIndex(): Int =
         checkNotNull(worldEntityInfo) {

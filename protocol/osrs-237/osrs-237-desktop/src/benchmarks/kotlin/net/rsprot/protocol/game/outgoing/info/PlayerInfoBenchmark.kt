@@ -93,7 +93,7 @@ class PlayerInfoBenchmark {
         infos: Infos,
         position: PlayerPosition,
     ) {
-        infos.updateRootCoord(position.level, position.x, position.z)
+        infos.updateRootCoord(0, position.x, position.z)
         infos.updateRootBuildAreaCenteredOnPlayer(position.buildAreaCenterX, position.buildAreaCenterZ)
     }
 
@@ -101,7 +101,6 @@ class PlayerInfoBenchmark {
         when (scenario) {
             Scenario.DENSE_ROOT ->
                 PlayerPosition(
-                    level = 0,
                     x = ROOT_X + random.nextInt(8),
                     z = ROOT_Z + random.nextInt(8),
                     buildAreaCenterX = ROOT_X,
@@ -110,15 +109,14 @@ class PlayerInfoBenchmark {
             Scenario.DISTRIBUTED_ROOT -> {
                 val x = ROOT_X + (index % 50) * 32
                 val z = ROOT_Z + (index / 50) * 32
-                PlayerPosition(0, x, z, x, z)
+                PlayerPosition(x, z, x, z)
             }
             Scenario.MIXED_WORLD_ENTITIES -> {
                 if (index <= ROOT_PLAYER_COUNT) {
-                    PlayerPosition(0, ROOT_X + index % 8, ROOT_Z + index / 8 % 8, ROOT_X, ROOT_Z)
+                    PlayerPosition(ROOT_X + index % 8, ROOT_Z + index / 8 % 8, ROOT_X, ROOT_Z)
                 } else {
                     val worldIndex = (index - ROOT_PLAYER_COUNT - 1) % WORLD_ENTITY_COUNT
                     PlayerPosition(
-                        level = 0,
                         x = (INSTANCE_ZONE_X + worldIndex) * 8 + index % 8,
                         z = INSTANCE_ZONE_Z * 8 + index / 8 % 8,
                         buildAreaCenterX = ROOT_X + worldIndex * 2,
@@ -172,7 +170,7 @@ class PlayerInfoBenchmark {
                 } else {
                     position.x
                 }
-            infos.updateRootCoord(position.level, x, position.z)
+            infos.updateRootCoord(0, x, position.z)
             infos.updateRootBuildAreaCenteredOnPlayer(position.buildAreaCenterX, position.buildAreaCenterZ)
         }
         tickCycle++
@@ -201,7 +199,6 @@ class PlayerInfoBenchmark {
     }
 
     private data class PlayerPosition(
-        val level: Int,
         val x: Int,
         val z: Int,
         val buildAreaCenterX: Int,

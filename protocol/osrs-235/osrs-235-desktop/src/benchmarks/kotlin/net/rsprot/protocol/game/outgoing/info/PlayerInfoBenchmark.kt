@@ -10,6 +10,7 @@ import org.openjdk.jmh.annotations.Fork
 import org.openjdk.jmh.annotations.Measurement
 import org.openjdk.jmh.annotations.Mode
 import org.openjdk.jmh.annotations.OutputTimeUnit
+import org.openjdk.jmh.annotations.Param
 import org.openjdk.jmh.annotations.Scope
 import org.openjdk.jmh.annotations.Setup
 import org.openjdk.jmh.annotations.State
@@ -27,33 +28,103 @@ import kotlin.random.Random
 class PlayerInfoBenchmark {
     private lateinit var protocols: InfoProtocols
     private lateinit var players: Array<Infos?>
+    private lateinit var positions: Array<PlayerPosition?>
     private val random: Random = Random(0)
+    private var tickCycle: Int = 0
+
+    @Param
+    private lateinit var scenario: Scenario
+
+    @Param
+    private lateinit var activity: Activity
 
     @Setup
     fun setup() {
-        protocols =
+        val context =
             generateBenchmarkInfoProtocols(
                 playerProtocolWorker = DefaultProtocolWorker(Int.MAX_VALUE, ForkJoinPool.commonPool()),
-            ).protocols
+            )
+        protocols = context.protocols
         players = arrayOfNulls(PROTOCOL_CAPACITY)
+        positions = arrayOfNulls(PROTOCOL_CAPACITY)
+        if (scenario == Scenario.MIXED_WORLD_ENTITIES) {
+            repeat(WORLD_ENTITY_COUNT) { index ->
+                context.worldEntityAvatarFactory.alloc(
+                    index = index + 1,
+                    id = index,
+                    ownerIndex = 0,
+                    sizeX = 1,
+                    sizeZ = 1,
+                    southWestZoneX = INSTANCE_ZONE_X + index,
+                    southWestZoneZ = INSTANCE_ZONE_Z,
+                    minLevel = 0,
+                    maxLevel = 0,
+                    fineX = (ROOT_X + index * 2) * 128 + 64,
+                    fineZ = ROOT_Z * 128 + 64,
+                    projectedLevel = 0,
+                    activeLevel = 0,
+                    angle = 0,
+                )
+            }
+        }
         for (i in 1..<MAX_IDX) {
             val infos = protocols.alloc(i, OldSchoolClientType.DESKTOP)
             players[i] = infos
-            updateCoord(infos, 0, random.nextInt(3200, 3213), random.nextInt(3200, 3213))
+            val position = position(i)
+            positions[i] = position
+            updateCoord(infos, position)
+            infos.playerInfo.avatar.setPreferredPlayerCountLimit(MAX_IDX)
             infos.playerInfo.avatar.postUpdate()
             initializeAppearance(infos.playerInfo, i)
+        }
+        if (scenario == Scenario.MIXED_WORLD_ENTITIES) {
+            protocols.worldEntityInfoProtocol.update()
+            for (i in 1..<MAX_IDX) {
+                val infos = checkNotNull(players[i])
+                val result = infos.getPackets().rootWorldInfoPackets.worldEntityInfo
+                val packet = checkNotNull(result.getOrNull())
+                packet.consume()
+                packet.release()
+            }
         }
     }
 
     private fun updateCoord(
         infos: Infos,
-        @Suppress("SameParameterValue") level: Int,
-        x: Int,
-        z: Int,
+        position: PlayerPosition,
     ) {
-        infos.updateRootCoord(level, x, z)
-        infos.updateRootBuildAreaCenteredOnPlayer(x, z)
+        infos.updateRootCoord(0, position.x, position.z)
+        infos.updateRootBuildAreaCenteredOnPlayer(position.buildAreaCenterX, position.buildAreaCenterZ)
     }
+
+    private fun position(index: Int): PlayerPosition =
+        when (scenario) {
+            Scenario.DENSE_ROOT ->
+                PlayerPosition(
+                    x = ROOT_X + random.nextInt(8),
+                    z = ROOT_Z + random.nextInt(8),
+                    buildAreaCenterX = ROOT_X,
+                    buildAreaCenterZ = ROOT_Z,
+                )
+            Scenario.DISTRIBUTED_ROOT -> {
+                val x = ROOT_X + (index % 50) * 32
+                val z = ROOT_Z + (index / 50) * 32
+                PlayerPosition(x, z, x, z)
+            }
+            Scenario.MIXED_WORLD_ENTITIES -> {
+                if (index <= ROOT_PLAYER_COUNT) {
+                    PlayerPosition(ROOT_X + index % 8, ROOT_Z + index / 8 % 8, ROOT_X, ROOT_Z)
+                } else {
+                    val worldIndex = (index - ROOT_PLAYER_COUNT - 1) % WORLD_ENTITY_COUNT
+                    PlayerPosition(
+                        x = (INSTANCE_ZONE_X + worldIndex) * 8 + index % 8,
+                        z = INSTANCE_ZONE_Z * 8 + index / 8 % 8,
+                        buildAreaCenterX = ROOT_X + worldIndex * 2,
+                        buildAreaCenterZ = ROOT_Z,
+                    )
+                }
+            }
+        }
 
     private fun initializeAppearance(
         player: PlayerInfo,
@@ -92,17 +163,17 @@ class PlayerInfoBenchmark {
     private fun tick() {
         for (i in 1..<MAX_IDX) {
             val infos = checkNotNull(players[i])
-            updateCoord(infos, 0, random.nextInt(3200, 3213), random.nextInt(3200, 3213))
-            val player = infos.playerInfo
-            player.avatar.extendedInfo.setChat(
-                0,
-                0,
-                0,
-                false,
-                "Neque porro quisquam est qui dolorem ipsum quia do",
-                null,
-            )
+            val position = checkNotNull(positions[i])
+            val x =
+                if (activity == Activity.ALTERNATING_HALF && i and 1 == 0) {
+                    position.x xor (tickCycle and 1)
+                } else {
+                    position.x
+                }
+            infos.updateRootCoord(0, x, position.z)
+            infos.updateRootBuildAreaCenteredOnPlayer(position.buildAreaCenterX, position.buildAreaCenterZ)
         }
+        tickCycle++
         protocols.playerInfoProtocol.update()
         for (i in 1..<MAX_IDX) {
             val player = checkNotNull(players[i]).playerInfo
@@ -118,6 +189,30 @@ class PlayerInfoBenchmark {
     }
 
     private companion object {
-        private const val MAX_IDX: Int = 2047
+        private const val MAX_IDX: Int = 2001
+        private const val ROOT_PLAYER_COUNT: Int = 1000
+        private const val WORLD_ENTITY_COUNT: Int = 4
+        private const val ROOT_X: Int = 3200
+        private const val ROOT_Z: Int = 3200
+        private const val INSTANCE_ZONE_X: Int = 800
+        private const val INSTANCE_ZONE_Z: Int = 800
+    }
+
+    private data class PlayerPosition(
+        val x: Int,
+        val z: Int,
+        val buildAreaCenterX: Int,
+        val buildAreaCenterZ: Int,
+    )
+
+    enum class Scenario {
+        DENSE_ROOT,
+        DISTRIBUTED_ROOT,
+        MIXED_WORLD_ENTITIES,
+    }
+
+    enum class Activity {
+        STATIONARY,
+        ALTERNATING_HALF,
     }
 }

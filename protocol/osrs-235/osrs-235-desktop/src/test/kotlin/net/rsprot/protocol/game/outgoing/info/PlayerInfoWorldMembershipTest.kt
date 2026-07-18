@@ -373,11 +373,11 @@ class PlayerInfoWorldMembershipTest {
         private const val INSTANCE_ZONE_X = 800
         private const val INSTANCE_ZONE_Z = 800
 
-        // Captured from the same scenario on unmodified upstream revision 237 at 7fa6050a.
+        // Captured from the same scenario on unmodified upstream revision 235 at 7fa6050a.
         private val EXPECTED_PACKET_HEX =
             listOf(
-                "00288640b202ff98023f00ffff0000000000000000000000000000000000000000000000000000000000" +
-                    "ffffffffffffffffffffffffffff546172676574007e000000000000000000",
+                "00288640b202ff9804bf808080808080808080fe80f4e5e7f2e1d47f7f7f7f7f7f7f7f7f7f7f7f7f7f808080" +
+                    "80808080808080808080808080808080808080808080808080807f7f80",
                 "807ff0",
                 "007ff08640b200",
                 "217ff0",
@@ -387,18 +387,18 @@ class PlayerInfoWorldMembershipTest {
                 "008a807ff0",
             )
 
-        // Captured from the same scenario on unmodified upstream revision 237 at 7fa6050a.
+        // Captured from the same scenario on unmodified upstream revision 235 at 7fa6050a.
         private val EXPECTED_STATIONARY_SNAPSHOT_PACKET_HEX =
             listOf(
-                "00288640b2030c816405ff20023f00ffff000000000000000000000000000000000000000000000000" +
-                    "0000000000ffffffffffffffffffffffffffff546172676574007e000000000000000000023f00ffff0000" +
-                    "000000000000000000000000000000000000000000000000000000ffffffffffffffffffffffffffff54" +
-                    "6172676574007e000000000000000000",
+                "00288640b2030c816405ff2004bf808080808080808080fe80f4e5e7f2e1d47f7f7f7f7f7f7f7f7f7f7f7f7f" +
+                    "7f80808080808080808080808080808080808080808080808080808080807f7f8004bf808080808080808080" +
+                    "fe80f4e5e7f2e1d47f7f7f7f7f7f7f7f7f7f7f7f7f7f80808080808080808080808080808080808080808080" +
+                    "808080808080807f7f80",
                 "98427fec",
-                "8080308640b2030c816405fe80023f00ffff000000000000000000000000000000000000000000000000" +
-                    "0000000000ffffffffffffffffffffffffffff546172676574007e000000000000000000023f00ffff0000" +
-                    "000000000000000000000000000000000000000000000000000000ffffffffffffffffffffffffffff54" +
-                    "6172676574007e000000000000000000",
+                "8080308640b2030c816405fe8004bf808080808080808080fe80f4e5e7f2e1d47f7f7f7f7f7f7f7f7f7f7f7f" +
+                    "7f7f80808080808080808080808080808080808080808080808080808080807f7f8004bf8080808080808080" +
+                    "80fe80f4e5e7f2e1d47f7f7f7f7f7f7f7f7f7f7f7f7f7f808080808080808080808080808080808080808080" +
+                    "80808080808080807f7f80",
             )
 
         private fun instanceCoord(

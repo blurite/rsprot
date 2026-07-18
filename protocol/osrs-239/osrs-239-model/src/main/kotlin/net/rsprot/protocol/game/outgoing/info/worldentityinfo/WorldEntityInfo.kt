@@ -591,19 +591,6 @@ public class WorldEntityInfo internal constructor(
         radius: Int,
     ): Boolean {
         val sourceWorldIndex = avatarRepository.getByCoordGrid(source)
-        return isVisible(source, sourceWorldIndex, target, radius)
-    }
-
-    /**
-     * Checks if the [target] is visible to the [source] with a precomputed [sourceWorldIndex].
-     * The source world index may be reused for every target observed by the same player update.
-     */
-    internal fun isVisible(
-        source: CoordGrid,
-        sourceWorldIndex: Int,
-        target: CoordGrid,
-        radius: Int,
-    ): Boolean {
         val targetWorldIndex = avatarRepository.getByCoordGrid(target)
         return isVisible(source, sourceWorldIndex, target, targetWorldIndex, radius)
     }
