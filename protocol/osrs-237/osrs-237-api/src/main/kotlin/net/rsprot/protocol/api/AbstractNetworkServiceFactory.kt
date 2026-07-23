@@ -41,6 +41,7 @@ import net.rsprot.protocol.metrics.impl.ConcurrentNetworkTrafficMonitor
 import net.rsprot.protocol.metrics.impl.NoopNetworkTrafficMonitor
 import net.rsprot.protocol.metrics.lock.TrafficMonitorLock
 import org.jire.netty.haproxy.HAProxyMode
+import org.jire.netty.haproxy.HAProxyTrustPredicate
 
 /**
  * The abstract network service factory is used to build the network service that is used
@@ -119,6 +120,13 @@ public abstract class AbstractNetworkServiceFactory<R> {
      */
     public open val haproxyMode: HAProxyMode
         get() = HAProxyMode.OFF
+
+    /**
+     * Gets the trust predicate deciding which peers' PROXY headers are honored
+     * when [haproxyMode] is enabled. By default, only loopback peers are trusted.
+     */
+    public open val haproxyTrustPredicate: HAProxyTrustPredicate
+        get() = HAProxyTrustPredicate.LOOPBACK_ONLY
 
     /**
      * Gets the bootstrap factory builder to register the network service.
@@ -394,6 +402,7 @@ public abstract class AbstractNetworkServiceFactory<R> {
             getJs5GroupProvider(),
             getIdleStateHandlerSuppliers(),
             haproxyMode,
+            haproxyTrustPredicate,
             getBinaryHeaderProvider(),
         )
     }

@@ -1,5 +1,6 @@
 package org.jire.netty.haproxy
 
+import com.github.michaelbull.logging.InlineLogger
 import io.netty.channel.Channel
 import io.netty.channel.ChannelHandler.Sharable
 import io.netty.channel.ChannelInboundHandler
@@ -29,6 +30,10 @@ import java.util.concurrent.TimeUnit
  * @param mode The [HAProxyMode] to use. Default is [HAProxyMode.AUTO] which will
  * support both proxied and non-proxied connections.
  *
+ * @param trustPredicate The [HAProxyTrustPredicate] deciding which peers' PROXY headers
+ * are honored. Untrusted peers are handled as plain connections under [HAProxyMode.AUTO]
+ * and closed under [HAProxyMode.ON]. Default is [HAProxyTrustPredicate.LOOPBACK_ONLY].
+ *
  * @param idleTimeout The timeout duration after which an idle connection will be closed.
  * Default to [DEFAULT_IDLE_TIMEOUT].
  * @param idleTimeoutUnit The time unit for the [idleTimeout].
@@ -40,6 +45,7 @@ public class HAProxyChannelInitializer
     public constructor(
         override val childHandler: ChannelInboundHandler,
         private val mode: HAProxyMode = HAProxyMode.AUTO,
+        private val trustPredicate: HAProxyTrustPredicate = HAProxyTrustPredicate.LOOPBACK_ONLY,
         private val idleTimeout: Long = DEFAULT_IDLE_TIMEOUT,
         private val idleTimeoutUnit: TimeUnit = DEFAULT_IDLE_TIMEOUT_UNIT,
     ) : ChannelInitializer<Channel>(),
@@ -53,6 +59,25 @@ public class HAProxyChannelInitializer
         override fun initChannel(ch: Channel) {
             val pipeline = ch.pipeline()
 
+            if (mode == HAProxyMode.OFF) {
+                addChildHandler(pipeline)
+                return
+            }
+
+            if (!trustPredicate.isTrusted(ch.remoteAddress())) {
+                when (mode) {
+                    HAProxyMode.AUTO -> addChildHandler(pipeline)
+
+                    else -> {
+                        logger.warn {
+                            "Untrusted peer ${ch.remoteAddress()} on PROXY-required channel, closing"
+                        }
+                        ch.close()
+                    }
+                }
+                return
+            }
+
             when (mode) {
                 HAProxyMode.AUTO -> {
                     addIdleStateHandler(pipeline)
@@ -62,19 +87,19 @@ public class HAProxyChannelInitializer
                     )
                 }
 
-                HAProxyMode.ON -> {
+                else -> {
                     addIdleStateHandler(pipeline)
                     addHAProxyHandlers(pipeline)
                 }
-
-                HAProxyMode.OFF -> {
-                    pipeline.replace(
-                        this@HAProxyChannelInitializer,
-                        HAPROXY_CHANNEL_INITIALIZER_CHILD_NAME,
-                        childHandler,
-                    )
-                }
             }
+        }
+
+        private fun addChildHandler(pipeline: ChannelPipeline) {
+            pipeline.replace(
+                this@HAProxyChannelInitializer,
+                HAPROXY_CHANNEL_INITIALIZER_CHILD_NAME,
+                childHandler,
+            )
         }
 
         public fun addIdleStateHandler(pipeline: ChannelPipeline) {
@@ -96,5 +121,9 @@ public class HAProxyChannelInitializer
                 HAPROXY_MESSAGE_HANDLER_NAME,
                 messageHandler,
             )
+        }
+
+        private companion object {
+            private val logger = InlineLogger()
         }
     }
