@@ -35,6 +35,7 @@ import net.rsprot.protocol.metrics.NetworkTrafficMonitor
 import net.rsprot.protocol.threads.IllegalThreadAccessException
 import org.jire.netty.haproxy.HAProxy.childHandlerProxied
 import org.jire.netty.haproxy.HAProxyMode
+import org.jire.netty.haproxy.HAProxyTrustPredicate
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.ScheduledExecutorService
@@ -107,6 +108,7 @@ public class NetworkService<R>
         js5GroupProvider: Js5GroupProvider,
         public val idleStateHandlerSuppliers: IdleStateHandlerSuppliers,
         public val haProxyMode: HAProxyMode,
+        public val haProxyTrustPredicate: HAProxyTrustPredicate,
         public val binaryHeaderProvider: BinaryHeaderProvider?,
     ) {
         public var encoderRepositories: MessageEncoderRepositories = MessageEncoderRepositories(huffmanCodecProvider)
@@ -156,7 +158,7 @@ public class NetworkService<R>
                 measureTime {
                     val bootstrap = bootstrapBuilder.build(messageSizeEstimator)
                     val initializer = LoginChannelInitializer(this)
-                    bootstrap.childHandlerProxied(initializer, haProxyMode)
+                    bootstrap.childHandlerProxied(initializer, haProxyMode, haProxyTrustPredicate)
                     this.bossGroup = bootstrap.config().group()
                     this.childGroup = bootstrap.config().childGroup()
                     val host = this.host

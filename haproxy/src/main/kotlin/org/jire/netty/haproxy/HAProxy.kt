@@ -15,6 +15,7 @@ public object HAProxy {
     public fun ServerBootstrap.childHandlerProxied(
         childHandler: ChannelInboundHandler,
         mode: HAProxyMode = HAProxyMode.AUTO,
+        trustPredicate: HAProxyTrustPredicate = HAProxyTrustPredicate.LOOPBACK_ONLY,
         idleTimeout: Long = DEFAULT_IDLE_TIMEOUT,
         idleTimeoutUnit: TimeUnit = DEFAULT_IDLE_TIMEOUT_UNIT,
     ): ServerBootstrap =
@@ -37,6 +38,7 @@ public object HAProxy {
                         HAProxyChannelInitializer(
                             childHandler,
                             mode,
+                            trustPredicate,
                             idleTimeout,
                             idleTimeoutUnit,
                         ),
