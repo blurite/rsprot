@@ -13,7 +13,7 @@ public class UrlOpen(
     public val url: String,
 ) : OutgoingGameMessage {
     override val category: ServerProtCategory
-        get() = GameServerProtCategory.LOW_PRIORITY_PROT
+        get() = GameServerProtCategory.HIGH_PRIORITY_PROT
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
