@@ -30,7 +30,7 @@ public class ReflectionChecker(
     public val checks: List<ReflectionCheck>,
 ) : OutgoingGameMessage {
     override val category: ServerProtCategory
-        get() = GameServerProtCategory.LOW_PRIORITY_PROT
+        get() = GameServerProtCategory.HIGH_PRIORITY_PROT
 
     override fun estimateSize(): Int {
         var size = Byte.SIZE_BYTES + Int.SIZE_BYTES
