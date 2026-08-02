@@ -25,7 +25,7 @@ public class ClanSettingsFull private constructor(
     public val clanType: Int
         get() = _clanType.toInt()
     override val category: ServerProtCategory
-        get() = GameServerProtCategory.HIGH_PRIORITY_PROT
+        get() = GameServerProtCategory.LOW_PRIORITY_PROT
 
     override fun estimateSize(): Int {
         return when (update) {
