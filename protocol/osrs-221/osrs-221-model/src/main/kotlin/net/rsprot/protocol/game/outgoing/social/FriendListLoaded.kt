@@ -12,5 +12,5 @@ import net.rsprot.protocol.message.OutgoingGameMessage
  */
 public data object FriendListLoaded : OutgoingGameMessage {
     override val category: ServerProtCategory
-        get() = GameServerProtCategory.LOW_PRIORITY_PROT
+        get() = GameServerProtCategory.HIGH_PRIORITY_PROT
 }
