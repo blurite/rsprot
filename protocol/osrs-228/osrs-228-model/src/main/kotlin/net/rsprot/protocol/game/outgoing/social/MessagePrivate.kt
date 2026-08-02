@@ -63,7 +63,7 @@ public class MessagePrivate private constructor(
     public val chatCrownType: Int
         get() = _chatCrownType.toInt()
     override val category: ServerProtCategory
-        get() = GameServerProtCategory.LOW_PRIORITY_PROT
+        get() = GameServerProtCategory.HIGH_PRIORITY_PROT
 
     override fun estimateSize(): Int =
         estimateTextSize(sender) +
