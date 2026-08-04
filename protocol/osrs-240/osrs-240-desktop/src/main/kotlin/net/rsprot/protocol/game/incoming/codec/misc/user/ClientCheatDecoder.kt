@@ -1,0 +1,22 @@
+package net.rsprot.protocol.game.incoming.codec.misc.user
+
+import net.rsprot.buffer.JagByteBuf
+import net.rsprot.protocol.ClientProt
+import net.rsprot.protocol.game.incoming.misc.user.ClientCheat
+import net.rsprot.protocol.game.incoming.prot.GameClientProt
+import net.rsprot.protocol.message.codec.MessageDecoder
+import net.rsprot.protocol.metadata.Consistent
+
+@Consistent
+public class ClientCheatDecoder : MessageDecoder<ClientCheat> {
+    override val prot: ClientProt = GameClientProt.CLIENT_CHEAT
+
+    override fun decode(buffer: JagByteBuf): ClientCheat {
+        val command = buffer.gjstr()
+        val unknown = buffer.g1()
+        return ClientCheat(
+            command,
+            unknown,
+        )
+    }
+}

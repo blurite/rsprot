@@ -1,5 +1,17 @@
 ## What's New?
 
+### Revision 240
+
+#### Additions
+- A new serverprot with a size of -2 that has no handler in neither Java nor native.
+- A new version of the spotanim extended info on players and NPCs. Each spotanim
+now comes with a boolean for "loops", which tells the client to keep looping that
+spotanim if the seq type of that spotanim allows looping.
+
+#### Changes
+- CLIENT_CHEAT packet now sends a byte after the cheat. The value is a constant
+zero on Java.
+
 ### Revision 239
 
 > [!NOTE]
