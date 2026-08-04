@@ -5,7 +5,6 @@ import net.rsprot.buffer.JagByteBuf
 import net.rsprot.buffer.bitbuffer.BitBuf
 import net.rsprot.buffer.bitbuffer.toBitBuf
 import net.rsprot.buffer.extensions.toJagByteBuf
-import net.rsprot.protocol.internal.RSProtFlags
 import net.rsprot.protocol.internal.game.outgoing.info.CoordGrid
 
 @Suppress("MemberVisibilityCanBePrivate")
@@ -58,22 +57,22 @@ class NpcInfoClient {
             val index = updatedNpcSlot[i]
             val npc = checkNotNull(cachedNpcs[index])
             var flag = buffer.g1()
-            if ((flag and 0x40) != 0) {
+            if ((flag and 0x20) != 0) {
                 val extra: Int = buffer.g1()
                 flag += extra shl 8
             }
-            if ((flag and 0x800) != 0) {
+            if ((flag and 0x1000) != 0) {
                 val extra: Int = buffer.g1()
                 flag += extra shl 16
             }
-            if ((flag and 0x200000) != 0) {
+            if ((flag and 0x40000) != 0) {
                 val extra: Int = buffer.g1()
                 flag += extra shl 24
             }
-            check(flag and (0x40 or 0x800 or 0x200000 or 0x2).inv() == 0) {
+            check(flag and (0x20 or 0x1000 or 0x40000 or 0x10).inv() == 0) {
                 "Extended info other than 'say' included!"
             }
-            if (flag and 0x2 != 0) {
+            if (flag and 0x10 != 0) {
                 val text = buffer.gjstr()
                 npc.overheadChat = text
             }
@@ -158,14 +157,18 @@ class NpcInfoClient {
 
                     val hasSpawnCycle = buffer.gBits(1) == 1
                     if (hasSpawnCycle) {
-                        npc.spawnCycle = buffer.gBits(32)
+                        val index = buffer.gBits(2)
+                        npc.spawnCycle = buffer.gBits(spawnClockBitcodes[index])
                     }
+
+                    val idBitCount = buffer.gBits(2)
+                    npc.id = buffer.gBits(typeBitcodes[idBitCount])
+
                     val extendedInfo = buffer.gBits(1)
                     val deltaX = decodeDelta(large, buffer)
                     val angle = NPC_TURN_ANGLES[buffer.gBits(3)]
-                    val deltaZ = decodeDelta(large, buffer)
                     val jump = buffer.gBits(1)
-                    npc.id = buffer.gBits(RSProtFlags.npcInfoBitCount)
+                    val deltaZ = decodeDelta(large, buffer)
                     if (extendedInfo == 1) {
                         updatedNpcSlot[updatedNpcSlotCount++] = index
                     }
@@ -310,5 +313,7 @@ class NpcInfoClient {
 
     private companion object {
         private val NPC_TURN_ANGLES = intArrayOf(768, 1024, 1280, 512, 1536, 256, 0, 1792)
+        private val spawnClockBitcodes = intArrayOf(18, 19, 20, 32)
+        private val typeBitcodes = intArrayOf(12, 14, 17, 24)
     }
 }

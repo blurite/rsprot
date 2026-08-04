@@ -15,12 +15,12 @@ public class CamMoveToCyclesV3Encoder : MessageEncoder<CamMoveToCyclesV3> {
         buffer: JagByteBuf,
         message: CamMoveToCyclesV3,
     ) {
-        buffer.p1(if (message.ignoreTerrain) 1 else 0)
-        buffer.p2Alt2(message.x)
+        buffer.p1Alt2(if (message.ignoreTerrain) 1 else 0)
+        buffer.p1Alt1(message.easing.id)
+        buffer.p1(if (message.heightRelative) 1 else 0)
+        buffer.p2Alt3(message.height)
+        buffer.p2Alt2(message.z)
         buffer.p2Alt1(message.cycles)
-        buffer.p1Alt2(message.easing.id)
-        buffer.p1Alt1(if (message.heightRelative) 1 else 0)
-        buffer.p2(message.z)
-        buffer.p2Alt2(message.height)
+        buffer.p2Alt3(message.x)
     }
 }

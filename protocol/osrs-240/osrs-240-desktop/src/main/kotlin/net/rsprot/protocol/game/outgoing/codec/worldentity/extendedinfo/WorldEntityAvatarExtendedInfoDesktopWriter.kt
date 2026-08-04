@@ -45,12 +45,12 @@ public class WorldEntityAvatarExtendedInfoDesktopWriter :
         val clientFlag = convertFlags(flag)
         var outFlag = clientFlag
 
-        outFlag = outFlag or pCached(buffer, clientFlag, VISIBLE_OPS, blocks.visibleOps)
         outFlag = outFlag or pCached(buffer, clientFlag, SEQUENCE, blocks.sequence)
+        outFlag = outFlag or pCached(buffer, clientFlag, VISIBLE_OPS, blocks.visibleOps)
 
         val finalPos = buffer.writerIndex()
         buffer.writerIndex(flagWriteIndex)
-        buffer.p1(outFlag)
+        buffer.p1Alt3(outFlag)
         buffer.writerIndex(finalPos)
     }
 

@@ -46,9 +46,9 @@ public class NpcHeadCustomisationEncoder : PrecomputedExtendedInfoEncoder<HeadCu
         }
         buffer.pFlag(flag)
         if (flag and FLAG_REMODEL != 0) {
-            buffer.p1Alt3(customisation.models.size)
+            buffer.p1Alt1(customisation.models.size)
             for (model in customisation.models) {
-                buffer.p4Alt2(model)
+                buffer.p4Alt3(model)
             }
         }
         if (flag and FLAG_RECOLOUR != 0) {
@@ -58,11 +58,11 @@ public class NpcHeadCustomisationEncoder : PrecomputedExtendedInfoEncoder<HeadCu
         }
         if (flag and FLAG_RETEXTURE != 0) {
             for (retex in customisation.retexture) {
-                buffer.p2Alt2(retex)
+                buffer.p2Alt3(retex)
             }
         }
         if (flag and FLAG_MIRROR_LOCAL_PLAYER != 0) {
-            buffer.p1Alt2(if (customisation.mirror == true) 1 else 0)
+            buffer.p1Alt3(if (customisation.mirror == true) 1 else 0)
         }
         return buffer
     }

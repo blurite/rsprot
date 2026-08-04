@@ -60,21 +60,21 @@ public class NpcBodyCustomisationEncoder : PrecomputedExtendedInfoEncoder<BodyCu
         }
         buffer.pFlag(flag)
         if (flag and FLAG_REMODEL != 0) {
-            buffer.pModelCount(customisation.models.size)
+            buffer.p1Alt2(customisation.models.size)
             for (model in customisation.models) {
-                buffer.pModel(model)
+                buffer.p4(model)
             }
         }
         if (flag and FLAG_RECOLOUR != 0) {
             buffer.pRecolourCount(customisation.recolours.size)
             for (recol in customisation.recolours) {
-                buffer.pRecolour(recol)
+                buffer.p2Alt2(recol)
             }
         }
         if (flag and FLAG_RETEXTURE != 0) {
             buffer.pRetextureCount(customisation.retexture.size)
             for (retex in customisation.retexture) {
-                buffer.pRetexture(retex)
+                buffer.p2Alt2(retex)
             }
         }
         return buffer
@@ -184,11 +184,11 @@ public class NpcBodyCustomisationEncoder : PrecomputedExtendedInfoEncoder<BodyCu
     }
 
     private fun JagByteBuf.pModelCount(value: Int) {
-        p1Alt1(value)
+        p1(value)
     }
 
     private fun JagByteBuf.pRecolourCount(value: Int) {
-        p1Alt2(value)
+        p1(value)
     }
 
     private fun JagByteBuf.pRetextureCount(value: Int) {
@@ -204,11 +204,11 @@ public class NpcBodyCustomisationEncoder : PrecomputedExtendedInfoEncoder<BodyCu
     }
 
     private fun JagByteBuf.pRecolour(value: Int) {
-        p2Alt1(value)
+        p2(value)
     }
 
     private fun JagByteBuf.pRetexture(value: Int) {
-        p2Alt3(value)
+        p2Alt1(value)
     }
 
     private fun JagByteBuf.pModel(value: Int) {
@@ -216,11 +216,11 @@ public class NpcBodyCustomisationEncoder : PrecomputedExtendedInfoEncoder<BodyCu
     }
 
     private fun JagByteBuf.pIdentKit(value: Int) {
-        p2(value)
+        p2Alt3(value)
     }
 
     private fun JagByteBuf.pFlag(value: Int) {
-        p1Alt2(value)
+        p1Alt3(value)
     }
 
     private companion object {

@@ -11,7 +11,7 @@ public class OpWorldEntity3Decoder : MessageDecoder<OpWorldEntity> {
 
     override fun decode(buffer: JagByteBuf): OpWorldEntity {
         val index = buffer.g2()
-        val controlKey = buffer.g1Alt3() == 1
+        val controlKey = buffer.g1() == 1
         return OpWorldEntity(
             index,
             controlKey,

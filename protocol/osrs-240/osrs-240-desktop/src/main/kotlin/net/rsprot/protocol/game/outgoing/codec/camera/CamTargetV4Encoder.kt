@@ -17,20 +17,20 @@ public class CamTargetV4Encoder : MessageEncoder<CamTargetV4> {
     ) {
         when (val type = message.type) {
             is CamTargetV4.PlayerCamTarget -> {
-                buffer.p4(type.index)
-                buffer.p1Alt2(0)
+                buffer.p1Alt3(0)
+                buffer.p4Alt3(type.index)
             }
             is CamTargetV4.NpcCamTarget -> {
-                buffer.p4(type.index)
-                buffer.p1Alt2(1)
+                buffer.p1Alt3(1)
+                buffer.p4Alt3(type.index)
             }
             is CamTargetV4.WorldEntityTarget -> {
-                buffer.p4(type.index)
-                buffer.p1Alt2(2)
+                buffer.p1Alt3(2)
+                buffer.p4Alt3(type.index)
             }
             is CamTargetV4.CoordGridTarget -> {
-                buffer.p4(type.coordGrid.packed)
-                buffer.p1Alt2(3)
+                buffer.p1Alt3(3)
+                buffer.p4Alt3(type.coordGrid.packed)
             }
         }
     }

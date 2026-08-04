@@ -17,11 +17,11 @@ public class NpcTransparencyEncoder : PrecomputedExtendedInfoEncoder<Transparenc
             alloc
                 .buffer(7, 7)
                 .toJagByteBuf()
-        buffer.p2Alt3(extendedInfo.start.toInt())
+        buffer.p2Alt1(extendedInfo.start.toInt())
         buffer.p2(extendedInfo.end.toInt())
         buffer.p1Alt1(extendedInfo.startTransparency.toInt())
-        buffer.p1Alt2(extendedInfo.endTransparency.toInt())
-        buffer.p1Alt2(if (extendedInfo.useStartTransparency) 1 else 0)
+        buffer.p1(extendedInfo.endTransparency.toInt())
+        buffer.p1(if (extendedInfo.useStartTransparency) 1 else 0)
         return buffer
     }
 }

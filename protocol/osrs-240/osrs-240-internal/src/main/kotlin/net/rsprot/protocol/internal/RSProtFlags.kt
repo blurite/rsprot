@@ -121,13 +121,6 @@ public object RSProtFlags {
         )
 
     @JvmStatic
-    public val npcInfoBitCount: Int =
-        getInt(
-            "npcInfoBitCount",
-            14,
-        )
-
-    @JvmStatic
     public val npcInfoPreferClosestNpcs: Boolean =
         getBoolean(
             "npcInfoPreferClosestNpcs",
@@ -184,7 +177,6 @@ public object RSProtFlags {
         log("captureSay", captureSay)
         log("singleVarShortPacketMaxAcceptedLength", singleVarShortPacketMaxAcceptedLength)
         log("infoPooling", infoPooling)
-        log("npcInfoBitCount", npcInfoBitCount)
         log("npcInfoPreferClosestNpcs", npcInfoPreferClosestNpcs)
 
         if (SystemPropertyUtil
@@ -194,6 +186,16 @@ public object RSProtFlags {
         ) {
             logger.warn {
                 "Flag -D${PREFIX}npcAvatarMaxId is no longer supported!"
+            }
+        }
+
+        if (SystemPropertyUtil
+                .get(
+                    PREFIX + "npcInfoBitCount",
+                ) != null
+        ) {
+            logger.warn {
+                "Flag -D${PREFIX}npcInfoBitCount is no longer supported!"
             }
         }
 

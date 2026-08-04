@@ -40,7 +40,7 @@ public class PlayerHitEncoder : OnDemandExtendedInfoEncoder<HitmarkList> {
         }
         val writerIndex = buffer.writerIndex()
         buffer.writerIndex(countMarker)
-        buffer.p1Alt3(count)
+        buffer.p1(count)
         buffer.writerIndex(writerIndex)
     }
 }

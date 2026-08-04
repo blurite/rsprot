@@ -15,11 +15,11 @@ public class CamMoveToV3Encoder : MessageEncoder<CamMoveToV3> {
         buffer: JagByteBuf,
         message: CamMoveToV3,
     ) {
+        buffer.p1Alt2(message.rate)
         buffer.p2(message.z)
-        buffer.p1(if (message.heightRelative) 1 else 0)
-        buffer.p1(message.rate)
-        buffer.p2Alt2(message.height)
-        buffer.p2Alt1(message.x)
         buffer.p1Alt1(message.rate2)
+        buffer.p2Alt1(message.height)
+        buffer.p2Alt3(message.x)
+        buffer.p1(if (message.heightRelative) 1 else 0)
     }
 }

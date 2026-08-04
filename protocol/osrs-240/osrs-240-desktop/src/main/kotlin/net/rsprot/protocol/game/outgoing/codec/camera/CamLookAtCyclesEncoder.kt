@@ -15,11 +15,11 @@ public class CamLookAtCyclesEncoder : MessageEncoder<CamLookAtCycles> {
         buffer: JagByteBuf,
         message: CamLookAtCycles,
     ) {
-        buffer.p2(message.cycles)
-        buffer.p1Alt3(if (message.heightRelative) 1 else 0)
-        buffer.p2(message.x)
-        buffer.p1Alt2(message.easing.id)
+        buffer.p2Alt2(message.x)
+        buffer.p2Alt2(message.cycles)
+        buffer.p1Alt3(message.easing.id)
         buffer.p2(message.z)
-        buffer.p2Alt2(message.height)
+        buffer.p1Alt3(if (message.heightRelative) 1 else 0)
+        buffer.p2Alt1(message.height)
     }
 }

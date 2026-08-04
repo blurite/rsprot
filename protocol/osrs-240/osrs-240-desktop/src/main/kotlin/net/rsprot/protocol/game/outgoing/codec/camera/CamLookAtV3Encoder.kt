@@ -15,11 +15,11 @@ public class CamLookAtV3Encoder : MessageEncoder<CamLookAtV3> {
         buffer: JagByteBuf,
         message: CamLookAtV3,
     ) {
-        buffer.p1Alt3(if (message.heightRelative) 1 else 0)
         buffer.p1Alt2(message.rate)
         buffer.p2(message.height)
-        buffer.p2Alt3(message.z)
-        buffer.p2(message.x)
-        buffer.p1Alt3(message.rate2)
+        buffer.p2Alt3(message.x)
+        buffer.p2(message.z)
+        buffer.p1Alt2(message.rate2)
+        buffer.p1Alt3(if (message.heightRelative) 1 else 0)
     }
 }
