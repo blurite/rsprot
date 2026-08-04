@@ -12,15 +12,18 @@ public value class SpotAnim(
      * @param id the id of the spotanim.
      * @param delay the delay in client cycles (20ms/cc) until the given spotanim begins rendering.
      * @param height the height at which to render the spotanim.
+     * @param loop whether to loop the spotanim if the seq type allows it.
      */
     public constructor(
         id: Int,
         delay: Int,
         height: Int,
+        loop: Boolean,
     ) : this(
         (id.toLong() and 0xFFFF)
             .or(delay.toLong() and 0xFFFF shl 16)
-            .or(height.toLong() and 0xFFFF shl 32),
+            .or(height.toLong() and 0xFFFF shl 32)
+            .or(if (loop) (1L shl 48) else 0),
     )
 
     public val id: Int
@@ -29,6 +32,8 @@ public value class SpotAnim(
         get() = (packed ushr 16 and 0xFFFF).toInt()
     public val height: Int
         get() = (packed ushr 32 and 0xFFFF).toInt()
+    public val loop: Boolean
+        get() = (packed ushr 48 and 0x1) == 0x1L
 
     public companion object {
         /**

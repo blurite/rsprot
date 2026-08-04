@@ -4,8 +4,8 @@ import net.rsprot.protocol.common.client.OldSchoolClientType
 import net.rsprot.protocol.game.outgoing.info.npcinfo.NpcAvatar
 import net.rsprot.protocol.game.outgoing.info.npcinfo.NpcAvatarFactory
 import net.rsprot.protocol.game.outgoing.info.npcinfo.NpcInfo
-import net.rsprot.protocol.game.outgoing.info.npcinfo.NpcInfoLargeV5
-import net.rsprot.protocol.game.outgoing.info.npcinfo.NpcInfoSmallV5
+import net.rsprot.protocol.game.outgoing.info.npcinfo.NpcInfoLargeV6
+import net.rsprot.protocol.game.outgoing.info.npcinfo.NpcInfoSmallV6
 import net.rsprot.protocol.game.outgoing.info.worker.DefaultProtocolWorker
 import net.rsprot.protocol.internal.game.outgoing.info.CoordGrid
 import org.openjdk.jmh.annotations.Benchmark
@@ -85,8 +85,8 @@ class NpcInfoBenchmark {
             val packet = checkNotNull(infos.npcInfo.internalPacketResult(NpcInfo.ROOT_WORLD).getOrNull())
             packet.markConsumed()
             when (packet) {
-                is NpcInfoSmallV5 -> packet.release()
-                is NpcInfoLargeV5 -> packet.release()
+                is NpcInfoSmallV6 -> packet.release()
+                is NpcInfoLargeV6 -> packet.release()
                 else -> throw IllegalStateException("Unknown packet type: $packet")
             }
         }

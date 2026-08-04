@@ -144,18 +144,20 @@ public class NpcAvatarExtendedInfoDesktopWriter :
 
         outFlag = outFlag or pCached(buffer, clientFlag, TINTING, blocks.tinting)
         outFlag = outFlag or pCached(buffer, clientFlag, BAS_CHANGE, blocks.baseAnimationSet)
+        outFlag = outFlag or pCached(buffer, clientFlag, SPOTANIM, blocks.spotAnims)
         outFlag = outFlag or pCached(buffer, clientFlag, HEAD_CUSTOMISATION, blocks.headCustomisation)
         outFlag = outFlag or pCached(buffer, clientFlag, HEADICON_CUSTOMISATION, blocks.headIconCustomisation)
         outFlag = outFlag or pCached(buffer, clientFlag, OPS, blocks.visibleOps)
+        outFlag = outFlag or pCached(buffer, clientFlag, BODY_CUSTOMISATION, blocks.bodyCustomisation)
         outFlag = outFlag or pCached(buffer, clientFlag, SAY, blocks.say)
         outFlag = outFlag or pCached(buffer, clientFlag, FREEZE, blocks.freeze)
         outFlag = outFlag or pCached(buffer, clientFlag, LEVEL_CHANGE, blocks.combatLevelChange)
         outFlag = outFlag or pCached(buffer, clientFlag, EXACT_MOVE, blocks.exactMove)
         outFlag = outFlag or pCached(buffer, clientFlag, SEQUENCE, blocks.sequence)
         outFlag = outFlag or pOnDemand(buffer, clientFlag, HITMARKS, blocks.hitmarkList, localIndex, observerIndex)
-        outFlag = outFlag or pCached(buffer, clientFlag, SPOTANIM, blocks.spotAnims)
+        // spotanim old
         outFlag = outFlag or pCached(buffer, clientFlag, TRANSPARENCY, blocks.transparency)
-        outFlag = outFlag or pCached(buffer, clientFlag, BODY_CUSTOMISATION, blocks.bodyCustomisation)
+        // old body customisation
         outFlag = outFlag or pCached(buffer, clientFlag, NAME_CHANGE, blocks.nameChange)
         outFlag = outFlag or pCached(buffer, clientFlag, TRANSFORMATION, blocks.transformation)
         outFlag = outFlag or pCached(buffer, clientFlag, FACING, blocks.face)
@@ -232,7 +234,7 @@ public class NpcAvatarExtendedInfoDesktopWriter :
         private const val SEQUENCE: Int = 0x4
         private const val NAME_CHANGE: Int = 0x100
         private const val OPS: Int = 0x400
-        private const val SPOTANIM: Int = 0x400_000
+        private const val SPOTANIM: Int = 0x2
         private const val HEADBARS: Int = 0x1_000_000
         private const val BAS_CHANGE: Int = 0x200_000
         private const val SAY: Int = 0x10
@@ -241,10 +243,13 @@ public class NpcAvatarExtendedInfoDesktopWriter :
         private const val TRANSFORMATION: Int = 0x8
         private const val FACING: Int = 0x80
         private const val HEADICON_CUSTOMISATION: Int = 0x10_000
-        private const val BODY_CUSTOMISATION: Int = 0x100_000
+        private const val BODY_CUSTOMISATION: Int = 0x2_000_000
         private const val HEAD_CUSTOMISATION: Int = 0x80_000
         private const val TINTING: Int = 0x200
         private const val TRANSPARENCY: Int = 0x8000
         private const val FREEZE: Int = 0x1
+
+        private const val SPOTANIM_OLD: Int = 0x400_000
+        private const val BODY_CUSTOMISATION_V2: Int = 0x100_000
     }
 }

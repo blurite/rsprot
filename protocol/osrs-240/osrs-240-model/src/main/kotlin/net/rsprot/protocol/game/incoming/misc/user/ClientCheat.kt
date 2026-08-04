@@ -8,11 +8,23 @@ import net.rsprot.protocol.message.IncomingGameMessage
  * Client cheats are commands sent in chat using the :: prefix,
  * or through the console on the C++ client.
  */
-public class ClientCheat(
+public class ClientCheat private constructor(
     public val command: String,
+    private val _unknown: Byte,
 ) : IncomingGameMessage {
+    public constructor(
+        command: String,
+        unknown: Int,
+    ) : this(
+        command,
+        unknown.toByte(),
+    )
+
     override val category: ClientProtCategory
         get() = GameClientProtCategory.USER_EVENT
+
+    public val unknown: Int
+        get() = _unknown.toInt()
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -20,10 +32,22 @@ public class ClientCheat(
 
         other as ClientCheat
 
-        return command == other.command
+        if (_unknown != other._unknown) return false
+        if (command != other.command) return false
+
+        return true
     }
 
-    override fun hashCode(): Int = command.hashCode()
+    override fun hashCode(): Int {
+        var result = _unknown.toInt()
+        result = 31 * result + command.hashCode()
+        return result
+    }
 
-    override fun toString(): String = "ClientCheat(command='$command')"
+    override fun toString(): String {
+        return "ClientCheat(" +
+            "command='$command', " +
+            "unknown=$unknown" +
+            ")"
+    }
 }

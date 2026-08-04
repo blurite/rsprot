@@ -455,12 +455,15 @@ public class NpcAvatarExtendedInfo(
      * @param id the id of the spotanim.
      * @param delay the delay in client cycles (20ms/cc) until the given spotanim begins rendering.
      * @param height the height at which to render the spotanim.
+     * @param loop loops the spotanim if the seq type allows it
      */
+    @JvmOverloads
     public fun setSpotAnim(
         slot: Int,
         id: Int,
         delay: Int,
         height: Int,
+        loop: Boolean = false,
     ) {
         checkCommunicationThread()
         verify {
@@ -477,7 +480,7 @@ public class NpcAvatarExtendedInfo(
                 "Unexpected delay: $height, expected range: $UNSIGNED_SHORT_RANGE"
             }
         }
-        blocks.spotAnims.set(slot, SpotAnim(id, delay, height))
+        blocks.spotAnims.set(slot, SpotAnim(id, delay, height, loop))
         flags = flags or SPOTANIM
     }
 

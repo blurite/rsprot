@@ -122,15 +122,16 @@ public class PlayerAvatarExtendedInfoDesktopWriter :
             buffer.p1(clientFlag shr 16)
         }
 
-        // minimenu strings (unused; done through appearance)
+        outFlag = outFlag or pCached(buffer, clientFlag, SPOTANIM, blocks.spotAnims)
         outFlag = outFlag or pCached(buffer, clientFlag, CHAT, blocks.chat)
         outFlag = outFlag or pOnDemand(buffer, clientFlag, HEADBARS, blocks.headbarList, localIndex, observerIndex)
         outFlag = outFlag or pCached(buffer, clientFlag, APPEARANCE, blocks.appearance)
         outFlag = outFlag or pCached(buffer, clientFlag, FREEZE, blocks.freeze)
         outFlag = outFlag or pCached(buffer, clientFlag, FACE, blocks.face)
+        // minimenu strings (unused; done through appearance)
         outFlag = outFlag or pCached(buffer, clientFlag, MOVE_SPEED, blocks.moveSpeed)
         outFlag = outFlag or pCached(buffer, clientFlag, TEMP_MOVE_SPEED, blocks.temporaryMoveSpeed)
-        outFlag = outFlag or pCached(buffer, clientFlag, SPOTANIM, blocks.spotAnims)
+        // old spotanim
         outFlag = outFlag or pCached(buffer, clientFlag, TRANSPARENCY, blocks.transparency)
         outFlag = outFlag or pOnDemand(buffer, clientFlag, HITMARKS, blocks.hitmarkList, localIndex, observerIndex)
         outFlag = outFlag or pCached(buffer, clientFlag, EXACT_MOVE, blocks.exactMove)
@@ -211,7 +212,7 @@ public class PlayerAvatarExtendedInfoDesktopWriter :
         private const val TINTING = 0x400
         private const val EXACT_MOVE = 0x8000
         private const val TEMP_MOVE_SPEED = 0x800
-        private const val SPOTANIM = 0x80000
+        private const val SPOTANIM = 0x20
         private const val HEADBARS = 0x20000
         private const val HITMARKS = 0x100000
         private const val FREEZE = 0x40000
@@ -220,5 +221,6 @@ public class PlayerAvatarExtendedInfoDesktopWriter :
         // Name extras are part of appearance nowadays, and thus will not be used on their own
         private const val NAME_EXTRAS = 0x200
         private const val CHAT_OLD = 0x2
+        private const val SPOTANIM_OLD = 0x80000
     }
 }

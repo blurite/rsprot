@@ -13,6 +13,10 @@ public class ClientCheatDecoder : MessageDecoder<ClientCheat> {
 
     override fun decode(buffer: JagByteBuf): ClientCheat {
         val command = buffer.gjstr()
-        return ClientCheat(command)
+        val unknown = buffer.g1()
+        return ClientCheat(
+            command,
+            unknown,
+        )
     }
 }

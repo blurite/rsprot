@@ -100,8 +100,8 @@ public class NpcAvatarFactory(
         require(index in 0..65534) {
             "Npc avatar index out of bounds: $index"
         }
-        require(id in 0..NpcAvatar.maxNpcId) {
-            "Npc id cannot be outside of 0..${NpcAvatar.maxNpcId} range"
+        require(id in 0..16777215) {
+            "Npc id cannot be outside of 0..16777215 range"
         }
         require(level in 0..3) {
             "Level cannot be outside of 0..3 range"
