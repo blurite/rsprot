@@ -609,9 +609,9 @@ public class NpcInfo internal constructor(
             val isEmpty = isEmptyPacket(details, buffer)
             details.previousPacket =
                 if (details.largeUpdate) {
-                    NpcInfoLargeV5(buffer, isEmpty)
+                    NpcInfoLargeV6(buffer, isEmpty)
                 } else {
-                    NpcInfoSmallV5(buffer, isEmpty)
+                    NpcInfoSmallV6(buffer, isEmpty)
                 }
 
             details.largeUpdate = false

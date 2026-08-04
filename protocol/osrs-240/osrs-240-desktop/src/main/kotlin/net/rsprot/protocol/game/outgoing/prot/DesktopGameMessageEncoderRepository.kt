@@ -104,8 +104,8 @@ import net.rsprot.protocol.game.outgoing.codec.misc.player.UpdateRunWeightEncode
 import net.rsprot.protocol.game.outgoing.codec.misc.player.UpdateStatV2Encoder
 import net.rsprot.protocol.game.outgoing.codec.misc.player.UpdateStockMarketSlotEncoder
 import net.rsprot.protocol.game.outgoing.codec.misc.player.UpdateTradingPostEncoder
-import net.rsprot.protocol.game.outgoing.codec.npcinfo.NpcInfoLargeV5Encoder
-import net.rsprot.protocol.game.outgoing.codec.npcinfo.NpcInfoSmallV5Encoder
+import net.rsprot.protocol.game.outgoing.codec.npcinfo.NpcInfoLargeV6Encoder
+import net.rsprot.protocol.game.outgoing.codec.npcinfo.NpcInfoSmallV6Encoder
 import net.rsprot.protocol.game.outgoing.codec.npcinfo.SetNpcUpdateOriginEncoder
 import net.rsprot.protocol.game.outgoing.codec.playerinfo.PlayerInfoEncoder
 import net.rsprot.protocol.game.outgoing.codec.social.FriendListLoadedEncoder
@@ -224,8 +224,8 @@ public object DesktopGameMessageEncoderRepository {
                 bind(ObjUncustomiseSpecificEncoder())
 
                 bind(PlayerInfoEncoder())
-                bind(NpcInfoSmallV5Encoder())
-                bind(NpcInfoLargeV5Encoder())
+                bind(NpcInfoSmallV6Encoder())
+                bind(NpcInfoLargeV6Encoder())
                 bind(SetNpcUpdateOriginEncoder())
 
                 bind(SetActiveWorldV2Encoder())

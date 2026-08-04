@@ -5,8 +5,8 @@ import net.rsprot.protocol.common.client.OldSchoolClientType
 import net.rsprot.protocol.game.outgoing.info.npcinfo.NpcAvatar
 import net.rsprot.protocol.game.outgoing.info.npcinfo.NpcAvatarFactory
 import net.rsprot.protocol.game.outgoing.info.npcinfo.NpcInfo
-import net.rsprot.protocol.game.outgoing.info.npcinfo.NpcInfoLargeV5
-import net.rsprot.protocol.game.outgoing.info.npcinfo.NpcInfoSmallV5
+import net.rsprot.protocol.game.outgoing.info.npcinfo.NpcInfoLargeV6
+import net.rsprot.protocol.game.outgoing.info.npcinfo.NpcInfoSmallV6
 import net.rsprot.protocol.internal.game.outgoing.info.CoordGrid
 import net.rsprot.protocol.internal.game.outgoing.info.util.ZoneIndexStorage
 import org.junit.jupiter.api.BeforeEach
@@ -54,8 +54,8 @@ class NpcInfoTest {
         val packet = this.localNpcInfo.internalPacketResult(NpcInfo.ROOT_WORLD).getOrNull()!!
         packet.markConsumed()
         return when (packet) {
-            is NpcInfoSmallV5 -> packet.content()
-            is NpcInfoLargeV5 -> packet.content()
+            is NpcInfoSmallV6 -> packet.content()
+            is NpcInfoLargeV6 -> packet.content()
             else -> throw IllegalStateException("Unknown npc info packet!")
         }
     }

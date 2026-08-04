@@ -4,10 +4,10 @@ package net.rsprot.protocol.game.outgoing.info.npcinfo
     message = "Deprecated. Use NpcInfoSmallV5.",
     replaceWith = ReplaceWith("NpcInfoSmallV5"),
 )
-public typealias NpcInfoSmall = NpcInfoSmallV5
+public typealias NpcInfoSmall = NpcInfoSmallV6
 
 @Deprecated(
     message = "Deprecated. Use NpcInfoLargeV5.",
     replaceWith = ReplaceWith("NpcInfoLargeV5"),
 )
-public typealias NpcInfoLarge = NpcInfoLargeV5
+public typealias NpcInfoLarge = NpcInfoLargeV6

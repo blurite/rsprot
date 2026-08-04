@@ -5,7 +5,7 @@ import io.netty.buffer.ByteBuf
 /**
  * A small npc info wrapper packet, used to wrap the pre-built buffer from the npc info class.
  */
-public class NpcInfoSmallV5(
+public class NpcInfoSmallV6(
     buffer: ByteBuf,
     empty: Boolean,
 ) : NpcInfoPacket(buffer, empty) {
@@ -21,6 +21,6 @@ public class NpcInfoSmallV5(
     }
 
     override fun toString(): String {
-        return "NpcInfoSmallV5()"
+        return "NpcInfoSmallV6()"
     }
 }
