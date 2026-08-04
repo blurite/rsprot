@@ -73,11 +73,13 @@ class PlayerInfoWorldMembershipTest {
         fixture.tick()
         assertTrue(fixture.targetIsHighResolution())
 
-        fixture.observer.playerInfo.avatar.forceResizeRange(0)
+        fixture.observer.playerInfo.avatar
+            .forceResizeRange(0)
         fixture.tick()
         assertFalse(fixture.targetIsHighResolution())
 
-        fixture.target.playerInfo.avatar.setHighPriority()
+        fixture.target.playerInfo.avatar
+            .setHighPriority()
         fixture.tick()
         assertTrue(fixture.targetIsHighResolution())
     }
@@ -239,13 +241,16 @@ class PlayerInfoWorldMembershipTest {
 
         fixture.updateObserver(0, ROOT_X, ROOT_Z)
         fixture.updateTarget(3, ROOT_X + 104, ROOT_Z + 104)
-        fixture.observer.playerInfo.avatar.forceResizeRange(Int.MAX_VALUE)
+        fixture.observer.playerInfo.avatar
+            .forceResizeRange(Int.MAX_VALUE)
         fixture.tick()
 
         assertTrue(fixture.targetIsHighResolution())
     }
 
-    private class PlayerFixture(playerProtocolWorker: ProtocolWorker? = null) {
+    private class PlayerFixture(
+        playerProtocolWorker: ProtocolWorker? = null,
+    ) {
         private val context =
             if (playerProtocolWorker == null) {
                 generateInfoProtocolContext()
@@ -373,11 +378,11 @@ class PlayerInfoWorldMembershipTest {
         private const val INSTANCE_ZONE_X = 800
         private const val INSTANCE_ZONE_Z = 800
 
-        // Captured from the same scenario on unmodified upstream revision 239 at 7fa6050a.
+        // Captured from the same scenario on unmodified upstream revision 240 at 71f1ad32.
         private val EXPECTED_PACKET_HEX =
             listOf(
-                "00288640b202ff982041807f7f80808080808080808080808080808080808080808080808080808080807f7f" +
-                    "7f7f7f7f7f7f7f7f7f7f7f7fd4e1f2e7e5f480fe808080808080808080",
+                "00288640b202ff9804410000000000000000007e00746567726154ffffffffffffffffffffffffffff" +
+                    "0000000000000000000000000000000000000000000000000000000000ffff00",
                 "807ff0",
                 "007ff08640b200",
                 "217ff0",
@@ -387,18 +392,20 @@ class PlayerInfoWorldMembershipTest {
                 "008a807ff0",
             )
 
-        // Captured from the same scenario on unmodified upstream revision 239 at 7fa6050a.
+        // Captured from the same scenario on unmodified upstream revision 240 at 71f1ad32.
         private val EXPECTED_STATIONARY_SNAPSHOT_PACKET_HEX =
             listOf(
-                "00288640b2030c816405ff202041807f7f808080808080808080808080808080808080808080808080808080" +
-                    "80807f7f7f7f7f7f7f7f7f7f7f7f7f7fd4e1f2e7e5f480fe8080808080808080802041807f7f808080808080" +
-                    "80808080808080808080808080808080808080808080807f7f7f7f7f7f7f7f7f7f7f7f7f7fd4e1f2e7e5f480" +
-                    "fe808080808080808080",
+                "00288640b2030c816405ff2004410000000000000000007e00746567726154" +
+                    "ffffffffffffffffffffffffffff00000000000000000000000000000000" +
+                    "00000000000000000000000000ffff0004410000000000000000007e0074" +
+                    "6567726154ffffffffffffffffffffffffffff0000000000000000000000" +
+                    "000000000000000000000000000000000000ffff00",
                 "98427fec",
-                "8080308640b2030c816405fe802041807f7f8080808080808080808080808080808080808080808080808080" +
-                    "8080807f7f7f7f7f7f7f7f7f7f7f7f7f7fd4e1f2e7e5f480fe8080808080808080802041807f7f8080808080" +
-                    "8080808080808080808080808080808080808080808080807f7f7f7f7f7f7f7f7f7f7f7f7f7fd4e1f2e7e5f4" +
-                    "80fe808080808080808080",
+                "8080308640b2030c816405fe8004410000000000000000007e00746567726154" +
+                    "ffffffffffffffffffffffffffff00000000000000000000000000000000" +
+                    "00000000000000000000000000ffff0004410000000000000000007e00746" +
+                    "567726154ffffffffffffffffffffffffffff000000000000000000000000" +
+                    "0000000000000000000000000000000000ffff00",
             )
 
         private fun instanceCoord(
@@ -454,7 +461,13 @@ class PlayerInfoWorldMembershipTest {
         }
 
         private fun releaseWorldEntityPacket(infos: Infos) {
-            val packet = checkNotNull(infos.getPackets().rootWorldInfoPackets.worldEntityInfo.getOrNull())
+            val packet =
+                checkNotNull(
+                    infos
+                        .getPackets()
+                        .rootWorldInfoPackets.worldEntityInfo
+                        .getOrNull(),
+                )
             packet.consume()
             packet.release()
         }
