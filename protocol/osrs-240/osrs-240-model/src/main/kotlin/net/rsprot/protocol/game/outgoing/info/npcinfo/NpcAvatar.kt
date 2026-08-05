@@ -195,8 +195,8 @@ public class NpcAvatar internal constructor(
      */
     public fun setId(id: Int) {
         checkCommunicationThread()
-        require(id in 0..16777215) {
-            "Id must be a value in range of 0..$16777215. Value: $id"
+        require(id in 0..65535) {
+            "Id must be a value in range of 0..65535. Value: $id"
         }
         this.details.id = id
     }
