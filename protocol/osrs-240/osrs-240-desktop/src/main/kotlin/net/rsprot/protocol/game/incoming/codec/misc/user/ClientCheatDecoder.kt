@@ -13,10 +13,10 @@ public class ClientCheatDecoder : MessageDecoder<ClientCheat> {
 
     override fun decode(buffer: JagByteBuf): ClientCheat {
         val command = buffer.gjstr()
-        val unknown = buffer.g1()
+        val autocomplete = buffer.g1()
         return ClientCheat(
             command,
-            unknown,
+            autocomplete == 1,
         )
     }
 }
