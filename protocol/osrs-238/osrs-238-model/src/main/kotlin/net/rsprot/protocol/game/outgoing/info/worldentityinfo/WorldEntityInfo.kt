@@ -325,8 +325,16 @@ public class WorldEntityInfo internal constructor(
                 precomputedBuffer.readerIndex(),
                 precomputedBuffer.readableBytes(),
             )
-            val placeholderFlag = pPlaceholderExtendedInfoFlag(buffer)
-            putWorldEntityExtendedInfo(avatar, buffer, placeholderFlag)
+            val extendedInfoWriter = avatar.extendedInfo.getWriter(oldSchoolClientType)
+            val placeholderFlag = buffer.writerIndex()
+            buffer.p1(0)
+            val flag = putWorldEntityExtendedInfo(avatar, buffer, extendedInfoWriter)
+            if (flag != 0) {
+                val finalPos = buffer.writerIndex()
+                buffer.writerIndex(placeholderFlag)
+                buffer.p1(flag)
+                buffer.writerIndex(finalPos)
+            }
         }
         return count != this.highResolutionIndicesCount
     }
@@ -418,8 +426,10 @@ public class WorldEntityInfo internal constructor(
             val fineXOffset = rootBuildArea.zoneX shl 10
             val fineZOffset = rootBuildArea.zoneZ shl 10
 
+            val extendedInfoWriter = avatar.extendedInfo.getWriter(oldSchoolClientType)
             buffer.p2(avatar.index)
-            val placeholderFlag = pPlaceholderExtendedInfoFlag(buffer)
+            val placeholderFlag = buffer.writerIndex()
+            buffer.p1Alt1(0) // Placeholder, updated to real value below
             buffer.p2Alt1(avatar.id)
             buffer.p1Alt2(priority.id)
             buffer.p1((avatar.sizeX shl 4) or avatar.sizeZ)
@@ -429,28 +439,26 @@ public class WorldEntityInfo internal constructor(
                 avatar.currentCoordFine.z - fineZOffset,
                 avatar.angle,
             )
-            putWorldEntityExtendedInfo(avatar, buffer, placeholderFlag)
+            val flag = putWorldEntityExtendedInfo(avatar, buffer, extendedInfoWriter)
+            if (flag != 0) {
+                val finalPos = buffer.writerIndex()
+                buffer.writerIndex(placeholderFlag)
+                buffer.p1Alt1(flag)
+                buffer.writerIndex(finalPos)
+            }
         }
-    }
-
-    private fun pPlaceholderExtendedInfoFlag(buffer: JagByteBuf): Int {
-        val index = buffer.writerIndex()
-        buffer.p1(0)
-        return index
     }
 
     private fun putWorldEntityExtendedInfo(
         avatar: WorldEntityAvatar,
         buffer: JagByteBuf,
-        flagWriteIndex: Int,
-    ) {
+        writer: WorldEntityAvatarExtendedInfoWriter,
+    ): Int {
         // No extra flags right now as the extended info system is still primitive
-        avatar.extendedInfo.pExtendedInfo(
-            oldSchoolClientType,
+        return avatar.extendedInfo.pExtendedInfo(
+            writer,
             buffer,
-            localIndex,
             0,
-            flagWriteIndex,
         )
     }
 

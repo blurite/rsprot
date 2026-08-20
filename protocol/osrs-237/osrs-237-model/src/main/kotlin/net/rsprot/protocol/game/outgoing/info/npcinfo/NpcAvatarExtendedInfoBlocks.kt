@@ -1,7 +1,6 @@
 package net.rsprot.protocol.game.outgoing.info.npcinfo
 
 import net.rsprot.protocol.common.client.OldSchoolClientType
-import net.rsprot.protocol.game.outgoing.info.AvatarExtendedInfoWriter
 import net.rsprot.protocol.internal.client.ClientTypeMap
 import net.rsprot.protocol.internal.game.outgoing.info.ExtendedInfo
 import net.rsprot.protocol.internal.game.outgoing.info.encoder.ExtendedInfoEncoder
@@ -26,8 +25,7 @@ import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.Visib
 
 private typealias NEnc = NpcExtendedInfoEncoders
 private typealias HeadIcon = HeadIconCustomisation
-private typealias NpcExtendedInfoWriters =
-    List<AvatarExtendedInfoWriter<NpcExtendedInfoEncoders, NpcAvatarExtendedInfoBlocks>>
+private typealias NpcExtendedInfoWriters = List<NpcAvatarExtendedInfoWriter>
 
 /**
  * A data structure to bring all the extended info blocks together,

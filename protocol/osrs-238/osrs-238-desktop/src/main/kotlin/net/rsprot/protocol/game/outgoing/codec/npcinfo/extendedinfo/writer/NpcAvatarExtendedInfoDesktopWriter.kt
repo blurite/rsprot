@@ -21,9 +21,9 @@ import net.rsprot.protocol.game.outgoing.codec.npcinfo.extendedinfo.NpcSpotAnimE
 import net.rsprot.protocol.game.outgoing.codec.npcinfo.extendedinfo.NpcTintingEncoder
 import net.rsprot.protocol.game.outgoing.codec.npcinfo.extendedinfo.NpcTransformationEncoder
 import net.rsprot.protocol.game.outgoing.codec.npcinfo.extendedinfo.NpcVisibleOpsEncoder
-import net.rsprot.protocol.game.outgoing.info.AvatarExtendedInfoWriter
 import net.rsprot.protocol.game.outgoing.info.npcinfo.NpcAvatarExtendedInfo
 import net.rsprot.protocol.game.outgoing.info.npcinfo.NpcAvatarExtendedInfoBlocks
+import net.rsprot.protocol.game.outgoing.info.npcinfo.NpcAvatarExtendedInfoWriter
 import net.rsprot.protocol.internal.game.outgoing.info.ExtendedInfo
 import net.rsprot.protocol.internal.game.outgoing.info.encoder.OnDemandExtendedInfoEncoder
 import net.rsprot.protocol.internal.game.outgoing.info.encoder.PrecomputedExtendedInfoEncoder
@@ -31,7 +31,7 @@ import net.rsprot.protocol.internal.game.outgoing.info.npcinfo.encoder.NpcExtend
 
 @Suppress("DuplicatedCode")
 public class NpcAvatarExtendedInfoDesktopWriter :
-    AvatarExtendedInfoWriter<NpcExtendedInfoEncoders, NpcAvatarExtendedInfoBlocks>(
+    NpcAvatarExtendedInfoWriter(
         OldSchoolClientType.DESKTOP,
         NpcExtendedInfoEncoders(
             OldSchoolClientType.DESKTOP,
@@ -112,7 +112,6 @@ public class NpcAvatarExtendedInfoDesktopWriter :
         observerIndex: Int,
         flag: Int,
         blocks: NpcAvatarExtendedInfoBlocks,
-        flagWriteIndex: Int,
     ) {
         var clientFlag = convertFlags(flag)
         if (clientFlag and 0xFF.inv() != 0) clientFlag = clientFlag or EXTENDED_SHORT

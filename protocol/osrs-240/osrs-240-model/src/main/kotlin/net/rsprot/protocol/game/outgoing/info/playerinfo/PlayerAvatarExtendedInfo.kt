@@ -6,7 +6,7 @@ import io.netty.buffer.ByteBufAllocator
 import net.rsprot.buffer.JagByteBuf
 import net.rsprot.compression.provider.HuffmanCodecProvider
 import net.rsprot.protocol.common.client.OldSchoolClientType
-import net.rsprot.protocol.game.outgoing.info.AvatarExtendedInfoWriter
+import net.rsprot.protocol.game.outgoing.info.ExtendedInfoWriterSupport
 import net.rsprot.protocol.game.outgoing.info.filter.ExtendedInfoFilter
 import net.rsprot.protocol.internal.RSProtFlags
 import net.rsprot.protocol.internal.checkCommunicationThread
@@ -20,8 +20,18 @@ import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.util.
 import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.util.HitMark
 import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.util.SpotAnim
 
-public typealias PlayerAvatarExtendedInfoWriter =
-    AvatarExtendedInfoWriter<PlayerExtendedInfoEncoders, PlayerAvatarExtendedInfoBlocks>
+public abstract class PlayerAvatarExtendedInfoWriter(
+    oldSchoolClientType: OldSchoolClientType,
+    encoders: PlayerExtendedInfoEncoders,
+) : ExtendedInfoWriterSupport<PlayerExtendedInfoEncoders>(oldSchoolClientType, encoders) {
+    public abstract fun pExtendedInfo(
+        buffer: JagByteBuf,
+        localIndex: Int,
+        observerIndex: Int,
+        flag: Int,
+        blocks: PlayerAvatarExtendedInfoBlocks,
+    )
+}
 
 /**
  * This data structure keeps track of all the extended info blocks for a given player avatar.
@@ -2019,7 +2029,6 @@ public class PlayerAvatarExtendedInfo(
             observer.localIndex,
             flag,
             blocks,
-            flagWriteIndex = -1,
         )
         return true
     }

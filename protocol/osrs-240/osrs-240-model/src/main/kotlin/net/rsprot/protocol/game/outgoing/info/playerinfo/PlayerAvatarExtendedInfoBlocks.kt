@@ -1,7 +1,6 @@
 package net.rsprot.protocol.game.outgoing.info.playerinfo
 
 import net.rsprot.protocol.common.client.OldSchoolClientType
-import net.rsprot.protocol.game.outgoing.info.AvatarExtendedInfoWriter
 import net.rsprot.protocol.internal.client.ClientTypeMap
 import net.rsprot.protocol.internal.game.outgoing.info.ExtendedInfo
 import net.rsprot.protocol.internal.game.outgoing.info.encoder.ExtendedInfoEncoder
@@ -34,7 +33,7 @@ private typealias TempMoveSpeed = TemporaryMoveSpeed
  * the exact order described by the client.
  */
 public class PlayerAvatarExtendedInfoBlocks(
-    writers: List<AvatarExtendedInfoWriter<PlayerExtendedInfoEncoders, PlayerAvatarExtendedInfoBlocks>>,
+    writers: List<PlayerAvatarExtendedInfoWriter>,
 ) {
     public val appearance: Appearance = Appearance(encoders(writers, PEnc::appearance))
     public val moveSpeed: MoveSpeed = MoveSpeed(encoders(writers, PEnc::moveSpeed))
@@ -71,7 +70,7 @@ public class PlayerAvatarExtendedInfoBlocks(
          * keyed by [OldSchoolClientType.id].
          */
         private inline fun <T : ExtendedInfo<T, E>, reified E : ExtendedInfoEncoder<T>> encoders(
-            allEncoders: List<AvatarExtendedInfoWriter<PlayerExtendedInfoEncoders, PlayerAvatarExtendedInfoBlocks>>,
+            allEncoders: List<PlayerAvatarExtendedInfoWriter>,
             selector: (PlayerExtendedInfoEncoders) -> E,
         ): ClientTypeMap<E> =
             ClientTypeMap.ofType(allEncoders, OldSchoolClientType.COUNT) {

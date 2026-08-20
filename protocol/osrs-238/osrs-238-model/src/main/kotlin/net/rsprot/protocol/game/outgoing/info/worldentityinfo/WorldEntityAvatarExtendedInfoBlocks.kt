@@ -1,7 +1,6 @@
 package net.rsprot.protocol.game.outgoing.info.worldentityinfo
 
 import net.rsprot.protocol.common.client.OldSchoolClientType
-import net.rsprot.protocol.game.outgoing.info.AvatarExtendedInfoWriter
 import net.rsprot.protocol.internal.client.ClientTypeMap
 import net.rsprot.protocol.internal.game.outgoing.info.ExtendedInfo
 import net.rsprot.protocol.internal.game.outgoing.info.encoder.ExtendedInfoEncoder
@@ -10,8 +9,7 @@ import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.Visib
 import net.rsprot.protocol.internal.game.outgoing.info.worldentityinfo.encoder.WorldEntityExtendedInfoEncoders
 
 private typealias WEEnc = WorldEntityExtendedInfoEncoders
-private typealias WorldEntityExtendedInfoWriters =
-    List<AvatarExtendedInfoWriter<WorldEntityExtendedInfoEncoders, WorldEntityAvatarExtendedInfoBlocks>>
+private typealias WorldEntityExtendedInfoWriters = List<WorldEntityAvatarExtendedInfoWriter>
 
 /**
  * A data structure to bring all the extended info blocks together,

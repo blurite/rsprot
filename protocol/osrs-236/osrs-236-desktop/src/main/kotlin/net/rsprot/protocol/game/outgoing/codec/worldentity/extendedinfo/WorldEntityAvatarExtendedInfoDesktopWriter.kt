@@ -5,16 +5,16 @@ package net.rsprot.protocol.game.outgoing.codec.worldentity.extendedinfo
 import com.github.michaelbull.logging.InlineLogger
 import net.rsprot.buffer.JagByteBuf
 import net.rsprot.protocol.common.client.OldSchoolClientType
-import net.rsprot.protocol.game.outgoing.info.AvatarExtendedInfoWriter
 import net.rsprot.protocol.game.outgoing.info.worldentityinfo.WorldEntityAvatarExtendedInfo
 import net.rsprot.protocol.game.outgoing.info.worldentityinfo.WorldEntityAvatarExtendedInfoBlocks
+import net.rsprot.protocol.game.outgoing.info.worldentityinfo.WorldEntityAvatarExtendedInfoWriter
 import net.rsprot.protocol.internal.game.outgoing.info.ExtendedInfo
 import net.rsprot.protocol.internal.game.outgoing.info.encoder.OnDemandExtendedInfoEncoder
 import net.rsprot.protocol.internal.game.outgoing.info.encoder.PrecomputedExtendedInfoEncoder
 import net.rsprot.protocol.internal.game.outgoing.info.worldentityinfo.encoder.WorldEntityExtendedInfoEncoders
 
 public class WorldEntityAvatarExtendedInfoDesktopWriter :
-    AvatarExtendedInfoWriter<WorldEntityExtendedInfoEncoders, WorldEntityAvatarExtendedInfoBlocks>(
+    WorldEntityAvatarExtendedInfoWriter(
         OldSchoolClientType.DESKTOP,
         WorldEntityExtendedInfoEncoders(
             OldSchoolClientType.DESKTOP,
@@ -36,22 +36,15 @@ public class WorldEntityAvatarExtendedInfoDesktopWriter :
     @Suppress("DuplicatedCode")
     override fun pExtendedInfo(
         buffer: JagByteBuf,
-        localIndex: Int,
-        observerIndex: Int,
         flag: Int,
         blocks: WorldEntityAvatarExtendedInfoBlocks,
-        flagWriteIndex: Int,
-    ) {
+    ): Int {
         val clientFlag = convertFlags(flag)
-        var outFlag = clientFlag
+        var outFlag = 0
 
         outFlag = outFlag or pCached(buffer, clientFlag, SEQUENCE, blocks.sequence)
         outFlag = outFlag or pCached(buffer, clientFlag, VISIBLE_OPS, blocks.visibleOps)
-
-        val finalPos = buffer.writerIndex()
-        buffer.writerIndex(flagWriteIndex)
-        buffer.p1(outFlag)
-        buffer.writerIndex(finalPos)
+        return outFlag
     }
 
     private fun <T : ExtendedInfo<T, E>, E : PrecomputedExtendedInfoEncoder<T>> pCached(

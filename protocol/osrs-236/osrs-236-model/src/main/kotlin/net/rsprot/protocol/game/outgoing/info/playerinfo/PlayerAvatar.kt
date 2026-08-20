@@ -2,13 +2,11 @@ package net.rsprot.protocol.game.outgoing.info.playerinfo
 
 import io.netty.buffer.ByteBufAllocator
 import net.rsprot.compression.provider.HuffmanCodecProvider
-import net.rsprot.protocol.game.outgoing.info.AvatarExtendedInfoWriter
 import net.rsprot.protocol.game.outgoing.info.AvatarPriority
 import net.rsprot.protocol.game.outgoing.info.filter.ExtendedInfoFilter
 import net.rsprot.protocol.game.outgoing.info.util.Avatar
 import net.rsprot.protocol.internal.checkCommunicationThread
 import net.rsprot.protocol.internal.game.outgoing.info.CoordGrid
-import net.rsprot.protocol.internal.game.outgoing.info.playerinfo.encoder.PlayerExtendedInfoEncoders
 
 /**
  * The player avatar class represents an avatar for the purposes of player information packet.
@@ -20,7 +18,7 @@ public class PlayerAvatar internal constructor(
     allocator: ByteBufAllocator,
     localIndex: Int,
     extendedInfoFilter: ExtendedInfoFilter,
-    extendedInfoWriters: List<AvatarExtendedInfoWriter<PlayerExtendedInfoEncoders, PlayerAvatarExtendedInfoBlocks>>,
+    extendedInfoWriters: List<PlayerAvatarExtendedInfoWriter>,
     huffmanCodec: HuffmanCodecProvider,
 ) : Avatar {
     /**

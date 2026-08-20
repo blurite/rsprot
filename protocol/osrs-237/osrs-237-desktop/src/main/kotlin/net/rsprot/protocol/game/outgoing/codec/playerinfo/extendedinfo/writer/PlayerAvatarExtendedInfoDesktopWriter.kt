@@ -18,16 +18,16 @@ import net.rsprot.protocol.game.outgoing.codec.playerinfo.extendedinfo.PlayerSeq
 import net.rsprot.protocol.game.outgoing.codec.playerinfo.extendedinfo.PlayerSpotAnimEncoder
 import net.rsprot.protocol.game.outgoing.codec.playerinfo.extendedinfo.PlayerTemporaryMoveSpeedEncoder
 import net.rsprot.protocol.game.outgoing.codec.playerinfo.extendedinfo.PlayerTintingEncoder
-import net.rsprot.protocol.game.outgoing.info.AvatarExtendedInfoWriter
 import net.rsprot.protocol.game.outgoing.info.playerinfo.PlayerAvatarExtendedInfo
 import net.rsprot.protocol.game.outgoing.info.playerinfo.PlayerAvatarExtendedInfoBlocks
+import net.rsprot.protocol.game.outgoing.info.playerinfo.PlayerAvatarExtendedInfoWriter
 import net.rsprot.protocol.internal.game.outgoing.info.ExtendedInfo
 import net.rsprot.protocol.internal.game.outgoing.info.encoder.OnDemandExtendedInfoEncoder
 import net.rsprot.protocol.internal.game.outgoing.info.encoder.PrecomputedExtendedInfoEncoder
 import net.rsprot.protocol.internal.game.outgoing.info.playerinfo.encoder.PlayerExtendedInfoEncoders
 
 public class PlayerAvatarExtendedInfoDesktopWriter :
-    AvatarExtendedInfoWriter<PlayerExtendedInfoEncoders, PlayerAvatarExtendedInfoBlocks>(
+    PlayerAvatarExtendedInfoWriter(
         OldSchoolClientType.DESKTOP,
         PlayerExtendedInfoEncoders(
             OldSchoolClientType.DESKTOP,
@@ -96,7 +96,6 @@ public class PlayerAvatarExtendedInfoDesktopWriter :
         observerIndex: Int,
         flag: Int,
         blocks: PlayerAvatarExtendedInfoBlocks,
-        flagWriteIndex: Int,
     ) {
         var clientFlag = convertFlags(flag)
         if (clientFlag and 0xFF.inv() != 0) clientFlag = clientFlag or EXTENDED_SHORT

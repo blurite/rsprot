@@ -6,37 +6,14 @@ import net.rsprot.protocol.internal.game.outgoing.info.ExtendedInfo
 import net.rsprot.protocol.internal.game.outgoing.info.encoder.OnDemandExtendedInfoEncoder
 
 /**
- * A base class for client-specific extended info writers.
+ * Shared support for client-specific extended info writers.
  * @param oldSchoolClientType the client for which the encoders are created.
  * @param encoders the set of extended info encoders for the given [oldSchoolClientType].
  */
-public abstract class AvatarExtendedInfoWriter<E, B>(
+public abstract class ExtendedInfoWriterSupport<E>(
     public val oldSchoolClientType: OldSchoolClientType,
     public val encoders: E,
 ) {
-    /**
-     * Main function to write all the extended info blocks over.
-     * The extended info blocks must be in the exact order as they are
-     * read within the client, and this function is responsible
-     * for converting library-specific-constants to client-specific-flags.
-     *
-     * @param buffer the buffer into which to write the extended info block.
-     * @param localIndex the index of the avatar that owns these extended info blocks.
-     * @param observerIndex the index of the player observing this avatar.
-     * @param flag the constant-flag of all the extended info blocks which must be
-     * translated and written to the buffer.
-     * @param blocks the wrapper class around all the extended info blocks.
-     * The blocks which are flagged will be written over.
-     */
-    public abstract fun pExtendedInfo(
-        buffer: JagByteBuf,
-        localIndex: Int,
-        observerIndex: Int,
-        flag: Int,
-        blocks: B,
-        flagWriteIndex: Int,
-    )
-
     /**
      * Natively copies cached data from the pre-computed extended info buffer over
      * into the primary player info buffer.

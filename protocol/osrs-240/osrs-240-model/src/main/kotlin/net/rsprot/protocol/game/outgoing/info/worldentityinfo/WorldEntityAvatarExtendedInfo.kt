@@ -4,22 +4,29 @@ import io.netty.buffer.ByteBufAllocator
 import net.rsprot.buffer.JagByteBuf
 import net.rsprot.compression.provider.HuffmanCodecProvider
 import net.rsprot.protocol.common.client.OldSchoolClientType
-import net.rsprot.protocol.game.outgoing.info.AvatarExtendedInfoWriter
+import net.rsprot.protocol.game.outgoing.info.ExtendedInfoWriterSupport
 import net.rsprot.protocol.internal.RSProtFlags
 import net.rsprot.protocol.internal.checkCommunicationThread
 import net.rsprot.protocol.internal.game.outgoing.info.precompute
 import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.VisibleOps
 import net.rsprot.protocol.internal.game.outgoing.info.worldentityinfo.encoder.WorldEntityExtendedInfoEncoders
 
-public typealias WorldEntityAvatarExtendedInfoWriter =
-    AvatarExtendedInfoWriter<WorldEntityExtendedInfoEncoders, WorldEntityAvatarExtendedInfoBlocks>
+public abstract class WorldEntityAvatarExtendedInfoWriter(
+    oldSchoolClientType: OldSchoolClientType,
+    encoders: WorldEntityExtendedInfoEncoders,
+) : ExtendedInfoWriterSupport<WorldEntityExtendedInfoEncoders>(oldSchoolClientType, encoders) {
+    public abstract fun pExtendedInfo(
+        buffer: JagByteBuf,
+        flag: Int,
+        blocks: WorldEntityAvatarExtendedInfoBlocks,
+    ): Int
+}
 
 /**
  * World entity avatar extended info is a data structure used to keep track of all the extended info
  * properties of the given avatar.
  */
 public class WorldEntityAvatarExtendedInfo(
-    private var avatarIndex: Int,
     extendedInfoWriters: List<WorldEntityAvatarExtendedInfoWriter>,
     private val allocator: ByteBufAllocator,
     private val huffmanCodec: HuffmanCodecProvider,
@@ -100,14 +107,6 @@ public class WorldEntityAvatarExtendedInfo(
     }
 
     /**
-     * Checks if the avatar has any extended info flagged.
-     * @return whether any extended info flags are set.
-     */
-    internal fun hasExtendedInfo(): Boolean {
-        return this.flags != 0
-    }
-
-    /**
      * Pre-computes all the buffers for this avatar.
      * Pre-computation is done, so we don't have to calculate these extended info blocks
      * for every avatar that observes us. Instead, we can do more performance-efficient
@@ -134,31 +133,32 @@ public class WorldEntityAvatarExtendedInfo(
     }
 
     /**
-     * Writes the extended info block of this avatar for the given observer.
-     * @param oldSchoolClientType the client that the observer is using.
+     * Gets the extended info writer for the given client type.
+     * @param oldSchoolClientType the client type for which to get the writer.
+     * @return the extended info writer for the given client type.
+     */
+    internal fun getWriter(oldSchoolClientType: OldSchoolClientType): WorldEntityAvatarExtendedInfoWriter =
+        requireNotNull(writers[oldSchoolClientType.id]) {
+            "Extended info writer missing for client $oldSchoolClientType"
+        }
+
+    /**
+     * Writes the extended info payload of this avatar.
+     * @param writer the client-specific extended info writer.
      * @param buffer the buffer into which the extended info block should be written.
-     * @param observerIndex index of the player avatar that is observing us.
+     * @param extraFlag any additional blocks which need to be written.
+     * @return the client-specific flag for every block successfully written.
      */
     internal fun pExtendedInfo(
-        oldSchoolClientType: OldSchoolClientType,
+        writer: WorldEntityAvatarExtendedInfoWriter,
         buffer: JagByteBuf,
-        observerIndex: Int,
         extraFlag: Int,
-        flagWriteIndex: Int,
-    ) {
+    ): Int {
         val flag = this.flags or extraFlag
-        val writer =
-            requireNotNull(writers[oldSchoolClientType.id]) {
-                "Extended info writer missing for client $oldSchoolClientType"
-            }
-
-        writer.pExtendedInfo(
+        return writer.pExtendedInfo(
             buffer,
-            avatarIndex,
-            observerIndex,
             flag,
             blocks,
-            flagWriteIndex,
         )
     }
 

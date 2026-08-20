@@ -203,7 +203,6 @@ public class WorldEntityAvatarRepository internal constructor(
         }
         val extendedInfo =
             WorldEntityAvatarExtendedInfo(
-                index,
                 extendedInfoWriter,
                 allocator,
                 huffmanCodec,

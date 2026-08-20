@@ -4,7 +4,7 @@ import io.netty.buffer.ByteBufAllocator
 import net.rsprot.buffer.JagByteBuf
 import net.rsprot.compression.provider.HuffmanCodecProvider
 import net.rsprot.protocol.common.client.OldSchoolClientType
-import net.rsprot.protocol.game.outgoing.info.AvatarExtendedInfoWriter
+import net.rsprot.protocol.game.outgoing.info.ExtendedInfoWriterSupport
 import net.rsprot.protocol.game.outgoing.info.filter.ExtendedInfoFilter
 import net.rsprot.protocol.internal.RSProtFlags
 import net.rsprot.protocol.internal.checkCommunicationThread
@@ -20,8 +20,18 @@ import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.util.
 import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.util.HitMark
 import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.util.SpotAnim
 
-public typealias NpcAvatarExtendedInfoWriter =
-    AvatarExtendedInfoWriter<NpcExtendedInfoEncoders, NpcAvatarExtendedInfoBlocks>
+public abstract class NpcAvatarExtendedInfoWriter(
+    oldSchoolClientType: OldSchoolClientType,
+    encoders: NpcExtendedInfoEncoders,
+) : ExtendedInfoWriterSupport<NpcExtendedInfoEncoders>(oldSchoolClientType, encoders) {
+    public abstract fun pExtendedInfo(
+        buffer: JagByteBuf,
+        localIndex: Int,
+        observerIndex: Int,
+        flag: Int,
+        blocks: NpcAvatarExtendedInfoBlocks,
+    )
+}
 
 /**
  * Npc avatar extended info is a data structure used to keep track of all the extended info
@@ -1571,7 +1581,6 @@ public class NpcAvatarExtendedInfo(
             observerIndex,
             flag,
             blocks,
-            flagWriteIndex = -1,
         )
     }
 
