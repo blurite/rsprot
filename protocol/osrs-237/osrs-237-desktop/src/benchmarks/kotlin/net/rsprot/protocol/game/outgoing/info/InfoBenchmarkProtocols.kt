@@ -10,6 +10,7 @@ import net.rsprot.protocol.common.client.OldSchoolClientType
 import net.rsprot.protocol.game.outgoing.codec.npcinfo.DesktopLowResolutionChangeEncoder
 import net.rsprot.protocol.game.outgoing.codec.npcinfo.extendedinfo.writer.NpcAvatarExtendedInfoDesktopWriter
 import net.rsprot.protocol.game.outgoing.codec.playerinfo.extendedinfo.writer.PlayerAvatarExtendedInfoDesktopWriter
+import net.rsprot.protocol.game.outgoing.codec.worldentity.DesktopWorldEntityResolutionChangeEncoder
 import net.rsprot.protocol.game.outgoing.codec.worldentity.extendedinfo.WorldEntityAvatarExtendedInfoDesktopWriter
 import net.rsprot.protocol.game.outgoing.info.filter.DefaultExtendedInfoFilter
 import net.rsprot.protocol.game.outgoing.info.npcinfo.DeferredNpcInfoProtocolSupplier
@@ -77,6 +78,13 @@ internal fun generateBenchmarkInfoProtocols(
             allocator,
             exceptionHandler = { _, _ -> },
             factory = worldEntityAvatarFactory,
+            resolutionChangeEncoders =
+                ClientTypeMap.of(
+                    listOf(DesktopWorldEntityResolutionChangeEncoder()),
+                    OldSchoolClientType.COUNT,
+                ) {
+                    it.clientType
+                },
             zoneIndexStorage = worldEntityStorage,
         )
     val playerInfoProtocol =

@@ -7,7 +7,9 @@ import net.rsprot.protocol.game.outgoing.info.ByteBufRecycler
 import net.rsprot.protocol.game.outgoing.info.worker.DefaultProtocolWorker
 import net.rsprot.protocol.game.outgoing.info.worker.ProtocolWorker
 import net.rsprot.protocol.internal.checkCommunicationThread
+import net.rsprot.protocol.internal.client.ClientTypeMap
 import net.rsprot.protocol.internal.game.outgoing.info.util.ZoneIndexStorage
+import net.rsprot.protocol.internal.game.outgoing.info.worldentityinfo.encoder.WorldEntityResolutionChangeEncoder
 import java.util.concurrent.Callable
 
 /**
@@ -16,6 +18,8 @@ import java.util.concurrent.Callable
  * @property exceptionHandler the exception handler which will be notified whenever
  * there is an exception caught in world entity avatar pre-computation.
  * @param factory the avatar factory used to provide instances of world entity avatars.
+ * @property resolutionChangeEncoders the client-specific encoders used when adding world entities
+ * from low to high resolution.
  * @property worker the protocol worker that will be executing the computation
  * of avatar and info buffers on the thread(s) specified by the implementation.
  * @property zoneIndexStorage the index storage responsible for tracking world entity
@@ -28,6 +32,7 @@ public class WorldEntityProtocol(
     private val allocator: ByteBufAllocator,
     private val exceptionHandler: WorldEntityAvatarExceptionHandler,
     factory: WorldEntityAvatarFactory,
+    private val resolutionChangeEncoders: ClientTypeMap<WorldEntityResolutionChangeEncoder>,
     private val worker: ProtocolWorker = DefaultProtocolWorker(),
     private val zoneIndexStorage: ZoneIndexStorage,
 ) {
@@ -39,6 +44,7 @@ public class WorldEntityProtocol(
                 localIndex,
                 allocator,
                 clientType,
+                resolutionChangeEncoders,
                 factory.avatarRepository,
                 zoneIndexStorage,
                 recycler,
