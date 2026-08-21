@@ -52,7 +52,7 @@ public class GameLoginDecoder(
     override fun decodeAuthentication(buffer: JagByteBuf): AuthenticationType {
         val otp = decodeOtpAuthentication(buffer)
         return when (val authenticationType = buffer.g1()) {
-            PASSWORD_AUTHENTICATION ->
+            PASSWORD_AUTHENTICATION, MOBILE_PASSWORD_AUTHENTICATION ->
                 AuthenticationType.PasswordAuthentication(
                     Password(buffer.gjstr().toByteArray()),
                     otp,
@@ -101,5 +101,6 @@ public class GameLoginDecoder(
 
         private const val PASSWORD_AUTHENTICATION = 0
         private const val TOKEN_AUTHENTICATION = 2
+        private const val MOBILE_PASSWORD_AUTHENTICATION = 5
     }
 }
