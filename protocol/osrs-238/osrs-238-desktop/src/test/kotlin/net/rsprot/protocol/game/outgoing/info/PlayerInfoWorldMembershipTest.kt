@@ -73,11 +73,13 @@ class PlayerInfoWorldMembershipTest {
         fixture.tick()
         assertTrue(fixture.targetIsHighResolution())
 
-        fixture.observer.playerInfo.avatar.forceResizeRange(0)
+        fixture.observer.playerInfo.avatar
+            .forceResizeRange(0)
         fixture.tick()
         assertFalse(fixture.targetIsHighResolution())
 
-        fixture.target.playerInfo.avatar.setHighPriority()
+        fixture.target.playerInfo.avatar
+            .setHighPriority()
         fixture.tick()
         assertTrue(fixture.targetIsHighResolution())
     }
@@ -239,13 +241,16 @@ class PlayerInfoWorldMembershipTest {
 
         fixture.updateObserver(0, ROOT_X, ROOT_Z)
         fixture.updateTarget(3, ROOT_X + 104, ROOT_Z + 104)
-        fixture.observer.playerInfo.avatar.forceResizeRange(Int.MAX_VALUE)
+        fixture.observer.playerInfo.avatar
+            .forceResizeRange(Int.MAX_VALUE)
         fixture.tick()
 
         assertTrue(fixture.targetIsHighResolution())
     }
 
-    private class PlayerFixture(playerProtocolWorker: ProtocolWorker? = null) {
+    private class PlayerFixture(
+        playerProtocolWorker: ProtocolWorker? = null,
+    ) {
         private val context =
             if (playerProtocolWorker == null) {
                 generateInfoProtocolContext()
@@ -454,7 +459,13 @@ class PlayerInfoWorldMembershipTest {
         }
 
         private fun releaseWorldEntityPacket(infos: Infos) {
-            val packet = checkNotNull(infos.getPackets().rootWorldInfoPackets.worldEntityInfo.getOrNull())
+            val packet =
+                checkNotNull(
+                    infos
+                        .getPackets()
+                        .rootWorldInfoPackets.worldEntityInfo
+                        .getOrNull(),
+                )
             packet.consume()
             packet.release()
         }
