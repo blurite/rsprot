@@ -9,6 +9,8 @@ import net.rsprot.protocol.common.js5.incoming.prot.Js5MessageDecoderRepository
 import net.rsprot.protocol.common.loginprot.incoming.prot.LoginMessageDecoderRepository
 import net.rsprot.protocol.game.incoming.prot.DesktopGameMessageDecoderRepository
 import net.rsprot.protocol.internal.client.ClientTypeMap
+import net.rsprot.protocol.internal.login.LoginCrcDecoder
+import net.rsprot.protocol.loginprot.incoming.codec.DesktopLoginCrcDecoder
 import net.rsprot.protocol.message.codec.incoming.MessageDecoderRepository
 import java.math.BigInteger
 
@@ -20,16 +22,19 @@ public class MessageDecoderRepositories private constructor(
     public val loginMessageDecoderRepository: MessageDecoderRepository<ClientProt>,
     public val js5MessageDecoderRepository: MessageDecoderRepository<ClientProt>,
     public val gameMessageDecoderRepositories: ClientTypeMap<MessageDecoderRepository<ClientProt>>,
+    public val loginCrcDecoders: ClientTypeMap<LoginCrcDecoder>,
 ) {
     public constructor(
         clientTypes: List<OldSchoolClientType>,
         exp: BigInteger,
         mod: BigInteger,
         gameMessageDecoderRepositories: ClientTypeMap<MessageDecoderRepository<ClientProt>>,
+        loginCrcDecoders: ClientTypeMap<LoginCrcDecoder>,
     ) : this(
-        LoginMessageDecoderRepository.build(clientTypes, exp, mod),
+        LoginMessageDecoderRepository.build(clientTypes, exp, mod, loginCrcDecoders),
         Js5MessageDecoderRepository.build(),
         gameMessageDecoderRepositories,
+        loginCrcDecoders,
     )
 
     internal companion object {
@@ -49,11 +54,22 @@ public class MessageDecoderRepositories private constructor(
                     OldSchoolClientType.COUNT,
                     repositories,
                 )
+            val crcDecoders =
+                ClientTypeMap.of(
+                    buildList {
+                        if (DESKTOP in clientTypes) {
+                            add(DesktopLoginCrcDecoder)
+                        }
+                    },
+                    OldSchoolClientType.COUNT,
+                    LoginCrcDecoder::clientType,
+                )
             return MessageDecoderRepositories(
                 clientTypes,
                 rsaKeyPair.exponent,
                 rsaKeyPair.modulus,
                 clientTypeMap,
+                crcDecoders,
             )
         }
     }

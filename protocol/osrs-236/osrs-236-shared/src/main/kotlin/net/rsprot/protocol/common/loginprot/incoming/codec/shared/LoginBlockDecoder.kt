@@ -8,6 +8,8 @@ import net.rsprot.protocol.common.RSProtConstants
 import net.rsprot.protocol.common.client.OldSchoolClientType
 import net.rsprot.protocol.common.loginprot.incoming.codec.shared.exceptions.InvalidVersionException
 import net.rsprot.protocol.common.loginprot.incoming.codec.shared.exceptions.UnsupportedClientException
+import net.rsprot.protocol.internal.client.ClientTypeMap
+import net.rsprot.protocol.internal.login.LoginCrcDecoder
 import net.rsprot.protocol.loginprot.incoming.util.CyclicRedundancyCheckBlock
 import net.rsprot.protocol.loginprot.incoming.util.HostPlatformStats
 import net.rsprot.protocol.loginprot.incoming.util.LoginBlock
@@ -18,6 +20,7 @@ import java.math.BigInteger
 public abstract class LoginBlockDecoder<T>(
     private val exp: BigInteger,
     private val mod: BigInteger,
+    private val crcDecoders: ClientTypeMap<LoginCrcDecoder>,
 ) {
     protected abstract fun decodeAuthentication(buffer: JagByteBuf): T
 
@@ -107,12 +110,18 @@ public abstract class LoginBlockDecoder<T>(
                         throw UnsupportedClientException
                     }
                     val reflectionCheckerConst = xteaBuffer.g4()
-                    val crc =
-                        if (betaWorld) {
-                            decodeBetaCrc(xteaBuffer)
-                        } else {
-                            decodeCrc(xteaBuffer)
+                    val clientType =
+                        checkNotNull(header.clientType.toOldSchoolClientType()) {
+                            "Unsupported login client type: ${header.clientType}"
                         }
+                    val crcDecoder = crcDecoders[clientType]
+                    val crcValues =
+                        if (betaWorld) {
+                            crcDecoder.decodeInitialBeta(xteaBuffer)
+                        } else {
+                            crcDecoder.decodeLive(xteaBuffer)
+                        }
+                    val crc = createCrcBlock(crcValues)
                     return LoginBlock(
                         header,
                         seed,
@@ -143,62 +152,17 @@ public abstract class LoginBlockDecoder<T>(
         }
     }
 
-    private fun decodeCrc(buffer: JagByteBuf): CyclicRedundancyCheckBlock {
-        val crc = IntArray(TRANSMITTED_CRC_COUNT)
-        crc[20] = buffer.g4Alt3()
-        crc[0] = buffer.g4Alt1()
-        crc[22] = buffer.g4()
-        crc[1] = buffer.g4()
-        crc[15] = buffer.g4Alt2()
-        crc[11] = buffer.g4Alt1()
-        crc[5] = buffer.g4Alt1()
-        crc[13] = buffer.g4()
-        crc[16] = buffer.g4Alt1()
-        crc[17] = buffer.g4Alt1()
-        crc[7] = buffer.g4()
-        crc[4] = buffer.g4()
-        crc[18] = buffer.g4Alt3()
-        crc[10] = buffer.g4()
-        crc[14] = buffer.g4()
-        crc[3] = buffer.g4Alt3()
-        crc[2] = buffer.g4Alt2()
-        crc[21] = buffer.g4()
-        crc[12] = buffer.g4()
-        crc[19] = buffer.g4Alt1()
-        crc[8] = buffer.g4Alt2()
-        crc[9] = buffer.g4Alt3()
-        crc[6] = buffer.g4Alt2()
-
-        return object : CyclicRedundancyCheckBlock(crc) {
-            override fun validate(serverCrc: IntArray): Boolean {
-                require(serverCrc.size >= TRANSMITTED_CRC_COUNT) {
-                    "Server CRC length less than expected: ${serverCrc.size}, expected >= $TRANSMITTED_CRC_COUNT"
-                }
-                for (i in 0..<TRANSMITTED_CRC_COUNT) {
-                    if (serverCrc[i] != this.clientCrc[i]) {
-                        return false
-                    }
-                }
-                return true
-            }
+    private fun createCrcBlock(crc: IntArray): CyclicRedundancyCheckBlock {
+        require(crc.size == LoginCrcDecoder.CRC_COUNT) {
+            "Client CRC length differs from expected: ${crc.size}, expected ${LoginCrcDecoder.CRC_COUNT}"
         }
-    }
-
-    private fun decodeBetaCrc(buffer: JagByteBuf): CyclicRedundancyCheckBlock {
-        val crc = IntArray(TRANSMITTED_CRC_COUNT)
-        crc[10] = buffer.g4Alt3()
-        crc[6] = buffer.g4Alt1()
-        crc[13] = buffer.g4Alt1()
-        crc[4] = buffer.g4()
-        crc[14] = buffer.g4Alt2()
-        crc[15] = buffer.g4Alt2()
-        crc[8] = buffer.g4()
         return object : CyclicRedundancyCheckBlock(crc) {
             override fun validate(serverCrc: IntArray): Boolean {
-                require(serverCrc.size >= TRANSMITTED_CRC_COUNT) {
-                    "Server CRC length less than expected: ${serverCrc.size}, expected >= $TRANSMITTED_CRC_COUNT"
+                require(serverCrc.size >= LoginCrcDecoder.CRC_COUNT) {
+                    "Server CRC length less than expected: ${serverCrc.size}, " +
+                        "expected >= ${LoginCrcDecoder.CRC_COUNT}"
                 }
-                for (i in 0..<TRANSMITTED_CRC_COUNT) {
+                for (i in 0..<LoginCrcDecoder.CRC_COUNT) {
                     if (serverCrc[i] != this.clientCrc[i]) {
                         return false
                     }
@@ -268,9 +232,5 @@ public abstract class LoginBlockDecoder<T>(
             clientName,
             deviceName,
         )
-    }
-
-    private companion object {
-        private const val TRANSMITTED_CRC_COUNT: Int = 23
     }
 }

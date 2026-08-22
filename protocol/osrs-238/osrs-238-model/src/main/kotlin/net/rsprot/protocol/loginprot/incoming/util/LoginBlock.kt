@@ -43,9 +43,12 @@ public class LoginBlock<T>(
     public val deprecatedClientType: Int
         get() = _deprecatedClientType.toInt()
 
-    public fun mergeBetaCrcs(remainingBetaArchives: RemainingBetaArchives) {
+    public fun mergeBetaCrcs(remainingBetaCrc: IntArray) {
+        require(remainingBetaCrc.size > RemainingBetaArchives.protectedArchives.last()) {
+            "Remaining beta CRC array is too small: ${remainingBetaCrc.size}"
+        }
         for (i in RemainingBetaArchives.protectedArchives) {
-            this.crc.set(i, remainingBetaArchives.crc[i])
+            this.crc.set(i, remainingBetaCrc[i])
         }
     }
 

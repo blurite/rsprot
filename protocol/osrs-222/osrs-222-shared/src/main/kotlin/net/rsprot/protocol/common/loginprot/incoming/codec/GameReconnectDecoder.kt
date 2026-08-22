@@ -7,6 +7,8 @@ import net.rsprot.protocol.ClientProt
 import net.rsprot.protocol.common.client.OldSchoolClientType
 import net.rsprot.protocol.common.loginprot.incoming.codec.shared.LoginBlockDecoder
 import net.rsprot.protocol.common.loginprot.incoming.prot.LoginClientProt
+import net.rsprot.protocol.internal.client.ClientTypeMap
+import net.rsprot.protocol.internal.login.LoginCrcDecoder
 import net.rsprot.protocol.loginprot.incoming.GameReconnect
 import net.rsprot.protocol.message.codec.MessageDecoder
 import java.math.BigInteger
@@ -15,7 +17,8 @@ public class GameReconnectDecoder(
     private val supportedClientTypes: List<OldSchoolClientType>,
     exp: BigInteger,
     mod: BigInteger,
-) : LoginBlockDecoder<XteaKey>(exp, mod),
+    crcDecoders: ClientTypeMap<LoginCrcDecoder>,
+) : LoginBlockDecoder<XteaKey>(exp, mod, crcDecoders),
     MessageDecoder<GameReconnect> {
     override val prot: ClientProt = LoginClientProt.GAMERECONNECT
 

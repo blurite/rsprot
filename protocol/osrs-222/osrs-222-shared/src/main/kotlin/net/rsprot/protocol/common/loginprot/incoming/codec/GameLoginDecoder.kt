@@ -6,6 +6,8 @@ import net.rsprot.protocol.ClientProt
 import net.rsprot.protocol.common.client.OldSchoolClientType
 import net.rsprot.protocol.common.loginprot.incoming.codec.shared.LoginBlockDecoder
 import net.rsprot.protocol.common.loginprot.incoming.prot.LoginClientProt
+import net.rsprot.protocol.internal.client.ClientTypeMap
+import net.rsprot.protocol.internal.login.LoginCrcDecoder
 import net.rsprot.protocol.loginprot.incoming.GameLogin
 import net.rsprot.protocol.loginprot.incoming.util.AuthenticationType
 import net.rsprot.protocol.loginprot.incoming.util.OtpAuthenticationType
@@ -18,7 +20,8 @@ public class GameLoginDecoder(
     private val supportedClientTypes: List<OldSchoolClientType>,
     exp: BigInteger,
     mod: BigInteger,
-) : LoginBlockDecoder<AuthenticationType>(exp, mod),
+    crcDecoders: ClientTypeMap<LoginCrcDecoder>,
+) : LoginBlockDecoder<AuthenticationType>(exp, mod, crcDecoders),
     MessageDecoder<GameLogin> {
     override val prot: ClientProt = LoginClientProt.GAMELOGIN
 
