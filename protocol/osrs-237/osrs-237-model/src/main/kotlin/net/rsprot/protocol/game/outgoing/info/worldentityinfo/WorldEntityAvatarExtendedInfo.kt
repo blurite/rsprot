@@ -11,8 +11,45 @@ import net.rsprot.protocol.internal.game.outgoing.info.precompute
 import net.rsprot.protocol.internal.game.outgoing.info.shared.extendedinfo.VisibleOps
 import net.rsprot.protocol.internal.game.outgoing.info.worldentityinfo.encoder.WorldEntityExtendedInfoEncoders
 
-public typealias WorldEntityAvatarExtendedInfoWriter =
-    AvatarExtendedInfoWriter<WorldEntityExtendedInfoEncoders, WorldEntityAvatarExtendedInfoBlocks>
+/**
+ * A base class for client-specific world entity extended info writers.
+ */
+public abstract class WorldEntityAvatarExtendedInfoWriter(
+    oldSchoolClientType: OldSchoolClientType,
+    encoders: WorldEntityExtendedInfoEncoders,
+) : AvatarExtendedInfoWriter<WorldEntityExtendedInfoEncoders, WorldEntityAvatarExtendedInfoBlocks>(
+        oldSchoolClientType,
+        encoders,
+    ) {
+    final override fun pExtendedInfo(
+        buffer: JagByteBuf,
+        localIndex: Int,
+        observerIndex: Int,
+        flag: Int,
+        blocks: WorldEntityAvatarExtendedInfoBlocks,
+        flagWriteIndex: Int,
+    ) {
+        pExtendedInfo(
+            buffer,
+            localIndex,
+            observerIndex,
+            flag,
+            blocks,
+            flagWriteIndex,
+            resolutionUpgrade = true,
+        )
+    }
+
+    public abstract fun pExtendedInfo(
+        buffer: JagByteBuf,
+        localIndex: Int,
+        observerIndex: Int,
+        flag: Int,
+        blocks: WorldEntityAvatarExtendedInfoBlocks,
+        flagWriteIndex: Int,
+        resolutionUpgrade: Boolean,
+    )
+}
 
 /**
  * World entity avatar extended info is a data structure used to keep track of all the extended info
@@ -145,6 +182,7 @@ public class WorldEntityAvatarExtendedInfo(
         observerIndex: Int,
         extraFlag: Int,
         flagWriteIndex: Int,
+        resolutionUpgrade: Boolean,
     ) {
         val flag = this.flags or extraFlag
         val writer =
@@ -159,6 +197,7 @@ public class WorldEntityAvatarExtendedInfo(
             flag,
             blocks,
             flagWriteIndex,
+            resolutionUpgrade,
         )
     }
 

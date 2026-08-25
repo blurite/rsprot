@@ -326,7 +326,12 @@ public class WorldEntityInfo internal constructor(
                 precomputedBuffer.readableBytes(),
             )
             val placeholderFlag = pPlaceholderExtendedInfoFlag(buffer)
-            putWorldEntityExtendedInfo(avatar, buffer, placeholderFlag)
+            putWorldEntityExtendedInfo(
+                avatar,
+                buffer,
+                placeholderFlag,
+                resolutionUpgrade = false,
+            )
         }
         return count != this.highResolutionIndicesCount
     }
@@ -429,7 +434,12 @@ public class WorldEntityInfo internal constructor(
                 avatar.currentCoordFine.z - fineZOffset,
                 avatar.angle,
             )
-            putWorldEntityExtendedInfo(avatar, buffer, placeholderFlag)
+            putWorldEntityExtendedInfo(
+                avatar,
+                buffer,
+                placeholderFlag,
+                resolutionUpgrade = true,
+            )
         }
     }
 
@@ -443,6 +453,7 @@ public class WorldEntityInfo internal constructor(
         avatar: WorldEntityAvatar,
         buffer: JagByteBuf,
         flagWriteIndex: Int,
+        resolutionUpgrade: Boolean,
     ) {
         // No extra flags right now as the extended info system is still primitive
         avatar.extendedInfo.pExtendedInfo(
@@ -451,6 +462,7 @@ public class WorldEntityInfo internal constructor(
             localIndex,
             0,
             flagWriteIndex,
+            resolutionUpgrade,
         )
     }
 
