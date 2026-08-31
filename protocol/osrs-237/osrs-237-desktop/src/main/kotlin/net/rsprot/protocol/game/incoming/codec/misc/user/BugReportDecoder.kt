@@ -5,9 +5,7 @@ import net.rsprot.protocol.ClientProt
 import net.rsprot.protocol.game.incoming.misc.user.BugReport
 import net.rsprot.protocol.game.incoming.prot.GameClientProt
 import net.rsprot.protocol.message.codec.MessageDecoder
-import net.rsprot.protocol.metadata.Consistent
 
-@Consistent
 public class BugReportDecoder : MessageDecoder<BugReport> {
     override val prot: ClientProt = GameClientProt.BUG_REPORT
 
