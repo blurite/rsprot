@@ -460,6 +460,7 @@ BinaryBlobAppendWriter, and an atomic BinaryBlobAtomicReplacementWriter.
 
 The append writer will continuously append to the same file, keeping only a
 small buffer in memory and resetting it with each successful invocation.
+Call `blob.close()` after the final write when the session can no longer reconnect.
 If users flush it every ~5kb
 (you can check it via `player.session.getBinaryBlobOrNull()?.readableBytes()`),
 there should never be more than ~10MB of heap memory allocated for this.
