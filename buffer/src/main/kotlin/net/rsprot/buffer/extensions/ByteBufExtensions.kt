@@ -11,3 +11,13 @@ public fun ByteBuf.toByteArray(): ByteArray {
     readBytes(array)
     return array
 }
+
+public inline fun <T> ByteBuf.releaseOnFailure(block: (() -> Unit) -> T): T {
+    var transferred = false
+    return try {
+        block { transferred = true }
+    } catch (throwable: Throwable) {
+        if (!transferred) release()
+        throw throwable
+    }
+}
