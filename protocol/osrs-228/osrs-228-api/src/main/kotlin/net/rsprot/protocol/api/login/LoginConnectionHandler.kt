@@ -132,6 +132,7 @@ public class LoginConnectionHandler<R>(
 
             is GameLogin -> {
                 if (this.loginState != LoginState.UNINITIALIZED) {
+                    msg.buffer.buffer.release()
                     ctx.close()
                     networkService
                         .trafficMonitor
@@ -152,6 +153,7 @@ public class LoginConnectionHandler<R>(
             }
 
             is GameReconnect -> {
+                releaseLoginBlock()
                 this.loginPacket = msg
                 this.loginHeader =
                     networkService
