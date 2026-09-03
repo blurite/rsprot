@@ -8,11 +8,15 @@ package net.rsprot.protocol.binary
 public data class BinaryBlob(
     public val header: BinaryHeader,
     public val stream: BinaryStream,
-) {
+) : AutoCloseable {
     /**
      * @return the number of readable bytes in this buffer.
      */
     public fun readableBytes(): Int {
         return stream.readableBytes()
+    }
+
+    override fun close() {
+        stream.close()
     }
 }
