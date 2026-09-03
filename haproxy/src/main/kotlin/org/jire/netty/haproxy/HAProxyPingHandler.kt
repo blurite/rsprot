@@ -34,8 +34,7 @@ public class HAProxyPingHandler
         private val response: ByteBuf =
             Unpooled.unreleasableBuffer(
                 Unpooled
-                    .directBuffer(1, 1)
-                    .writeByte(responseOpcode),
+                    .wrappedBuffer(byteArrayOf(responseOpcode.toByte())),
             )
 
         override fun channelRead0(
