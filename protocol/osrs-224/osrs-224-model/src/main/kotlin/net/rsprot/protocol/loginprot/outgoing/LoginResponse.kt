@@ -107,8 +107,13 @@ public sealed interface LoginResponse : OutgoingLoginMessage {
                 playerInfo.ensureReconnectCalled()
                 val allocator = playerInfo.allocator
                 val buffer = allocator.buffer(PLAYER_INFO_BLOCK_SIZE)
-                playerInfo.handleAbsolutePlayerPositions(worldId, buffer)
-                return buffer
+                return try {
+                    playerInfo.handleAbsolutePlayerPositions(worldId, buffer)
+                    buffer
+                } catch (throwable: Throwable) {
+                    buffer.release()
+                    throw throwable
+                }
             }
         }
 
