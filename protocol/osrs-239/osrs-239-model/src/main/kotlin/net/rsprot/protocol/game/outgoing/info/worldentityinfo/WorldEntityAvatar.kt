@@ -200,6 +200,7 @@ public class WorldEntityAvatar(
         this.highResolutionBuffer?.release()
         this.teleport = false
         this.lastAngle = this.angle
+        this.extendedInfo.postUpdate()
     }
 
     private companion object {
