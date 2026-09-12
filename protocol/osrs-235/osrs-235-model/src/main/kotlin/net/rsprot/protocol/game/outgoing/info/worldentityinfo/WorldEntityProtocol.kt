@@ -16,6 +16,7 @@ import java.util.concurrent.Callable
  * @property exceptionHandler the exception handler which will be notified whenever
  * there is an exception caught in world entity avatar pre-computation.
  * @param factory the avatar factory used to provide instances of world entity avatars.
+ * @property filter a world entity avatar filter that must be passed to add/keep a world entity in high resolution.
  * @property worker the protocol worker that will be executing the computation
  * of avatar and info buffers on the thread(s) specified by the implementation.
  * @property zoneIndexStorage the index storage responsible for tracking world entity
@@ -30,6 +31,7 @@ public class WorldEntityProtocol(
     factory: WorldEntityAvatarFactory,
     private val worker: ProtocolWorker = DefaultProtocolWorker(),
     private val zoneIndexStorage: ZoneIndexStorage,
+    private val filter: WorldEntityAvatarFilter? = null,
 ) {
     private val recycler: ByteBufRecycler = ByteBufRecycler()
     private val avatarRepository = factory.avatarRepository
@@ -42,6 +44,7 @@ public class WorldEntityProtocol(
                 factory.avatarRepository,
                 zoneIndexStorage,
                 recycler,
+                filter,
             )
         }
 

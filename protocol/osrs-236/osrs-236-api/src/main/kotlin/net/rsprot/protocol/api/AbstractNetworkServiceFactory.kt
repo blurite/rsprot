@@ -29,6 +29,7 @@ import net.rsprot.protocol.common.loginprot.incoming.prot.LoginClientProt
 import net.rsprot.protocol.common.loginprot.outgoing.prot.LoginServerProt
 import net.rsprot.protocol.game.incoming.prot.GameClientProt
 import net.rsprot.protocol.game.outgoing.info.npcinfo.NpcAvatarFilter
+import net.rsprot.protocol.game.outgoing.info.worldentityinfo.WorldEntityAvatarFilter
 import net.rsprot.protocol.game.outgoing.prot.GameServerProt
 import net.rsprot.protocol.loginprot.incoming.util.LoginBlock
 import net.rsprot.protocol.message.codec.incoming.provider.GameMessageConsumerRepositoryProvider
@@ -316,6 +317,14 @@ public abstract class AbstractNetworkServiceFactory<R> {
     }
 
     /**
+     * Gets the world entity avatar filter - a requirement for adding/keeping world entities in high resolution.
+     * This is a server-side filter that can be customized to ones needs.
+     */
+    public open fun getWorldEntityAvatarFilter(): WorldEntityAvatarFilter? {
+        return null
+    }
+
+    /**
      * An opcode mapper for client to server game packets.
      * All incoming opcodes will be mapped immediately before any processing.
      */
@@ -377,6 +386,7 @@ public abstract class AbstractNetworkServiceFactory<R> {
                 getNpcInfoSupplier(),
                 getWorldEntityInfoSupplier(),
                 getNpcAvatarFilter(),
+                getWorldEntityAvatarFilter(),
             )
         return NetworkService(
             allocator,

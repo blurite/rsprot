@@ -19,6 +19,7 @@ import net.rsprot.protocol.game.outgoing.info.playerinfo.PlayerInfoProtocol
 import net.rsprot.protocol.game.outgoing.info.worker.DefaultProtocolWorker
 import net.rsprot.protocol.game.outgoing.info.worker.ProtocolWorker
 import net.rsprot.protocol.game.outgoing.info.worldentityinfo.WorldEntityAvatarFactory
+import net.rsprot.protocol.game.outgoing.info.worldentityinfo.WorldEntityAvatarFilter
 import net.rsprot.protocol.game.outgoing.info.worldentityinfo.WorldEntityProtocol
 import net.rsprot.protocol.internal.client.ClientTypeMap
 import net.rsprot.protocol.internal.game.outgoing.info.util.ZoneIndexStorage
@@ -52,6 +53,7 @@ internal fun generateInfoProtocolContext(
     npcAvatarFactory: NpcAvatarFactory = generateNpcAvatarFactory(),
     npcIndexStorage: ZoneIndexStorage = ZoneIndexStorage(ZoneIndexStorage.NPC_CAPACITY),
     playerProtocolWorker: ProtocolWorker = DefaultProtocolWorker(),
+    worldEntityAvatarFilter: WorldEntityAvatarFilter? = null,
 ): TestInfoProtocolContext {
     val allocator = UnpooledByteBufAllocator.DEFAULT
     val protocolSupplier = DeferredNpcInfoProtocolSupplier()
@@ -96,6 +98,7 @@ internal fun generateInfoProtocolContext(
                     it.clientType
                 },
             zoneIndexStorage = worldEntityStorage,
+            filter = worldEntityAvatarFilter,
         )
 
     val playerAvatarFactory =

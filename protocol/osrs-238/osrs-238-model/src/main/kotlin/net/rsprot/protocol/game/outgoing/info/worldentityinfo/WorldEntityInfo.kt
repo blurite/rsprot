@@ -31,6 +31,7 @@ import java.util.Collections
  * world entity in the root world.
  * @property zoneIndexStorage the storage responsible for tracking the zones in which
  * the world entities currently lie.
+ * @property filter a world entity avatar filter that must be passed to add/keep a world entity in high resolution.
  * @property renderDistance the render distance in tiles, effectively how far to render
  * world entities from the local player (or the camera pov)
  * @property coordInRootWorld the current real coordinate of the local player.
@@ -68,6 +69,7 @@ public class WorldEntityInfo internal constructor(
     private val avatarRepository: WorldEntityAvatarRepository,
     private val zoneIndexStorage: ZoneIndexStorage,
     private val recycler: ByteBufRecycler = ByteBufRecycler(),
+    private val filter: WorldEntityAvatarFilter? = null,
 ) : ReferencePooledObject<Unit> {
     private var renderDistance: Int = DEFAULT_RENDER_DISTANCE
     private var zoneSeekRadius: Int = DEFAULT_ZONE_SEEK_RADIUS
@@ -359,6 +361,7 @@ public class WorldEntityInfo internal constructor(
         val startZoneZ = ((centerFineZ shr 10) - zoneSeekRadius).coerceAtLeast(0)
         val endZoneX = ((centerFineX shr 10) + zoneSeekRadius).coerceAtMost(0x7FF)
         val endZoneZ = ((centerFineZ shr 10) + zoneSeekRadius).coerceAtMost(0x7FF)
+        val filter = this.filter
         for (x in startZoneX..endZoneX) {
             for (z in startZoneZ..endZoneZ) {
                 val npcs = this.zoneIndexStorage.get(level, x, z) ?: continue
@@ -379,6 +382,9 @@ public class WorldEntityInfo internal constructor(
                         if (!isCurrentWorldEntity && avatar.ownerIndex != localIndex) {
                             continue
                         }
+                    }
+                    if (filter != null && !filter.accept(localIndex, index)) {
+                        continue
                     }
                     val avatarCoord = avatar.currentCoordFine
                     val dx = (centerFineX - avatarCoord.x).toLong()

@@ -21,6 +21,7 @@ import net.rsprot.protocol.game.outgoing.info.playerinfo.PlayerAvatarFactory
 import net.rsprot.protocol.game.outgoing.info.playerinfo.PlayerInfoProtocol
 import net.rsprot.protocol.game.outgoing.info.worldentityinfo.WorldEntityAvatarExtendedInfoWriter
 import net.rsprot.protocol.game.outgoing.info.worldentityinfo.WorldEntityAvatarFactory
+import net.rsprot.protocol.game.outgoing.info.worldentityinfo.WorldEntityAvatarFilter
 import net.rsprot.protocol.game.outgoing.info.worldentityinfo.WorldEntityProtocol
 import net.rsprot.protocol.internal.client.ClientTypeMap
 import net.rsprot.protocol.internal.game.outgoing.info.npcinfo.encoder.NpcResolutionChangeEncoder
@@ -86,6 +87,7 @@ public class EntityInfoProtocols
                 npcInfoSupplier: NpcInfoSupplier,
                 worldEntityInfoSupplier: WorldEntityInfoSupplier,
                 filter: NpcAvatarFilter?,
+                worldEntityAvatarFilter: WorldEntityAvatarFilter?,
             ): EntityInfoProtocols {
                 val playerWriters = mutableListOf<PlayerAvatarExtendedInfoWriter>()
                 val npcWriters = mutableListOf<NpcAvatarExtendedInfoWriter>()
@@ -117,6 +119,7 @@ public class EntityInfoProtocols
                         worldEntityAvatarFactory,
                         worldEntityResolutionChangeEncoders,
                         zoneIndexStorage,
+                        worldEntityAvatarFilter,
                     )
                 val playerAvatarFactory =
                     buildPlayerAvatarFactory(allocator, playerInfoSupplier, playerWriters, huffmanCodecProvider)
@@ -219,6 +222,7 @@ public class EntityInfoProtocols
                 worldEntityAvatarFactory: WorldEntityAvatarFactory,
                 worldEntityResolutionChangeEncoders: MutableList<WorldEntityResolutionChangeEncoder>,
                 zoneIndexStorage: ZoneIndexStorage,
+                filter: WorldEntityAvatarFilter?,
             ) = WorldEntityProtocol(
                 allocator,
                 worldEntityInfoSupplier.worldEntityAvatarExceptionHandler,
@@ -231,6 +235,7 @@ public class EntityInfoProtocols
                 },
                 worldEntityInfoSupplier.worldEntityInfoProtocolWorker,
                 zoneIndexStorage,
+                filter,
             )
 
             private fun buildPlayerInfoProtocol(
