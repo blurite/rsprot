@@ -409,7 +409,8 @@ public class WorldEntityInfo internal constructor(
                         avatar.angle,
                     )
                     buffer.p1(avatar.priority.id)
-                    putWorldEntityExtendedInfo(avatar, buffer)
+                    val extraFlag = avatar.extendedInfo.getLowToHighResChangeExtendedInfoFlags()
+                    putWorldEntityExtendedInfo(avatar, buffer, extraFlag)
                 }
             }
         }
@@ -418,13 +419,13 @@ public class WorldEntityInfo internal constructor(
     private fun putWorldEntityExtendedInfo(
         avatar: WorldEntityAvatar,
         buffer: JagByteBuf,
+        extraFlag: Int = 0,
     ) {
-        // No extra flags right now as the extended info system is still primitive
         avatar.extendedInfo.pExtendedInfo(
             oldSchoolClientType,
             buffer,
             localIndex,
-            0,
+            extraFlag,
         )
     }
 

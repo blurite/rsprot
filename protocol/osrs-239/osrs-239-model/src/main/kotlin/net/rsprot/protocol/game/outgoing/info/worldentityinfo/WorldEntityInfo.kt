@@ -455,7 +455,8 @@ public class WorldEntityInfo internal constructor(
                 avatar.currentCoordFine.z - fineZOffset,
                 avatar.angle,
             )
-            val flag = putWorldEntityExtendedInfo(avatar, buffer, extendedInfoWriter)
+            val extraFlag = avatar.extendedInfo.getLowToHighResChangeExtendedInfoFlags()
+            val flag = putWorldEntityExtendedInfo(avatar, buffer, extendedInfoWriter, extraFlag)
             if (flag != 0) {
                 resolutionChangeEncoder.rewriteExtendedInfoFlag(
                     buffer,
@@ -470,12 +471,12 @@ public class WorldEntityInfo internal constructor(
         avatar: WorldEntityAvatar,
         buffer: JagByteBuf,
         writer: WorldEntityAvatarExtendedInfoWriter,
+        extraFlag: Int = 0,
     ): Int {
-        // No extra flags right now as the extended info system is still primitive
         return avatar.extendedInfo.pExtendedInfo(
             writer,
             buffer,
-            0,
+            extraFlag,
         )
     }
 
