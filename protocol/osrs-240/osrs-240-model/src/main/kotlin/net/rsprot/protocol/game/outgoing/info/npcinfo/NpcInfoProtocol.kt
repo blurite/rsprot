@@ -212,6 +212,14 @@ public class NpcInfoProtocol(
                 }
                 compute(details)
             }
+            // A transfer may add an NPC to an earlier world before removing it from a later one.
+            // Apply registrations after all removals, before extended info precomputation.
+            for (details in this.details) {
+                if (details == null) {
+                    continue
+                }
+                registerNewObservers(details)
+            }
         }
     }
 

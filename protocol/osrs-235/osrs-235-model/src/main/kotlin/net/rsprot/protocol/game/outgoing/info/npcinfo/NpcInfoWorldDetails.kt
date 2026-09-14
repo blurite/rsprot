@@ -76,6 +76,9 @@ internal class NpcInfoWorldDetails(
      */
     internal var highResolutionNpcIndexCount: Int = 0
 
+    /** First appended NPC whose observer registration is pending; MAX_VALUE when none are pending. */
+    internal var pendingObserverIndex: Int = Int.MAX_VALUE
+
     /**
      * The extended info indices contain pointers to all the npcs for whom we need to
      * write an extended info block. We do this rather than directly writing them as this
@@ -270,6 +273,7 @@ internal class NpcInfoWorldDetails(
     internal fun onAlloc(worldId: Int) {
         this.worldId = worldId
         this.highResolutionNpcIndexCount = 0
+        this.pendingObserverIndex = Int.MAX_VALUE
         this.highResolutionNpcIndices.fill(0u)
         this.temporaryHighResolutionNpcIndices.fill(0u)
         this.extendedInfoCount = 0
