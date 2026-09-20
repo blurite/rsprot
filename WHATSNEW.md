@@ -99,7 +99,7 @@ and the ability to face a world entity.
 > WorldEntityInfo, you should be fine as-is.
 
 #### Additions
-- RESUME_P_COUNTDIALOG_LONG added.
+- RESUME_P_LONGDIALOG added.
 - RUNCLIENTSCRIPT supports `long` data type via 'Ï' char code.
 - IF_SETMODEL_V2 added, supporting g4() for models.
 - Obj customisation section in appearance extended info uses g4() for models.
