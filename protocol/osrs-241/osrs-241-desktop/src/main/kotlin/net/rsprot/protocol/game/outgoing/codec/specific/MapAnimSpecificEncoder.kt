@@ -16,8 +16,8 @@ public class MapAnimSpecificEncoder : MessageEncoder<MapAnimSpecific> {
         message: MapAnimSpecific,
     ) {
         buffer.p2Alt3(message.id)
-        buffer.p2Alt3(message.delay)
-        buffer.p1(message.height)
-        buffer.p3(message.coordInBuildAreaPacked)
+        buffer.p2(message.delay)
+        buffer.p1Alt3(message.height)
+        buffer.p3Alt2(message.coordInBuildAreaPacked)
     }
 }

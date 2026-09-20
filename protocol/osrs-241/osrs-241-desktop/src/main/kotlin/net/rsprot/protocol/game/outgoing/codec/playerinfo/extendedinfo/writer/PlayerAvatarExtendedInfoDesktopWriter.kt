@@ -121,23 +121,21 @@ public class PlayerAvatarExtendedInfoDesktopWriter :
             buffer.p1(clientFlag shr 16)
         }
 
+        outFlag = outFlag or pCached(buffer, clientFlag, SAY, blocks.say)
+        outFlag = outFlag or pCached(buffer, clientFlag, MOVE_SPEED, blocks.moveSpeed)
+        outFlag = outFlag or pCached(buffer, clientFlag, FACE, blocks.face)
         outFlag = outFlag or pCached(buffer, clientFlag, SPOTANIM, blocks.spotAnims)
-        outFlag = outFlag or pCached(buffer, clientFlag, CHAT, blocks.chat)
         outFlag = outFlag or pOnDemand(buffer, clientFlag, HEADBARS, blocks.headbarList, localIndex, observerIndex)
         outFlag = outFlag or pCached(buffer, clientFlag, APPEARANCE, blocks.appearance)
-        outFlag = outFlag or pCached(buffer, clientFlag, FREEZE, blocks.freeze)
-        outFlag = outFlag or pCached(buffer, clientFlag, FACE, blocks.face)
-        // minimenu strings (unused; done through appearance)
-        outFlag = outFlag or pCached(buffer, clientFlag, MOVE_SPEED, blocks.moveSpeed)
         outFlag = outFlag or pCached(buffer, clientFlag, TEMP_MOVE_SPEED, blocks.temporaryMoveSpeed)
-        // old spotanim
-        outFlag = outFlag or pCached(buffer, clientFlag, TRANSPARENCY, blocks.transparency)
+        outFlag = outFlag or pCached(buffer, clientFlag, CHAT, blocks.chat)
         outFlag = outFlag or pOnDemand(buffer, clientFlag, HITMARKS, blocks.hitmarkList, localIndex, observerIndex)
-        outFlag = outFlag or pCached(buffer, clientFlag, EXACT_MOVE, blocks.exactMove)
-        outFlag = outFlag or pCached(buffer, clientFlag, SEQUENCE, blocks.sequence)
         outFlag = outFlag or pOnDemand(buffer, clientFlag, TINTING, blocks.tinting, localIndex, observerIndex)
+        outFlag = outFlag or pCached(buffer, clientFlag, SEQUENCE, blocks.sequence)
+        outFlag = outFlag or pCached(buffer, clientFlag, EXACT_MOVE, blocks.exactMove)
+        outFlag = outFlag or pCached(buffer, clientFlag, TRANSPARENCY, blocks.transparency)
         outFlag = outFlag or pCached(buffer, clientFlag, PLAYER_RESET, blocks.playerReset)
-        outFlag = outFlag or pCached(buffer, clientFlag, SAY, blocks.say)
+        outFlag = outFlag or pCached(buffer, clientFlag, FREEZE, blocks.freeze)
 
         if (outFlag != clientFlag) {
             val finalPos = buffer.writerIndex()
@@ -201,25 +199,24 @@ public class PlayerAvatarExtendedInfoDesktopWriter :
         private const val EXTENDED_SHORT = 0x80
         private const val EXTENDED_MEDIUM = 0x2000
 
-        private const val SEQUENCE = 0x10
-        private const val APPEARANCE = 0x4
-        private const val FACE = 0x40
+        private const val SEQUENCE = 0x40
+        private const val APPEARANCE = 0x2
+        private const val FACE = 0x20
         private const val PLAYER_RESET = 0x8
-        private const val SAY = 0x1
-        private const val CHAT = 0x1000
-        private const val MOVE_SPEED = 0x4000
-        private const val TINTING = 0x400
-        private const val EXACT_MOVE = 0x8000
-        private const val TEMP_MOVE_SPEED = 0x800
-        private const val SPOTANIM = 0x20
-        private const val HEADBARS = 0x20000
-        private const val HITMARKS = 0x100000
-        private const val FREEZE = 0x40000
+        private const val SAY = 0x10
+        private const val CHAT = 0x400
+        private const val MOVE_SPEED = 0x100
+        private const val TINTING = 0x1000
+        private const val EXACT_MOVE = 0x800
+        private const val TEMP_MOVE_SPEED = 0x4000
+        private const val SPOTANIM = 0x4
+        private const val HEADBARS = 0x80000
+        private const val HITMARKS = 0x20000
+        private const val FREEZE = 0x40_000
         private const val TRANSPARENCY = 0x10000
 
         // Name extras are part of appearance nowadays, and thus will not be used on their own
-        private const val NAME_EXTRAS = 0x200
-        private const val CHAT_OLD = 0x2
-        private const val SPOTANIM_OLD = 0x80000
+        private const val NAME_EXTRAS = 0x8000
+        private const val SPOTANIM_OLD = 0x100000
     }
 }

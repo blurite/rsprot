@@ -18,7 +18,7 @@ import net.rsprot.protocol.message.toIntOrMinusOne
  * @property retex the texture value to assign at the [retexIndex] index
  * @property coordGrid the absolute coordinate at which the obj is modified.
  */
-public class ObjCustomiseSpecific private constructor(
+public class ObjCustomiseSpecificV1 private constructor(
     private val _id: UShort,
     public val quantity: Int,
     private val _model: UShort,
@@ -87,7 +87,7 @@ public class ObjCustomiseSpecific private constructor(
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
-        if (other !is ObjCustomiseSpecific) return false
+        if (other !is ObjCustomiseSpecificV1) return false
 
         if (_id != other._id) return false
         if (quantity != other.quantity) return false
@@ -114,7 +114,7 @@ public class ObjCustomiseSpecific private constructor(
     }
 
     override fun toString(): String {
-        return "ObjCustomiseSpecific(" +
+        return "ObjCustomiseSpecificV1(" +
             "id=$id, " +
             "quantity=$quantity, " +
             "model=$model, " +

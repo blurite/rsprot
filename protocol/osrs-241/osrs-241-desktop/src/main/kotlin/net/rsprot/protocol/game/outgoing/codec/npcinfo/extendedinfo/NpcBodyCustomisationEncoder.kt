@@ -38,7 +38,7 @@ public class NpcBodyCustomisationEncoder : PrecomputedExtendedInfoEncoder<BodyCu
         customisation: TypeCustomisation,
     ): JagByteBuf {
         val capacity =
-            6 + (customisation.models.size * 4) +
+            9 + (customisation.models.size * 4) +
                 (customisation.recolours.size * 2) +
                 (customisation.retexture.size * 2)
         val buffer =
@@ -49,7 +49,7 @@ public class NpcBodyCustomisationEncoder : PrecomputedExtendedInfoEncoder<BodyCu
         if (customisation.models.isNotEmpty()) {
             flag = flag or FLAG_REMODEL
         }
-        if (customisation.recolours.isNotEmpty()) {
+        if (customisation.recolours.isNotEmpty() || customisation.recolAll != null) {
             flag = flag or FLAG_RECOLOUR
         }
         if (customisation.retexture.isNotEmpty()) {
@@ -66,9 +66,16 @@ public class NpcBodyCustomisationEncoder : PrecomputedExtendedInfoEncoder<BodyCu
             }
         }
         if (flag and FLAG_RECOLOUR != 0) {
-            buffer.pRecolourCount(customisation.recolours.size)
-            for (recol in customisation.recolours) {
-                buffer.pRecolour(recol)
+            val recolAll = customisation.recolAll
+            buffer.p1(if (recolAll != null) 1 else 0)
+            if (recolAll != null) {
+                buffer.p2Alt3(recolAll)
+            }
+            if (recolAll == null || recolAll == 65535) {
+                buffer.pRecolourCount(customisation.recolours.size)
+                for (recol in customisation.recolours) {
+                    buffer.pRecolour(recol)
+                }
             }
         }
         if (flag and FLAG_RETEXTURE != 0) {
@@ -100,6 +107,7 @@ public class NpcBodyCustomisationEncoder : PrecomputedExtendedInfoEncoder<BodyCu
         pEquipment(buffer, composition)
 
         if (colours != null) {
+            buffer.p1(0) // Individual player-composition recolours, no whole-model override.
             buffer.pRecolourCount(colours.size)
             for (recol in colours) {
                 buffer.pRecolour(recol.toInt() and 0xFFFF)
@@ -184,19 +192,19 @@ public class NpcBodyCustomisationEncoder : PrecomputedExtendedInfoEncoder<BodyCu
     }
 
     private fun JagByteBuf.pModelCount(value: Int) {
-        p1(value)
+        p1Alt3(value)
     }
 
     private fun JagByteBuf.pRecolourCount(value: Int) {
-        p1(value)
+        p1Alt1(value)
     }
 
     private fun JagByteBuf.pRetextureCount(value: Int) {
-        p1Alt2(value)
+        p1(value)
     }
 
     private fun JagByteBuf.pBodyType(value: Int) {
-        p1Alt1(value)
+        p1Alt2(value)
     }
 
     private fun JagByteBuf.pIdentKitCount(value: Int) {
@@ -204,7 +212,7 @@ public class NpcBodyCustomisationEncoder : PrecomputedExtendedInfoEncoder<BodyCu
     }
 
     private fun JagByteBuf.pRecolour(value: Int) {
-        p2(value)
+        p2Alt1(value)
     }
 
     private fun JagByteBuf.pRetexture(value: Int) {
@@ -220,7 +228,7 @@ public class NpcBodyCustomisationEncoder : PrecomputedExtendedInfoEncoder<BodyCu
     }
 
     private fun JagByteBuf.pFlag(value: Int) {
-        p1Alt3(value)
+        p1(value)
     }
 
     private companion object {

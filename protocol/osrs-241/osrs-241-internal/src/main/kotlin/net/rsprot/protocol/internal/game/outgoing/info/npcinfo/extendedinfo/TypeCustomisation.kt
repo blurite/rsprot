@@ -5,4 +5,5 @@ public class TypeCustomisation(
     public val recolours: List<Int>,
     public val retexture: List<Int>,
     public val mirror: Boolean?,
+    public val recolAll: Int? = null,
 )

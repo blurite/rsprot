@@ -36,9 +36,14 @@ public class PlayerAppearanceEncoder : PrecomputedExtendedInfoEncoder<Appearance
         intermediate.pjstr(extendedInfo.afterName)
         intermediate.pjstr(extendedInfo.afterCombatLevel)
         intermediate.p1(extendedInfo.pronoun.toInt())
-        val capacity = intermediate.readableBytes() + 1
+        val appearanceSize = intermediate.readableBytes()
+        if (appearanceSize > 255) {
+            intermediate.buffer.release()
+            error("Appearance payload exceeds the one-byte length: $appearanceSize")
+        }
+        val capacity = appearanceSize + 1
         val buffer = alloc.buffer(capacity, capacity).toJagByteBuf()
-        buffer.p1Alt3(capacity - 1)
+        buffer.p1Alt2(capacity - 1)
         try {
             buffer.pdataAlt1(intermediate.buffer)
         } finally {
@@ -172,10 +177,10 @@ public class PlayerAppearanceEncoder : PrecomputedExtendedInfoEncoder<Appearance
         val recolIndices = customisation.recolIndices.toInt()
         val retexIndices = customisation.retexIndices.toInt()
         var flag = 0
-        if (recolIndices != 0xFF) {
+        if (customisation.recolours != null || recolIndices != 0xFF) {
             flag = flag or 0x1
         }
-        if (retexIndices != 0xFF) {
+        if (customisation.retextures != null || retexIndices != 0xFF) {
             flag = flag or 0x2
         }
         if (customisation.manWear != ObjTypeCustomisation.DEFAULT_MODEL ||
@@ -188,22 +193,47 @@ public class PlayerAppearanceEncoder : PrecomputedExtendedInfoEncoder<Appearance
         ) {
             flag = flag or 0x8
         }
+        if (customisation.recolAll != null) {
+            flag = flag or 0x10
+        }
         intermediate.p1(flag)
         if (flag and 0x1 != 0) {
-            pObjTypeCustomisation(
-                intermediate,
-                recolIndices,
-                customisation.recol1.toInt(),
-                customisation.recol2.toInt(),
-            )
+            val replacements = customisation.recolours
+            if (replacements != null) {
+                intermediate.p1(replacements.size)
+                for ((index, value) in replacements) {
+                    intermediate.p1(index)
+                    intermediate.p2(value)
+                }
+            } else {
+                pObjTypeCustomisation(
+                    intermediate,
+                    recolIndices,
+                    customisation.recol1.toInt(),
+                    customisation.recol2.toInt(),
+                )
+            }
         }
         if (flag and 0x2 != 0) {
-            pObjTypeCustomisation(
-                intermediate,
-                retexIndices,
-                customisation.retex1.toInt(),
-                customisation.retex2.toInt(),
-            )
+            val replacements = customisation.retextures
+            if (replacements != null) {
+                intermediate.p1(replacements.size)
+                for ((index, value) in replacements) {
+                    intermediate.p1(index)
+                    intermediate.p2(value)
+                }
+            } else {
+                pObjTypeCustomisation(
+                    intermediate,
+                    retexIndices,
+                    customisation.retex1.toInt(),
+                    customisation.retex2.toInt(),
+                )
+            }
+        }
+        if (flag and 0x10 != 0) {
+            intermediate.p1(1)
+            intermediate.p2(checkNotNull(customisation.recolAll))
         }
         if (flag and 0x4 != 0) {
             pObjTypeWearModels(intermediate, customisation)
@@ -219,11 +249,16 @@ public class PlayerAppearanceEncoder : PrecomputedExtendedInfoEncoder<Appearance
         value1: Int,
         value2: Int,
     ) {
-        intermediate.p1(flag)
-        if (flag and 0xF != 0xF) {
+        val index1 = flag and 0xF
+        val index2 = (flag ushr 4) and 0xF
+        val count = (if (index1 != 0xF) 1 else 0) + (if (index2 != 0xF) 1 else 0)
+        intermediate.p1(count)
+        if (index1 != 0xF) {
+            intermediate.p1(index1)
             intermediate.p2(value1)
         }
-        if (flag and 0xF0 != 0xF0) {
+        if (index2 != 0xF) {
+            intermediate.p1(index2)
             intermediate.p2(value2)
         }
     }

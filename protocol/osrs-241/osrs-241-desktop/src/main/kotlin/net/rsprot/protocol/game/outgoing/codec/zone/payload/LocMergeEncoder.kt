@@ -13,18 +13,8 @@ public class LocMergeEncoder : ZoneProtEncoder<LocMerge> {
         buffer: JagByteBuf,
         message: LocMerge,
     ) {
-        // The function at the bottom of the LOC_MERGE has a consistent order,
-        // making it easy to identify all the properties of this packet:
-        // loc_merge(level, x, z, shape, rotation, layer, id, start, end, minX, minZ, maxX, maxZ, player)
-        buffer.p1(message.minZ)
-        buffer.p2Alt3(message.id)
-        buffer.p2(message.end)
-        buffer.p1Alt2(message.locPropertiesPacked)
-        buffer.p2Alt3(message.start)
-        buffer.p1Alt2(message.maxZ)
-        buffer.p1(message.minX)
-        buffer.p1Alt2(message.maxX)
-        buffer.p2Alt2(message.index)
-        buffer.p1Alt2(message.coordInZonePacked)
+        // TODO(241): Native consumes all 14 bytes without applying a merge.
+        // No active 241 field layout is verified; do not transmit the copied 240 payload.
+        throw UnsupportedOperationException("LOC_MERGE has no verified active revision-241 layout")
     }
 }

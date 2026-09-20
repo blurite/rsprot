@@ -1493,23 +1493,20 @@ public class NpcAvatarExtendedInfo(
     }
 
     /**
-     * Sets the NPC body customisation for this NPC.
-     * @param models the list of models to override; if the list is empty, models are not overridden.
-     * @param recolours the list of recolours to apply to this NPC; if the list is empty,
-     * recolours are not applied. If recolours are provided, the server MUST ensure that the number of recolours
-     * matches the number of source colours defined on the NPC in the cache, as the client reads based on the
-     * cache configuration.
-     * @param retextures the list of retextures to apply to this NPC; if the list is empty,
-     * retextures are not applied. If retextures are provided, the server MUST ensure that the number of retextures
-     * matches the number of source textures defined on the NPC in the cache, as the client reads based on the
-     * cache configuration.
+     * Sets NPC body customisation using revision 241's V4 mask.
+     * Models, recolours and retextures are explicitly counted, with up to 255 entries each.
+     * A non-null [recolAll] replaces every model colour; 65535 selects the [recolours] fallback.
+     * With a non-sentinel [recolAll], the client does not read individual recolours.
      */
     public fun setBodyCustomisation(
         models: List<Int>,
         recolours: List<Int>,
         retextures: List<Int>,
+        recolAll: Int? = null,
     ) {
         checkCommunicationThread()
+        require(models.size <= 255 && recolours.size <= 255 && retextures.size <= 255)
+        require(recolAll == null || recolAll in 0..65535)
         blocks.bodyCustomisation.composition = null
         blocks.bodyCustomisation.customisation =
             TypeCustomisation(
@@ -1517,6 +1514,7 @@ public class NpcAvatarExtendedInfo(
                 recolours,
                 retextures,
                 false,
+                recolAll,
             )
         flags = flags or BODY_CUSTOMISATION
     }

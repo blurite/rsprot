@@ -57,11 +57,11 @@ class NpcInfoClient {
             val index = updatedNpcSlot[i]
             val npc = checkNotNull(cachedNpcs[index])
             var flag = buffer.g1()
-            if ((flag and 0x20) != 0) {
+            if ((flag and 0x10) != 0) {
                 val extra: Int = buffer.g1()
                 flag += extra shl 8
             }
-            if ((flag and 0x1000) != 0) {
+            if ((flag and 0x2000) != 0) {
                 val extra: Int = buffer.g1()
                 flag += extra shl 16
             }
@@ -69,10 +69,10 @@ class NpcInfoClient {
                 val extra: Int = buffer.g1()
                 flag += extra shl 24
             }
-            check(flag and (0x20 or 0x1000 or 0x40000 or 0x10).inv() == 0) {
+            check(flag and (0x10 or 0x2000 or 0x40000 or 0x40).inv() == 0) {
                 "Extended info other than 'say' included!"
             }
-            if (flag and 0x10 != 0) {
+            if (flag and 0x40 != 0) {
                 val text = buffer.gjstr()
                 npc.overheadChat = text
             }
@@ -92,7 +92,7 @@ class NpcInfoClient {
         npcSlotCount = 0
         for (i in 0..<count) {
             val index = npcSlot[i]
-            val npc = requireNotNull(cachedNpcs[i])
+            val npc = requireNotNull(cachedNpcs[index])
             val hasUpdate = buffer.gBits(1)
             if (hasUpdate == 0) {
                 npcSlot[npcSlotCount++] = index
@@ -155,20 +155,18 @@ class NpcInfoClient {
                     npcSlot[npcSlotCount++] = index
                     npc.lastUpdateCycle = cycle
 
+                    val deltaZ = decodeDelta(large, buffer)
+                    val jump = buffer.gBits(1)
+                    val angle = NPC_TURN_ANGLES[buffer.gBits(3)]
                     val hasSpawnCycle = buffer.gBits(1) == 1
                     if (hasSpawnCycle) {
-                        val index = buffer.gBits(2)
-                        npc.spawnCycle = buffer.gBits(spawnClockBitcodes[index])
+                        val selector = buffer.gBits(2)
+                        npc.spawnCycle = buffer.gBits(spawnClockBitcodes[selector])
                     }
-
+                    val extendedInfo = buffer.gBits(1)
                     val idBitCount = buffer.gBits(2)
                     npc.id = buffer.gBits(typeBitcodes[idBitCount])
-
-                    val extendedInfo = buffer.gBits(1)
                     val deltaX = decodeDelta(large, buffer)
-                    val angle = NPC_TURN_ANGLES[buffer.gBits(3)]
-                    val jump = buffer.gBits(1)
-                    val deltaZ = decodeDelta(large, buffer)
                     if (extendedInfo == 1) {
                         updatedNpcSlot[updatedNpcSlotCount++] = index
                     }

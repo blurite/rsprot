@@ -6,7 +6,6 @@ import net.rsprot.protocol.game.outgoing.util.OpFlags
 import net.rsprot.protocol.game.outgoing.zone.payload.LocAddChangeV2
 import net.rsprot.protocol.game.outgoing.zone.payload.LocAnim
 import net.rsprot.protocol.game.outgoing.zone.payload.LocDel
-import net.rsprot.protocol.game.outgoing.zone.payload.LocMerge
 import net.rsprot.protocol.game.outgoing.zone.payload.MapAnim
 import net.rsprot.protocol.game.outgoing.zone.payload.ObjAdd
 import net.rsprot.protocol.game.outgoing.zone.payload.ObjCount
@@ -170,20 +169,6 @@ class ZonePartialEnclosedCacheBufferTest {
             LocAddChangeV2(id = 123, xInZone = 0, zInZone = 0, shape = 0, rotation = 0, OpFlags.ALL_SHOWN),
             LocAnim(id = 123, xInZone = 0, zInZone = 0, shape = 0, rotation = 0),
             LocDel(xInZone = 0, zInZone = 0, shape = 0, rotation = 0),
-            LocMerge(
-                index = 0,
-                id = 123,
-                xInZone = 0,
-                zInZone = 0,
-                shape = 0,
-                rotation = 0,
-                start = 0,
-                end = 0,
-                minX = 0,
-                minZ = 0,
-                maxX = 0,
-                maxZ = 0,
-            ),
             MapAnim(id = 123, delay = 0, height = 0, xInZone = 0, zInZone = 0),
             ObjAdd(id = 123, quantity = 0, xInZone = 0, zInZone = 0, opFlags = OpFlags.ALL_SHOWN),
             ObjCount(id = 123, oldQuantity = 0, newQuantity = 0, xInZone = 0, zInZone = 0),

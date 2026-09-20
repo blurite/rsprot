@@ -16,7 +16,7 @@ public class UpdateZoneFullFollowsEncoder : MessageEncoder<UpdateZoneFullFollows
         message: UpdateZoneFullFollows,
     ) {
         buffer.p1(message.zoneZ)
+        buffer.p1(message.level)
         buffer.p1(message.zoneX)
-        buffer.p1Alt3(message.level)
     }
 }

@@ -3,25 +3,25 @@ package net.rsprot.protocol.game.outgoing.codec.misc.player
 import net.rsprot.buffer.JagByteBuf
 import net.rsprot.crypto.cipher.StreamCipher
 import net.rsprot.protocol.ServerProt
-import net.rsprot.protocol.game.outgoing.misc.player.UpdateTradingPost
+import net.rsprot.protocol.game.outgoing.misc.player.UpdateTradingPostV1
 import net.rsprot.protocol.game.outgoing.prot.GameServerProt
 import net.rsprot.protocol.message.codec.MessageEncoder
 import net.rsprot.protocol.metadata.Consistent
 
 @Consistent
-public class UpdateTradingPostEncoder : MessageEncoder<UpdateTradingPost> {
-    override val prot: ServerProt = GameServerProt.UPDATE_TRADINGPOST
+public class UpdateTradingPostV1Encoder : MessageEncoder<UpdateTradingPostV1> {
+    override val prot: ServerProt = GameServerProt.UPDATE_TRADINGPOST_V1
 
     override fun encode(
         streamCipher: StreamCipher,
         buffer: JagByteBuf,
-        message: UpdateTradingPost,
+        message: UpdateTradingPostV1,
     ) {
         when (val update = message.updateType) {
-            UpdateTradingPost.ResetTradingPost -> {
+            UpdateTradingPostV1.ResetTradingPost -> {
                 buffer.p1(0)
             }
-            is UpdateTradingPost.SetTradingPostOfferList -> {
+            is UpdateTradingPostV1.SetTradingPostOfferList -> {
                 buffer.p1(1)
                 buffer.p8(update.age)
                 buffer.p2(update.obj)

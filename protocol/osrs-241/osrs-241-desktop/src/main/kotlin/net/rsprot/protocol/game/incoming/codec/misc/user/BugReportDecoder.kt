@@ -10,9 +10,9 @@ public class BugReportDecoder : MessageDecoder<BugReport> {
     override val prot: ClientProt = GameClientProt.BUG_REPORT
 
     override fun decode(buffer: JagByteBuf): BugReport {
-        val description = buffer.gjstr()
         val instructions = buffer.gjstr()
-        val type = buffer.g1Alt3()
+        val type = buffer.g1Alt2()
+        val description = buffer.gjstr()
         check(description.length <= 500) {
             "Bug report description length cannot exceed 500 characters."
         }

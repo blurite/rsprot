@@ -17,9 +17,9 @@ public class SoundAreaEncoder : ZoneProtEncoder<SoundArea> {
         // SoundList.playAreaSound(activeWorld.id, id, x, z, range, dropOffRange, loops, delay);
         buffer.p1Alt1(message.dropOffRange)
         buffer.p1Alt1(message.loops)
+        buffer.p1(message.range)
+        buffer.p1Alt2(message.coordInZonePacked)
         buffer.p1Alt3(message.delay)
-        buffer.p1Alt1(message.coordInZonePacked)
-        buffer.p1Alt2(message.range)
-        buffer.p2Alt3(message.id)
+        buffer.p2(message.id)
     }
 }

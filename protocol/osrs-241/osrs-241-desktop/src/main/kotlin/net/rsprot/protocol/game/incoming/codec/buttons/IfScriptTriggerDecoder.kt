@@ -12,10 +12,10 @@ public class IfScriptTriggerDecoder : MessageDecoder<IfScriptTrigger> {
 
     override fun decode(buffer: JagByteBuf): IfScriptTrigger {
         // Function is method(int combinedId, int sub, int obj, int crc, Object[] args)
-        val crc = buffer.g4Alt2()
-        val obj = buffer.g2()
         val combinedId = buffer.gCombinedIdAlt2()
+        val obj = buffer.g2Alt1()
         val sub = buffer.g2Alt1()
+        val crc = buffer.g4Alt2()
 
         val copy = buffer.buffer.copy()
         // Mark the buffer as "read" as copy function doesn't do it automatically.

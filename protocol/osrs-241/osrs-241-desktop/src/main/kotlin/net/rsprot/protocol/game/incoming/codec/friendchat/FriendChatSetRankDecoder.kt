@@ -10,7 +10,7 @@ public class FriendChatSetRankDecoder : MessageDecoder<FriendChatSetRank> {
     override val prot: ClientProt = GameClientProt.FRIENDCHAT_SETRANK
 
     override fun decode(buffer: JagByteBuf): FriendChatSetRank {
-        val rank = buffer.g1Alt2()
+        val rank = buffer.g1()
         val name = buffer.gjstr()
         return FriendChatSetRank(
             name,

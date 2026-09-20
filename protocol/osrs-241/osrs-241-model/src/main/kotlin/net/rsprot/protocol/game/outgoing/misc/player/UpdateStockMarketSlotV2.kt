@@ -8,10 +8,13 @@ import net.rsprot.protocol.message.OutgoingGameMessage
  * Update stockmarket slot packet is used to set up
  * an offer on the Grand Exchange, or to clear out an
  * offer.
+ * Unlike [UpdateStockMarketSlotV1], the price and the amount of gold
+ * received are 64-bit values.
+ * @property slot the Grand Exchange slot to update
  * @property update the update type to perform, either
  * [ResetStockMarketSlot] or [SetStockMarketSlot].
  */
-public class UpdateStockMarketSlot private constructor(
+public class UpdateStockMarketSlotV2 private constructor(
     private val _slot: UByte,
     public val update: StockMarketUpdateType,
 ) : OutgoingGameMessage {
@@ -32,30 +35,29 @@ public class UpdateStockMarketSlot private constructor(
         if (this === other) return true
         if (javaClass != other?.javaClass) return false
 
-        other as UpdateStockMarketSlot
+        other as UpdateStockMarketSlotV2
 
-        return update == other.update
+        return _slot == other._slot && update == other.update
     }
 
-    override fun hashCode(): Int = update.hashCode()
+    override fun hashCode(): Int = 31 * _slot.hashCode() + update.hashCode()
 
     override fun toString(): String =
-        "UpdateStockMarketSlot(" +
+        "UpdateStockMarketSlotV2(" +
             "slot=$slot, " +
             "update=$update" +
             ")"
 
     public sealed interface StockMarketUpdateType
 
+    // TODO(241): Figure out the remaining six bytes in the reset packet.
+    // The native client only reads 28 of the 34 bytes, so this update cannot be encoded yet.
     public data object ResetStockMarketSlot : StockMarketUpdateType
 
     /**
      * Set stockmarket slot update creates an offer
      * on the Grand Exchange.
      * @property status the status of the offer to create.
-     * Note that if the status value is 0, it will be treated
-     * as a request to clear out the slot and all the remaining
-     * data will be ignored in the process.
      * @property obj the obj to set in the specified slot
      * @property price the price per item
      * @property count the count to buy or sell
@@ -65,18 +67,18 @@ public class UpdateStockMarketSlot private constructor(
     public class SetStockMarketSlot private constructor(
         private val _status: Byte,
         private val _obj: UShort,
-        public val price: Int,
+        public val price: Long,
         public val count: Int,
         public val completedCount: Int,
-        public val completedGold: Int,
+        public val completedGold: Long,
     ) : StockMarketUpdateType {
         public constructor(
             status: Int,
             obj: Int,
-            price: Int,
+            price: Long,
             count: Int,
             completedCount: Int,
-            completedGold: Int,
+            completedGold: Long,
         ) : this(
             status.toByte(),
             obj.toUShort(),
@@ -110,10 +112,10 @@ public class UpdateStockMarketSlot private constructor(
         override fun hashCode(): Int {
             var result = _status.toInt()
             result = 31 * result + _obj.hashCode()
-            result = 31 * result + price
+            result = 31 * result + price.hashCode()
             result = 31 * result + count
             result = 31 * result + completedCount
-            result = 31 * result + completedGold
+            result = 31 * result + completedGold.hashCode()
             return result
         }
 

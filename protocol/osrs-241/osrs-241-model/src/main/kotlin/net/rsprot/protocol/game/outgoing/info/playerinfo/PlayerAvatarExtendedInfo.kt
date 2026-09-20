@@ -1571,6 +1571,56 @@ public class PlayerAvatarExtendedInfo(
     }
 
     /**
+     * Sets explicit revision-241 recolours indices. A null map restores the two-slot API values.
+     * Calling a legacy two-slot setter switches back to that API.
+     * Indices outside the obj's cache-defined source array are ignored by the client.
+     */
+    public fun setObjRecolours(
+        wearpos: Int,
+        replacements: Map<Int, Int>?,
+    ) {
+        checkCommunicationThread()
+        require(wearpos in 0..11)
+        require(replacements == null || replacements.size <= 255)
+        require(
+            replacements == null || replacements.all { (index, value) -> index in 0..255 && value in 0..65535 },
+        )
+        allocObjCustomisation(wearpos).recolours = replacements?.toMap()
+        flagAppearance()
+    }
+
+    /**
+     * Sets explicit revision-241 retextures indices. A null map restores the two-slot API values.
+     * Calling a legacy two-slot setter switches back to that API.
+     * Indices outside the obj's cache-defined source array are ignored by the client.
+     */
+    public fun setObjRetextures(
+        wearpos: Int,
+        replacements: Map<Int, Int>?,
+    ) {
+        checkCommunicationThread()
+        require(wearpos in 0..11)
+        require(replacements == null || replacements.size <= 255)
+        require(
+            replacements == null || replacements.all { (index, value) -> index in 0..255 && value in 0..65535 },
+        )
+        allocObjCustomisation(wearpos).retextures = replacements?.toMap()
+        flagAppearance()
+    }
+
+    /** Sets a whole-model colour; null removes the override and 65535 is the client's no-colour sentinel. */
+    public fun setObjRecolAll(
+        wearpos: Int,
+        colour: Int?,
+    ) {
+        checkCommunicationThread()
+        require(wearpos in 0..11)
+        require(colour == null || colour in 0..65535)
+        allocObjCustomisation(wearpos).recolAll = colour
+        flagAppearance()
+    }
+
+    /**
      * Allocates an obj type customisation in [wearpos] if it doesn't already exist.
      * @param wearpos the wearpos in which a customisation is being made.
      * @return the customisation class holding the state overrides of this obj.
@@ -1626,6 +1676,7 @@ public class PlayerAvatarExtendedInfo(
             }
         }
         val customisation = allocObjCustomisation(wearpos)
+        customisation.recolours = null
         customisation.recolIndices = ((customisation.recolIndices.toInt() and 0xF0) or (index and 0xF)).toUByte()
         customisation.recol1 = value.toUShort()
         flagAppearance()
@@ -1673,6 +1724,7 @@ public class PlayerAvatarExtendedInfo(
             }
         }
         val customisation = allocObjCustomisation(wearpos)
+        customisation.recolours = null
         customisation.recolIndices = ((customisation.recolIndices.toInt() and 0xF) or ((index and 0xF) shl 4)).toUByte()
         customisation.recol2 = value.toUShort()
         flagAppearance()
@@ -1720,6 +1772,7 @@ public class PlayerAvatarExtendedInfo(
             }
         }
         val customisation = allocObjCustomisation(wearpos)
+        customisation.retextures = null
         customisation.retexIndices = ((customisation.retexIndices.toInt() and 0xF0) or (index and 0xF)).toUByte()
         customisation.retex1 = value.toUShort()
         flagAppearance()
@@ -1767,6 +1820,7 @@ public class PlayerAvatarExtendedInfo(
             }
         }
         val customisation = allocObjCustomisation(wearpos)
+        customisation.retextures = null
         customisation.retexIndices = ((customisation.retexIndices.toInt() and 0xF) or ((index and 0xF) shl 4)).toUByte()
         customisation.retex2 = value.toUShort()
         flagAppearance()
@@ -2011,10 +2065,7 @@ public class PlayerAvatarExtendedInfo(
         if (flag and APPEARANCE != 0) {
             observer.otherAppearanceChangeCycles[localIndex] = lastAppearanceChangeCycle
         }
-        // Note: The order must be as client expects it, in 240 chat is before say
-        if (flag and CHAT != 0) {
-            observer.observedChatStorage.trackChat(this.localIndex, this.blocks.chat)
-        }
+        // Note: Match the client mask order: in 241 say is before chat.
         if (flag and SAY != 0) {
             val appendToChatbox =
                 this.blocks.say.text
@@ -2022,6 +2073,9 @@ public class PlayerAvatarExtendedInfo(
             if (localIndex == observer.localIndex || appendToChatbox) {
                 observer.observedChatStorage.trackSay(this.localIndex, this.blocks.say)
             }
+        }
+        if (flag and CHAT != 0) {
+            observer.observedChatStorage.trackChat(this.localIndex, this.blocks.chat)
         }
         writer.pExtendedInfo(
             buffer,

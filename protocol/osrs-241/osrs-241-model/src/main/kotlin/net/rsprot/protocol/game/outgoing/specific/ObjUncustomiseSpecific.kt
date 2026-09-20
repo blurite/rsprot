@@ -6,7 +6,7 @@ import net.rsprot.protocol.internal.game.outgoing.info.CoordGrid
 import net.rsprot.protocol.message.OutgoingGameMessage
 
 /**
- * Obj uncustomise resets any customisations done to an obj via the [ObjCustomiseSpecific] packet.
+ * Obj uncustomise resets any customisations done to an obj via the [ObjCustomiseSpecificV1] packet.
  * @property id the id of the obj to update
  * @property quantity the quantity of the obj to update
  * @property coordGrid the absolute coordinate at which the obj is modified.
@@ -62,7 +62,7 @@ public class ObjUncustomiseSpecific private constructor(
     }
 
     override fun toString(): String {
-        return "ObjCustomiseSpecific(" +
+        return "ObjCustomiseSpecificV1(" +
             "id=$id, " +
             "quantity=$quantity, " +
             "coordGrid=$coordGrid" +

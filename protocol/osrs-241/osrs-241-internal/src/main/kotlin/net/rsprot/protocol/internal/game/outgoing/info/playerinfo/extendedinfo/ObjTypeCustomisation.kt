@@ -12,6 +12,9 @@ package net.rsprot.protocol.internal.game.outgoing.info.playerinfo.extendedinfo
  * @param womanWear the female body type wear model
  * @param manHead the male chathead model
  * @param womanHead the female chathead model
+ * @param recolours explicit source indices and replacement colours, overriding the legacy two-slot values
+ * @param retextures explicit source indices and replacement textures, overriding the legacy two-slot values
+ * @param recolAll optional whole-model colour override; 65535 is the client's no-colour sentinel
  */
 public class ObjTypeCustomisation(
     public var recolIndices: UByte,
@@ -24,6 +27,9 @@ public class ObjTypeCustomisation(
     public var womanWear: Int,
     public var manHead: Int,
     public var womanHead: Int,
+    public var recolours: Map<Int, Int>? = null,
+    public var retextures: Map<Int, Int>? = null,
+    public var recolAll: Int? = null,
 ) {
     public constructor() : this(
         recolIndices = 0xFFu,

@@ -3,18 +3,13 @@ package net.rsprot.protocol.game.outgoing.prot
 import net.rsprot.compression.provider.HuffmanCodecProvider
 import net.rsprot.protocol.ProtRepository
 import net.rsprot.protocol.game.outgoing.codec.camera.CamLookAtCyclesEncoder
-import net.rsprot.protocol.game.outgoing.codec.camera.CamLookAtV2Encoder
 import net.rsprot.protocol.game.outgoing.codec.camera.CamLookAtV3Encoder
 import net.rsprot.protocol.game.outgoing.codec.camera.CamModeEncoder
-import net.rsprot.protocol.game.outgoing.codec.camera.CamMoveToArcV2Encoder
 import net.rsprot.protocol.game.outgoing.codec.camera.CamMoveToArcV3Encoder
-import net.rsprot.protocol.game.outgoing.codec.camera.CamMoveToCyclesV2Encoder
 import net.rsprot.protocol.game.outgoing.codec.camera.CamMoveToCyclesV3Encoder
-import net.rsprot.protocol.game.outgoing.codec.camera.CamMoveToV2Encoder
 import net.rsprot.protocol.game.outgoing.codec.camera.CamMoveToV3Encoder
 import net.rsprot.protocol.game.outgoing.codec.camera.CamResetEncoder
 import net.rsprot.protocol.game.outgoing.codec.camera.CamRotateByEncoder
-import net.rsprot.protocol.game.outgoing.codec.camera.CamRotateToCoordinateV2Encoder
 import net.rsprot.protocol.game.outgoing.codec.camera.CamRotateToCoordinateV3Encoder
 import net.rsprot.protocol.game.outgoing.codec.camera.CamRotateToEncoder
 import net.rsprot.protocol.game.outgoing.codec.camera.CamShakeEncoder
@@ -95,6 +90,8 @@ import net.rsprot.protocol.game.outgoing.codec.misc.player.AccountFlagsEncoder
 import net.rsprot.protocol.game.outgoing.codec.misc.player.ChatFilterSettingsEncoder
 import net.rsprot.protocol.game.outgoing.codec.misc.player.ChatFilterSettingsPrivateChatEncoder
 import net.rsprot.protocol.game.outgoing.codec.misc.player.MessageGameEncoder
+import net.rsprot.protocol.game.outgoing.codec.misc.player.ObjUnlockResetEncoder
+import net.rsprot.protocol.game.outgoing.codec.misc.player.ObjUnlockUpdateEncoder
 import net.rsprot.protocol.game.outgoing.codec.misc.player.RunClientScriptEncoder
 import net.rsprot.protocol.game.outgoing.codec.misc.player.SetMapFlagV2Encoder
 import net.rsprot.protocol.game.outgoing.codec.misc.player.SetPlayerOpEncoder
@@ -102,8 +99,10 @@ import net.rsprot.protocol.game.outgoing.codec.misc.player.TriggerOnDialogAbortE
 import net.rsprot.protocol.game.outgoing.codec.misc.player.UpdateRunEnergyEncoder
 import net.rsprot.protocol.game.outgoing.codec.misc.player.UpdateRunWeightEncoder
 import net.rsprot.protocol.game.outgoing.codec.misc.player.UpdateStatV2Encoder
-import net.rsprot.protocol.game.outgoing.codec.misc.player.UpdateStockMarketSlotEncoder
-import net.rsprot.protocol.game.outgoing.codec.misc.player.UpdateTradingPostEncoder
+import net.rsprot.protocol.game.outgoing.codec.misc.player.UpdateStockMarketSlotV1Encoder
+import net.rsprot.protocol.game.outgoing.codec.misc.player.UpdateStockMarketSlotV2Encoder
+import net.rsprot.protocol.game.outgoing.codec.misc.player.UpdateTradingPostV1Encoder
+import net.rsprot.protocol.game.outgoing.codec.misc.player.UpdateTradingPostV2Encoder
 import net.rsprot.protocol.game.outgoing.codec.npcinfo.NpcInfoLargeV6Encoder
 import net.rsprot.protocol.game.outgoing.codec.npcinfo.NpcInfoSmallV6Encoder
 import net.rsprot.protocol.game.outgoing.codec.npcinfo.SetNpcUpdateOriginEncoder
@@ -129,13 +128,15 @@ import net.rsprot.protocol.game.outgoing.codec.specific.NpcHeadIconSpecificEncod
 import net.rsprot.protocol.game.outgoing.codec.specific.NpcSpotAnimSpecificEncoder
 import net.rsprot.protocol.game.outgoing.codec.specific.ObjAddSpecificEncoder
 import net.rsprot.protocol.game.outgoing.codec.specific.ObjCountSpecificEncoder
-import net.rsprot.protocol.game.outgoing.codec.specific.ObjCustomiseSpecificEncoder
+import net.rsprot.protocol.game.outgoing.codec.specific.ObjCustomiseSpecificV1Encoder
+import net.rsprot.protocol.game.outgoing.codec.specific.ObjCustomiseSpecificV2Encoder
 import net.rsprot.protocol.game.outgoing.codec.specific.ObjDelSpecificEncoder
 import net.rsprot.protocol.game.outgoing.codec.specific.ObjEnabledOpsSpecificEncoder
 import net.rsprot.protocol.game.outgoing.codec.specific.ObjUncustomiseSpecificEncoder
 import net.rsprot.protocol.game.outgoing.codec.specific.PlayerSpotAnimSpecificEncoder
 import net.rsprot.protocol.game.outgoing.codec.specific.ProjAnimSpecificV4Encoder
 import net.rsprot.protocol.game.outgoing.codec.varp.VarpLargeEncoder
+import net.rsprot.protocol.game.outgoing.codec.varp.VarpLongEncoder
 import net.rsprot.protocol.game.outgoing.codec.varp.VarpResetEncoder
 import net.rsprot.protocol.game.outgoing.codec.varp.VarpSmallEncoder
 import net.rsprot.protocol.game.outgoing.codec.varp.VarpSyncEncoder
@@ -220,7 +221,8 @@ public object DesktopGameMessageEncoderRepository {
                 bind(ObjDelSpecificEncoder())
                 bind(ObjCountSpecificEncoder())
                 bind(ObjEnabledOpsSpecificEncoder())
-                bind(ObjCustomiseSpecificEncoder())
+                bind(ObjCustomiseSpecificV1Encoder())
+                bind(ObjCustomiseSpecificV2Encoder())
                 bind(ObjUncustomiseSpecificEncoder())
 
                 bind(PlayerInfoEncoder())
@@ -238,22 +240,18 @@ public object DesktopGameMessageEncoderRepository {
 
                 bind(VarpSmallEncoder())
                 bind(VarpLargeEncoder())
+                bind(VarpLongEncoder())
                 bind(VarpResetEncoder())
                 bind(VarpSyncEncoder())
 
                 bind(CamShakeEncoder())
                 bind(CamResetEncoder())
                 bind(CamSmoothResetEncoder())
-                bind(CamMoveToV2Encoder())
                 bind(CamMoveToV3Encoder())
-                bind(CamMoveToCyclesV2Encoder())
                 bind(CamMoveToCyclesV3Encoder())
-                bind(CamMoveToArcV2Encoder())
                 bind(CamMoveToArcV3Encoder())
-                bind(CamLookAtV2Encoder())
                 bind(CamLookAtV3Encoder())
                 bind(CamLookAtCyclesEncoder())
-                bind(CamRotateToCoordinateV2Encoder())
                 bind(CamRotateToCoordinateV3Encoder())
                 bind(CamRotateByEncoder())
                 bind(CamRotateToEncoder())
@@ -308,9 +306,13 @@ public object DesktopGameMessageEncoderRepository {
                 bind(MessageGameEncoder())
                 bind(ChatFilterSettingsEncoder())
                 bind(ChatFilterSettingsPrivateChatEncoder())
-                bind(UpdateTradingPostEncoder())
-                bind(UpdateStockMarketSlotEncoder())
+                bind(UpdateTradingPostV1Encoder())
+                bind(UpdateTradingPostV2Encoder())
+                bind(UpdateStockMarketSlotV1Encoder())
+                bind(UpdateStockMarketSlotV2Encoder())
                 bind(AccountFlagsEncoder())
+                bind(ObjUnlockResetEncoder())
+                bind(ObjUnlockUpdateEncoder())
 
                 bind(HintArrowEncoder())
                 bind(ResetAnimsEncoder())

@@ -17,7 +17,7 @@ public class PlayerResetEncoder : PrecomputedExtendedInfoEncoder<PlayerReset> {
             alloc
                 .buffer(1, 1)
                 .toJagByteBuf()
-        buffer.p1Alt2(extendedInfo.value.toInt())
+        buffer.p1(extendedInfo.value.toInt())
         return buffer
     }
 }

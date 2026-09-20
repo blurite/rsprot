@@ -10,7 +10,7 @@ import net.rsprot.protocol.message.OutgoingGameMessage
  * post interface back when it still existed, in circa
  * 2014. This packet has not had a use since then, however.
  */
-public class UpdateTradingPost(
+public class UpdateTradingPostV1(
     public val updateType: TradingPostUpdateType,
 ) : OutgoingGameMessage {
     override val category: ServerProtCategory
@@ -42,14 +42,14 @@ public class UpdateTradingPost(
         if (this === other) return true
         if (javaClass != other?.javaClass) return false
 
-        other as UpdateTradingPost
+        other as UpdateTradingPostV1
 
         return updateType == other.updateType
     }
 
     override fun hashCode(): Int = updateType.hashCode()
 
-    override fun toString(): String = "UpdateTradingPost(updateType=$updateType)"
+    override fun toString(): String = "UpdateTradingPostV1(updateType=$updateType)"
 
     public sealed interface TradingPostUpdateType
 

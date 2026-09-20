@@ -11,11 +11,11 @@ public class IfCrmViewOpDecoder : MessageDecoder<IfCrmViewOp> {
     override val prot: ClientProt = GameClientProt.IF_CRMVIEW_OP
 
     override fun decode(buffer: JagByteBuf): IfCrmViewOp {
+        val serverTarget = buffer.g4Alt1()
+        val sub = buffer.g2Alt1()
+        val behaviour1 = buffer.g4Alt2()
         val behaviour2 = buffer.g4()
-        val behaviour1 = buffer.g4Alt1()
-        val behaviour3 = buffer.g4Alt3()
-        val serverTarget = buffer.g4()
-        val sub = buffer.g2Alt2()
+        val behaviour3 = buffer.g4()
         val combinedId = buffer.gCombinedId()
         return IfCrmViewOp(
             serverTarget,

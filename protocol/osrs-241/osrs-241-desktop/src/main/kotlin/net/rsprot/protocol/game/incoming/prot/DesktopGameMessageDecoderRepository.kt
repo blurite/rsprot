@@ -96,7 +96,6 @@ import net.rsprot.protocol.game.incoming.codec.worldentities.OpWorldEntity3Decod
 import net.rsprot.protocol.game.incoming.codec.worldentities.OpWorldEntity4Decoder
 import net.rsprot.protocol.game.incoming.codec.worldentities.OpWorldEntity5Decoder
 import net.rsprot.protocol.game.incoming.codec.worldentities.OpWorldEntity6Decoder
-import net.rsprot.protocol.game.incoming.codec.worldentities.OpWorldEntityTDecoder
 import net.rsprot.protocol.message.codec.incoming.MessageDecoderRepository
 import net.rsprot.protocol.message.codec.incoming.MessageDecoderRepositoryBuilder
 
@@ -155,7 +154,7 @@ public object DesktopGameMessageDecoderRepository {
                 bind(OpWorldEntity4Decoder())
                 bind(OpWorldEntity5Decoder())
                 bind(OpWorldEntity6Decoder())
-                bind(OpWorldEntityTDecoder())
+                // TODO(241): Native has no verified OPWORLDENTITYT
 
                 bind(EventAppletFocusDecoder())
                 bind(EventCameraPositionDecoder())

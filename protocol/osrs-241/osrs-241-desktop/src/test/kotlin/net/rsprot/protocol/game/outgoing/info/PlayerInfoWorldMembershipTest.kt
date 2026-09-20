@@ -378,10 +378,10 @@ class PlayerInfoWorldMembershipTest {
         private const val INSTANCE_ZONE_X = 800
         private const val INSTANCE_ZONE_Z = 800
 
-        // Captured from the same scenario on unmodified upstream revision 240 at 71f1ad32.
+        // Revision-240 movement fixture; appearance mask/length updated to the verified 241 wire layout.
         private val EXPECTED_PACKET_HEX =
             listOf(
-                "00288640b202ff9804410000000000000000007e00746567726154ffffffffffffffffffffffffffff" +
+                "00288640b202ff9802c10000000000000000007e00746567726154ffffffffffffffffffffffffffff" +
                     "0000000000000000000000000000000000000000000000000000000000ffff00",
                 "807ff0",
                 "007ff08640b200",
@@ -392,18 +392,18 @@ class PlayerInfoWorldMembershipTest {
                 "008a807ff0",
             )
 
-        // Captured from the same scenario on unmodified upstream revision 240 at 71f1ad32.
+        // Revision-240 movement fixture; appearance mask/length updated to the verified 241 wire layout.
         private val EXPECTED_STATIONARY_SNAPSHOT_PACKET_HEX =
             listOf(
-                "00288640b2030c816405ff2004410000000000000000007e00746567726154" +
+                "00288640b2030c816405ff2002c10000000000000000007e00746567726154" +
                     "ffffffffffffffffffffffffffff00000000000000000000000000000000" +
-                    "00000000000000000000000000ffff0004410000000000000000007e0074" +
+                    "00000000000000000000000000ffff0002c10000000000000000007e0074" +
                     "6567726154ffffffffffffffffffffffffffff0000000000000000000000" +
                     "000000000000000000000000000000000000ffff00",
                 "98427fec",
-                "8080308640b2030c816405fe8004410000000000000000007e00746567726154" +
+                "8080308640b2030c816405fe8002c10000000000000000007e00746567726154" +
                     "ffffffffffffffffffffffffffff00000000000000000000000000000000" +
-                    "00000000000000000000000000ffff0004410000000000000000007e00746" +
+                    "00000000000000000000000000ffff0002c10000000000000000007e00746" +
                     "567726154ffffffffffffffffffffffffffff000000000000000000000000" +
                     "0000000000000000000000000000000000ffff00",
             )

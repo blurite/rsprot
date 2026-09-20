@@ -17,7 +17,7 @@ public class NpcCombatLevelChangeEncoder : PrecomputedExtendedInfoEncoder<Combat
             alloc
                 .buffer(4, 4)
                 .toJagByteBuf()
-        buffer.p4Alt1(extendedInfo.level)
+        buffer.p4(extendedInfo.level)
         return buffer
     }
 }

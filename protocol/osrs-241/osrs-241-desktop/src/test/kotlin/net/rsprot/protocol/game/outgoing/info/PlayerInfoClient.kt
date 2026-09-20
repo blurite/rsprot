@@ -193,13 +193,13 @@ class PlayerInfoClient {
         player: Player,
         flag: Int,
     ) {
-        if (flag and 0x4 != 0) {
-            val len = buffer.g1Alt3()
+        if (flag and 0x2 != 0) {
+            val len = buffer.g1Alt2()
             val data = ByteArray(len)
             buffer.gdataAlt1(data)
             decodeAppearance(Unpooled.wrappedBuffer(data).toJagByteBuf(), player)
         }
-        require(flag and 0x4.inv() == 0)
+        require(flag and 0x2.inv() == 0)
     }
 
     private fun decodeAppearance(
