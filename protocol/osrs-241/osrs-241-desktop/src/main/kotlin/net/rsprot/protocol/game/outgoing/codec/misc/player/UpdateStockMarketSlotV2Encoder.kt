@@ -19,12 +19,14 @@ public class UpdateStockMarketSlotV2Encoder : MessageEncoder<UpdateStockMarketSl
     ) {
         when (val update = message.update) {
             UpdateStockMarketSlotV2.ResetStockMarketSlot -> {
-                // TODO(241): Verify the native reset branch's six unconsumed bytes.
-                throw UnsupportedOperationException("Revision-241 stockmarket V2 reset is not verified")
+                buffer.p1(0)
+                buffer.p1(0x7)
+                buffer.p1(2)
+                buffer.skipWrite(31)
             }
             is UpdateStockMarketSlotV2.SetStockMarketSlot -> {
                 buffer.p1(message.slot)
-                buffer.p1(7) // Escaped/versioned offer.
+                buffer.p1(0x7)
                 buffer.p1(2)
                 buffer.p1(update.status)
                 buffer.p2(update.obj)

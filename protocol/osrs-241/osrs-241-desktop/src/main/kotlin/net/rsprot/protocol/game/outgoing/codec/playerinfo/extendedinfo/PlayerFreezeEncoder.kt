@@ -19,7 +19,7 @@ public class PlayerFreezeEncoder : PrecomputedExtendedInfoEncoder<Freeze> {
                 .toJagByteBuf()
         buffer.p2Alt1(extendedInfo.delay.toInt())
         buffer.p2Alt1(extendedInfo.duration.toInt())
-        buffer.p1Alt1(if (extendedInfo.cancelSequence) 1 else 0)
+        buffer.p1Alt3(if (extendedInfo.cancelSequence) 1 else 0)
         return buffer
     }
 }

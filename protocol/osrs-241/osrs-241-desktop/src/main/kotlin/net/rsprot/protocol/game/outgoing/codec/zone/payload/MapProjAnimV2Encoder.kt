@@ -24,7 +24,7 @@ public class MapProjAnimV2Encoder : ZoneProtEncoder<MapProjAnimV2> {
         buffer.p3Alt3(message.sourceIndex)
         buffer.p2Alt3(message.startTime)
         buffer.p2Alt1(message.startHeight)
-        buffer.p1(message.coordInZonePacked)
+        buffer.p1Alt1(message.coordInZonePacked)
         buffer.p2Alt2(message.endHeight)
         buffer.p2Alt2(message.progress)
         buffer.p3Alt2(message.targetIndex)

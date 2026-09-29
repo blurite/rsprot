@@ -13,12 +13,12 @@ public class ScriptedProjAddEncoder : ZoneProtEncoder<ScriptedProjAdd> {
         buffer: JagByteBuf,
         message: ScriptedProjAdd,
     ) {
-        buffer.p2(message.curveScriptT)
+        buffer.p2(message.curveScriptA)
         buffer.p3Alt1(message.sourceIndex)
-        buffer.p2Alt2(message.sourceHeight)
-        buffer.p2Alt3(message.targetHeight)
-        buffer.p2(message.sourceOffsetX)
-        buffer.p2Alt2(message.targetOffsetX)
+        buffer.p2Alt2(message.sourceOffsetX)
+        buffer.p2Alt3(message.targetOffsetX)
+        buffer.p2(message.sourceHeight)
+        buffer.p2Alt2(message.targetHeight)
         buffer.p2Alt1(message.targetOffsetZ)
         buffer.p2Alt2(message.id)
         buffer.p3Alt2(message.targetIndex)
@@ -26,7 +26,7 @@ public class ScriptedProjAddEncoder : ZoneProtEncoder<ScriptedProjAdd> {
         buffer.p2Alt3(message.slot)
         buffer.p2(message.startTime)
         buffer.p2Alt2(message.sourceOffsetZ)
-        buffer.p2Alt3(message.curveScriptA)
+        buffer.p2Alt3(message.curveScriptT)
         buffer.p4Alt1(message.targetCoord.packed)
         buffer.p2Alt3(message.curveScriptH)
         buffer.p1Alt2(message.coordInZonePacked)

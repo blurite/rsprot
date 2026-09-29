@@ -21,7 +21,7 @@ public class PlayerTransparencyEncoder : PrecomputedExtendedInfoEncoder<Transpar
         buffer.p2Alt3(extendedInfo.end.toInt())
         buffer.p1Alt1(extendedInfo.startTransparency.toInt())
         buffer.p1Alt1(extendedInfo.endTransparency.toInt())
-        buffer.p1Alt1(if (extendedInfo.useStartTransparency) 1 else 0)
+        buffer.p1Alt3(if (extendedInfo.useStartTransparency) 1 else 0)
         return buffer
     }
 }

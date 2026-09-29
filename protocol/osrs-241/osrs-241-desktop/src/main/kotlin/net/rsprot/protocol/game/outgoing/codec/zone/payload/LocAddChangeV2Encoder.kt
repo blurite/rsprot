@@ -18,7 +18,7 @@ public class LocAddChangeV2Encoder : ZoneProtEncoder<LocAddChangeV2> {
         // loc_add_change_del(world, level, x, z, layer, id, shape, rotation, opFlags, ops, 0, -1);
         buffer.p1Alt1(message.locPropertiesPacked)
         buffer.p1(message.opFlags.toInt())
-        buffer.p1(message.coordInZonePacked)
+        buffer.p1Alt1(message.coordInZonePacked)
         val ops = message.ops
         val opCount = ops?.size ?: 0
         buffer.p1Alt2(opCount)

@@ -19,6 +19,6 @@ public class MapAnimEncoder : ZoneProtEncoder<MapAnim> {
         buffer.p2Alt1(message.delay)
         buffer.p1(message.height)
         buffer.p2Alt3(message.id)
-        buffer.p1Alt2(message.coordInZonePacked)
+        buffer.p1Alt3(message.coordInZonePacked)
     }
 }

@@ -19,7 +19,7 @@ public class NpcFreezeEncoder : PrecomputedExtendedInfoEncoder<Freeze> {
                 .toJagByteBuf()
         buffer.p2Alt1(extendedInfo.delay.toInt())
         buffer.p2(extendedInfo.duration.toInt())
-        buffer.p1(if (extendedInfo.cancelSequence) 1 else 0)
+        buffer.p1Alt2(if (extendedInfo.cancelSequence) 1 else 0)
         return buffer
     }
 }

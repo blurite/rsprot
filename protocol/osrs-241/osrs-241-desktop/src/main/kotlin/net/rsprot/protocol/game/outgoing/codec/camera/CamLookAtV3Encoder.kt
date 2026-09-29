@@ -19,7 +19,7 @@ public class CamLookAtV3Encoder : MessageEncoder<CamLookAtV3> {
         buffer.p2Alt3(message.x)
         buffer.p1Alt1(message.rate2)
         buffer.p1(message.rate)
-        buffer.p1(if (message.heightRelative) 1 else 0)
+        buffer.p1Alt2(if (message.heightRelative) 1 else 0)
         buffer.p2(message.z)
     }
 }

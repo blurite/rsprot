@@ -13,9 +13,9 @@ public class ScriptedProjChangeEncoder : ZoneProtEncoder<ScriptedProjChange> {
         buffer: JagByteBuf,
         message: ScriptedProjChange,
     ) {
-        buffer.p2Alt3(message.targetHeight)
+        buffer.p2Alt3(message.targetOffsetX)
         buffer.p3Alt3(message.targetIndex)
-        buffer.p2(message.targetOffsetX)
+        buffer.p2(message.targetHeight)
         buffer.p1Alt2(if (message.deleteOnFreezeEnd) 1 else 0)
         buffer.p2Alt1(message.slot)
         buffer.p2Alt3(message.freezeDuration)

@@ -13,8 +13,15 @@ public class LocMergeEncoder : ZoneProtEncoder<LocMerge> {
         buffer: JagByteBuf,
         message: LocMerge,
     ) {
-        // TODO(241): Native consumes all 14 bytes without applying a merge.
-        // No active 241 field layout is verified; do not transmit the copied 240 payload.
-        throw UnsupportedOperationException("LOC_MERGE has no verified active revision-241 layout")
+        buffer.p1Alt3(message.coordInZonePacked)
+        buffer.p1(message.maxZ)
+        buffer.p2(message.end)
+        buffer.p1Alt1(message.minX)
+        buffer.p1Alt3(message.locPropertiesPacked)
+        buffer.p2Alt1(message.index)
+        buffer.p2Alt3(message.start)
+        buffer.p1Alt3(message.maxX)
+        buffer.p2Alt3(message.id)
+        buffer.p1Alt1(message.minZ)
     }
 }

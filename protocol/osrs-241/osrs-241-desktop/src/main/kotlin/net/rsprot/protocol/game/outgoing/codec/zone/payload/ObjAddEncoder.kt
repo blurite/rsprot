@@ -18,7 +18,7 @@ public class ObjAddEncoder : ZoneProtEncoder<ObjAdd> {
         // obj_add(level, x, z, id, quantity, opFlags,
         // timeUntilPublic, timeUntilDespawn, ownershipType, neverBecomesPublic)
         buffer.p1Alt2(message.ownershipType)
-        buffer.p1Alt2(message.coordInZonePacked)
+        buffer.p1Alt3(message.coordInZonePacked)
         buffer.p2Alt1(message.id)
         buffer.p2Alt2(message.timeUntilDespawn)
         buffer.p1Alt2(message.opFlags.toInt())

@@ -50,8 +50,6 @@ public class UpdateStockMarketSlotV2 private constructor(
 
     public sealed interface StockMarketUpdateType
 
-    // TODO(241): Figure out the remaining six bytes in the reset packet.
-    // The native client only reads 28 of the 34 bytes, so this update cannot be encoded yet.
     public data object ResetStockMarketSlot : StockMarketUpdateType
 
     /**

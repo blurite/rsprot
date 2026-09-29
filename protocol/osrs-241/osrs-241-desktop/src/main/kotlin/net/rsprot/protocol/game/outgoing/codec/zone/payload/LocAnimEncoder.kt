@@ -17,7 +17,7 @@ public class LocAnimEncoder : ZoneProtEncoder<LocAnim> {
         // making it easy to identify all the properties of this packet:
         // loc_anim(level, x, z, shape, rotation, layer, id)
         buffer.p1Alt1(message.locPropertiesPacked)
-        buffer.p1Alt2(message.coordInZonePacked)
+        buffer.p1Alt3(message.coordInZonePacked)
         buffer.p2Alt3(message.id)
     }
 }
