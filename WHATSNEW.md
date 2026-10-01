@@ -1,5 +1,40 @@
 ## What's New?
 
+### Revision 241
+
+#### Additions
+- VARP_LONG: A way to send a 64 bit value to the client.
+- UPDATE_TRADINGPOST_V2: Changed price to a long.
+- UPDATE_STOCKMARKET_SLOT_V2: Changed price and completedGold to a long.
+Furthermore, supports a section for extra info, but because the packet is
+a fixed size, that extra info must always be empty.
+- OBJUNLOCK_RESET: Originally intended for bronzeman mode, but it failed the polls.
+The packet will likely be removed in the future. The packet clears existing
+unlocked obj tracking.
+- OBJUNLOCK_UPDATE: Originally intended for bronzeman mode, but it failed the polls.
+The packet will likely be removed in the future. The packet tells the client which
+objs to mark as unlocked.
+- OBJ_CUSTOMISE_SPECIFIC_V2: Adds the ability to apply more than one
+recolour or retexture, as well as the ability to set all triangles to a specific
+colour.
+- NPC body customisation V4: Adds support for recolouring all triangles of a
+NPC's model to a specific colour.
+- Player obj type customisation: Adds the ability to recolour/retexture up to 256 values,
+up from 2. Additionally adds support for recolouring all triangles to a specific
+colour.
+
+#### Removals
+- CAM_LOOKAT_V2
+- CAM_MOVETO_ARC_V2
+- CAM_MOVETO_CYCLES_V2
+- CAM_MOVETO_V2
+- CAM_ROTATETO_COORDINATE_V2
+- NPC_INFO_LARGE_V5
+- NPC_INFO_SMALL_V5
+- OPNPC 1-5 V1
+- OPLOC 1-5 V1
+- OPOBJ 1-5 V1
+
 ### Revision 240
 
 #### Additions
@@ -16,10 +51,11 @@ zero on Java.
 
 > [!NOTE]
 > Four packets were renamed in a breaking manner with the release of
-> 1.0.0-ALPHA-20260624. These packets are:
-> PlayerAnimSpecific → AnimSpecific
-> CamLookAtEasedCoord → CamRotateToCoordinate
-> IfCrmViewClick → IfCrmViewOp
+> 1.0.0-ALPHA-20260624.\
+> These packets are:\
+> PlayerAnimSpecific → AnimSpecific\
+> CamLookAtEasedCoord → CamRotateToCoordinate\
+> IfCrmViewClick → IfCrmViewOp\
 > OculusLeave → ExitFreecam
 
 #### Additions
@@ -99,7 +135,7 @@ and the ability to face a world entity.
 > WorldEntityInfo, you should be fine as-is.
 
 #### Additions
-- RESUME_P_COUNTDIALOG_LONG added.
+- RESUME_P_LONGDIALOG added.
 - RUNCLIENTSCRIPT supports `long` data type via 'Ï' char code.
 - IF_SETMODEL_V2 added, supporting g4() for models.
 - Obj customisation section in appearance extended info uses g4() for models.
