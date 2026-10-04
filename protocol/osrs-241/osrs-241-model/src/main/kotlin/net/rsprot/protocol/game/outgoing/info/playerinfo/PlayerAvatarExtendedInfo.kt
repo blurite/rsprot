@@ -1602,7 +1602,7 @@ public class PlayerAvatarExtendedInfo(
         require(wearpos in 0..11)
         require(replacements == null || replacements.size <= 255)
         require(
-            replacements == null || replacements.all { (index, value) -> index in 0..255 && value in 0..65535 },
+            replacements == null || replacements.all { (index, value) -> index in 0..255 && value in -1..65535 },
         )
         allocObjCustomisation(wearpos).retextures = replacements?.toMap()
         flagAppearance()
