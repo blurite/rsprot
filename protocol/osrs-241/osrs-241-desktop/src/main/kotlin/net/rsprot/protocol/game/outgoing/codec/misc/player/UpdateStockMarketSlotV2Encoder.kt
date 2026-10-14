@@ -17,15 +17,14 @@ public class UpdateStockMarketSlotV2Encoder : MessageEncoder<UpdateStockMarketSl
         buffer: JagByteBuf,
         message: UpdateStockMarketSlotV2,
     ) {
+        buffer.p1(message.slot)
         when (val update = message.update) {
             UpdateStockMarketSlotV2.ResetStockMarketSlot -> {
-                buffer.p1(0)
                 buffer.p1(0x7)
                 buffer.p1(2)
-                buffer.skipWrite(31)
+                buffer.pdata(EMPTY_PAYLOAD)
             }
             is UpdateStockMarketSlotV2.SetStockMarketSlot -> {
-                buffer.p1(message.slot)
                 buffer.p1(0x7)
                 buffer.p1(2)
                 buffer.p1(update.status)
@@ -37,5 +36,9 @@ public class UpdateStockMarketSlotV2Encoder : MessageEncoder<UpdateStockMarketSl
                 buffer.p4(0) // No extension: the complete packet occupies exactly 34 bytes.
             }
         }
+    }
+
+    private companion object {
+        private val EMPTY_PAYLOAD: ByteArray = ByteArray(31)
     }
 }
