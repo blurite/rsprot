@@ -19,7 +19,7 @@ public class ObjCustomiseEncoder : ZoneProtEncoder<ObjCustomise> {
         buffer.p2Alt2(message.recol)
         buffer.p2Alt2(message.retex)
         buffer.p2Alt2(message.recolIndex)
-        buffer.p1Alt2(message.coordInZonePacked)
+        buffer.p1Alt3(message.coordInZonePacked)
         buffer.p2(message.id)
     }
 }

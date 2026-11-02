@@ -15,6 +15,6 @@ public class ObjUncustomiseEncoder : ZoneProtEncoder<ObjUncustomise> {
     ) {
         buffer.p2Alt3(message.id)
         buffer.p4(message.quantity)
-        buffer.p1(message.coordInZonePacked)
+        buffer.p1Alt1(message.coordInZonePacked)
     }
 }

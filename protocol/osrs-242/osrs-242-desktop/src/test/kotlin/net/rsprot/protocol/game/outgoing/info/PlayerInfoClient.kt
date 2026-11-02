@@ -199,7 +199,7 @@ class PlayerInfoClient {
             buffer.gdata(data)
             decodeAppearance(Unpooled.wrappedBuffer(data).toJagByteBuf(), player)
         }
-        require(flag and (0x40 or 0x4 or 0x1000).inv() == 0)
+        require(flag and 0x40.inv() == 0)
     }
 
     private fun decodeAppearance(

@@ -15,7 +15,7 @@ public class AmbientSoundStartEncoder : MessageEncoder<AmbientSoundStart> {
         buffer: JagByteBuf,
         message: AmbientSoundStart,
     ) {
-        buffer.p1(if (message.fade) 1 else 0)
+        buffer.p1Alt2(if (message.fade) 1 else 0)
         buffer.p2Alt2(message.id)
     }
 }

@@ -1571,7 +1571,7 @@ public class PlayerAvatarExtendedInfo(
     }
 
     /**
-     * Sets explicit revision-241 recolours indices. A null map restores the two-slot API values.
+     * Sets explicit recolours indices. A null map restores the two-slot API values.
      * Calling a legacy two-slot setter switches back to that API.
      * Indices outside the obj's cache-defined source array are ignored by the client.
      */
@@ -1590,7 +1590,7 @@ public class PlayerAvatarExtendedInfo(
     }
 
     /**
-     * Sets explicit revision-241 retextures indices. A null map restores the two-slot API values.
+     * Sets explicit retextures indices. A null map restores the two-slot API values.
      * Calling a legacy two-slot setter switches back to that API.
      * Indices outside the obj's cache-defined source array are ignored by the client.
      */

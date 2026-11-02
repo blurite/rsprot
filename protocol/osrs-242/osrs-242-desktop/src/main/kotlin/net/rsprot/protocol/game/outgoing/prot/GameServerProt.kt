@@ -213,5 +213,5 @@ public enum class GameServerProt(
     // Unknown packets
     UNKNOWN_STRING(GameServerProtId.UNKNOWN_STRING, Prot.VAR_BYTE),
     LOC_ADD_CHANGE_V3(GameServerProtId.LOC_ADD_CHANGE_V3, Prot.VAR_SHORT),
-    DISPLAYNAME_SESSION_TOKEN(GameServerProtId.DISPLAYNAME_SESSION_TOKEN, Prot.VAR_SHORT),
+    SET_WEBSITE_TOKEN(GameServerProtId.SET_WEBSITE_TOKEN, Prot.VAR_SHORT),
 }

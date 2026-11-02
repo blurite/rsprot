@@ -9,7 +9,7 @@ import net.rsprot.protocol.message.util.estimateTextSize
  * Sets the website session token used when changing the player's display name.
  * @property token the session token
  */
-public class DisplayNameSessionToken(
+public class SetWebsiteToken(
     public val token: String,
 ) : OutgoingGameMessage {
     override val category: ServerProtCategory
@@ -23,12 +23,12 @@ public class DisplayNameSessionToken(
         if (this === other) return true
         if (javaClass != other?.javaClass) return false
 
-        other as DisplayNameSessionToken
+        other as SetWebsiteToken
 
         return token == other.token
     }
 
     override fun hashCode(): Int = token.hashCode()
 
-    override fun toString(): String = "DisplayNameSessionToken(token='$token')"
+    override fun toString(): String = "SetWebsiteToken(token='$token')"
 }

@@ -29,7 +29,7 @@ public object DesktopLoginCrcDecoder : LoginCrcDecoder {
         crc[21] = buffer.g4Alt3()
         crc[10] = buffer.g4Alt1()
         crc[4] = buffer.g4()
-        crc[16] = buffer.g4()
+        crc[16] = buffer.g4Alt1()
         crc[0] = buffer.g4Alt3()
         crc[9] = buffer.g4Alt1()
         return crc

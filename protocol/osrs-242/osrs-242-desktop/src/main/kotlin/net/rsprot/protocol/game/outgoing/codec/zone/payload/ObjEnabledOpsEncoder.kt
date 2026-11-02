@@ -15,6 +15,6 @@ public class ObjEnabledOpsEncoder : ZoneProtEncoder<ObjEnabledOps> {
     ) {
         buffer.p1Alt2(message.opFlags.toInt())
         buffer.p2(message.id)
-        buffer.p1(message.coordInZonePacked)
+        buffer.p1Alt1(message.coordInZonePacked)
     }
 }

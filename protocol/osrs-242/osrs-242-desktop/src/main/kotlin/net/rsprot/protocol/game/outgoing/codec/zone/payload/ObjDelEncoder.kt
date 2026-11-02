@@ -14,7 +14,7 @@ public class ObjDelEncoder : ZoneProtEncoder<ObjDel> {
         message: ObjDel,
     ) {
         buffer.p2Alt1(message.id)
-        buffer.p1Alt2(message.coordInZonePacked)
+        buffer.p1Alt3(message.coordInZonePacked)
         buffer.p4Alt1(message.quantity)
     }
 }

@@ -13,7 +13,7 @@ public class LocDelEncoder : ZoneProtEncoder<LocDel> {
         buffer: JagByteBuf,
         message: LocDel,
     ) {
-        buffer.p1Alt2(message.coordInZonePacked)
+        buffer.p1Alt3(message.coordInZonePacked)
         buffer.p1Alt2(message.locPropertiesPacked)
     }
 }

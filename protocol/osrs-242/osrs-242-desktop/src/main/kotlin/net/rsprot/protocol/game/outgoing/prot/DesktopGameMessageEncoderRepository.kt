@@ -68,7 +68,6 @@ import net.rsprot.protocol.game.outgoing.codec.logout.LogoutWithReasonEncoder
 import net.rsprot.protocol.game.outgoing.codec.map.RebuildNormalV2Encoder
 import net.rsprot.protocol.game.outgoing.codec.map.RebuildRegionV2Encoder
 import net.rsprot.protocol.game.outgoing.codec.map.RebuildWorldEntityV4Encoder
-import net.rsprot.protocol.game.outgoing.codec.misc.client.DisplayNameSessionTokenEncoder
 import net.rsprot.protocol.game.outgoing.codec.misc.client.HideLocOpsEncoder
 import net.rsprot.protocol.game.outgoing.codec.misc.client.HideNpcOpsEncoder
 import net.rsprot.protocol.game.outgoing.codec.misc.client.HideObjOpsEncoder
@@ -83,6 +82,7 @@ import net.rsprot.protocol.game.outgoing.codec.misc.client.SendPingEncoder
 import net.rsprot.protocol.game.outgoing.codec.misc.client.ServerTickEndEncoder
 import net.rsprot.protocol.game.outgoing.codec.misc.client.SetHeatmapEnabledEncoder
 import net.rsprot.protocol.game.outgoing.codec.misc.client.SetInteractionModeEncoder
+import net.rsprot.protocol.game.outgoing.codec.misc.client.SetWebsiteTokenEncoder
 import net.rsprot.protocol.game.outgoing.codec.misc.client.SiteSettingsEncoder
 import net.rsprot.protocol.game.outgoing.codec.misc.client.UpdateRebootTimerV2Encoder
 import net.rsprot.protocol.game.outgoing.codec.misc.client.UpdateUid192Encoder
@@ -332,7 +332,7 @@ public object DesktopGameMessageEncoderRepository {
 
                 bind(UrlOpenEncoder())
                 bind(SiteSettingsEncoder())
-                bind(DisplayNameSessionTokenEncoder())
+                bind(SetWebsiteTokenEncoder())
                 bind(UpdateUid192Encoder())
                 bind(ReflectionCheckerEncoder())
                 bind(SendPingEncoder())

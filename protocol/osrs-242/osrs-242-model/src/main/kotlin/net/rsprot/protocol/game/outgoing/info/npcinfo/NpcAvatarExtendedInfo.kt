@@ -1493,7 +1493,7 @@ public class NpcAvatarExtendedInfo(
     }
 
     /**
-     * Sets NPC body customisation using revision 241's V4 mask.
+     * Sets NPC body customisation via list encoding variant.
      * Models, recolours and retextures are explicitly counted, with up to 255 entries each.
      * A non-null [recolAll] replaces every model colour; 65535 selects the [recolours] fallback.
      * With a non-sentinel [recolAll], the client does not read individual recolours.
