@@ -13,11 +13,8 @@ public class ObjUncustomiseEncoder : ZoneProtEncoder<ObjUncustomise> {
         buffer: JagByteBuf,
         message: ObjUncustomise,
     ) {
-        // The function at the bottom of the OBJ_CUSTOMISE has a consistent order,
-        // making it easy to identify all the properties of this packet:
-        // objUncustomise(level, x, z, id, count);
-        buffer.p1(message.coordInZonePacked)
-        buffer.p2(message.id)
+        buffer.p2Alt3(message.id)
         buffer.p4(message.quantity)
+        buffer.p1(message.coordInZonePacked)
     }
 }

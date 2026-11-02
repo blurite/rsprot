@@ -15,18 +15,8 @@ public class RebuildNormalV2Encoder : MessageEncoder<StaticRebuildMessageV2> {
         buffer: JagByteBuf,
         message: StaticRebuildMessageV2,
     ) {
-        // We have to use the same encoder as it relies on the prot
-        // under the hood to map the encoders down
-        // if (message is RebuildLogin) {
-        //     val gpiInitBlock = message.gpiInitBlock
-        //     buffer.buffer.writeBytes(
-        //         gpiInitBlock,
-        //         gpiInitBlock.readerIndex(),
-        //         gpiInitBlock.readableBytes(),
-        //     )
-        // }
-        buffer.p2(message.zoneZ)
-        buffer.p2Alt1(message.zoneX)
-        buffer.p2(message.worldArea)
+        buffer.p2Alt2(message.zoneZ)
+        buffer.p2Alt3(message.worldArea)
+        buffer.p2Alt3(message.zoneX)
     }
 }

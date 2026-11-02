@@ -14,11 +14,11 @@ public class DesktopWorldEntityResolutionChangeEncoder : WorldEntityResolutionCh
         sizeZ: Int,
         priority: Int,
     ): Int {
-        buffer.p2Alt1(id)
+        buffer.p2(id)
         val flagWriteIndex = buffer.writerIndex()
-        buffer.p1Alt3(0)
-        buffer.p1Alt2(priority)
-        buffer.p1Alt3((sizeX shl 4) or sizeZ)
+        buffer.p1(0)
+        buffer.p1Alt2((sizeX shl 4) or sizeZ)
+        buffer.p1Alt3(priority)
         return flagWriteIndex
     }
 
@@ -29,7 +29,7 @@ public class DesktopWorldEntityResolutionChangeEncoder : WorldEntityResolutionCh
     ) {
         val finalPosition = buffer.writerIndex()
         buffer.writerIndex(flagWriteIndex)
-        buffer.p1Alt3(flag)
+        buffer.p1(flag)
         buffer.writerIndex(finalPosition)
     }
 }

@@ -18,7 +18,7 @@ public class WorldEntitySequenceEncoder : PrecomputedExtendedInfoEncoder<Sequenc
                 .buffer(3, 3)
                 .toJagByteBuf()
         buffer.p2(extendedInfo.id.toInt())
-        buffer.p1Alt2(extendedInfo.delay.toInt())
+        buffer.p1Alt3(extendedInfo.delay.toInt())
         return buffer
     }
 }

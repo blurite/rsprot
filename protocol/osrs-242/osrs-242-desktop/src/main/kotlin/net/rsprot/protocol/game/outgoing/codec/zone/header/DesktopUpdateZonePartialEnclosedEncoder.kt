@@ -8,6 +8,7 @@ import net.rsprot.buffer.extensions.toJagByteBuf
 import net.rsprot.crypto.cipher.StreamCipher
 import net.rsprot.protocol.ServerProt
 import net.rsprot.protocol.game.outgoing.codec.zone.payload.LocAddChangeV2Encoder
+import net.rsprot.protocol.game.outgoing.codec.zone.payload.LocAddChangeV3Encoder
 import net.rsprot.protocol.game.outgoing.codec.zone.payload.LocAnimEncoder
 import net.rsprot.protocol.game.outgoing.codec.zone.payload.LocDelEncoder
 import net.rsprot.protocol.game.outgoing.codec.zone.payload.LocMergeEncoder
@@ -39,15 +40,9 @@ public class DesktopUpdateZonePartialEnclosedEncoder : MessageEncoder<UpdateZone
         buffer: JagByteBuf,
         message: UpdateZonePartialEnclosed,
     ) {
-        buffer.p1(message.zoneZ)
-        buffer.p1(message.zoneX)
+        buffer.p1Alt2(message.zoneZ)
+        buffer.p1Alt2(message.zoneX)
         buffer.p1Alt3(message.level)
-        // Special handling in our Netty encoder for the payload
-        // buffer.buffer.writeBytes(
-        //     message.payload,
-        //     message.payload.readerIndex(),
-        //     message.payload.readableBytes(),
-        // )
     }
 
     public companion object : UpdateZonePartialEnclosedCache {
@@ -128,21 +123,22 @@ public class DesktopUpdateZonePartialEnclosedEncoder : MessageEncoder<UpdateZone
             private val protId: Int,
             val encoder: ZoneProtEncoder<*>,
         ) {
+            SOUND_AREA(OldSchoolZoneProt.SOUND_AREA, SoundAreaEncoder()),
             MAP_ANIM(OldSchoolZoneProt.MAP_ANIM, MapAnimEncoder()),
-            MAP_PROJANIM_V2(OldSchoolZoneProt.MAP_PROJANIM_V2, MapProjAnimV2Encoder()),
-            OBJ_COUNT(OldSchoolZoneProt.OBJ_COUNT, ObjCountEncoder()),
-            LOC_DEL(OldSchoolZoneProt.LOC_DEL, LocDelEncoder()),
-            OBJ_ENABLED_OPS(OldSchoolZoneProt.OBJ_ENABLED_OPS, ObjEnabledOpsEncoder()),
-            OBJ_DEL(OldSchoolZoneProt.OBJ_DEL, ObjDelEncoder()),
+            LOC_MERGE(OldSchoolZoneProt.LOC_MERGE, LocMergeEncoder()),
             LOC_ANIM(OldSchoolZoneProt.LOC_ANIM, LocAnimEncoder()),
-            OBJ_CUSTOMISE(OldSchoolZoneProt.OBJ_CUSTOMISE, ObjCustomiseEncoder()),
+            LOC_ADD_CHANGE_V3(OldSchoolZoneProt.LOC_ADD_CHANGE_V3, LocAddChangeV3Encoder()),
+            MAP_PROJANIM_V2(OldSchoolZoneProt.MAP_PROJANIM_V2, MapProjAnimV2Encoder()),
             OBJ_UNCUSTOMISE(OldSchoolZoneProt.OBJ_UNCUSTOMISE, ObjUncustomiseEncoder()),
             OBJ_ADD(OldSchoolZoneProt.OBJ_ADD, ObjAddEncoder()),
+            OBJ_COUNT(OldSchoolZoneProt.OBJ_COUNT, ObjCountEncoder()),
+            LOC_DEL(OldSchoolZoneProt.LOC_DEL, LocDelEncoder()),
+            OBJ_CUSTOMISE(OldSchoolZoneProt.OBJ_CUSTOMISE, ObjCustomiseEncoder()),
+            OBJ_ENABLED_OPS(OldSchoolZoneProt.OBJ_ENABLED_OPS, ObjEnabledOpsEncoder()),
+            OBJ_DEL(OldSchoolZoneProt.OBJ_DEL, ObjDelEncoder()),
+            SCRIPTEDPROJ_ADD(OldSchoolZoneProt.SCRIPTEDPROJ_ADD, ScriptedProjAddEncoder()),
             SCRIPTEDPROJ_CHANGE(OldSchoolZoneProt.SCRIPTEDPROJ_CHANGE, ScriptedProjChangeEncoder()),
             LOC_ADD_CHANGE_V2(OldSchoolZoneProt.LOC_ADD_CHANGE_V2, LocAddChangeV2Encoder()),
-            LOC_MERGE(OldSchoolZoneProt.LOC_MERGE, LocMergeEncoder()),
-            SCRIPTEDPROJ_ADD(OldSchoolZoneProt.SCRIPTEDPROJ_ADD, ScriptedProjAddEncoder()),
-            SOUND_AREA(OldSchoolZoneProt.SOUND_AREA, SoundAreaEncoder()),
             ;
 
             companion object {

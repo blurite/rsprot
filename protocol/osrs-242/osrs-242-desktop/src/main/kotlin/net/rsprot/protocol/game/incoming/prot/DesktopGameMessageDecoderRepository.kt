@@ -25,12 +25,19 @@ import net.rsprot.protocol.game.incoming.codec.friendchat.FriendChatJoinLeaveDec
 import net.rsprot.protocol.game.incoming.codec.friendchat.FriendChatKickDecoder
 import net.rsprot.protocol.game.incoming.codec.friendchat.FriendChatSetRankDecoder
 import net.rsprot.protocol.game.incoming.codec.locs.OpLoc1V2Decoder
+import net.rsprot.protocol.game.incoming.codec.locs.OpLoc1V3Decoder
 import net.rsprot.protocol.game.incoming.codec.locs.OpLoc2V2Decoder
+import net.rsprot.protocol.game.incoming.codec.locs.OpLoc2V3Decoder
 import net.rsprot.protocol.game.incoming.codec.locs.OpLoc3V2Decoder
+import net.rsprot.protocol.game.incoming.codec.locs.OpLoc3V3Decoder
 import net.rsprot.protocol.game.incoming.codec.locs.OpLoc4V2Decoder
+import net.rsprot.protocol.game.incoming.codec.locs.OpLoc4V3Decoder
 import net.rsprot.protocol.game.incoming.codec.locs.OpLoc5V2Decoder
-import net.rsprot.protocol.game.incoming.codec.locs.OpLoc6Decoder
-import net.rsprot.protocol.game.incoming.codec.locs.OpLocTDecoder
+import net.rsprot.protocol.game.incoming.codec.locs.OpLoc5V3Decoder
+import net.rsprot.protocol.game.incoming.codec.locs.OpLoc6V1Decoder
+import net.rsprot.protocol.game.incoming.codec.locs.OpLoc6V2Decoder
+import net.rsprot.protocol.game.incoming.codec.locs.OpLocTV1Decoder
+import net.rsprot.protocol.game.incoming.codec.locs.OpLocTV2Decoder
 import net.rsprot.protocol.game.incoming.codec.messaging.MessagePrivateDecoder
 import net.rsprot.protocol.game.incoming.codec.messaging.MessagePublicDecoder
 import net.rsprot.protocol.game.incoming.codec.misc.client.ConnectionTelemetryDecoder
@@ -96,7 +103,6 @@ import net.rsprot.protocol.game.incoming.codec.worldentities.OpWorldEntity3Decod
 import net.rsprot.protocol.game.incoming.codec.worldentities.OpWorldEntity4Decoder
 import net.rsprot.protocol.game.incoming.codec.worldentities.OpWorldEntity5Decoder
 import net.rsprot.protocol.game.incoming.codec.worldentities.OpWorldEntity6Decoder
-import net.rsprot.protocol.game.incoming.codec.worldentities.OpWorldEntityTDecoder
 import net.rsprot.protocol.message.codec.incoming.MessageDecoderRepository
 import net.rsprot.protocol.message.codec.incoming.MessageDecoderRepositoryBuilder
 
@@ -124,12 +130,19 @@ public object DesktopGameMessageDecoderRepository {
                 bind(OpNpcTDecoder())
 
                 bind(OpLoc1V2Decoder())
+                bind(OpLoc1V3Decoder())
                 bind(OpLoc2V2Decoder())
+                bind(OpLoc2V3Decoder())
                 bind(OpLoc3V2Decoder())
+                bind(OpLoc3V3Decoder())
                 bind(OpLoc4V2Decoder())
+                bind(OpLoc4V3Decoder())
                 bind(OpLoc5V2Decoder())
-                bind(OpLoc6Decoder())
-                bind(OpLocTDecoder())
+                bind(OpLoc5V3Decoder())
+                bind(OpLoc6V1Decoder())
+                bind(OpLoc6V2Decoder())
+                bind(OpLocTV1Decoder())
+                bind(OpLocTV2Decoder())
 
                 bind(OpObj1V2Decoder())
                 bind(OpObj2V2Decoder())
@@ -155,7 +168,7 @@ public object DesktopGameMessageDecoderRepository {
                 bind(OpWorldEntity4Decoder())
                 bind(OpWorldEntity5Decoder())
                 bind(OpWorldEntity6Decoder())
-                bind(OpWorldEntityTDecoder())
+                // TODO(242): OpWorldEntityTDecoder has no verified opcode.
 
                 bind(EventAppletFocusDecoder())
                 bind(EventCameraPositionDecoder())

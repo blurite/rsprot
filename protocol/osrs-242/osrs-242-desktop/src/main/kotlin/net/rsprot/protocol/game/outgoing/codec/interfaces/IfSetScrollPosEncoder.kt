@@ -16,7 +16,7 @@ public class IfSetScrollPosEncoder : MessageEncoder<IfSetScrollPos> {
         buffer: JagByteBuf,
         message: IfSetScrollPos,
     ) {
+        buffer.p2(message.scrollPos)
         buffer.pCombinedIdAlt3(message.combinedId)
-        buffer.p2Alt1(message.scrollPos)
     }
 }

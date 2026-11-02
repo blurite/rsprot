@@ -378,11 +378,11 @@ class PlayerInfoWorldMembershipTest {
         private const val INSTANCE_ZONE_X = 800
         private const val INSTANCE_ZONE_Z = 800
 
-        // Revision-240 movement fixture; appearance mask/length updated to the verified 241 wire layout.
+        // Revision-240 movement fixture; appearance mask/copy updated to the verified 242 wire layout.
         private val EXPECTED_PACKET_HEX =
             listOf(
-                "00288640b202ff9802c10000000000000000007e00746567726154ffffffffffffffffffffffffffff" +
-                    "0000000000000000000000000000000000000000000000000000000000ffff00",
+                "00288640b202ff9840c100ffff000000000000000000000000000000000000000000000000000000" +
+                    "0000ffffffffffffffffffffffffffff546172676574007e000000000000000000",
                 "807ff0",
                 "007ff08640b200",
                 "217ff0",
@@ -392,20 +392,18 @@ class PlayerInfoWorldMembershipTest {
                 "008a807ff0",
             )
 
-        // Revision-240 movement fixture; appearance mask/length updated to the verified 241 wire layout.
+        // Revision-240 movement fixture; appearance mask/copy updated to the verified 242 wire layout.
         private val EXPECTED_STATIONARY_SNAPSHOT_PACKET_HEX =
             listOf(
-                "00288640b2030c816405ff2002c10000000000000000007e00746567726154" +
-                    "ffffffffffffffffffffffffffff00000000000000000000000000000000" +
-                    "00000000000000000000000000ffff0002c10000000000000000007e0074" +
-                    "6567726154ffffffffffffffffffffffffffff0000000000000000000000" +
-                    "000000000000000000000000000000000000ffff00",
+                "00288640b2030c816405ff2040c100ffff0000000000000000000000000000000000000000000000" +
+                    "000000000000ffffffffffffffffffffffffffff546172676574007e00000000000000000040c100" +
+                    "ffff0000000000000000000000000000000000000000000000000000000000ffffffffffffffffff" +
+                    "ffffffffff546172676574007e000000000000000000",
                 "98427fec",
-                "8080308640b2030c816405fe8002c10000000000000000007e00746567726154" +
-                    "ffffffffffffffffffffffffffff00000000000000000000000000000000" +
-                    "00000000000000000000000000ffff0002c10000000000000000007e00746" +
-                    "567726154ffffffffffffffffffffffffffff000000000000000000000000" +
-                    "0000000000000000000000000000000000ffff00",
+                "8080308640b2030c816405fe8040c100ffff00000000000000000000000000000000000000000000" +
+                    "00000000000000ffffffffffffffffffffffffffff546172676574007e00000000000000000040c1" +
+                    "00ffff0000000000000000000000000000000000000000000000000000000000ffffffffffffffff" +
+                    "ffffffffffff546172676574007e000000000000000000",
             )
 
         private fun instanceCoord(

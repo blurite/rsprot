@@ -93,7 +93,7 @@ public class WorldEntityAvatarExtendedInfoDesktopWriter :
     @Suppress("unused")
     private companion object {
         private val logger = InlineLogger()
-        private const val VISIBLE_OPS: Int = 0x2
-        private const val SEQUENCE: Int = 0x1
+        private const val VISIBLE_OPS: Int = 0x1
+        private const val SEQUENCE: Int = 0x2
     }
 }

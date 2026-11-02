@@ -67,9 +67,9 @@ public class NpcBodyCustomisationEncoder : PrecomputedExtendedInfoEncoder<BodyCu
         }
         if (flag and FLAG_RECOLOUR != 0) {
             val recolAll = customisation.recolAll
-            buffer.p1(if (recolAll != null) 1 else 0)
+            buffer.p1Alt1(if (recolAll != null) 1 else 0)
             if (recolAll != null) {
-                buffer.p2Alt3(recolAll)
+                buffer.p2Alt2(recolAll)
             }
             if (recolAll == null || recolAll == 65535) {
                 buffer.pRecolourCount(customisation.recolours.size)
@@ -107,7 +107,7 @@ public class NpcBodyCustomisationEncoder : PrecomputedExtendedInfoEncoder<BodyCu
         pEquipment(buffer, composition)
 
         if (colours != null) {
-            buffer.p1(0) // Individual player-composition recolours, no whole-model override.
+            buffer.p1Alt1(0) // Individual player-composition recolours, no whole-model override.
             buffer.pRecolourCount(colours.size)
             for (recol in colours) {
                 buffer.pRecolour(recol.toInt() and 0xFFFF)
@@ -192,7 +192,7 @@ public class NpcBodyCustomisationEncoder : PrecomputedExtendedInfoEncoder<BodyCu
     }
 
     private fun JagByteBuf.pModelCount(value: Int) {
-        p1Alt3(value)
+        p1(value)
     }
 
     private fun JagByteBuf.pRecolourCount(value: Int) {
@@ -200,15 +200,15 @@ public class NpcBodyCustomisationEncoder : PrecomputedExtendedInfoEncoder<BodyCu
     }
 
     private fun JagByteBuf.pRetextureCount(value: Int) {
-        p1(value)
+        p1Alt1(value)
     }
 
     private fun JagByteBuf.pBodyType(value: Int) {
-        p1Alt2(value)
+        p1Alt3(value)
     }
 
     private fun JagByteBuf.pIdentKitCount(value: Int) {
-        p1Alt1(value)
+        p1Alt3(value)
     }
 
     private fun JagByteBuf.pRecolour(value: Int) {
@@ -216,19 +216,19 @@ public class NpcBodyCustomisationEncoder : PrecomputedExtendedInfoEncoder<BodyCu
     }
 
     private fun JagByteBuf.pRetexture(value: Int) {
-        p2Alt1(value)
-    }
-
-    private fun JagByteBuf.pModel(value: Int) {
-        p4(value)
-    }
-
-    private fun JagByteBuf.pIdentKit(value: Int) {
         p2Alt3(value)
     }
 
+    private fun JagByteBuf.pModel(value: Int) {
+        p4Alt3(value)
+    }
+
+    private fun JagByteBuf.pIdentKit(value: Int) {
+        p2Alt1(value)
+    }
+
     private fun JagByteBuf.pFlag(value: Int) {
-        p1Alt1(value)
+        p1(value)
     }
 
     private companion object {

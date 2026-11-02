@@ -68,6 +68,7 @@ import net.rsprot.protocol.game.outgoing.codec.logout.LogoutWithReasonEncoder
 import net.rsprot.protocol.game.outgoing.codec.map.RebuildNormalV2Encoder
 import net.rsprot.protocol.game.outgoing.codec.map.RebuildRegionV2Encoder
 import net.rsprot.protocol.game.outgoing.codec.map.RebuildWorldEntityV4Encoder
+import net.rsprot.protocol.game.outgoing.codec.misc.client.DisplayNameSessionTokenEncoder
 import net.rsprot.protocol.game.outgoing.codec.misc.client.HideLocOpsEncoder
 import net.rsprot.protocol.game.outgoing.codec.misc.client.HideNpcOpsEncoder
 import net.rsprot.protocol.game.outgoing.codec.misc.client.HideObjOpsEncoder
@@ -146,6 +147,7 @@ import net.rsprot.protocol.game.outgoing.codec.zone.header.DesktopUpdateZonePart
 import net.rsprot.protocol.game.outgoing.codec.zone.header.UpdateZoneFullFollowsEncoder
 import net.rsprot.protocol.game.outgoing.codec.zone.header.UpdateZonePartialFollowsEncoder
 import net.rsprot.protocol.game.outgoing.codec.zone.payload.LocAddChangeV2Encoder
+import net.rsprot.protocol.game.outgoing.codec.zone.payload.LocAddChangeV3Encoder
 import net.rsprot.protocol.game.outgoing.codec.zone.payload.LocAnimEncoder
 import net.rsprot.protocol.game.outgoing.codec.zone.payload.LocDelEncoder
 import net.rsprot.protocol.game.outgoing.codec.zone.payload.LocMergeEncoder
@@ -203,6 +205,7 @@ public object DesktopGameMessageEncoderRepository {
                 bind(DesktopUpdateZonePartialEnclosedEncoder())
 
                 bind(LocAddChangeV2Encoder())
+                bind(LocAddChangeV3Encoder())
                 bind(LocDelEncoder())
                 bind(LocAnimEncoder())
                 bind(LocMergeEncoder())
@@ -329,6 +332,7 @@ public object DesktopGameMessageEncoderRepository {
 
                 bind(UrlOpenEncoder())
                 bind(SiteSettingsEncoder())
+                bind(DisplayNameSessionTokenEncoder())
                 bind(UpdateUid192Encoder())
                 bind(ReflectionCheckerEncoder())
                 bind(SendPingEncoder())

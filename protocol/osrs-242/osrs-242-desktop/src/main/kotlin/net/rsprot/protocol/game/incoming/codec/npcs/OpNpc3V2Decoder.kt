@@ -10,9 +10,9 @@ public class OpNpc3V2Decoder : MessageDecoder<OpNpcV2> {
     override val prot: ClientProt = GameClientProt.OPNPC3_V2
 
     override fun decode(buffer: JagByteBuf): OpNpcV2 {
-        val index = buffer.g2Alt1()
-        val subop = buffer.g1()
         val controlKey = buffer.g1Alt1() == 1
+        val index = buffer.g2()
+        val subop = buffer.g1Alt1()
         return OpNpcV2(
             index,
             controlKey,

@@ -15,16 +15,13 @@ public class ObjCustomiseSpecificV1Encoder : MessageEncoder<ObjCustomiseSpecific
         buffer: JagByteBuf,
         message: ObjCustomiseSpecificV1,
     ) {
-        // The function at the bottom of the OBJ_CUSTOMISE_SPECIFIC_V1 has a consistent order,
-        // making it easy to identify all the properties of this packet:
-        // objCustomise(world, level, x, z, id, count, recol, recolIndex, retex, retexIndex, model);
-        buffer.p2Alt1(message.id)
-        buffer.p4Alt1(message.coordGrid.packed)
-        buffer.p4Alt3(message.quantity)
-        buffer.p2Alt3(message.recol)
+        buffer.p2Alt1(message.recolIndex)
+        buffer.p2(message.retexIndex)
+        buffer.p4(message.coordGrid.packed)
+        buffer.p2Alt1(message.model)
+        buffer.p4Alt2(message.quantity)
+        buffer.p2Alt2(message.id)
         buffer.p2Alt3(message.retex)
-        buffer.p2Alt2(message.retexIndex)
-        buffer.p2Alt3(message.recolIndex)
-        buffer.p2Alt2(message.model)
+        buffer.p2(message.recol)
     }
 }

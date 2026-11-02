@@ -51,7 +51,7 @@ public enum class GameServerProt(
     UPDATE_ZONE_PARTIAL_ENCLOSED(GameServerProtId.UPDATE_ZONE_PARTIAL_ENCLOSED, Prot.VAR_SHORT),
 
     // Zone payload packets
-    LOC_ADD_CHANGE_V2(GameServerProtId.LOC_ADD_CHANGE_V2, -2),
+    LOC_ADD_CHANGE_V2(GameServerProtId.LOC_ADD_CHANGE_V2, Prot.VAR_SHORT),
     LOC_DEL(GameServerProtId.LOC_DEL, 2),
     LOC_ANIM(GameServerProtId.LOC_ANIM, 4),
     LOC_MERGE(GameServerProtId.LOC_MERGE, 14),
@@ -212,4 +212,6 @@ public enum class GameServerProt(
 
     // Unknown packets
     UNKNOWN_STRING(GameServerProtId.UNKNOWN_STRING, Prot.VAR_BYTE),
+    LOC_ADD_CHANGE_V3(GameServerProtId.LOC_ADD_CHANGE_V3, Prot.VAR_SHORT),
+    DISPLAYNAME_SESSION_TOKEN(GameServerProtId.DISPLAYNAME_SESSION_TOKEN, Prot.VAR_SHORT),
 }

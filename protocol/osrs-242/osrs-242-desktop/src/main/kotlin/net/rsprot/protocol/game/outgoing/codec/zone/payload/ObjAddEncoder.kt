@@ -13,17 +13,13 @@ public class ObjAddEncoder : ZoneProtEncoder<ObjAdd> {
         buffer: JagByteBuf,
         message: ObjAdd,
     ) {
-        // The function at the bottom of the OBJ_ADD has a consistent order,
-        // making it easy to identify all the properties of this packet:
-        // obj_add(level, x, z, id, quantity, opFlags,
-        // timeUntilPublic, timeUntilDespawn, ownershipType, neverBecomesPublic)
-        buffer.p1Alt2(message.ownershipType)
-        buffer.p1Alt3(message.coordInZonePacked)
         buffer.p2Alt1(message.id)
-        buffer.p2Alt2(message.timeUntilDespawn)
-        buffer.p1Alt2(message.opFlags.toInt())
-        buffer.p4(message.quantity)
-        buffer.p2Alt3(message.timeUntilPublic)
-        buffer.p1Alt3(if (message.neverBecomesPublic) 1 else 0)
+        buffer.p1Alt3(message.ownershipType)
+        buffer.p1(message.coordInZonePacked)
+        buffer.p2(message.timeUntilDespawn)
+        buffer.p2(message.timeUntilPublic)
+        buffer.p1Alt1(message.opFlags.toInt())
+        buffer.p1(if (message.neverBecomesPublic) 1 else 0)
+        buffer.p4Alt1(message.quantity)
     }
 }

@@ -13,15 +13,7 @@ public class LocMergeEncoder : ZoneProtEncoder<LocMerge> {
         buffer: JagByteBuf,
         message: LocMerge,
     ) {
-        buffer.p1Alt3(message.coordInZonePacked)
-        buffer.p1(message.maxZ)
-        buffer.p2(message.end)
-        buffer.p1Alt1(message.minX)
-        buffer.p1Alt3(message.locPropertiesPacked)
-        buffer.p2Alt1(message.index)
-        buffer.p2Alt3(message.start)
-        buffer.p1Alt3(message.maxX)
-        buffer.p2Alt3(message.id)
-        buffer.p1Alt1(message.minZ)
+        // TODO(242): Native only discards the payload; recover the active Java layout.
+        throw UnsupportedOperationException("LOC_MERGE has no verified 242 layout")
     }
 }

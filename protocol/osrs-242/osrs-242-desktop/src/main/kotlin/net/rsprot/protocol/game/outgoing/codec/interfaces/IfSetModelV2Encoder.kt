@@ -16,7 +16,7 @@ public class IfSetModelV2Encoder : MessageEncoder<IfSetModelV2> {
         buffer: JagByteBuf,
         message: IfSetModelV2,
     ) {
-        buffer.p4Alt2(message.model)
         buffer.pCombinedId(message.combinedId)
+        buffer.p4Alt3(message.model)
     }
 }

@@ -15,10 +15,7 @@ public class MidiSongStopEncoder : MessageEncoder<MidiSongStop> {
         buffer: JagByteBuf,
         message: MidiSongStop,
     ) {
-        // The order in the client remains the same for the function call at the end
-        // of the packet, as:
-        // fadeOut(fadeOutDelay, fadeOutSpeed)
+        buffer.p2Alt1(message.fadeOutSpeed)
         buffer.p2Alt3(message.fadeOutDelay)
-        buffer.p2Alt2(message.fadeOutSpeed)
     }
 }
