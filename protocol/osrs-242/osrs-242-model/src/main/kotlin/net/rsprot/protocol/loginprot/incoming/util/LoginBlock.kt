@@ -21,6 +21,7 @@ public class LoginBlock<T>(
     public val reflectionCheckerConst: Int,
     public val crc: CyclicRedundancyCheckBlock,
     public val authentication: T,
+    public val jxSessionId: String?,
 ) {
     // Property delegates for backwards compatibility
     public val version: Int
@@ -109,45 +110,47 @@ public class LoginBlock<T>(
 
         other as LoginBlock<*>
 
-        if (header != other.header) return false
-        if (!seed.contentEquals(other.seed)) return false
         if (sessionId != other.sessionId) return false
-        if (username != other.username) return false
         if (lowDetail != other.lowDetail) return false
         if (resizable != other.resizable) return false
+        if (affiliate != other.affiliate) return false
+        if (reflectionCheckerConst != other.reflectionCheckerConst) return false
+        if (header != other.header) return false
+        if (!seed.contentEquals(other.seed)) return false
+        if (username != other.username) return false
         if (_width != other._width) return false
         if (_height != other._height) return false
         if (!uuid.contentEquals(other.uuid)) return false
         if (siteSettings != other.siteSettings) return false
-        if (affiliate != other.affiliate) return false
         if (deepLinks != other.deepLinks) return false
         if (hostPlatformStats != other.hostPlatformStats) return false
         if (_deprecatedClientType != other._deprecatedClientType) return false
-        if (reflectionCheckerConst != other.reflectionCheckerConst) return false
         if (crc != other.crc) return false
         if (authentication != other.authentication) return false
+        if (jxSessionId != other.jxSessionId) return false
 
         return true
     }
 
     override fun hashCode(): Int {
-        var result = header.hashCode()
-        result = 31 * result + seed.contentHashCode()
-        result = 31 * result + sessionId.hashCode()
-        result = 31 * result + username.hashCode()
+        var result = sessionId.hashCode()
         result = 31 * result + lowDetail.hashCode()
         result = 31 * result + resizable.hashCode()
+        result = 31 * result + affiliate
+        result = 31 * result + reflectionCheckerConst
+        result = 31 * result + header.hashCode()
+        result = 31 * result + seed.contentHashCode()
+        result = 31 * result + username.hashCode()
         result = 31 * result + _width.hashCode()
         result = 31 * result + _height.hashCode()
         result = 31 * result + uuid.contentHashCode()
         result = 31 * result + siteSettings.hashCode()
-        result = 31 * result + affiliate
         result = 31 * result + deepLinks.hashCode()
         result = 31 * result + hostPlatformStats.hashCode()
         result = 31 * result + _deprecatedClientType.hashCode()
-        result = 31 * result + reflectionCheckerConst
         result = 31 * result + crc.hashCode()
-        result = 31 * result + (authentication?.hashCode() ?: 0)
+        result = 31 * result + authentication.hashCode()
+        result = 31 * result + jxSessionId.hashCode()
         return result
     }
 
@@ -159,17 +162,27 @@ public class LoginBlock<T>(
             "username='$username', " +
             "lowDetail=$lowDetail, " +
             "resizable=$resizable, " +
+            "_width=$_width, " +
+            "_height=$_height, " +
             "uuid=${uuid.contentToString()}, " +
             "siteSettings='$siteSettings', " +
             "affiliate=$affiliate, " +
-            "hostPlatformStats=$hostPlatformStats, " +
-            "crc=$crc, " +
             "deepLinks=$deepLinks, " +
+            "hostPlatformStats=$hostPlatformStats, " +
+            "_deprecatedClientType=$_deprecatedClientType, " +
+            "reflectionCheckerConst=$reflectionCheckerConst, " +
+            "crc=$crc, " +
+            "authentication=$authentication, " +
+            "jxSessionId=$jxSessionId, " +
+            "version=$version, " +
+            "subVersion=$subVersion, " +
+            "serverVersion=$serverVersion, " +
+            "clientType=$clientType, " +
+            "platformType=$platformType, " +
+            "externalAuthenticatorType=$externalAuthenticatorType, " +
             "width=$width, " +
             "height=$height, " +
-            "deprecatedClientType=$deprecatedClientType, " +
-            "reflectionCheckerConst=$reflectionCheckerConst, " +
-            "authentication=$authentication" +
+            "deprecatedClientType=$deprecatedClientType" +
             ")"
     }
 }
