@@ -154,6 +154,10 @@ public class PlayerAppearanceEncoder : PrecomputedExtendedInfoEncoder<Appearance
         intermediate: JagByteBuf,
         extendedInfo: Appearance,
     ) {
+        if (extendedInfo.transformedNpcId != UShort.MAX_VALUE) {
+            intermediate.p2(0)
+            return
+        }
         val marker = intermediate.writerIndex()
         intermediate.skipWrite(2)
         val objTypeCustomisations = extendedInfo.objTypeCustomisation

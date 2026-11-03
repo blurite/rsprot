@@ -1,5 +1,12 @@
 ## What's New?
 
+### Revision 242
+
+#### Additions
+- SET_WEBSITE_TOKEN: Sets a token for name changes in the future.
+- All OPLOC* packets now have a new variant that reads 3 bytes for id.
+- LOC_ADD_CHANGE_V3 which uses 3 bytes for id.
+
 ### Revision 241
 
 #### Additions
