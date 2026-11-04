@@ -15,7 +15,7 @@ public enum class LoginClientType(
     ENHANCED_LINUX(10),
     ;
 
-    public fun toOldSchoolClientType(): OldSchoolClientType? {
+    public fun toOldSchoolClientType(): OldSchoolClientType {
         return when (this) {
             DESKTOP -> OldSchoolClientType.DESKTOP
             // Non-enhanced Android & IOS are no longer in use, but this helps
