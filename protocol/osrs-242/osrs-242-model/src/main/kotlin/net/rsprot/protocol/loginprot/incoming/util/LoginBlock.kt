@@ -21,7 +21,6 @@ public class LoginBlock<T>(
     public val reflectionCheckerConst: Int,
     public val crc: CyclicRedundancyCheckBlock,
     public val authentication: T,
-    public val jxSessionId: String?,
 ) {
     // Property delegates for backwards compatibility
     public val version: Int
@@ -127,7 +126,6 @@ public class LoginBlock<T>(
         if (_deprecatedClientType != other._deprecatedClientType) return false
         if (crc != other.crc) return false
         if (authentication != other.authentication) return false
-        if (jxSessionId != other.jxSessionId) return false
 
         return true
     }
@@ -150,7 +148,6 @@ public class LoginBlock<T>(
         result = 31 * result + _deprecatedClientType.hashCode()
         result = 31 * result + crc.hashCode()
         result = 31 * result + authentication.hashCode()
-        result = 31 * result + jxSessionId.hashCode()
         return result
     }
 
@@ -173,7 +170,6 @@ public class LoginBlock<T>(
             "reflectionCheckerConst=$reflectionCheckerConst, " +
             "crc=$crc, " +
             "authentication=$authentication, " +
-            "jxSessionId=$jxSessionId, " +
             "version=$version, " +
             "subVersion=$subVersion, " +
             "serverVersion=$serverVersion, " +

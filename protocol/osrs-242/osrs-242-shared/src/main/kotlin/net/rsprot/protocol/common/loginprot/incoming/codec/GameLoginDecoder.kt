@@ -56,11 +56,13 @@ public class GameLoginDecoder(
                 AuthenticationType.PasswordAuthentication(
                     Password(buffer.gjstr().toByteArray()),
                     otp,
+                    if (buffer.g1() == 1) buffer.gjstr() else null,
                 )
             TOKEN_AUTHENTICATION ->
                 AuthenticationType.TokenAuthentication(
                     Token(buffer.gjstr().toByteArray()),
                     otp,
+                    if (buffer.g1() == 1) buffer.gjstr() else null,
                 )
             else -> {
                 throw IllegalStateException("Unknown authentication type: $authenticationType")

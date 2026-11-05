@@ -2,6 +2,7 @@ package net.rsprot.protocol.loginprot.incoming.util
 
 public sealed interface AuthenticationType {
     public val otpAuthentication: OtpAuthenticationType
+    public val jxSessionId: String?
 
     /**
      * Clears all data stored in this [AuthenticationType].
@@ -13,6 +14,7 @@ public sealed interface AuthenticationType {
     public data class PasswordAuthentication(
         public val password: Password,
         override val otpAuthentication: OtpAuthenticationType,
+        override val jxSessionId: String?,
     ) : AuthenticationType {
         override fun clear() {
             otpAuthentication.clear()
@@ -23,6 +25,7 @@ public sealed interface AuthenticationType {
     public data class TokenAuthentication(
         public val token: Token,
         override val otpAuthentication: OtpAuthenticationType,
+        override val jxSessionId: String?,
     ) : AuthenticationType {
         override fun clear() {
             otpAuthentication.clear()

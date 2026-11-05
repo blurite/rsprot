@@ -81,13 +81,6 @@ public abstract class LoginBlockDecoder<T>(
                     }
                 val sessionId = rsaBuffer.g8()
                 val authentication = decodeAuthentication(rsaBuffer)
-                var jxSessionId: String? = null
-                if (header.version >= 242) {
-                    val hasJxSessionId = buffer.g1() == 1
-                    if (hasJxSessionId) {
-                        jxSessionId = buffer.gjstr()
-                    }
-                }
                 val xteaBuffer = buffer.buffer.xteaDecrypt(seed).toJagByteBuf()
                 try {
                     val username = xteaBuffer.gjstr()
@@ -148,7 +141,6 @@ public abstract class LoginBlockDecoder<T>(
                         reflectionCheckerConst,
                         crc,
                         authentication,
-                        jxSessionId,
                     )
                 } finally {
                     xteaBuffer.buffer.release()
