@@ -15,13 +15,13 @@ public class ObjAddSpecificEncoder : MessageEncoder<ObjAddSpecific> {
         buffer: JagByteBuf,
         message: ObjAddSpecific,
     ) {
-        buffer.p1Alt1(if (message.neverBecomesPublic) 1 else 0)
-        buffer.p2(message.timeUntilPublic)
-        buffer.p4Alt1(message.coordGrid.packed)
-        buffer.p2Alt1(message.timeUntilDespawn)
-        buffer.p1Alt3(message.ownershipType)
-        buffer.p2Alt3(message.id)
-        buffer.p1Alt3(message.opFlags.toInt())
+        buffer.p2Alt3(message.timeUntilPublic)
+        buffer.p2(message.timeUntilDespawn)
+        buffer.p1Alt2(message.ownershipType)
+        buffer.p1Alt2(message.opFlags.toInt())
         buffer.p4(message.quantity)
+        buffer.p4(message.coordGrid.packed)
+        buffer.p1Alt1(if (message.neverBecomesPublic) 1 else 0)
+        buffer.p2(message.id)
     }
 }

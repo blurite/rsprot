@@ -68,12 +68,12 @@ public class Js5Client(
     ): Js5GroupResponse? {
         var block: ByteBuf? = currentRequest.block
         if (block == null || currentRequest.isComplete()) {
-            val request = pop()
-            if (request == -1) {
+            if (urgent.isEmpty() && prefetch.isEmpty()) {
                 return null
             }
-            val archiveId = request ushr 16
-            val groupId = request and 0xFFFF
+            val request = if (urgent.isNotEmpty()) urgent.removeFirst() else prefetch.removeFirst()
+            val archiveId = request ushr 24
+            val groupId = request and 0xFFFFFF
             // If unauthorized, log it and go for the next request. The client will
             // never receive a response about it.
             if (!authorizer.isAuthorized(address, archiveId)) {
@@ -178,18 +178,6 @@ public class Js5Client(
     }
 
     /**
-     * Pops a request from this client, prioritizing urgent requests before prefetch.
-     * @return the bitpacked id of the request, or -1 if the queues are empty.
-     */
-    private fun pop(): Int {
-        val urgent = urgent.removeFirstOrDefault(-1)
-        if (urgent != -1) {
-            return urgent
-        }
-        return prefetch.removeFirstOrDefault(-1)
-    }
-
-    /**
      * Transfers [threshold] worth of bytes of prefetch requests to be served
      * to the client.
      * @param groupProvider the provider for JS5 group sizes, allowing for proper throttling
@@ -212,13 +200,10 @@ public class Js5Client(
             return false
         }
         var transferredBytes = 0
-        while (true) {
-            val next = awaitingPrefetch.removeFirstOrDefault(-1)
-            if (next == -1) {
-                break
-            }
-            val archiveId = next ushr 16
-            val groupId = next and 0xFFFF
+        while (awaitingPrefetch.isNotEmpty()) {
+            val next = awaitingPrefetch.removeFirst()
+            val archiveId = next ushr 24
+            val groupId = next and 0xFFFFFF
             val size = groupProvider.provide(archiveId, groupId)?.readableBytes() ?: 0
             prefetch.addLast(next)
             transferredBytes += size
@@ -236,11 +221,8 @@ public class Js5Client(
      * non-throttled one. This is one whenever the client goes on login-screen.
      */
     private fun transferAllPrefetch() {
-        while (true) {
-            val next = awaitingPrefetch.removeFirstOrDefault(-1)
-            if (next == -1) {
-                break
-            }
+        while (awaitingPrefetch.isNotEmpty()) {
+            val next = awaitingPrefetch.removeFirst()
             prefetch.addLast(next)
         }
     }

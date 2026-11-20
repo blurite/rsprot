@@ -13,9 +13,9 @@ public class ObjCountEncoder : ZoneProtEncoder<ObjCount> {
         buffer: JagByteBuf,
         message: ObjCount,
     ) {
-        buffer.p1Alt2(message.coordInZonePacked)
-        buffer.p4Alt3(message.oldQuantity)
-        buffer.p4(message.newQuantity)
-        buffer.p2Alt3(message.id)
+        buffer.p4Alt2(message.newQuantity)
+        buffer.p2Alt2(message.id)
+        buffer.p1(message.coordInZonePacked)
+        buffer.p4Alt1(message.oldQuantity)
     }
 }

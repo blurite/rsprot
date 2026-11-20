@@ -4,27 +4,29 @@ import net.rsprot.protocol.message.IncomingJs5Message
 
 public class PrefetchRequest(
     private val _archiveId: UByte,
-    private val _groupId: UShort,
+    override val groupId: Int,
 ) : IncomingJs5Message,
     Js5GroupRequest {
+    init {
+        require(groupId in 0..0xFFFFFF)
+    }
+
     override val archiveId: Int
         get() = _archiveId.toInt()
-    override val groupId: Int
-        get() = _groupId.toInt()
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (other !is PrefetchRequest) return false
 
         if (_archiveId != other._archiveId) return false
-        if (_groupId != other._groupId) return false
+        if (groupId != other.groupId) return false
 
         return true
     }
 
     override fun hashCode(): Int {
         var result = _archiveId.hashCode()
-        result = 31 * result + _groupId.hashCode()
+        result = 31 * result + groupId.hashCode()
         return result
     }
 

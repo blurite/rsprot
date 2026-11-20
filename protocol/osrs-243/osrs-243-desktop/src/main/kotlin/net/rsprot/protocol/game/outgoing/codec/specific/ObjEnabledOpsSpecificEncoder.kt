@@ -15,8 +15,8 @@ public class ObjEnabledOpsSpecificEncoder : MessageEncoder<ObjEnabledOpsSpecific
         buffer: JagByteBuf,
         message: ObjEnabledOpsSpecific,
     ) {
-        buffer.p2Alt2(message.id)
-        buffer.p1Alt1(message.opFlags.toInt())
+        buffer.p1Alt3(message.opFlags.toInt())
+        buffer.p2Alt3(message.id)
         buffer.p4Alt1(message.coordGrid.packed)
     }
 }

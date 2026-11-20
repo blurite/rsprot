@@ -13,8 +13,8 @@ public class LocAnimEncoder : ZoneProtEncoder<LocAnim> {
         buffer: JagByteBuf,
         message: LocAnim,
     ) {
-        buffer.p1Alt1(message.coordInZonePacked)
-        buffer.p1Alt3(message.locPropertiesPacked)
-        buffer.p2(message.id)
+        buffer.p1Alt2(message.coordInZonePacked)
+        buffer.p1Alt1(message.locPropertiesPacked)
+        buffer.p2Alt3(message.id)
     }
 }

@@ -42,8 +42,8 @@ public class WorldEntityAvatarExtendedInfoDesktopWriter :
         val clientFlag = convertFlags(flag)
         var outFlag = 0
 
-        outFlag = outFlag or pCached(buffer, clientFlag, SEQUENCE, blocks.sequence)
         outFlag = outFlag or pCached(buffer, clientFlag, VISIBLE_OPS, blocks.visibleOps)
+        outFlag = outFlag or pCached(buffer, clientFlag, SEQUENCE, blocks.sequence)
         return outFlag
     }
 

@@ -20,10 +20,10 @@ public class NpcTintingEncoder : PrecomputedExtendedInfoEncoder<NpcTinting> {
         val tinting = extendedInfo.global
         buffer.p2Alt2(tinting.start.toInt())
         buffer.p2(tinting.end.toInt())
-        buffer.p1Alt2(tinting.hue.toInt())
-        buffer.p1Alt3(tinting.saturation.toInt())
-        buffer.p1Alt2(tinting.lightness.toInt())
-        buffer.p1Alt3(tinting.weight.toInt())
+        buffer.p1Alt3(tinting.hue.toInt())
+        buffer.p1(tinting.saturation.toInt())
+        buffer.p1Alt1(tinting.lightness.toInt())
+        buffer.p1Alt1(tinting.weight.toInt())
         return buffer
     }
 }

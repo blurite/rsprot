@@ -16,7 +16,7 @@ public class IfSetPlayerModelBodyTypeEncoder : MessageEncoder<IfSetPlayerModelBo
         buffer: JagByteBuf,
         message: IfSetPlayerModelBodyType,
     ) {
-        buffer.p1Alt2(message.bodyType)
         buffer.pCombinedIdAlt2(message.combinedId)
+        buffer.p1Alt2(message.bodyType)
     }
 }

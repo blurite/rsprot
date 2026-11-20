@@ -15,24 +15,24 @@ public class ObjCustomiseSpecificV2Encoder : MessageEncoder<ObjCustomiseSpecific
         buffer: JagByteBuf,
         message: ObjCustomiseSpecificV2,
     ) {
-        buffer.p1(message.retextures.size)
-        for ((index, value) in message.retextures) {
-            buffer.p1(index)
+        buffer.p2Alt2(message.id)
+        buffer.p4(message.coordGrid.packed)
+        buffer.p1(message.recolours.size)
+        for ((index, value) in message.recolours) {
+            buffer.p1Alt1(index)
             buffer.p2(value)
         }
-        buffer.p2Alt1(message.id)
-        buffer.p1Alt1(message.recolours.size)
-        for ((index, value) in message.recolours) {
-            buffer.p1Alt3(index)
-            buffer.p2Alt2(value)
-        }
         val colour = message.colour
-        buffer.p1Alt1(if (colour != null) 1 else 0)
+        buffer.p1(if (colour != null) 1 else 0)
         if (colour != null) {
-            buffer.p2(colour)
+            buffer.p2Alt1(colour)
         }
-        buffer.p4Alt3(message.quantity)
-        buffer.p4Alt3(message.coordGrid.packed)
         buffer.p2Alt3(message.model)
+        buffer.p4(message.quantity)
+        buffer.p1(message.retextures.size)
+        for ((index, value) in message.retextures) {
+            buffer.p1Alt3(index)
+            buffer.p2(value)
+        }
     }
 }

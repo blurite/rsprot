@@ -15,13 +15,13 @@ public class ObjCustomiseSpecificV1Encoder : MessageEncoder<ObjCustomiseSpecific
         buffer: JagByteBuf,
         message: ObjCustomiseSpecificV1,
     ) {
-        buffer.p2Alt1(message.recolIndex)
-        buffer.p2(message.retexIndex)
-        buffer.p4(message.coordGrid.packed)
-        buffer.p2Alt1(message.model)
         buffer.p4Alt2(message.quantity)
-        buffer.p2Alt2(message.id)
-        buffer.p2Alt3(message.retex)
-        buffer.p2(message.recol)
+        buffer.p2Alt2(message.recolIndex)
+        buffer.p2(message.id)
+        buffer.p2(message.model)
+        buffer.p4Alt3(message.coordGrid.packed)
+        buffer.p2Alt1(message.retex)
+        buffer.p2(message.retexIndex)
+        buffer.p2Alt3(message.recol)
     }
 }

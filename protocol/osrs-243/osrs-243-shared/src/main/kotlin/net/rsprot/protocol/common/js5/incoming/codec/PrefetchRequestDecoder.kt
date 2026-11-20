@@ -11,10 +11,10 @@ public class PrefetchRequestDecoder : MessageDecoder<PrefetchRequest> {
 
     override fun decode(buffer: JagByteBuf): PrefetchRequest {
         val archiveId = buffer.g1()
-        val groupId = buffer.g2()
+        val groupId = buffer.g3()
         return PrefetchRequest(
             archiveId.toUByte(),
-            groupId.toUShort(),
+            groupId,
         )
     }
 }

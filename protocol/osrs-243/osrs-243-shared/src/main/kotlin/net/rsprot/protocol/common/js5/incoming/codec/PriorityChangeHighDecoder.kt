@@ -10,7 +10,7 @@ public class PriorityChangeHighDecoder : MessageDecoder<PriorityChangeHigh> {
     override val prot: ClientProt = Js5ClientProt.PRIORITY_CHANGE_HIGH
 
     override fun decode(buffer: JagByteBuf): PriorityChangeHigh {
-        buffer.skipRead(3)
+        buffer.skipRead(4)
         return PriorityChangeHigh
     }
 }

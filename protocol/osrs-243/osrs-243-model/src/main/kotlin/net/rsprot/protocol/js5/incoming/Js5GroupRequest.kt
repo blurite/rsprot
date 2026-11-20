@@ -5,5 +5,5 @@ public sealed interface Js5GroupRequest {
     public val groupId: Int
 
     public val bitpacked: Int
-        get() = groupId or (archiveId shl 16)
+        get() = groupId or (archiveId shl 24)
 }

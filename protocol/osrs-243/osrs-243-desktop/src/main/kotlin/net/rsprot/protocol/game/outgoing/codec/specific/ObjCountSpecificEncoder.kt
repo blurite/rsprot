@@ -15,9 +15,9 @@ public class ObjCountSpecificEncoder : MessageEncoder<ObjCountSpecific> {
         buffer: JagByteBuf,
         message: ObjCountSpecific,
     ) {
-        buffer.p4Alt3(message.newQuantity)
         buffer.p2Alt1(message.id)
-        buffer.p4Alt3(message.oldQuantity)
-        buffer.p4Alt1(message.coordGrid.packed)
+        buffer.p4Alt1(message.newQuantity)
+        buffer.p4Alt1(message.oldQuantity)
+        buffer.p4(message.coordGrid.packed)
     }
 }

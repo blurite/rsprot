@@ -15,8 +15,8 @@ public class ObjUncustomiseSpecificEncoder : MessageEncoder<ObjUncustomiseSpecif
         buffer: JagByteBuf,
         message: ObjUncustomiseSpecific,
     ) {
-        buffer.p4Alt2(message.coordGrid.packed)
+        buffer.p2Alt2(message.id)
+        buffer.p4Alt3(message.coordGrid.packed)
         buffer.p4(message.quantity)
-        buffer.p2Alt3(message.id)
     }
 }

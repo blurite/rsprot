@@ -17,7 +17,7 @@ public class PlayerTemporaryMoveSpeedEncoder : PrecomputedExtendedInfoEncoder<Te
             alloc
                 .buffer(1, 1)
                 .toJagByteBuf()
-        buffer.p1Alt3(extendedInfo.value)
+        buffer.p1Alt1(extendedInfo.value)
         return buffer
     }
 }

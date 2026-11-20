@@ -16,8 +16,8 @@ public class MidiSwapEncoder : MessageEncoder<MidiSwap> {
         message: MidiSwap,
     ) {
         buffer.p2Alt1(message.fadeOutDelay)
-        buffer.p2(message.fadeInSpeed)
-        buffer.p2Alt1(message.fadeInDelay)
         buffer.p2(message.fadeOutSpeed)
+        buffer.p2Alt3(message.fadeInDelay)
+        buffer.p2Alt1(message.fadeInSpeed)
     }
 }

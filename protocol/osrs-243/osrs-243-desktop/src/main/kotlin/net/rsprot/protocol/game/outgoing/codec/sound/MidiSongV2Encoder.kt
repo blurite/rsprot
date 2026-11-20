@@ -15,10 +15,10 @@ public class MidiSongV2Encoder : MessageEncoder<MidiSongV2> {
         buffer: JagByteBuf,
         message: MidiSongV2,
     ) {
-        buffer.p2Alt2(message.fadeInSpeed)
-        buffer.p2Alt3(message.fadeOutDelay)
-        buffer.p2Alt2(message.id)
-        buffer.p2Alt2(message.fadeOutSpeed)
-        buffer.p2Alt1(message.fadeInDelay)
+        buffer.p2Alt1(message.id)
+        buffer.p2Alt3(message.fadeOutSpeed)
+        buffer.p2Alt3(message.fadeInDelay)
+        buffer.p2Alt3(message.fadeInSpeed)
+        buffer.p2Alt2(message.fadeOutDelay)
     }
 }

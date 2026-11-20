@@ -10,11 +10,11 @@ public class OpLoc2V3Decoder : MessageDecoder<OpLocV3> {
     override val prot: ClientProt = GameClientProt.OPLOC2_V3
 
     override fun decode(buffer: JagByteBuf): OpLocV3 {
-        val id = buffer.g3Alt2()
-        val x = buffer.g2()
-        val subop = buffer.g1Alt2()
-        val z = buffer.g2Alt3()
-        val controlKey = buffer.g1Alt2() == 1
+        val z = buffer.g2Alt2()
+        val id = buffer.g3()
+        val x = buffer.g2Alt1()
+        val subop = buffer.g1Alt1()
+        val controlKey = buffer.g1Alt3() == 1
         return OpLocV3(
             id,
             x,

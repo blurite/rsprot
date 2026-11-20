@@ -13,16 +13,16 @@ public class MapProjAnimV2Encoder : ZoneProtEncoder<MapProjAnimV2> {
         buffer: JagByteBuf,
         message: MapProjAnimV2,
     ) {
-        buffer.p3Alt2(message.sourceIndex)
-        buffer.p2Alt3(message.endTime)
-        buffer.p2Alt1(message.startHeight)
-        buffer.p2(message.endHeight)
-        buffer.p2Alt1(message.startTime)
-        buffer.p2(message.id)
-        buffer.p1Alt2(message.coordInZonePacked)
-        buffer.p1Alt1(message.angle)
-        buffer.p2Alt1(message.progress)
+        buffer.p2(message.startTime)
+        buffer.p1Alt3(message.angle)
         buffer.p4(message.end.packed)
+        buffer.p1(message.coordInZonePacked)
+        buffer.p2Alt1(message.endTime)
+        buffer.p2Alt2(message.id)
+        buffer.p2Alt2(message.progress)
+        buffer.p2(message.startHeight)
+        buffer.p2Alt3(message.endHeight)
         buffer.p3Alt1(message.targetIndex)
+        buffer.p3Alt1(message.sourceIndex)
     }
 }

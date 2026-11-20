@@ -13,11 +13,11 @@ public class SoundAreaEncoder : ZoneProtEncoder<SoundArea> {
         buffer: JagByteBuf,
         message: SoundArea,
     ) {
-        buffer.p1Alt1(message.range)
-        buffer.p1(message.coordInZonePacked)
+        buffer.p2Alt2(message.id)
+        buffer.p1Alt1(message.dropOffRange)
         buffer.p1Alt1(message.loops)
-        buffer.p1Alt3(message.dropOffRange)
-        buffer.p1Alt3(message.delay)
-        buffer.p2Alt1(message.id)
+        buffer.p1Alt2(message.range)
+        buffer.p1(message.coordInZonePacked)
+        buffer.p1(message.delay)
     }
 }

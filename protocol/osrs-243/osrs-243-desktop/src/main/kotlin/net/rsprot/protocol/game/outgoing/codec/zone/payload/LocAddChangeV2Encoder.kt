@@ -13,18 +13,18 @@ public class LocAddChangeV2Encoder : ZoneProtEncoder<LocAddChangeV2> {
         buffer: JagByteBuf,
         message: LocAddChangeV2,
     ) {
-        buffer.p2(message.id)
-        buffer.p1Alt3(message.coordInZonePacked)
-        buffer.p1Alt2(message.locPropertiesPacked)
+        buffer.p1Alt3(message.opFlags.toInt())
         val ops = message.ops
         val opCount = ops?.size ?: 0
-        buffer.p1Alt2(opCount)
+        buffer.p1Alt1(opCount)
         if (!ops.isNullOrEmpty()) {
             for ((key, value) in ops) {
-                buffer.p1(key.toInt() - 1)
+                buffer.p1Alt1(key.toInt() - 1)
                 buffer.pjstr(value)
             }
         }
-        buffer.p1Alt3(message.opFlags.toInt())
+        buffer.p2Alt1(message.id)
+        buffer.p1(message.coordInZonePacked)
+        buffer.p1(message.locPropertiesPacked)
     }
 }

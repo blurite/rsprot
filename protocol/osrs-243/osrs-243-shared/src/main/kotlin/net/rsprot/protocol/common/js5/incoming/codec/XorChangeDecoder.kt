@@ -11,7 +11,7 @@ public class XorChangeDecoder : MessageDecoder<XorChange> {
 
     override fun decode(buffer: JagByteBuf): XorChange {
         val key = buffer.g1()
-        buffer.skipRead(2)
+        buffer.skipRead(3)
         return XorChange(key)
     }
 }

@@ -15,8 +15,8 @@ public class RebuildNormalV2Encoder : MessageEncoder<StaticRebuildMessageV2> {
         buffer: JagByteBuf,
         message: StaticRebuildMessageV2,
     ) {
-        buffer.p2Alt2(message.zoneZ)
         buffer.p2Alt3(message.worldArea)
-        buffer.p2Alt3(message.zoneX)
+        buffer.p2Alt2(message.zoneX)
+        buffer.p2Alt3(message.zoneZ)
     }
 }

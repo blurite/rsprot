@@ -11,10 +11,10 @@ public class UrgentRequestDecoder : MessageDecoder<UrgentRequest> {
 
     override fun decode(buffer: JagByteBuf): UrgentRequest {
         val archiveId = buffer.g1()
-        val groupId = buffer.g2()
+        val groupId = buffer.g3()
         return UrgentRequest(
             archiveId.toUByte(),
-            groupId.toUShort(),
+            groupId,
         )
     }
 }

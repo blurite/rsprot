@@ -13,8 +13,8 @@ public class ObjUncustomiseEncoder : ZoneProtEncoder<ObjUncustomise> {
         buffer: JagByteBuf,
         message: ObjUncustomise,
     ) {
+        buffer.p1(message.coordInZonePacked)
+        buffer.p4Alt1(message.quantity)
         buffer.p2Alt3(message.id)
-        buffer.p4(message.quantity)
-        buffer.p1Alt1(message.coordInZonePacked)
     }
 }

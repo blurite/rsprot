@@ -15,8 +15,8 @@ public class ObjDelSpecificEncoder : MessageEncoder<ObjDelSpecific> {
         buffer: JagByteBuf,
         message: ObjDelSpecific,
     ) {
-        buffer.p4(message.quantity)
-        buffer.p4(message.coordGrid.packed)
-        buffer.p2(message.id)
+        buffer.p2Alt1(message.id)
+        buffer.p4Alt1(message.coordGrid.packed)
+        buffer.p4Alt3(message.quantity)
     }
 }

@@ -13,13 +13,13 @@ public class ObjAddEncoder : ZoneProtEncoder<ObjAdd> {
         buffer: JagByteBuf,
         message: ObjAdd,
     ) {
-        buffer.p2Alt1(message.id)
-        buffer.p1Alt3(message.ownershipType)
-        buffer.p1Alt1(message.coordInZonePacked)
-        buffer.p2(message.timeUntilDespawn)
-        buffer.p2(message.timeUntilPublic)
-        buffer.p1Alt1(message.opFlags.toInt())
-        buffer.p1(if (message.neverBecomesPublic) 1 else 0)
+        buffer.p2Alt2(message.id)
+        buffer.p2Alt3(message.timeUntilPublic)
         buffer.p4Alt1(message.quantity)
+        buffer.p1Alt2(message.coordInZonePacked)
+        buffer.p2(message.timeUntilDespawn)
+        buffer.p1Alt3(message.opFlags.toInt())
+        buffer.p1Alt1(message.ownershipType)
+        buffer.p1Alt2(if (message.neverBecomesPublic) 1 else 0)
     }
 }

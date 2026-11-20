@@ -42,7 +42,7 @@ public class DesktopUpdateZonePartialEnclosedEncoder : MessageEncoder<UpdateZone
     ) {
         buffer.p1Alt2(message.zoneZ)
         buffer.p1Alt2(message.zoneX)
-        buffer.p1Alt3(message.level)
+        buffer.p1(message.level)
     }
 
     public companion object : UpdateZonePartialEnclosedCache {
@@ -123,22 +123,22 @@ public class DesktopUpdateZonePartialEnclosedEncoder : MessageEncoder<UpdateZone
             private val protId: Int,
             val encoder: ZoneProtEncoder<*>,
         ) {
-            SOUND_AREA(OldSchoolZoneProt.SOUND_AREA, SoundAreaEncoder()),
-            MAP_ANIM(OldSchoolZoneProt.MAP_ANIM, MapAnimEncoder()),
             LOC_MERGE(OldSchoolZoneProt.LOC_MERGE, LocMergeEncoder()),
-            LOC_ANIM(OldSchoolZoneProt.LOC_ANIM, LocAnimEncoder()),
-            LOC_ADD_CHANGE_V3(OldSchoolZoneProt.LOC_ADD_CHANGE_V3, LocAddChangeV3Encoder()),
-            MAP_PROJANIM_V2(OldSchoolZoneProt.MAP_PROJANIM_V2, MapProjAnimV2Encoder()),
-            OBJ_UNCUSTOMISE(OldSchoolZoneProt.OBJ_UNCUSTOMISE, ObjUncustomiseEncoder()),
             OBJ_ADD(OldSchoolZoneProt.OBJ_ADD, ObjAddEncoder()),
-            OBJ_COUNT(OldSchoolZoneProt.OBJ_COUNT, ObjCountEncoder()),
-            LOC_DEL(OldSchoolZoneProt.LOC_DEL, LocDelEncoder()),
-            OBJ_CUSTOMISE(OldSchoolZoneProt.OBJ_CUSTOMISE, ObjCustomiseEncoder()),
-            OBJ_ENABLED_OPS(OldSchoolZoneProt.OBJ_ENABLED_OPS, ObjEnabledOpsEncoder()),
-            OBJ_DEL(OldSchoolZoneProt.OBJ_DEL, ObjDelEncoder()),
-            SCRIPTEDPROJ_ADD(OldSchoolZoneProt.SCRIPTEDPROJ_ADD, ScriptedProjAddEncoder()),
             SCRIPTEDPROJ_CHANGE(OldSchoolZoneProt.SCRIPTEDPROJ_CHANGE, ScriptedProjChangeEncoder()),
+            SCRIPTEDPROJ_ADD(OldSchoolZoneProt.SCRIPTEDPROJ_ADD, ScriptedProjAddEncoder()),
+            OBJ_ENABLED_OPS(OldSchoolZoneProt.OBJ_ENABLED_OPS, ObjEnabledOpsEncoder()),
+            OBJ_UNCUSTOMISE(OldSchoolZoneProt.OBJ_UNCUSTOMISE, ObjUncustomiseEncoder()),
+            MAP_ANIM(OldSchoolZoneProt.MAP_ANIM, MapAnimEncoder()),
+            LOC_ADD_CHANGE_V3(OldSchoolZoneProt.LOC_ADD_CHANGE_V3, LocAddChangeV3Encoder()),
+            OBJ_CUSTOMISE(OldSchoolZoneProt.OBJ_CUSTOMISE, ObjCustomiseEncoder()),
             LOC_ADD_CHANGE_V2(OldSchoolZoneProt.LOC_ADD_CHANGE_V2, LocAddChangeV2Encoder()),
+            OBJ_DEL(OldSchoolZoneProt.OBJ_DEL, ObjDelEncoder()),
+            LOC_DEL(OldSchoolZoneProt.LOC_DEL, LocDelEncoder()),
+            OBJ_COUNT(OldSchoolZoneProt.OBJ_COUNT, ObjCountEncoder()),
+            MAP_PROJANIM_V2(OldSchoolZoneProt.MAP_PROJANIM_V2, MapProjAnimV2Encoder()),
+            LOC_ANIM(OldSchoolZoneProt.LOC_ANIM, LocAnimEncoder()),
+            SOUND_AREA(OldSchoolZoneProt.SOUND_AREA, SoundAreaEncoder()),
             ;
 
             companion object {

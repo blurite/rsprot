@@ -13,7 +13,7 @@ public class LocMergeEncoder : ZoneProtEncoder<LocMerge> {
         buffer: JagByteBuf,
         message: LocMerge,
     ) {
-        // TODO(242): Native only discards the payload; recover the active Java layout.
-        throw UnsupportedOperationException("LOC_MERGE has no verified 242 layout")
+        // TODO(243): Native only discards the payload; recover the active Java layout.
+        throw UnsupportedOperationException("LOC_MERGE has no verified 243 layout")
     }
 }

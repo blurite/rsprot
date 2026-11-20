@@ -15,6 +15,6 @@ public class CamSkyboxEncoder : MessageEncoder<CamSkybox> {
         buffer: JagByteBuf,
         message: CamSkybox,
     ) {
-        buffer.p4Alt3(message.model)
+        buffer.p4Alt2(message.model)
     }
 }

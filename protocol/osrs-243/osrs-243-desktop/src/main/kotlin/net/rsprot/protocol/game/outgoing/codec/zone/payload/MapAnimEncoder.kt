@@ -13,9 +13,9 @@ public class MapAnimEncoder : ZoneProtEncoder<MapAnim> {
         buffer: JagByteBuf,
         message: MapAnim,
     ) {
-        buffer.p1Alt2(message.height)
+        buffer.p1(message.height)
         buffer.p2Alt3(message.id)
-        buffer.p2Alt3(message.delay)
         buffer.p1Alt2(message.coordInZonePacked)
+        buffer.p2Alt1(message.delay)
     }
 }
