@@ -1882,7 +1882,7 @@ public class PlayerAvatarExtendedInfo(
         if (flags and HITS != 0) {
             blocks.hit.clear()
         }
-        if (flags and TINTING != 0) {
+        if (flags and TINTING != 0 || blocks.tinting.observerDependent.isNotEmpty()) {
             blocks.tinting.clear()
         }
     }

@@ -1934,7 +1934,7 @@ public class PlayerAvatarExtendedInfo(
         if (flags and HEADBARS != 0) {
             blocks.headbarList.clear()
         }
-        if (flags and TINTING != 0) {
+        if (flags and TINTING != 0 || blocks.tinting.observerDependent.isNotEmpty()) {
             blocks.tinting.clear()
         }
     }
