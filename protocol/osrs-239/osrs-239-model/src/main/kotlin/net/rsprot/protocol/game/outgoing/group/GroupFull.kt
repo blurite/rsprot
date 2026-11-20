@@ -8,9 +8,8 @@ import net.rsprot.protocol.message.OutgoingGameMessage
 /**
  * Group full packet is used to perform full updates to a list of groups.
  * The operations can include deleting groups, or adding/updating existing ones.
- * Note that the group variables, and group member variables must match the
- * cache structures perfectly, as the client decodes the data based on the length
- * of the cache structures.
+ * The group definition in the cache determines the length of each variable list
+ * and the type of each value. Neither is written to the packet.
  * @property updates the list of group updates to apply.
  */
 public class GroupFull(
@@ -73,17 +72,13 @@ public class GroupFull(
     }
 
     /**
-     * Adds or changes and existing group in the client.
+     * Adds or changes an existing group in the client.
      * @property index the index of the group.
-     * @property id the id the group in cache.
+     * @property id the id of the group definition in the cache.
      * @property uid the server-tracked uid of the group.
-     * @property groupVariables a list of group variables to update.
-     * Note that the length must match the cache-sided structure,
-     * and the base var types must align too.
-     * @property groupMemberVariables a list of group member variables
-     * to update.
-     * Note that the length must match the cache-sided structure,
-     * and the base var types must align too.
+     * @property groupVariables values in the order defined by cache opcode 7.
+     * @property groupMemberVariables values in the order defined by cache opcode 8.
+     * @property unknownVariables values in the order defined by cache opcode 11.
      */
     public class GroupAddChange(
         public val index: Int,
@@ -91,7 +86,16 @@ public class GroupFull(
         public val uid: Long,
         public val groupVariables: List<GroupVariable<*>>,
         public val groupMemberVariables: List<GroupVariable<*>>,
+        public val unknownVariables: List<GroupVariable<*>>,
     ) : GroupUpdate {
+        public constructor(
+            index: Int,
+            id: Int,
+            uid: Long,
+            groupVariables: List<GroupVariable<*>>,
+            groupMemberVariables: List<GroupVariable<*>>,
+        ) : this(index, id, uid, groupVariables, groupMemberVariables, emptyList())
+
         init {
             require(index in 0..255) {
                 "Index must be in range of 0..255"
@@ -112,6 +116,7 @@ public class GroupFull(
             if (uid != other.uid) return false
             if (groupVariables != other.groupVariables) return false
             if (groupMemberVariables != other.groupMemberVariables) return false
+            if (unknownVariables != other.unknownVariables) return false
 
             return true
         }
@@ -122,6 +127,7 @@ public class GroupFull(
             result = 31 * result + uid.hashCode()
             result = 31 * result + groupVariables.hashCode()
             result = 31 * result + groupMemberVariables.hashCode()
+            result = 31 * result + unknownVariables.hashCode()
             return result
         }
 
@@ -131,7 +137,8 @@ public class GroupFull(
                 "id=$id, " +
                 "uid=$uid, " +
                 "groupVariables=$groupVariables, " +
-                "groupMemberVariables=$groupMemberVariables" +
+                "groupMemberVariables=$groupMemberVariables, " +
+                "unknownVariables=$unknownVariables" +
                 ")"
         }
     }
