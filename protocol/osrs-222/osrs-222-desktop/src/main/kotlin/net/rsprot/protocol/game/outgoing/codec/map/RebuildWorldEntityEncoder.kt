@@ -38,11 +38,8 @@ public class RebuildWorldEntityEncoder : MessageEncoder<RebuildWorldEntity> {
 
         var xteaCount = 0
         val (mapsquares, xteas) = distinctMapsquares.get()
-        val maxBitBufByteCount = ((27 * message.zones.size) + 32) ushr 5
-        val maxXteaByteCount = 2 + (4 * 4 * message.zones.size)
-        // Ensure the correct number of writable bytes ahead of time for the worst case scenario
-        // This is due to our bit buffer implementation by default not ensuring this
-        buffer.buffer.ensureWritable(maxBitBufByteCount + maxXteaByteCount)
+        val bitCount = message.zones.size + 26 * message.zones.count { it != null }
+        buffer.buffer.ensureWritable((bitCount + 7) ushr 3)
         val bitbuf = buffer.buffer.toBitBuf()
         bitbuf.use {
             for (zone in message.zones) {
