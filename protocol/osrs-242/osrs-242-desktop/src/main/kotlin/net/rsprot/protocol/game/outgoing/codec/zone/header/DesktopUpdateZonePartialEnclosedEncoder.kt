@@ -11,7 +11,6 @@ import net.rsprot.protocol.game.outgoing.codec.zone.payload.LocAddChangeV2Encode
 import net.rsprot.protocol.game.outgoing.codec.zone.payload.LocAddChangeV3Encoder
 import net.rsprot.protocol.game.outgoing.codec.zone.payload.LocAnimEncoder
 import net.rsprot.protocol.game.outgoing.codec.zone.payload.LocDelEncoder
-import net.rsprot.protocol.game.outgoing.codec.zone.payload.LocMergeEncoder
 import net.rsprot.protocol.game.outgoing.codec.zone.payload.MapAnimEncoder
 import net.rsprot.protocol.game.outgoing.codec.zone.payload.MapProjAnimV2Encoder
 import net.rsprot.protocol.game.outgoing.codec.zone.payload.ObjAddEncoder
@@ -78,7 +77,7 @@ public class DesktopUpdateZonePartialEnclosedEncoder : MessageEncoder<UpdateZone
                     encodeMessage(
                         buffer,
                         message,
-                        indexedEncoder.encoder,
+                        requireNotNull(indexedEncoder.encoder) { "Unsupported zone protocol: ${indexedEncoder.name}" },
                     )
                 }
             } catch (t: Throwable) {
@@ -121,11 +120,11 @@ public class DesktopUpdateZonePartialEnclosedEncoder : MessageEncoder<UpdateZone
          */
         private enum class IndexedZoneProtEncoder(
             private val protId: Int,
-            val encoder: ZoneProtEncoder<*>,
+            val encoder: ZoneProtEncoder<*>?,
         ) {
             SOUND_AREA(OldSchoolZoneProt.SOUND_AREA, SoundAreaEncoder()),
             MAP_ANIM(OldSchoolZoneProt.MAP_ANIM, MapAnimEncoder()),
-            LOC_MERGE(OldSchoolZoneProt.LOC_MERGE, LocMergeEncoder()),
+            LOC_MERGE(OldSchoolZoneProt.LOC_MERGE, null),
             LOC_ANIM(OldSchoolZoneProt.LOC_ANIM, LocAnimEncoder()),
             LOC_ADD_CHANGE_V3(OldSchoolZoneProt.LOC_ADD_CHANGE_V3, LocAddChangeV3Encoder()),
             MAP_PROJANIM_V2(OldSchoolZoneProt.MAP_PROJANIM_V2, MapProjAnimV2Encoder()),
@@ -148,7 +147,7 @@ public class DesktopUpdateZonePartialEnclosedEncoder : MessageEncoder<UpdateZone
                  */
                 val maxZoneProtSize =
                     entries.maxOf {
-                        it.encoder.prot.size
+                        it.encoder?.prot?.size ?: 0
                     }
 
                 /**

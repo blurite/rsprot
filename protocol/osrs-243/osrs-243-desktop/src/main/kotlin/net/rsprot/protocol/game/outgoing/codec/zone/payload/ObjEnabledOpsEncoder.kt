@@ -13,7 +13,7 @@ public class ObjEnabledOpsEncoder : ZoneProtEncoder<ObjEnabledOps> {
         buffer: JagByteBuf,
         message: ObjEnabledOps,
     ) {
-        buffer.p1(message.coordInZonePacked)
+        buffer.p1Alt1(message.coordInZonePacked)
         buffer.p1Alt1(message.opFlags.toInt())
         buffer.p2Alt1(message.id)
     }

@@ -21,7 +21,7 @@ public class ScriptedProjAddEncoder : ZoneProtEncoder<ScriptedProjAdd> {
         buffer.p2(message.startTime)
         buffer.p2Alt1(message.targetOffsetZ)
         buffer.p2Alt3(message.curveScriptT)
-        buffer.p1Alt2(message.coordInZonePacked)
+        buffer.p1Alt3(message.coordInZonePacked)
         buffer.p2Alt2(message.endTime)
         buffer.p2Alt1(message.curveScriptH)
         buffer.p2Alt2(message.id)

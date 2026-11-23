@@ -11,7 +11,6 @@ import net.rsprot.protocol.game.outgoing.codec.zone.payload.LocAddChangeV2Encode
 import net.rsprot.protocol.game.outgoing.codec.zone.payload.LocAddChangeV3Encoder
 import net.rsprot.protocol.game.outgoing.codec.zone.payload.LocAnimEncoder
 import net.rsprot.protocol.game.outgoing.codec.zone.payload.LocDelEncoder
-import net.rsprot.protocol.game.outgoing.codec.zone.payload.LocMergeEncoder
 import net.rsprot.protocol.game.outgoing.codec.zone.payload.MapAnimEncoder
 import net.rsprot.protocol.game.outgoing.codec.zone.payload.MapProjAnimV2Encoder
 import net.rsprot.protocol.game.outgoing.codec.zone.payload.ObjAddEncoder
@@ -78,7 +77,7 @@ public class DesktopUpdateZonePartialEnclosedEncoder : MessageEncoder<UpdateZone
                     encodeMessage(
                         buffer,
                         message,
-                        indexedEncoder.encoder,
+                        requireNotNull(indexedEncoder.encoder) { "Unsupported zone protocol: ${indexedEncoder.name}" },
                     )
                 }
             } catch (t: Throwable) {
@@ -121,9 +120,9 @@ public class DesktopUpdateZonePartialEnclosedEncoder : MessageEncoder<UpdateZone
          */
         private enum class IndexedZoneProtEncoder(
             private val protId: Int,
-            val encoder: ZoneProtEncoder<*>,
+            val encoder: ZoneProtEncoder<*>?,
         ) {
-            LOC_MERGE(OldSchoolZoneProt.LOC_MERGE, LocMergeEncoder()),
+            LOC_MERGE(OldSchoolZoneProt.LOC_MERGE, null),
             OBJ_ADD(OldSchoolZoneProt.OBJ_ADD, ObjAddEncoder()),
             SCRIPTEDPROJ_CHANGE(OldSchoolZoneProt.SCRIPTEDPROJ_CHANGE, ScriptedProjChangeEncoder()),
             SCRIPTEDPROJ_ADD(OldSchoolZoneProt.SCRIPTEDPROJ_ADD, ScriptedProjAddEncoder()),
@@ -148,7 +147,7 @@ public class DesktopUpdateZonePartialEnclosedEncoder : MessageEncoder<UpdateZone
                  */
                 val maxZoneProtSize =
                     entries.maxOf {
-                        it.encoder.prot.size
+                        it.encoder?.prot?.size ?: 0
                     }
 
                 /**

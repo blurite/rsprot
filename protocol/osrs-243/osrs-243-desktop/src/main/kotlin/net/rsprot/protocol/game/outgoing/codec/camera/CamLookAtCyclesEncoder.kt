@@ -18,7 +18,7 @@ public class CamLookAtCyclesEncoder : MessageEncoder<CamLookAtCycles> {
         buffer.p1(message.easing.id)
         buffer.p2Alt3(message.cycles)
         buffer.p2Alt3(message.z)
-        buffer.p1(if (message.heightRelative) 1 else 0)
+        buffer.p1Alt2(if (message.heightRelative) 1 else 0)
         buffer.p2Alt3(message.x)
         buffer.p2Alt2(message.height)
     }

@@ -17,7 +17,7 @@ public class CamRotateToCoordinateV3Encoder : MessageEncoder<CamRotateToCoordina
     ) {
         buffer.p2Alt2(message.cycles)
         buffer.p2Alt2(message.z)
-        buffer.p1Alt1(if (message.heightRelative) 1 else 0)
+        buffer.p1Alt3(if (message.heightRelative) 1 else 0)
         buffer.p1Alt1(if (message.trackTarget) 1 else 0)
         buffer.p1Alt3(message.easing.id)
         buffer.p2Alt3(message.x)

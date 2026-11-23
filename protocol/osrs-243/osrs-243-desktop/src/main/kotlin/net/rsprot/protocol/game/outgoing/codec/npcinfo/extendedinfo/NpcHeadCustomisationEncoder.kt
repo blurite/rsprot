@@ -24,8 +24,8 @@ public class NpcHeadCustomisationEncoder : PrecomputedExtendedInfoEncoder<HeadCu
             return buffer
         }
         val capacity =
-            3 + (customisation.models.size * 2) +
-                (customisation.recolours.size * 4) +
+            3 + (customisation.models.size * 4) +
+                (customisation.recolours.size * 2) +
                 (customisation.retexture.size * 2)
         val buffer =
             alloc
@@ -68,7 +68,7 @@ public class NpcHeadCustomisationEncoder : PrecomputedExtendedInfoEncoder<HeadCu
     }
 
     private fun JagByteBuf.pFlag(value: Int) {
-        p1(value)
+        p1Alt1(value)
     }
 
     private companion object {

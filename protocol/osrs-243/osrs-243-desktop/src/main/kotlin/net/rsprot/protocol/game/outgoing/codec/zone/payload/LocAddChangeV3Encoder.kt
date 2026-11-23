@@ -14,7 +14,7 @@ public class LocAddChangeV3Encoder : ZoneProtEncoder<LocAddChangeV3> {
         message: LocAddChangeV3,
     ) {
         buffer.p1Alt1(message.locPropertiesPacked)
-        buffer.p1Alt2(message.coordInZonePacked)
+        buffer.p1Alt3(message.coordInZonePacked)
         val ops = message.ops
         val opCount = ops?.size ?: 0
         buffer.p1Alt2(opCount)

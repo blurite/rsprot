@@ -150,7 +150,6 @@ import net.rsprot.protocol.game.outgoing.codec.zone.payload.LocAddChangeV2Encode
 import net.rsprot.protocol.game.outgoing.codec.zone.payload.LocAddChangeV3Encoder
 import net.rsprot.protocol.game.outgoing.codec.zone.payload.LocAnimEncoder
 import net.rsprot.protocol.game.outgoing.codec.zone.payload.LocDelEncoder
-import net.rsprot.protocol.game.outgoing.codec.zone.payload.LocMergeEncoder
 import net.rsprot.protocol.game.outgoing.codec.zone.payload.MapAnimEncoder
 import net.rsprot.protocol.game.outgoing.codec.zone.payload.SoundAreaEncoder
 import net.rsprot.protocol.game.outgoing.map.RebuildLoginV2
@@ -208,7 +207,6 @@ public object DesktopGameMessageEncoderRepository {
                 bind(LocAddChangeV3Encoder())
                 bind(LocDelEncoder())
                 bind(LocAnimEncoder())
-                bind(LocMergeEncoder())
                 bind(MapAnimEncoder())
                 bind(SoundAreaEncoder())
 

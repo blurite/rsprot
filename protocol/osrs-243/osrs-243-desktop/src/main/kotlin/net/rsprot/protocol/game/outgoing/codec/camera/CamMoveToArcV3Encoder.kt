@@ -18,7 +18,7 @@ public class CamMoveToArcV3Encoder : MessageEncoder<CamMoveToArcV3> {
         buffer.p2Alt3(message.cycles)
         buffer.p2(message.height)
         buffer.p2(message.centerZ)
-        buffer.p1Alt1(if (message.heightRelative) 1 else 0)
+        buffer.p1Alt3(if (message.heightRelative) 1 else 0)
         buffer.p2(message.centerX)
         buffer.p1(message.easing.id)
         buffer.p2Alt3(message.destinationX)

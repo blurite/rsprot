@@ -16,6 +16,6 @@ public class AmbientSoundStartEncoder : MessageEncoder<AmbientSoundStart> {
         message: AmbientSoundStart,
     ) {
         buffer.p2Alt1(message.id)
-        buffer.p1(if (message.fade) 1 else 0)
+        buffer.p1Alt2(if (message.fade) 1 else 0)
     }
 }
