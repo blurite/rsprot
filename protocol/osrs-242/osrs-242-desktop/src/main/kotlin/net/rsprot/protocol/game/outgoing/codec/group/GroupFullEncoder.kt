@@ -31,34 +31,23 @@ public class GroupFullEncoder : MessageEncoder<GroupFull> {
                     buffer.pSmart1or2null(update.id)
                     buffer.p8(update.uid)
 
-                    for (variable in update.groupVariables) {
-                        when (variable) {
-                            is GroupVariable.IntGroupVariable -> {
-                                buffer.pVarInt2s(variable.value)
-                            }
-                            is GroupVariable.LongGroupVariable -> {
-                                buffer.p8(variable.value)
-                            }
-                            is GroupVariable.StringGroupVariable -> {
-                                buffer.pjstr(variable.value)
-                            }
-                        }
-                    }
-
-                    for (variable in update.groupMemberVariables) {
-                        when (variable) {
-                            is GroupVariable.IntGroupVariable -> {
-                                buffer.pVarInt2s(variable.value)
-                            }
-                            is GroupVariable.LongGroupVariable -> {
-                                buffer.p8(variable.value)
-                            }
-                            is GroupVariable.StringGroupVariable -> {
-                                buffer.pjstr(variable.value)
-                            }
-                        }
-                    }
+                    writeVariables(buffer, update.groupVariables)
+                    writeVariables(buffer, update.groupMemberVariables)
+                    writeVariables(buffer, update.unknownVariables)
                 }
+            }
+        }
+    }
+
+    private fun writeVariables(
+        buffer: JagByteBuf,
+        variables: List<GroupVariable<*>>,
+    ) {
+        for (variable in variables) {
+            when (variable) {
+                is GroupVariable.IntGroupVariable -> buffer.pVarInt2s(variable.value)
+                is GroupVariable.LongGroupVariable -> buffer.p8(variable.value)
+                is GroupVariable.StringGroupVariable -> buffer.pjstr(variable.value)
             }
         }
     }

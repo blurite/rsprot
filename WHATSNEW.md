@@ -1,5 +1,11 @@
 ## What's New?
 
+### Revision 243
+
+#### Changes
+- JS5 now uses 3 bytes to write the group id, pushing max group id from
+65,535 to 16,777,215.
+
 ### Revision 242
 
 #### Additions

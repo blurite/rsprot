@@ -37,10 +37,8 @@ internal fun encodeRegionV2(
 
     var distinctMapsquareCount = 0
     val (mapsquares, _) = distinctMapsquares.get()
-    val maxBitBufByteCount = ((27 * zones.size) + 32) ushr 5
-    // Ensure the correct number of writable bytes ahead of time for the worst case scenario
-    // This is due to our bit buffer implementation by default not ensuring this
-    buffer.buffer.ensureWritable(maxBitBufByteCount + 2)
+    val bitCount = zones.size + 26 * zones.count { it != null }
+    buffer.buffer.ensureWritable((bitCount + 7) ushr 3)
     val bitbuf = buffer.buffer.toBitBuf()
     bitbuf.use {
         for (zone in zones) {
